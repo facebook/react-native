@@ -90,7 +90,12 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
 - (void)bundleFinishedLoading:(NSError *)error
 {
   if (error != nil) {
-    [[RCTRedBox sharedInstance] showErrorMessage:error.localizedDescription withDetails:error.localizedFailureReason];
+    NSArray *stack = [[error userInfo] objectForKey:@"stack"];
+    if (stack) {
+      [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withStack:stack];
+    } else {
+      [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withDetails:[error localizedFailureReason]];
+    }
   } else {
     
     [_bridge.uiManager registerRootView:self];
