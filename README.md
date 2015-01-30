@@ -52,8 +52,7 @@ movie search placeholder text:
 
 1. Open the `Examples/Movies/SearchScreen.js` file in your favorite JavaScript
 editor.
-2. Look for the current search placeholder text and change it to "Search for an
-awesome movie...".
+2. Look for the current search placeholder text and change it to "Search a movie...".
 3. Hit cmd+R ([twice](http://openradar.appspot.com/19613391)) in your iOS simulator to reload the app and see your change.
 If you don't immediately see your changes, try restarting your app within Xcode.
 
