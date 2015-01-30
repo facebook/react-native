@@ -39,7 +39,7 @@ class Board {
     return this;
   }
 
-  hasMove(row: number, col: number): boolean {
+  hasMark(row: number, col: number): boolean {
     return this.grid[row][col] !== 0;
   }
 
@@ -175,7 +175,7 @@ var TicTacToeApp = React.createClass({
   },
 
   handleCellPress(row: number, col: number) {
-    if (this.state.board.hasMove(row, col)) {
+    if (this.state.board.hasMark(row, col)) {
       return;
     }
 
