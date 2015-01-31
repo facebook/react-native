@@ -57,6 +57,11 @@ class XMLHttpRequest {
     /* Stub */
     return '';
   }
+  
+  getResponseHeader(header: string): ?string {
+    /* Stub */
+    return '';
+  }
 
   setRequestHeader(header: string, value: any): void {
     this._headers[header] = value;
