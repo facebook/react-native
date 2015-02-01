@@ -493,6 +493,7 @@ var NavigatorIOS = React.createClass({
             this.props.itemWrapperStyle,
             route.wrapperStyle
           ]}
+          backButtonTitle={route.backButtonTitle}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
           tintColor={this.props.tintColor}>
