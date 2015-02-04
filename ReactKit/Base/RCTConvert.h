@@ -41,6 +41,7 @@
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json;
 
++ (CAKeyframeAnimation *)GIF:(id)json;
 + (UIImage *)UIImage:(id)json;
 + (CGImageRef)CGImage:(id)json;
 

@@ -35,7 +35,7 @@ NSString *RCTMD5Hash(NSString *string)
 
 CGFloat RCTScreenScale()
 {
-  static CGFloat scale = -1;
+  static CGFloat scale;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     if (![NSThread isMainThread]) {
@@ -48,6 +48,23 @@ CGFloat RCTScreenScale()
   });
 
   return scale;
+}
+
+CGSize RCTScreenSize()
+{
+  static CGSize size;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    if (![NSThread isMainThread]) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        size = [UIScreen mainScreen].bounds.size;
+      });
+    } else {
+      size = [UIScreen mainScreen].bounds.size;
+    }
+  });
+  
+  return size;
 }
 
 CGFloat RCTRoundPixelValue(CGFloat value)
@@ -120,3 +137,24 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement)
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
 }
+
+BOOL RCTClassOverridesClassMethod(Class cls, SEL selector)
+{
+  return RCTClassOverridesInstanceMethod(object_getClass(cls), selector);
+}
+
+BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
+{
+  unsigned int numberOfMethods;
+  Method *methods = class_copyMethodList(cls, &numberOfMethods);
+  for (unsigned int i = 0; i < numberOfMethods; i++)
+  {
+    if (method_getName(methods[i]) == selector)
+    {
+      free(methods);
+      return YES;
+    }
+  }
+  return NO;
+}
+

@@ -20,8 +20,9 @@ id RCTJSONParse(NSString *jsonString, NSError **error);
 // Get MD5 hash of a string
 NSString *RCTMD5Hash(NSString *string);
 
-// Get screen scale in a thread-safe way
+// Get screen metrics in a thread-safe way
 CGFloat RCTScreenScale(void);
+CGSize RCTScreenSize(void);
 
 // Round float coordinates to nearest whole screen pixel (not point)
 CGFloat RCTRoundPixelValue(CGFloat value);
@@ -34,3 +35,7 @@ NSTimeInterval RCTTGetAbsoluteTime(void);
 // Method swizzling
 void RCTSwapClassMethods(Class cls, SEL original, SEL replacement);
 void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);
+
+// Module subclass support
+BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
+BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);

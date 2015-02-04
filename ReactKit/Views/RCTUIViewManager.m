@@ -3,13 +3,38 @@
 #import "RCTUIViewManager.h"
 
 #import "RCTConvert.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTView.h"
 
 @implementation RCTUIViewManager
+{
+  __weak RCTEventDispatcher *_eventDispatcher;
+}
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+{
+  if ((self = [super init])) {
+    _eventDispatcher = eventDispatcher;
+  }
+  return self;
+}
+
++ (NSString *)moduleName
+{
+  // Default implementation, works in most cases
+  NSString *name = NSStringFromClass(self);
+  if ([name hasPrefix:@"RCTUI"]) {
+    name = [name substringFromIndex:@"RCT".length];
+  }
+  if ([name hasSuffix:@"Manager"]) {
+    name = [name substringToIndex:name.length - @"Manager".length];
+  }
+  return name;
+}
+
+- (UIView *)view
 {
   return [[UIView alloc] init];
 }
@@ -29,7 +54,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius)
 RCT_REMAP_VIEW_PROPERTY(borderColor, layer.borderColor);
 RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius)
 RCT_REMAP_VIEW_PROPERTY(borderWidth, layer.borderWidth)
-RCT_REMAP_VIEW_PROPERTY(transformMatrix, view.layer.transform)
+RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform)
 
 - (void)set_overflow:(id)json
              forView:(UIView *)view

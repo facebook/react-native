@@ -6,7 +6,7 @@
 
 @implementation RCTRawTextManager
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (UIView *)view
 {
   return [[UIView alloc] init];
 }

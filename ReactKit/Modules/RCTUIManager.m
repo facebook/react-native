@@ -34,26 +34,6 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
   }
 }
 
-static NSString *RCTModuleName(Class moduleClass)
-{
-  if ([moduleClass respondsToSelector:@selector(moduleName)]) {
-    
-    return [moduleClass moduleName];
-    
-  } else {
-    
-    // Default implementation, works in most cases
-    NSString *className = NSStringFromClass(moduleClass);
-    if ([className hasPrefix:@"RCTUI"]) {
-      className = [className substringFromIndex:@"RCT".length];
-    }
-    if ([className hasSuffix:@"Manager"]) {
-      className = [className substringToIndex:className.length - @"Manager".length];
-    }
-    return className;
-  }
-}
-
 static NSDictionary *RCTViewModuleClasses(void)
 {
   static NSMutableDictionary *modules;
@@ -78,7 +58,7 @@ static NSDictionary *RCTViewModuleClasses(void)
       }
       
       // Get module name
-      NSString *moduleName = RCTModuleName(cls);
+      NSString *moduleName = [cls respondsToSelector:@selector(moduleName)] ? [cls moduleName] : NSStringFromClass(cls);
       
       // Check module name is unique
       id existingClass = modules[moduleName];
@@ -131,7 +111,7 @@ static NSDictionary *RCTViewModuleClasses(void)
     // Instantiate view managers
     NSMutableDictionary *viewManagers = [[NSMutableDictionary alloc] init];
     [RCTViewModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, Class moduleClass, BOOL *stop) {
-      viewManagers[moduleName] = [[moduleClass alloc] init];
+      viewManagers[moduleName] = [[moduleClass alloc] initWithEventDispatcher:_bridge.eventDispatcher];
     }];
     _viewManagers = viewManagers;
     
@@ -535,11 +515,6 @@ static NSDictionary *RCTViewModuleClasses(void)
   }
 }
 
-- (UIView *)viewForViewManager:(id <RCTNativeViewModule>)manager
-{
-  return [manager viewWithEventDispatcher:_bridge.eventDispatcher];
-}
-
 static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView, id <RCTNativeViewModule>manager)
 {
   // TODO: cache respondsToSelector tests
@@ -581,7 +556,9 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
       
       if (obj == [NSNull null]) {
         // Copy property from default view to current
-        RCTSetProperty(shadowView, key, [defaultView valueForKey:key]);
+        // Note: not just doing `[defaultView valueForKey:key]`, the
+        // key may not exist, in which case we'd get an exception.
+        RCTCopyProperty(shadowView, defaultView, key);
       } else {
         RCTSetProperty(shadowView, key, obj);
       }
@@ -619,10 +596,10 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
       // Note the default is setup after the props are read for the first time ever
       // for this className - this is ok because we only use the default for restoring
       // defaults, which never happens on first creation.
-      uiManager->_defaultViews[moduleName] = [uiManager viewForViewManager:manager];
+      uiManager->_defaultViews[moduleName] = [manager view];
     }
     
-    UIView *view = [uiManager viewForViewManager:manager];
+    UIView *view = [manager view];
     if (view) {
       // Set required properties
       view.reactTag = reactTag;
@@ -1013,7 +990,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   }];
 }
 
-- (NSDictionary *)allBubblingEventTypesConfigs
++ (NSDictionary *)allBubblingEventTypesConfigs
 {
   NSMutableDictionary *customBubblingEventTypesConfigs = [@{
     // Bubble dispatched events
@@ -1103,20 +1080,20 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     },
   } mutableCopy];
 
-  for (id <RCTNativeViewModule> viewManager in _viewManagers.allValues) {
-    NSDictionary *bubblingEvents = [viewManager respondsToSelector:@selector(customBubblingEventTypes)]? [viewManager customBubblingEventTypes] : nil;
-    if (bubblingEvents) {
-      for (NSString *eventName in bubblingEvents) {
-        RCTCAssert(!customBubblingEventTypesConfigs[eventName], @"Event %@ registered multiple times.", eventName);
+  [RCTViewModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *name, Class cls, BOOL *stop) {
+    if (RCTClassOverridesClassMethod(cls, @selector(customBubblingEventTypes))) {
+      NSDictionary *eventTypes = [cls customBubblingEventTypes];
+      for (NSString *eventName in eventTypes) {
+        RCTCAssert(!customBubblingEventTypesConfigs[eventName], @"Event '%@' registered multiple times.", eventName);
       }
-      [customBubblingEventTypesConfigs addEntriesFromDictionary:bubblingEvents];
+      [customBubblingEventTypesConfigs addEntriesFromDictionary:eventTypes];
     }
-  }
+  }];
 
   return customBubblingEventTypesConfigs;
 }
 
-- (NSDictionary *)allDirectEventTypesConfigs
++ (NSDictionary *)allDirectEventTypesConfigs
 {
   NSMutableDictionary *customDirectEventTypes = [@{
     @"topScrollBeginDrag": @{
@@ -1154,22 +1131,21 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     },
   } mutableCopy];
 
-  for (id <RCTNativeViewModule> viewManager in _viewManagers.allValues) {
-    NSDictionary *bubblingEvents = [viewManager respondsToSelector:@selector(customDirectEventTypes)] ? [viewManager customDirectEventTypes] : nil;
-    if (bubblingEvents) {
-      for (NSString *eventName in bubblingEvents) {
-        RCTCAssert(!customDirectEventTypes[eventName], @"Event %@ registered multiple times.", eventName);
+  [RCTViewModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *name, Class cls, BOOL *stop) {
+    if (RCTClassOverridesClassMethod(cls, @selector(customDirectEventTypes))) {
+      NSDictionary *eventTypes = [cls customDirectEventTypes];
+      for (NSString *eventName in eventTypes) {
+        RCTCAssert(!customDirectEventTypes[eventName], @"Event '%@' registered multiple times.", eventName);
       }
-      [customDirectEventTypes addEntriesFromDictionary:bubblingEvents];
+      [customDirectEventTypes addEntriesFromDictionary:eventTypes];
     }
-  }
+  }];
 
   return customDirectEventTypes;
 }
 
-- (NSDictionary *)constantsToExport
++ (NSDictionary *)constantsToExport
 {
-  UIScreen *screen = [UIScreen mainScreen];
   NSMutableDictionary *allJSConstants = [@{
     @"customBubblingEventTypes": [self allBubblingEventTypesConfigs],
     @"customDirectEventTypes": [self allDirectEventTypesConfigs],
@@ -1180,13 +1156,13 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     },
     @"Dimensions": @{
       @"window": @{
-        @"width": @(screen.bounds.size.width),
-        @"height": @(screen.bounds.size.height),
-        @"scale": @(screen.scale),
+        @"width": @(RCTScreenSize().width),
+        @"height": @(RCTScreenSize().height),
+        @"scale": @(RCTScreenScale()),
       },
       @"modalFullscreenView": @{
-        @"width": @(screen.bounds.size.width),
-        @"height": @(screen.bounds.size.height),
+        @"width": @(RCTScreenSize().width),
+        @"height": @(RCTScreenSize().width),
       },
     },
     @"StyleConstants": @{
@@ -1224,12 +1200,15 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     },
   } mutableCopy];
 
-  [_viewManagers enumerateKeysAndObjectsUsingBlock:^(NSString *name, id <RCTNativeViewModule> viewManager, BOOL *stop) {
-    NSDictionary *constants = [viewManager respondsToSelector:@selector(constantsToExport)] ? [viewManager constantsToExport] : nil;
-    if (constants) {
-      RCTAssert(allJSConstants[name] == nil , @"Cannot redefine constant namespace: %@", name);
+  [RCTViewModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *name, Class cls, BOOL *stop) {
+    // TODO: should these be inherited?
+    NSDictionary *constants = RCTClassOverridesClassMethod(cls, @selector(constantsToExport)) ? [cls constantsToExport] : nil;
+    if ([constants count]) {
+      NSMutableDictionary *namespace = [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
+      RCTAssert(namespace[@"Constants"] == nil , @"Cannot redefine Constants in namespace: %@", name);
       // add an additional 'Constants' namespace for each class
-      allJSConstants[name] = @{@"Constants": constants};
+      namespace[@"Constants"] = constants;
+      allJSConstants[name] = [namespace copy];
     }
   }];
 

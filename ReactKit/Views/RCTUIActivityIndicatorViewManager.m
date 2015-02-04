@@ -6,9 +6,9 @@
 
 @implementation RCTUIActivityIndicatorViewManager
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (UIView *)view
 {
-  return [[UIActivityIndicatorView alloc] initWithFrame:CGRectZero];
+  return [[UIActivityIndicatorView alloc] init];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(activityIndicatorViewStyle)
@@ -28,7 +28,7 @@ RCT_EXPORT_VIEW_PROPERTY(color)
   }
 }
 
-- (NSDictionary *)constantsToExport
++ (NSDictionary *)constantsToExport
 {
   return
   @{

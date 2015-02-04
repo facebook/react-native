@@ -50,7 +50,6 @@
 		83CBBA601A601EAA00E9B192 /* RCTBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA5F1A601EAA00E9B192 /* RCTBridge.m */; };
 		83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */; };
 		83CBBA871A60202500E9B192 /* RCTJavaScriptAppEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA861A60202500E9B192 /* RCTJavaScriptAppEngine.m */; };
-		83CBBA8B1A60204600E9B192 /* RCTModuleIDs.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA8A1A60204600E9B192 /* RCTModuleIDs.m */; };
 		83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */; };
 		83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBACB1A6023D300E9B192 /* RCTConvert.m */; };
 		83EEC2EE1A604AB200C39218 /* RCTModuleMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EEC2ED1A604AB200C39218 /* RCTModuleMethod.m */; };
@@ -162,8 +161,6 @@
 		83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventDispatcher.m; sourceTree = "<group>"; };
 		83CBBA851A60202500E9B192 /* RCTJavaScriptAppEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJavaScriptAppEngine.h; sourceTree = "<group>"; };
 		83CBBA861A60202500E9B192 /* RCTJavaScriptAppEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJavaScriptAppEngine.m; sourceTree = "<group>"; };
-		83CBBA891A60204600E9B192 /* RCTModuleIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuleIDs.h; sourceTree = "<group>"; };
-		83CBBA8A1A60204600E9B192 /* RCTModuleIDs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleIDs.m; sourceTree = "<group>"; };
 		83CBBA961A6020BB00E9B192 /* RCTTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTouchHandler.h; sourceTree = "<group>"; };
 		83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTouchHandler.m; sourceTree = "<group>"; };
 		83CBBACA1A6023D300E9B192 /* RCTConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTConvert.h; sourceTree = "<group>"; };
@@ -329,8 +326,6 @@
 				83BEE46D1A6D19BC00B5863B /* RCTSparseArray.m */,
 				83CBBA4D1A601E3B00E9B192 /* RCTLog.h */,
 				83CBBA4E1A601E3B00E9B192 /* RCTLog.m */,
-				83CBBA891A60204600E9B192 /* RCTModuleIDs.h */,
-				83CBBA8A1A60204600E9B192 /* RCTModuleIDs.m */,
 				83CBBA581A601E9000E9B192 /* RCTRedBox.h */,
 				83CBBA591A601E9000E9B192 /* RCTRedBox.m */,
 				83CBBA961A6020BB00E9B192 /* RCTTouchHandler.h */,
@@ -439,7 +434,6 @@
 				13E067591A70F44B002CDEE1 /* UIView+ReactKit.m in Sources */,
 				137029531A69923600575408 /* RCTImageDownloader.m in Sources */,
 				83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */,
-				83CBBA8B1A60204600E9B192 /* RCTModuleIDs.m in Sources */,
 				83CBBA521A601E3B00E9B192 /* RCTLog.m in Sources */,
 				13B080071A6947C200A75B9A /* RCTShadowRawText.m in Sources */,
 				13B0801D1A69489C00A75B9A /* RCTNavItemManager.m in Sources */,
@@ -555,6 +549,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -564,6 +559,7 @@
 		83CBBA411A601D0F00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

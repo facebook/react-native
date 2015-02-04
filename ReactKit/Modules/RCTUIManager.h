@@ -12,7 +12,7 @@
 @protocol RCTScrollableProtocol;
 @protocol RCTViewNodeProtocol;
 
-@interface RCTUIManager : NSObject <RCTInvalidating, RCTNativeModule>
+@interface RCTUIManager : NSObject <RCTNativeModule, RCTInvalidating>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

@@ -7,9 +7,9 @@
 
 @implementation RCTScrollViewManager
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (UIView *)view
 {
-  return [[RCTScrollView alloc] initWithFrame:CGRectZero eventDispatcher:eventDispatcher];
+  return [[RCTScrollView alloc] initWithEventDispatcher:self.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(alwaysBounceHorizontal)
@@ -36,7 +36,7 @@ RCT_EXPORT_VIEW_PROPERTY(contentInset);
 RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets);
 RCT_EXPORT_VIEW_PROPERTY(contentOffset);
 
-- (NSDictionary *)constantsToExport
++ (NSDictionary *)constantsToExport
 {
   return
   @{

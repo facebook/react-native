@@ -11,6 +11,9 @@
 #import "RCTUtils.h"
 #import "UIView+ReactKit.h"
 
+// TODO: this class behaves a lot like a module, and could be implemented as a
+// module if we were to assume that modules and RootViews had a 1:1 relationship
+
 @implementation RCTTouchHandler
 {
   __weak UIView *_rootView;
@@ -25,11 +28,6 @@
   NSMutableOrderedSet *_nativeTouches;
   NSMutableArray *_reactTouches;
   NSMutableArray *_touchViews;
-}
-
-- (instancetype)init
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
 }
 
 - (instancetype)initWithTarget:(id)target action:(SEL)action

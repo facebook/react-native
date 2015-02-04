@@ -32,6 +32,6 @@
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, copy) NSArray *stickyHeaderIndices;
 
-- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @end

@@ -4,6 +4,7 @@
 
 #import "RCTImageDownloader.h"
 #import "RCTUtils.h"
+#import "RCTConvert.h"
 
 @implementation RCTNetworkImageView
 {
@@ -52,13 +53,27 @@
       self.layer.contentsScale = _defaultImage.scale;
       self.layer.contents = (__bridge id)_defaultImage.CGImage;
     }
-    _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() block:^(UIImage *image, NSError *error) {
-      if (image) {
-        self.layer.contentsScale = image.scale;
-        self.layer.contents = (__bridge id)image.CGImage;
-      }
-      // TODO: handle errors
-    }];
+    if ([imageURL.pathExtension caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
+      _downloadToken = [_imageDownloader downloadDataForURL:imageURL block:^(NSData *data, NSError *error) {
+        if (data) {
+          CAKeyframeAnimation *animation = [RCTConvert GIF:data];
+          CGImageRef firstFrame = (__bridge CGImageRef)animation.values.firstObject;
+          self.layer.bounds = CGRectMake(0, 0, CGImageGetWidth(firstFrame), CGImageGetHeight(firstFrame));
+          self.layer.contentsScale = 1.0;
+          self.layer.contentsGravity = kCAGravityResizeAspect;
+          [self.layer addAnimation:animation forKey:@"contents"];
+        }
+        // TODO: handle errors
+      }];
+    } else {
+      _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() block:^(UIImage *image, NSError *error) {
+        if (image) {
+          self.layer.contentsScale = image.scale;
+          self.layer.contents = (__bridge id)image.CGImage;
+        }
+        // TODO: handle errors
+      }];
+    }
   }
 }
 

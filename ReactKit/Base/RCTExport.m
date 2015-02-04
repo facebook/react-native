@@ -349,6 +349,36 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
   return YES;
 }
 
+BOOL RCTCopyProperty(id target, id source, NSString *keypath)
+{
+  // Split keypath
+  NSArray *parts = [keypath componentsSeparatedByString:@"."];
+  NSString *key = [parts lastObject];
+  for (NSUInteger i = 0; i < parts.count - 1; i++) {
+    source = [source valueForKey:parts[i]];
+    target = [target valueForKey:parts[i]];
+    if (!source || !target) {
+      return NO;
+    }
+  }
+
+  // Check class for property definition
+  if (!class_getProperty([source class], [key UTF8String])) {
+    // Check if setter exists
+    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
+                                       [[key substringToIndex:1] uppercaseString],
+                                       [key substringFromIndex:1]]);
+    
+    if (![source respondsToSelector:setter]
+        || ![target respondsToSelector:setter]) {
+      return NO;
+    }
+  }
+
+  [target setValue:[source valueForKey:key] forKey:key];
+  return YES;
+}
+
 BOOL RCTCallSetter(id target, SEL setter, id value)
 {
   // Get property name

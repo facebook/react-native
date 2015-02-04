@@ -6,12 +6,11 @@
 
 @implementation RCTViewManager
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (UIView *)view
 {
   return [[RCTView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel)
 RCT_EXPORT_VIEW_PROPERTY(pointerEvents)
 
 @end

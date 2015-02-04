@@ -8,9 +8,9 @@
 
 @implementation RCTTextFieldManager
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (UIView *)view
 {
-  return [[RCTTextField alloc] initWithFrame:CGRectZero eventDispatcher:eventDispatcher];
+  return [[RCTTextField alloc] initWithEventDispatcher:self.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden)

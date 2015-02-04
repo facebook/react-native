@@ -4,9 +4,8 @@
 
 @interface RCTSparseArray : NSObject <NSCopying>
 
-- (instancetype)init;
-- (instancetype)initWithCapacity:(NSUInteger)capacity;
-- (instancetype)initWithSparseArray:(RCTSparseArray *)sparseArray;
+- (instancetype)initWithCapacity:(NSUInteger)capacity NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSparseArray:(RCTSparseArray *)sparseArray NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sparseArray;
 + (instancetype)sparseArrayWithCapacity:(NSUInteger)capacity;

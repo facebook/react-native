@@ -14,14 +14,14 @@
   BOOL _jsRequestingFirstResponder;
 }
 
-- (instancetype)init
+- (instancetype)initWithFrame:(CGRect)frame
 {
   RCT_NOT_DESIGNATED_INITIALIZER();
 }
 
-- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if ((self = [super initWithFrame:frame])) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     
     _eventDispatcher = eventDispatcher;
     [self addTarget:self action:@selector(_textFieldDidChange) forControlEvents:UIControlEventEditingChanged];

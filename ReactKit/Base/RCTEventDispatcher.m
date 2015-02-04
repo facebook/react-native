@@ -3,7 +3,6 @@
 #import "RCTEventDispatcher.h"
 
 #import "RCTBridge.h"
-#import "RCTModuleIDs.h"
 #import "UIView+ReactKit.h"
 
 @implementation RCTEventDispatcher
@@ -19,39 +18,13 @@
   return self;
 }
 
-- (NSArray *)touchEvents
+- (void)sendEventWithName:(NSString *)name body:(NSDictionary *)body
 {
-  static NSArray *events;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    events = @[
-      @"topTouchStart",
-      @"topTouchMove",
-      @"topTouchEnd",
-      @"topTouchCancel",
-    ];
-  });
-  
-  return events;
-}
-
-- (void)sendRawEventWithType:(NSString *)eventType body:(NSDictionary *)body
-{
-  static NSSet *touchEvents;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    touchEvents = [NSSet setWithArray:[self touchEvents]];
-  });
-  
-  RCTAssert(![touchEvents containsObject:eventType], @"Touch events must be"
-    "sent via the sendTouchEventWithOrderedTouches: method, not sendRawEventWithType:");
-  
   RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-    @"Event body dictionary must include a 'target' property containing a react tag");
+            @"Event body dictionary must include a 'target' property containing a react tag");
   
-  [_bridge enqueueJSCall:RCTModuleIDReactIOSEventEmitter
-                methodID:RCTEventEmitterReceiveEvent
-                    args:@[body[@"target"], eventType, body]];
+  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
+                    args:@[body[@"target"], name, body]];
 }
 
 /**
@@ -69,30 +42,32 @@
                        touches:(NSArray *)touches
                 changedIndexes:(NSArray *)changedIndexes
 {
+  static NSString *events[] = {
+    @"topTouchStart",
+    @"topTouchMove",
+    @"topTouchEnd",
+    @"topTouchCancel",
+  };
+  
   RCTAssert(touches.count, @"No touches in touchEventArgsForOrderedTouches");
 
-  [_bridge enqueueJSCall:RCTModuleIDReactIOSEventEmitter
-                methodID:RCTEventEmitterReceiveTouches
-                    args:@[[self touchEvents][type], touches, changedIndexes]];
+  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
+                    args:@[events[type], touches, changedIndexes]];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
 {
-  static NSArray *events;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    events = @[
-      @"topFocus",
-      @"topBlur",
-      @"topChange",
-      @"topSubmitEditing",
-      @"topEndEditing",
-    ];
-  });
+  static NSString *events[] = {
+    @"topFocus",
+    @"topBlur",
+    @"topChange",
+    @"topSubmitEditing",
+    @"topEndEditing",
+  };
   
-  [self sendRawEventWithType:events[type] body:@{
+  [self sendEventWithName:events[type] body:@{
     @"text": text,
     @"target": reactTag
   }];
@@ -111,18 +86,14 @@
                      scrollView:(UIScrollView *)scrollView
                        userData:(NSDictionary *)userData
 {
-  static NSArray *events;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    events = @[
-      @"topScrollBeginDrag",
-      @"topScroll",
-      @"topScrollEndDrag",
-      @"topMomentumScrollBegin",
-      @"topMomentumScrollEnd",
-      @"topScrollAnimationEnd",
-    ];
-  });
+  static NSString *events[] = {
+    @"topScrollBeginDrag",
+    @"topScroll",
+    @"topScrollEndDrag",
+    @"topMomentumScrollBegin",
+    @"topMomentumScrollEnd",
+    @"topScrollAnimationEnd",
+  };
   
   NSDictionary *body = @{
     @"contentOffset": @{
@@ -147,7 +118,7 @@
     body = mutableBody;
   }
   
-  [self sendRawEventWithType:events[type] body:body];
+  [self sendEventWithName:events[type] body:body];
 }
 
 @end

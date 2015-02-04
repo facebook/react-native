@@ -28,14 +28,6 @@
   return self;
 }
 
-- (instancetype)initWithStorage:(NSDictionary *)storage
-{
-  if ((self = [super init])) {
-    _storage = [storage copy];
-  }
-  return self;
-}
-
 + (instancetype)sparseArray
 {
   return [[self alloc] init];

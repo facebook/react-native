@@ -10,6 +10,6 @@
 @property (nonatomic, assign) BOOL autoCorrect;
 @property (nonatomic, assign) UIEdgeInsets paddingEdgeInsets; // TODO: contentInset
 
-- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @end

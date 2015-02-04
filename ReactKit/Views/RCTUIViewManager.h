@@ -4,6 +4,12 @@
 
 #import "RCTExport.h"
 
+@class RCTEventDispatcher;
+
 @interface RCTUIViewManager : NSObject <RCTNativeViewModule>
+
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 
 @end

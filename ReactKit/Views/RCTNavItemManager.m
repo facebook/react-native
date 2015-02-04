@@ -7,9 +7,9 @@
 
 @implementation RCTNavItemManager
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (UIView *)view
 {
-  return [[RCTNavItem alloc] initWithFrame:CGRectZero];
+  return [[RCTNavItem alloc] init];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(title)

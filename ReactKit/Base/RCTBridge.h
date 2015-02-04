@@ -33,10 +33,9 @@ static inline NSDictionary *RCTAPIErrorObject(NSString *msg)
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
 
-- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                   javaScriptModulesConfig:(NSDictionary *)javaScriptModulesConfig;
+- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor;
 
-- (void)enqueueJSCall:(NSUInteger)moduleID methodID:(NSUInteger)methodID args:(NSArray *)args;
+- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete;
 
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;

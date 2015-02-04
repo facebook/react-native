@@ -8,9 +8,9 @@
 
 @implementation RCTNavigatorManager
 
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (UIView *)view
 {
-  return [[RCTNavigator alloc] initWithFrame:CGRectZero eventDispatcher:eventDispatcher];
+  return [[RCTNavigator alloc] initWithEventDispatcher:self.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack)

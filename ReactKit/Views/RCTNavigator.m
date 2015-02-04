@@ -126,7 +126,17 @@ NSInteger kNeverProgressed = -10000;
  */
 @implementation RCTNavigationController
 
-- (instancetype)init
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+  RCT_NOT_DESIGNATED_INITIALIZER();
+}
+
+- (instancetype)initWithNavigationBarClass:(Class)navigationBarClass toolbarClass:(Class)toolbarClass
+{
+  RCT_NOT_DESIGNATED_INITIALIZER();
+}
+
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
 {
   RCT_NOT_DESIGNATED_INITIALIZER();
 }
@@ -137,7 +147,7 @@ NSInteger kNeverProgressed = -10000;
  */
 - (instancetype)initWithScrollCallback:(dispatch_block_t)callback
 {
-  if ((self = [super init])) {
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     _scrollCallback = callback;
   }
   return self;
@@ -265,11 +275,14 @@ NSInteger kNeverProgressed = -10000;
 
 @implementation RCTNavigator
 
-- (id)initWithFrame:(CGRect)frame
-    eventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  self = [super initWithFrame:frame];
-  if (self) {
+  RCT_NOT_DESIGNATED_INITIALIZER();
+}
+
+- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+{
+  if ((self = [super initWithFrame:CGRectZero])) {
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(reportNavigationProgress:)];
     _mostRecentProgress = kNeverProgressed;
     _dummyView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -311,22 +324,13 @@ NSInteger kNeverProgressed = -10000;
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_eventDispatcher sendRawEventWithType:@"topNavigationProgress"
-                                      body:@{@"fromIndex": @(_currentlyTransitioningFrom),
-                                             @"toIndex": @(_currentlyTransitioningTo),
-                                             @"progress": @(nextProgress),
-                                             @"target": self.reactTag}];
+    [_eventDispatcher sendEventWithName:@"topNavigationProgress" body:@{
+      @"fromIndex": @(_currentlyTransitioningFrom),
+      @"toIndex": @(_currentlyTransitioningTo),
+      @"progress": @(nextProgress),
+      @"target": self.reactTag
+    }];
   }
-}
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
-- (instancetype)init
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
 }
 
 - (void)dealloc
@@ -438,9 +442,10 @@ NSInteger kNeverProgressed = -10000;
 
 - (void)handleTopOfStackChanged
 {
-  [_eventDispatcher sendRawEventWithType:@"topNavigateBack"
-                                    body:@{@"target":self.reactTag,
-                                           @"stackLength":@(_navigationController.viewControllers.count)}];
+  [_eventDispatcher sendEventWithName:@"topNavigateBack" body:@{
+    @"target":self.reactTag,
+    @"stackLength":@(_navigationController.viewControllers.count)
+  }];
 }
 
 - (void)dispatchFakeScrollEvent

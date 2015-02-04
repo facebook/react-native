@@ -96,7 +96,7 @@
 
 - (void)rightButtonTapped
 {
-  [_eventDispatcher sendRawEventWithType:@"topNavRightButtonTap" body:@{@"target":_navItem.reactTag}];
+  [_eventDispatcher sendEventWithName:@"topNavRightButtonTap" body:@{@"target":_navItem.reactTag}];
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent

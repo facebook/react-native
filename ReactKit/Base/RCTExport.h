@@ -26,6 +26,7 @@ extern NSString *RCTExportedModuleNameAtSortedIndex(NSUInteger index);
 extern NSDictionary *RCTExportedMethodsByModule(void);
 
 extern BOOL RCTSetProperty(id target, NSString *keypath, id value);
+extern BOOL RCTCopyProperty(id target, id source, NSString *keypath);
 extern BOOL RCTCallSetter(id target, SEL setter, id value);
 /* ------------------------------------------------------------------- */
 
@@ -66,9 +67,22 @@ _RCTExportSectionName))) static const RCTExportEntry __rct_export_entry__ = { __
 
 /**
  * Injects constants into JS. These constants are made accessible via
- * NativeModules.moduleName.X.
+ * NativeModules.moduleName.X. Note that this method is not inherited when you
+ * subclass a module, and you should not call [super constantsToExport] when
+ * implementing it.
  */
-- (NSDictionary *)constantsToExport;
++ (NSDictionary *)constantsToExport;
+
+/**
+ * An array of JavaScript methods that the module will call via the
+ * -[RCTBridge enqueueJSCall:args:] method. Each method should be specified
+ * as a string of the form "JSModuleName.jsMethodName". Attempting to call a
+ * method that has not been registered will result in an error. If a method
+ * has already been regsistered by another module, it is not necessary to
+ * register it again, but it is good pratice. Registering the same method
+ * more than once is silently ignored and will not result in an error.
+ */
++ (NSArray *)JSMethods;
 
 /**
  * Notifies the module that a batch of JS method invocations has just completed.
@@ -84,9 +98,18 @@ _RCTExportSectionName))) static const RCTExportEntry __rct_export_entry__ = { __
 @protocol RCTNativeViewModule <NSObject>
 
 /**
- * This method instantiates a native view to be managed by the module.
+ * Designated initializer for view modules. The event dispatched can either be
+ * used directly by the module, or passed on to instantiated views for event handling.
  */
-- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+
+/**
+ * This method instantiates a native view to be managed by the module. The method
+ * will be called many times, and should return a fresh instance each time. The
+ * view module MUST NOT cache the returned view and return the same instance
+ * for subsequent calls.
+ */
+- (UIView *)view;
 
 @optional
 
@@ -98,7 +121,8 @@ _RCTExportSectionName))) static const RCTExportEntry __rct_export_entry__ = { __
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,
- * an ordinary RCTShadowView instance will be created.
+ * an ordinary RCTShadowView instance will be created. As with the -view method,
+ * the -shadowView method should return a fresh instance each time it is called.
  */
 - (RCTShadowView *)shadowView;
 
@@ -164,8 +188,11 @@ RCT_REMAP_VIEW_PROPERTY(name, name)
  *     }
  *   }
  * }
+ *
+ * Note that this method is not inherited when you subclass a view module, and
+ * you should not call [super customBubblingEventTypes] when implementing it.
  */
-- (NSDictionary *)customBubblingEventTypes;
++ (NSDictionary *)customBubblingEventTypes;
 
 /**
  * Returns a dictionary of config data passed to JS that defines eligible events
@@ -177,14 +204,19 @@ RCT_REMAP_VIEW_PROPERTY(name, name)
  *     @"registrationName": @"onTwirl"
  *   }
  * }
+ *
+ * Note that this method is not inherited when you subclass a view module, and
+ * you should not call [super customDirectEventTypes] when implementing it.
  */
-- (NSDictionary *)customDirectEventTypes;
++ (NSDictionary *)customDirectEventTypes;
 
 /**
  * Injects constants into JS. These constants are made accessible via
- * NativeModules.moduleName.X.
+ * NativeModules.moduleName.X. Note that this method is not inherited when you
+ * subclass a view module, and you should not call [super constantsToExport]
+ * when implementing it.
  */
-- (NSDictionary *)constantsToExport;
++ (NSDictionary *)constantsToExport;
 
 /**
  * To deprecate, hopefully

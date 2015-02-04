@@ -8,6 +8,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUIManager.h"
+#import "RCTUtils.h"
 #import "UIView+ReactKit.h"
 
 CGFloat const ZINDEX_DEFAULT = 0;
@@ -122,6 +123,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
  */
 - (BOOL)touchesShouldCancelInContentView:(UIView *)view
 {
+  //TODO: shouldn't this call super if _shouldDisableScrollInteraction returns NO?
   return ![self _shouldDisableScrollInteraction];
 }
 
@@ -260,9 +262,14 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 @synthesize nativeMainScrollDelegate = _nativeMainScrollDelegate;
 
-- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:frame])) {
+  RCT_NOT_DESIGNATED_INITIALIZER();
+}
+
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+{
+  if ((self = [super initWithFrame:CGRectZero])) {
     
     _eventDispatcher = eventDispatcher;
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];

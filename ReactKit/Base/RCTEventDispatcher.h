@@ -33,9 +33,11 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 /**
- * Send an arbitrary event type
+ * Send a named event. For most purposes, use the an
+ * event type of RCTEventTypeDefault, the other types
+ * are used internally by the React framework.
  */
-- (void)sendRawEventWithType:(NSString *)eventType body:(NSDictionary *)body;
+- (void)sendEventWithName:(NSString *)name body:(NSDictionary *)body;
 
 /**
  * Send an array of touch events

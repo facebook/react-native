@@ -37,12 +37,14 @@ function createStrictShapeTypeChecker(shapeTypes) {
     var allKeys = merge(props[propName], shapeTypes);
     for (var key in allKeys) {
       var checker = shapeTypes[key];
-      invariant(
-        checker,
-        `Invalid props.${propName} key \`${key}\` supplied to \`${componentName}\`.` +
-          `\nBad object: ` + JSON.stringify(props[propName], null, '  ') +
-          `\nValid keys: ` + JSON.stringify(Object.keys(shapeTypes), null, '  ')
-      );
+      if (!checker) {
+        invariant(
+          false,
+          `Invalid props.${propName} key \`${key}\` supplied to \`${componentName}\`.` +
+            `\nBad object: ` + JSON.stringify(props[propName], null, '  ') +
+            `\nValid keys: ` + JSON.stringify(Object.keys(shapeTypes), null, '  ')
+        );
+      }
       var error = checker(propValue, key, componentName, location);
       if (error) {
         invariant(

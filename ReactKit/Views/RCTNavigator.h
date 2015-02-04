@@ -9,8 +9,7 @@
 @property (nonatomic, strong) UIView *reactNavSuperviewLink;
 @property (nonatomic, assign) NSInteger requestedTopOfStack;
 
-- (instancetype)initWithFrame:(CGRect)frame
-              eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 /**
  * Schedules a JavaScript navigation and prevents `UIKit` from navigating until

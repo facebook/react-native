@@ -18,6 +18,20 @@
   return sharedInstance;
 }
 
+- (id)downloadDataForURL:(NSURL *)url
+                   block:(RCTDataDownloadBlock)block
+{
+  NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    // Dispatch back to main thread
+    dispatch_async(dispatch_get_main_queue(), ^{
+      block(data, error);
+    });
+  }];
+  
+  [task resume];
+  return task;
+}
+
 - (id)downloadImageForURL:(NSURL *)url
                      size:(CGSize)size
                     scale:(CGFloat)scale

@@ -6,11 +6,11 @@
 #import "RCTContextExecutor.h"
 #import "RCTEventDispatcher.h"
 #import "RCTJavaScriptAppEngine.h"
-#import "RCTModuleIDs.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTViewManager.h"
+#import "RCTWebViewExecutor.h"
 #import "UIView+ReactKit.h"
 #import "RCTKeyCommands.h"
 
@@ -23,6 +23,8 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
   RCTTouchHandler *_touchHandler;
 }
 
+static BOOL _useWebExec;
+
 + (void)initialize
 {
 
@@ -32,6 +34,13 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
+                                                          [self reloadAll];
+                                                        }];
+  // Cmd-D reloads using the web view executor, allows attaching from Safari dev tools.
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          _useWebExec = YES;
                                                           [self reloadAll];
                                                         }];
 
@@ -98,8 +107,8 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
       @"rootTag": self.reactTag ?: @0,
       @"initialProps": self.initialProperties ?: @{},
     };
-    [_bridge enqueueJSCall:RCTModuleIDBundler
-                  methodID:RCTBundlerRunApplication
+    
+    [_bridge enqueueJSCall:@"Bundler.runApplication"
                       args:@[moduleName, appParameters]];
   }
 }
@@ -123,9 +132,13 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
   [_executor invalidate];
   [_bridge invalidate];
 
-  _executor = [[RCTContextExecutor alloc] init];
-  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor
-                                  javaScriptModulesConfig:[RCTModuleIDs config]];
+  if (!_useWebExec) {
+    _executor = [[RCTContextExecutor alloc] init];
+  } else {
+    _executor = [[RCTWebViewExecutor alloc] init];
+  }
+
+  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor];
 
   _appEngine = [[RCTJavaScriptAppEngine alloc] initWithBridge:_bridge];
   _touchHandler = [[RCTTouchHandler alloc] initWithEventDispatcher:_bridge.eventDispatcher rootView:self];
@@ -163,24 +176,6 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
 + (void)reloadAll
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewReloadNotification object:nil];
-}
-
-#pragma mark - Key commands
-
-- (NSArray *)keyCommands
-{
-  return @[
-           
-    // Reload
-    [UIKeyCommand keyCommandWithInput:@"r"
-                       modifierFlags:UIKeyModifierCommand
-                              action:@selector(reload)]
-    ];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return YES;
 }
 
 @end

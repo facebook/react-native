@@ -169,12 +169,20 @@ var ReactIOSEventEmitter = merge(ReactEventEmitterMixin, {
       var target = nativeEvent.target;
       if (target !== null && target !== undefined) {
         if (target < ReactIOSTagHandles.tagsStartAt) {
+          // When we get multiple touches at the same time, only the first touch
+          // actually has a view attached to it. The rest of the touches do not.
+          // This is presumably because iOS doesn't want to send touch events to
+          // two views for a single multi touch. Therefore this warning is only
+          // appropriate when it happens to the first touch. (hence jj === 0)
           if (__DEV__) {
-            warning(
-              false,
-              'A view is reporting that a touch occured on tag zero.'
-            );
+            if (jj === 0) {
+              warning(
+                false,
+                'A view is reporting that a touch occured on tag zero.'
+              );
+            }
           }
+          continue;
         } else {
           rootNodeID = NodeHandle.getRootNodeID(target);
         }

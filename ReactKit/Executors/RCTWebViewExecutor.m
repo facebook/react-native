@@ -41,6 +41,11 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   return self;
 }
 
+- (id)init
+{
+  return [self initWithWebView:[[UIWebView alloc] init]];
+}
+
 - (BOOL)isValid
 {
   return _webView != nil;
@@ -98,7 +103,13 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
                        sourceURL:(NSURL *)url
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  RCTAssertMainThread();
+  if (![NSThread isMainThread]) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      [self executeApplicationScript:script sourceURL:url onComplete:onComplete];
+    });
+    return;
+  }
+
   RCTAssert(onComplete != nil, @"");
   _onApplicationScriptLoaded = onComplete;
 
@@ -137,26 +148,12 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
  */
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  if (![NSThread isMainThread]) {
-    [self performSelectorOnMainThread:@selector(executeBlockOnJavaScriptQueue:)
-                                  withObject:block
-                               waitUntilDone:YES];
-  } else {
-    [self performSelector:@selector(_onMainThreadExecuteBlockAfterDelay:)
-               withObject:block afterDelay:0.001  // This can't be zero!
-                  inModes:@[NSDefaultRunLoopMode, UITrackingRunLoopMode]];
-  }
-}
+  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC);
 
-/**
- * This timing delay is needed to avoid crashes in WebKit when setting a
- * breakpoint or `debugger` statement and debugging via the remote Safari
- * inspector.
- */
-- (void)_onMainThreadExecuteBlockAfterDelay:(dispatch_block_t)block
-{
-  RCTAssertMainThread();
-  block();
+  dispatch_after(when, dispatch_get_main_queue(), ^{
+    RCTAssertMainThread();
+    block();
+  });
 }
 
 /**

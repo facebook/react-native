@@ -4,7 +4,6 @@
 
 #import "RCTBridge.h"
 #import "RCTLog.h"
-#import "RCTModuleIDs.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
 
@@ -53,6 +52,11 @@
   RCTSparseArray *_timers;
   RCTBridge *_bridge;
   id _updateTimer;
+}
+
++ (NSArray *)JSMethods
+{
+  return @[@"RCTJSTimers.callTimers"];
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -143,7 +147,7 @@
   
   // call timers that need to be called
   if ([timersToCall count] > 0) {
-    [_bridge enqueueJSCall:RCTModuleIDJSTimers methodID:RCTJSTimersCallTimers args:@[timersToCall]];
+    [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[timersToCall]];
   }
 }
 
@@ -155,14 +159,14 @@
  * Date.now() from JS and then subtracting that from the current time here.
  */
 - (void)createTimer:(NSNumber *)callbackID
-           duration:(NSNumber *)jsDuration
-   jsSchedulingTime:(NSNumber *)jsSchedulingTime
-            repeats:(NSNumber *)repeats
+           duration:(double)jsDuration
+   jsSchedulingTime:(double)jsSchedulingTime
+            repeats:(BOOL)repeats
 {
   RCT_EXPORT();
 
-  NSTimeInterval interval = jsDuration.doubleValue / 1000;
-  NSTimeInterval jsCreationTimeSinceUnixEpoch = jsSchedulingTime.doubleValue / 1000;
+  NSTimeInterval interval = jsDuration / 1000;
+  NSTimeInterval jsCreationTimeSinceUnixEpoch = jsSchedulingTime / 1000;
   NSTimeInterval currentTimeSinceUnixEpoch = [[NSDate date] timeIntervalSince1970];
   NSTimeInterval jsSchedulingOverhead = currentTimeSinceUnixEpoch - jsCreationTimeSinceUnixEpoch;
   if (jsSchedulingOverhead < 0) {
