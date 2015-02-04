@@ -35,10 +35,10 @@ Get up and running with our Movies sample app:
 
 1. Once you have the repo cloned and met all the requirements above, start the
 packager that will transform your JS code on-the-fly:
-```
-npm install
-npm start
-```
+  ```
+  npm install
+  npm start
+  ```
 2. Open the `Examples/Movies/Movies.xcodeproj` project in Xcode.
 3. Make sure the target is set to `Movies` and that you have an iOS simulator
 selected to run the app.
@@ -61,21 +61,18 @@ Feel free to browse the Movies sample files and customize various properties to
 get familiar with the codebase and React Native.
 
 Also check out the UI Component Explorer for more sample code:
-`Examples/UIExplorer/UIExplorer.xcodeproj`.  **Make sure to stop any running apps
-before running a new one or Xcode might hang.**
+`Examples/UIExplorer/UIExplorer.xcodeproj`.  **Make sure to close the Movies
+project first - Xcode will break if you have two projects open that reference
+the same library.**
 
 ## Troubleshooting
 
-If Xcode hangs, force kill it with the activity monitor.  This sometimes happens
-if you try to run another app without manually stopping the previous one first.
+Xcode will break if you have two examples open at the same time.
 
 Jest testing does not yet work on node versions after 0.10.x.
 
 You can verify the packager is working by loading the [bundle](http://localhost:8081/Examples/Movies/MoviesApp.includeRequire.runModule.bundle) in your browser and
 inspecting the contents.
-
-You might see weird npm install errors - we recommend uninstalling and
-reinstalling node and other software with brew instead.
 
 Please report any other issues you encounter so we can fix them ASAP.
 

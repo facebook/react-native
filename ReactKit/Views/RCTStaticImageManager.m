@@ -9,7 +9,7 @@
 
 @implementation RCTStaticImageManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   return [[RCTStaticImage alloc] init];
 }

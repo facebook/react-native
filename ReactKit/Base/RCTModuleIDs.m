@@ -21,16 +21,6 @@
       }
     },
 
-    @"RCTRenderingPerf": @{
-      @"moduleID": @(RCTModuleIDRenderingPerf),
-      @"methods": @{
-        @"toggle": @{
-          @"methodID": @(RCTRenderingPerfToggle),
-          @"type": @"local"
-        },
-      }
-    },
-
     @"RCTDeviceEventEmitter": @{
       @"moduleID": @(RCTModuleIDDeviceEventEmitter),
       @"methods": @{

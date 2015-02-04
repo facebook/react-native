@@ -8,7 +8,7 @@
 
 @implementation RCTTextFieldManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   return [[RCTTextField alloc] initWithFrame:CGRectZero eventDispatcher:eventDispatcher];
 }

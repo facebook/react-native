@@ -25,7 +25,7 @@
                         targetTime:(NSTimeInterval)targetTime
                            repeats:(BOOL)repeats
 {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _active = YES;
     _interval = interval;
     _repeats = repeats;
@@ -62,7 +62,7 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _bridge = bridge;
     _timers = [[RCTSparseArray alloc] init];
   }

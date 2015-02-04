@@ -14,7 +14,6 @@ typedef NS_ENUM(NSUInteger, RCTJSModuleIDs) {
   RCTModuleIDDimensions,
   RCTModuleIDDeviceEventEmitter,
   RCTModuleIDNativeAppEventEmitter,
-  RCTModuleIDRenderingPerf,
 };
 
 /**
@@ -23,39 +22,6 @@ typedef NS_ENUM(NSUInteger, RCTJSModuleIDs) {
 typedef NS_ENUM(NSUInteger, RCTEventEmitterRemoteMethodIDs) {
   RCTEventEmitterReceiveEvent = 0,
   RCTEventEmitterReceiveTouches
-};
-
-/**
- * `RCTEventEmitter`: Encoding of parameters.
- */
-typedef NS_ENUM(NSUInteger, RCTEventType) {
-  RCTEventTap = 1,
-  RCTEventVisibleCellsChange,
-  RCTEventNavigateBack,
-  RCTEventNavRightButtonTap,
-  RCTEventChange,
-  RCTEventTextFieldDidFocus,
-  RCTEventTextFieldWillBlur,
-  RCTEventTextFieldSubmitEditing,
-  RCTEventTextFieldEndEditing,
-  RCTEventTextInput,
-  RCTEventLongPress,
-  RCTEventTouchStart,
-  RCTEventTouchMove,
-  RCTEventTouchCancel,
-  RCTEventTouchEnd,
-  RCTEventScrollBeginDrag,
-  RCTEventScroll,
-  RCTEventScrollEndDrag,
-  RCTEventSelectionChange,
-  RCTEventMomentumScrollBegin,
-  RCTEventMomentumScrollEnd,
-  RCTEventPullToRefresh,
-  RCTEventScrollAnimationEnd,
-  RCTEventLoadingStart,
-  RCTEventLoadingFinish,
-  RCTEventLoadingError,
-  RCTEventNavigationProgress,
 };
 
 typedef NS_ENUM(NSUInteger, RCTKeyCode) {
@@ -82,16 +48,8 @@ typedef NS_ENUM(NSUInteger, RCTDimensionsMethodIDs) {
   RCTDimensionsSet = 0
 };
 
-typedef NS_ENUM(NSUInteger, RCTRenderingPerfMethodIDs) {
-  RCTRenderingPerfToggle = 0,
-};
-
 typedef NS_ENUM(NSUInteger, RCTDeviceEventEmitterMethodIDs) {
   RCTDeviceEventEmitterEmit = 0
-};
-
-typedef NS_ENUM(NSUInteger, RCTNativeAppEventEmitterMethodIDs) {
-  RCTNativeAppEventEmitterEmit = 0
 };
 
 @interface RCTModuleIDs : NSObject

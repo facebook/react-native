@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTJavaScriptEventDispatcher;
+@class RCTEventDispatcher;
 
 @interface RCTNavigator : UIView <UINavigationControllerDelegate>
 
@@ -10,7 +10,7 @@
 @property (nonatomic, assign) NSInteger requestedTopOfStack;
 
 - (instancetype)initWithFrame:(CGRect)frame
-              eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher;
+              eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 /**
  * Schedules a JavaScript navigation and prevents `UIKit` from navigating until

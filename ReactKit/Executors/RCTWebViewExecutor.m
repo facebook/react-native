@@ -33,7 +33,7 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   if (!webView) {
     @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Can't init with a nil webview" userInfo:nil];
   }
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _objectsToInject = [[NSMutableDictionary alloc] init];
     _webView = webView;
     _webView.delegate = self;

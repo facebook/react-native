@@ -9,7 +9,7 @@
 
 @implementation RCTUIViewManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   return [[UIView alloc] init];
 }

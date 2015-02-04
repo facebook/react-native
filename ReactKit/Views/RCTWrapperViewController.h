@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTJavaScriptEventDispatcher;
+@class RCTEventDispatcher;
 @class RCTNavItem;
 @class RCTWrapperViewController;
 
@@ -15,8 +15,8 @@ didMoveToNavigationController:(UINavigationController *)navigationController;
 
 @interface RCTWrapperViewController : UIViewController
 
-- (instancetype)initWithContentView:(UIView *)contentView eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher;
-- (instancetype)initWithNavItem:(RCTNavItem *)navItem eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher;
+- (instancetype)initWithContentView:(UIView *)contentView eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+- (instancetype)initWithNavItem:(RCTNavItem *)navItem eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @property (nonatomic, readwrite, weak) id<RCTWrapperViewControllerNavigationListener> navigationListener;
 @property (nonatomic, strong, readwrite) RCTNavItem *navItem;

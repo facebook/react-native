@@ -5,10 +5,8 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
-#import "RCTEventExtractor.h"
-#import "RCTJavaScriptEventDispatcher.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
-#import "RCTScrollDispatcher.h"
 #import "RCTUIManager.h"
 #import "UIView+ReactKit.h"
 
@@ -249,24 +247,20 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 @end
 
-@interface RCTScrollView ()
+@implementation RCTScrollView
 {
-  RCTJavaScriptEventDispatcher *_eventDispatcher;
+  RCTEventDispatcher *_eventDispatcher;
   BOOL _contentSizeManuallySet;
-  RCTScrollDispatcher *_scrollDispatcher;
   RCTCustomScrollView *_scrollView;
   UIView *_contentView;
+  NSTimeInterval _lastScrollDispatchTime;
+  NSMutableArray *_cachedChildFrames;
+  BOOL _allowNextScrollNoMatterWhat;
 }
-
-@property (nonatomic, readwrite, assign) BOOL didThrottleMomentumScrollEvent;
-
-@end
-
-@implementation RCTScrollView
 
 @synthesize nativeMainScrollDelegate = _nativeMainScrollDelegate;
 
-- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:frame])) {
     
@@ -274,9 +268,12 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
-    _scrollDispatcher = [[RCTScrollDispatcher alloc] initWithEventDispatcher:eventDispatcher];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
+    
+    _throttleScrollCallbackMS = 0;
+    _lastScrollDispatchTime = CACurrentMediaTime();
+    _cachedChildFrames = [[NSMutableArray alloc] init];
 
     [self addSubview:_scrollView];
   }
@@ -371,90 +368,120 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   [_scrollView zoomToRect:rect animated:animated];
 }
 
-#pragma mark - UIScrollViewDelegate methods
+#pragma mark - ScrollView delegate
 
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
-{
-  [_scrollDispatcher scrollViewDidEndScrollingAnimation:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewDidEndScrollingAnimation:)]) {
-    [_nativeMainScrollDelegate scrollViewDidEndScrollingAnimation:scrollView];
-  }
+#define RCT_SCROLL_EVENT_HANDLER(delegateMethod, eventName) \
+- (void)delegateMethod:(UIScrollView *)scrollView           \
+{                                                           \
+  [_eventDispatcher sendScrollEventWithType:eventName reactTag:self.reactTag scrollView:scrollView userData:nil]; \
+  if ([_nativeMainScrollDelegate respondsToSelector:_cmd]) { \
+    [_nativeMainScrollDelegate delegateMethod:scrollView]; \
+  } \
 }
+
+#define RCT_FORWARD_SCROLL_EVENT(call) \
+if ([_nativeMainScrollDelegate respondsToSelector:_cmd]) { \
+  [_nativeMainScrollDelegate call]; \
+}
+
+RCT_SCROLL_EVENT_HANDLER(scrollViewDidEndScrollingAnimation, RCTScrollEventTypeEndDeceleration)
+RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, RCTScrollEventTypeStartDeceleration)
+RCT_SCROLL_EVENT_HANDLER(scrollViewDidEndDecelerating, RCTScrollEventTypeEndDeceleration)
+RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  [_scrollDispatcher scrollViewDidScroll:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
-    [_nativeMainScrollDelegate scrollViewDidScroll:scrollView];
-  }
-}
+  NSTimeInterval now = CACurrentMediaTime();
+  NSTimeInterval throttleScrollCallbackSeconds = _throttleScrollCallbackMS / 1000.0;
+  
+  /**
+   * TODO: this logic looks wrong, and it may be because it is. Currently, if _throttleScrollCallbackMS
+   * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
+   * while scrolling as expected. However, if you "fix" that bug, ScrollView will generate repeated
+   * warnings, and behave strangely (ListView works fine however), so don't fix it unless you fix that too!
+   */
+  if (_allowNextScrollNoMatterWhat ||
+      (_throttleScrollCallbackMS != 0 && throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
+    
+    // Calculate changed frames
+    NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
+    [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
+      
+      // Check if new or changed
+      CGRect newFrame = subview.frame;
+      BOOL frameChanged = NO;
+      if (_cachedChildFrames.count <= idx) {
+        frameChanged = YES;
+        [_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
+      } else if (!CGRectEqualToRect(newFrame, [_cachedChildFrames[idx] CGRectValue])) {
+        frameChanged = YES;
+        _cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
+      }
+      
+      // Create JS frame object
+      if (frameChanged) {
+        [updatedChildFrames addObject: @{
+          @"index": @(idx),
+          @"x": @(newFrame.origin.x),
+          @"y": @(newFrame.origin.y),
+          @"width": @(newFrame.size.width),
+          @"height": @(newFrame.size.height),
+        }];
+      }
+      
+    }];
+    
+    // If there are new frames, add them to event data
+    NSDictionary *userData = nil;
+    if (updatedChildFrames.count > 0) {
+      userData = @{@"updatedChildFrames": updatedChildFrames};
+    }
 
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
-{
-  [_scrollDispatcher scrollViewWillBeginDecelerating:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewWillBeginDecelerating:)]) {
-    [_nativeMainScrollDelegate scrollViewWillBeginDecelerating:scrollView];
+    // Dispatch event
+    [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
+                                     reactTag:self.reactTag
+                                   scrollView:scrollView
+                                     userData:userData];
+    // Update dispatch time
+    _lastScrollDispatchTime = now;
+    _allowNextScrollNoMatterWhat = NO;
   }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-  [_scrollDispatcher scrollViewDidEndDecelerating:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
-    [_nativeMainScrollDelegate scrollViewDidEndDecelerating:scrollView];
-  }
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll:scrollView);
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
-    [_nativeMainScrollDelegate scrollViewWillBeginDragging:scrollView];
-  }
-  [_scrollDispatcher scrollViewWillBeginDragging:_scrollView reactTag:[self reactTag]];
+  _allowNextScrollNoMatterWhat = YES; // Ensure next scroll event is recorded, regardless of throttle
+  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeStart reactTag:self.reactTag scrollView:scrollView userData:nil];
+  RCT_FORWARD_SCROLL_EVENT(scrollViewWillBeginDragging:scrollView);
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  [_scrollDispatcher scrollViewWillEndDragging:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
-    [_nativeMainScrollDelegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
-  }
+  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:nil];
+  RCT_FORWARD_SCROLL_EVENT(scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset);
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
-    [_nativeMainScrollDelegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-  }
-}
-
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView
-{
-  [_scrollDispatcher scrollViewDidScroll:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewDidZoom:)]) {
-    [_nativeMainScrollDelegate scrollViewDidZoom:scrollView];
-  }
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDragging:scrollView willDecelerate:decelerate);
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
 {
-  [_scrollDispatcher scrollViewWillBeginDragging:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewWillBeginZooming:withView:)]) {
-    [_nativeMainScrollDelegate scrollViewWillBeginZooming:scrollView withView:view];
-  }
+  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeStart reactTag:self.reactTag scrollView:scrollView userData:nil];
+  RCT_FORWARD_SCROLL_EVENT(scrollViewWillBeginZooming:scrollView withView:view);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
 {
-  [_scrollDispatcher scrollViewWillEndDragging:_scrollView reactTag:[self reactTag]];
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewDidEndZooming:withView:atScale:)]) {
-    [_nativeMainScrollDelegate scrollViewDidEndZooming:scrollView withView:view atScale:scale];
-  }
+  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:nil];
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndZooming:scrollView withView:view atScale:scale);
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
 {
-  if ([_nativeMainScrollDelegate respondsToSelector:@selector(scrollViewShouldScrollToTop:)]) {
+  if ([_nativeMainScrollDelegate respondsToSelector:_cmd]) {
     return [_nativeMainScrollDelegate scrollViewShouldScrollToTop:scrollView];
   }
   return YES;
@@ -466,11 +493,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 }
 
 #pragma mark - Setters
-
-- (void)setThrottleScrollCallbackMS:(NSUInteger)ms
-{
-  _scrollDispatcher.throttleScrollCallbackMS = ms;
-}
 
 - (CGSize)_calculateViewportSize
 {
@@ -527,27 +549,24 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 {
   if (_contentSizeManuallySet) {
     _scrollView.contentSize = _contentSize;
+  } else if (!_contentView) {
+    _scrollView.contentSize = CGSizeZero;
   } else {
-    if (!_contentView) {
-      _scrollView.contentSize = CGSizeZero;
-    } else {
-      CGSize singleSubviewSize = _contentView.frame.size;
-      CGPoint singleSubviewPosition = _contentView.frame.origin;
-      CGSize fittedSize = CGSizeMake(
-       singleSubviewSize.width + singleSubviewPosition.x,
-       singleSubviewSize.height + singleSubviewPosition.y
-      );
-      if (!CGSizeEqualToSize(_scrollView.contentSize, fittedSize)) {
-        // When contentSize is set manually, ScrollView internals will reset contentOffset to 0,0. Since
-        // we potentially set contentSize whenever anything in the ScrollView updates, we workaround this
-        // issue by manually adjusting contentOffset whenever this happens
-        CGPoint newOffset = [self calculateOffsetForContentSize:fittedSize];
-        _scrollView.contentSize = fittedSize;
-        _scrollView.contentOffset = newOffset;
-      }
-      // when react makes changes to our
-      [_scrollView dockClosestSectionHeader];
+    CGSize singleSubviewSize = _contentView.frame.size;
+    CGPoint singleSubviewPosition = _contentView.frame.origin;
+    CGSize fittedSize = {
+      singleSubviewSize.width + singleSubviewPosition.x,
+      singleSubviewSize.height + singleSubviewPosition.y
+    };
+    if (!CGSizeEqualToSize(_scrollView.contentSize, fittedSize)) {
+      // When contentSize is set manually, ScrollView internals will reset contentOffset to 0,0. Since
+      // we potentially set contentSize whenever anything in the ScrollView updates, we workaround this
+      // issue by manually adjusting contentOffset whenever this happens
+      CGPoint newOffset = [self calculateOffsetForContentSize:fittedSize];
+      _scrollView.contentSize = fittedSize;
+      _scrollView.contentOffset = newOffset;
     }
+    [_scrollView dockClosestSectionHeader];
   }
 }
 

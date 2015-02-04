@@ -4,12 +4,9 @@
 
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
+#import "RCTEventDispatcher.h"
 #import "RCTJavaScriptAppEngine.h"
-#import "RCTJavaScriptEventDispatcher.h"
 #import "RCTModuleIDs.h"
-#import "RCTRedBox.h"
-#import "RCTShadowView.h"
-#import "RCTSparseArray.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"

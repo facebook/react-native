@@ -7,7 +7,7 @@
 @protocol RCTNativeModule;
 
 @class RCTUIManager;
-@class RCTJavaScriptEventDispatcher;
+@class RCTEventDispatcher;
 
 /**
  * Functions are the one thing that aren't automatically converted to OBJC
@@ -67,7 +67,7 @@ static inline NSDictionary *RCTAPIErrorObject(NSString *msg)
 - (void)enqueueUpdateTimers;
 
 @property (nonatomic, readonly) RCTUIManager *uiManager;
-@property (nonatomic, readonly) RCTJavaScriptEventDispatcher *eventDispatcher;
+@property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 
 // For use in implementing delegates, which may need to queue responses.
 - (RCTResponseSenderBlock)createResponseSenderBlock:(NSInteger)callbackID;

@@ -6,7 +6,7 @@
 
 #import "RCTModuleMethod.h"
 #import "RCTInvalidating.h"
-#import "RCTJavaScriptEventDispatcher.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTModuleIDs.h"
 #import "RCTTiming.h"
@@ -94,7 +94,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _javaScriptExecutor = javaScriptExecutor;
     _latestJSExecutor = _javaScriptExecutor;
     _shadowQueue = shadowQueue;
-    _eventDispatcher = [[RCTJavaScriptEventDispatcher alloc] initWithBridge:self];
+    _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
     
     _moduleInstances = [[NSMutableDictionary alloc] init];
     

@@ -8,7 +8,7 @@
 
 @implementation RCTNavigatorManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   return [[RCTNavigator alloc] initWithFrame:CGRectZero eventDispatcher:eventDispatcher];
 }

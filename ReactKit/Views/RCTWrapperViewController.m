@@ -2,8 +2,7 @@
 
 #import "RCTWrapperViewController.h"
 
-#import "RCTEventExtractor.h"
-#import "RCTJavaScriptEventDispatcher.h"
+#import "RCTEventDispatcher.h"
 #import "RCTNavItem.h"
 #import "RCTUtils.h"
 #import "UIView+ReactKit.h"
@@ -11,7 +10,7 @@
 @implementation RCTWrapperViewController
 {
   UIView *_contentView;
-  RCTJavaScriptEventDispatcher *_eventDispatcher;
+  RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayout;
   CGFloat _previousBottomLayout;
 }
@@ -21,9 +20,9 @@
   RCT_NOT_DESIGNATED_INITIALIZER();
 }
 
-- (instancetype)initWithContentView:(UIView *)contentView eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (instancetype)initWithContentView:(UIView *)contentView eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     _contentView = contentView;
     _eventDispatcher = eventDispatcher;
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -31,9 +30,9 @@
   return self;
 }
 
-- (instancetype)initWithNavItem:(RCTNavItem *)navItem eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (instancetype)initWithNavItem:(RCTNavItem *)navItem eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if (self = [self initWithContentView:navItem eventDispatcher:eventDispatcher]) {
+  if ((self = [self initWithContentView:navItem eventDispatcher:eventDispatcher])) {
     _navItem = navItem;
   }
   return self;
@@ -57,7 +56,7 @@
       [[UIBarButtonItem alloc] initWithTitle:_navItem.rightButtonTitle
                                       style:UIBarButtonItemStyleDone
                                       target:self
-                                      action:@selector(_onRightButtonTapped:)];
+                                      action:@selector(rightButtonTapped)];
   }
 
   if (_navItem.backButtonTitle.length > 0) {
@@ -95,20 +94,9 @@
   [self.view addSubview:_contentView];
 }
 
-- (void)_onRightButtonTapped:(id)sender
+- (void)rightButtonTapped
 {
-  RCTAssert(_navItem != nil, @"");
-  [self handleNavRightButtonTapped];
-}
-
-- (void)handleNavRightButtonTapped
-{
-  NSDictionary *nativeEvent = @{
-    @"target":_navItem.reactTag
-  };
-  [_eventDispatcher sendEventWithArgs:[RCTEventExtractor eventArgs:[_navItem reactTag]
-                                                             type:RCTEventNavRightButtonTap
-                                                   nativeEventObj:nativeEvent]];
+  [_eventDispatcher sendRawEventWithType:@"topNavRightButtonTap" body:@{@"target":_navItem.reactTag}];
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent

@@ -6,7 +6,7 @@
 
 @implementation RCTUIActivityIndicatorViewManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   return [[UIActivityIndicatorView alloc] initWithFrame:CGRectZero];
 }

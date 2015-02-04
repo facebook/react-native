@@ -4,8 +4,7 @@
 
 #import "RCTAssert.h"
 #import "RCTConvert.h"
-#import "RCTEventExtractor.h"
-#import "RCTJavaScriptEventDispatcher.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTNavItem.h"
 #import "RCTUtils.h"
@@ -138,7 +137,7 @@ NSInteger kNeverProgressed = -10000;
  */
 - (instancetype)initWithScrollCallback:(dispatch_block_t)callback
 {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _scrollCallback = callback;
   }
   return self;
@@ -193,7 +192,7 @@ NSInteger kNeverProgressed = -10000;
 
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener>
 {
-  RCTJavaScriptEventDispatcher *_eventDispatcher;
+  RCTEventDispatcher *_eventDispatcher;
   NSInteger _numberOfViewControllerMovesToIgnore;
 }
 
@@ -267,7 +266,7 @@ NSInteger kNeverProgressed = -10000;
 @implementation RCTNavigator
 
 - (id)initWithFrame:(CGRect)frame
-    eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+    eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   self = [super initWithFrame:frame];
   if (self) {
@@ -311,16 +310,12 @@ NSInteger kNeverProgressed = -10000;
     if (nextProgress == _mostRecentProgress) {
       return;
     }
-    NSDictionary *nativeEventObj = @{
-      @"fromIndex": @(_currentlyTransitioningFrom),
-      @"toIndex": @(_currentlyTransitioningTo),
-      @"progress": @(nextProgress),
-      @"target": self.reactTag ?: @0,
-    };
     _mostRecentProgress = nextProgress;
-    [_eventDispatcher sendEventWithArgs:[RCTEventExtractor eventArgs:self.reactTag
-                                                              type:RCTEventNavigationProgress
-                                                    nativeEventObj:nativeEventObj]];
+    [_eventDispatcher sendRawEventWithType:@"topNavigationProgress"
+                                      body:@{@"fromIndex": @(_currentlyTransitioningFrom),
+                                             @"toIndex": @(_currentlyTransitioningTo),
+                                             @"progress": @(nextProgress),
+                                             @"target": self.reactTag}];
   }
 }
 
@@ -443,21 +438,17 @@ NSInteger kNeverProgressed = -10000;
 
 - (void)handleTopOfStackChanged
 {
-  NSDictionary *nativeEventObj = @{
-    @"target":self.reactTag ?: @0,
-    @"stackLength":@(_navigationController.viewControllers.count)
-  };
-  NSArray *eventArgs = [RCTEventExtractor eventArgs:self.reactTag
-                                              type:RCTEventNavigateBack
-                                    nativeEventObj:nativeEventObj];
-  [_eventDispatcher sendEventWithArgs:eventArgs];
+  [_eventDispatcher sendRawEventWithType:@"topNavigateBack"
+                                    body:@{@"target":self.reactTag,
+                                           @"stackLength":@(_navigationController.viewControllers.count)}];
 }
 
 - (void)dispatchFakeScrollEvent
 {
-  [_eventDispatcher sendEventWithArgs:[RCTEventExtractor eventArgs:[self reactTag]
-                                                             type:RCTEventScroll
-                                                   nativeEventObj:[RCTEventExtractor fakeScrollEventObjectFor:[self reactTag]]]];
+  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
+                                   reactTag:self.reactTag
+                                 scrollView:nil
+                                   userData:nil];
 }
 
 /**

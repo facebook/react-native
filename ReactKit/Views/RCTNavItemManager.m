@@ -7,7 +7,7 @@
 
 @implementation RCTNavItemManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   return [[RCTNavItem alloc] initWithFrame:CGRectZero];
 }

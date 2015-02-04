@@ -14,19 +14,17 @@
 
 - (instancetype)initWithCapacity:(NSUInteger)capacity
 {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _storage = [NSMutableDictionary dictionaryWithCapacity:capacity];
   }
-
   return self;
 }
 
 - (instancetype)initWithSparseArray:(RCTSparseArray *)sparseArray
 {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _storage = [sparseArray->_storage copy];
   }
-
   return self;
 }
 

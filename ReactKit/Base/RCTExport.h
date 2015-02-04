@@ -9,7 +9,7 @@
 
 typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *viewRegistry);
 
-@class RCTJavaScriptEventDispatcher;
+@class RCTEventDispatcher;
 @class RCTShadowView;
 
 /* ------------------------------------------------------------------- */
@@ -79,7 +79,7 @@ _RCTExportSectionName))) static const RCTExportEntry __rct_export_entry__ = { __
 /**
  * This method instantiates a native view to be managed by the module.
  */
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher;
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @optional
 

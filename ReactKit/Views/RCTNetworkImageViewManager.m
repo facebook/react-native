@@ -11,7 +11,7 @@
 
 @implementation RCTNetworkImageViewManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   RCTNetworkImageView *view = [[RCTNetworkImageView alloc] initWithFrame:CGRectZero imageDownloader:[RCTImageDownloader sharedInstance]];
   view.contentMode = UIViewContentModeScaleAspectFill;

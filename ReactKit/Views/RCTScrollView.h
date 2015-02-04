@@ -8,7 +8,7 @@
 
 @protocol UIScrollViewDelegate;
 
-@class RCTJavaScriptEventDispatcher;
+@class RCTEventDispatcher;
 
 @interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
 
@@ -32,6 +32,6 @@
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, copy) NSArray *stickyHeaderIndices;
 
-- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher;
+- (instancetype)initWithFrame:(CGRect)frame eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @end

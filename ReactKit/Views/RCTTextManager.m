@@ -13,7 +13,7 @@
 
 @implementation RCTTextManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   UILabel *label = [[UILabel alloc] init];
   label.numberOfLines = 0;

@@ -7,7 +7,7 @@
 
 @implementation RCTScrollViewManager
 
-- (UIView *)viewWithEventDispatcher:(RCTJavaScriptEventDispatcher *)eventDispatcher
+- (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   return [[RCTScrollView alloc] initWithFrame:CGRectZero eventDispatcher:eventDispatcher];
 }
@@ -33,8 +33,8 @@ RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices);
 RCT_EXPORT_VIEW_PROPERTY(throttleScrollCallbackMS);
 RCT_EXPORT_VIEW_PROPERTY(zoomScale);
 RCT_EXPORT_VIEW_PROPERTY(contentInset);
-RCT_REMAP_VIEW_PROPERTY(scrollIndicatorInsets, scrollView.scrollIndicatorInsets);
-RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffse);
+RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets);
+RCT_EXPORT_VIEW_PROPERTY(contentOffset);
 
 - (NSDictionary *)constantsToExport
 {

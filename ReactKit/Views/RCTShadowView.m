@@ -183,17 +183,17 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   node->layout.should_update = false;
   _layoutLifecycle = RCTLayoutLifecycleComputed;
 
-  CGPoint absoluteTopLeft = (CGPoint){
+  CGPoint absoluteTopLeft = {
     RCTRoundPixelValue(absolutePosition.x + node->layout.position[CSS_LEFT]),
     RCTRoundPixelValue(absolutePosition.y + node->layout.position[CSS_TOP])
   };
   
-  CGPoint absoluteBottomRight = (CGPoint){
+  CGPoint absoluteBottomRight = {
     RCTRoundPixelValue(absolutePosition.x + node->layout.position[CSS_LEFT] + node->layout.dimensions[CSS_WIDTH]),
     RCTRoundPixelValue(absolutePosition.y + node->layout.position[CSS_TOP] + node->layout.dimensions[CSS_HEIGHT])
   };
   
-  CGRect frame = (CGRect){
+  CGRect frame = {
     RCTRoundPixelValue(node->layout.position[CSS_LEFT]),
     RCTRoundPixelValue(node->layout.position[CSS_TOP]),
     RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),

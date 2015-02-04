@@ -5,20 +5,19 @@
 #import "RCTExport.h"
 #import "RCTInvalidating.h"
 
+@class RCTAnimationRegistry;
+@class RCTRootView;
+@class RCTShadowView;
+
 @protocol RCTScrollableProtocol;
 @protocol RCTViewNodeProtocol;
-
-@class RCTRootView;
-@class RCTJavaScriptEventDispatcher;
-@class RCTShadowView;
-@class RCTAnimationRegistry;
 
 @interface RCTUIManager : NSObject <RCTInvalidating, RCTNativeModule>
 
 - (instancetype)initWithShadowQueue:(dispatch_queue_t)shadowQueue
                        viewManagers:(NSDictionary *)viewManagers;
 
-@property (nonatomic, strong) RCTJavaScriptEventDispatcher *eventDispatcher;
+@property (nonatomic, strong) RCTEventDispatcher *eventDispatcher;
 @property (nonatomic, strong) RCTSparseArray *shadowViewRegistry;
 @property (nonatomic, strong) RCTSparseArray *viewRegistry;
 @property (nonatomic, strong) RCTAnimationRegistry *animationRegistry;

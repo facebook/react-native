@@ -4,7 +4,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <objc/message.h>
-#import <pthread/pthread.h>
+#import <pthread.h>
 
 #import "Layout.h"
 #import "RCTAssert.h"
@@ -26,7 +26,8 @@
 
 typedef void (^react_view_node_block_t)(id<RCTViewNodeProtocol>);
 
-static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_block_t block) {
+static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_block_t block)
+{
   if (view.reactTag) block(view);
   for (id<RCTViewNodeProtocol> subview in view.reactSubviews) {
     RCTTraverseViewNodes(subview, block);

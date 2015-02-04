@@ -53,6 +53,8 @@ var NavigatorIOSExample = React.createClass({
           </View>
         </View>
         <View style={styles.line}/>
+        <View style={styles.groupSpace}/>
+        <View style={styles.line}/>
         <View style={styles.group}>
           {this._renderRow(recurseTitle, () => {
             this.props.navigator.push({
@@ -182,7 +184,9 @@ var styles = StyleSheet.create({
   },
   group: {
     backgroundColor: 'white',
-    paddingVertical: 10,
+  },
+  groupSpace: {
+    height: 15,
   },
   line: {
     backgroundColor: '#bbbbbb',
@@ -192,7 +196,7 @@ var styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 8,
+    paddingVertical: 15,
   },
   separator: {
     height: 1 / PixelRatio.get(),
