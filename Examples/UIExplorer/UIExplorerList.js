@@ -25,6 +25,7 @@ var EXAMPLES = [
   require('./ImageExample'),
   require('./ListViewSimpleExample'),
   require('./NavigatorIOSExample'),
+  require('./StatusBarIOSExample'),
   require('./PointerEventsExample'),
   require('./TouchableExample'),
   require('./SpinnerExample'),
