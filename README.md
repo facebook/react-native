@@ -1,4 +1,4 @@
-**Warning: This is a one-time code drop to accompany the ReactJS conference
+**Warning: This is a private code preview to accompany the ReactJS conference
 talk, and is not accessible outside the official conference attendees - please
 don't share this code.**
 
