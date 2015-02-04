@@ -5,7 +5,7 @@
 #import "RCTExport.h"
 #import "RCTInvalidating.h"
 
-@class RCTAnimationRegistry;
+@class RCTBridge;
 @class RCTRootView;
 @class RCTShadowView;
 
@@ -14,13 +14,10 @@
 
 @interface RCTUIManager : NSObject <RCTInvalidating, RCTNativeModule>
 
-- (instancetype)initWithShadowQueue:(dispatch_queue_t)shadowQueue
-                       viewManagers:(NSDictionary *)viewManagers;
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-@property (nonatomic, strong) RCTEventDispatcher *eventDispatcher;
 @property (nonatomic, strong) RCTSparseArray *shadowViewRegistry;
 @property (nonatomic, strong) RCTSparseArray *viewRegistry;
-@property (nonatomic, strong) RCTAnimationRegistry *animationRegistry;
 @property (nonatomic, weak) id<RCTScrollableProtocol> mainScrollView;
 
 /**

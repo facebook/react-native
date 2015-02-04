@@ -34,6 +34,64 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
   }
 }
 
+static NSString *RCTModuleName(Class moduleClass)
+{
+  if ([moduleClass respondsToSelector:@selector(moduleName)]) {
+    
+    return [moduleClass moduleName];
+    
+  } else {
+    
+    // Default implementation, works in most cases
+    NSString *className = NSStringFromClass(moduleClass);
+    if ([className hasPrefix:@"RCTUI"]) {
+      className = [className substringFromIndex:@"RCT".length];
+    }
+    if ([className hasSuffix:@"Manager"]) {
+      className = [className substringToIndex:className.length - @"Manager".length];
+    }
+    return className;
+  }
+}
+
+static NSDictionary *RCTViewModuleClasses(void)
+{
+  static NSMutableDictionary *modules;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    modules = [NSMutableDictionary dictionary];
+    
+    unsigned int classCount;
+    Class *classes = objc_copyClassList(&classCount);
+    for (unsigned int i = 0; i < classCount; i++) {
+      
+      Class cls = classes[i];
+      
+      if (!class_getSuperclass(cls)) {
+        // Class has no superclass - it's probably something weird
+        continue;
+      }
+      
+      if (![cls conformsToProtocol:@protocol(RCTNativeViewModule)]) {
+        // Not an RCTNativeModule
+        continue;
+      }
+      
+      // Get module name
+      NSString *moduleName = RCTModuleName(cls);
+      
+      // Check module name is unique
+      id existingClass = modules[moduleName];
+      RCTCAssert(existingClass == Nil, @"Attempted to register RCTNativeViewModule class %@ for the name '%@', but name was already registered by class %@", cls, moduleName, existingClass);
+      modules[moduleName] = cls;
+    }
+    
+    free(classes);
+  });
+  
+  return modules;
+}
+
 @implementation RCTUIManager
 {
   // Root views are only mutated on the shadow queue
@@ -42,13 +100,14 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
   NSMutableArray *_pendingUIBlocks;
   
   pthread_mutex_t _pendingUIBlocksMutex;
-  dispatch_queue_t _shadowQueue;
   NSDictionary *_nextLayoutAnimationConfig; // RCT thread only
   RCTResponseSenderBlock _nextLayoutAnimationCallback; // RCT thread only
   RCTResponseSenderBlock _layoutAnimationCallbackMT; // Main thread only
   
   NSMutableDictionary *_defaultShadowViews;
   NSMutableDictionary *_defaultViews;
+  
+  __weak RCTBridge *_bridge;
 }
 
 - (id <RCTNativeViewModule>)_managerInstanceForViewWithModuleName:(NSString *)moduleName
@@ -62,17 +121,23 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
   return managerInstance;
 }
 
-- (instancetype)initWithShadowQueue:(dispatch_queue_t)shadowQueue
-                       viewManagers:(NSDictionary *)viewManagers
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super init])) {
+  
+    _bridge = bridge;
+    pthread_mutex_init(&_pendingUIBlocksMutex, NULL);
     
+    // Instantiate view managers
+    NSMutableDictionary *viewManagers = [[NSMutableDictionary alloc] init];
+    [RCTViewModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, Class moduleClass, BOOL *stop) {
+      viewManagers[moduleName] = [[moduleClass alloc] init];
+    }];
     _viewManagers = viewManagers;
+    
     _viewRegistry = [[RCTSparseArray alloc] init];
     _shadowViewRegistry = [[RCTSparseArray alloc] init];
-    _shadowQueue = shadowQueue;
-    pthread_mutex_init(&_pendingUIBlocksMutex, NULL);
-
+    
     // Internal resources
     _pendingUIBlocks = [[NSMutableArray alloc] init];
     _rootViewTags = [[NSMutableSet alloc] init];
@@ -101,6 +166,8 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
 
 - (void)invalidate
 {
+  RCTAssertMainThread();
+
   _viewRegistry = nil;
   _shadowViewRegistry = nil;
 
@@ -111,6 +178,8 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
 
 - (void)registerRootView:(RCTRootView *)rootView;
 {
+  RCTAssertMainThread();
+  
   NSNumber *reactTag = rootView.reactTag;
   UIView *existingView = _viewRegistry[reactTag];
   RCTCAssert(existingView == nil || existingView == rootView,
@@ -121,7 +190,7 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
   CGRect frame = rootView.frame;
   
   // Register shadow view
-  dispatch_async(_shadowQueue, ^{
+  dispatch_async(_bridge.shadowQueue, ^{
     
     RCTShadowView *shadowView = [[RCTShadowView alloc] init];
     shadowView.reactTag = reactTag;
@@ -468,7 +537,7 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
 
 - (UIView *)viewForViewManager:(id <RCTNativeViewModule>)manager
 {
-  return [manager viewWithEventDispatcher:_eventDispatcher];
+  return [manager viewWithEventDispatcher:_bridge.eventDispatcher];
 }
 
 static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView, id <RCTNativeViewModule>manager)
@@ -610,25 +679,25 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while
   // processing the pending blocks in another thread.
-
+  
   for (id <RCTNativeViewModule>viewManager in _viewManagers.allValues) {
     RCTViewManagerUIBlock uiBlock = [viewManager respondsToSelector:@selector(uiBlockToAmendWithShadowViewRegistry:)] ? [viewManager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry] : nil;
     if (uiBlock != nil) {
       [self addUIBlock:uiBlock];
     }
   }
-
+  
   for (NSNumber *reactTag in _rootViewTags) {
     RCTShadowView *rootView = _shadowViewRegistry[reactTag];
     [self addUIBlock:[self uiBlockWithLayoutUpdateForRootView:rootView]];
     [self _amendPendingUIBlocksWithStylePropagationUpdateForRootView:rootView];
   }
-
+  
   pthread_mutex_lock(&_pendingUIBlocksMutex);
   NSArray *previousPendingUIBlocks = _pendingUIBlocks;
   _pendingUIBlocks = [[NSMutableArray alloc] init];
   pthread_mutex_unlock(&_pendingUIBlocksMutex);
-
+  
   dispatch_async(dispatch_get_main_queue(), ^{
     for (dispatch_block_t block in previousPendingUIBlocks) {
       block();

@@ -22,11 +22,8 @@
  */
 @implementation RCTJavaScriptAppEngine
 {
-  BOOL _isPaused; // Pauses drawing/updating of the JSView
-  BOOL _pauseOnEnterBackground;
-  CADisplayLink *_displayLink;
-  NSTimer *_runTimer;
   NSDictionary *_loadedResource;
+  __weak RCTBridge *_bridge;
 }
 
 - (instancetype)init
@@ -54,116 +51,11 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   RCTAssertMainThread();
+  
   if ((self = [super init])) {
     _bridge = bridge;
-    _isPaused = NO;
-    self.pauseOnEnterBackground = YES;
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(run:)];
-    if (_displayLink) {
-      [_displayLink setFrameInterval:1];
-      [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    } else {
-      RCTLogWarn(@"Failed to create a display link (probably on buildbot) - using an NSTimer for AppEngine instead.");
-      _runTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60.0) target:self selector:@selector(run:) userInfo:nil repeats:YES];
-    }
   }
   return self;
-}
-
-/**
- * TODO: Wait until operations on `javaScriptQueue` are complete.
- */
-- (void)dealloc
-{
-  RCTAssert(!self.valid, @"-invalidate must be called before -dealloc");
-}
-
-#pragma mark - RCTInvalidating
-
-- (BOOL)isValid
-{
-  return _displayLink != nil;
-}
-
-- (void)invalidate
-{
-  [_bridge invalidate];
-  _bridge = nil;
-
-  [_displayLink invalidate];
-  _displayLink = nil;
-
-  // Remove from notification center
-  self.pauseOnEnterBackground = NO;
-}
-
-#pragma mark - Run loop
-
-- (void)run:(CADisplayLink *)sender
-{
-  if (!_isPaused) {
-    RCTAssertMainThread();
-    [_bridge enqueueUpdateTimers];
-  }
-}
-
-- (void)pauseRunLoop
-{
-  if (!_isPaused) {
-    [_displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    _isPaused = YES;
-  }
-}
-
-- (void)resumeRunLoop
-{
-  if (_isPaused) {
-    [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    _isPaused = NO;
-  }
-}
-
-/**
- * See warnings from lint: UIApplicationDidBecomeActive fires in a critical
- * foreground path, and prevents the app from prioritizing the foreground
- * processing. Consider using
- * FBApplicationDidFinishEnteringForegroundAndIsNowIdleNotification.
- */
-- (void)setPauseOnEnterBackground:(BOOL)pauses
-{
-  NSArray *pauseN = @[
-    UIApplicationWillResignActiveNotification,
-    UIApplicationDidEnterBackgroundNotification,
-    UIApplicationWillTerminateNotification
-  ];
-  NSArray *resumeN =
-    @[UIApplicationWillEnterForegroundNotification, UIApplicationDidBecomeActiveNotification];
-
-  if (pauses) {
-    [self observeKeyPaths:pauseN selector:@selector(pauseRunLoop)];
-    [self observeKeyPaths:resumeN selector:@selector(resumeRunLoop)];
-  }
-  else {
-    [self removeObserverForKeyPaths:pauseN];
-    [self removeObserverForKeyPaths:resumeN];
-  }
-  _pauseOnEnterBackground = pauses;
-}
-
-- (void)removeObserverForKeyPaths:(NSArray*)keyPaths
-{
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  for (NSString *name in keyPaths) {
-    [nc removeObserver:self name:name object:nil];
-  }
-}
-
-- (void)observeKeyPaths:(NSArray*)keyPaths selector:(SEL)selector
-{
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  for (NSString *name in keyPaths) {
-    [nc addObserver:self selector:selector name:name object:nil];
-  }
 }
 
 #pragma mark - Module and script loading

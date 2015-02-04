@@ -14,9 +14,7 @@
  * JavaScript so that applications can clean up resources. (launch blocker).
  * TODO: Incremental module loading. (low pri).
  */
-@interface RCTJavaScriptAppEngine : NSObject <RCTInvalidating>
-
-@property (nonatomic, readonly, strong) RCTBridge *bridge;
+@interface RCTJavaScriptAppEngine : NSObject
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 - (void)loadBundleAtURL:(NSURL *)moduleURL useCache:(BOOL)useCache onComplete:(RCTJavaScriptCompleteBlock)onComplete;

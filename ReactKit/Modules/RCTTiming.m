@@ -11,7 +11,6 @@
 @interface RCTTimer : NSObject
 
 @property (nonatomic, strong, readonly) NSDate *target;
-@property (nonatomic, assign, readonly, getter=isActive) BOOL active;
 @property (nonatomic, assign, readonly) BOOL repeats;
 @property (nonatomic, strong, readonly) NSNumber *callbackID;
 @property (nonatomic, assign, readonly) NSTimeInterval interval;
@@ -26,7 +25,6 @@
                            repeats:(BOOL)repeats
 {
   if ((self = [super init])) {
-    _active = YES;
     _interval = interval;
     _repeats = repeats;
     _callbackID = callbackID;
@@ -40,13 +38,9 @@
  */
 - (BOOL)updateFoundNeedsJSUpdate
 {
-  if (_active && _target.timeIntervalSinceNow <= 0) {
+  if (_target && _target.timeIntervalSinceNow <= 0) {
     // The JS Timers will do fine grained calculating of expired timeouts.
-    if (_repeats) {
-      _target = [NSDate dateWithTimeIntervalSinceNow:_interval];
-    } else {
-      _active = NO;
-    }
+    _target = _repeats ? [NSDate dateWithTimeIntervalSinceNow:_interval] : nil;
     return YES;
   }
   return NO;
@@ -58,6 +52,7 @@
 {
   RCTSparseArray *_timers;
   RCTBridge *_bridge;
+  id _updateTimer;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -65,19 +60,74 @@
   if ((self = [super init])) {
     _bridge = bridge;
     _timers = [[RCTSparseArray alloc] init];
+    [self startTimers];
+    
+    for (NSString *name in @[UIApplicationWillResignActiveNotification,
+                             UIApplicationDidEnterBackgroundNotification,
+                             UIApplicationWillTerminateNotification]) {
+      
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(stopTimers)
+                                                   name:name
+                                                 object:nil];
+    }
+    
+    for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
+                             UIApplicationWillEnterForegroundNotification]) {
+      
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(startTimers)
+                                                   name:name
+                                                 object:nil];
+    }
   }
   return self;
 }
 
-/**
- * TODO (#5906496): Wait until operations on `javaScriptQueue` are complete to complete the
- * `dealloc`.
- */
-/* - (void)dealloc
- {
- } */
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
-- (void)enqueueUpdateTimers
+- (BOOL)isValid
+{
+  return _bridge != nil;
+}
+
+- (void)invalidate
+{
+  [self stopTimers];
+  _bridge = nil;
+}
+
+- (void)stopTimers
+{
+  [_updateTimer invalidate];
+  _updateTimer = nil;
+}
+
+- (void)startTimers
+{
+  RCTAssertMainThread();
+  
+  if (![self isValid] || _updateTimer != nil) {
+    return;
+  }
+
+  _updateTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
+  if (_updateTimer) {
+    [_updateTimer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+  } else {
+    RCTLogWarn(@"Failed to create a display link (probably on buildbot) - using an NSTimer for AppEngine instead.");
+    _updateTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60)
+                                                    target:self
+                                                  selector:@selector(update)
+                                                  userInfo:nil
+                                                   repeats:YES];
+  }
+}
+
+- (void)update
 {
   RCTAssertMainThread();
   
@@ -86,7 +136,7 @@
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];
     }
-    if (!timer.active) {
+    if (!timer.target) {
       _timers[timer.callbackID] = nil;
     }
   }
@@ -95,14 +145,6 @@
   if ([timersToCall count] > 0) {
     [_bridge enqueueJSCall:RCTModuleIDJSTimers methodID:RCTJSTimersCallTimers args:@[timersToCall]];
   }
-}
-
-- (void)scheduleCallbackID:(NSNumber *)callbackID interval:(NSTimeInterval)interval targetTime:(NSTimeInterval)targetTime repeats:(BOOL)repeats
-{
-  dispatch_async(dispatch_get_main_queue(), ^{
-    RCTTimer *timer = [[RCTTimer alloc] initWithCallbackID:callbackID interval:interval targetTime:targetTime repeats:repeats];
-    _timers[callbackID] = timer;
-  });
 }
 
 /**
@@ -132,10 +174,13 @@
     interval = 0;
   }
   
-  [self scheduleCallbackID:callbackID
-                  interval:interval
-                targetTime:targetTime
-                   repeats:repeats.boolValue];
+  RCTTimer *timer = [[RCTTimer alloc] initWithCallbackID:callbackID
+                                                interval:interval
+                                              targetTime:targetTime
+                                                 repeats:repeats];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    _timers[callbackID] = timer;
+  });
 }
 
 - (void)deleteTimer:(NSNumber *)timerID

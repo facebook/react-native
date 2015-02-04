@@ -18,7 +18,6 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
 
 @implementation RCTRootView
 {
-  dispatch_queue_t _shadowQueue;
   RCTBridge *_bridge;
   RCTJavaScriptAppEngine *_appEngine;
   RCTTouchHandler *_touchHandler;
@@ -62,9 +61,6 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
 
 - (void)setUp
 {
-  // TODO: does it make sense to do this here? What if there's more than one host view?
-  _shadowQueue = dispatch_queue_create("com.facebook.ReactKit.ShadowQueue", DISPATCH_QUEUE_SERIAL);
-
   // Every root view that is created must have a unique react tag.
   // Numbering of these tags goes from 1, 11, 21, 31, etc
   static NSInteger rootViewTag = 1;
@@ -95,16 +91,16 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
     }
   } else {
     
-    [_bridge.uiManager registerRootView:self];
+    [_bridge registerRootView:self];
 
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
       @"rootTag": self.reactTag ?: @0,
       @"initialProps": self.initialProperties ?: @{},
     };
-    [_appEngine.bridge enqueueJSCall:RCTModuleIDBundler
-                            methodID:RCTBundlerRunApplication
-                                args:@[moduleName, appParameters]];
+    [_bridge enqueueJSCall:RCTModuleIDBundler
+                  methodID:RCTBundlerRunApplication
+                      args:@[moduleName, appParameters]];
   }
 }
 
@@ -125,12 +121,10 @@ NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification"
   };
 
   [_executor invalidate];
-  [_appEngine invalidate];
   [_bridge invalidate];
 
   _executor = [[RCTContextExecutor alloc] init];
   _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor
-                                              shadowQueue:_shadowQueue
                                   javaScriptModulesConfig:[RCTModuleIDs config]];
 
   _appEngine = [[RCTJavaScriptAppEngine alloc] initWithBridge:_bridge];

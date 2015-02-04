@@ -6,33 +6,8 @@
 
 @protocol RCTNativeModule;
 
-@class RCTUIManager;
 @class RCTEventDispatcher;
-
-/**
- * Functions are the one thing that aren't automatically converted to OBJC
- * blocks, according to this revert: http://trac.webkit.org/changeset/144489
- * They must be expressed as `JSValue`s.
- *
- * But storing callbacks causes reference cycles!
- * http://stackoverflow.com/questions/19202248/how-can-i-use-jsmanagedvalue-to-avoid-a-reference-cycle-without-the-jsvalue-gett
- * We'll live with the leak for now, but need to clean this up asap:
- * Passing a reference to the `context` to the bridge would make it easy to
- * execute JS. We can add `JSManagedValue`s to protect against this. The same
- * needs to be done in `RCTTiming` and friends.
- */
-
-/**
- * Must be kept in sync with `MessageQueue.js`.
- */
-typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
-  RCTBridgeFieldRequestModuleIDs = 0,
-  RCTBridgeFieldMethodIDs,
-  RCTBridgeFieldParamss,
-  RCTBridgeFieldResponseCBIDs,
-  RCTBridgeFieldResponseReturnValues,
-  RCTBridgeFieldFlushDateMillis
-};
+@class RCTRootView;
 
 /**
  * Utilities for constructing common response objects. When sending a
@@ -59,18 +34,18 @@ static inline NSDictionary *RCTAPIErrorObject(NSString *msg)
 @interface RCTBridge : NSObject <RCTInvalidating>
 
 - (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                               shadowQueue:(dispatch_queue_t)shadowQueue
                    javaScriptModulesConfig:(NSDictionary *)javaScriptModulesConfig;
 
 - (void)enqueueJSCall:(NSUInteger)moduleID methodID:(NSUInteger)methodID args:(NSArray *)args;
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete;
-- (void)enqueueUpdateTimers;
 
-@property (nonatomic, readonly) RCTUIManager *uiManager;
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
+@property (nonatomic, readonly) dispatch_queue_t shadowQueue;
 
 // For use in implementing delegates, which may need to queue responses.
 - (RCTResponseSenderBlock)createResponseSenderBlock:(NSInteger)callbackID;
+
+- (void)registerRootView:(RCTRootView *)rootView;
 
 /**
  * Global logging function will print to both xcode and js debugger consoles.

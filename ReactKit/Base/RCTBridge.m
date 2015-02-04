@@ -9,11 +9,34 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTModuleIDs.h"
-#import "RCTTiming.h"
-#import "RCTUIManager.h"
 #import "RCTUtils.h"
 
-NSString *RCTModuleName(Class moduleClass)
+/**
+ * Functions are the one thing that aren't automatically converted to OBJC
+ * blocks, according to this revert: http://trac.webkit.org/changeset/144489
+ * They must be expressed as `JSValue`s.
+ *
+ * But storing callbacks causes reference cycles!
+ * http://stackoverflow.com/questions/19202248/how-can-i-use-jsmanagedvalue-to-avoid-a-reference-cycle-without-the-jsvalue-gett
+ * We'll live with the leak for now, but need to clean this up asap:
+ * Passing a reference to the `context` to the bridge would make it easy to
+ * execute JS. We can add `JSManagedValue`s to protect against this. The same
+ * needs to be done in `RCTTiming` and friends.
+ */
+
+/**
+ * Must be kept in sync with `MessageQueue.js`.
+ */
+typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
+  RCTBridgeFieldRequestModuleIDs = 0,
+  RCTBridgeFieldMethodIDs,
+  RCTBridgeFieldParamss,
+  RCTBridgeFieldResponseCBIDs,
+  RCTBridgeFieldResponseReturnValues,
+  RCTBridgeFieldFlushDateMillis
+};
+
+static NSString *RCTModuleName(Class moduleClass)
 {
   if ([moduleClass respondsToSelector:@selector(moduleName)]) {
     
@@ -22,22 +45,11 @@ NSString *RCTModuleName(Class moduleClass)
   } else {
   
     // Default implementation, works in most cases
-    NSString *className = NSStringFromClass(moduleClass);
-    
-    // TODO: be more consistent with naming so that this check isn't needed
-    if ([moduleClass conformsToProtocol:@protocol(RCTNativeViewModule)]) {
-      if ([className hasPrefix:@"RCTUI"]) {
-        className = [className substringFromIndex:@"RCT".length];
-      }
-      if ([className hasSuffix:@"Manager"]) {
-        className = [className substringToIndex:className.length - @"Manager".length];
-      }
-    }
-    return className;
+    return NSStringFromClass(moduleClass);
   }
 }
 
-NSDictionary *RCTNativeModuleClasses(void)
+static NSDictionary *RCTNativeModuleClasses(void)
 {
   static NSMutableDictionary *modules;
   static dispatch_once_t onceToken;
@@ -79,46 +91,30 @@ NSDictionary *RCTNativeModuleClasses(void)
 {
   NSMutableDictionary *_moduleInstances;
   NSDictionary *_javaScriptModulesConfig;
-  dispatch_queue_t _shadowQueue;
-  RCTTiming *_timing;
   id<RCTJavaScriptExecutor> _javaScriptExecutor;
 }
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                               shadowQueue:(dispatch_queue_t)shadowQueue
                    javaScriptModulesConfig:(NSDictionary *)javaScriptModulesConfig
 {
   if ((self = [super init])) {
     _javaScriptExecutor = javaScriptExecutor;
     _latestJSExecutor = _javaScriptExecutor;
-    _shadowQueue = shadowQueue;
     _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
-    
-    _moduleInstances = [[NSMutableDictionary alloc] init];
-    
-    // TODO (#5906496): Remove special case
-    _timing = [[RCTTiming alloc] initWithBridge:self];
     _javaScriptModulesConfig = javaScriptModulesConfig;
-    _moduleInstances[RCTModuleName([RCTTiming class])] = _timing;
-    
-    // TODO (#5906496): Remove special case
-    NSMutableDictionary *viewManagers = [[NSMutableDictionary alloc] init];
-    [RCTNativeModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, Class moduleClass, BOOL *stop) {
-      if ([moduleClass conformsToProtocol:@protocol(RCTNativeViewModule)]) {
-        viewManagers[moduleName] = [[moduleClass alloc] init];
-      }
-    }];
-    _uiManager = [[RCTUIManager alloc] initWithShadowQueue:_shadowQueue viewManagers:viewManagers];
-    _uiManager.eventDispatcher = _eventDispatcher;
-    _moduleInstances[RCTModuleName([RCTUIManager class])] = _uiManager;
-    [_moduleInstances addEntriesFromDictionary:viewManagers];
-    
-    // Register remaining modules
+    _shadowQueue = dispatch_queue_create("com.facebook.ReactKit.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+
+    // Register modules
+    _moduleInstances = [[NSMutableDictionary alloc] init];
     [RCTNativeModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, Class moduleClass, BOOL *stop) {
       if (_moduleInstances[moduleName] == nil) {
-        _moduleInstances[moduleName] = [[moduleClass alloc] init];
+        if ([moduleClass instancesRespondToSelector:@selector(initWithBridge:)]) {
+          _moduleInstances[moduleName] = [[moduleClass alloc] initWithBridge:self];
+        } else {
+          _moduleInstances[moduleName] = [[moduleClass alloc] init];
+        }
       }
     }];
     
@@ -148,18 +144,16 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   _javaScriptExecutor = nil;
 
   dispatch_sync(_shadowQueue, ^{
-    // Make sure all dispatchers have been executed before
-    // freeing up memory from _asyncHookMapByModuleID
+    // Make sure all dispatchers have been executed before continuing
+    // TODO: is this still needed?
   });
-
+  
   for (id target in _moduleInstances.objectEnumerator) {
     if ([target respondsToSelector:@selector(invalidate)]) {
       [(id<RCTInvalidating>)target invalidate];
     }
   }
   [_moduleInstances removeAllObjects];
-
-  _timing = nil;
 }
 
 /**
@@ -197,11 +191,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                                 onComplete(error);
                               }];
   }];
-}
-
-- (void)enqueueUpdateTimers
-{
-  [_timing enqueueUpdateTimers];
 }
 
 #pragma mark - Payload Generation
@@ -274,12 +263,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }
   }
 
-  NSArray *moduleIDs = [requestsArray objectAtIndex:RCTBridgeFieldRequestModuleIDs];
-  NSArray *methodIDs = [requestsArray objectAtIndex:RCTBridgeFieldMethodIDs];
-  NSArray *paramss = [requestsArray objectAtIndex:RCTBridgeFieldParamss];
+  NSArray *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
+  NSArray *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
+  NSArray *paramsArrays = requestsArray[RCTBridgeFieldParamss];
 
   NSUInteger numRequests = [moduleIDs count];
-  BOOL allSame = numRequests == [methodIDs count] && numRequests == [paramss count];
+  BOOL allSame = numRequests == [methodIDs count] && numRequests == [paramsArrays count];
   if (!allSame) {
     RCTLogMustFix(@"Invalid data message - all must be length: %zd", numRequests);
     return;
@@ -288,31 +277,102 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   for (NSUInteger i = 0; i < numRequests; i++) {
     @autoreleasepool {
       [self _handleRequestNumber:i
-                        moduleID:[moduleIDs objectAtIndex:i]
-                        methodID:[methodIDs objectAtIndex:i]
-                          params:[paramss objectAtIndex:i]];
+                        moduleID:[moduleIDs[i] integerValue]
+                        methodID:[methodIDs[i] integerValue]
+                          params:paramsArrays[i]];
     }
   }
 
-  // Update modules
-  for (id target in _moduleInstances.objectEnumerator) {
-    if ([target respondsToSelector:@selector(batchDidComplete)]) {
-      dispatch_async(_shadowQueue, ^{
+  // TODO: only used by RCTUIManager - can we eliminate this special case?
+  dispatch_async(_shadowQueue, ^{
+    for (id target in _moduleInstances.objectEnumerator) {
+      if ([target respondsToSelector:@selector(batchDidComplete)]) {
         [target batchDidComplete];
-      });
+      }
     }
-  }
+  });
 }
 
-- (void)_handleRequestNumber:(NSUInteger)i moduleID:(id)moduleID methodID:(id)methodID params:(id)params
+- (BOOL)_handleRequestNumber:(NSUInteger)i
+                    moduleID:(NSInteger)moduleID
+                    methodID:(NSInteger)methodID
+                      params:(NSArray *)params
 {
-  if (![moduleID isKindOfClass:[NSNumber class]] || ![methodID isKindOfClass:[NSNumber class]] || ![params isKindOfClass:[NSArray class]]) {
+  if (![params isKindOfClass:[NSArray class]]) {
     RCTLogMustFix(@"Invalid module/method/params tuple for request #%zd", i);
-    return;
+    return NO;
   }
-  [self _dispatchUsingAsyncHookMapWithModuleID:[moduleID integerValue]
-                                      methodID:[methodID integerValue]
-                                        params:params];
+  
+  if (moduleID < 0 || moduleID >= RCTExportedMethodsByModule().count) {
+    return NO;
+  }
+  
+  NSString *moduleName = RCTExportedModuleNameAtSortedIndex(moduleID);
+  NSArray *methods = RCTExportedMethodsByModule()[moduleName];
+  if (methodID < 0 || methodID >= methods.count) {
+    return NO;
+  }
+  
+  RCTModuleMethod *method = methods[methodID];
+  NSUInteger methodArity = method.arity;
+  if (params.count != methodArity) {
+    RCTLogMustFix(@"Expected %tu arguments but got %tu invoking %@.%@",
+                  methodArity,
+                  params.count,
+                  moduleName,
+                  method.JSMethodName);
+    return NO;
+  }
+  
+  __weak RCTBridge *weakSelf = self;
+  dispatch_async(_shadowQueue, ^{
+    __strong RCTBridge *strongSelf = weakSelf;
+    
+    if (!strongSelf.isValid) {
+      // strongSelf has been invalidated since the dispatch_async call and this
+      // invocation should not continue.
+      return;
+    }
+    
+    NSInvocation *invocation = [RCTBridge invocationForAdditionalArguments:methodArity];
+    
+    // TODO: we should just store module instances by index, since that's how we look them up anyway
+    id target = strongSelf->_moduleInstances[moduleName];
+    RCTAssert(target != nil, @"No module found for name '%@'", moduleName);
+    
+    [invocation setArgument:&target atIndex:0];
+    
+    SEL selector = method.selector;
+    [invocation setArgument:&selector atIndex:1];
+    
+    // Retain used blocks until after invocation completes.
+    NSMutableArray *blocks = [NSMutableArray array];
+    
+    [params enumerateObjectsUsingBlock:^(id param, NSUInteger idx, BOOL *stop) {
+      if ([param isEqual:[NSNull null]]) {
+        param = nil;
+      } else if ([method.blockArgumentIndexes containsIndex:idx]) {
+        id block = [strongSelf createResponseSenderBlock:[param integerValue]];
+        [blocks addObject:block];
+        param = block;
+      }
+      
+      [invocation setArgument:&param atIndex:idx + 2];
+    }];
+    
+    @try {
+      [invocation invoke];
+    }
+    @catch (NSException *exception) {
+      RCTLogMustFix(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, target, params, exception);
+    }
+    @finally {
+      // Force `blocks` to remain alive until here.
+      blocks = nil;
+    }
+  });
+  
+  return YES;
 }
 
 /**
@@ -352,84 +412,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return invocation;
 }
 
-- (BOOL)_dispatchUsingAsyncHookMapWithModuleID:(NSInteger)moduleID
-                                      methodID:(NSInteger)methodID
-                                        params:(NSArray *)params
-{
-  if (moduleID < 0 || moduleID >= RCTExportedMethodsByModule().count) {
-    return NO;
-  }
-
-  NSString *moduleName = RCTExportedModuleNameAtSortedIndex(moduleID);
-  NSArray *methods = RCTExportedMethodsByModule()[moduleName];
-  if (methodID < 0 || methodID >= methods.count) {
-    return NO;
-  }
-
-  RCTModuleMethod *method = methods[methodID];
-  NSUInteger methodArity = method.arity;
-  if (params.count != methodArity) {
-    RCTLogMustFix(
-      @"Expected %tu arguments but got %tu invoking %@.%@",
-      methodArity,
-      params.count,
-      moduleName,
-      method.JSMethodName
-    );
-    return NO;
-  }
-
-  __weak RCTBridge *weakSelf = self;
-  dispatch_async(_shadowQueue, ^{
-    __strong RCTBridge *strongSelf = weakSelf;
-
-    if (!strongSelf.isValid) {
-      // strongSelf has been invalidated since the dispatch_async call and this
-      // invocation should not continue.
-      return;
-    }
-
-    NSInvocation *invocation = [RCTBridge invocationForAdditionalArguments:methodArity];
-    
-    // TODO: we should just store module instances by index, since that's how we look them up anyway
-    id target = strongSelf->_moduleInstances[moduleName];
-    RCTAssert(target != nil, @"No module found for name '%@'", moduleName);
-    
-    [invocation setArgument:&target atIndex:0];
-
-    SEL selector = method.selector;
-    [invocation setArgument:&selector atIndex:1];
-
-    // Retain used blocks until after invocation completes.
-    NSMutableArray *blocks = [NSMutableArray array];
-
-    [params enumerateObjectsUsingBlock:^(id param, NSUInteger idx, BOOL *stop) {
-      if ([param isEqual:[NSNull null]]) {
-        param = nil;
-      } else if ([method.blockArgumentIndexes containsIndex:idx]) {
-        id block = [strongSelf createResponseSenderBlock:[param integerValue]];
-        [blocks addObject:block];
-        param = block;
-      }
-
-      [invocation setArgument:&param atIndex:idx + 2];
-    }];
-
-    @try {
-      [invocation invoke];
-    }
-    @catch (NSException *exception) {
-      RCTLogMustFix(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, target, params, exception);
-    }
-    @finally {
-      // Force `blocks` to remain alive until here.
-      blocks = nil;
-    }
-  });
-
-  return YES;
-}
-
 - (void)doneRegisteringModules
 {
   RCTAssertMainThread();
@@ -456,8 +438,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     moduleConfig[@"methods"] = methods;
 
     id target = [_moduleInstances objectForKey:moduleName];
-    if ([target respondsToSelector:@selector(constantsToExport)] && ![target conformsToProtocol:@protocol(RCTNativeViewModule)]) {
-      // TODO: find a more elegant way to handle RCTNativeViewModule constants as a special case
+    if ([target respondsToSelector:@selector(constantsToExport)]) {
       moduleConfig[@"constants"] = [target constantsToExport];
     }
     moduleConfigs[moduleName] = moduleConfig;
@@ -480,6 +461,16 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   for (NSUInteger i = 0, count = objectsToInject.count; i < count; i++) {
     if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) != 0) {
       RCTLogMustFix(@"JavaScriptExecutor take too long to inject JSON object");
+    }
+  }
+}
+
+- (void)registerRootView:(RCTRootView *)rootView
+{
+  // TODO: only used by RCTUIManager - can we eliminate this special case?
+  for (id target in _moduleInstances.objectEnumerator) {
+    if ([target respondsToSelector:@selector(registerRootView:)]) {
+      [target registerRootView:rootView];
     }
   }
 }

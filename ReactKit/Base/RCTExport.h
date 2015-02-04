@@ -4,6 +4,7 @@
 
 #import "RCTLog.h"
 
+@class RCTBridge;
 @class RCTSparseArray;
 @class RCTUIManager;
 
@@ -43,6 +44,12 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 @optional
 
 /**
+ * Optional initializer for modules that require access
+ * to bridge features, such as sending events or making JS calls
+ */
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
+
+/**
  * Place this macro inside the method body of any method you want
  * to expose to JS. The optional js_name argument will be used as
  * the JS function name. If omitted, the JS function name will match
@@ -74,7 +81,7 @@ _RCTExportSectionName))) static const RCTExportEntry __rct_export_entry__ = { __
 /**
  * Provides minimal interface needed to register a UIViewManager module
  */
-@protocol RCTNativeViewModule <RCTNativeModule>
+@protocol RCTNativeViewModule <NSObject>
 
 /**
  * This method instantiates a native view to be managed by the module.
@@ -82,6 +89,12 @@ _RCTExportSectionName))) static const RCTExportEntry __rct_export_entry__ = { __
 - (UIView *)viewWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @optional
+
+/**
+ * The module name exposed to JS. If omitted, this will be inferred
+ * automatically by using the view module's class name.
+ */
++ (NSString *)moduleName;
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,
@@ -166,6 +179,12 @@ RCT_REMAP_VIEW_PROPERTY(name, name)
  * }
  */
 - (NSDictionary *)customDirectEventTypes;
+
+/**
+ * Injects constants into JS. These constants are made accessible via
+ * NativeModules.moduleName.X.
+ */
+- (NSDictionary *)constantsToExport;
 
 /**
  * To deprecate, hopefully
