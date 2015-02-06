@@ -11,6 +11,7 @@ var Image = require('Image');
 var ListView = require('ListView');
 var ListViewDataSource = require('ListViewDataSource');
 var NavigatorIOS = require('NavigatorIOS');
+var StatusBarIOS = require('StatusBarIOS');
 var PixelRatio = require('PixelRatio');
 var React = require('React');
 var ScrollView = require('ScrollView');
@@ -34,6 +35,7 @@ var ReactNative = {
   ListView,
   ListViewDataSource,
   NavigatorIOS,
+  StatusBarIOS,
   PixelRatio,
   ScrollView,
   SpinnerIOS,

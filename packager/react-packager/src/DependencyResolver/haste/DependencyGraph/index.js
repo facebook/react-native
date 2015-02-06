@@ -325,10 +325,26 @@ DependecyGraph.prototype._lookupName = function(modulePath) {
   }
 };
 
+DependecyGraph.prototype._deleteModule = function(module) {
+  delete this._graph[module.path];
+
+  // Others may keep a reference so we mark it as deleted.
+  module.deleted = true;
+
+  // Haste allows different module to have the same id.
+  if (this._moduleById[module.id] === module) {
+    delete this._moduleById[module.id];
+  }
+};
+
 /**
- * Update the graph and idices with the module.
+ * Update the graph and indices with the module.
  */
 DependecyGraph.prototype._updateGraphWithModule = function(module) {
+  if (this._graph[module.path]) {
+    this._deleteModule(this._graph[module.path]);
+  }
+
   this._graph[module.path] = module;
 
   if (this._moduleById[module.id]) {
@@ -389,15 +405,7 @@ DependecyGraph.prototype._processFileChange = function(eventType, filePath, root
       return;
     }
 
-    delete this._graph[module];
-
-    // Others may keep a reference so we mark it as deleted.
-    module.deleted = true;
-
-    // Modules may have same id.
-    if (this._moduleById[module.id] === module) {
-      delete this._moduleById[module.id];
-    }
+    this._deleteModule(module);
   } else if (!(stat && stat.isDirectory())) {
     var self = this;
     this._loading = this._loading.then(function() {
