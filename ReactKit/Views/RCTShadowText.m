@@ -14,8 +14,7 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 static css_dim_t RCTMeasure(void *context, float width)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
-  if (isnan(width)) width = MAXFLOAT;
-  CGSize computedSize = [[shadowText attributedString] boundingRectWithSize:(CGSize){width, CGFLOAT_MAX} options:NSStringDrawingUsesLineFragmentOrigin context:nil].size;
+  CGSize computedSize = [[shadowText attributedString] boundingRectWithSize:(CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX} options:NSStringDrawingUsesLineFragmentOrigin context:nil].size;
   
   css_dim_t result;
   result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
@@ -26,7 +25,6 @@ static css_dim_t RCTMeasure(void *context, float width)
 @implementation RCTShadowText
 {
   NSAttributedString *_cachedAttributedString;
-  NSAttributedString *_cachedReactTagAttributedString;
   UIFont *_font;
 }
 
@@ -37,33 +35,6 @@ static css_dim_t RCTMeasure(void *context, float width)
     _isHighlighted = NO;
   }
   return self;
-}
-
-- (NSAttributedString *)reactTagAttributedString
-{
-  if (![self isTextDirty] && _cachedReactTagAttributedString) {
-    return _cachedReactTagAttributedString;
-  }
-
-  NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] init];
-  for (RCTShadowView *child in [self reactSubviews]) {
-    if ([child isKindOfClass:[RCTShadowText class]]) {
-      RCTShadowText *shadowText = (RCTShadowText *)child;
-      [attributedString appendAttributedString:[shadowText reactTagAttributedString]];
-    } else if ([child isKindOfClass:[RCTShadowRawText class]]) {
-      RCTShadowRawText *shadowRawText = (RCTShadowRawText *)child;
-      [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[shadowRawText text] ?: @""]];
-    } else {
-      RCTLogError(@"<Text> can't have any children except <Text> or raw strings");
-    }
-  }
-
-  [self _addAttribute:RCTReactTagAttributeName
-            withValue:self.reactTag
-   toAttributedString:attributedString];
-
-  _cachedReactTagAttributedString = attributedString;
-  return _cachedReactTagAttributedString;
 }
 
 - (NSAttributedString *)attributedString
@@ -80,9 +51,6 @@ static css_dim_t RCTMeasure(void *context, float width)
   if (![self isTextDirty] && _cachedAttributedString) {
     return _cachedAttributedString;
   }
-
-  // while we're updating the attributed string, also update the react tag attributed string
-  [self reactTagAttributedString];
 
   if (_fontSize && !isnan(_fontSize)) {
     fontSize = _fontSize;
@@ -121,7 +89,7 @@ static css_dim_t RCTMeasure(void *context, float width)
 
   _font = [RCTConvert UIFont:nil withFamily:fontFamily size:@(fontSize) weight:fontWeight];
   [self _addAttribute:NSFontAttributeName withValue:_font toAttributedString:attributedString];
-
+  [self _addAttribute:RCTReactTagAttributeName withValue:self.reactTag toAttributedString:attributedString];
   [self _setParagraphStyleOnAttributedString:attributedString];
 
   // create a non-mutable attributedString for use by the Text system which avoids copies down the line
@@ -179,10 +147,10 @@ static css_dim_t RCTMeasure(void *context, float width)
   // if we found anything, set it :D
   if (hasParagraphStyle) {
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.alignment = _textAlign;
     paragraphStyle.baseWritingDirection = _writingDirection;
     paragraphStyle.minimumLineHeight = _lineHeight;
     paragraphStyle.maximumLineHeight = _lineHeight;
-    [paragraphStyle setAlignment:_textAlign];
     [attributedString addAttribute:NSParagraphStyleAttributeName
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];

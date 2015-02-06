@@ -376,6 +376,21 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return _reactSubviews;
 }
 
+- (NSNumber *)reactTagAtPoint:(CGPoint)point
+{
+  for (RCTShadowView *shadowView in _reactSubviews) {
+    if (CGRectContainsPoint(shadowView.frame, point)) {
+      CGPoint relativePoint = point;
+      CGPoint origin = shadowView.frame.origin;
+      relativePoint.x -= origin.x;
+      relativePoint.y -= origin.y;
+      return [shadowView reactTagAtPoint:relativePoint];
+    }
+  }
+
+  return self.reactTag;
+}
+
 - (void)updateShadowViewLayout
 {
   if (_recomputePadding) {

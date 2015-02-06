@@ -97,6 +97,10 @@ Packager.prototype.package = function(main, runModule, sourceMapUrl) {
     });
 };
 
+Packager.prototype.invalidateFile = function(filePath){
+  this._transformer.invalidateFile(filePath);
+}
+
 Packager.prototype._transformModule = function(module) {
   var resolver = this._resolver;
   return this._transformer.loadFileAndTransform(

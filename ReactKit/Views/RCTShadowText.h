@@ -22,6 +22,5 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) NSLineBreakMode truncationMode;
 
 - (NSAttributedString *)attributedString;
-- (NSAttributedString *)reactTagAttributedString;
 
 @end

@@ -19,13 +19,6 @@ describe('JSTransformer Cache', function() {
     });
 
     Cache = require('../Cache');
-
-    var FileWatcher = require('../../FileWatcher');
-    FileWatcher.prototype.getWatcher = function() {
-      return q({
-        on: function() {}
-      });
-    };
   });
 
   describe('getting/settig', function() {
@@ -74,41 +67,6 @@ describe('JSTransformer Cache', function() {
             expect(shouldNotBeCalled).not.toBeCalled();
             expect(value).toBe('lol');
           });
-      });
-    });
-
-    pit('it invalidates cache after a file has changed', function() {
-      require('fs').stat.mockImpl(function(file, callback) {
-        callback(null, {
-          mtime: {
-            getTime: function() {}
-          }
-        });
-      });
-      var FileWatcher = require('../../FileWatcher');
-      var triggerChangeFile;
-      FileWatcher.prototype.getWatcher = function() {
-        return q({
-          on: function(type, callback) {
-            triggerChangeFile = callback;
-          }
-        });
-      };
-
-      var cache = new Cache({projectRoot: '/rootDir'});
-      var loaderCb = jest.genMockFn().mockImpl(function() {
-        return q('lol');
-      });
-
-      return cache.get('/rootDir/someFile', loaderCb).then(function(value) {
-        expect(value).toBe('lol');
-        triggerChangeFile('change', 'someFile');
-        var loaderCb2 = jest.genMockFn().mockImpl(function() {
-          return q('lol2');
-        });
-        return cache.get('/rootDir/someFile', loaderCb2).then(function(value2) {
-          expect(value2).toBe('lol2');
-        });
       });
     });
   });

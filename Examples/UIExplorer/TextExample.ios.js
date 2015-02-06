@@ -34,22 +34,20 @@ var AttributeToggler = React.createClass({
   render: function() {
     var curStyle = {fontSize: this.state.fontSize};
     return (
-      <View>
+      <Text>
         <Text style={curStyle}>
           Tap the controls below to change attributes.
         </Text>
         <Text>
-          <Text>
-            See how it will even work on{' '}
-            <Text style={curStyle}>
-              this nested text
-            </Text>
+          See how it will even work on{' '}
+          <Text style={curStyle}>
+            this nested text
+          </Text>
+          <Text onPress={this.increaseSize}>
+            {'>> Increase Size <<'}
           </Text>
         </Text>
-        <Text onPress={this.increaseSize}>
-          {'>> Increase Size <<'}
-        </Text>
-      </View>
+      </Text>
     );
   }
 });

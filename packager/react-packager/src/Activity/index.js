@@ -131,11 +131,12 @@ function _writeAction(action) {
 
     case 'endEvent':
       var startAction = _eventStarts[action.eventId];
+      var startData = startAction.data ? ': ' + JSON.stringify(startAction.data) : '';
       console.log(
         '[' + fmtTime + '] ' +
         '<END>   ' + startAction.eventName +
         '(' + (action.tstamp - startAction.tstamp) + 'ms)' +
-        data
+        startData
       );
       delete _eventStarts[action.eventId];
       break;

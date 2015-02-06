@@ -4,7 +4,6 @@ var path = require('path');
 var version = require('../../package.json').version;
 var tmpdir = require('os').tmpDir();
 var pathUtils = require('../fb-path-utils');
-var FileWatcher = require('../FileWatcher');
 var fs = require('fs');
 var _ = require('underscore');
 var q = require('q');
@@ -34,16 +33,6 @@ function Cache(projectConfig) {
     this._persistCache.bind(this),
     2000
   );
-
-  this._fileWatcher = new FileWatcher(projectConfig);
-  this._fileWatcher
-    .getWatcher()
-    .done(function(watcher) {
-      watcher.on('all', function(type, filepath) {
-        var absPath = path.join(projectConfig.projectRoot, filepath);
-        delete data[absPath];
-      });
-    }.bind(this));
 }
 
 Cache.prototype.get = function(filepath, loaderCb) {
@@ -75,11 +64,14 @@ Cache.prototype._set = function(filepath, loaderPromise) {
   }.bind(this));
 };
 
+Cache.prototype.invalidate = function(filepath){
+  if(this._has(filepath)) {
+    delete this._data[filepath];
+  }
+}
+
 Cache.prototype.end = function() {
-  return q.all([
-    this._persistCache(),
-    this._fileWatcher.end()
-  ]);
+  return this._persistCache();
 };
 
 Cache.prototype._persistCache = function() {

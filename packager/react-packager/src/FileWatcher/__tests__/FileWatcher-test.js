@@ -17,14 +17,14 @@ describe('FileWatcher', function() {
   });
 
   pit('it should get the watcher instance when ready', function() {
-    var fileWatcher = new FileWatcher({projectRoot: 'rootDir'});
+    var fileWatcher = new FileWatcher('rootDir');
     return fileWatcher.getWatcher().then(function(watcher) {
       expect(watcher instanceof Watcher).toBe(true);
     });
   });
 
   pit('it should end the watcher', function() {
-    var fileWatcher = new FileWatcher({projectRoot: 'rootDir'});
+    var fileWatcher = new FileWatcher('rootDir');
     Watcher.prototype.close.mockImplementation(function(callback) {
       callback();
     });

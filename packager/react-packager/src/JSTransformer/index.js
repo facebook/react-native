@@ -25,6 +25,12 @@ Transformer.prototype.kill = function() {
   return this._cache.end();
 };
 
+Transformer.prototype.invalidateFile = function(filePath) {
+  this._cache.invalidate(filePath);
+  //TODO: We can read the file and put it into the cache right here
+  //      This would simplify some caching logic as we can be sure that the cache is up to date
+}
+
 Transformer.prototype.loadFileAndTransform = function(
   transformSets,
   filePath,

@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     
     RCTAssert(targetView.reactTag && targetView.userInteractionEnabled,
               @"No react view found for touch - something went wrong.");
-    
+
     // Get new, unique touch id
     const NSUInteger RCTMaxTouches = 11; // This is the maximum supported by iDevices
     NSInteger touchID = ([_reactTouches.lastObject[@"target"] integerValue] + 1) % RCTMaxTouches;
@@ -97,7 +97,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     
     // Create touch
     NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
-    reactTouch[@"target"] = targetView.reactTag;
+    reactTouch[@"target"] = [targetView reactTagAtPoint:[touch locationInView:targetView]];
     reactTouch[@"identifier"] = @(touchID);
     reactTouch[@"touches"] = [NSNull null];        // We hijack this touchObj to serve both as an event
     reactTouch[@"changedTouches"] = [NSNull null]; // and as a Touch object, so making this JIT friendly.

@@ -29,7 +29,7 @@ function HasteDependencyResolver(config) {
       return filepath.indexOf('__tests__') !== -1 ||
         (config.blacklistRE && config.blacklistRE.test(filepath));
     },
-    fileWatcher: new FileWatcher(config)
+    fileWatcher: new FileWatcher(config.projectRoot)
   });
 
   this._polyfillModuleNames = [

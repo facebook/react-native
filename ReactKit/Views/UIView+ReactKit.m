@@ -23,6 +23,15 @@
   return NO;
 }
 
+- (NSNumber *)reactTagAtPoint:(CGPoint)point
+{
+  UIView *view = [self hitTest:point withEvent:nil];
+  while (view && !view.reactTag) {
+    view = view.superview;
+  }
+  return view.reactTag;
+}
+
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [self insertSubview:subview atIndex:atIndex];

@@ -13,6 +13,7 @@
 - (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTViewNodeProtocol>)subview;
 - (NSMutableArray *)reactSubviews;
+- (NSNumber *)reactTagAtPoint:(CGPoint)point;
 
 // View is an RCTRootView
 - (BOOL)isReactRootView;

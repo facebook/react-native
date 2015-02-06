@@ -22,15 +22,15 @@ var MAX_WAIT_TIME = 3000;
 
 var memoizedInstances = Object.create(null);
 
-function FileWatcher(projectConfig) {
-  if (memoizedInstances[projectConfig.projectRoot]) {
-    return memoizedInstances[projectConfig.projectRoot];
+function FileWatcher(projectRoot) {
+  if (memoizedInstances[projectRoot]) {
+    return memoizedInstances[projectRoot];
   } else {
-    memoizedInstances[projectConfig.projectRoot] = this;
+    memoizedInstances[projectRoot] = this;
   }
 
   this._loadingWatcher = detectingWatcherClass.then(function(Watcher) {
-    var watcher = new Watcher(projectConfig.projectRoot, {glob: '**/*.js'});
+    var watcher = new Watcher(projectRoot, {glob: '**/*.js'});
 
     return new Promise(function(resolve, reject) {
       var rejectTimeout = setTimeout(function() {

@@ -42,9 +42,11 @@ Package.prototype.finalize = function(options) {
 };
 
 Package.prototype.getSource = function() {
-  return _.pluck(this._modules, 'transformedCode').join('\n') + '\n' +
-    'RAW_SOURCE_MAP = ' + JSON.stringify(this.getSourceMap({excludeSource: true})) + ';\n' +
-    '\/\/@ sourceMappingURL=' + this._sourceMapUrl;
+  return this._source || (
+    this._source = _.pluck(this._modules, 'transformedCode').join('\n') + '\n' +
+    'RAW_SOURCE_MAP = ' + JSON.stringify(this.getSourceMap({excludeSource: true})) +
+    ';\n' + '\/\/@ sourceMappingURL=' + this._sourceMapUrl
+  );
 };
 
 Package.prototype.getSourceMap = function(options) {

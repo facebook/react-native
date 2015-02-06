@@ -5,19 +5,17 @@
 #import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
-#import "RCTSparseArray.h"
-#import "UIView+ReactKit.h"
-
 #import "RCTShadowRawText.h"
 #import "RCTShadowText.h"
+#import "RCTSparseArray.h"
+#import "RCTText.h"
+#import "UIView+ReactKit.h"
 
 @implementation RCTTextManager
 
 - (UIView *)view
 {
-  UILabel *label = [[UILabel alloc] init];
-  label.numberOfLines = 0;
-  return label;
+  return [[RCTText alloc] init];
 }
 
 - (RCTShadowView *)shadowView
@@ -26,11 +24,17 @@
 }
 
 RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
-RCT_REMAP_VIEW_PROPERTY(textAlign, textAlignment);
+
+- (void)set_textAlign:(id)json
+        forShadowView:(RCTShadowText *)shadowView
+      withDefaultView:(RCTShadowText *)defaultView
+{
+  shadowView.textAlign = json ? [RCTConvert NSTextAlignment:json] : defaultView.textAlign;
+}
 
 - (void)set_numberOfLines:(id)json
-                  forView:(UILabel *)view
-          withDefaultView:(UILabel *)defaultView
+                  forView:(RCTText *)view
+          withDefaultView:(RCTText *)defaultView
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
   view.numberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.numberOfLines;
@@ -80,7 +84,6 @@ RCT_REMAP_VIEW_PROPERTY(textAlign, textAlignment);
 
   // TODO: are modules global, or specific to a given rootView?
   for (RCTShadowView *rootView in shadowViewRegistry.allObjects) {
-    
     if (![rootView isReactRootView]) {
       // This isn't a host view
       continue;
@@ -92,7 +95,7 @@ RCT_REMAP_VIEW_PROPERTY(textAlign, textAlignment);
     }
 
     // TODO: this is a slightly weird way to do this - a recursive approach would be cleaner
-    RCTSparseArray *attributedStringForTag = [[RCTSparseArray alloc] init];
+    RCTSparseArray *reactTaggedAttributedStrings = [[RCTSparseArray alloc] init];
     NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
     for (NSInteger i = 0; i < [queue count]; i++) {
       RCTShadowView *shadowView = queue[i];
@@ -100,11 +103,9 @@ RCT_REMAP_VIEW_PROPERTY(textAlign, textAlignment);
 
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
         RCTShadowText *shadowText = (RCTShadowText *)shadowView;
-        NSNumber *reactTag = shadowText.reactTag;
-        attributedStringForTag[reactTag] = [shadowText attributedString];
+        reactTaggedAttributedStrings[shadowText.reactTag] = [shadowText attributedString];
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
-        RCTShadowRawText *shadowRawText = (RCTShadowRawText *)shadowView;
-        RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'", [shadowRawText text]);
+        RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'", [(RCTShadowRawText *)shadowView text]);
       } else {
         for (RCTShadowView *child in [shadowView reactSubviews]) {
           if ([child isTextDirty]) {
@@ -117,9 +118,9 @@ RCT_REMAP_VIEW_PROPERTY(textAlign, textAlignment);
     }
 
     [shadowBlocks addObject:^(RCTUIManager *viewManager, RCTSparseArray *viewRegistry) {
-      [attributedStringForTag enumerateObjectsUsingBlock:^(NSAttributedString *attributedString, NSNumber *reactTag, BOOL *stop) {
-        UILabel *textView = viewRegistry[reactTag];
-        [textView setAttributedText:attributedString];
+      [reactTaggedAttributedStrings enumerateObjectsUsingBlock:^(NSAttributedString *attributedString, NSNumber *reactTag, BOOL *stop) {
+        RCTText *text = viewRegistry[reactTag];
+        text.attributedText = attributedString;
       }];
     }];
   }
