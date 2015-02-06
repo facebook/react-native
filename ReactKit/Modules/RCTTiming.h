@@ -2,13 +2,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTExport.h"
+#import "RCTBridgeModule.h"
 #import "RCTInvalidating.h"
 
-@class RCTBridge;
-
-@interface RCTTiming : NSObject <RCTNativeModule, RCTInvalidating>
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+@interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @end

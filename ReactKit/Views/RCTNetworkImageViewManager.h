@@ -1,8 +1,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#import "RCTUIViewManager.h"
+#import "RCTViewManager.h"
 
-@interface RCTNetworkImageViewManager : RCTUIViewManager
+@interface RCTNetworkImageViewManager : RCTViewManager
 
 @end
 

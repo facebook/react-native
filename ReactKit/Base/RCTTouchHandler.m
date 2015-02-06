@@ -5,7 +5,7 @@
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import "RCTAssert.h"
-#import "RCTEventDispatcher.h"
+#import "RCTBridge.h"
 #import "RCTLog.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
@@ -16,8 +16,7 @@
 
 @implementation RCTTouchHandler
 {
-  __weak UIView *_rootView;
-  RCTEventDispatcher *_eventDispatcher;
+  __weak RCTBridge *_bridge;
   
   /**
    * Arrays managed in parallel tracking native touch object along with the
@@ -35,16 +34,13 @@
   RCT_NOT_DESIGNATED_INITIALIZER();
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
-                               rootView:(UIView *)rootView
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super initWithTarget:nil action:NULL])) {
     
-    RCTAssert(eventDispatcher != nil, @"Expect an event dispatcher");
-    RCTAssert(rootView != nil, @"Expect a root view");
+    RCTAssert(bridge != nil, @"Expect an event dispatcher");
     
-    _eventDispatcher = eventDispatcher;
-    _rootView = rootView;
+    _bridge = bridge;
     
     _nativeTouches = [[NSMutableOrderedSet alloc] init];
     _reactTouches = [[NSMutableArray alloc] init];
@@ -53,10 +49,16 @@
     // `cancelsTouchesInView` is needed in order to be used as a top level event delegated recognizer. Otherwise, lower
     // level components not build using RCT, will fail to recognize gestures.
     self.cancelsTouchesInView = NO;
-    [_rootView addGestureRecognizer:self];
   }
   return self;
 }
+
+typedef NS_ENUM(NSInteger, RCTTouchEventType) {
+  RCTTouchEventTypeStart,
+  RCTTouchEventTypeMove,
+  RCTTouchEventTypeEnd,
+  RCTTouchEventTypeCancel
+};
 
 #pragma mark - Bookkeeping for touch indices
 
@@ -122,7 +124,7 @@
 {
   UITouch *nativeTouch = _nativeTouches[touchIndex];
   CGPoint windowLocation = [nativeTouch locationInView:nativeTouch.window];
-  CGPoint rootViewLocation = [nativeTouch.window convertPoint:windowLocation toView:_rootView];
+  CGPoint rootViewLocation = [nativeTouch.window convertPoint:windowLocation toView:self.view];
   
   UIView *touchView = _touchViews[touchIndex];
   CGPoint touchViewLocation = [nativeTouch.window convertPoint:windowLocation toView:touchView];
@@ -135,15 +137,26 @@
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
 }
 
-- (void)_updateAndDispatchTouches:(NSSet *)touches eventType:(RCTTouchEventType)eventType
+/**
+ * Constructs information about touch events to send across the serialized
+ * boundary. This data should be compliant with W3C `Touch` objects. This data
+ * alone isn't sufficient to construct W3C `Event` objects. To construct that,
+ * there must be a simple receiver on the other side of the bridge that
+ * organizes the touch objects into `Event`s.
+ *
+ * We send the data as an array of `Touch`es, the type of action
+ * (start/end/move/cancel) and the indices that represent "changed" `Touch`es
+ * from that array.
+ */
+- (void)_updateAndDispatchTouches:(NSSet *)touches eventName:(NSString *)eventName
 {
   // Update touches
-  NSMutableArray *changedIndices = [[NSMutableArray alloc] init];
+  NSMutableArray *changedIndexes = [[NSMutableArray alloc] init];
   for (UITouch *touch in touches) {
     NSInteger index = [_nativeTouches indexOfObject:touch];
     RCTAssert(index != NSNotFound, @"Touch not found. This is a critical bug.");
     [self _updateReactTouchAtIndex:index];
-    [changedIndices addObject:@(index)];
+    [changedIndexes addObject:@(index)];
   }
   
   // Deep copy the touches because they will be accessed from another thread
@@ -154,9 +167,8 @@
   }
   
   // Dispatch touch event
-  [_eventDispatcher sendTouchEventWithType:eventType
-                                   touches:reactTouches
-                            changedIndexes:changedIndices];
+  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
+                    args:@[eventName, reactTouches, changedIndexes]];
 }
 
 #pragma mark - Gesture Recognizer Delegate Callbacks
@@ -169,7 +181,7 @@
   // "start" has to record new touches before extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
-  [self _updateAndDispatchTouches:touches eventType:RCTTouchEventTypeStart];
+  [self _updateAndDispatchTouches:touches eventName:@"topTouchStart"];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -178,20 +190,20 @@
   if (self.state == UIGestureRecognizerStateFailed) {
     return;
   }
-  [self _updateAndDispatchTouches:touches eventType:RCTTouchEventTypeMove];
+  [self _updateAndDispatchTouches:touches eventName:@"topTouchMove"];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
-  [self _updateAndDispatchTouches:touches eventType:RCTTouchEventTypeEnd];
+  [self _updateAndDispatchTouches:touches eventName:@"topTouchEnd"];
   [self _recordRemovedTouches:touches];
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
-  [self _updateAndDispatchTouches:touches eventType:RCTTouchEventTypeCancel];
+  [self _updateAndDispatchTouches:touches eventName:@"topTouchCancel"];
   [self _recordRemovedTouches:touches];
 }
 

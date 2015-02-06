@@ -23,8 +23,13 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   va_end(args);
 }
 
+@interface RCTWebViewExecutor () <UIWebViewDelegate>
+
+@end
+
 @implementation RCTWebViewExecutor
 {
+  UIWebView *_webView;
   NSMutableDictionary *_objectsToInject;
 }
 

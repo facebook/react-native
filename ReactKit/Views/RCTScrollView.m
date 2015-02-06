@@ -242,11 +242,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   return frame;
 }
 
-- (void)insertReactSubview:(NSObject<RCTViewNodeProtocol> *)subview atIndex:(NSInteger)atIndex
-{
-  [super insertReactSubview:subview atIndex:atIndex];
-}
-
 @end
 
 @implementation RCTScrollView

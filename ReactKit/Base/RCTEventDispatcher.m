@@ -2,6 +2,7 @@
 
 #import "RCTEventDispatcher.h"
 
+#import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "UIView+ReactKit.h"
 
@@ -25,34 +26,6 @@
   
   [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
                     args:@[body[@"target"], name, body]];
-}
-
-/**
- * Constructs information about touch events to send across the serialized
- * boundary. This data should be compliant with W3C `Touch` objects. This data
- * alone isn't sufficient to construct W3C `Event` objects. To construct that,
- * there must be a simple receiver on the other side of the bridge that
- * organizes the touch objects into `Event`s.
- *
- * We send the data as an array of `Touch`es, the type of action
- * (start/end/move/cancel) and the indices that represent "changed" `Touch`es
- * from that array.
- */
-- (void)sendTouchEventWithType:(RCTTouchEventType)type
-                       touches:(NSArray *)touches
-                changedIndexes:(NSArray *)changedIndexes
-{
-  static NSString *events[] = {
-    @"topTouchStart",
-    @"topTouchMove",
-    @"topTouchEnd",
-    @"topTouchCancel",
-  };
-  
-  RCTAssert(touches.count, @"No touches in touchEventArgsForOrderedTouches");
-
-  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
-                    args:@[events[type], touches, changedIndexes]];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type

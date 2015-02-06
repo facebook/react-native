@@ -4,7 +4,13 @@
 #import <UIKit/UIKit.h>
 
 #import "Layout.h"
+#import "RCTPointerEvents.h"
 
+/**
+ * This class provides a collection of conversion functions for mapping
+ * JSON objects to native types and classes. These are useful when writing
+ * custom RCTViewManager setter methods.
+ */
 @interface RCTConvert : NSObject
 
 + (BOOL)BOOL:(id)json;
@@ -57,4 +63,21 @@
 + (css_position_type_t)css_position_type_t:(id)json;
 + (css_wrap_type_t)css_wrap_type_t:(id)json;
 
++ (RCTPointerEvents)RCTPointerEvents:(id)json;
+
 @end
+
+/**
+ * This function will attempt to set a property using a json value by first
+ * inferring the correct type from all available information, and then
+ * applying an appropriate conversion method. If the property does not
+ * exist, or the type cannot be inferred, the function will return NO.
+ */
+BOOL RCTSetProperty(id target, NSString *keypath, id json);
+
+/**
+ * This function attempts to copy a property from the source object to the
+ * destination object using KVC. If the property does not exist, or cannot
+ * be set, it will do nothing and return NO.
+ */
+BOOL RCTCopyProperty(id target, id source, NSString *keypath);

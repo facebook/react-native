@@ -4,19 +4,13 @@
 
 #import <UIKit/UIKit.h>
 
-// TODO: rehome this
-typedef NS_ENUM(NSInteger, RCTPointerEventsValue) {
-  RCTPointerEventsUnspecified = 0, // Default
-  RCTPointerEventsNone,
-  RCTPointerEventsBoxNone,
-  RCTPointerEventsBoxOnly,
-};
+#import "RCTPointerEvents.h"
 
 @protocol RCTAutoInsetsProtocol;
 
 @interface RCTView : UIView
 
-@property (nonatomic, assign) RCTPointerEventsValue pointerEvents;
+@property (nonatomic, assign) RCTPointerEvents pointerEvents;
 @property (nonatomic, copy) NSString *overrideAccessibilityLabel;
 
 + (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView

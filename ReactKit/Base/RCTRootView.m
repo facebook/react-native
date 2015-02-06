@@ -5,25 +5,25 @@
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
 #import "RCTEventDispatcher.h"
-#import "RCTJavaScriptAppEngine.h"
+#import "RCTKeyCommands.h"
+#import "RCTLog.h"
+#import "RCTRedBox.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
-#import "RCTViewManager.h"
 #import "RCTWebViewExecutor.h"
 #import "UIView+ReactKit.h"
-#import "RCTKeyCommands.h"
 
 NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification";
 
 @implementation RCTRootView
 {
   RCTBridge *_bridge;
-  RCTJavaScriptAppEngine *_appEngine;
   RCTTouchHandler *_touchHandler;
+  id <RCTJavaScriptExecutor> _executor;
 }
 
-static BOOL _useWebExec;
+static Class _globalExecutorClass;
 
 + (void)initialize
 {
@@ -36,11 +36,12 @@ static BOOL _useWebExec;
                                                         action:^(UIKeyCommand *command) {
                                                           [self reloadAll];
                                                         }];
+  
   // Cmd-D reloads using the web view executor, allows attaching from Safari dev tools.
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          _useWebExec = YES;
+                                                          _globalExecutorClass = [RCTWebViewExecutor class];
                                                           [self reloadAll];
                                                         }];
 
@@ -50,21 +51,18 @@ static BOOL _useWebExec;
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-  self = [super initWithCoder:aDecoder];
-  if (!self) return nil;
-
-  [self setUp];
-
+  if ((self = [super initWithCoder:aDecoder])) {
+    [self setUp];
+  }
   return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  self = [super initWithFrame:frame];
-  if (!self) return nil;
-
-  [self setUp];
-
+  if ((self = [super initWithFrame:frame])) {
+    self.backgroundColor = [UIColor whiteColor];
+    [self setUp];
+  }
   return self;
 }
 
@@ -81,7 +79,6 @@ static BOOL _useWebExec;
                                            selector:@selector(reload)
                                                name:RCTRootViewReloadNotification
                                              object:nil];
-  self.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)dealloc
@@ -104,10 +101,9 @@ static BOOL _useWebExec;
 
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
-      @"rootTag": self.reactTag ?: @0,
+      @"rootTag": self.reactTag,
       @"initialProps": self.initialProperties ?: @{},
     };
-    
     [_bridge enqueueJSCall:@"Bundler.runApplication"
                       args:@[moduleName, appParameters]];
   }
@@ -122,28 +118,81 @@ static BOOL _useWebExec;
     return;
   }
   
-  __weak typeof(self) weakSelf = self;
-  RCTJavaScriptCompleteBlock callback = ^(NSError *error) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf bundleFinishedLoading:error];
-    });
-  };
-
+  // Clean up
+  [self removeGestureRecognizer:_touchHandler];
   [_executor invalidate];
   [_bridge invalidate];
 
-  if (!_useWebExec) {
-    _executor = [[RCTContextExecutor alloc] init];
-  } else {
-    _executor = [[RCTWebViewExecutor alloc] init];
-  }
-
+  // Choose local executor if specified, followed by global, followed by default
+  _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
   _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor];
+  _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+  [self addGestureRecognizer:_touchHandler];
 
-  _appEngine = [[RCTJavaScriptAppEngine alloc] initWithBridge:_bridge];
-  _touchHandler = [[RCTTouchHandler alloc] initWithEventDispatcher:_bridge.eventDispatcher rootView:self];
+  // Load the bundle
+  NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:_scriptURL completionHandler:
+                                ^(NSData *data, NSURLResponse *response, NSError *error) {
+    
+    // Handle general request errors
+    if (error) {
+      if ([[error domain] isEqualToString:NSURLErrorDomain]) {
+        NSDictionary *userInfo = @{
+          NSLocalizedDescriptionKey: @"Could not connect to development server. Ensure node server is running - run 'npm start' from ReactKit root",
+          NSLocalizedFailureReasonErrorKey: [error localizedDescription],
+          NSUnderlyingErrorKey: error,
+        };
+        error = [NSError errorWithDomain:@"JSServer"
+                                    code:error.code
+                                userInfo:userInfo];
+      }
+      [self bundleFinishedLoading:error];
+      return;
+    }
+    
+    // Parse response as text
+    NSStringEncoding encoding = NSUTF8StringEncoding;
+    if (response.textEncodingName != nil) {
+      CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
+      if (cfEncoding != kCFStringEncodingInvalidId) {
+        encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
+      }
+    }
+    NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
+    
+    // Handle HTTP errors
+    if ([response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)response statusCode] != 200) {
+      NSDictionary *userInfo;
+      NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
+      if ([errorDetails isKindOfClass:[NSDictionary class]]) {
+        userInfo = @{
+          NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
+          @"stack": @[@{
+            @"methodName": errorDetails[@"description"] ?: @"",
+            @"file": errorDetails[@"filename"] ?: @"",
+            @"lineNumber": errorDetails[@"lineNumber"] ?: @0
+          }]
+        };
+      } else {
+        userInfo = @{NSLocalizedDescriptionKey: rawText};
+      }
+      error = [NSError errorWithDomain:@"JSServer"
+                                  code:[(NSHTTPURLResponse *)response statusCode]
+                              userInfo:userInfo];
+      
+      [self bundleFinishedLoading:error];
+      return;
+    }
 
-  [_appEngine loadBundleAtURL:_scriptURL useCache:NO onComplete:callback];
+    // Success!
+    [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *error) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self bundleFinishedLoading:error];
+      });
+    }];
+                                  
+  }];
+  
+  [task resume];
 }
 
 - (void)setScriptURL:(NSURL *)scriptURL
@@ -156,12 +205,6 @@ static BOOL _useWebExec;
   [self loadBundle];
 }
 
-- (void)setExecutor:(id<RCTJavaScriptExecutor>)executor
-{
-  RCTAssert(!_bridge, @"You may only change the Javascript Executor prior to loading a script bundle.");
-  _executor = executor;
-}
-
 - (BOOL)isReactRootView
 {
   return YES;
@@ -169,7 +212,6 @@ static BOOL _useWebExec;
 
 - (void)reload
 {
-  [RCTJavaScriptAppEngine resetCacheForBundleAtURL:_scriptURL];
   [self loadBundle];
 }
 

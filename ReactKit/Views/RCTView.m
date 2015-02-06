@@ -40,7 +40,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
-- (void)setPointerEvents:(RCTPointerEventsValue)pointerEvents
+- (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
   _pointerEvents = pointerEvents;
   self.userInteractionEnabled = (pointerEvents != RCTPointerEventsNone);

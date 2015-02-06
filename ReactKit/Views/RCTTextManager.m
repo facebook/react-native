@@ -67,6 +67,13 @@ RCT_REMAP_VIEW_PROPERTY(textAlign, textAlignment);
   shadowView.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
 }
 
+// TODO: the purpose of this block is effectively just to copy properties from the shadow views
+// to their equivalent UIViews. In this case, the property being copied is the attributed text,
+// but the same principle could be used to copy any property. The implementation is really ugly tho
+// because the RCTViewManager doesn't retain a reference to the views that it manages, so it basically
+// has to search the entire view hierarchy for relevant views. Not awesome. This seems like something
+// where we could introduce a generic solution - perhaps a method on RCTShadowView that is called after
+// layout to copy its properties across?
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
   NSMutableArray *shadowBlocks = [NSMutableArray new];

@@ -2,8 +2,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTExport.h"
+#import "RCTBridgeModule.h"
 
-@interface RCTAlertManager : NSObject <RCTNativeModule>
+@interface RCTAlertManager : NSObject <RCTBridgeModule>
 
 @end

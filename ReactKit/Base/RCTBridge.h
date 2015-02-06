@@ -1,10 +1,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#import "RCTExport.h"
+#import "RCTBridgeModule.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
-
-@protocol RCTNativeModule;
 
 @class RCTEventDispatcher;
 @class RCTRootView;
@@ -29,31 +27,65 @@ static inline NSDictionary *RCTAPIErrorObject(NSString *msg)
 }
 
 /**
- * Async batched bridge used to communicate with `RCTJavaScriptAppEngine`.
+ * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
 
-- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor;
+/**
+ * The designated initializer. This creates a new bridge on top of the specified
+ * executor. The bridge should then be used for all subsequent communication
+ * with the JavaScript code running in the executor.
+ */
+- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor NS_DESIGNATED_INITIALIZER;
 
+/**
+ * This method is used to call functions in the JavaScript application context.
+ * It is primarily intended for use by modules that require two-way communication
+ * with the JavaScript code.
+ */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
+
+/**
+ * This method is used to execute a new application script. It is called
+ * internally whenever a JS application bundle is loaded/reloaded, but should
+ * probably not be used at any other time.
+ */
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete;
 
+/**
+ * The event dispatcher is a wrapper around -enqueueJSCall:args: that provides a
+ * higher-level interface for sending UI events such as touches and text input.
+ */
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
+
+/**
+ * The shadow queue is used to execute callbacks from the JavaScript code. All
+ * native hooks (e.g. exported module methods) will be executed on the shadow
+ * queue.
+ */
 @property (nonatomic, readonly) dispatch_queue_t shadowQueue;
 
 // For use in implementing delegates, which may need to queue responses.
 - (RCTResponseSenderBlock)createResponseSenderBlock:(NSInteger)callbackID;
 
+/**
+ * Register a root view with the bridge. Theorectically, a single bridge can
+ * support multiple root views, however this feature is not currently exposed
+ * and may eventually be removed.
+ */
 - (void)registerRootView:(RCTRootView *)rootView;
 
 /**
- * Global logging function will print to both xcode and js debugger consoles.
+ * Global logging function that will print to both xcode and JS debugger consoles.
  *
  * NOTE: Use via RCTLog* macros defined in RCTLog.h
  * TODO (#5906496): should log function be exposed here, or could it be a module?
  */
 + (void)log:(NSArray *)objects level:(NSString *)level;
 
+/**
+ * Method to check that a valid executor exists with which to log
+ */
 + (BOOL)hasValidJSExecutor;
 
 @end

@@ -16,7 +16,7 @@
  * @providesModule ResponderEventPlugin
  */
 
-"use strict";
+'use strict';
 
 var EventConstants = require('EventConstants');
 var EventPluginUtils = require('EventPluginUtils');
@@ -27,6 +27,7 @@ var ResponderSyntheticEvent = require('ResponderSyntheticEvent');
 var ResponderTouchHistoryStore = require('ResponderTouchHistoryStore');
 
 var accumulate = require('accumulate');
+var invariant = require('invariant');
 var keyOf = require('keyOf');
 
 var isStartish = EventPluginUtils.isStartish;
@@ -42,6 +43,12 @@ var executeDispatchesInOrderStopAtTrue =
  * indicated explicitly by relevant callbacks.
  */
 var responderID = null;
+
+/**
+ * Count of current touches. A textInput should become responder iff the
+ * the selection changes while there is a touch on the screen.
+ */
+var trackedTouchCount = 0;
 
 /**
  * Last reported number of active touches.
@@ -426,7 +433,8 @@ function setResponderAndExtractTransfer(
 function canTriggerTransfer(topLevelType, topLevelTargetID) {
   return topLevelTargetID && (
     topLevelType === EventConstants.topLevelTypes.topScroll ||
-    topLevelType === EventConstants.topLevelTypes.topSelectionChange ||
+    (trackedTouchCount > 0 &&
+      topLevelType === EventConstants.topLevelTypes.topSelectionChange) ||
     isStartish(topLevelType) ||
     isMoveish(topLevelType)
   );
@@ -489,6 +497,15 @@ var ResponderEventPlugin = {
       topLevelTargetID,
       nativeEvent) {
 
+    if (isStartish(topLevelType)) {
+      trackedTouchCount += 1;
+    } else if (isEndish(topLevelType)) {
+      trackedTouchCount -= 1;
+      invariant(
+        trackedTouchCount >= 0,
+        'Ended a touch event which was not counted in trackedTouchCount.'
+      );
+    }
 
     ResponderTouchHistoryStore.recordTouchTrack(topLevelType, nativeEvent);
 
@@ -507,12 +524,10 @@ var ResponderEventPlugin = {
     // (`onResponderRelease/onResponderTerminate`).
     var isResponderTouchStart = responderID && isStartish(topLevelType);
     var isResponderTouchMove = responderID && isMoveish(topLevelType);
-    var isResponderTouchTerminate = responderID && topLevelType === EventConstants.topLevelTypes.topTouchCancel;
     var isResponderTouchEnd = responderID && isEndish(topLevelType);
     var incrementalTouch =
       isResponderTouchStart ? eventTypes.responderStart :
       isResponderTouchMove ? eventTypes.responderMove :
-      isResponderTouchTerminate ? eventTypes.responderTerminate :
       isResponderTouchEnd ? eventTypes.responderEnd :
       null;
 
@@ -524,17 +539,24 @@ var ResponderEventPlugin = {
       extracted = accumulate(extracted, gesture);
     }
 
+    var isResponderTerminate =
+      responderID &&
+      topLevelType === EventConstants.topLevelTypes.topTouchCancel;
     var isResponderRelease =
-      responderID && isEndish(topLevelType) && noResponderTouches(nativeEvent);
-    if (isResponderRelease) {
-      var release = ResponderSyntheticEvent.getPooled(
-        eventTypes.responderRelease,
-        responderID,
-        nativeEvent
-      );
-      release.touchHistory = ResponderTouchHistoryStore.touchHistory;
-      EventPropagators.accumulateDirectDispatches(release);
-      extracted = accumulate(extracted, release);
+      responderID &&
+      !isResponderTerminate &&
+      isEndish(topLevelType) &&
+      noResponderTouches(nativeEvent);
+    var finalTouch =
+      isResponderTerminate ? eventTypes.responderTerminate :
+      isResponderRelease ? eventTypes.responderRelease :
+      null;
+    if (finalTouch) {
+      var finalEvent =
+        ResponderSyntheticEvent.getPooled(finalTouch, responderID, nativeEvent);
+      finalEvent.touchHistory = ResponderTouchHistoryStore.touchHistory;
+      EventPropagators.accumulateDirectDispatches(finalEvent);
+      extracted = accumulate(extracted, finalEvent);
       changeResponder(null);
     }
 

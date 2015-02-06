@@ -13,15 +13,16 @@
  * environment. And ensure main thread operations are actually added to a queue
  * instead of being executed immediately if already on the main thread.
  */
-@interface RCTWebViewExecutor : NSObject<RCTJavaScriptExecutor, UIWebViewDelegate>
-
-@property (nonatomic, readwrite, strong) UIWebView *webView;
+@interface RCTWebViewExecutor : NSObject<RCTJavaScriptExecutor>
 
 // Only one callback stored - will only be invoked for the latest issued
 // application script request.
-@property (nonatomic, readwrite, copy) RCTJavaScriptCompleteBlock onApplicationScriptLoaded;
+@property (nonatomic, copy) RCTJavaScriptCompleteBlock onApplicationScriptLoaded;
 
-- (instancetype)initWithWebView:(UIWebView *)webView;
+/**
+ * Instantiate with a specific webview instance
+ */
+- (instancetype)initWithWebView:(UIWebView *)webView NS_DESIGNATED_INITIALIZER;
 
 /**
  * Invoke this to reclaim the web view for reuse. This is necessary in order to

@@ -4,13 +4,6 @@
 
 @class RCTBridge;
 
-typedef NS_ENUM(NSInteger, RCTTouchEventType) {
-  RCTTouchEventTypeStart,
-  RCTTouchEventTypeMove,
-  RCTTouchEventTypeEnd,
-  RCTTouchEventTypeCancel
-};
-
 typedef NS_ENUM(NSInteger, RCTTextEventType) {
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
@@ -38,13 +31,6 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
  * are used internally by the React framework.
  */
 - (void)sendEventWithName:(NSString *)name body:(NSDictionary *)body;
-
-/**
- * Send an array of touch events
- */
-- (void)sendTouchEventWithType:(RCTTouchEventType)type
-                       touches:(NSArray *)touches
-                changedIndexes:(NSArray *)changedIndexes;
 
 /**
  * Send text events

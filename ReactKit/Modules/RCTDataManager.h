@@ -2,9 +2,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTExport.h"
+#import "RCTBridgeModule.h"
 
-@interface RCTDataManager : NSObject <RCTNativeModule>
+@interface RCTDataManager : NSObject <RCTBridgeModule>
 
 @end
 

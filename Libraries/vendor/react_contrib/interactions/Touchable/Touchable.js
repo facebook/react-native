@@ -2,13 +2,12 @@
  * @providesModule Touchable
  */
 
-"use strict";
+'use strict';
 
 var BoundingDimensions = require('BoundingDimensions');
 var Position = require('Position');
 var TouchEventUtils = require('TouchEventUtils');
 
-var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var queryLayoutByID = require('queryLayoutByID');
 
@@ -277,20 +276,20 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
  *     +
  *     | RESPONDER_GRANT (HitRect)
  *     v
- * +---------------------------+  DELAY   +-------------------------+  T - DELAY     +------------------------------+       
- * |RESPONDER_INACTIVE_PRESS_IN|+-------->|RESPONDER_ACTIVE_PRESS_IN| +------------> |RESPONDER_ACTIVE_LONG_PRESS_IN| 
+ * +---------------------------+  DELAY   +-------------------------+  T - DELAY     +------------------------------+
+ * |RESPONDER_INACTIVE_PRESS_IN|+-------->|RESPONDER_ACTIVE_PRESS_IN| +------------> |RESPONDER_ACTIVE_LONG_PRESS_IN|
  * +---------------------------+          +-------------------------+                +------------------------------+
  *     +            ^                         +           ^                                 +           ^
  *     |LEAVE_      |ENTER_                   |LEAVE_     |ENTER_                           |LEAVE_     |ENTER_
  *     |PRESS_RECT  |PRESS_RECT               |PRESS_RECT |PRESS_RECT                       |PRESS_RECT |PRESS_RECT
  *     |            |                         |           |                                 |           |
  *     v            +                         v           +                                 v           +
- * +----------------------------+  DELAY  +--------------------------+               +-------------------------------+ 
- * |RESPONDER_INACTIVE_PRESS_OUT|+------->|RESPONDER_ACTIVE_PRESS_OUT|               |RESPONDER_ACTIVE_LONG_PRESS_OUT|                                                                  
- * +----------------------------+         +--------------------------+               +-------------------------------+ 
+ * +----------------------------+  DELAY  +--------------------------+               +-------------------------------+
+ * |RESPONDER_INACTIVE_PRESS_OUT|+------->|RESPONDER_ACTIVE_PRESS_OUT|               |RESPONDER_ACTIVE_LONG_PRESS_OUT|
+ * +----------------------------+         +--------------------------+               +-------------------------------+
  *
- * T - DELAY => LONG_PRESS_THRESHOLD - DELAY 
- * 
+ * T - DELAY => LONG_PRESS_THRESHOLD - DELAY
+ *
  * Not drawn are the side effects of each transition. The most important side
  * effect is the `touchableHandlePress` abstract method invocation that occurs
  * when a responder is released while in either of the "Press" states.
@@ -344,7 +343,7 @@ var TouchableMixin = {
    *
    */
   touchableHandleResponderGrant: function(e, dispatchID) {
-    // Since e is used in a callback invoked on another event loop 
+    // Since e is used in a callback invoked on another event loop
     // (as in setTimeout etc), we need to call e.persist() on the
     // event to make sure it doesn't get reused in the event object pool.
     e.persist();
@@ -420,9 +419,9 @@ var TouchableMixin = {
       var movedDistance = this._getDistanceBetweenPoints(pageX, pageY, this.pressInLocation.pageX, this.pressInLocation.pageY);
       if (movedDistance > LONG_PRESS_ALLOWED_MOVEMENT) {
         this._cancelLongPressDelayTimeout();
-      }  
+      }
     }
-    
+
     var isTouchWithinActive =
         pageX > positionOnActivate.left - pressExpandLeft &&
         pageY > positionOnActivate.top - pressExpandTop &&
@@ -556,18 +555,19 @@ var TouchableMixin = {
    */
   _receiveSignal: function(signal, e) {
     var curState = this.state.touchable.touchState;
-    invariant(
-      Transitions[curState] && Transitions[curState][signal],
-      'You have supplied either an unrecognized signal or current state %s',
-      curState
-    );
+    if (!(Transitions[curState] && Transitions[curState][signal])) {
+      throw new Error(
+        'Unrecognized signal `' + signal + '` or state `' + curState +
+        '` for Touchable responder `' + this.state.touchable.responderID + '`'
+      );
+    }
     var nextState = Transitions[curState][signal];
-    invariant(
-      nextState !== States.ERROR,
-      'Some assumptions about the state machine were violated. This is the ' +
-      'fault of Touchable.js. This case has been modeled and caught as an ' +
-      'error transition.'
-    );
+    if (nextState === States.ERROR) {
+      throw new Error(
+        'Touchable cannot transition from `' + curState + '` to `' + signal +
+        '` for responder `' + this.state.touchable.responderID + '`'
+      );
+    }
     if (curState !== nextState) {
       this._performSideEffectsForTransition(curState, nextState, signal, e);
       this.state.touchable.touchState = nextState;
@@ -580,7 +580,7 @@ var TouchableMixin = {
   },
 
   _isHighlight: function (state) {
-    return state === States.RESPONDER_ACTIVE_PRESS_IN || 
+    return state === States.RESPONDER_ACTIVE_PRESS_IN ||
            state === States.RESPONDER_ACTIVE_LONG_PRESS_IN;
   },
 
@@ -626,15 +626,15 @@ var TouchableMixin = {
 
     if (IsPressingIn[curState] && signal === Signals.LONG_PRESS_DETECTED) {
       this.touchableHandleLongPress && this.touchableHandleLongPress();
-    }    
-    
+    }
+
     if (newIsHighlight && !curIsHighlight) {
       this._savePressInLocation(e);
       this.touchableHandleActivePressIn && this.touchableHandleActivePressIn();
     } else if (!newIsHighlight && curIsHighlight) {
       this.touchableHandleActivePressOut && this.touchableHandleActivePressOut();
     }
-    
+
     if (IsPressingIn[curState] && signal === Signals.RESPONDER_RELEASE) {
       var hasLongPressHandler = !!this.touchableHandleLongPress;
       var pressIsLongButStillCallOnPress =
@@ -660,4 +660,3 @@ var Touchable = {
 };
 
 module.exports = Touchable;
-

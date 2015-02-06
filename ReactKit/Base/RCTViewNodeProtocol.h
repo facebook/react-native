@@ -22,8 +22,4 @@
 // TODO: Deprecate this
 - (void)reactBridgeDidFinishTransaction;
 
-// Invoked when react determines that the view will be removed from the view
-// hierarchy and never replaced.
-- (void)reactWillDestroy;
-
 @end

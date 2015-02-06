@@ -2,9 +2,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTInvalidating.h"
+
 @class RCTEventDispatcher;
 
-@interface RCTNavigator : UIView <UINavigationControllerDelegate>
+@interface RCTNavigator : UIView <RCTInvalidating>
 
 @property (nonatomic, strong) UIView *reactNavSuperviewLink;
 @property (nonatomic, assign) NSInteger requestedTopOfStack;

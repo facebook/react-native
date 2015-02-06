@@ -17,7 +17,7 @@ do { \
 NSString *RCTJSONStringify(id jsonObject, NSError **error);
 id RCTJSONParse(NSString *jsonString, NSError **error);
 
-// Get MD5 hash of a string
+// Get MD5 hash of a string (TODO: currently unused. Remove?)
 NSString *RCTMD5Hash(NSString *string);
 
 // Get screen metrics in a thread-safe way

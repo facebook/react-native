@@ -200,7 +200,7 @@ NSInteger kNeverProgressed = -10000;
 @end
 
 
-@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener>
+@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
 {
   RCTEventDispatcher *_eventDispatcher;
   NSInteger _numberOfViewControllerMovesToIgnore;
@@ -417,9 +417,14 @@ NSInteger kNeverProgressed = -10000;
   return _currentViews;
 }
 
-- (void)reactWillDestroy
+- (BOOL)isValid
 {
-  // Removes run loop's references to `displayLink`.
+  return _displayLink != nil;
+}
+
+- (void)invalidate
+{
+  // Prevent displayLink from retaining the navigator indefinitely
   [_displayLink invalidate];
   _displayLink = nil;
   _runTimer = nil;

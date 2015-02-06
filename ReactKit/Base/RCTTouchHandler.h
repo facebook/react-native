@@ -2,11 +2,10 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTEventDispatcher;
+@class RCTBridge;
 
 @interface RCTTouchHandler : UIGestureRecognizer
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
-                               rootView:(UIView *)rootView;
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 @end

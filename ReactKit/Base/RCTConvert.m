@@ -4,6 +4,7 @@
 
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <objc/message.h>
 
 #import "RCTLog.h"
 
@@ -41,7 +42,7 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
     return default;                                       \
   }                                                       \
   if ([json isKindOfClass:[NSNumber class]]) {            \
-    if ([[mapping allValues] containsObject:json]) {      \
+    if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
       return [json getter];                               \
     }                                                     \
     RCTLogMustFix(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
@@ -651,4 +652,253 @@ RCT_ENUM_CONVERTER(css_wrap_type_t, (@{
   @"nowrap": @(CSS_NOWRAP)
 }), CSS_NOWRAP, intValue)
 
+RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
+  @"none": @(RCTPointerEventsNone),
+  @"boxonly": @(RCTPointerEventsBoxOnly),
+  @"boxnone": @(RCTPointerEventsBoxNone)
+}), RCTPointerEventsUnspecified, integerValue)
+
 @end
+
+static NSString *RCTGuessTypeEncoding(id target, NSString *key, id value, NSString *encoding)
+{
+  // TODO (#5906496): handle more cases
+  if ([key rangeOfString:@"color" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+    if ([target isKindOfClass:[CALayer class]]) {
+      return @(@encode(CGColorRef));
+    } else {
+      return @"@\"UIColor\"";
+    }
+  }
+  
+  return nil;
+}
+
+static NSDictionary *RCTConvertValue(id value, NSString *encoding)
+{
+  static NSDictionary *converters = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    
+    id (^numberConvert)(id) = ^(id val){
+      return [RCTConvert NSNumber:val];
+    };
+    
+    id (^boolConvert)(id) = ^(id val){
+      return @([RCTConvert BOOL:val]);
+    };
+    
+    // TODO (#5906496): add the rest of RCTConvert here
+    converters =
+    @{
+      @(@encode(char)): boolConvert,
+      @(@encode(int)): numberConvert,
+      @(@encode(short)): numberConvert,
+      @(@encode(long)): numberConvert,
+      @(@encode(long long)): numberConvert,
+      @(@encode(unsigned char)): numberConvert,
+      @(@encode(unsigned int)): numberConvert,
+      @(@encode(unsigned short)): numberConvert,
+      @(@encode(unsigned long)): numberConvert,
+      @(@encode(unsigned long long)): numberConvert,
+      @(@encode(float)): numberConvert,
+      @(@encode(double)): numberConvert,
+      @(@encode(bool)): boolConvert,
+      @(@encode(UIEdgeInsets)): ^(id val) {
+        return [NSValue valueWithUIEdgeInsets:[RCTConvert UIEdgeInsets:val]];
+      },
+      @(@encode(CGPoint)): ^(id val) {
+        return [NSValue valueWithCGPoint:[RCTConvert CGPoint:val]];
+      },
+      @(@encode(CGSize)): ^(id val) {
+        return [NSValue valueWithCGSize:[RCTConvert CGSize:val]];
+      },
+      @(@encode(CGRect)): ^(id val) {
+        return [NSValue valueWithCGRect:[RCTConvert CGRect:val]];
+      },
+      @(@encode(CGColorRef)): ^(id val) {
+        return (id)[RCTConvert CGColor:val];
+      },
+      @(@encode(CGAffineTransform)): ^(id val) {
+        return [NSValue valueWithCGAffineTransform:[RCTConvert CGAffineTransform:val]];
+      },
+      @(@encode(CATransform3D)): ^(id val) {
+        return [NSValue valueWithCATransform3D:[RCTConvert CATransform3D:val]];
+      },
+      @"@\"NSString\"": ^(id val) {
+        return [RCTConvert NSString:val];
+      },
+      @"@\"NSURL\"": ^(id val) {
+        return [RCTConvert NSURL:val];
+      },
+      @"@\"UIColor\"": ^(id val) {
+        return [RCTConvert UIColor:val];
+      },
+      @"@\"UIImage\"": ^(id val) {
+        return [RCTConvert UIImage:val];
+      },
+      @"@\"NSDate\"": ^(id val) {
+        return [RCTConvert NSDate:val];
+      },
+      @"@\"NSTimeZone\"": ^(id val) {
+        return [RCTConvert NSTimeZone:val];
+      },
+    };
+  });
+
+  // Handle null values
+  if (value == [NSNull null] && ![encoding isEqualToString:@"@\"NSNull\""]) {
+    return nil;
+  }
+  
+  // Convert value
+  id (^converter)(id) = converters[encoding];
+  return converter ? converter(value) : value;
+}
+
+BOOL RCTSetProperty(id target, NSString *keypath, id value)
+{
+  // Split keypath
+  NSArray *parts = [keypath componentsSeparatedByString:@"."];
+  NSString *key = [parts lastObject];
+  for (NSUInteger i = 0; i < parts.count - 1; i++) {
+    target = [target valueForKey:parts[i]];
+    if (!target) {
+      return NO;
+    }
+  }
+
+  // Check target class for property definition
+  NSString *encoding = nil;
+  objc_property_t property = class_getProperty([target class], [key UTF8String]);
+  if (property) {
+    
+    // Get type info
+    char *typeEncoding = property_copyAttributeValue(property, "T");
+    encoding = @(typeEncoding);
+    free(typeEncoding);
+    
+  } else {
+    
+    // Check if setter exists
+    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
+                                       [[key substringToIndex:1] uppercaseString],
+                                       [key substringFromIndex:1]]);
+    
+    if (![target respondsToSelector:setter]) {
+      return NO;
+    }
+    
+    // Get type of first method argument
+    Method method = class_getInstanceMethod([target class], setter);
+    char *typeEncoding = method_copyArgumentType(method, 2);
+    if (typeEncoding) {
+      encoding = @(typeEncoding);
+      free(typeEncoding);
+    }
+  }
+  
+  if (encoding.length == 0 || [encoding isEqualToString:@(@encode(id))]) {
+    // Not enough info about the type encoding to be useful, so
+    // try to guess the type from the value and property name
+    encoding = RCTGuessTypeEncoding(target, key, value, encoding);
+  }
+  
+  // Special case for numeric encodings, which may be enums
+  if ([value isKindOfClass:[NSString class]] &&
+      [@"iIsSlLqQ" containsString:[encoding substringToIndex:1]]) {
+    
+    /**
+     * NOTE: the property names below may seem weird, but it's
+     * because they are tested as case-sensitive suffixes, so
+     * "apitalizationType" will match any of the following
+     *
+     * - capitalizationType
+     * - autocapitalizationType
+     * - autoCapitalizationType
+     * - titleCapitalizationType
+     * - etc.
+     */
+    static NSDictionary *converters = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      converters =
+      @{
+        @"apitalizationType": ^(id val) {
+          return [RCTConvert UITextAutocapitalizationType:val];
+        },
+        @"eyboardType": ^(id val) {
+          return [RCTConvert UIKeyboardType:val];
+        },
+        @"extAlignment": ^(id val) {
+          return [RCTConvert NSTextAlignment:val];
+        },
+      };
+    });
+    for (NSString *subkey in converters) {
+      if ([key hasSuffix:subkey]) {
+        NSInteger (^converter)(NSString *) = converters[subkey];
+        value = @(converter(value));
+        break;
+      }
+    }
+  }
+  
+  // Another nasty special case
+  if ([target isKindOfClass:[UITextField class]]) {
+    static NSDictionary *specialCases = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      specialCases = @{
+        @"autocapitalizationType": ^(UITextField *f, NSInteger v){ f.autocapitalizationType = v; },
+        @"autocorrectionType": ^(UITextField *f, NSInteger v){ f.autocorrectionType = v; },
+        @"spellCheckingType": ^(UITextField *f, NSInteger v){ f.spellCheckingType = v; },
+        @"keyboardType": ^(UITextField *f, NSInteger v){ f.keyboardType = v; },
+        @"keyboardAppearance": ^(UITextField *f, NSInteger v){ f.keyboardAppearance = v; },
+        @"returnKeyType": ^(UITextField *f, NSInteger v){ f.returnKeyType = v; },
+        @"enablesReturnKeyAutomatically": ^(UITextField *f, NSInteger v){ f.enablesReturnKeyAutomatically = !!v; },
+        @"secureTextEntry": ^(UITextField *f, NSInteger v){ f.secureTextEntry = !!v; }};
+    });
+    
+    void (^block)(UITextField *f, NSInteger v) = specialCases[key];
+    if (block)
+    {
+      block(target, [value integerValue]);
+      return YES;
+    }
+  }
+  
+  // Set converted value
+  [target setValue:RCTConvertValue(value, encoding) forKey:key];
+  return YES;
+}
+
+BOOL RCTCopyProperty(id target, id source, NSString *keypath)
+{
+  // Split keypath
+  NSArray *parts = [keypath componentsSeparatedByString:@"."];
+  NSString *key = [parts lastObject];
+  for (NSUInteger i = 0; i < parts.count - 1; i++) {
+    source = [source valueForKey:parts[i]];
+    target = [target valueForKey:parts[i]];
+    if (!source || !target) {
+      return NO;
+    }
+  }
+
+  // Check class for property definition
+  if (!class_getProperty([source class], [key UTF8String])) {
+    // Check if setter exists
+    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
+                                       [[key substringToIndex:1] uppercaseString],
+                                       [key substringFromIndex:1]]);
+    
+    if (![source respondsToSelector:setter]
+        || ![target respondsToSelector:setter]) {
+      return NO;
+    }
+  }
+
+  [target setValue:[source valueForKey:key] forKey:key];
+  return YES;
+}

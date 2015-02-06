@@ -14,12 +14,13 @@
   return [[RCTStaticImage alloc] init];
 }
 
+RCT_EXPORT_VIEW_PROPERTY(capInsets)
 RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
 
 - (void)set_src:(id)json forView:(RCTStaticImage *)view withDefaultView:(RCTStaticImage *)defaultView
 {
   if (json) {
-    if ([json isKindOfClass:[NSString class]] && [[json pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
+    if ([[[json description] pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
       [view.layer addAnimation:[RCTConvert GIF:json] forKey:@"contents"];
     } else {
       view.image = [RCTConvert UIImage:json];
@@ -27,11 +28,6 @@ RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
   } else {
     view.image = defaultView.image;
   }
-}
-
-- (void)set_capInsets:(id)json forView:(RCTStaticImage *)view withDefaultView:(RCTStaticImage *)defaultView
-{
-  view.capInsets = json ? [RCTConvert UIEdgeInsets:json] : defaultView.capInsets;
 }
 
 - (void)set_tintColor:(id)json forView:(RCTStaticImage *)view withDefaultView:(RCTStaticImage *)defaultView

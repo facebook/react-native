@@ -2,19 +2,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTExport.h"
+#import "RCTBridgeModule.h"
 #import "RCTInvalidating.h"
 
-@class RCTBridge;
 @class RCTRootView;
 @class RCTShadowView;
+@class RCTSparseArray;
 
 @protocol RCTScrollableProtocol;
-@protocol RCTViewNodeProtocol;
 
-@interface RCTUIManager : NSObject <RCTNativeModule, RCTInvalidating>
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+@interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, strong) RCTSparseArray *shadowViewRegistry;
 @property (nonatomic, strong) RCTSparseArray *viewRegistry;
@@ -25,9 +22,6 @@
  * see `RCTUIManager`'s `setMainScrollViewTag`.
  */
 @property (nonatomic, readwrite, weak) id<UIScrollViewDelegate> nativeMainScrollDelegate;
-
-+ (UIView <RCTViewNodeProtocol> *)closestReactAncestor:(UIView *)view;
-+ (UIView <RCTViewNodeProtocol> *)closestReactAncestorThatRespondsToTouch:(UITouch *)touch;
 
 - (void)registerRootView:(RCTRootView *)rootView;
 

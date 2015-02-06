@@ -19,7 +19,7 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTViewNodeProtocol.h"
-#import "RCTUIViewManager.h"
+#import "RCTViewManager.h"
 #import "UIView+ReactKit.h"
 
 @class RCTAnimationConfig;
@@ -52,17 +52,20 @@ static NSDictionary *RCTViewModuleClasses(void)
         continue;
       }
       
-      if (![cls conformsToProtocol:@protocol(RCTNativeViewModule)]) {
-        // Not an RCTNativeModule
+      if (![cls isSubclassOfClass:[RCTViewManager class]]) {
+        // Not a view module
         continue;
       }
       
       // Get module name
-      NSString *moduleName = [cls respondsToSelector:@selector(moduleName)] ? [cls moduleName] : NSStringFromClass(cls);
+      NSString *moduleName = [cls moduleName];
       
       // Check module name is unique
       id existingClass = modules[moduleName];
-      RCTCAssert(existingClass == Nil, @"Attempted to register RCTNativeViewModule class %@ for the name '%@', but name was already registered by class %@", cls, moduleName, existingClass);
+      RCTCAssert(existingClass == Nil, @"Attempted to register view module class %@ "
+        "for the name '%@', but name was already registered by class %@", cls, moduleName, existingClass);
+      
+      // Add to module list
       modules[moduleName] = cls;
     }
     
@@ -90,14 +93,13 @@ static NSDictionary *RCTViewModuleClasses(void)
   __weak RCTBridge *_bridge;
 }
 
-- (id <RCTNativeViewModule>)_managerInstanceForViewWithModuleName:(NSString *)moduleName
+- (RCTViewManager *)_managerInstanceForViewWithModuleName:(NSString *)moduleName
 {
-  id <RCTNativeViewModule> managerInstance = _viewManagers[moduleName];
+  RCTViewManager *managerInstance = _viewManagers[moduleName];
   if (managerInstance == nil) {
     RCTLogWarn(@"No manager class found for view with module name \"%@\"", moduleName);
-    managerInstance = [[RCTUIViewManager alloc] init];
+    managerInstance = [[RCTViewManager alloc] init];
   }
-  
   return managerInstance;
 }
 
@@ -183,27 +185,6 @@ static NSDictionary *RCTViewModuleClasses(void)
   });
 }
 
-+ (UIView *)closestReactAncestor:(UIView *)view
-{
-  UIView *currentUIView = view;
-  while (currentUIView && !currentUIView.reactTag) {
-    currentUIView = currentUIView.superview;
-  }
-  return (UIView *)currentUIView;
-}
-
-+ (UIView *)closestReactAncestorThatRespondsToTouch:(UITouch *)touch
-{
-  UIView *currentUIView = [RCTUIManager closestReactAncestor:touch.view];
-  while (currentUIView != nil) {
-    if ([currentUIView isUserInteractionEnabled]) { // TODO: implement respondsToTouch:touch mechanism
-      return currentUIView;
-    }
-    currentUIView = [RCTUIManager closestReactAncestor:currentUIView.superview];
-  }
-  return nil;
-}
-
 /**
  * Unregisters views from registries
  */
@@ -212,8 +193,8 @@ static NSDictionary *RCTViewModuleClasses(void)
   for (id<RCTViewNodeProtocol> child in children) {
     RCTTraverseViewNodes(registry[child.reactTag], ^(id<RCTViewNodeProtocol> subview) {
       RCTAssert(![subview isReactRootView], @"Host views should not be unregistered");
-      if ([subview respondsToSelector:@selector(reactWillDestroy)]) {
-        [subview reactWillDestroy];
+      if ([subview conformsToProtocol:@protocol(RCTInvalidating)]) {
+        [(id<RCTInvalidating>)subview invalidate];
       }
       registry[subview.reactTag] = nil;
     });
@@ -332,17 +313,10 @@ static NSDictionary *RCTViewModuleClasses(void)
 {
   NSMutableSet *applierBlocks = [NSMutableSet setWithCapacity:1];
   [topView collectUpdatedProperties:applierBlocks parentProperties:@{}];
-  NSMutableArray *propsAppliers = [NSMutableArray arrayWithCapacity:applierBlocks.count];
-
-  for (RCTApplierBlock propsApplier in applierBlocks) {
-    [propsAppliers addObject:propsApplier];
-  }
-
-  NSArray *immutablePropsAppliers = propsAppliers;
+  
   [self addUIBlock:^(RCTUIManager *viewManager, RCTSparseArray *viewRegistry) {
-    for (NSUInteger f = 0; f < immutablePropsAppliers.count; f++) {
-      RCTApplierBlock applier = [immutablePropsAppliers objectAtIndex: f];
-      applier(viewRegistry);
+    for (RCTApplierBlock block in applierBlocks) {
+      block(viewRegistry);
     }
   }];
 }
@@ -515,7 +489,7 @@ static NSDictionary *RCTViewModuleClasses(void)
   }
 }
 
-static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView, id <RCTNativeViewModule>manager)
+static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
 {
   // TODO: cache respondsToSelector tests
   if ([manager respondsToSelector:setter]) {
@@ -531,7 +505,7 @@ static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView,
 }
 
 static void RCTSetViewProps(NSDictionary *props, UIView *view,
-                            UIView *defaultView, id <RCTNativeViewModule>manager)
+                            UIView *defaultView, RCTViewManager *manager)
 {
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
     
@@ -544,7 +518,7 @@ static void RCTSetViewProps(NSDictionary *props, UIView *view,
 }
 
 static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView,
-                                  RCTShadowView *defaultView, id <RCTNativeViewModule>manager)
+                                  RCTShadowView *defaultView, RCTViewManager *manager)
 {
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
     
@@ -575,14 +549,14 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
 {
   RCT_EXPORT(createView);
 
-  id <RCTNativeViewModule>manager = [self _managerInstanceForViewWithModuleName:moduleName];
+  RCTViewManager *manager = [self _managerInstanceForViewWithModuleName:moduleName];
 
   // Generate default view, used for resetting default props
   if (!_defaultShadowViews[moduleName]) {
-    _defaultShadowViews[moduleName] = ([manager respondsToSelector:@selector(shadowView)] ? [manager shadowView] : nil) ?: [[RCTShadowView alloc] init];
+    _defaultShadowViews[moduleName] = [manager shadowView];
   }
   
-  RCTShadowView *shadowView = ([manager respondsToSelector:@selector(shadowView)] ? [manager shadowView] : nil) ?: [[RCTShadowView alloc] init];
+  RCTShadowView *shadowView = [manager shadowView];
   shadowView.moduleName = moduleName;
   shadowView.reactTag = reactTag;
   RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[moduleName], manager);
@@ -619,7 +593,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   RCT_EXPORT();
 
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  id <RCTNativeViewModule>manager = [self _managerInstanceForViewWithModuleName:moduleName];
+  RCTViewManager *manager = [self _managerInstanceForViewWithModuleName:moduleName];
   RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[moduleName], manager);
   
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
@@ -657,8 +631,8 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   // pending blocks to a new array. This guards against mutation while
   // processing the pending blocks in another thread.
   
-  for (id <RCTNativeViewModule>viewManager in _viewManagers.allValues) {
-    RCTViewManagerUIBlock uiBlock = [viewManager respondsToSelector:@selector(uiBlockToAmendWithShadowViewRegistry:)] ? [viewManager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry] : nil;
+  for (RCTViewManager *manager in _viewManagers.allValues) {
+    RCTViewManagerUIBlock uiBlock = [manager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
     if (uiBlock != nil) {
       [self addUIBlock:uiBlock];
     }

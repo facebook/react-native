@@ -2,8 +2,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTExport.h"
+#import "RCTBridgeModule.h"
 
-@interface RCTExceptionsManager : NSObject <RCTNativeModule>
+@interface RCTExceptionsManager : NSObject <RCTBridgeModule>
 
 @end
