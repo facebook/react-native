@@ -20,7 +20,7 @@ var createExamplePage = function(title, exampleModule) {
       description: exampleModule.description,
     },
 
-    getBlock: function(example) {
+    getBlock: function(example, i) {
       // Hack warning: This is a hack because the www UI explorer requires
       // renderComponent to be called.
       var originalRenderComponent = React.renderComponent;
@@ -37,6 +37,7 @@ var createExamplePage = function(title, exampleModule) {
       React.render = originalRender;
       return (
         <UIExplorerBlock
+          key={i}
           title={example.title}
           description={example.description}>
           {renderedComponent}

@@ -45,10 +45,10 @@ var UIExplorerList = React.createClass({
     );
   },
 
-  _renderRow: function(example) {
+  _renderRow: function(example, i) {
     invariant(example.title, 'Example must provide a title.');
     return (
-      <View>
+      <View key={i}>
         <TouchableHighlight onPress={() => this._onPressRow(example)}>
           <View style={styles.row}>
             <Text style={styles.rowTitleText}>

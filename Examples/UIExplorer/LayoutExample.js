@@ -124,7 +124,7 @@ var LayoutExample = React.createClass({
         </UIExplorerBlock>
         <UIExplorerBlock title="Flex Wrap">
           <CircleBlock style={{flexWrap: 'wrap'}}>
-            {'oooooooooooooooo'.split('').map(() => <Circle />)}
+            {'oooooooooooooooo'.split('').map((char, i) => <Circle key={i} />)}
           </CircleBlock>
         </UIExplorerBlock>
       </UIExplorerPage>
