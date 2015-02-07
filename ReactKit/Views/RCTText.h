@@ -6,7 +6,7 @@
 
 @property (nonatomic, copy) NSAttributedString *attributedText;
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;
-@property (nonatomic, assign) NSInteger numberOfLines;
+@property (nonatomic, assign) NSUInteger numberOfLines;
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 

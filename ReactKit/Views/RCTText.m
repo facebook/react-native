@@ -40,16 +40,18 @@
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
   [_textStorage setAttributedString:attributedText];
+  [self setNeedsDisplay];
 }
 
-- (NSInteger)numberOfLines
+- (NSUInteger)numberOfLines
 {
   return _textContainer.maximumNumberOfLines;
 }
 
-- (void)setNumberOfLines:(NSInteger)numberOfLines
+- (void)setNumberOfLines:(NSUInteger)numberOfLines
 {
-  _textContainer.maximumNumberOfLines = MAX(0, numberOfLines);
+  _textContainer.maximumNumberOfLines = numberOfLines;
+  [self setNeedsDisplay];
 }
 
 - (NSLineBreakMode)lineBreakMode
@@ -60,6 +62,7 @@
 - (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode
 {
   _textContainer.lineBreakMode = lineBreakMode;
+  [self setNeedsDisplay];
 }
 
 - (void)layoutSubviews

@@ -5,49 +5,27 @@
  */
 'use strict';
 
-var Bundler = require('Bundler');
-var ExpandingText = require('ExpandingText');
-var Image = require('Image');
-var ListView = require('ListView');
-var ListViewDataSource = require('ListViewDataSource');
-var NavigatorIOS = require('NavigatorIOS');
-var StatusBarIOS = require('StatusBarIOS');
-var PixelRatio = require('PixelRatio');
-var React = require('React');
-var ScrollView = require('ScrollView');
-var SpinnerIOS = require('SpinnerIOS');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TextInput = require('TextInput');
-var TimerMixin = require('TimerMixin');
-var TouchableHighlight = require('TouchableHighlight');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
-
-var invariant = require('invariant');
-var ix = require('ix');
-
 var ReactNative = {
-  ...React,
-  Bundler,
-  ExpandingText,
-  Image,
-  ListView,
-  ListViewDataSource,
-  NavigatorIOS,
-  StatusBarIOS,
-  PixelRatio,
-  ScrollView,
-  SpinnerIOS,
-  StyleSheet,
-  Text,
-  TextInput,
-  TimerMixin,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-  View,
-  invariant,
-  ix,
+  ...require('React'),
+  Bundler: require('Bundler'),
+  ExpandingText: require('ExpandingText'),
+  Image: require('Image'),
+  ListView: require('ListView'),
+  ListViewDataSource: require('ListViewDataSource'),
+  NavigatorIOS: require('NavigatorIOS'),
+  PixelRatio: require('PixelRatio'),
+  ScrollView: require('ScrollView'),
+  SpinnerIOS: require('SpinnerIOS'),
+  StatusBarIOS: require('StatusBarIOS'),
+  StyleSheet: require('StyleSheet'),
+  Text: require('Text'),
+  TextInput: require('TextInput'),
+  TimerMixin: require('TimerMixin'),
+  TouchableHighlight: require('TouchableHighlight'),
+  TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
+  View: require('View'),
+  invariant: require('invariant'),
+  ix: require('ix'),
 };
 
 module.exports = ReactNative;

@@ -8,6 +8,7 @@
 var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactPerf = require('ReactPerf');
 
 var instantiateReactComponent = require('instantiateReactComponent');
 var invariant = require('invariant');
@@ -47,7 +48,7 @@ var ReactIOSMount = {
     TOP_ROOT_NODE_IDS[topRootNodeID] = true;
 
     var childRootNodeID = instanceNumberToChildRootID(
-      topRootNodeID, 
+      topRootNodeID,
       ReactIOSMount.instanceCount++
     );
     ReactIOSMount._instancesByContainerID[topRootNodeID] = instance;
@@ -112,5 +113,11 @@ var ReactIOSMount = {
     return id;
   }
 };
+
+ReactIOSMount.renderComponent = ReactPerf.measure(
+  'ReactMount',
+  '_renderNewRootComponent',
+  ReactIOSMount.renderComponent
+);
 
 module.exports = ReactIOSMount;
