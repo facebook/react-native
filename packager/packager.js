@@ -67,7 +67,7 @@ function openStackFrameInEditor(req, res, next) {
 }
 
 function getAppMiddleware(options) {
-  return ReactPackager.catalystMiddleware({
+  return ReactPackager.middleware({
     dev: true,
     projectRoot: options.projectRoot,
     blacklistRE: blacklist(false),
