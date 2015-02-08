@@ -122,6 +122,32 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should ignore malformed packages', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': 'lol',
+            'main.js': 'lol'
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: 'index', path: '/root/index.js', dependencies: ['aPackage']},
+          ]);
+      });
+    });
+
     pit('can have multiple modules with the same name', function() {
       var root = '/root';
       fs.__setMockFilesystem({

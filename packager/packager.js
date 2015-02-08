@@ -3,13 +3,25 @@
  */
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
+
+if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
+  console.log(
+    '\n' +
+    'Could not find dependencies.\n' +
+    'Ensure dependencies are installed - ' +
+    'run \'npm install\' from project root.\n'
+  );
+  process.exit();
+}
+
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
 var connect = require('connect');
 var http = require('http');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
-var path = require('path');
 
 var options = parseCommandLine([{
   command: 'port',

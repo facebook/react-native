@@ -40,7 +40,7 @@ class Board {
     return this;
   }
 
-  hasMove(row: number, col: number): boolean {
+  hasMark(row: number, col: number): boolean {
     return this.grid[row][col] !== 0;
   }
 
@@ -132,7 +132,10 @@ var Cell = React.createClass({
 
   render() {
     return (
-      <TouchableHighlight onPress={this.props.onPress} underlayColor={'clear'} activeOpacity={0.5}>
+      <TouchableHighlight
+        onPress={this.props.onPress}
+        underlayColor="transparent"
+        activeOpacity={0.5}>
         <View style={[styles.cell, this.cellStyle()]}>
           <Image source={{uri: this.imageContents()}} />
         </View>
@@ -161,7 +164,10 @@ var GameEndOverlay = React.createClass({
     return (
       <View style={styles.overlay}>
         <Text style={styles.overlayMessage}>{message}</Text>
-        <TouchableHighlight onPress={this.props.onRestart} underlayColor={'clear'} activeOpacity={0.5}>
+        <TouchableHighlight
+          onPress={this.props.onRestart}
+          underlayColor="transparent"
+          activeOpacity={0.5}>
           <View style={styles.newGame}>
             <Text style={styles.newGameText}>New Game</Text>
           </View>
@@ -185,7 +191,7 @@ var TicTacToeApp = React.createClass({
   },
 
   handleCellPress(row: number, col: number) {
-    if (this.state.board.hasMove(row, col)) {
+    if (this.state.board.hasMark(row, col)) {
       return;
     }
 
@@ -214,7 +220,10 @@ var TicTacToeApp = React.createClass({
         <View style={styles.board}>
           {rows}
         </View>
-        <GameEndOverlay board={this.state.board} onRestart={this.restartGame} />
+        <GameEndOverlay
+          board={this.state.board}
+          onRestart={this.restartGame}
+        />
       </View>
     );
   }

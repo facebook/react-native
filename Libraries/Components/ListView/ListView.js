@@ -104,7 +104,7 @@ var ListView = React.createClass({
       initialListSize: PropTypes.number,
       /**
        * Called when all rows have been rendered and the list has been scrolled
-       * to within onEndReachedThreashold of the bottom.  The native scroll
+       * to within onEndReachedThreshold of the bottom.  The native scroll
        * event is provided.
        */
       onEndReached: PropTypes.func,

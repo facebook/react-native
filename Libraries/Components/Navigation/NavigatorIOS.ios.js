@@ -180,6 +180,13 @@ var NavigatorIOS = React.createClass({
       passProps: PropTypes.object,
 
       /**
+       * If set, the left header button will appear with this name. Note that
+       * this doesn't apply for the header of the current view, but the ones
+       * of the views that are pushed afterward.
+       */
+      backButtonTitle: PropTypes.string,
+
+      /**
        * If set, the right header button will appear with this name
        */
       rightButtonTitle: PropTypes.string,
@@ -493,6 +500,7 @@ var NavigatorIOS = React.createClass({
             this.props.itemWrapperStyle,
             route.wrapperStyle
           ]}
+          backButtonTitle={route.backButtonTitle}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
           tintColor={this.props.tintColor}>

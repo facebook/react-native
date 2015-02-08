@@ -114,7 +114,7 @@ RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
     RCTLogMustFix(@"Expected NSString for NSURL, received %@: %@", [json class], json);
     return nil;
   }
-  
+
   NSString *path = json;
   if ([path isAbsolutePath])
   {
@@ -194,15 +194,15 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   if (color) {
     return color;
   }
-  
+
   if ([json isKindOfClass:[NSString class]]) {
-    
+
     // Check named colors
     static NSDictionary *namedColors = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       namedColors = @{
-                      
+
         // CSS colors
         @"aliceblue": @"#f0f8ff",
         @"antiquewhite": @"#faebd7",
@@ -352,17 +352,16 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
         @"whitesmoke": @"#f5f5f5",
         @"yellow": @"#ffff00",
         @"yellowgreen": @"#9acd32",
-        
+
         // Nonstandard color extensions
         @"transparent": @"rgba(0,0,0,0)",
-        @"clear": @"rgba(0,0,0,0)",
       };
     });
     NSString *colorString = namedColors[json];
     if (!colorString) {
       colorString = json;
     }
-   
+
     // Parse color
     NSUInteger red = -1;
     NSUInteger green = -1;
@@ -384,32 +383,32 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
     } else {
       color = [UIColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:alpha];
     }
-    
+
   } else if ([json isKindOfClass:[NSArray class]]) {
-    
+
     if ([json count] < 3 || [json count] > 4) {
-      
+
       RCTLogMustFix(@"Expected array with count 3 or 4, but count is %zd: %@", [json count], json);
-    
+
     } else {
-    
+
       // Color array
       color = [UIColor colorWithRed:[json[0] doubleValue]
                               green:[json[1] doubleValue]
                                blue:[json[2] doubleValue]
                               alpha:[json count] > 3 ? [json[3] doubleValue] : 1];
     }
-    
+
   } else if ([json isKindOfClass:[NSDictionary class]]) {
-    
+
     // Color dictionary
     color = [UIColor colorWithRed:[json[@"r"] doubleValue]
                             green:[json[@"g"] doubleValue]
                              blue:[json[@"b"] doubleValue]
                             alpha:[json[@"a"] ?: @1 doubleValue]];
-  
+
   } else if (json && ![json isKindOfClass:[NSNull class]]) {
-    
+
     RCTLogMustFix(@"Expected NSArray, NSDictionary or NSString for UIColor, received %@: %@", [json class], json);
   }
 
@@ -417,7 +416,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   if (!color) {
     color = [UIColor whiteColor];
   }
-  
+
   // Cache and return
   if (json) {
     colorCache[json] = color;
@@ -513,11 +512,11 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
     RCTLogMustFix(@"Expected NSString for UIImage, received %@: %@", [json class], json);
     return nil;
   }
-  
+
   if ([json length] == 0) {
     return nil;
   }
-  
+
   UIImage *image = nil;
   NSString *path = json;
   if ([path isAbsolutePath]) {
@@ -558,13 +557,13 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
 {
   // Create descriptor
   UIFontDescriptor *fontDescriptor = font.fontDescriptor ?: [UIFontDescriptor fontDescriptorWithName:RCTDefaultFontName size:RCTDefaultFontSize];
-  
+
   // Get font size
   CGFloat fontSize = [self CGFloat:size];
   if (fontSize && !isnan(fontSize)) {
     fontDescriptor = [fontDescriptor fontDescriptorWithSize:fontSize];
   }
-  
+
   // Get font family
   NSString *familyName = [RCTConvert NSString:family];
   if (familyName) {
@@ -584,21 +583,21 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
       fontDescriptor = [fontDescriptor fontDescriptorWithFamily:familyName];
     }
   }
-  
+
   // Get font weight
   NSString *fontWeight = [RCTConvert NSString:weight];
   if (fontWeight) {
-    
+
     static NSSet *values;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       values = [NSSet setWithObjects:@"bold", @"normal", nil];
     });
-    
+
     if (fontWeight && ![values containsObject:fontWeight]) {
       RCTLogError(@"Unrecognized font weight '%@', must be one of %@", fontWeight, values);
     }
-    
+
     UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;
     if ([fontWeight isEqualToString:RCTBoldFontWeight]) {
       symbolicTraits |= UIFontDescriptorTraitBold;
@@ -607,9 +606,9 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
     }
     fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
   }
-  
+
   // TODO: font style
-  
+
   // Create font
   return [UIFont fontWithDescriptor:fontDescriptor size:fontDescriptor.pointSize];
 }
@@ -670,7 +669,7 @@ static NSString *RCTGuessTypeEncoding(id target, NSString *key, id value, NSStri
       return @"@\"UIColor\"";
     }
   }
-  
+
   return nil;
 }
 
@@ -679,15 +678,15 @@ static NSDictionary *RCTConvertValue(id value, NSString *encoding)
   static NSDictionary *converters = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    
+
     id (^numberConvert)(id) = ^(id val){
       return [RCTConvert NSNumber:val];
     };
-    
+
     id (^boolConvert)(id) = ^(id val){
       return @([RCTConvert BOOL:val]);
     };
-    
+
     // TODO (#5906496): add the rest of RCTConvert here
     converters =
     @{
@@ -750,7 +749,7 @@ static NSDictionary *RCTConvertValue(id value, NSString *encoding)
   if (value == [NSNull null] && ![encoding isEqualToString:@"@\"NSNull\""]) {
     return nil;
   }
-  
+
   // Convert value
   id (^converter)(id) = converters[encoding];
   return converter ? converter(value) : value;
@@ -772,23 +771,23 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
   NSString *encoding = nil;
   objc_property_t property = class_getProperty([target class], [key UTF8String]);
   if (property) {
-    
+
     // Get type info
     char *typeEncoding = property_copyAttributeValue(property, "T");
     encoding = @(typeEncoding);
     free(typeEncoding);
-    
+
   } else {
-    
+
     // Check if setter exists
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
                                        [[key substringToIndex:1] uppercaseString],
                                        [key substringFromIndex:1]]);
-    
+
     if (![target respondsToSelector:setter]) {
       return NO;
     }
-    
+
     // Get type of first method argument
     Method method = class_getInstanceMethod([target class], setter);
     char *typeEncoding = method_copyArgumentType(method, 2);
@@ -797,17 +796,17 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
       free(typeEncoding);
     }
   }
-  
+
   if (encoding.length == 0 || [encoding isEqualToString:@(@encode(id))]) {
     // Not enough info about the type encoding to be useful, so
     // try to guess the type from the value and property name
     encoding = RCTGuessTypeEncoding(target, key, value, encoding);
   }
-  
+
   // Special case for numeric encodings, which may be enums
   if ([value isKindOfClass:[NSString class]] &&
       [@"iIsSlLqQ" containsString:[encoding substringToIndex:1]]) {
-    
+
     /**
      * NOTE: the property names below may seem weird, but it's
      * because they are tested as case-sensitive suffixes, so
@@ -843,7 +842,7 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
       }
     }
   }
-  
+
   // Another nasty special case
   if ([target isKindOfClass:[UITextField class]]) {
     static NSDictionary *specialCases = nil;
@@ -859,7 +858,7 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
         @"enablesReturnKeyAutomatically": ^(UITextField *f, NSInteger v){ f.enablesReturnKeyAutomatically = !!v; },
         @"secureTextEntry": ^(UITextField *f, NSInteger v){ f.secureTextEntry = !!v; }};
     });
-    
+
     void (^block)(UITextField *f, NSInteger v) = specialCases[key];
     if (block)
     {
@@ -867,7 +866,7 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
       return YES;
     }
   }
-  
+
   // Set converted value
   [target setValue:RCTConvertValue(value, encoding) forKey:key];
   return YES;
@@ -892,7 +891,7 @@ BOOL RCTCopyProperty(id target, id source, NSString *keypath)
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
                                        [[key substringToIndex:1] uppercaseString],
                                        [key substringFromIndex:1]]);
-    
+
     if (![source respondsToSelector:setter]
         || ![target respondsToSelector:setter]) {
       return NO;

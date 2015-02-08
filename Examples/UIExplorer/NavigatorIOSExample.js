@@ -60,6 +60,7 @@ var NavigatorIOSExample = React.createClass({
             this.props.navigator.push({
               title: NavigatorIOSExample.title,
               component: NavigatorIOSExample,
+              backButtonTitle: 'Custom Back',
               passProps: {topExampleRoute: this.props.topExampleRoute || this.props.route},
             });
           })}

@@ -267,9 +267,15 @@ DependecyGraph.prototype._findAndProcessPackage = function(files, root) {
   if (packagePath != null) {
     return readFile(packagePath, 'utf8')
       .then(function(content) {
-        var packageJson = JSON.parse(content);
-        if (packageJson.name == null) {
+        var packageJson;
+        try {
+          packageJson = JSON.parse(content);
+        } catch (e) {
+          debug('WARNING: malformed package.json: ', packagePath);
+          return q();
+        }
 
+        if (packageJson.name == null) {
           debug(
             'WARNING: package.json `%s` is missing a name field',
             packagePath
