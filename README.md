@@ -34,10 +34,9 @@ products with no compromises in quality or capability.
 Get up and running with our Movies sample app:
 
 1. Once you have the repo cloned and met all the requirements above, start the
-packager that will transform your JS code on-the-fly:
-  ```
-  npm install
-  ```
+packager that will transform your JS code on-the-fly:  
+  `npm install`  
+  `npm start` 
 2. Open the `Examples/Movies/Movies.xcodeproj` project in Xcode.
 3. Make sure the target is set to `Movies` and that you have an iOS simulator
 selected to run the app.
