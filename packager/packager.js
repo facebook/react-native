@@ -28,8 +28,8 @@ var options = parseCommandLine([{
   default: 8081,
 }]);
 
-if (!options.projectRoot) {
-  options.projectRoot = path.resolve(__dirname, '..');
+if (!options.projectRoots) {
+  options.projectRoots = [path.resolve(__dirname, '..')];
 }
 
 console.log('\n' +

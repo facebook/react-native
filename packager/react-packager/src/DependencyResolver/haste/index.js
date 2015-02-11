@@ -23,13 +23,14 @@ var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
 var REL_REQUIRE_STMT = /require\(['"]([\.\/0-9A-Z_$\-]*)['"]\)/gi;
 
 function HasteDependencyResolver(config) {
+  this._fileWatcher = new FileWatcher(config.projectRoots);
   this._depGraph = new DependencyGraph({
-    root: config.projectRoot,
+    roots: config.projectRoots,
     ignoreFilePath: function(filepath) {
       return filepath.indexOf('__tests__') !== -1 ||
         (config.blacklistRE && config.blacklistRE.test(filepath));
     },
-    fileWatcher: new FileWatcher(config.projectRoot)
+    fileWatcher: this._fileWatcher
   });
 
   this._polyfillModuleNames = [
@@ -116,6 +117,10 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
       '_deps_': JSON.stringify(resolvedDepsArr),
     }[key];
   });
+};
+
+HasteDependencyResolver.prototype.end = function() {
+  return this._fileWatcher.end();
 };
 
 module.exports = HasteDependencyResolver;

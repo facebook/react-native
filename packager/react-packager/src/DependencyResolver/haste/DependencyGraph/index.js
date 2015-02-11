@@ -14,10 +14,10 @@ var lstat = q.nfbind(fs.lstat);
 var realpath = q.nfbind(fs.realpath);
 
 function DependecyGraph(options) {
-  this._root = options.root;
+  this._roots = options.roots;
   this._ignoreFilePath = options.ignoreFilePath || function(){};
   this._loaded = false;
-  this._queue = [this._root];
+  this._queue = this._roots.slice();
   this._graph = Object.create(null);
   this._packageByRoot = Object.create(null);
   this._packagesById = Object.create(null);
@@ -36,16 +36,14 @@ DependecyGraph.prototype.load = function() {
  * Given an entry file return an array of all the dependent module descriptors.
  */
 DependecyGraph.prototype.getOrderedDependencies = function(entryPath) {
-  var absolutePath;
-  if (!isAbsolutePath(entryPath)) {
-    absolutePath = path.join(this._root, entryPath);
-  } else {
-    absolutePath = entryPath;
+  var absolutePath = this._getAbsolutePath(entryPath);
+  if (absolutePath == null) {
+    throw new Error('Cannot find entry file in any of the roots: ' + entryPath);
   }
 
   var module = this._graph[absolutePath];
   if (module == null) {
-    throw new Error('Module with path "' + absolutePath + '" is not in graph');
+    throw new Error('Module with path "' + entryPath + '" is not in graph');
   }
 
   var self = this;
@@ -172,15 +170,11 @@ DependecyGraph.prototype.resolveDependency = function(
  */
 DependecyGraph.prototype._init = function() {
   var processChange = this._processFileChange.bind(this);
-  var loadingWatcher = this._fileWatcher.getWatcher();
+  var watcher = this._fileWatcher;
 
-  this._loading = this.load()
-    .then(function() {
-      return loadingWatcher;
-    })
-    .then(function(watcher) {
-      watcher.on('all', processChange);
-    });
+  this._loading = this.load().then(function() {
+    watcher.on('all', processChange);
+  });
 };
 
 /**
@@ -370,7 +364,6 @@ DependecyGraph.prototype._updateGraphWithModule = function(module) {
  * Find the nearest package to a module.
  */
 DependecyGraph.prototype._lookupPackage = function(modulePath) {
-  var root = this._root;
   var packageByRoot = this._packageByRoot;
 
   /**
@@ -380,8 +373,7 @@ DependecyGraph.prototype._lookupPackage = function(modulePath) {
     // ideally we stop once we're outside root and this can be a simple child
     // dir check. However, we have to support modules that was symlinked inside
     // our project root.
-    if (!path.relative(root, currDir) === '' || currDir === '.'
-        || currDir === '/') {
+    if (currDir === '/') {
       return null;
     } else {
       var packageJson = packageByRoot[currDir];
@@ -400,7 +392,7 @@ DependecyGraph.prototype._lookupPackage = function(modulePath) {
  * Process a filewatcher change event.
  */
 DependecyGraph.prototype._processFileChange = function(eventType, filePath, root, stat) {
-  var absPath = path.join(this._root, filePath);
+  var absPath = path.join(root, filePath);
   if (this._ignoreFilePath(absPath)) {
     return;
   }
@@ -418,6 +410,24 @@ DependecyGraph.prototype._processFileChange = function(eventType, filePath, root
       return self._processModule(absPath);
     });
   }
+};
+
+/**
+ * Searches all roots for the file and returns the first one that has file of the same path.
+ */
+DependecyGraph.prototype._getAbsolutePath = function(filePath) {
+  if (isAbsolutePath(filePath)) {
+    return filePath;
+  }
+
+  for (var i = 0, root; root = this._roots[i]; i++) {
+    var absPath = path.join(root, filePath);
+    if (this._graph[absPath]) {
+      return absPath;
+    }
+  }
+
+  return null;
 };
 
 /**

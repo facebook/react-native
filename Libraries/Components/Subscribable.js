@@ -88,7 +88,7 @@ class Subscribable {
     this._internalEmitter = new EventEmitter();
     this._eventMapping = eventMapping || (data => data);
 
-    eventEmitter.addListener(
+    this._upstreamSubscription = eventEmitter.addListener(
       eventName,
       this._handleEmit,
       this
@@ -103,6 +103,13 @@ class Subscribable {
    */
   get() {
     return this._lastData;
+  }
+
+  /**
+   * Unsubscribe from the upstream EventEmitter
+   */
+  cleanup() {
+    this._upstreamSubscription && this._upstreamSubscription.remove();
   }
 
   /**
@@ -229,6 +236,55 @@ Subscribable.Mixin = {
     );
   },
 
+  /**
+   * Gets a Subscribable store, scoped to the component, that can be passed to
+   * children. The component will automatically clean up the subscribable's
+   * subscription to the eventEmitter when unmounting.
+   *
+   * `provideSubscribable` will always return the same Subscribable for any
+   * particular emitter/eventName combo, so it can be called directly from
+   * render, and it will never create duplicate Subscribables.
+   *
+   * @param {EventEmitter} eventEmitter Emitter to trigger subscription events.
+   * @param {string} eventName Name of emitted event that triggers subscription
+   *   events.
+   * @param {function} eventMapping (optional) Function to convert the output
+   *   of the eventEmitter to the subscription output.
+   * @param {function} getInitData (optional) Async function to grab the initial
+   *   data to publish. Signature `function(successCallback, errorCallback)`.
+   *   The resolved data will be transformed with the eventMapping before it
+   *   gets emitted.
+   */
+  provideSubscribable: function(eventEmitter, eventName, eventMapping, getInitData) {
+    this._localSubscribables = this._localSubscribables || {};
+    this._localSubscribables[eventEmitter] =
+      this._localSubscribables[eventEmitter] || {};
+    if (!this._localSubscribables[eventEmitter][eventName]) {
+      this._localSubscribables[eventEmitter][eventName] =
+        new Subscribable(eventEmitter, eventName, eventMapping, getInitData);
+    }
+    return this._localSubscribables[eventEmitter][eventName];
+  },
+
+  /**
+   * Removes any local Subscribables created with `provideSubscribable`, so the
+   * component can unmount without leaving any dangling listeners on
+   * eventEmitters
+   */
+  _cleanupLocalSubscribables: function() {
+    if (!this._localSubscribables) {
+      return;
+    }
+    var emitterSubscribables;
+    Object.keys(this._localSubscribables).forEach((eventEmitter) => {
+      emitterSubscribables = this._localSubscribables[eventEmitter];
+      Object.keys(emitterSubscribables).forEach((eventName) => {
+        emitterSubscribables[eventName].cleanup();
+      });
+    });
+    this._localSubscribables = null;
+  },
+
   componentWillMount: function() {
     this._endSubscribableLifespanCallbacks = [];
 
@@ -240,6 +296,8 @@ Subscribable.Mixin = {
     // Resolve the lifespan, which will cause Subscribable to clean any
     // remaining subscriptions
     this._endSubscribableLifespan && this._endSubscribableLifespan();
+
+    this._cleanupLocalSubscribables();
 
     // DEPRECATED addListenerOn* usage uses _subscribableSubscriptions array
     // instead of lifespan

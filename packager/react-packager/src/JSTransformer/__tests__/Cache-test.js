@@ -23,7 +23,7 @@ describe('JSTransformer Cache', function() {
 
   describe('getting/settig', function() {
     it('calls loader callback for uncached file', function() {
-      var cache = new Cache({projectRoot: '/rootDir'});
+      var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
         return q();
       });
@@ -39,7 +39,7 @@ describe('JSTransformer Cache', function() {
           }
         });
       });
-      var cache = new Cache({projectRoot: '/rootDir'});
+      var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
         return q('lol');
       });
@@ -56,7 +56,7 @@ describe('JSTransformer Cache', function() {
           }
         });
       });
-      var cache = new Cache({projectRoot: '/rootDir'});
+      var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
         return q('lol');
       });
@@ -117,7 +117,7 @@ describe('JSTransformer Cache', function() {
     });
 
     pit('should load cache from disk', function() {
-      var cache = new Cache({projectRoot: '/rootDir'});
+      var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn();
       return cache.get('/rootDir/someFile', loaderCb).then(function(value) {
         expect(loaderCb).not.toBeCalled();
@@ -143,7 +143,7 @@ describe('JSTransformer Cache', function() {
         return 123;
       };
 
-      var cache = new Cache({projectRoot: '/rootDir'});
+      var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
         return q('new value');
       });
@@ -184,7 +184,7 @@ describe('JSTransformer Cache', function() {
         });
       });
 
-      var cache = new Cache({projectRoot: '/rootDir'});
+      var cache = new Cache({projectRoots: ['/rootDir']});
       cache.get('/rootDir/bar', function() {
         return q('bar value');
       });

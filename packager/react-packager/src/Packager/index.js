@@ -3,6 +3,7 @@
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
+var q = require('q');
 var Promise = require('q').Promise;
 var Transformer = require('../JSTransformer');
 var DependencyResolver = require('../DependencyResolver');
@@ -45,10 +46,7 @@ var DEFAULT_CONFIG = {
 };
 
 function Packager(projectConfig) {
-  // Verify that the root exists.
-  var root = projectConfig.projectRoot;
-  assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
-  this._rootPath = root;
+  projectConfig.projectRoots.forEach(verifyRootExists);
 
   this._config = Object.create(DEFAULT_CONFIG);
   for (var key in projectConfig) {
@@ -61,7 +59,10 @@ function Packager(projectConfig) {
 }
 
 Packager.prototype.kill = function() {
-  return this._transformer.kill();
+  return q.all([
+    this._transformer.kill(),
+    this._resolver.end(),
+  ]);
 };
 
 Packager.prototype.package = function(main, runModule, sourceMapUrl) {
@@ -115,5 +116,10 @@ Packager.prototype._transformModule = function(module) {
     );
   });
 };
+
+function verifyRootExists(root) {
+  // Verify that the root exists.
+  assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
+}
 
 module.exports = Packager;

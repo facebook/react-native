@@ -35,7 +35,7 @@ describe('Packager', function() {
       };
     });
 
-    var packager = new Packager({});
+    var packager = new Packager({projectRoots: []});
     var modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
       {id: 'bar', path: '/root/bar.js', dependencies: []},

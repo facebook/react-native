@@ -13,12 +13,7 @@ var Promise = q.Promise;
 module.exports = Cache;
 
 function Cache(projectConfig) {
-  this._cacheFilePath = path.join(
-    tmpdir,
-    'React-Packager-JSTransformer-' + version + '-' +
-    projectConfig.projectRoot.split(path.sep).join('-') +
-    '-' + (projectConfig.cacheVersion || '0')
-  );
+  this._cacheFilePath = cacheFilePath(projectConfig);
 
   var data;
   if (!projectConfig.resetCache) {
@@ -117,4 +112,18 @@ function loadCacheSync(cacheFilepath) {
   });
 
   return ret;
+}
+
+function cacheFilePath(projectConfig) {
+  var roots = projectConfig.projectRoots.join(',').split(path.sep).join('-');
+  var cacheVersion = projectConfig.cacheVersion || '0';
+  return path.join(
+    tmpdir,
+    [
+      'react-packager-cache',
+      version,
+      cacheVersion,
+      roots,
+    ].join('-')
+  );
 }

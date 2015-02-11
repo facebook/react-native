@@ -16,15 +16,17 @@ describe('FileWatcher', function() {
     });
   });
 
-  pit('it should get the watcher instance when ready', function() {
-    var fileWatcher = new FileWatcher('rootDir');
-    return fileWatcher.getWatcher().then(function(watcher) {
-      expect(watcher instanceof Watcher).toBe(true);
+  it('it should get the watcher instance when ready', function() {
+    var fileWatcher = new FileWatcher(['rootDir']);
+    return fileWatcher._loading.then(function(watchers) {
+      watchers.forEach(function(watcher) {
+        expect(watcher instanceof Watcher).toBe(true);
+      });
     });
   });
 
   pit('it should end the watcher', function() {
-    var fileWatcher = new FileWatcher('rootDir');
+    var fileWatcher = new FileWatcher(['rootDir']);
     Watcher.prototype.close.mockImplementation(function(callback) {
       callback();
     });

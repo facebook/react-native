@@ -1,6 +1,4 @@
- 'use strict';
-
-jest.dontMock('worker-farm')
+jest.setMock('worker-farm', function(){ return function(){}; })
     .dontMock('q')
     .dontMock('os')
     .dontMock('errno/custom')
@@ -19,7 +17,7 @@ describe('processRequest', function(){
   var FileWatcher;
 
   var options = {
-     projectRoot: 'root',
+     projectRoots: ['root'],
      blacklistRE: null,
      cacheVersion: null,
      polyfillModuleNames: null
@@ -59,11 +57,8 @@ describe('processRequest', function(){
         }
       })
     };
-    FileWatcher.prototype.getWatcher = function() {
-      return q({
-        on: watcherFunc
-      });
-    };
+
+    FileWatcher.prototype.on = watcherFunc;
 
     Packager.prototype.invalidateFile = invalidatorFunc;
 
@@ -98,16 +93,12 @@ describe('processRequest', function(){
   describe('file changes', function() {
     var triggerFileChange;
     beforeEach(function() {
-      FileWatcher.prototype.getWatcher = function() {
-        return q({
-          on: function(eventType, callback) {
-            if (eventType !== 'all') {
-              throw new Error('Can only handle "all" event in watcher.');
-            }
-            triggerFileChange = callback;
-            return this;
-          }
-        });
+      FileWatcher.prototype.on = function(eventType, callback) {
+        if (eventType !== 'all') {
+          throw new Error('Can only handle "all" event in watcher.');
+        }
+        triggerFileChange = callback;
+        return this;
       };
     });
 
@@ -115,7 +106,7 @@ describe('processRequest', function(){
       result = makeRequest(requestHandler,'mybundle.includeRequire.runModule.bundle');
       return result.then(function(response){
         var onFileChange = watcherFunc.mock.calls[0][1];
-        onFileChange('all','path/file.js');
+        onFileChange('all','path/file.js', options.projectRoots[0]);
         expect(invalidatorFunc.mock.calls[0][0]).toEqual('root/path/file.js');
       });
     });
@@ -152,7 +143,7 @@ describe('processRequest', function(){
         .then(function(response){
           expect(response).toEqual("this is the first source");
           expect(packageFunc.mock.calls.length).toBe(1);
-          triggerFileChange('all','path/file.js');
+          triggerFileChange('all','path/file.js', options.projectRoots[0]);
         })
         .then(function(){
           expect(packageFunc.mock.calls.length).toBe(2);

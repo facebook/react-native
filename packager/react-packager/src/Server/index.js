@@ -8,10 +8,10 @@ var q = require('q');
 module.exports = Server;
 
 function Server(options) {
-  this._projectRoot = options.projectRoot;
+  this._projectRoots = options.projectRoots;
   this._packages = Object.create(null);
   this._packager = new Packager({
-    projectRoot: options.projectRoot,
+    projectRoots: options.projectRoots,
     blacklistRE: options.blacklistRE,
     polyfillModuleNames: options.polyfillModuleNames || [],
     runtimeCode: options.runtimeCode,
@@ -20,18 +20,18 @@ function Server(options) {
     dev: options.dev,
   });
 
-  this._fileWatcher = new FileWatcher(options.projectRoot);
+  this._fileWatcher = new FileWatcher(options.projectRoots);
 
   var onFileChange = this._onFileChange.bind(this);
-  this._fileWatcher.getWatcher().done(function(watcher) {
-    watcher.on('all', onFileChange);
-  });
+  this._fileWatcher.on('all', onFileChange);
 }
 
-Server.prototype._onFileChange = function(type, filepath) {
-  var absPath = path.join(this._projectRoot, filepath);
+Server.prototype._onFileChange = function(type, filepath, root) {
+  var absPath = path.join(root, filepath);
   this._packager.invalidateFile(absPath);
-  this._rebuildPackages(absPath);
+  // Make sure the file watcher event runs through the system before
+  // we rebuild the packages.
+  setImmediate(this._rebuildPackages.bind(this, absPath))
 };
 
 Server.prototype._rebuildPackages = function(filepath) {
