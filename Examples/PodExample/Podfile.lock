@@ -1,0 +1,14 @@
+PODS:
+  - React (0.0.1)
+
+DEPENDENCIES:
+  - React (from `../..`)
+
+EXTERNAL SOURCES:
+  React:
+    :path: ../..
+
+SPEC CHECKSUMS:
+  React: 9e9999bdfc2fde31407e61057f34a99788d27c2f
+
+COCOAPODS: 0.36.0
