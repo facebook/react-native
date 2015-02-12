@@ -81,7 +81,7 @@ function openStackFrameInEditor(req, res, next) {
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
     dev: true,
-    projectRoot: options.projectRoot,
+    projectRoots: options.projectRoots,
     blacklistRE: blacklist(false),
     cacheVersion: '2',
     polyfillModuleNames: [
@@ -92,14 +92,14 @@ function getAppMiddleware(options) {
 }
 
 function runServer(
-  options, /* {string projectRoot, bool web, bool dev} */
+  options, /* {string projectRoots, bool web, bool dev} */
   readyCallback
 ) {
   var app = connect()
     .use(loadRawBody)
     .use(openStackFrameInEditor)
     .use(getAppMiddleware(options))
-    .use(connect.static(options.projectRoot))
+    .use(connect.static(options.projectRoots))
     .use(connect.logger())
     .use(connect.compress())
     .use(connect.errorHandler());
