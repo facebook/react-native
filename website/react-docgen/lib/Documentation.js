@@ -17,6 +17,7 @@ type PropDescriptor = {
   type?: {
     name: string;
     value?: any;
+    raw?: string;
   };
   required?: boolean;
   defaultValue?: any;

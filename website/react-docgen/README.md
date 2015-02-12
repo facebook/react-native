@@ -1,9 +1,9 @@
- # react-docs-generator
+# react-docgen
 
-`react-docs-generator` extracts information from React components with which
+`react-docgen` extracts information from React components with which
 you can generate documentation for those components.
 
-It uses esprima-fb to parse the provided files into an AST, looks for React
+It uses [recast][] to parse the provided files into an AST, looks for React
 component definitions, and inspects the `propTypes` and `getDefaultProps`
 declarations. The output is a JSON blob with the extracted information.
 
@@ -16,18 +16,18 @@ is a limit to what is statically analyzable.
 Install the module directly from npm:
 
 ```
-npm install -g react-docs-generator
+npm install -g react-docgen
 ```
 
 ## CLI
 
-Installing the module adds a `react-docs` executable which allows you do convert
+Installing the module adds a `react-docgen` executable which allows you do convert
 a single file, multiple files or an input stream. We are trying to make the
 executable as versatile as possible so that it can be integrated into many
 workflows.
 
 ```
-Usage: react-docs [path]... [options]
+Usage: react-docgen [path]... [options]
 
 path     A component file or directory. If no path is provided it reads from stdin.
 
@@ -46,7 +46,7 @@ If a directory is passed, it is recursively traversed.
 The tool can also be used programmatically to extract component information:
 
 ```js
-var reactDocs = require('react-docs-generator');
+var reactDocs = require('react-docgen');
 var componentInfo reactDocs.parseSource(src);
 ```
 
@@ -160,6 +160,7 @@ The structure of the JSON blob / JavaScript object is as follows:
       "type": {
         "name": "<typeName>",
         ["value": <typeValue>]
+        ["raw": string]
       },
       "required": boolean,
       "description": string,
@@ -173,3 +174,5 @@ The structure of the JSON blob / JavaScript object is as follows:
   ["composes": <componentNames>]
 }
 ```
+
+[recast]: https://github.com/benjamn/recast

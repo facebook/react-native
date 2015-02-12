@@ -30,7 +30,7 @@ function getDefaultValue(path) {
   } else {
     path = resolveToValue(path);
     node = path.node;
-    defaultValue = expressionTo.String(path);
+    defaultValue = recast.print(path).code;
   }
   if (typeof defaultValue !== 'undefined') {
     return {

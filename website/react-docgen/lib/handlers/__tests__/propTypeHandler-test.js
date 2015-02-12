@@ -152,7 +152,7 @@ describe('React documentation parser', function() {
     expect(result).toEqual(expectedResult);
   });
 
-  it.only('detects complex prop types', function() {
+  it('detects complex prop types', function() {
     var source = getSource([
       '{',
       '  propTypes: {',
@@ -197,9 +197,10 @@ describe('React documentation parser', function() {
         oneOfType_custom_prop: {
           type: {
             name:'union',
-            value: [
-              {name: 'custom'}
-            ]
+            value: [{
+              name: 'custom',
+              raw: 'xyz'
+            }]
           },
           required: false
         },
@@ -231,7 +232,10 @@ describe('React documentation parser', function() {
           type: {
             name: 'shape',
             value: {
-              foo: {name: 'custom'},
+              foo: {
+                name: 'custom',
+                raw: 'xyz'
+              },
             }
           },
           required: false
@@ -368,7 +372,8 @@ describe('React documentation parser', function() {
     var source = getSource([
       '{',
       '  propTypes: {',
-      '    custom_prop: function() {}',
+      '    custom_prop: function() {},',
+      '    custom_prop2: () => {}',
       '  }',
       '}'
     ].join('\n'));
@@ -377,7 +382,17 @@ describe('React documentation parser', function() {
       description: '',
       props: {
         custom_prop: {
-          type: {name: 'custom'},
+          type: {
+            name: 'custom',
+            raw: 'function() {}'
+          },
+          required: false
+        },
+        custom_prop2: {
+          type: {
+            name: 'custom',
+            raw: '() => {}'
+          },
           required: false
         }
       }
@@ -409,7 +424,10 @@ describe('React documentation parser', function() {
           required: false
         },
         custom_propB: {
-          type: {name: 'custom'},
+          type: {
+            name: 'custom',
+            raw: 'Prop.bool.isRequired'
+          },
           required: false
         }
       }

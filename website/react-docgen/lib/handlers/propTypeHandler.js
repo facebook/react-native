@@ -19,9 +19,10 @@ var expressionTo = require('../utils/expressionTo');
 var getNameOrValue = require('../utils/getNameOrValue');
 var getPropertyName = require('../utils/getPropertyName');
 var isReactModuleName = require('../utils/isReactModuleName');
+var recast = require('recast');
 var resolveToModule = require('../utils/resolveToModule');
 var resolveToValue = require('../utils/resolveToValue');
-var types = require('recast').types.namedTypes;
+var types = recast.types.namedTypes;
 
 var simplePropTypes = {
   array: 1,
@@ -146,8 +147,11 @@ var propTypes = {
  */
 function getPropType(path) {
   var node = path.node;
-  if (types.FunctionExpression.check(node) || !isPropTypesExpression(path)) {
-    return {name: 'custom'};
+  if (types.Function.check(node) || !isPropTypesExpression(path)) {
+    return {
+      name: 'custom',
+      raw: recast.print(path).code
+    };
   }
 
   var expressionParts = [];

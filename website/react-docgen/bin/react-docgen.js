@@ -10,7 +10,7 @@
  */
 
 var argv = require('nomnom')
-  .script('react-docs')
+  .script('react-docgen')
   .help(
     'Extract meta information from React components.\n' +
     'If a directory is passed, it is recursively traversed.'
