@@ -20,22 +20,28 @@ exports.examples = [
   title: '<ScrollView>',
   description: 'To make content scrollable, wrap it within a <ScrollView> component',
   render: function() {
-    return <ScrollView
+    return (
+      <ScrollView
+        onScroll={() => { console.log('onScroll!'); }}
+        throttleScrollCallbackMS={200}
         contentInset={{top: -50}}
         style={styles.scrollView}>
         {THUMBS.map(createThumbRow)}
-      </ScrollView>;
+      </ScrollView>
+    );
   }
 }, {
   title: '<ScrollView> (horizontal = true)',
   description: 'You can display <ScrollView>\'s child components horizontally rather than vertically',
   render: function() {
-    return <ScrollView
+    return (
+      <ScrollView
         horizontal={true}
         contentInset={{top: -50}}
         style={[styles.scrollView, styles.horizontalScrollView]}>
         {THUMBS.map(createThumbRow)}
-      </ScrollView>;
+      </ScrollView>
+    );
   }
 }];
 

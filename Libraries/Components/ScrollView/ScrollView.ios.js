@@ -25,6 +25,7 @@ var invariant = require('invariant');
 var merge = require('merge');
 var nativePropType = require('nativePropType');
 var validAttributesFromPropTypes = require('validAttributesFromPropTypes');
+var warning = require('warning');
 
 var PropTypes = React.PropTypes;
 
@@ -192,6 +193,17 @@ var ScrollView = React.createClass({
           ') must by applied through the contentContainerStyle prop.'
       );
     }
+    if (__DEV__) {
+      warning(
+        this.props.onScroll && !this.props.throttleScrollCallbackMS,
+        'You specified `onScroll` on a <ScrollView> but not ' +
+        '`throttleScrollCallbackMS`. You will only receive one event. ' +
+        'Using `16` you get all the events but be aware that it may cause ' +
+        'frame drops, use a bigger number if you don\'t need as much ' +
+        'precision.'
+      );
+    }
+
     var contentContainer =
       <View
         ref={INNERVIEW}
