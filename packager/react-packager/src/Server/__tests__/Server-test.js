@@ -144,6 +144,7 @@ describe('processRequest', function(){
           expect(response).toEqual("this is the first source");
           expect(packageFunc.mock.calls.length).toBe(1);
           triggerFileChange('all','path/file.js', options.projectRoots[0]);
+          jest.runAllTimers();
         })
         .then(function(){
           expect(packageFunc.mock.calls.length).toBe(2);

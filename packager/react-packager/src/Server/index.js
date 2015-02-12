@@ -67,12 +67,49 @@ Server.prototype.buildPackageFromUrl = function(reqUrl) {
   return this._buildPackage(options);
 };
 
+Server.prototype._processDebugRequest = function(reqUrl, res) {
+  var ret = '<!doctype html>';
+  var pathname = url.parse(reqUrl).pathname;
+  var parts = pathname.split('/').filter(Boolean);
+  if (parts.length === 1) {
+    ret += '<div><a href="/debug/packages">Cached Packages</a></div>';
+    ret += '<div><a href="/debug/graph">Dependency Graph</a></div>';
+    res.end(ret);
+  } else if (parts[1] === 'packages') {
+    ret += '<h1> Cached Packages </h1>';
+    q.all(Object.keys(this._packages).map(function(url) {
+      return this._packages[url].then(function(p) {
+        ret += '<div><h2>' + url + '</h2>';
+        ret += p.getDebugInfo();
+      });
+    }, this)).then(
+      function() { res.end(ret); },
+      function(e) {
+        res.wrteHead(500);
+        res.end('Internal Error');
+        console.log(e.stack);
+      }
+    );
+  } else if (parts[1] === 'graph'){
+    ret += '<h1> Dependency Graph </h2>';
+    ret += this._packager.getGraphDebugInfo();
+    res.end(ret);
+  } else {
+    res.writeHead('404');
+    res.end('Invalid debug request');
+    return;
+  }
+};
+
 Server.prototype.processRequest = function(req, res, next) {
   var requestType;
   if (req.url.match(/\.bundle$/)) {
     requestType = 'bundle';
   } else if (req.url.match(/\.map$/)) {
     requestType = 'map';
+  } else if (req.url.match(/^\/debug/)) {
+    this._processDebugRequest(req.url, res);
+    return;
   } else {
     return next();
   }

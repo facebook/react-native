@@ -108,3 +108,25 @@ Package.prototype._getMappings = function() {
   }
   return mappings;
 };
+
+Package.prototype.getDebugInfo = function() {
+  return [
+    '<div><h3>Main Module:</h3> ' + this._mainModuleId + '</div>',
+    '<style>',
+    'pre.collapsed {',
+    '  height: 10px;',
+    '  width: 100px;',
+    '  display: block;',
+    '  text-overflow: ellipsis;',
+    '  overflow: hidden;',
+    '  cursor: pointer;',
+    '}',
+    '</style>',
+    '<h3> Module paths and transformed code: </h3>',
+    this._modules.map(function(m) {
+      return '<div> <h4> Path: </h4>' + m.sourcePath + '<br/> <h4> Source: </h4>' +
+        '<code><pre class="collapsed" onclick="this.classList.remove(\'collapsed\')">' +
+        _.escape(m.transformedCode) + '</pre></code></div>';
+    }).join('\n'),
+  ].join('\n');
+};

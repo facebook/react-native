@@ -117,9 +117,15 @@ Packager.prototype._transformModule = function(module) {
   });
 };
 
+
 function verifyRootExists(root) {
   // Verify that the root exists.
   assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
 }
+
+Packager.prototype.getGraphDebugInfo = function() {
+  return this._resolver.getDebugInfo();
+};
+
 
 module.exports = Packager;

@@ -7,6 +7,7 @@ var docblock = require('./docblock');
 var path = require('path');
 var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
+var util = require('util');
 
 var readFile = q.nfbind(fs.readFile);
 var readDir = q.nfbind(fs.readdir);
@@ -22,6 +23,7 @@ function DependecyGraph(options) {
   this._packageByRoot = Object.create(null);
   this._packagesById = Object.create(null);
   this._moduleById = Object.create(null);
+  this._debugUpdateEvents = [];
   this._fileWatcher = options.fileWatcher;
 
   // Kick off the search process to precompute the dependency graph.
@@ -196,16 +198,20 @@ DependecyGraph.prototype._search = function() {
   return readDir(dir)
     .then(function(files){
       return q.all(files.map(function(filePath) {
-        return realpath(path.join(dir, filePath));
+        return realpath(path.join(dir, filePath)).catch(handleBrokenLink);
       }));
     })
     .then(function(filePaths) {
       filePaths = filePaths.filter(function(filePath) {
+        if (filePath == null) {
+          return false
+        }
+
         return !self._ignoreFilePath(filePath);
       });
 
       var statsP = filePaths.map(function(filePath) {
-        return lstat(filePath);
+        return lstat(filePath).catch(handleBrokenLink);
       });
 
       return [
@@ -397,6 +403,8 @@ DependecyGraph.prototype._processFileChange = function(eventType, filePath, root
     return;
   }
 
+  this._debugUpdateEvents.push({event: eventType, path: filePath});
+
   if (eventType === 'delete') {
     var module = this._graph[absPath];
     if (module == null) {
@@ -410,6 +418,13 @@ DependecyGraph.prototype._processFileChange = function(eventType, filePath, root
       return self._processModule(absPath);
     });
   }
+};
+
+DependecyGraph.prototype.getDebugInfo = function() {
+  return '<h1>FileWatcher Update Events</h1>' +
+    '<pre>' + util.inspect(this._debugUpdateEvents) + '</pre>' +
+    '<h1> Graph dump </h1>' +
+    '<pre>' + util.inspect(this._graph) + '</pre>';
 };
 
 /**
@@ -469,6 +484,11 @@ function withExtJs(file) {
   } else {
     return file + '.js';
   }
+}
+
+function handleBrokenLink(e) {
+  debug('WARNING: error stating, possibly broken symlink', e.message);
+  return q();
 }
 
 module.exports = DependecyGraph;

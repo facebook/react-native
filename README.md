@@ -34,12 +34,9 @@ products with no compromises in quality or capability.
 Get up and running with our Movies sample app:
 
 1. Once you have the repo cloned and met all the requirements above, start the
-packager that will transform your JS code on-the-fly:
-  
-  ```
-  npm install
-  npm start
-  ```
+packager that will transform your JS code on-the-fly:  
+  `npm install`  
+  `npm start`  
 2. Open the `Examples/Movies/Movies.xcodeproj` project in Xcode.
 3. Make sure the target is set to `Movies` and that you have an iOS simulator
 selected to run the app.
@@ -96,27 +93,27 @@ the responder system.
 
 # FAQ
 
-##### Q. How does debugging work?  Can I set breakpoints in my JS?
+Q. How does debugging work?  Can I set breakpoints in my JS?  
 A. We are going to add the ability to use the Chrome developer tools soon.  We
 are very passionate about building the best possible developer experience.
 
-##### Q. When is this coming to Android/Windows/OS X/etc?
+Q. When is this coming to Android/Windows/OS X/etc?  
 A. We're working on Android, and we are excited to release it as soon as we can.
 We are looking forward to the community helping us target other platforms as
 well :)
 
-##### Q. How do I create my own app?
+Q. How do I create my own app?  
 A. Copy the entire `Examples/TicTacToe` folder, rename stuff in Xcode, and
 replace the `TicTacToeApp.js` with your own. Then, in `AppDelegate.m`, update
 `moduleName` to match your call to
 `Bundler.registerComponent(<moduleName>, <componentName>)` at the bottom of your
 JS file, and update `jsCodeLocation` to match your JS file name and location.
 
-##### Q. Can I submit my own React Native app to the App Store?
+Q. Can I submit my own React Native app to the App Store?  
 A. Not yet, but you will be able to soon.  If you build something you want to
 submit to the App Store, come talk to us ASAP.
 
-##### Q. How do I deploy to my device?
+Q. How do I deploy to my device?  
 A. You can change `localhost` in `AppDelegate.m` to your laptop's IP address and
 grab the bundle over the same Wi-Fi network.  You can also download the bundle
 that the React packager generates, save it to the file `main.jsbundle`, and add it
@@ -124,20 +121,20 @@ as a static resource in your Xcode project. Then set the `jsCodeLocation` in
 `AppDelegate.m` to point to that file and deploy to your device like you would
 any other app.
 
-##### Q. What's up with this private repo?  Why aren't you just open sourcing it now?
+Q. What's up with this private repo?  Why aren't you just open sourcing it now?  
 A. We want input from the React community before we open the floodgates so we
 can incorporate your feedback, and we also have a bunch more features we want to
 add to make a more complete offering before we open source.
 
-##### Q. Do you have to ship a JS runtime with your apps?
+Q. Do you have to ship a JS runtime with your apps?  
 A. No, we just use the JavaScriptCore public API that is part of iOS 7 and
 later.
 
-##### Q. How do I add more native capabilities?
+Q. How do I add more native capabilities?  
 A. React Native is designed to be extensible - come talk to us, we would love to
 work with you.
 
-##### Q. Can I reuse existing iOS code?
+Q. Can I reuse existing iOS code?  
 A. Yes, React Native is designed to be extensible and allow integration of all
 sorts of native components, such as `UINavigationController` (available as
 `<NavigatorIOS>`), `MKMapView` (not available yet), or your own custom

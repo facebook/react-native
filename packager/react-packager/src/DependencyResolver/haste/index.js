@@ -119,8 +119,13 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
   });
 };
 
+
 HasteDependencyResolver.prototype.end = function() {
   return this._fileWatcher.end();
+};
+
+HasteDependencyResolver.prototype.getDebugInfo = function() {
+  return this._depGraph.getDebugInfo();
 };
 
 module.exports = HasteDependencyResolver;
