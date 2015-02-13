@@ -26,7 +26,7 @@ var queue = (function() {
     is_executing = true;
     fn(function() {
       is_executing = false;
-      execute()
+      execute();
     });
   }
   return {push: push};
