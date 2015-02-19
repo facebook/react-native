@@ -692,7 +692,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTCAssertMainThread();
     
-    // Register manager (TODO: should we do this, or leave it nil?)
+    // Register manager
     uiManager->_viewManagerRegistry[reactTag] = manager;
     
     // Generate default view, used for resetting default props

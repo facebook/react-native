@@ -64,7 +64,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 
 /**
  * Position and dimensions.
- * Defaults to { 0, 0, NAN, NAN }
+ * Defaults to { 0, 0, NAN, NAN }.
  */
 @property (nonatomic, assign) CGFloat top;
 @property (nonatomic, assign) CGFloat left;
@@ -76,12 +76,29 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 - (void)setSize:(CGSize)size;
 
 /**
- * Border. Defaults to 0.
+ * Border. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat borderTop;
+@property (nonatomic, assign) CGFloat borderLeft;
+@property (nonatomic, assign) CGFloat borderWidth;
+@property (nonatomic, assign) CGFloat borderHeight;
+
 - (void)setBorderWidth:(CGFloat)value;
 
 /**
- * Padding. Defaults to 0.
+ * Margin. Defaults to { 0, 0, 0, 0 }.
+ */
+@property (nonatomic, assign) CGFloat marginTop;
+@property (nonatomic, assign) CGFloat marginLeft;
+@property (nonatomic, assign) CGFloat marginBottom;
+@property (nonatomic, assign) CGFloat marginRight;
+
+- (void)setMargin:(CGFloat)margin;
+- (void)setMarginVertical:(CGFloat)margin;
+- (void)setMarginHorizontal:(CGFloat)margin;
+
+/**
+ * Padding. Defaults to { 0, 0, 0, 0 }.
  */
 @property (nonatomic, assign) CGFloat paddingTop;
 @property (nonatomic, assign) CGFloat paddingLeft;

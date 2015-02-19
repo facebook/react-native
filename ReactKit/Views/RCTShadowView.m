@@ -126,16 +126,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   : 0;
 }
 
-- (UIEdgeInsets)paddingAsInsets
-{
-  return (UIEdgeInsets){
-    _cssNode->style.padding[CSS_TOP],
-    _cssNode->style.padding[CSS_LEFT],
-    _cssNode->style.padding[CSS_BOTTOM],
-    _cssNode->style.padding[CSS_RIGHT]
-  };
-}
-
 - (void)fillCSSNode:(css_node_t *)node
 {
   node->children_count = (int)_reactSubviews.count;
@@ -432,7 +422,7 @@ RCT_MARGIN_PROPERTY(Right, RIGHT)
 }                                                  \
 - (CGFloat)padding##prop                           \
 {                                                  \
-  return _marginMetaProps[META_PROP_##metaProp];   \
+  return _paddingMetaProps[META_PROP_##metaProp];  \
 }
 
 RCT_PADDING_PROPERTY(, ALL)
@@ -443,7 +433,33 @@ RCT_PADDING_PROPERTY(Left, LEFT)
 RCT_PADDING_PROPERTY(Bottom, BOTTOM)
 RCT_PADDING_PROPERTY(Right, RIGHT)
 
+- (UIEdgeInsets)paddingAsInsets
+{
+  return (UIEdgeInsets){
+    _cssNode->style.padding[CSS_TOP],
+    _cssNode->style.padding[CSS_LEFT],
+    _cssNode->style.padding[CSS_BOTTOM],
+    _cssNode->style.padding[CSS_RIGHT]
+  };
+}
+
 // Border
+
+#define RCT_BORDER_PROPERTY(prop, metaProp)            \
+- (void)setBorder##prop:(CGFloat)value                 \
+{                                                      \
+  _cssNode->style.border[CSS_##metaProp] = value;      \
+  [self dirtyLayout];                                  \
+}                                                      \
+- (CGFloat)border##prop                                \
+{                                                      \
+  return _cssNode->style.border[META_PROP_##metaProp]; \
+}
+
+RCT_BORDER_PROPERTY(Top, TOP)
+RCT_BORDER_PROPERTY(Left, LEFT)
+RCT_BORDER_PROPERTY(Bottom, BOTTOM)
+RCT_BORDER_PROPERTY(Right, RIGHT)
 
 - (void)setBorderWidth:(CGFloat)value
 {

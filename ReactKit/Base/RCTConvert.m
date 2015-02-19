@@ -2,9 +2,10 @@
 
 #import "RCTConvert.h"
 
+#import <objc/message.h>
+
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <objc/message.h>
 
 #import "RCTLog.h"
 
@@ -431,7 +432,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
 
 + (CAKeyframeAnimation *)GIF:(id)json
 {
-  CGImageSourceRef imageSource;
+  CGImageSourceRef imageSource = NULL;
   if ([json isKindOfClass:[NSString class]]) {
     NSString *path = json;
     if (path.length == 0) {
@@ -568,7 +569,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   NSString *familyName = [RCTConvert NSString:family];
   if (familyName) {
       if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
-      UIFont *font = [UIFont fontWithName:familyName size:fontDescriptor.pointSize];
+      font = [UIFont fontWithName:familyName size:fontDescriptor.pointSize];
       if (font) {
         // It's actually a font name, not a font family name,
         // but we'll do what was meant, not what was said.

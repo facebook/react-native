@@ -76,7 +76,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius)
 RCT_REMAP_VIEW_PROPERTY(borderColor, layer.borderColor);
 RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius)
 RCT_REMAP_VIEW_PROPERTY(borderWidth, layer.borderWidth)
-RCT_REMAP_VIEW_PROPERTY(transformMatrix, view.layer.transform)
+RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform)
 
 - (void)set_overflow:(id)json
              forView:(UIView *)view
@@ -86,11 +86,11 @@ RCT_REMAP_VIEW_PROPERTY(transformMatrix, view.layer.transform)
 }
 
 - (void)set_pointerEvents:(id)json
-                  forView:(UIView *)view
-          withDefaultView:(UIView *)defaultView
+                  forView:(RCTView *)view
+          withDefaultView:(RCTView *)defaultView
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
-    [(id)view setPointerEvents:json ? [RCTConvert RCTPointerEvents:json] : [(id)defaultView pointerEvents]];
+    view.pointerEvents = json ? [RCTConvert RCTPointerEvents:json] : defaultView.pointerEvents;
     return;
   }
   
