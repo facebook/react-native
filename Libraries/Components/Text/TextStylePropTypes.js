@@ -15,6 +15,7 @@ var TextStylePropTypes = merge(
     fontFamily: ReactPropTypes.string,
     fontSize: ReactPropTypes.number,
     fontWeight: ReactPropTypes.oneOf(['normal' /*default*/, 'bold']),
+    fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
     lineHeight: ReactPropTypes.number,
     color: ReactPropTypes.string,
     containerBackgroundColor: ReactPropTypes.string,

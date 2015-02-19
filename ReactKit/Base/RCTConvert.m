@@ -814,7 +814,7 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
 
   // Special case for numeric encodings, which may be enums
   if ([value isKindOfClass:[NSString class]] &&
-      [@"iIsSlLqQ" containsString:[encoding substringToIndex:1]]) {
+      [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length) {
 
     /**
      * NOTE: the property names below may seem weird, but it's
