@@ -26,10 +26,23 @@ var parseCommandLine = require('./parseCommandLine.js');
 var options = parseCommandLine([{
   command: 'port',
   default: 8081,
+}, {
+  command: 'root',
+  description: 'add another root(s) to be used by the packager in this project',
 }]);
 
 if (!options.projectRoots) {
   options.projectRoots = [path.resolve(__dirname, '..')];
+}
+
+if (options.root) {
+  if (typeof options.root === 'string') {
+    options.projectRoots.push(path.resolve(options.root));
+  } else {
+    options.root.forEach(function(root) {
+      options.projectRoots.push(path.resolve(root));
+    });
+  }
 }
 
 console.log('\n' +
