@@ -25,7 +25,7 @@
     "recast": "^0.9.17"
   },
   "devDependencies": {
-    "jest-cli": "^0.2.2",
+    "jest-cli": "^0.3.0",
     "react-tools": "^0.12.2"
   },
   "jest": {

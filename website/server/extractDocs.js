@@ -1,4 +1,10 @@
 var docs = require('../react-docgen');
+var findExportedReactCreateClassCall = require(
+  '../react-docgen/dist/strategies/findExportedReactCreateClassCall'
+);
+var findAllReactCreateClassCalls = require(
+  '../react-docgen/dist/strategies/findAllReactCreateClassCalls'
+);
 var fs = require('fs');
 var path = require('path');
 var slugify = require('../core/slugify');
@@ -12,7 +18,14 @@ function getNameFromPath(filepath) {
 }
 
 function docsToMarkdown(filepath, i) {
-  var json = docs.parseSource(fs.readFileSync(filepath));
+  var json = docs.parseSource(
+    fs.readFileSync(filepath),
+    function(node, recast) {
+      return findExportedReactCreateClassCall(node, recast) ||
+        findAllReactCreateClassCalls(node, recast)[0];
+    }
+  )
+
   var componentName = getNameFromPath(filepath);
 
   var res = [
@@ -45,7 +58,7 @@ var components = [
   '../Libraries/Components/TextInput/TextInput.ios.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
-//  '../Libraries/Components/View/View.js',
+  '../Libraries/Components/View/View.js',
 ];
 
 module.exports = function() {

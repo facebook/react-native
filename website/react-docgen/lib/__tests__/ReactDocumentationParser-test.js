@@ -10,109 +10,52 @@
 
 "use strict";
 
-require('mock-modules').autoMockOff();
+jest.autoMockOff();
 
 describe('React documentation parser', function() {
   var ReactDocumentationParser;
   var parser;
+  var recast;
 
   beforeEach(function() {
+    recast = require('recast');
     ReactDocumentationParser = require('../ReactDocumentationParser');
     parser = new ReactDocumentationParser();
   });
 
-  it('errors if component definition is not found', function() {
-    var source = 'var React = require("React");';
+  function pathFromSource(source) {
+    return new recast.types.NodePath(
+      recast.parse(source).program.body[0].expression
+    );
+  }
 
-    expect(function() {
-      parser.parseSource(source);
-    }).toThrow(ReactDocumentationParser.ERROR_MISSING_DEFINITION);
+  describe('parseSource', function() {
+
+    it('allows custom component definition resolvers', function() {
+      var path = pathFromSource('({foo: "bar"})');
+      var resolver = jest.genMockFunction().mockReturnValue(path);
+      var handler = jest.genMockFunction();
+      parser.addHandler(handler);
+      parser.parseSource('', resolver);
+
+      expect(resolver).toBeCalled();
+      expect(handler.mock.calls[0][1]).toBe(path);
+    });
+
+    it('errors if component definition is not found', function() {
+      var handler = jest.genMockFunction();
+      expect(function() {
+        parser.parseSource('', handler);
+      }).toThrow(ReactDocumentationParser.ERROR_MISSING_DEFINITION);
+      expect(handler).toBeCalled();
+
+      handler = jest.genMockFunction().mockReturnValue([]);
+      expect(function() {
+        parser.parseSource('', handler);
+      }).toThrow(ReactDocumentationParser.ERROR_MISSING_DEFINITION);
+      expect(handler).toBeCalled();
+    });
+
   });
 
-  it('finds React.createClass', function() {
-    var source = [
-      'var React = require("React");',
-      'var Component = React.createClass({});',
-      'module.exports = Component;'
-    ].join('\n');
-
-    expect(function() {
-      parser.parseSource(source);
-    }).not.toThrow();
-  });
-
-  it('finds React.createClass, independent of the var name', function() {
-    var source = [
-      'var R = require("React");',
-      'var Component = R.createClass({});',
-      'module.exports = Component;'
-    ].join('\n');
-
-    expect(function() {
-      parser.parseSource(source);
-    }).not.toThrow();
-  });
-
-  it('does not process X.createClass of other modules', function() {
-    var source = [
-      'var R = require("NoReact");',
-      'var Component = R.createClass({});',
-      'module.exports = Component;'
-    ].join('\n');
-
-    expect(function() {
-      parser.parseSource(source);
-    }).toThrow(ReactDocumentationParser.ERROR_MISSING_DEFINITION);
-  });
-
-  it('finds assignments to exports', function() {
-    var source = [
-      'var R = require("React");',
-      'var Component = R.createClass({});',
-      'exports.foo = 42;',
-      'exports.Component = Component;'
-    ].join('\n');
-
-    expect(function() {
-      parser.parseSource(source);
-    }).not.toThrow();
-  });
-
-  it('errors if multiple components are exported', function() {
-    var source = [
-      'var R = require("React");',
-      'var ComponentA = R.createClass({});',
-      'var ComponentB = R.createClass({});',
-      'exports.ComponentA = ComponentA;',
-      'exports.ComponentB = ComponentB;'
-    ].join('\n');
-
-    expect(function() {
-      parser.parseSource(source);
-    }).toThrow(ReactDocumentationParser.ERROR_MULTIPLE_DEFINITIONS);
-  });
-
-  it('accepts multiple definitions if only one is exported', function() {
-    var source = [
-      'var R = require("React");',
-      'var ComponentA = R.createClass({});',
-      'var ComponentB = R.createClass({});',
-      'exports.ComponentB = ComponentB;'
-    ].join('\n');
-
-    expect(function() {
-      parser.parseSource(source);
-    }).not.toThrow();
-
-    source = [
-      'var R = require("React");',
-      'var ComponentA = R.createClass({});',
-      'var ComponentB = R.createClass({});',
-      'module.exports = ComponentB;'
-    ].join('\n');
-
-    expect(function() {
-      parser.parseSource(source);
-    }).not.toThrow();
-  });
 });

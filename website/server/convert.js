@@ -14,7 +14,8 @@ function splitHeader(content) {
     }
   }
   return {
-    header: lines.slice(1, i + 1).join('\n'),
+    header: i < lines.length - 1 ?
+      lines.slice(1, i + 1).join('\n') : null,
     content: lines.slice(i + 1).join('\n')
   };
 }
@@ -47,6 +48,9 @@ function execute() {
 
     // Extract markdown metadata header
     var both = splitHeader(content);
+    if (!both.header) {
+      return;
+    }
     var lines = both.header.split('\n');
     for (var i = 0; i < lines.length - 1; ++i) {
       var keyvalue = lines[i].split(':');
