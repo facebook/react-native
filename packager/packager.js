@@ -22,6 +22,7 @@ var connect = require('connect');
 var http = require('http');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
+var projectRoots = [path.resolve(__dirname, '..')];
 
 var options = parseCommandLine([{
   command: 'port',
@@ -31,18 +32,12 @@ var options = parseCommandLine([{
   description: 'add another root(s) to be used by the packager in this project',
 }]);
 
-if (!options.projectRoots) {
-  options.projectRoots = [path.resolve(__dirname, '..')];
-}
-
-if (options.root) {
-  if (typeof options.root === 'string') {
-    options.projectRoots.push(path.resolve(options.root));
-  } else {
-    options.root.forEach(function(root) {
-      options.projectRoots.push(path.resolve(root));
-    });
-  }
+if ('string' === typeof options.root) {
+  projectRoots.push(path.resolve(options.root));
+} else {
+  options.root.forEach(function(root) {
+    projectRoots.push(path.resolve(root));
+  });
 }
 
 console.log('\n' +
@@ -94,7 +89,7 @@ function openStackFrameInEditor(req, res, next) {
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
     dev: true,
-    projectRoots: options.projectRoots,
+    projectRoots: projectRoots,
     blacklistRE: blacklist(false),
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
@@ -110,7 +105,7 @@ function runServer(
     .use(openStackFrameInEditor)
     .use(getAppMiddleware(options));
 
-  options.projectRoots.forEach(function(root) {
+  projectRoots.forEach(function(root) {
     app.use(connect.static(root));
   });
 
