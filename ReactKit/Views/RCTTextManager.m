@@ -80,12 +80,12 @@ RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
 // layout to copy its properties across?
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
-  NSMutableArray *shadowBlocks = [NSMutableArray new];
+  NSMutableArray *uiBlocks = [NSMutableArray new];
 
   // TODO: are modules global, or specific to a given rootView?
   for (RCTShadowView *rootView in shadowViewRegistry.allObjects) {
     if (![rootView isReactRootView]) {
-      // This isn't a host view
+      // This isn't a root view
       continue;
     }
     
@@ -117,7 +117,7 @@ RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
       [shadowView setTextComputed];
     }
 
-    [shadowBlocks addObject:^(RCTUIManager *viewManager, RCTSparseArray *viewRegistry) {
+    [uiBlocks addObject:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
       [reactTaggedAttributedStrings enumerateObjectsUsingBlock:^(NSAttributedString *attributedString, NSNumber *reactTag, BOOL *stop) {
         RCTText *text = viewRegistry[reactTag];
         text.attributedText = attributedString;
@@ -125,9 +125,9 @@ RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
     }];
   }
 
-  return ^(RCTUIManager *viewManager, RCTSparseArray *viewRegistry) {
-    for (RCTViewManagerUIBlock shadowBlock in shadowBlocks) {
-      shadowBlock(viewManager, viewRegistry);
+  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    for (RCTViewManagerUIBlock shadowBlock in uiBlocks) {
+      shadowBlock(uiManager, viewRegistry);
     }
   };
 }

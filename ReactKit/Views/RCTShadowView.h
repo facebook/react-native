@@ -14,7 +14,7 @@ typedef NS_ENUM(NSUInteger, RCTLayoutLifecycle) {
   RCTLayoutLifecycleDirtied,
 };
 
-// TODO: is this redundact now?
+// TODO: is this still needed?
 typedef NS_ENUM(NSUInteger, RCTPropagationLifecycle) {
   RCTPropagationLifecycleUninitialized = 0,
   RCTPropagationLifecycleComputed,
@@ -72,7 +72,8 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, assign) CGFloat height;
 @property (nonatomic, assign) CGRect frame;
 
-- (void)updateShadowViewLayout;
+- (void)setTopLeft:(CGPoint)topLeft;
+- (void)setSize:(CGSize)size;
 
 /**
  * Border. Defaults to 0.
@@ -110,11 +111,21 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 
 // The following are implementation details exposed to subclasses. Do not call them directly
 - (void)dirtyLayout;
-- (void)dirtyPropagation;
+- (BOOL)isLayoutDirty;
 
+// TODO: is this still needed?
+- (void)dirtyPropagation;
+- (BOOL)isPropagationDirty;
+
+// TODO: move this to text node?
 - (void)dirtyText;
 - (BOOL)isTextDirty;
 - (void)setTextComputed;
+
+/**
+ * Triggers a recalculation of the shadow view's layout.
+ */
+- (void)updateShadowViewLayout;
 
 /**
  * Computes the recursive offset, meaning the sum of all descendant offsets -

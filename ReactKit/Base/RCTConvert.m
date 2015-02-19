@@ -20,7 +20,7 @@ NSString *const RCTBoldFontWeight = @"bold";
     return code;                               \
   }                                            \
   @catch (__unused NSException *e) {           \
-    RCTLogMustFix(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
+    RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
     json, [json class], #type); \
     json = nil; \
     return code; \
@@ -45,15 +45,15 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
     if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
       return [json getter];                               \
     }                                                     \
-    RCTLogMustFix(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
     return default;                                       \
   }                                                       \
   if (![json isKindOfClass:[NSString class]]) {           \
-    RCTLogMustFix(@"Expected NSNumber or NSString for %s, received %@: %@", #type, [json class], json); \
+    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", #type, [json class], json); \
   }                                                       \
   id value = mapping[json];                               \
   if(!value && [json description].length > 0) {           \
-    RCTLogMustFix(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
   }                                                       \
   return value ? [value getter] : default;                \
 }
@@ -72,7 +72,7 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
     type result;                                         \
     if ([json isKindOfClass:[NSArray class]]) {          \
       if ([json count] != count) {                       \
-        RCTLogMustFix(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
+        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
       } else {                                           \
         for (NSUInteger i = 0; i < count; i++) {         \
           ((CGFloat *)&result)[i] = [json[i] doubleValue]; \
@@ -80,7 +80,7 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
       }                                                  \
     } else {                                             \
       if (![json isKindOfClass:[NSDictionary class]]) {  \
-         RCTLogMustFix(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
+         RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
       } else {                                           \
         for (NSUInteger i = 0; i < count; i++) {         \
           ((CGFloat *)&result)[i] = [json[fields[i]] doubleValue]; \
@@ -90,7 +90,7 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
     return result;                                       \
   }                                                      \
   @catch (__unused NSException *e) {                     \
-    RCTLogMustFix(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
+    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
     type result; \
     return result; \
   } \
@@ -111,7 +111,7 @@ RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
 + (NSURL *)NSURL:(id)json
 {
   if (![json isKindOfClass:[NSString class]]) {
-    RCTLogMustFix(@"Expected NSString for NSURL, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json class], json);
     return nil;
   }
 
@@ -376,10 +376,10 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
     } else if ([colorString hasPrefix:@"rgb("]) {
       sscanf([colorString UTF8String], "rgb(%zd,%zd,%zd)", &red, &green, &blue);
     } else {
-      RCTLogMustFix(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb", colorString);
+      RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb", colorString);
     }
     if (red == -1 || green == -1 || blue == -1 || alpha > 1.0 || alpha < 0.0) {
-      RCTLogMustFix(@"Invalid color string '%@'", colorString);
+      RCTLogError(@"Invalid color string '%@'", colorString);
     } else {
       color = [UIColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:alpha];
     }
@@ -388,7 +388,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
 
     if ([json count] < 3 || [json count] > 4) {
 
-      RCTLogMustFix(@"Expected array with count 3 or 4, but count is %zd: %@", [json count], json);
+      RCTLogError(@"Expected array with count 3 or 4, but count is %zd: %@", [json count], json);
 
     } else {
 
@@ -409,7 +409,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
 
   } else if (json && ![json isKindOfClass:[NSNull class]]) {
 
-    RCTLogMustFix(@"Expected NSArray, NSDictionary or NSString for UIColor, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, received %@: %@", [json class], json);
   }
 
   // Default color
@@ -509,7 +509,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
 + (UIImage *)UIImage:(id)json
 {
   if (![json isKindOfClass:[NSString class]]) {
-    RCTLogMustFix(@"Expected NSString for UIImage, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json class], json);
     return nil;
   }
 
@@ -656,6 +656,14 @@ RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"boxonly": @(RCTPointerEventsBoxOnly),
   @"boxnone": @(RCTPointerEventsBoxNone)
 }), RCTPointerEventsUnspecified, integerValue)
+
+RCT_ENUM_CONVERTER(RCTAnimationType, (@{
+  @"spring": @(RCTAnimationTypeSpring),
+  @"linear": @(RCTAnimationTypeLinear),
+  @"easeIn": @(RCTAnimationTypeEaseIn),
+  @"easeOut": @(RCTAnimationTypeEaseOut),
+  @"easeInEaseOut": @(RCTAnimationTypeEaseInEaseOut),
+}), RCTAnimationTypeEaseInEaseOut, integerValue)
 
 @end
 
@@ -831,6 +839,9 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
         },
         @"extAlignment": ^(id val) {
           return [RCTConvert NSTextAlignment:val];
+        },
+        @"ointerEvents": ^(id val) {
+          return [RCTConvert RCTPointerEvents:val];
         },
       };
     });

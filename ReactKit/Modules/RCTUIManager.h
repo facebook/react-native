@@ -6,15 +6,11 @@
 #import "RCTInvalidating.h"
 
 @class RCTRootView;
-@class RCTShadowView;
-@class RCTSparseArray;
 
 @protocol RCTScrollableProtocol;
 
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
-@property (nonatomic, strong) RCTSparseArray *shadowViewRegistry;
-@property (nonatomic, strong) RCTSparseArray *viewRegistry;
 @property (nonatomic, weak) id<RCTScrollableProtocol> mainScrollView;
 
 /**

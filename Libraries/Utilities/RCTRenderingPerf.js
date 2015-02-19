@@ -9,20 +9,35 @@ var ReactDefaultPerf = require('ReactDefaultPerf');
 var ReactPerf = require('ReactPerf');
 
 var invariant = require('invariant');
+
 var perfModules = [];
+var enabled = false;
 
 var RCTRenderingPerf = {
+  // Once perf is enabled, it stays enabled
   toggle: function() {
-    if (ReactPerf.enableMeasure) {
-      ReactDefaultPerf.stop();
-      ReactDefaultPerf.printInclusive();
-      ReactDefaultPerf.printWasted();
-      perfModules.forEach((module) => module.stop());
-    } else {
-      ReactDefaultPerf.start();
-      console.log('Render perfomance measurements started');
-      perfModules.forEach((module) => module.start());
+    console.log('Render perfomance measurements enabled');
+    enabled = true;
+  },
+
+  start: function() {
+    if (!enabled) {
+      return;
     }
+
+    ReactDefaultPerf.start();
+    perfModules.forEach((module) => module.start());
+  },
+
+  stop: function() {
+    if (!enabled) {
+      return;
+    }
+
+    ReactDefaultPerf.stop();
+    ReactDefaultPerf.printInclusive();
+    ReactDefaultPerf.printWasted();
+    perfModules.forEach((module) => module.stop());
   },
 
   register: function(module) {

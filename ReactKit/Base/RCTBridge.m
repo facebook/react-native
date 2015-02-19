@@ -240,15 +240,15 @@ static NSDictionary *RCTRemoteModulesConfig()
       NSMutableDictionary *methods = [NSMutableDictionary dictionaryWithCapacity:rawMethods.count];
       [rawMethods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger methodID, BOOL *stop) {
         methods[method.JSMethodName] = @{
-                                         @"methodID": @(methodID),
-                                         @"type": @"remote",
-                                         };
+          @"methodID": @(methodID),
+          @"type": @"remote",
+        };
       }];
       
       NSDictionary *module = @{
-                               @"moduleID": @(remoteModules.count),
-                               @"methods": methods
-                               };
+        @"moduleID": @(remoteModules.count),
+        @"methods": methods
+      };
       
       Class cls = RCTBridgeModuleClasses()[moduleName];
       if (RCTClassOverridesClassMethod(cls, @selector(constantsToExport))) {
@@ -302,10 +302,10 @@ static NSDictionary *RCTLocalModulesConfig()
     
     // Add globally used methods
     [JSMethods addObjectsFromArray:@[
-                                     @"Bundler.runApplication",
-                                     @"RCTEventEmitter.receiveEvent",
-                                     @"RCTEventEmitter.receiveTouches",
-                                     ]];
+      @"Bundler.runApplication",
+      @"RCTEventEmitter.receiveEvent",
+      @"RCTEventEmitter.receiveTouches",
+    ]];
     
     //  NOTE: these methods are currently unused in the OSS project
     //  @"Dimensions.set",
@@ -331,9 +331,9 @@ static NSDictionary *RCTLocalModulesConfig()
       NSDictionary *module = localModules[moduleName];
       if (!module) {
         module = @{
-                   @"moduleID": @(localModules.count),
-                   @"methods": [[NSMutableDictionary alloc] init]
-                   };
+          @"moduleID": @(localModules.count),
+          @"methods": [[NSMutableDictionary alloc] init]
+        };
         localModules[moduleName] = module;
       }
       
@@ -342,9 +342,9 @@ static NSDictionary *RCTLocalModulesConfig()
       NSMutableDictionary *methods = module[@"methods"];
       if (!methods[methodName]) {
         methods[methodName] = @{
-                                @"methodID": @(methods.count),
-                                @"type": @"local"
-                                };
+          @"methodID": @(methods.count),
+          @"type": @"local"
+        };
       }
       
       // Add module and method lookup
@@ -386,9 +386,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     
     // Inject module data into JS context
     NSString *configJSON = RCTJSONStringify(@{
-                                              @"remoteModuleConfig": RCTRemoteModulesConfig(),
-                                              @"localModulesConfig": RCTLocalModulesConfig()
-                                              }, NULL);
+      @"remoteModuleConfig": RCTRemoteModulesConfig(),
+      @"localModulesConfig": RCTLocalModulesConfig()
+    }, NULL);
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [_javaScriptExecutor injectJSONText:configJSON asGlobalObjectNamed:@"__fbBatchedBridgeConfig" callback:^(id err) {
       dispatch_semaphore_signal(semaphore);

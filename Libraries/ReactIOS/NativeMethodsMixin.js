@@ -9,6 +9,7 @@ var NativeModules = require('NativeModules');
 var NativeModulesDeprecated = require('NativeModulesDeprecated');
 var RKUIManager = NativeModules.RKUIManager;
 var RKUIManagerDeprecated = NativeModulesDeprecated.RKUIManager;
+var RKPOPAnimationManagerDeprecated = NativeModulesDeprecated.RKPOPAnimationManager;
 var TextInputState = require('TextInputState');
 
 var flattenStyle = require('flattenStyle');
@@ -19,19 +20,19 @@ var animationIDInvariant = function(funcName, anim) {
   invariant(
     anim,
     funcName + ' must be called with a valid animation ID returned from' +
-    ' ReactIOSAnimation.createAnimation, received: "' + anim + '"'
+    ' POPAnimation.createAnimation, received: "' + anim + '"'
   );
 };
 
 var NativeMethodsMixin = {
   addAnimation: function(anim, callback) {
     animationIDInvariant('addAnimation', anim);
-    RKUIManagerDeprecated.addAnimation(this.getNodeHandle(), anim, callback);
+    RKPOPAnimationManagerDeprecated.addAnimation(this.getNodeHandle(), anim, callback);
   },
 
   removeAnimation: function(anim) {
     animationIDInvariant('removeAnimation', anim);
-    RKUIManagerDeprecated.removeAnimation(this.getNodeHandle(), anim);
+    RKPOPAnimationManagerDeprecated.removeAnimation(this.getNodeHandle(), anim);
   },
 
   measure: function(callback) {

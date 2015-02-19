@@ -103,7 +103,7 @@ static css_node_t *RCTGetChild(void *context, int i)
 static bool RCTIsDirty(void *context)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
-  return shadowView.layoutLifecycle != RCTLayoutLifecycleComputed;
+  return [shadowView isLayoutDirty];
 }
 
 // Enforces precedence rules, e.g. marginLeft > marginHorizontal > margin.
@@ -325,12 +325,22 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
+- (BOOL)isLayoutDirty
+{
+  return _layoutLifecycle != RCTLayoutLifecycleComputed;
+}
+
 - (void)dirtyPropagation
 {
   if (_propagationLifecycle != RCTPropagationLifecycleDirtied) {
     _propagationLifecycle = RCTPropagationLifecycleDirtied;
     [_superview dirtyPropagation];
   }
+}
+
+- (BOOL)isPropagationDirty
+{
+  return _propagationLifecycle != RCTLayoutLifecycleComputed;
 }
 
 - (void)dirtyText
@@ -390,23 +400,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
   return self.reactTag;
 }
-
-- (void)updateShadowViewLayout
-{
-  if (_recomputePadding) {
-    RCTProcessMetaProps(_paddingMetaProps, _cssNode->style.padding);
-  }
-  if (_recomputeMargin) {
-    RCTProcessMetaProps(_marginMetaProps, _cssNode->style.margin);
-  }
-  if (_recomputePadding || _recomputeMargin) {
-    [self dirtyLayout];
-  }
-  [self fillCSSNode:_cssNode];
-  _recomputeMargin = NO;
-  _recomputePadding = NO;
-}
-
 
 // Margin
 
@@ -503,6 +496,20 @@ RCT_POSITION_PROPERTY(Left, left, LEFT)
   [self dirtyLayout];
 }
 
+- (void)setTopLeft:(CGPoint)topLeft
+{
+  _cssNode->style.position[CSS_LEFT] = topLeft.x;
+  _cssNode->style.position[CSS_TOP] = topLeft.y;
+  [self dirtyLayout];
+}
+
+- (void)setSize:(CGSize)size
+{
+  _cssNode->style.dimensions[CSS_WIDTH] = size.width;
+  _cssNode->style.dimensions[CSS_HEIGHT] = size.height;
+  [self dirtyLayout];
+}
+
 // Flex
 
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
@@ -528,6 +535,22 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
 {
   _backgroundColor = color;
   [self dirtyPropagation];
+}
+
+- (void)updateShadowViewLayout
+{
+  if (_recomputePadding) {
+    RCTProcessMetaProps(_paddingMetaProps, _cssNode->style.padding);
+  }
+  if (_recomputeMargin) {
+    RCTProcessMetaProps(_marginMetaProps, _cssNode->style.margin);
+  }
+  if (_recomputePadding || _recomputeMargin) {
+    [self dirtyLayout];
+  }
+  [self fillCSSNode:_cssNode];
+  _recomputeMargin = NO;
+  _recomputePadding = NO;
 }
 
 @end

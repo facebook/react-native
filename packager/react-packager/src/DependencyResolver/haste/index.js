@@ -5,10 +5,6 @@ var FileWatcher = require('../../FileWatcher');
 var DependencyGraph = require('./DependencyGraph');
 var ModuleDescriptor = require('../ModuleDescriptor');
 
-var DEFAULT_POLYFILLS = [
-
-];
-
 var DEFINE_MODULE_CODE =
   '__d(' +
     '\'_moduleName_\',' +
@@ -39,6 +35,8 @@ function HasteDependencyResolver(config) {
       : path.join(__dirname, 'polyfills/prelude.js'),
     path.join(__dirname, 'polyfills/require.js'),
     path.join(__dirname, 'polyfills/polyfills.js'),
+    path.join(__dirname, 'polyfills/console.js'),
+    path.join(__dirname, 'polyfills/error-guard.js'),
   ].concat(
     config.polyfillModuleNames || []
   );

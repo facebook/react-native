@@ -5,6 +5,7 @@
 
 #import "Layout.h"
 #import "RCTPointerEvents.h"
+#import "RCTAnimationType.h"
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -64,6 +65,7 @@
 + (css_wrap_type_t)css_wrap_type_t:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
++ (RCTAnimationType)RCTAnimationType:(id)json;
 
 @end
 
