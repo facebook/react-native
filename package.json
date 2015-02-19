@@ -12,7 +12,9 @@
       "/node_modules/",
       "/packager/"
     ],
-    "testFileExtensions": ["js"]
+    "testFileExtensions": [
+      "js"
+    ]
   },
   "scripts": {
     "test": "jest",
@@ -45,7 +47,8 @@
     "underscore": "1.7.0",
     "wordwrap": "0.0.2",
     "worker-farm": "1.1.0",
-    "yargs": "1.3.2"
+    "yargs": "1.3.2",
+    "joi": "~5.1.0"
   },
   "devDependencies": {
     "jest-cli": "0.2.1",
