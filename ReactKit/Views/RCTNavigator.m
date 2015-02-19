@@ -324,7 +324,7 @@ NSInteger kNeverProgressed = -10000;
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_eventDispatcher sendEventWithName:@"topNavigationProgress" body:@{
+    [_eventDispatcher sendInputEventWithName:@"topNavigationProgress" body:@{
       @"fromIndex": @(_currentlyTransitioningFrom),
       @"toIndex": @(_currentlyTransitioningTo),
       @"progress": @(nextProgress),
@@ -447,7 +447,7 @@ NSInteger kNeverProgressed = -10000;
 
 - (void)handleTopOfStackChanged
 {
-  [_eventDispatcher sendEventWithName:@"topNavigateBack" body:@{
+  [_eventDispatcher sendInputEventWithName:@"topNavigateBack" body:@{
     @"target":self.reactTag,
     @"stackLength":@(_navigationController.viewControllers.count)
   }];

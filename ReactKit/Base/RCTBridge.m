@@ -235,8 +235,9 @@ static NSDictionary *RCTRemoteModulesConfig()
     RCTRemoteModulesByID = [[NSMutableDictionary alloc] init];
     
     remoteModules = [[NSMutableDictionary alloc] init];
-    [RCTExportedMethodsByModule() enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, NSArray *rawMethods, BOOL *stop) {
-      
+    [RCTBridgeModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, Class moduleClass, BOOL *stop) {
+
+      NSArray *rawMethods = RCTExportedMethodsByModule()[moduleName];
       NSMutableDictionary *methods = [NSMutableDictionary dictionaryWithCapacity:rawMethods.count];
       [rawMethods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger methodID, BOOL *stop) {
         methods[method.JSMethodName] = @{
@@ -249,13 +250,15 @@ static NSDictionary *RCTRemoteModulesConfig()
         @"moduleID": @(remoteModules.count),
         @"methods": methods
       };
-      
-      Class cls = RCTBridgeModuleClasses()[moduleName];
-      if (RCTClassOverridesClassMethod(cls, @selector(constantsToExport))) {
-        module = [module mutableCopy];
-        ((NSMutableDictionary *)module)[@"constants"] = [cls constantsToExport];
+
+      if (RCTClassOverridesClassMethod(moduleClass, @selector(constantsToExport))) {
+        NSDictionary *constants = [moduleClass constantsToExport];
+        if (constants.count) {
+          module = [module mutableCopy];
+          ((NSMutableDictionary *)module)[@"constants"] = constants;
+        }
       }
-      remoteModules[moduleName] = module;
+      remoteModules[moduleName] = [module copy];
       
       // Add module lookup
       RCTRemoteModulesByID[module[@"moduleID"]] = moduleName;
@@ -303,13 +306,13 @@ static NSDictionary *RCTLocalModulesConfig()
     // Add globally used methods
     [JSMethods addObjectsFromArray:@[
       @"Bundler.runApplication",
+      @"RCTDeviceEventEmitter.emit",
       @"RCTEventEmitter.receiveEvent",
       @"RCTEventEmitter.receiveTouches",
     ]];
     
     //  NOTE: these methods are currently unused in the OSS project
     //  @"Dimensions.set",
-    //  @"RCTDeviceEventEmitter.emit",
     //  @"RCTNativeAppEventEmitter.emit",
     //  @"ReactIOS.unmountComponentAtNodeAndRemoveContainer",
     
@@ -376,10 +379,15 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _moduleInstances = [[NSMutableDictionary alloc] init];
     [RCTBridgeModuleClasses() enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, Class moduleClass, BOOL *stop) {
       if (_moduleInstances[moduleName] == nil) {
+        id<RCTBridgeModule> moduleInstance;
         if ([moduleClass instancesRespondToSelector:@selector(initWithBridge:)]) {
-          _moduleInstances[moduleName] = [[moduleClass alloc] initWithBridge:self];
+          moduleInstance = [[moduleClass alloc] initWithBridge:self];
         } else {
-          _moduleInstances[moduleName] = [[moduleClass alloc] init];
+          moduleInstance = [[moduleClass alloc] init];
+        }
+        if (moduleInstance) {
+          // If nil, the module doesn't support auto-instantiation
+          _moduleInstances[moduleName] = moduleInstance;
         }
       }
     }];
@@ -522,7 +530,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
   
   if (![buffer isKindOfClass:[NSArray class]]) {
-    RCTLogMustFix(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
+    RCTLogError(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
     return;
   }
   
@@ -530,14 +538,14 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   NSUInteger bufferRowCount = [requestsArray count];
   NSUInteger expectedFieldsCount = RCTBridgeFieldResponseReturnValues + 1;
   if (bufferRowCount != expectedFieldsCount) {
-    RCTLogMustFix(@"Must pass all fields to buffer - expected %zd, saw %zd", expectedFieldsCount, bufferRowCount);
+    RCTLogError(@"Must pass all fields to buffer - expected %zd, saw %zd", expectedFieldsCount, bufferRowCount);
     return;
   }
   
   for (NSUInteger fieldIndex = RCTBridgeFieldRequestModuleIDs; fieldIndex <= RCTBridgeFieldParamss; fieldIndex++) {
     id field = [requestsArray objectAtIndex:fieldIndex];
     if (![field isKindOfClass:[NSArray class]]) {
-      RCTLogMustFix(@"Field at index %zd in buffer must be an instance of NSArray, got %@", fieldIndex, NSStringFromClass([field class]));
+      RCTLogError(@"Field at index %zd in buffer must be an instance of NSArray, got %@", fieldIndex, NSStringFromClass([field class]));
       return;
     }
   }
@@ -549,7 +557,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   NSUInteger numRequests = [moduleIDs count];
   BOOL allSame = numRequests == [methodIDs count] && numRequests == [paramsArrays count];
   if (!allSame) {
-    RCTLogMustFix(@"Invalid data message - all must be length: %zd", numRequests);
+    RCTLogError(@"Invalid data message - all must be length: %zd", numRequests);
     return;
   }
   
@@ -578,30 +586,30 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                       params:(NSArray *)params
 {
   if (![params isKindOfClass:[NSArray class]]) {
-    RCTLogMustFix(@"Invalid module/method/params tuple for request #%zd", i);
+    RCTLogError(@"Invalid module/method/params tuple for request #%zd", i);
     return NO;
   }
   
   NSString *moduleName = RCTRemoteModulesByID[moduleID];
   if (!moduleName) {
-    RCTLogMustFix(@"Unknown moduleID: %@", moduleID);
+    RCTLogError(@"Unknown moduleID: %@", moduleID);
     return NO;
   }
   
   NSArray *methods = RCTExportedMethodsByModule()[moduleName];
   if (methodID >= methods.count) {
-    RCTLogMustFix(@"Unknown methodID: %zd for module: %@", methodID, moduleName);
+    RCTLogError(@"Unknown methodID: %zd for module: %@", methodID, moduleName);
     return NO;
   }
   
   RCTModuleMethod *method = methods[methodID];
   NSUInteger methodArity = method.arity;
   if (params.count != methodArity) {
-    RCTLogMustFix(@"Expected %tu arguments but got %tu invoking %@.%@",
-                  methodArity,
-                  params.count,
-                  moduleName,
-                  method.JSMethodName);
+    RCTLogError(@"Expected %tu arguments but got %tu invoking %@.%@",
+                methodArity,
+                params.count,
+                moduleName,
+                method.JSMethodName);
     return NO;
   }
   
@@ -663,13 +671,13 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
           // TODO: it seems like an error if the param doesn't respond
           // so we should probably surface that error rather than failing silently
 #define CASE(_value, _type, _selector)                           \
-case _value:                                             \
-if ([param respondsToSelector:@selector(_selector)]) { \
-_type value = [param _selector];                     \
-[invocation setArgument:&value atIndex:argIdx];      \
-shouldSet = NO;                                      \
-}                                                      \
-break;
+        case _value:                                             \
+          if ([param respondsToSelector:@selector(_selector)]) { \
+            _type value = [param _selector];                     \
+            [invocation setArgument:&value atIndex:argIdx];      \
+            shouldSet = NO;                                      \
+          }                                                      \
+          break;
           
           CASE('c', char, charValue)
           CASE('C', unsigned char, unsignedCharValue)
@@ -698,7 +706,7 @@ break;
       [invocation invoke];
     }
     @catch (NSException *exception) {
-      RCTLogMustFix(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, target, params, exception);
+      RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, target, params, exception);
     }
   });
   

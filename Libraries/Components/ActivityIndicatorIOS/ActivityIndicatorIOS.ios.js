@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule SpinnerIOS
+ * @providesModule ActivityIndicatorIOS
  */
 'use strict';
 
@@ -25,7 +25,7 @@ var SpinnerSize = keyMirror({
 
 var GRAY = '#999999';
 
-var SpinnerIOS = React.createClass({
+var ActivityIndicatorIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
@@ -39,8 +39,8 @@ var SpinnerIOS = React.createClass({
     color: PropTypes.string,
     /**
      * The size of the spinner, must be one of:
-     * - SpinnerIOS.size.large
-     * - SpinnerIOS.size.small (default)
+     * - ActivityIndicatorIOS.size.large
+     * - ActivityIndicatorIOS.size.small (default)
      */
     size: PropTypes.oneOf([SpinnerSize.large, SpinnerSize.small]),
   },
@@ -101,4 +101,4 @@ var UIActivityIndicatorView = createReactIOSNativeComponentClass({
   uiViewClassName: 'UIActivityIndicatorView',
 });
 
-module.exports = SpinnerIOS;
+module.exports = ActivityIndicatorIOS;

@@ -21,27 +21,36 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
   RCTScrollEventTypeEndAnimation,
 };
 
+/**
+ * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
+ * provides some convenience methods for generating event calls.
+ */
 @interface RCTEventDispatcher : NSObject
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 /**
- * Send a named event. For most purposes, use the an
- * event type of RCTEventTypeDefault, the other types
- * are used internally by the React framework.
+ * Send a device or application event that does not relate to a specific
+ * view, e.g. rotation, location, keyboard show/hide, background/awake, etc.
  */
-- (void)sendEventWithName:(NSString *)name body:(NSDictionary *)body;
+- (void)sendDeviceEventWithName:(NSString *)name body:(NSDictionary *)body;
 
 /**
- * Send text events
+ * Send a user input event. The body dictionary must contain a "target"
+ * parameter, representing the react tag of the view sending the event
+ */
+- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body;
+
+/**
+ * Send a text input/focus event.
  */
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text;
 
 /**
- * Send scroll events
- * (You can send a fake scroll event by passing nil for scrollView)
+ * Send a scroll event.
+ * (You can send a fake scroll event by passing nil for scrollView).
  */
 - (void)sendScrollEventWithType:(RCTScrollEventType)type
                        reactTag:(NSNumber *)reactTag

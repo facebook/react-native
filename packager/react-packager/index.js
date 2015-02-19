@@ -10,10 +10,30 @@ exports.middleware = function(options) {
 
 exports.buildPackageFromUrl = function(options, reqUrl) {
   Activity.disable();
+  // Don't start the filewatcher or the cache.
+  if (options.nonPersistent == null) {
+    options.nonPersistent = true;
+  }
+
   var server = new Server(options);
   return server.buildPackageFromUrl(reqUrl)
     .then(function(p) {
-      server.kill();
+      server.end();
       return p;
+    });
+};
+
+exports.getDependencies = function(options, main) {
+  Activity.disable();
+  // Don't start the filewatcher or the cache.
+  if (options.nonPersistent == null) {
+    options.nonPersistent = true;
+  }
+
+  var server = new Server(options);
+  return server.getDependencies(main)
+    .then(function(r) {
+      server.end();
+      return r.dependencies;
     });
 };

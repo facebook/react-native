@@ -6,6 +6,10 @@ jest
   .dontMock('os')
   .dontMock('../index');
 
+var OPTIONS = {
+  transformModulePath: '/foo/bar'
+};
+
 describe('Transformer', function() {
   var Transformer;
   var workers;
@@ -32,7 +36,7 @@ describe('Transformer', function() {
       callback(null, 'content');
     });
 
-    return new Transformer({}).loadFileAndTransform([], 'file', {})
+    return new Transformer(OPTIONS).loadFileAndTransform([], 'file', {})
       .then(function(data) {
         expect(data).toEqual({
           code: 'transformed',
@@ -55,7 +59,7 @@ describe('Transformer', function() {
       callback(null, {error: esprimaError});
     });
 
-    return new Transformer({}).loadFileAndTransform([], 'foo-file.js', {})
+    return new Transformer(OPTIONS).loadFileAndTransform([], 'foo-file.js', {})
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
         expect(error.snippet).toEqual([

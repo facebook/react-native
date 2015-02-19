@@ -76,3 +76,11 @@ function createWatcher(root) {
     });
   });
 }
+
+FileWatcher.createDummyWatcher = function() {
+  var ev = new EventEmitter();
+  ev.end = function() {
+    return q();
+  };
+  return ev;
+};

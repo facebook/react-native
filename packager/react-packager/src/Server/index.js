@@ -18,10 +18,13 @@ function Server(options) {
     cacheVersion: options.cacheVersion,
     resetCache: options.resetCache,
     dev: options.dev,
-    transformModulePath: options.transformModulePath
+    transformModulePath: options.transformModulePath,
+    nonPersistent: options.nonPersistent,
   });
 
-  this._fileWatcher = new FileWatcher(options.projectRoots);
+  this._fileWatcher = options.nonPersistent
+    ? FileWatcher.createDummyWatcher()
+    : new FileWatcher(options.projectRoots);
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);
@@ -48,7 +51,7 @@ Server.prototype._rebuildPackages = function(filepath) {
   });
 };
 
-Server.prototype.kill = function() {
+Server.prototype.end = function() {
   q.all([
     this._fileWatcher.end(),
     this._packager.kill(),
@@ -66,6 +69,10 @@ Server.prototype._buildPackage = function(options) {
 Server.prototype.buildPackageFromUrl = function(reqUrl) {
   var options = getOptionsFromPath(url.parse(reqUrl).pathname);
   return this._buildPackage(options);
+};
+
+Server.prototype.getDependencies = function(main) {
+  return this._packager.getDependencies(main);
 };
 
 Server.prototype._processDebugRequest = function(reqUrl, res) {

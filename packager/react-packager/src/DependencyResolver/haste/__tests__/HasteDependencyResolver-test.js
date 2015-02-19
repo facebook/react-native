@@ -55,6 +55,25 @@ describe('HasteDependencyResolver', function() {
               isPolyfill: true,
               dependencies: ['polyfills/prelude.js', 'polyfills/require.js']
             },
+            { id: 'polyfills/console.js',
+              isPolyfill: true,
+              path: 'polyfills/console.js',
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js'
+              ],
+            },
+            { id: 'polyfills/error-guard.js',
+              isPolyfill: true,
+              path: 'polyfills/error-guard.js',
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js',
+                'polyfills/console.js'
+              ],
+            },
             module
           ]);
         });
@@ -97,11 +116,35 @@ describe('HasteDependencyResolver', function() {
               isPolyfill: true,
               dependencies: ['polyfills/prelude.js', 'polyfills/require.js']
             },
+            { id: 'polyfills/console.js',
+              isPolyfill: true,
+              path: 'polyfills/console.js',
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js'
+              ],
+            },
+            { id: 'polyfills/error-guard.js',
+              isPolyfill: true,
+              path: 'polyfills/error-guard.js',
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js',
+                'polyfills/console.js'
+              ],
+            },
             { path: 'some module',
               id: 'some module',
               isPolyfill: true,
-              dependencies: [ 'polyfills/prelude.js', 'polyfills/require.js',
-                'polyfills/polyfills.js']
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js',
+                'polyfills/console.js',
+                'polyfills/error-guard.js',
+              ]
             },
             module
           ]);

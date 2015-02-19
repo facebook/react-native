@@ -14,15 +14,21 @@ module.exports = Transformer;
 Transformer.TransformError = TransformError;
 
 function Transformer(projectConfig) {
-  this._cache = new Cache(projectConfig);
-  this._workers = workerFarm(
-    {autoStart: true},
-    projectConfig.transformModulePath
-  );
+  this._cache = projectConfig.nonPersistent
+    ? new DummyCache() : new Cache(projectConfig);
+
+  if (projectConfig.transformModulePath == null) {
+    this._failedToStart = q.Promise.reject(new Error('No transfrom module'));
+  } else {
+    this._workers = workerFarm(
+      {autoStart: true},
+      projectConfig.transformModulePath
+    );
+  }
 }
 
 Transformer.prototype.kill = function() {
-  workerFarm.end(this._workers);
+  this._workers && workerFarm.end(this._workers);
   return this._cache.end();
 };
 
@@ -37,6 +43,10 @@ Transformer.prototype.loadFileAndTransform = function(
   filePath,
   options
 ) {
+  if (this._failedToStart) {
+    return this._failedToStart;
+  }
+
   var workers = this._workers;
   return this._cache.get(filePath, function() {
     return readFile(filePath)
@@ -93,3 +103,10 @@ function formatEsprimaError(err, filename, source) {
   error.description = err.description;
   return error;
 }
+
+function DummyCache() {}
+DummyCache.prototype.get = function(filePath, loaderCb) {
+  return loaderCb();
+};
+DummyCache.prototype.end =
+DummyCache.prototype.invalidate = function(){};

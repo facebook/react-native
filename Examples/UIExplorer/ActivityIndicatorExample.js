@@ -1,19 +1,19 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule SpinnerExample
+ * @providesModule ActivityIndicatorExample
  */
 'use strict';
 
 var React = require('react-native');
 var {
-  SpinnerIOS,
+  ActivityIndicatorIOS,
   StyleSheet,
   TimerMixin,
   View,
 } = React;
 
-var ToggleAnimatingSpinner = React.createClass({
+var ToggleAnimatingActivityIndicator = React.createClass({
   mixins: [TimerMixin],
 
   getInitialState: function() {
@@ -38,17 +38,17 @@ var ToggleAnimatingSpinner = React.createClass({
 
   render: function() {
     return (
-      <SpinnerIOS
+      <ActivityIndicatorIOS
         animating={this.state.animating}
         style={[styles.centering, {height: 80}]}
-        size={SpinnerIOS.size.large}
+        size={ActivityIndicatorIOS.size.large}
       />
     );
   }
 });
 
 exports.framework = 'React';
-exports.title = '<SpinnerIOS>';
+exports.title = '<ActivityIndicatorIOS>';
 exports.description = 'Animated loading indicators.';
 
 exports.examples = [
@@ -56,7 +56,7 @@ exports.examples = [
     title: 'Default (small, white)',
     render: function() {
       return (
-        <SpinnerIOS
+        <ActivityIndicatorIOS
           style={[styles.centering, styles.gray, {height: 40}]}
           color="white"
           />
@@ -68,10 +68,10 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <SpinnerIOS
+          <ActivityIndicatorIOS
             style={[styles.centering, {height: 40}]}
           />
-          <SpinnerIOS
+          <ActivityIndicatorIOS
             style={[styles.centering, {backgroundColor: '#eeeeee', height: 40}]}
           />
         </View>
@@ -83,10 +83,10 @@ exports.examples = [
     render: function() {
       return (
         <View style={styles.horizontal}>
-          <SpinnerIOS color="#0000ff" />
-          <SpinnerIOS color="#aa00aa" />
-          <SpinnerIOS color="#aa3300" />
-          <SpinnerIOS color="#00aa00" />
+          <ActivityIndicatorIOS color="#0000ff" />
+          <ActivityIndicatorIOS color="#aa00aa" />
+          <ActivityIndicatorIOS color="#aa3300" />
+          <ActivityIndicatorIOS color="#00aa00" />
         </View>
       );
     }
@@ -95,10 +95,10 @@ exports.examples = [
     title: 'Large',
     render: function() {
       return (
-        <SpinnerIOS
+        <ActivityIndicatorIOS
           style={[styles.centering, styles.gray, {height: 80}]}
           color="white"
-          size={SpinnerIOS.size.large}
+          size={ActivityIndicatorIOS.size.large}
         />
       );
     }
@@ -108,20 +108,20 @@ exports.examples = [
     render: function() {
       return (
         <View style={styles.horizontal}>
-          <SpinnerIOS
-            size={SpinnerIOS.size.large}
+          <ActivityIndicatorIOS
+            size={ActivityIndicatorIOS.size.large}
             color="#0000ff"
           />
-          <SpinnerIOS
-            size={SpinnerIOS.size.large}
+          <ActivityIndicatorIOS
+            size={ActivityIndicatorIOS.size.large}
             color="#aa00aa"
           />
-          <SpinnerIOS
-            size={SpinnerIOS.size.large}
+          <ActivityIndicatorIOS
+            size={ActivityIndicatorIOS.size.large}
             color="#aa3300"
           />
-          <SpinnerIOS
-            size={SpinnerIOS.size.large}
+          <ActivityIndicatorIOS
+            size={ActivityIndicatorIOS.size.large}
             color="#00aa00"
           />
         </View>
@@ -131,7 +131,7 @@ exports.examples = [
   {
     title: 'Start/stop',
     render: function() {
-      return <ToggleAnimatingSpinner />;
+      return <ToggleAnimatingActivityIndicator />;
     }
   },
 ];

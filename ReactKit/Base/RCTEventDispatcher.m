@@ -4,7 +4,6 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
-#import "UIView+ReactKit.h"
 
 @implementation RCTEventDispatcher
 {
@@ -19,7 +18,14 @@
   return self;
 }
 
-- (void)sendEventWithName:(NSString *)name body:(NSDictionary *)body
+- (void)sendDeviceEventWithName:(NSString *)name body:(NSDictionary *)body
+{
+  [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
+                    args:body ? @[name, body] : @[name]];
+}
+
+
+- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
 {
   RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
             @"Event body dictionary must include a 'target' property containing a react tag");
@@ -40,7 +46,7 @@
     @"topEndEditing",
   };
   
-  [self sendEventWithName:events[type] body:@{
+  [self sendInputEventWithName:events[type] body:@{
     @"text": text,
     @"target": reactTag
   }];
@@ -91,7 +97,7 @@
     body = mutableBody;
   }
   
-  [self sendEventWithName:events[type] body:body];
+  [self sendInputEventWithName:events[type] body:body];
 }
 
 @end

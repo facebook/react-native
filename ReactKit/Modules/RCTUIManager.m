@@ -677,7 +677,10 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     RCTLogWarn(@"No manager class found for view with module name \"%@\"", moduleName);
     manager = [[RCTViewManager alloc] init];
   }
-  
+
+  // Register manager
+  _viewManagerRegistry[reactTag] = manager;
+
   // Generate default view, used for resetting default props
   if (!_defaultShadowViews[moduleName]) {
     _defaultShadowViews[moduleName] = [manager shadowView];
@@ -691,10 +694,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTCAssertMainThread();
-    
-    // Register manager
-    uiManager->_viewManagerRegistry[reactTag] = manager;
-    
+
     // Generate default view, used for resetting default props
     if (!uiManager->_defaultViews[moduleName]) {
       // Note the default is setup after the props are read for the first time ever

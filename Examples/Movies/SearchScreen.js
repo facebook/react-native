@@ -9,7 +9,7 @@ var {
   ListView,
   ListViewDataSource,
   ScrollView,
-  SpinnerIOS,
+  ActivityIndicatorIOS,
   StyleSheet,
   Text,
   TextInput,
@@ -215,7 +215,7 @@ var SearchScreen = React.createClass({
     if (!this.hasMore() || !this.state.isLoadingTail) {
       return <View style={styles.scrollSpinner} />;
     }
-    return <SpinnerIOS style={styles.scrollSpinner} />;
+    return <ActivityIndicatorIOS style={styles.scrollSpinner} />;
   },
 
   renderRow: function(movie: Object)  {
@@ -290,7 +290,7 @@ var SearchBar = React.createClass({
           onFocus={this.props.onFocus}
           style={styles.searchBarInput}
         />
-        <SpinnerIOS
+        <ActivityIndicatorIOS
           animating={this.props.isLoading}
           style={styles.spinner}
         />

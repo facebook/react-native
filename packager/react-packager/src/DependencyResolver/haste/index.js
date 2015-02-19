@@ -19,7 +19,10 @@ var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
 var REL_REQUIRE_STMT = /require\(['"]([\.\/0-9A-Z_$\-]*)['"]\)/gi;
 
 function HasteDependencyResolver(config) {
-  this._fileWatcher = new FileWatcher(config.projectRoots);
+  this._fileWatcher = config.nonPersistent
+    ? FileWatcher.createDummyWatcher()
+    : new FileWatcher(config.projectRoots);
+
   this._depGraph = new DependencyGraph({
     roots: config.projectRoots,
     ignoreFilePath: function(filepath) {
@@ -97,7 +100,6 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
     }
   }
 
-
   var relativizedCode =
     code.replace(REL_REQUIRE_STMT, function(codeMatch, depName) {
       var dep = resolvedDeps[depName];
@@ -116,7 +118,6 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
     }[key];
   });
 };
-
 
 HasteDependencyResolver.prototype.end = function() {
   return this._fileWatcher.end();

@@ -16,7 +16,7 @@ var ReactNative = {
   NavigatorIOS: require('NavigatorIOS'),
   PixelRatio: require('PixelRatio'),
   ScrollView: require('ScrollView'),
-  SpinnerIOS: require('SpinnerIOS'),
+  ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
   Text: require('Text'),

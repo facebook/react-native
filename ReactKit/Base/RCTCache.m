@@ -5,20 +5,89 @@
 #import <UIKit/UIKit.h>
 #import <sys/xattr.h>
 
-static NSString *const CacheSubdirectoryName = @"ReactKit";
-static NSString *const KeyExtendedAttributeName = @"com.facebook.ReactKit.RCTCacheManager.Key";
-static dispatch_queue_t Queue;
+static NSString *const RCTCacheSubdirectoryName = @"ReactKit";
+static NSString *const RCTKeyExtendedAttributeName = @"com.facebook.ReactKit.RCTCacheManager.Key";
+static NSMapTable *RCTLivingCachesByName;
+
+static NSError *RCTPOSIXError(int errorNumber)
+{
+  NSDictionary *userInfo = @{
+    NSLocalizedDescriptionKey: @(strerror(errorNumber))
+  };
+  return [NSError errorWithDomain:NSPOSIXErrorDomain code:errorNumber userInfo:userInfo];
+}
+
+static NSString *RCTGetExtendedAttribute(NSURL *fileURL, NSString *key, NSError **error)
+{
+  const char *path = fileURL.fileSystemRepresentation;
+  ssize_t length = getxattr(path, key.UTF8String, NULL, 0, 0, 0);
+  if (length <= 0) {
+    if (error) *error = RCTPOSIXError(errno);
+    return nil;
+  }
+
+  char *buffer = malloc(length);
+  length = getxattr(path, key.UTF8String, buffer, length, 0, 0);
+  if (length > 0) {
+    return [[NSString alloc] initWithBytesNoCopy:buffer length:length encoding:NSUTF8StringEncoding freeWhenDone:YES];
+  }
+
+  free(buffer);
+  if (error) *error = RCTPOSIXError(errno);
+  return nil;
+}
+
+static BOOL RCTSetExtendedAttribute(NSURL *fileURL, NSString *key, NSString *value, NSError **error)
+{
+  const char *path = fileURL.fileSystemRepresentation;
+
+  int result;
+  if (value) {
+    const char *valueUTF8String = value.UTF8String;
+    result = setxattr(path, key.UTF8String, valueUTF8String, strlen(valueUTF8String), 0, 0);
+  } else {
+    result = removexattr(path, key.UTF8String, 0);
+  }
+
+  if (result) {
+    if (error) *error = RCTPOSIXError(errno);
+    return NO;
+  }
+
+  return YES;
+}
 
 #pragma mark - Cache Record -
 
 @interface RCTCacheRecord : NSObject
 
-@property (nonatomic, copy) NSUUID *UUID;
+@property (readonly) NSUUID *UUID;
+@property (readonly, weak) dispatch_queue_t queue;
 @property (nonatomic, copy) NSData *data;
 
 @end
 
 @implementation RCTCacheRecord
+
+- (instancetype)initWithUUID:(NSUUID *)UUID
+{
+  if ((self = [super init])) {
+    _UUID = [UUID copy];
+  }
+  return self;
+}
+
+- (void)enqueueBlock:(dispatch_block_t)block
+{
+  dispatch_queue_t queue = _queue;
+  if (!queue) {
+    NSString *queueName = [NSString stringWithFormat:@"com.facebook.ReactKit.RCTCache.%@", _UUID.UUIDString];
+    queue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    _queue = queue;
+  }
+
+  dispatch_async(queue, block);
+}
 
 @end
 
@@ -35,9 +104,10 @@ static dispatch_queue_t Queue;
 + (void)initialize
 {
   if (self == [RCTCache class]) {
-    Queue = dispatch_queue_create("com.facebook.ReactKit.RCTCache", DISPATCH_QUEUE_SERIAL);
+    RCTLivingCachesByName = [NSMapTable strongToWeakObjectsMapTable];
   }
 }
+
 - (instancetype)init
 {
   return [self initWithName:@"default"];
@@ -46,44 +116,37 @@ static dispatch_queue_t Queue;
 - (instancetype)initWithName:(NSString *)name
 {
   NSParameterAssert(name.length < NAME_MAX);
+  RCTCache *cachedCache = [RCTLivingCachesByName objectForKey:name];
+  if (cachedCache) {
+    self = cachedCache;
+    return self;
+  }
+
   if ((self = [super init])) {
     _name = [name copy];
     _fileManager = [[NSFileManager alloc] init];
     _storage = [NSMutableDictionary dictionary];
 
     NSURL *cacheDirectoryURL = [[_fileManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
-    cacheDirectoryURL = [cacheDirectoryURL URLByAppendingPathComponent:CacheSubdirectoryName isDirectory:YES];
+    cacheDirectoryURL = [cacheDirectoryURL URLByAppendingPathComponent:RCTCacheSubdirectoryName isDirectory:YES];
     _cacheDirectoryURL = [cacheDirectoryURL URLByAppendingPathComponent:name isDirectory:YES];
     [_fileManager createDirectoryAtURL:_cacheDirectoryURL withIntermediateDirectories:YES attributes:nil error:NULL];
 
     NSArray *fileURLs = [_fileManager contentsOfDirectoryAtURL:_cacheDirectoryURL includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:NULL];
     for (NSURL *fileURL in fileURLs) {
-      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:fileURL.lastPathComponent];
-      if (!uuid) continue;
+      NSUUID *UUID = [[NSUUID alloc] initWithUUIDString:fileURL.lastPathComponent];
+      if (!UUID) continue;
 
-      NSString *key = [self keyOfItemAtURL:fileURL error:NULL];
+      NSString *key = RCTGetExtendedAttribute(fileURL, RCTKeyExtendedAttributeName, NULL);
       if (!key) {
         [_fileManager removeItemAtURL:fileURL error:NULL];
         continue;
       }
 
-      RCTCacheRecord *record = [[RCTCacheRecord alloc] init];
-      record.UUID = uuid;
-      _storage[key] = record;
+      _storage[key] = [[RCTCacheRecord alloc] initWithUUID:UUID];
     }
   }
   return self;
-}
-
-- (void)runOnQueue:(dispatch_block_t)block
-{
-  UIBackgroundTaskIdentifier identifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
-  dispatch_async(Queue, ^{
-    if (block) block();
-    if (identifier != UIBackgroundTaskInvalid) {
-      [[UIApplication sharedApplication] endBackgroundTask:identifier];
-    }
-  });
 }
 
 - (BOOL)hasDataForKey:(NSString *)key
@@ -95,115 +158,67 @@ static dispatch_queue_t Queue;
 {
   NSParameterAssert(key.length > 0);
   NSParameterAssert(completionHandler != nil);
-  [self runOnQueue:^{
-    RCTCacheRecord *record = _storage[key];
-    if (record && !record.data) {
+  RCTCacheRecord *record = _storage[key];
+  if (!record) {
+    completionHandler(nil);
+    return;
+  }
+
+  [record enqueueBlock:^{
+    if (!record.data) {
       record.data = [NSData dataWithContentsOfURL:[_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString]];
     }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      completionHandler(record.data);
-    });
+    completionHandler(record.data);
   }];
 }
 
 - (void)setData:(NSData *)data forKey:(NSString *)key
 {
   NSParameterAssert(key.length > 0);
-  [self runOnQueue:^{
-    RCTCacheRecord *record = _storage[key];
+  RCTCacheRecord *record = _storage[key];
+  if (!record) {
+    if (!data) return;
+
+    record = [[RCTCacheRecord alloc] initWithUUID:[NSUUID UUID]];
+    _storage[key] = record;
+  }
+
+  NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
+
+  UIBackgroundTaskIdentifier identifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+  [record enqueueBlock:^{
     if (data) {
-      if (!record) {
-        record = [[RCTCacheRecord alloc] init];
-        record.UUID = [NSUUID UUID];
-        _storage[key] = record;
-      }
-
-      record.data = data;
-
-      NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
       [data writeToURL:fileURL options:NSDataWritingAtomic error:NULL];
-    } else if (record) {
-      [_storage removeObjectForKey:key];
-
-      NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
+      RCTSetExtendedAttribute(fileURL, RCTKeyExtendedAttributeName, key, NULL);
+    } else {
       [_fileManager removeItemAtURL:fileURL error:NULL];
+    }
+
+    if (identifier != UIBackgroundTaskInvalid) {
+      [[UIApplication sharedApplication] endBackgroundTask:identifier];
     }
   }];
 }
 
 - (void)removeAllData
 {
-  [self runOnQueue:^{
-    [_storage removeAllObjects];
+  UIBackgroundTaskIdentifier identifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+  dispatch_group_t group = dispatch_group_create();
 
-    NSDirectoryEnumerator *enumerator = [_fileManager enumeratorAtURL:_cacheDirectoryURL includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles errorHandler:nil];
-    for (NSURL *fileURL in enumerator) {
+  [_storage enumerateKeysAndObjectsUsingBlock:^(NSString *key, RCTCacheRecord *record, BOOL *stop) {
+    NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
+    dispatch_group_async(group, record.queue, ^{
       [_fileManager removeItemAtURL:fileURL error:NULL];
-    }
+    });
   }];
-}
 
-#pragma mark - Extended Attributes
-
-- (NSError *)errorWithPOSIXErrorNumber:(int)errorNumber
-{
-  NSDictionary *userInfo = @{
-    NSLocalizedDescriptionKey: @(strerror(errorNumber))
-  };
-  return [NSError errorWithDomain:NSPOSIXErrorDomain code:errorNumber userInfo:userInfo];
-}
-
-- (BOOL)setAttribute:(NSString *)key value:(NSString *)value ofItemAtURL:(NSURL *)fileURL error:(NSError **)error
-{
-  const char *path = fileURL.fileSystemRepresentation;
-
-  int result;
-  if (value) {
-    const char *valueUTF8String = value.UTF8String;
-    result = setxattr(path, key.UTF8String, valueUTF8String, strlen(valueUTF8String), 0, 0);
-  } else {
-    result = removexattr(path, key.UTF8String, 0);
+  if (identifier != UIBackgroundTaskInvalid) {
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+      [[UIApplication sharedApplication] endBackgroundTask:identifier];
+    });
   }
 
-  if (result) {
-    if (error) *error = [self errorWithPOSIXErrorNumber:errno];
-    return NO;
-  }
-
-  return YES;
-}
-
-- (NSString *)attribute:(NSString *)key ofItemAtURL:(NSURL *)fileURL error:(NSError **)error
-{
-  const char *path = fileURL.fileSystemRepresentation;
-  const ssize_t length = getxattr(path, key.UTF8String, NULL, 0, 0, 0);
-  if (length <= 0) {
-    if (error) *error = [self errorWithPOSIXErrorNumber:errno];
-    return nil;
-  }
-
-  char *buffer = malloc(length);
-  ssize_t result = getxattr(path, key.UTF8String, buffer, length, 0, 0);
-  if (result == 0) {
-    return [[NSString alloc] initWithBytesNoCopy:buffer length:length encoding:NSUTF8StringEncoding freeWhenDone:YES];
-  }
-
-  free(buffer);
-  if (error) *error = [self errorWithPOSIXErrorNumber:errno];
-  return nil;
-}
-
-#pragma mark - Extended Attributes - Key
-
-- (NSString *)keyOfItemAtURL:(NSURL *)fileURL error:(NSError **)error
-{
-  return [self attribute:KeyExtendedAttributeName ofItemAtURL:fileURL error:error];
-}
-
-- (BOOL)setKey:(NSString *)key ofItemAtURL:(NSURL *)fileURL error:(NSError **)error
-{
-  return [self setAttribute:KeyExtendedAttributeName value:key ofItemAtURL:fileURL error:error];
+  [_storage removeAllObjects];
 }
 
 @end

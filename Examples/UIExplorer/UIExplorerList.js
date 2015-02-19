@@ -29,7 +29,7 @@ var EXAMPLES = [
   require('./StatusBarIOSExample'),
   require('./PointerEventsExample'),
   require('./TouchableExample'),
-  require('./SpinnerExample'),
+  require('./ActivityIndicatorExample'),
   require('./ScrollViewExample'),
 ];
 

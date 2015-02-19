@@ -34,15 +34,7 @@ var DEFAULT_CONFIG = {
    */
   polyfillModuleNames: [],
 
-  /**
-   * DEPRECATED
-   *
-   * A string of code to be appended to the top of a package.
-   *
-   * TODO: THIS RUINS SOURCE MAPS. THIS OPTION SHOULD BE REMOVED ONCE WE GET
-   *       config.polyfillModuleNames WORKING!
-   */
-  runtimeCode: ''
+  nonPersistent: false,
 };
 
 function Packager(projectConfig) {
@@ -72,7 +64,7 @@ Packager.prototype.package = function(main, runModule, sourceMapUrl) {
   var findEventId = Activity.startEvent('find dependencies');
   var transformEventId;
 
-  return this._resolver.getDependencies(main)
+  return this.getDependencies(main)
     .then(function(result) {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
@@ -98,9 +90,13 @@ Packager.prototype.package = function(main, runModule, sourceMapUrl) {
     });
 };
 
-Packager.prototype.invalidateFile = function(filePath){
+Packager.prototype.invalidateFile = function(filePath) {
   this._transformer.invalidateFile(filePath);
 }
+
+Packager.prototype.getDependencies = function(main) {
+  return this._resolver.getDependencies(main);
+};
 
 Packager.prototype._transformModule = function(module) {
   var resolver = this._resolver;

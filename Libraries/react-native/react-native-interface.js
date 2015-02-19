@@ -11,7 +11,7 @@ declare module "react-native" {
   declare var NavigatorItemIOS: ReactClass<any, any, any>;
   declare var PixelRatio: ReactClass<any, any, any>;
   declare var ScrollView: ReactClass<any, any, any>;
-  declare var SpinnerIOS: ReactClass<any, any, any>;
+  declare var ActivityIndicatorIOS: ReactClass<any, any, any>;
   declare var StyleSheet: ReactClass<any, any, any>;
   declare var Text: ReactClass<any, any, any>;
   declare var TextInput: ReactClass<any, any, any>;
