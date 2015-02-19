@@ -84,10 +84,7 @@ function getAppMiddleware(options) {
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(false),
     cacheVersion: '2',
-    polyfillModuleNames: [
-      path.resolve(__dirname, 'polyfill/console.js'),
-      path.resolve(__dirname, 'polyfill/error-guard.js'),
-    ]
+    transformModulePath: require.resolve('./transformer.js'),
   });
 }
 

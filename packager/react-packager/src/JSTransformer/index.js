@@ -8,9 +8,6 @@ var Cache = require('./Cache');
 var _ = require('underscore');
 var workerFarm = require('worker-farm');
 
-var workers = workerFarm(require.resolve('./worker'));
-warmupWorkers();
-
 var readFile = q.nfbind(fs.readFile);
 
 module.exports = Transformer;
@@ -18,10 +15,14 @@ Transformer.TransformError = TransformError;
 
 function Transformer(projectConfig) {
   this._cache = new Cache(projectConfig);
+  this._workers = workerFarm(
+    {autoStart: true},
+    projectConfig.transformModulePath
+  );
 }
 
 Transformer.prototype.kill = function() {
-  workerFarm.end(workers);
+  workerFarm.end(this._workers);
   return this._cache.end();
 };
 
@@ -36,6 +37,7 @@ Transformer.prototype.loadFileAndTransform = function(
   filePath,
   options
 ) {
+  var workers = this._workers;
   return this._cache.get(filePath, function() {
     return readFile(filePath)
       .then(function(buffer) {
@@ -61,19 +63,6 @@ Transformer.prototype.loadFileAndTransform = function(
       });
   });
 };
-
-// worker-farm module starts workers lazily. But we want them to take time
-// to initialize so we send a dummy request.
-// see https://github.com/rvagg/node-worker-farm/issues/23
-function warmupWorkers() {
-  os.cpus().forEach(function() {
-    workers({
-      transformSets: ['es6'],
-      sourceCode: '\n',
-      options: {}
-    }, function() {});
-  });
-}
 
 function TransformError() {}
 TransformError.__proto__ = SyntaxError.prototype;

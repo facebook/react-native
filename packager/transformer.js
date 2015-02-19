@@ -30,4 +30,28 @@ function transform(transformSets, srcTxt, options) {
   return jstransform(visitorList, staticTypeSyntaxResult.code);
 }
 
-exports.transform = transform;
+module.exports = function(data, callback) {
+  var result;
+  try {
+    result = transform(
+      data.transformSets,
+      data.sourceCode,
+      data.options
+    );
+  } catch (e) {
+    return callback(null, {
+      error: {
+        lineNumber: e.lineNumber,
+        column: e.column,
+        message: e.message,
+        stack: e.stack,
+        description: e.description
+      }
+    });
+  }
+
+  callback(null, result);
+};
+
+// export for use in jest
+module.exports.transform = transform;

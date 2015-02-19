@@ -18,6 +18,7 @@ function Server(options) {
     cacheVersion: options.cacheVersion,
     resetCache: options.resetCache,
     dev: options.dev,
+    transformModulePath: options.transformModulePath
   });
 
   this._fileWatcher = new FileWatcher(options.projectRoots);

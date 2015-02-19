@@ -1,6 +1,6 @@
 'use strict';
 
-var transformer = require('../packager/react-packager/src/JSTransformer/transformer.js');
+var transformer = require('../packager/transformer.js');
 
 function transformSource(src) {
   return transformer.transform(null, src).code;
