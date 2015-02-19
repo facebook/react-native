@@ -36,7 +36,7 @@ static Class _globalExecutorClass;
                                                         action:^(UIKeyCommand *command) {
                                                           [self reloadAll];
                                                         }];
-  
+
   // Cmd-D reloads using the web view executor, allows attaching from Safari dev tools.
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
                                                  modifierFlags:UIKeyModifierCommand
@@ -46,7 +46,7 @@ static Class _globalExecutorClass;
                                                         }];
 
 #endif
-  
+
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -96,7 +96,7 @@ static Class _globalExecutorClass;
       [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withDetails:[error localizedFailureReason]];
     }
   } else {
-    
+
     [_bridge registerRootView:self];
 
     NSString *moduleName = _moduleName ?: @"";
@@ -104,7 +104,7 @@ static Class _globalExecutorClass;
       @"rootTag": self.reactTag,
       @"initialProps": self.initialProperties ?: @{},
     };
-    [_bridge enqueueJSCall:@"Bundler.runApplication"
+    [_bridge enqueueJSCall:@"AppRegistry.runApplication"
                       args:@[moduleName, appParameters]];
   }
 }
@@ -113,11 +113,11 @@ static Class _globalExecutorClass;
 {
   // Clear view
   [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-  
+
   if (!_scriptURL) {
     return;
   }
-  
+
   // Clean up
   [self removeGestureRecognizer:_touchHandler];
   [_executor invalidate];
@@ -132,7 +132,7 @@ static Class _globalExecutorClass;
   // Load the bundle
   NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:_scriptURL completionHandler:
                                 ^(NSData *data, NSURLResponse *response, NSError *error) {
-    
+
     // Handle general request errors
     if (error) {
       if ([[error domain] isEqualToString:NSURLErrorDomain]) {
@@ -148,7 +148,7 @@ static Class _globalExecutorClass;
       [self bundleFinishedLoading:error];
       return;
     }
-    
+
     // Parse response as text
     NSStringEncoding encoding = NSUTF8StringEncoding;
     if (response.textEncodingName != nil) {
@@ -158,7 +158,7 @@ static Class _globalExecutorClass;
       }
     }
     NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
-    
+
     // Handle HTTP errors
     if ([response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)response statusCode] != 200) {
       NSDictionary *userInfo;
@@ -178,7 +178,7 @@ static Class _globalExecutorClass;
       error = [NSError errorWithDomain:@"JSServer"
                                   code:[(NSHTTPURLResponse *)response statusCode]
                               userInfo:userInfo];
-      
+
       [self bundleFinishedLoading:error];
       return;
     }
@@ -189,9 +189,9 @@ static Class _globalExecutorClass;
         [self bundleFinishedLoading:error];
       });
     }];
-                                  
+
   }];
-  
+
   [task resume];
 }
 

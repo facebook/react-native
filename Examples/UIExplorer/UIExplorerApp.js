@@ -9,7 +9,7 @@ var React = require('react-native/addons');
 var UIExplorerList = require('./UIExplorerList');
 
 var {
-  Bundler,
+  AppRegistry,
   NavigatorIOS,
   StyleSheet,
 } = React;
@@ -39,6 +39,6 @@ var styles = StyleSheet.create({
   },
 });
 
-Bundler.registerComponent('UIExplorerApp', () => UIExplorerApp);
+AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 
 module.exports = UIExplorerApp;

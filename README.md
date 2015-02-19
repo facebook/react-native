@@ -109,7 +109,7 @@ well :)
 A. Copy the entire `Examples/TicTacToe` folder, rename stuff in Xcode, and
 replace the `TicTacToeApp.js` with your own. Then, in `AppDelegate.m`, update
 `moduleName` to match your call to
-`Bundler.registerComponent(<moduleName>, <componentName>)` at the bottom of your
+`AppRegistry.registerComponent(<moduleName>, <componentName>)` at the bottom of your
 JS file, and update `jsCodeLocation` to match your JS file name and location.
 
 ##### Q. Can I submit my own React Native app to the App Store?

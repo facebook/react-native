@@ -7,7 +7,7 @@
 
 var ReactNative = {
   ...require('React'),
-  Bundler: require('Bundler'),
+  AppRegistry: require('AppRegistry'),
   ExpandingText: require('ExpandingText'),
   Image: require('Image'),
   LayoutAnimation: require('LayoutAnimation'),

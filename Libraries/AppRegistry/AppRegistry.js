@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule Bundler
+ * @providesModule AppRegistry
  */
 'use strict';
 
@@ -16,31 +16,42 @@ if (__DEV__) {
 
 var runnables = {};
 
-class Bundler {
-  static registerConfig(config) {
+/**
+ * `AppRegistry` is the JS entry point to running all React Native apps.  App
+ * root components should register themselves with
+ * `AppRegistry.registerComponent`, then the native system can load the bundle
+ * for the app and then actually run the app when it's ready by invoking
+ * `AppRegistry.runApplication`.
+ *
+ * `AppRegistry` should be `require`d early in the `require` sequence to make
+ * sure the JS execution environment is setup before other modules are
+ * `require`d.
+ */
+var AppRegistry = {
+  registerConfig: function(config) {
     for (var i = 0; i < config.length; ++i) {
       if (config[i].run) {
-        Bundler.registerRunnable(config[i].appKey, config[i].run);
+        AppRegistry.registerRunnable(config[i].appKey, config[i].run);
       } else {
-        Bundler.registerComponent(config[i].appKey, config[i].component);
+        AppRegistry.registerComponent(config[i].appKey, config[i].component);
       }
     }
-  }
+  },
 
-  static registerComponent(appKey, getComponentFunc) {
+  registerComponent: function(appKey, getComponentFunc) {
     runnables[appKey] = {
       run: (appParameters) =>
         renderApplication(getComponentFunc(), appParameters.initialProps, appParameters.rootTag)
     };
     return appKey;
-  }
+  },
 
-  static registerRunnable(appKey, func) {
+  registerRunnable: function(appKey, func) {
     runnables[appKey] = {run: func};
     return appKey;
-  }
+  },
 
-  static runApplication(appKey, appParameters) {
+  runApplication: function(appKey, appParameters) {
     console.log(
       'Running application "' + appKey + '" with appParams: ',
       appParameters
@@ -51,7 +62,7 @@ class Bundler {
       'Application ' + appKey + ' has not been registered.'
     );
     runnables[appKey].run(appParameters);
-  }
-}
+  },
+};
 
-module.exports = Bundler;
+module.exports = AppRegistry;

@@ -35,7 +35,7 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object,
     NSString *str = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, string);
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:
-                                  @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/MainBundle/([a-z0-9_]+).includeRequire.runModule.bundle(:[0-9]+:[0-9]+)"
+                                  @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/([a-z0-9_]+).includeRequire.runModule.bundle(:[0-9]+:[0-9]+)"
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:&error];
     NSString *modifiedString = [regex stringByReplacingMatchesInString:str options:0 range:NSMakeRange(0, [str length]) withTemplate:@"[$4$5]  \t$2"];

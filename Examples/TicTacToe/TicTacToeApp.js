@@ -8,7 +8,7 @@
 
 var React = require('react-native');
 var {
-  Bundler,
+  AppRegistry,
   Image,
   StyleSheet,
   Text,
@@ -317,6 +317,6 @@ var styles = StyleSheet.create({
   },
 });
 
-Bundler.registerComponent('TicTacToeApp', () => TicTacToeApp);
+AppRegistry.registerComponent('TicTacToeApp', () => TicTacToeApp);
 
 module.exports = TicTacToeApp;

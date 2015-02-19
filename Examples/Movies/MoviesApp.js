@@ -8,7 +8,7 @@
 
 var React = require('react-native/addons');
 var {
-  Bundler,
+  AppRegistry,
   NavigatorIOS,
   StyleSheet,
 } = React;
@@ -36,6 +36,6 @@ var styles = StyleSheet.create({
   },
 });
 
-Bundler.registerComponent('MoviesApp', () => MoviesApp);
+AppRegistry.registerComponent('MoviesApp', () => MoviesApp);
 
 module.exports = MoviesApp;

@@ -3,7 +3,7 @@ declare module "react-native" {
     constructor(params: Object): void;
   }
 
-  declare var Bundler: ReactClass<any, any, any>;
+  declare var AppRegistry: ReactClass<any, any, any>;
   declare var ExpandingText: ReactClass<any, any, any>;
   declare var Image: ReactClass<any, any, any>;
   declare var ListView: ReactClass<any, any, any>;
