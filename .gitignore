@@ -18,3 +18,4 @@ DerivedData
 *.xcuserstate
 
 node_modules
+npm-debug.log
