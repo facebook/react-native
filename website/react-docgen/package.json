@@ -1,0 +1,35 @@
+{
+  "name": "react-docgen",
+  "version": "1.0.0",
+  "description": "Extract information from React components for documentation generation",
+  "bin": {
+    "react-docgen": "bin/react-docgen.js"
+  },
+  "main": "dist/main.js",
+  "scripts": {
+    "watch": "jsx lib/ dist/ --harmony --strip-types -w",
+    "build": "rm -rf dist/ && jsx lib/ dist/ --harmony --strip-types --no-cache-dir",
+    "prepublish": "npm run build",
+    "test": "jest"
+  },
+  "keywords": [
+    "react",
+    "documentation"
+  ],
+  "author": "Felix Kling",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "async": "^0.9.0",
+    "node-dir": "^0.1.6",
+    "nomnom": "^1.8.1",
+    "recast": "^0.9.17"
+  },
+  "devDependencies": {
+    "jest-cli": "^0.3.0",
+    "react-tools": "^0.12.2"
+  },
+  "jest": {
+    "scriptPreprocessor": "./preprocessor",
+    "testPathDirs": ["lib"]
+  }
+}

@@ -1,0 +1,135 @@
+/**
+ * Copyright 2004-present Facebook. All Rights Reserved.
+ *
+ * @providesModule JSTimers
+ */
+'use strict';
+
+// Note that the module JSTimers is split into two in order to solve a cycle
+// in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
+var RKTiming = require('NativeModules').RKTiming;
+var JSTimersExecution = require('JSTimersExecution');
+
+/**
+ * JS implementation of timer functions. Must be completely driven by an
+ * external clock signal, all that's stored here is timerID, timer type, and
+ * callback.
+ */
+var JSTimers = {
+  Types: JSTimersExecution.Types,
+
+  /**
+   * Returns a free index if one is available, and the next consecutive index
+   * otherwise.
+   */
+  _getFreeIndex: function() {
+    var freeIndex = JSTimersExecution.timerIDs.indexOf(null);
+    if (freeIndex === -1) {
+      freeIndex = JSTimersExecution.timerIDs.length;
+    }
+    return freeIndex;
+  },
+
+  /**
+   * @param {function} func Callback to be invoked after `duration` ms.
+   * @param {number} duration Number of milliseconds.
+   */
+  setTimeout: function(func, duration, ...args) {
+    var newID = JSTimersExecution.GUID++;
+    var freeIndex = JSTimers._getFreeIndex();
+    JSTimersExecution.timerIDs[freeIndex] = newID;
+    JSTimersExecution.callbacks[freeIndex] = func;
+    JSTimersExecution.callbacks[freeIndex] = function() {
+      return func.apply(undefined, args);
+    };
+    JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.setTimeout;
+    RKTiming.createTimer(newID, duration, Date.now(), /** recurring */ false);
+    return newID;
+  },
+
+  /**
+   * @param {function} func Callback to be invoked every `duration` ms.
+   * @param {number} duration Number of milliseconds.
+   */
+  setInterval: function(func, duration, ...args) {
+    var newID = JSTimersExecution.GUID++;
+    var freeIndex = JSTimers._getFreeIndex();
+    JSTimersExecution.timerIDs[freeIndex] = newID;
+    JSTimersExecution.callbacks[freeIndex] = func;
+    JSTimersExecution.callbacks[freeIndex] = function() {
+      return func.apply(undefined, args);
+    };
+    JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.setInterval;
+    RKTiming.createTimer(newID, duration, Date.now(), /** recurring */ true);
+    return newID;
+  },
+
+  /**
+   * @param {function} func Callback to be invoked before the end of the
+   * current JavaScript execution loop.
+   */
+  setImmediate: function(func, ...args) {
+    var newID = JSTimersExecution.GUID++;
+    var freeIndex = JSTimers._getFreeIndex();
+    JSTimersExecution.timerIDs[freeIndex] = newID;
+    JSTimersExecution.callbacks[freeIndex] = func;
+    JSTimersExecution.callbacks[freeIndex] = function() {
+      return func.apply(undefined, args);
+    };
+    JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.setImmediate;
+    JSTimersExecution.immediates.push(newID);
+    return newID;
+  },
+
+  /**
+   * @param {function} func Callback to be invoked every frame.
+   */
+  requestAnimationFrame: function(func) {
+    var newID = JSTimersExecution.GUID++;
+    var freeIndex = JSTimers._getFreeIndex();
+    JSTimersExecution.timerIDs[freeIndex] = newID;
+    JSTimersExecution.callbacks[freeIndex] = func;
+    JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.requestAnimationFrame;
+    RKTiming.createTimer(newID, 0, Date.now(), /** recurring */ false);
+    return newID;
+  },
+
+  clearTimeout: function(timerID) {
+    JSTimers._clearTimerID(timerID);
+  },
+
+  clearInterval: function(timerID) {
+    JSTimers._clearTimerID(timerID);
+  },
+
+  clearImmediate: function(timerID) {
+    JSTimers._clearTimerID(timerID);
+    JSTimersExecution.immediates.splice(
+      JSTimersExecution.immediates.indexOf(timerID),
+      1
+    );
+  },
+
+  cancelAnimationFrame: function(timerID) {
+    JSTimers._clearTimerID(timerID);
+  },
+
+  _clearTimerID: function(timerID) {
+    // JSTimersExecution.timerIDs contains nulls after timers have been removed;
+    // ignore nulls upfront so indexOf doesn't find them
+    if (timerID == null) {
+      return;
+    }
+
+    var index = JSTimersExecution.timerIDs.indexOf(timerID);
+    // See corresponding comment in `callTimers` for reasoning behind this
+    if (index !== -1) {
+      JSTimersExecution._clearIndex(index);
+      if (JSTimersExecution.types[index] !== JSTimersExecution.Type.setImmediate) {
+        RKTiming.deleteTimer(timerID);
+      }
+    }
+  },
+};
+
+module.exports = JSTimers;
