@@ -11,6 +11,7 @@
 'use strict';
 
 var EventEmitter = require('EventEmitter');
+var Image = require('Image');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
@@ -46,9 +47,14 @@ var RCTNavigatorItem = createReactIOSNativeComponentClass({
     //  NavigatorIOS does not use them all, because some are problematic
     title: true,
     barTintColor: true,
+    leftButtonImageName: true,
+    leftButtonTitle: true,
+    onNavLeftButtonTap: true,
+    rightButtonImageName: true,
     rightButtonTitle: true,
     onNavRightButtonTap: true,
     tintColor: true,
+    backButtonImageName: true,
     backButtonTitle: true,
     titleTextColor: true,
     style: true,
@@ -188,11 +194,38 @@ var NavigatorIOS = React.createClass({
       passProps: PropTypes.object,
 
       /**
+       * If set, the left header button image will appear with this source. Note
+       * that this doesn't apply for the header of the current view, but the
+       * ones of the views that are pushed afterward.
+       */
+      backButtonImageSource: Image.propTypes.source,
+
+      /**
        * If set, the left header button will appear with this name. Note that
        * this doesn't apply for the header of the current view, but the ones
        * of the views that are pushed afterward.
        */
       backButtonTitle: PropTypes.string,
+
+      /**
+       * If set, the left header button image will appear with this source
+       */
+      leftButtonImageSource: Image.propTypes.source,
+
+      /**
+       * If set, the left header button will appear with this name
+       */
+      leftButtonTitle: PropTypes.string,
+
+      /**
+       * Called when the left header button is pressed
+       */
+      onleftButtonPress: PropTypes.func,
+
+      /**
+       * If set, the right header button image will appear with this source
+       */
+      rightButtonImageSource: Image.propTypes.source,
 
       /**
        * If set, the right header button will appear with this name
@@ -508,7 +541,12 @@ var NavigatorIOS = React.createClass({
             this.props.itemWrapperStyle,
             route.wrapperStyle
           ]}
+          backButtonImageName={this._imageNameFromSource(route.backButtonImageSource)}
           backButtonTitle={route.backButtonTitle}
+          leftButtonImageName={this._imageNameFromSource(route.leftButtonImageSource)}
+          leftButtonTitle={route.leftButtonTitle}
+          onNavLeftButtonTap={route.onLeftButtonPress}
+          rightButtonImageName={this._imageNameFromSource(route.rightButtonImageSource)}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
           tintColor={this.props.tintColor}>
@@ -520,6 +558,10 @@ var NavigatorIOS = React.createClass({
         </RCTNavigatorItem>
       </StaticContainer>
     );
+  },
+
+  _imageNameFromSource: function(source) {
+    return source ? source.uri : undefined;
   },
 
   renderNavigationStackItems: function() {
