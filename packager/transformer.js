@@ -16,18 +16,26 @@ var staticTypeSyntax =
 var visitorList = reactVisitors;
 
 
-function transform(transformSets, srcTxt, options) {
-  options = options || {};
+function transform(transformSets, srcTxt) {
+  var options = {
+    es3: true,
+    sourceType: 'nonStrictModule'
+  };
 
   // These tranforms mostly just erase type annotations and static typing
   // related statements, but they were conflicting with other tranforms.
   // Running them first solves that problem
   var staticTypeSyntaxResult = jstransform(
     staticTypeSyntax,
-    srcTxt
+    srcTxt,
+    options
   );
 
-  return jstransform(visitorList, staticTypeSyntaxResult.code);
+  return jstransform(
+    visitorList,
+    staticTypeSyntaxResult.code,
+    options
+  );
 }
 
 module.exports = function(data, callback) {
@@ -35,8 +43,7 @@ module.exports = function(data, callback) {
   try {
     result = transform(
       data.transformSets,
-      data.sourceCode,
-      data.options
+      data.sourceCode
     );
   } catch (e) {
     return callback(null, {
