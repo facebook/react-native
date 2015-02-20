@@ -79,14 +79,12 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
           ((CGFloat *)&result)[i] = [json[i] doubleValue]; \
         }                                                \
       }                                                  \
-    } else {                                             \
-      if (![json isKindOfClass:[NSDictionary class]]) {  \
-         RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
-      } else {                                           \
-        for (NSUInteger i = 0; i < count; i++) {         \
-          ((CGFloat *)&result)[i] = [json[fields[i]] doubleValue]; \
-        }                                                \
+    } else if ([json isKindOfClass:[NSDictionary class]]) { \
+      for (NSUInteger i = 0; i < count; i++) {           \
+        ((CGFloat *)&result)[i] = [json[fields[i]] doubleValue]; \
       }                                                  \
+    } else if (json) {                                   \
+      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
     }                                                    \
     return result;                                       \
   }                                                      \

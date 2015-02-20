@@ -98,6 +98,11 @@
   }];
 }
 
+- (void)removeAllObjects
+{
+  [_storage removeAllObjects];
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
   return [[[self class] allocWithZone:zone] initWithSparseArray:self];

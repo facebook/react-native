@@ -34,9 +34,11 @@ static inline NSDictionary *RCTAPIErrorObject(NSString *msg)
 /**
  * The designated initializer. This creates a new bridge on top of the specified
  * executor. The bridge should then be used for all subsequent communication
- * with the JavaScript code running in the executor.
+ * with the JavaScript code running in the executor. You can optionally pass in
+ * a list of module instances to be used instead of the auto-instantiated versions.
  */
-- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
+                           moduleInstances:(NSArray *)moduleInstances NS_DESIGNATED_INITIALIZER;
 
 /**
  * This method is used to call functions in the JavaScript application context.

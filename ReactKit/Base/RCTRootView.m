@@ -125,7 +125,7 @@ static Class _globalExecutorClass;
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
-  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor];
+  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor moduleInstances:nil];
   _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
   [self addGestureRecognizer:_touchHandler];
 
