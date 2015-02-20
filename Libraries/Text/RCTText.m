@@ -33,6 +33,7 @@
     _textStorage = [[NSTextStorage alloc] init];
     [_textStorage addLayoutManager:_layoutManager];
 
+    self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
 
