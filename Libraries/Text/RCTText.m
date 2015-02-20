@@ -25,6 +25,7 @@
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
 
+    self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
 
