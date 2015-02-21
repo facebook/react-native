@@ -1,6 +1,7 @@
-**Warning: This is currently a private repo to accompany the ReactJS conference
+#⚠ Warning ⚠
+This is currently a private repo to accompany the ReactJS conference
 talk, and is not accessible outside the official conference attendees - please
-do not share this code.**
+do **NOT** share this code.
 
 This is also a very early alpha release.  There are certainly bugs and missing
 features. Some things may even be well-documented in JS, but missing from the
