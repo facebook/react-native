@@ -75,5 +75,5 @@ var List = React.createClass({
 });
 
 // ... in another file ...
-<List style={styles.list} elementStyle={styles.element} />
+<List style={styles.list} elementStyle={styles.listElement} />
 ```
