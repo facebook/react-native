@@ -60,6 +60,7 @@ In order to let a call site customize the style of your component children, you 
 ```javascript
 var List = React.createClass({
   propTypes: {
+    style: View.stylePropType,
     elementStyle: View.stylePropType,
   },
   render: function() {
