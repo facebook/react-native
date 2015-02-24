@@ -2,6 +2,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTJSMethodRegistrar.h"
+
 @class RCTBridge;
 
 /**
@@ -11,9 +13,9 @@
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
- * Provides minimal interface needed to register a bridge module
+ * Provides the interface needed to register a bridge module.
  */
-@protocol RCTBridgeModule <NSObject>
+@protocol RCTBridgeModule <RCTJSMethodRegistrar>
 @optional
 
 /**
@@ -47,15 +49,12 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 + (NSDictionary *)constantsToExport;
 
 /**
- * An array of JavaScript methods that the module will call via the
- * -[RCTBridge enqueueJSCall:args:] method. Each method should be specified
- * as a string of the form "JSModuleName.jsMethodName". Attempting to call a
- * method that has not been registered will result in an error. If a method
- * has already been regsistered by another module, it is not necessary to
- * register it again, but it is good pratice. Registering the same method
- * more than once is silently ignored and will not result in an error.
+ * Some "constants" are not really constant, and need to be re-generated
+ * each time the bridge module is created. Support for this feature is
+ * deprecated and may be going away or changing, but for now you can use
+ * the -constantsToExport instance method to register these "pseudo-constants".
  */
-+ (NSArray *)JSMethods;
+- (NSDictionary *)constantsToExport;
 
 /**
  * Notifies the module that a batch of JS method invocations has just completed.
