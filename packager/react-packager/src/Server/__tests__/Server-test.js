@@ -6,8 +6,6 @@ jest.setMock('worker-farm', function(){ return function(){}; })
     .dontMock('url')
     .dontMock('../');
 
-
-var server = require('../');
 var q = require('q');
 
 describe('processRequest', function(){
@@ -45,17 +43,17 @@ describe('processRequest', function(){
   beforeEach(function(){
     Activity = require('../../Activity');
     Packager = require('../../Packager');
-    FileWatcher = require('../../FileWatcher')
+    FileWatcher = require('../../FileWatcher');
 
-    Packager.prototype.package = function(main, runModule, sourceMapUrl) {
+    Packager.prototype.package = function() {
       return q({
-        getSource: function(){
-          return "this is the source"
+        getSource: function() {
+          return 'this is the source';
         },
         getSourceMap: function(){
-          return "this is the source map"
-        }
-      })
+          return 'this is the source map';
+        },
+      });
     };
 
     FileWatcher.prototype.on = watcherFunc;

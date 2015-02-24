@@ -1,28 +1,69 @@
 
 'use strict';
 
-var os = require('os');
 var fs = require('fs');
 var q = require('q');
 var Cache = require('./Cache');
 var _ = require('underscore');
 var workerFarm = require('worker-farm');
+var declareOpts = require('../lib/declareOpts');
 
 var readFile = q.nfbind(fs.readFile);
 
 module.exports = Transformer;
 Transformer.TransformError = TransformError;
 
-function Transformer(projectConfig) {
-  this._cache = projectConfig.nonPersistent
-    ? new DummyCache() : new Cache(projectConfig);
+var validateOpts = declareOpts({
+  projectRoots: {
+    type: 'array',
+    required: true,
+  },
+  blacklistRE: {
+    type: 'object', // typeof regex is object
+  },
+  polyfillModuleNames: {
+    type: 'array',
+    default: [],
+  },
+  cacheVersion: {
+    type: 'string',
+    default: '1.0',
+  },
+  resetCache: {
+    type: 'boolean',
+    default: false,
+  },
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+  transformModulePath: {
+    type:'string',
+    required: true,
+  },
+  nonPersistent: {
+    type: 'boolean',
+    default: false,
+  },
+});
 
-  if (projectConfig.transformModulePath == null) {
+function Transformer(options) {
+  var opts = validateOpts(options);
+
+  this._cache = opts.nonPersistent
+    ? new DummyCache()
+    : new Cache({
+      resetCache: options.resetCache,
+      cacheVersion: options.cacheVersion,
+      projectRoots: options.projectRoots,
+    });
+
+  if (options.transformModulePath == null) {
     this._failedToStart = q.Promise.reject(new Error('No transfrom module'));
   } else {
     this._workers = workerFarm(
       {autoStart: true},
-      projectConfig.transformModulePath
+      options.transformModulePath
     );
   }
 }

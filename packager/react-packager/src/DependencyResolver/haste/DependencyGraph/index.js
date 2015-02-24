@@ -8,15 +8,35 @@ var path = require('path');
 var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
 var util = require('util');
+var declareOpts = require('../../../lib/declareOpts');
 
 var readFile = q.nfbind(fs.readFile);
 var readDir = q.nfbind(fs.readdir);
 var lstat = q.nfbind(fs.lstat);
 var realpath = q.nfbind(fs.realpath);
 
+var validateOpts = declareOpts({
+  roots: {
+    type: 'array',
+    required: true,
+  },
+  ignoreFilePath: {
+    type: 'function',
+    default: function(){}
+  },
+  fileWatcher: {
+    type: 'object',
+    required: true,
+  },
+});
+
 function DependecyGraph(options) {
-  this._roots = options.roots;
-  this._ignoreFilePath = options.ignoreFilePath || function(){};
+  var opts = validateOpts(options);
+
+  this._roots = opts.roots;
+  this._ignoreFilePath = opts.ignoreFilePath;
+  this._fileWatcher = options.fileWatcher;
+
   this._loaded = false;
   this._queue = this._roots.slice();
   this._graph = Object.create(null);
@@ -24,7 +44,6 @@ function DependecyGraph(options) {
   this._packagesById = Object.create(null);
   this._moduleById = Object.create(null);
   this._debugUpdateEvents = [];
-  this._fileWatcher = options.fileWatcher;
 
   // Kick off the search process to precompute the dependency graph.
   this._init();

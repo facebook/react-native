@@ -10,44 +10,69 @@ var DependencyResolver = require('../DependencyResolver');
 var _ = require('underscore');
 var Package = require('./Package');
 var Activity = require('../Activity');
+var declareOpts = require('../lib/declareOpts');
 
-var DEFAULT_CONFIG = {
-  /**
-   * RegExp used to ignore paths when scanning the filesystem to calculate the
-   * dependency graph.
-   */
-  blacklistRE: null,
+var validateOpts = declareOpts({
+  projectRoots: {
+    type: 'array',
+    required: true,
+  },
+  blacklistRE: {
+    type: 'object', // typeof regex is object
+  },
+  moduleFormat: {
+    type: 'string',
+    default: 'haste',
+  },
+  polyfillModuleNames: {
+    type: 'array',
+    default: [],
+  },
+  cacheVersion: {
+    type: 'string',
+    default: '1.0',
+  },
+  resetCache: {
+    type: 'boolean',
+    default: false,
+  },
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+  transformModulePath: {
+    type:'string',
+    required: true,
+  },
+  nonPersistent: {
+    type: 'boolean',
+    default: false,
+  },
+});
 
-  /**
-   * The kind of module system/transport wrapper to use for the modules bundled
-   * in the package.
-   */
-  moduleFormat: 'haste',
+function Packager(options) {
+  var opts = this._opts = validateOpts(options);
 
-  /**
-   * An ordered list of module names that should be considered as dependencies
-   * of every module in the system. The list is ordered because every item in
-   * the list will have an implicit dependency on all items before it.
-   *
-   * (This ordering is necessary to build, for example, polyfills that build on
-   *  each other)
-   */
-  polyfillModuleNames: [],
+  opts.projectRoots.forEach(verifyRootExists);
 
-  nonPersistent: false,
-};
+  this._resolver = new DependencyResolver({
+    projectRoots: opts.projectRoots,
+    blacklistRE: opts.blacklistRE,
+    polyfillModuleNames: opts.polyfillModuleNames,
+    dev: opts.dev,
+    nonPersistent: opts.nonPersistent,
+    moduleFormat: opts.moduleFormat
+  });
 
-function Packager(projectConfig) {
-  projectConfig.projectRoots.forEach(verifyRootExists);
-
-  this._config = Object.create(DEFAULT_CONFIG);
-  for (var key in projectConfig) {
-    this._config[key] = projectConfig[key];
-  }
-
-  this._resolver = new DependencyResolver(this._config);
-
-  this._transformer = new Transformer(projectConfig);
+  this._transformer = new Transformer({
+    projectRoots: opts.projectRoots,
+    blacklistRE: opts.blacklistRE,
+    cacheVersion: opts.cacheVersion,
+    resetCache: opts.resetCache,
+    dev: opts.dev,
+    transformModulePath: opts.transformModulePath,
+    nonPersistent: opts.nonPersistent,
+  });
 }
 
 Packager.prototype.kill = function() {
@@ -92,7 +117,7 @@ Packager.prototype.package = function(main, runModule, sourceMapUrl) {
 
 Packager.prototype.invalidateFile = function(filePath) {
   this._transformer.invalidateFile(filePath);
-}
+};
 
 Packager.prototype.getDependencies = function(main) {
   return this._resolver.getDependencies(main);
@@ -103,7 +128,7 @@ Packager.prototype._transformModule = function(module) {
   return this._transformer.loadFileAndTransform(
     ['es6'],
     path.resolve(module.path),
-    this._config.transformer || {}
+    this._opts.transformer || {}
   ).then(function(transformed) {
     return _.extend(
       {},
