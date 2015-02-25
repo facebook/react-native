@@ -30,10 +30,16 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 /**
- * Send a device or application event that does not relate to a specific
- * view, e.g. rotation, location, keyboard show/hide, background/awake, etc.
+ * Send an application-specific event that does not relate to a specific
+ * view, e.g. a navigation or data update notification.
  */
-- (void)sendDeviceEventWithName:(NSString *)name body:(NSDictionary *)body;
+- (void)sendAppEventWithName:(NSString *)name body:(id)body;
+
+/**
+ * Send a device or iOS event that does not relate to a specific view,
+ * e.g.rotation, location, keyboard show/hide, background/awake, etc.
+ */
+- (void)sendDeviceEventWithName:(NSString *)name body:(id)body;
 
 /**
  * Send a user input event. The body dictionary must contain a "target"

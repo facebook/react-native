@@ -7,7 +7,7 @@
 
 @implementation RCTEventDispatcher
 {
-  RCTBridge *_bridge;
+  RCTBridge __weak *_bridge;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -18,20 +18,34 @@
   return self;
 }
 
-- (void)sendDeviceEventWithName:(NSString *)name body:(NSDictionary *)body
++ (NSArray *)JSMethods
+{
+  return @[
+    @"RCTNativeAppEventEmitter.emit",
+    @"RCTDeviceEventEmitter.emit",
+    @"RCTEventEmitter.receiveEvent",
+  ];
+}
+
+- (void)sendAppEventWithName:(NSString *)name body:(id)body
+{
+  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit"
+                    args:body ? @[name, body] : @[name]];
+}
+
+- (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 {
   [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
                     args:body ? @[name, body] : @[name]];
 }
 
-
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
 {
   RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-            @"Event body dictionary must include a 'target' property containing a react tag");
+    @"Event body dictionary must include a 'target' property containing a react tag");
   
   [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
-                    args:@[body[@"target"], name, body]];
+                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type
@@ -46,8 +60,10 @@
     @"topEndEditing",
   };
   
-  [self sendInputEventWithName:events[type] body:@{
+  [self sendInputEventWithName:events[type] body:text ? @{
     @"text": text,
+    @"target": reactTag
+  } : @{
     @"target": reactTag
   }];
 }
