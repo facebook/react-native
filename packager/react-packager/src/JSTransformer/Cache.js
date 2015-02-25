@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path');
-var version = require('../../package.json').version;
+var version = require('../../../../package.json').version;
 var tmpdir = require('os').tmpDir();
 var pathUtils = require('../fb-path-utils');
 var declareOpts = require('../lib/declareOpts');
