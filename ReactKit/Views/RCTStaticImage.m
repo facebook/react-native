@@ -20,6 +20,10 @@
   if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets)) {
     image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeStretch];
   }
+
+  // Apply trilinear filtering to smooth out mis-sized images
+  self.layer.minificationFilter = kCAFilterTrilinear;
+  self.layer.magnificationFilter = kCAFilterTrilinear;
   
   super.image = image;
 }
