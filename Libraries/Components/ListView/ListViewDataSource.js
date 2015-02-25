@@ -245,12 +245,14 @@ class ListViewDataSource {
   }
 
   /**
-   * Returns an array containing the number of rows in each section
+   * Returns a mapping from sectionIDs to the number of rows in each respective
+   * section
    */
-  getSectionLengths(): Array<number> {
-    var results = [];
+  getSectionLengths(): {[key: string], number} {
+    var results = {};
     for (var ii = 0; ii < this.sectionIdentities.length; ii++) {
-      results.push(this.rowIdentities[ii].length);
+      var sectionID = this.sectionIdentities[ii];
+      results[sectionID] = this.rowIdentities[ii].length;
     }
     return results;
   }
