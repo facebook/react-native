@@ -147,7 +147,7 @@ DependecyGraph.prototype.resolveDependency = function(
     dep = this._graph[modulePath];
     if (dep == null) {
       throw new Error(
-        'Cannot find package main file for pacakge: ' + packageJson._root
+        'Cannot find package main file for package: ' + packageJson._root
       );
     }
     return dep;
