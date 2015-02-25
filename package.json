@@ -8,12 +8,15 @@
   },
   "jest": {
     "scriptPreprocessor": "jestSupport/scriptPreprocess.js",
+    "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/packager/"
+      "/node_modules/"
     ],
     "testFileExtensions": [
       "js"
+    ],
+    "unmockedModulePathPatterns": [
+      "source-map"
     ]
   },
   "scripts": {
