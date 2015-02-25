@@ -81,9 +81,20 @@ static Class _globalExecutorClass;
                                              object:nil];
 }
 
++ (NSArray *)JSMethods
+{
+  return @[
+    @"AppRegistry.runApplication",
+    @"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
+  ];
+}
+
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
+                    args:@[self.reactTag]];
 }
 
 - (void)bundleFinishedLoading:(NSError *)error
@@ -125,7 +136,7 @@ static Class _globalExecutorClass;
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
-  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor moduleInstances:nil];
+  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor moduleProvider:nil];
   _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
   [self addGestureRecognizer:_touchHandler];
 

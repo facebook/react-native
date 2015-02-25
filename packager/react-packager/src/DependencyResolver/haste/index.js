@@ -4,6 +4,7 @@ var path = require('path');
 var FileWatcher = require('../../FileWatcher');
 var DependencyGraph = require('./DependencyGraph');
 var ModuleDescriptor = require('../ModuleDescriptor');
+var declareOpts = require('../../lib/declareOpts');
 
 var DEFINE_MODULE_CODE =
   '__d(' +
@@ -18,22 +19,50 @@ var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
 
 var REL_REQUIRE_STMT = /require\(['"]([\.\/0-9A-Z_$\-]*)['"]\)/gi;
 
-function HasteDependencyResolver(config) {
-  this._fileWatcher = config.nonPersistent
+var validateOpts = declareOpts({
+  projectRoots: {
+    type: 'array',
+    required: true,
+  },
+  blacklistRE: {
+    type: 'object', // typeof regex is object
+  },
+  polyfillModuleNames: {
+    type: 'array',
+    default: [],
+  },
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+  nonPersistent: {
+    type: 'boolean',
+    default: false,
+  },
+  moduleFormat: {
+    type: 'string',
+    default: 'haste',
+  },
+});
+
+function HasteDependencyResolver(options) {
+  var opts = validateOpts(options);
+
+  this._fileWatcher = opts.nonPersistent
     ? FileWatcher.createDummyWatcher()
-    : new FileWatcher(config.projectRoots);
+    : new FileWatcher(opts.projectRoots);
 
   this._depGraph = new DependencyGraph({
-    roots: config.projectRoots,
+    roots: opts.projectRoots,
     ignoreFilePath: function(filepath) {
       return filepath.indexOf('__tests__') !== -1 ||
-        (config.blacklistRE && config.blacklistRE.test(filepath));
+        (opts.blacklistRE && opts.blacklistRE.test(filepath));
     },
     fileWatcher: this._fileWatcher
   });
 
   this._polyfillModuleNames = [
-    config.dev
+    opts.dev
       ? path.join(__dirname, 'polyfills/prelude_dev.js')
       : path.join(__dirname, 'polyfills/prelude.js'),
     path.join(__dirname, 'polyfills/require.js'),
@@ -41,7 +70,7 @@ function HasteDependencyResolver(config) {
     path.join(__dirname, 'polyfills/console.js'),
     path.join(__dirname, 'polyfills/error-guard.js'),
   ].concat(
-    config.polyfillModuleNames || []
+    opts.polyfillModuleNames || []
   );
 }
 

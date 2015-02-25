@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "jest": {
-    "unmockedModulePathPatterns": ["source-map"],
-    "testPathIgnorePatterns": ["JSAppServer/node_modules"]
+    "unmockedModulePathPatterns": [
+      "source-map"
+    ],
+    "testPathIgnorePatterns": [
+      "JSAppServer/node_modules"
+    ]
   }
 }

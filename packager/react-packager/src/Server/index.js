@@ -1,26 +1,56 @@
 var url = require('url');
 var path = require('path');
-var FileWatcher = require('../FileWatcher')
+var declareOpts = require('../lib/declareOpts');
+var FileWatcher = require('../FileWatcher');
 var Packager = require('../Packager');
 var Activity = require('../Activity');
 var q = require('q');
 
 module.exports = Server;
 
+var validateOpts = declareOpts({
+  projectRoots: {
+    type: 'array',
+    required: true,
+  },
+  blacklistRE: {
+    type: 'object', // typeof regex is object
+  },
+  moduleFormat: {
+    type: 'string',
+    default: 'haste',
+  },
+  polyfillModuleNames: {
+    type: 'array',
+    default: [],
+  },
+  cacheVersion: {
+    type: 'string',
+    default: '1.0',
+  },
+  resetCache: {
+    type: 'boolean',
+    default: false,
+  },
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+  transformModulePath: {
+    type:'string',
+    required: true,
+  },
+  nonPersistent: {
+    type: 'boolean',
+    default: false,
+  },
+});
+
 function Server(options) {
-  this._projectRoots = options.projectRoots;
+  var opts = validateOpts(options);
+  this._projectRoots = opts.projectRoots;
   this._packages = Object.create(null);
-  this._packager = new Packager({
-    projectRoots: options.projectRoots,
-    blacklistRE: options.blacklistRE,
-    polyfillModuleNames: options.polyfillModuleNames || [],
-    runtimeCode: options.runtimeCode,
-    cacheVersion: options.cacheVersion,
-    resetCache: options.resetCache,
-    dev: options.dev,
-    transformModulePath: options.transformModulePath,
-    nonPersistent: options.nonPersistent,
-  });
+  this._packager = new Packager(opts);
 
   this._fileWatcher = options.nonPersistent
     ? FileWatcher.createDummyWatcher()
@@ -35,10 +65,10 @@ Server.prototype._onFileChange = function(type, filepath, root) {
   this._packager.invalidateFile(absPath);
   // Make sure the file watcher event runs through the system before
   // we rebuild the packages.
-  setImmediate(this._rebuildPackages.bind(this, absPath))
+  setImmediate(this._rebuildPackages.bind(this, absPath));
 };
 
-Server.prototype._rebuildPackages = function(filepath) {
+Server.prototype._rebuildPackages = function() {
   var buildPackage = this._buildPackage.bind(this);
   var packages = this._packages;
   Object.keys(packages).forEach(function(key) {

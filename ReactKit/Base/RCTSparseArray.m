@@ -108,4 +108,9 @@
   return [[[self class] allocWithZone:zone] initWithSparseArray:self];
 }
 
+- (NSString *)description
+{
+  return [[super description] stringByAppendingString:[_storage description]];
+}
+
 @end

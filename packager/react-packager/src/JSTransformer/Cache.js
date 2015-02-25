@@ -4,19 +4,36 @@ var path = require('path');
 var version = require('../../package.json').version;
 var tmpdir = require('os').tmpDir();
 var pathUtils = require('../fb-path-utils');
+var declareOpts = require('../lib/declareOpts');
 var fs = require('fs');
 var _ = require('underscore');
 var q = require('q');
 
 var Promise = q.Promise;
 
+var validateOpts = declareOpts({
+  resetCache: {
+    type: 'boolean',
+    default: false,
+  },
+  cacheVersion: {
+    type: 'string',
+    default: '1.0',
+  },
+  projectRoots: {
+    type: 'array',
+    required: true,
+  },
+});
 module.exports = Cache;
 
-function Cache(projectConfig) {
-  this._cacheFilePath = cacheFilePath(projectConfig);
+function Cache(options) {
+  var opts = validateOpts(options);
+
+  this._cacheFilePath = cacheFilePath(opts);
 
   var data;
-  if (!projectConfig.resetCache) {
+  if (!opts.resetCache) {
     data = loadCacheSync(this._cacheFilePath);
   } else {
     data = Object.create(null);
@@ -63,7 +80,7 @@ Cache.prototype.invalidate = function(filepath){
   if(this._has(filepath)) {
     delete this._data[filepath];
   }
-}
+};
 
 Cache.prototype.end = function() {
   return this._persistCache();
@@ -114,9 +131,9 @@ function loadCacheSync(cacheFilepath) {
   return ret;
 }
 
-function cacheFilePath(projectConfig) {
-  var roots = projectConfig.projectRoots.join(',').split(path.sep).join('-');
-  var cacheVersion = projectConfig.cacheVersion || '0';
+function cacheFilePath(options) {
+  var roots = options.projectRoots.join(',').split(path.sep).join('-');
+  var cacheVersion = options.cacheVersion || '0';
   return path.join(
     tmpdir,
     [
