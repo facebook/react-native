@@ -2,7 +2,6 @@
 
 #import "RCTTiming.h"
 
-#import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTLog.h"
 #import "RCTSparseArray.h"
@@ -12,7 +11,7 @@
 
 @property (nonatomic, strong, readonly) NSDate *target;
 @property (nonatomic, assign, readonly) BOOL repeats;
-@property (nonatomic, copy, readonly) NSNumber *callbackID;
+@property (nonatomic, strong, readonly) NSNumber *callbackID;
 @property (nonatomic, assign, readonly) NSTimeInterval interval;
 
 @end
@@ -173,12 +172,12 @@
   if (jsSchedulingOverhead < 0) {
     RCTLogWarn(@"jsSchedulingOverhead (%ims) should be positive", (int)(jsSchedulingOverhead * 1000));
   }
-
+  
   NSTimeInterval targetTime = interval - jsSchedulingOverhead;
   if (interval < 0.018) { // Make sure short intervals run each frame
     interval = 0;
   }
-
+  
   RCTTimer *timer = [[RCTTimer alloc] initWithCallbackID:callbackID
                                                 interval:interval
                                               targetTime:targetTime

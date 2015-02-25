@@ -9,6 +9,7 @@
 #import <objc/runtime.h>
 
 #import "RCTConvert.h"
+#import "RCTInvalidating.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTSparseArray.h"
@@ -98,40 +99,6 @@ static id<RCTBridgeModule> RCTCreateModuleInstance(Class cls, RCTBridge *bridge)
   } else {
     return [[cls alloc] init];
   }
-}
-
-/**
- * This function scans all classes available at runtime and returns an array
- * of all JSMethods registered.
- */
-static NSArray *RCTJSMethods(void)
-{
-  static NSArray *JSMethods;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    NSMutableSet *uniqueMethods = [NSMutableSet set];
-
-    unsigned int classCount;
-    Class *classes = objc_copyClassList(&classCount);
-    for (unsigned int i = 0; i < classCount; i++) {
-
-      Class cls = classes[i];
-
-      if (!class_getSuperclass(cls)) {
-        // Class has no superclass - it's probably something weird
-        continue;
-      }
-
-      if (RCTClassOverridesClassMethod(cls, @selector(JSMethods))) {
-        [uniqueMethods addObjectsFromArray:[cls JSMethods]];
-      }
-    }
-    free(classes);
-
-    JSMethods = [uniqueMethods allObjects];
-  });
-
-  return JSMethods;
 }
 
 /**
@@ -297,7 +264,7 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
 
       NSArray *methods = RCTExportedMethodsByModuleID()[moduleID];
       NSMutableDictionary *methodsByName = [NSMutableDictionary dictionaryWithCapacity:methods.count];
-      [methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger methodID, BOOL *_stop) {
+      [methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger methodID, BOOL *stop) {
         methodsByName[method.JSMethodName] = @{
           @"methodID": @(methodID),
           @"type": @"remote",
@@ -368,16 +335,38 @@ static NSDictionary *RCTLocalModulesConfig()
   static NSMutableDictionary *localModules;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-
+    
     RCTLocalModuleIDs = [[NSMutableDictionary alloc] init];
     RCTLocalMethodIDs = [[NSMutableDictionary alloc] init];
-
+    
+    NSMutableArray *JSMethods = [[NSMutableArray alloc] init];
+    
+    // Add globally used methods
+    [JSMethods addObjectsFromArray:@[
+      @"AppRegistry.runApplication",
+      @"RCTDeviceEventEmitter.emit",
+      @"RCTEventEmitter.receiveEvent",
+      @"RCTEventEmitter.receiveTouches",
+    ]];
+    
+    //  NOTE: these methods are currently unused in the OSS project
+    //  @"Dimensions.set",
+    //  @"RCTNativeAppEventEmitter.emit",
+    //  @"ReactIOS.unmountComponentAtNodeAndRemoveContainer",
+    
+    // Register individual methods from modules
+    for (Class cls in RCTBridgeModuleClassesByModuleID()) {
+      if (RCTClassOverridesClassMethod(cls, @selector(JSMethods))) {
+        [JSMethods addObjectsFromArray:[cls JSMethods]];
+      }
+    }
+    
     localModules = [[NSMutableDictionary alloc] init];
-    for (NSString *moduleDotMethod in RCTJSMethods()) {
-
+    for (NSString *moduleDotMethod in JSMethods) {
+      
       NSArray *parts = [moduleDotMethod componentsSeparatedByString:@"."];
       RCTCAssert(parts.count == 2, @"'%@' is not a valid JS method definition - expected 'Module.method' format.", moduleDotMethod);
-
+      
       // Add module if it doesn't already exist
       NSString *moduleName = parts[0];
       NSDictionary *module = localModules[moduleName];
@@ -388,7 +377,7 @@ static NSDictionary *RCTLocalModulesConfig()
         };
         localModules[moduleName] = module;
       }
-
+      
       // Add method if it doesn't already exist
       NSString *methodName = parts[1];
       NSMutableDictionary *methods = module[@"methods"];
@@ -398,27 +387,27 @@ static NSDictionary *RCTLocalModulesConfig()
           @"type": @"local"
         };
       }
-
+      
       // Add module and method lookup
       RCTLocalModuleIDs[moduleDotMethod] = module[@"moduleID"];
       RCTLocalMethodIDs[moduleDotMethod] = methods[methodName][@"methodID"];
     }
   });
-
+  
   return localModules;
 }
 
 @implementation RCTBridge
 {
   RCTSparseArray *_modulesByID;
-  NSDictionary *_modulesByName;
+  NSMutableDictionary *_modulesByName;
   id<RCTJavaScriptExecutor> _javaScriptExecutor;
 }
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                            moduleProvider:(RCTBridgeModuleProviderBlock)block
+                           moduleInstances:(NSArray *)moduleInstances
 {
   if ((self = [super init])) {
     _javaScriptExecutor = javaScriptExecutor;
@@ -428,39 +417,31 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
     // Register passed-in module instances
     NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
-    if (block) {
-      for (id<RCTBridgeModule> module in block(self)) {
-        preregisteredModules[RCTModuleNameForClass([module class])] = module;
-      }
+    for (id<RCTBridgeModule> module in moduleInstances) {
+      preregisteredModules[RCTModuleNameForClass([module class])] = module;
     }
 
     // Instantiate modules
     _modulesByID = [[RCTSparseArray alloc] init];
-    NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
+    _modulesByName = [[NSMutableDictionary alloc] initWithDictionary:preregisteredModules];
     [RCTBridgeModuleClassesByModuleID() enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
       NSString *moduleName = RCTModuleNamesByID[moduleID];
       // Check if module instance has already been registered for this name
-      if ((_modulesByID[moduleID] = modulesByName[moduleName])) {
+      if (_modulesByName[moduleName] != nil) {
         // Preregistered instances takes precedence, no questions asked
         if (!preregisteredModules[moduleName]) {
           // It's OK to have a name collision as long as the second instance is nil
           RCTAssert(RCTCreateModuleInstance(moduleClass, self) == nil,
                     @"Attempted to register RCTBridgeModule class %@ for the name '%@', \
                     but name was already registered by class %@", moduleClass,
-                    moduleName, [modulesByName[moduleName] class]);
+                    moduleName, [_modulesByName[moduleName] class]);
         }
       } else {
         // Module name hasn't been used before, so go ahead and instantiate
-        id<RCTBridgeModule> module = RCTCreateModuleInstance(moduleClass, self);
-        if (module) {
-          _modulesByID[moduleID] = modulesByName[moduleName] = module;
-        }
+        _modulesByID[moduleID] = _modulesByName[moduleName] = RCTCreateModuleInstance(moduleClass, self);
       }
     }];
-
-    // Store modules
-    _modulesByName = [modulesByName copy];
-
+    
     // Inject module data into JS context
     NSString *configJSON = RCTJSONStringify(@{
       @"remoteModuleConfig": RCTRemoteModulesConfig(_modulesByName),
@@ -477,14 +458,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
   
   return self;
-}
-
-- (NSDictionary *)modules
-{
-  RCTAssert(_modulesByName != nil, @"Bridge modules have not yet been initialized. \
-            You may be trying to access a module too early in the startup procedure.");
-
-  return _modulesByName;
 }
 
 - (void)dealloc
@@ -543,7 +516,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
-                      arguments:@[moduleID, methodID, args ?: @[]]];
+                      arguments:@[moduleID, methodID, args]];
 }
 
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete
@@ -726,8 +699,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       switch (argumentType[0]) {
         case ':':
           if ([param isKindOfClass:[NSString class]]) {
-            SEL sel = NSSelectorFromString(param);
-            [invocation setArgument:&sel atIndex:argIdx];
+            SEL selector = NSSelectorFromString(param);
+            [invocation setArgument:&selector atIndex:argIdx];
             shouldSet = NO;
           }
           break;
@@ -840,7 +813,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 + (void)log:(NSArray *)objects level:(NSString *)level
 {
   if (!_latestJSExecutor || ![_latestJSExecutor isValid]) {
-    RCTLogError(@"ERROR: No valid JS executor to log %@.", objects);
+    RCTLogError(@"%@", RCTLogFormatString(@"ERROR: No valid JS executor to log %@.", objects));
     return;
   }
   NSMutableArray *args = [NSMutableArray arrayWithObject:level];

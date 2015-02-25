@@ -4,7 +4,6 @@
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
 
-@class RCTBridge;
 @class RCTEventDispatcher;
 @class RCTRootView;
 
@@ -28,12 +27,6 @@ static inline NSDictionary *RCTAPIErrorObject(NSString *msg)
 }
 
 /**
- * This block can be used to instantiate modules that require additional
- * init parameters, or additional configuration prior to being used.
- */
-typedef NSArray *(^RCTBridgeModuleProviderBlock)(RCTBridge *bridge);
-
-/**
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
@@ -41,13 +34,11 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(RCTBridge *bridge);
 /**
  * The designated initializer. This creates a new bridge on top of the specified
  * executor. The bridge should then be used for all subsequent communication
- * with the JavaScript code running in the executor. Modules will be automatically
- * instantiated using the default contructor, but you can optionally pass in a
- * module provider block to manually instantiate modules that require additional
- * init parameters or configuration.
+ * with the JavaScript code running in the executor. You can optionally pass in
+ * a list of module instances to be used instead of the auto-instantiated versions.
  */
 - (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                            moduleProvider:(RCTBridgeModuleProviderBlock)block NS_DESIGNATED_INITIALIZER;
+                           moduleInstances:(NSArray *)moduleInstances NS_DESIGNATED_INITIALIZER;
 
 /**
  * This method is used to call functions in the JavaScript application context.
@@ -68,11 +59,6 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(RCTBridge *bridge);
  * higher-level interface for sending UI events such as touches and text input.
  */
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
-
-/**
- * A dictionary of all registered RCTBridgeModule instances, keyed by moduleName.
- */
-@property (nonatomic, copy, readonly) NSDictionary *modules;
 
 /**
  * The shadow queue is used to execute callbacks from the JavaScript code. All
