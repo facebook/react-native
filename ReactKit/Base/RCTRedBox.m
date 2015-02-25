@@ -87,11 +87,13 @@
 {
   _lastStackTrace = stack;
   _lastErrorMessage = message;
-  _cachedMessageCell = [self reuseCell:nil forErrorMessage:message];
-  [_stackTraceTableView reloadData];
-  [_stackTraceTableView setNeedsLayout];
   
   if (self.hidden && shouldShow) {
+
+    _cachedMessageCell = [self reuseCell:nil forErrorMessage:message];
+    [_stackTraceTableView reloadData];
+    [_stackTraceTableView setNeedsLayout];
+
     [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                 atScrollPosition:UITableViewScrollPositionTop
                                         animated:NO];
