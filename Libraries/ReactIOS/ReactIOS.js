@@ -6,6 +6,7 @@
 
 "use strict";
 
+var ReactChildren = require('ReactChildren');
 var ReactComponent = require('ReactComponent');
 var ReactCompositeComponent = require('ReactCompositeComponent');
 var ReactContext = require('ReactContext');
@@ -20,6 +21,7 @@ var ReactPropTypes = require('ReactPropTypes');
 
 var deprecated = require('deprecated');
 var invariant = require('invariant');
+var onlyChild = require('onlyChild');
 
 ReactIOSDefaultInjection.inject();
 
@@ -73,6 +75,12 @@ var render = function(component, mountInto) {
 
 var ReactIOS = {
   hasReactIOSInitialized: false,
+  Children: {
+    map: ReactChildren.map,
+    forEach: ReactChildren.forEach,
+    count: ReactChildren.count,
+    only: onlyChild
+  },
   PropTypes: ReactPropTypes,
   createClass: ReactCompositeComponent.createClass,
   createElement: createElement,
