@@ -139,7 +139,7 @@ DependecyGraph.prototype.resolveDependency = function(
         depModuleId,
         fromModule.id
       );
-      return;
+      return null;
     }
 
     var main = packageJson.main || 'index';
@@ -223,7 +223,7 @@ DependecyGraph.prototype._search = function() {
     .then(function(filePaths) {
       filePaths = filePaths.filter(function(filePath) {
         if (filePath == null) {
-          return false
+          return false;
         }
 
         return !self._ignoreFilePath(filePath);
@@ -454,7 +454,8 @@ DependecyGraph.prototype._getAbsolutePath = function(filePath) {
     return filePath;
   }
 
-  for (var i = 0, root; root = this._roots[i]; i++) {
+  for (var i = 0; i < this._roots.length; i++) {
+    var root = this._roots[i];
     var absPath = path.join(root, filePath);
     if (this._graph[absPath]) {
       return absPath;

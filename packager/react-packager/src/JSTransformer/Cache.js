@@ -3,7 +3,7 @@
 var path = require('path');
 var version = require('../../../../package.json').version;
 var tmpdir = require('os').tmpDir();
-var pathUtils = require('../fb-path-utils');
+var isAbsolutePath = require('absolute-path');
 var declareOpts = require('../lib/declareOpts');
 var fs = require('fs');
 var _ = require('underscore');
@@ -48,7 +48,7 @@ function Cache(options) {
 }
 
 Cache.prototype.get = function(filepath, loaderCb) {
-  if (!pathUtils.isAbsolutePath(filepath)) {
+  if (!isAbsolutePath(filepath)) {
     throw new Error('Use absolute paths');
   }
 
@@ -62,7 +62,7 @@ Cache.prototype.get = function(filepath, loaderCb) {
 };
 
 Cache.prototype._set = function(filepath, loaderPromise) {
-  return this._data[filepath] = loaderPromise.then(function(data) {
+  this._data[filepath] = loaderPromise.then(function(data) {
     return [
       data,
       q.nfbind(fs.stat)(filepath)
@@ -74,10 +74,12 @@ Cache.prototype._set = function(filepath, loaderPromise) {
       mtime: stat.mtime.getTime(),
     };
   }.bind(this));
+
+  return this._data[filepath];
 };
 
 Cache.prototype.invalidate = function(filepath){
-  if(this._has(filepath)) {
+  if (this._has(filepath)) {
     delete this._data[filepath];
   }
 };
@@ -94,7 +96,7 @@ Cache.prototype._persistCache = function() {
   var data = this._data;
   var cacheFilepath = this._cacheFilePath;
 
-  return this._persisting = q.all(_.values(data))
+  this._persisting = q.all(_.values(data))
     .then(function(values) {
       var json = Object.create(null);
       Object.keys(data).forEach(function(key, i) {
@@ -106,6 +108,8 @@ Cache.prototype._persistCache = function() {
       this._persisting = null;
       return true;
     }.bind(this));
+
+  return this._persisting;
 };
 
 function loadCacheSync(cacheFilepath) {

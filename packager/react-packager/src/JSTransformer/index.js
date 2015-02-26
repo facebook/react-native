@@ -7,6 +7,7 @@ var Cache = require('./Cache');
 var _ = require('underscore');
 var workerFarm = require('worker-farm');
 var declareOpts = require('../lib/declareOpts');
+var util = require('util');
 
 var readFile = q.nfbind(fs.readFile);
 
@@ -75,9 +76,7 @@ Transformer.prototype.kill = function() {
 
 Transformer.prototype.invalidateFile = function(filePath) {
   this._cache.invalidate(filePath);
-  //TODO: We can read the file and put it into the cache right here
-  //      This would simplify some caching logic as we can be sure that the cache is up to date
-}
+};
 
 Transformer.prototype.loadFileAndTransform = function(
   transformSets,
@@ -116,7 +115,7 @@ Transformer.prototype.loadFileAndTransform = function(
 };
 
 function TransformError() {}
-TransformError.__proto__ = SyntaxError.prototype;
+util.inherits(TransformError, SyntaxError);
 
 function formatEsprimaError(err, filename, source) {
   if (!(err.lineNumber && err.column)) {

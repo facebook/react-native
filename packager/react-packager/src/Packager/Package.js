@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('underscore');
-var SourceMapGenerator = require('source-map').SourceMapGenerator;
 var base64VLQ = require('./base64-vlq');
 
 module.exports = Package;
@@ -102,7 +101,7 @@ Package.prototype._getMappings = function() {
         mappings += ';';
       }
     }
-    if (i != modules.length - 1) {
+    if (i !== modules.length - 1) {
       mappings += ';';
     }
   }

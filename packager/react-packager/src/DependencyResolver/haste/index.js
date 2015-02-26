@@ -6,14 +6,15 @@ var DependencyGraph = require('./DependencyGraph');
 var ModuleDescriptor = require('../ModuleDescriptor');
 var declareOpts = require('../../lib/declareOpts');
 
-var DEFINE_MODULE_CODE =
-  '__d(' +
-    '\'_moduleName_\',' +
-    '_deps_,' +
-    'function(global, require, requireDynamic, requireLazy, module, exports) {'+
-    '  _code_' +
-    '}' +
-  ');';
+var DEFINE_MODULE_CODE = [
+  '__d(',
+  '\'_moduleName_\',',
+  '_deps_,',
+  'function(global, require, requireDynamic, requireLazy, module, exports) {',
+  '  _code_',
+  '}',
+  ');',
+].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
 
@@ -116,7 +117,6 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
     return code;
   }
 
-  var depGraph = this._depGraph;
   var resolvedDeps = Object.create(null);
   var resolvedDepsArr = [];
 
@@ -131,9 +131,9 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
 
   var relativizedCode =
     code.replace(REL_REQUIRE_STMT, function(codeMatch, depName) {
-      var dep = resolvedDeps[depName];
-      if (dep != null) {
-        return 'require(\'' + dep + '\')';
+      var depId = resolvedDeps[depName];
+      if (depId != null) {
+        return 'require(\'' + depId + '\')';
       } else {
         return codeMatch;
       }

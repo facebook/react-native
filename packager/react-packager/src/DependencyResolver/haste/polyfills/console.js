@@ -20,7 +20,9 @@
  * @polyfill
  */
 
+/*eslint global-strict:0*/
 (function(global) {
+  'use strict';
 
   var OBJECT_COLUMN_NAME = '(index)';
 
@@ -45,7 +47,7 @@
             if (typeof arg.toString === 'function') {
               try {
                 return arg.toString();
-              } catch (e) {
+              } catch (E) {
                 return 'unknown';
               }
             }
@@ -53,7 +55,7 @@
         }
       }).join(', ');
       global.nativeLoggingHook(str);
-    };
+    }
 
     var repeat = function(element, n) {
       return Array.apply(null, Array(n)).map(function() { return element; });
@@ -120,7 +122,7 @@
       // logged string, which would shift the header and screw up
       // the table
       global.nativeLoggingHook('\n' + table.join('\n'));
-    };
+    }
 
     global.console = {
       error: doNativeLog,
@@ -130,7 +132,7 @@
       table: consoleTablePolyfill
     };
 
-  };
+  }
 
   if (typeof module !== 'undefined') {
     module.exports = setupConsole;

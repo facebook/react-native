@@ -1,17 +1,12 @@
+'use strict';
+
 var Promise = require('q').Promise;
 var ModuleDescriptor = require('../ModuleDescriptor');
 
 var mdeps = require('module-deps');
 var path = require('path');
-var fs = require('fs');
 
-// var REQUIRE_RUNTIME = fs.readFileSync(
-//   path.join(__dirname, 'require.js')
-// ).toString();
-
-exports.getRuntimeCode = function() {
-  return REQUIRE_RUNTIME;
-};
+exports.getRuntimeCode = function() {};
 
 exports.wrapModule = function(id, source) {
   return Promise.resolve(
@@ -21,7 +16,7 @@ exports.wrapModule = function(id, source) {
 };
 
 exports.getDependencies = function(root, fileEntryPath) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(resolve) {
     fileEntryPath = path.join(process.cwd(), root, fileEntryPath);
 
     var md = mdeps();

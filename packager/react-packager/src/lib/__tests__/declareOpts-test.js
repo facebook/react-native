@@ -1,3 +1,5 @@
+'use strict';
+
 jest.autoMockOff();
 
 var declareOpts = require('../declareOpts');

@@ -1,3 +1,5 @@
+'use strict';
+
 jest.autoMockOff();
 
 describe('Activity', function() {
