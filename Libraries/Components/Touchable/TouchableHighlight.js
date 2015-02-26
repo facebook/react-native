@@ -11,6 +11,7 @@ var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('TimerMixin');
 var Touchable = require('Touchable');
+var TouchableFeedbackPropType = require('TouchableFeedbackPropType');
 var View = require('View');
 
 var cloneWithProps = require('cloneWithProps');
@@ -50,6 +51,7 @@ var DEFAULT_PROPS = {
 
 var TouchableHighlight = React.createClass({
   propTypes: {
+    ...TouchableFeedbackPropType,
     /**
      * Called when the touch is released, but not if cancelled (e.g. by
      * a scroll that steals the responder lock).
@@ -127,12 +129,14 @@ var TouchableHighlight = React.createClass({
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     this._showUnderlay();
+    this.props.onPressIn && this.props.onPressIn();
   },
 
   touchableHandleActivePressOut: function() {
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
+    this.props.onPressOut && this.props.onPressOut();
   },
 
   touchableHandlePress: function() {
@@ -140,6 +144,10 @@ var TouchableHighlight = React.createClass({
     this._showUnderlay();
     this._hideTimeout = this.setTimeout(this._hideUnderlay, 100);
     this.props.onPress && this.props.onPress();
+  },
+
+  touchableHandleLongPress: function() {
+    this.props.onLongPress && this.props.onLongPress();
   },
 
   touchableGetPressRectOffset: function() {
