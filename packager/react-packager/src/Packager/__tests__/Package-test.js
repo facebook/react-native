@@ -50,13 +50,13 @@ describe('Package', function() {
 
   describe('sourcemap package', function() {
     it('should create sourcemap', function() {
-      var ppackage = new Package('test_url');
-      ppackage.addModule('transformed foo;\n', 'source foo', 'foo path');
-      ppackage.addModule('transformed bar;\n', 'source bar', 'bar path');
-      ppackage.setMainModuleId('foo');
-      ppackage.finalize({runMainModule: true});
-      var s = ppackage.getSourceMap();
-      expect(s).toEqual(genSourceMap(ppackage._modules));
+      var p = new Package('test_url');
+      p.addModule('transformed foo;\n', 'source foo', 'foo path');
+      p.addModule('transformed bar;\n', 'source bar', 'bar path');
+      p.setMainModuleId('foo');
+      p.finalize({runMainModule: true});
+      var s = p.getSourceMap();
+      expect(s).toEqual(genSourceMap(p._modules));
     });
   });
 });
@@ -92,4 +92,4 @@ describe('Package', function() {
      );
    }
    return sourceMapGen.toJSON();
-};
+ }

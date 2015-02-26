@@ -22,7 +22,7 @@
 
 // WARNING: This is an optimized version that fails on hasOwnProperty checks
 // and non objects. It's not spec-compliant. It's a perf optimization.
-
+/* eslint global-strict:0 */
 Object.assign = function(target, sources) {
   if (__DEV__) {
     if (target == null) {

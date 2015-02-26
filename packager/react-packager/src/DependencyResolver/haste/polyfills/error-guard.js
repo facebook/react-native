@@ -39,7 +39,7 @@
       return ErrorUtils._inGuard;
     },
     guard: function(fun, name, context) {
-      if (typeof fun !== "function") {
+      if (typeof fun !== 'function') {
         console.warn('A function must be passed to ErrorUtils.guard, got ', fun);
         return null;
       }

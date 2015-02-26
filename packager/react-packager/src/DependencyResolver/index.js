@@ -1,3 +1,5 @@
+'use strict';
+
 var HasteDependencyResolver = require('./haste');
 var NodeDependencyResolver = require('./node');
 
