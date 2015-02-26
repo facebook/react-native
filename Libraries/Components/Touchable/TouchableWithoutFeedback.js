@@ -7,7 +7,7 @@
 
 var React = require('React');
 var Touchable = require('Touchable');
-var View = require('View');
+var TouchableFeedbackPropType = require('TouchableFeedbackPropType');
 
 var copyProperties = require('copyProperties');
 var onlyChild = require('onlyChild');
@@ -29,12 +29,7 @@ var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 var TouchableWithoutFeedback = React.createClass({
   mixins: [Touchable.Mixin],
 
-  propTypes: {
-    onPress: React.PropTypes.func,
-    onPressIn: React.PropTypes.func,
-    onPressOut: React.PropTypes.func,
-    onLongPress: React.PropTypes.func,
-  },
+  propTypes: TouchableFeedbackPropType,
 
   getInitialState: function() {
     return this.touchableGetInitialState();

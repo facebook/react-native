@@ -9,6 +9,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var POPAnimationMixin = require('POPAnimationMixin');
 var React = require('React');
 var Touchable = require('Touchable');
+var TouchableFeedbackPropType = require('TouchableFeedbackPropType');
 
 var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
@@ -41,11 +42,7 @@ var TouchableOpacity = React.createClass({
   mixins: [Touchable.Mixin, NativeMethodsMixin, POPAnimationMixin],
 
   propTypes: {
-    /**
-     * Called when the touch is released, but not if cancelled (e.g. by
-     * a scroll that steals the responder lock).
-     */
-    onPress: React.PropTypes.func,
+    ...TouchableFeedbackPropType,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
      * active.
@@ -97,15 +94,21 @@ var TouchableOpacity = React.createClass({
     this.refs[CHILD_REF].setNativeProps({
       opacity: this.props.activeOpacity
     });
+    this.props.onPressIn && this.props.onPressIn();
   },
 
   touchableHandleActivePressOut: function() {
     this.setOpacityTo(1.0);
+    this.props.onPressOut && this.props.onPressOut();
   },
 
   touchableHandlePress: function() {
     this.setOpacityTo(1.0);
     this.props.onPress && this.props.onPress();
+  },
+
+  touchableHandleLongPress: function() {
+    this.props.onLongPress && this.props.onLongPress();
   },
 
   touchableGetPressRectOffset: function() {
