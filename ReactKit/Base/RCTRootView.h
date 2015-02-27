@@ -38,4 +38,7 @@
 - (void)reload;
 + (void)reloadAll;
 
+- (void)startOrResetInteractionTiming;
+- (NSDictionary *)endAndResetInteractionTiming;
+
 @end
