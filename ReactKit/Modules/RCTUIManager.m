@@ -1293,6 +1293,14 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
         @"None": @(UITextAutocapitalizationTypeNone),
       },
     },
+    @"UITextField": @{
+      @"clearButtonMode": @{
+        @"Never": @(UITextFieldViewModeNever),
+        @"WhileEditing": @(UITextFieldViewModeWhileEditing),
+        @"UnlessEditing": @(UITextFieldViewModeUnlessEditing),
+        @"Always": @(UITextFieldViewModeAlways),
+      },
+    },
     @"UIView": @{
       @"ContentMode": @{
         @"ScaleToFill": @(UIViewContentModeScaleToFill),
