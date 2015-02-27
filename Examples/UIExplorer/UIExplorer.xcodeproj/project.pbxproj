@@ -14,6 +14,7 @@
 		587651361A9EB175008B8F17 /* libRCTNetworkImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 587651281A9EB168008B8F17 /* libRCTNetworkImage.a */; };
 		587651371A9EB175008B8F17 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 587651301A9EB168008B8F17 /* libRCTText.a */; };
 		587651381A9EB175008B8F17 /* libReactKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 587651351A9EB168008B8F17 /* libReactKit.a */; };
+		587651571A9F862F008B8F17 /* libRCTDataManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5876514F1A9F8619008B8F17 /* libRCTDataManager.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,20 @@
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = ReactKit;
 		};
+		5876514E1A9F8619008B8F17 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 58B511DB1A9E6C8500147676;
+			remoteInfo = RCTDataManager;
+		};
+		587651501A9F8619008B8F17 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 58B511E61A9E6C8500147676;
+			remoteInfo = RCTDataManagerTests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +80,7 @@
 		5876511C1A9EB168008B8F17 /* RCTNetworkImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetworkImage.xcodeproj; path = "/Users/sahrens/src/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/RCTStandardLibrary/../Image/RCTNetworkImage.xcodeproj"; sourceTree = "<absolute>"; };
 		5876511F1A9EB168008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "/Users/sahrens/src/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/RCTStandardLibrary/../Text/RCTText.xcodeproj"; sourceTree = "<absolute>"; };
 		587651221A9EB168008B8F17 /* ReactKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactKit.xcodeproj; path = "/Users/sahrens/src/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/RCTStandardLibrary/../../ReactKit/ReactKit.xcodeproj"; sourceTree = "<absolute>"; };
+		587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTDataManager.xcodeproj; path = ../../Libraries/Network/RCTDataManager.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				587651571A9F862F008B8F17 /* libRCTDataManager.a in Frameworks */,
 				587651361A9EB175008B8F17 /* libRCTNetworkImage.a in Frameworks */,
 				587651371A9EB175008B8F17 /* libRCTText.a in Frameworks */,
 				587651381A9EB175008B8F17 /* libReactKit.a in Frameworks */,
@@ -120,10 +137,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5876514A1A9F8619008B8F17 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5876514F1A9F8619008B8F17 /* libRCTDataManager.a */,
+				587651511A9F8619008B8F17 /* RCTDataManagerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
 				13B07FAE1A68108700A75B9A /* UIExplorer */,
+				587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */,
 				5876511C1A9EB168008B8F17 /* RCTNetworkImage.xcodeproj */,
 				5876511F1A9EB168008B8F17 /* RCTText.xcodeproj */,
 				587651221A9EB168008B8F17 /* ReactKit.xcodeproj */,
@@ -181,6 +208,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 5876514A1A9F8619008B8F17 /* Products */;
+					ProjectRef = 587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */;
+				},
+				{
 					ProductGroup = 5876511D1A9EB168008B8F17 /* Products */;
 					ProjectRef = 5876511C1A9EB168008B8F17 /* RCTNetworkImage.xcodeproj */;
 				},
@@ -234,6 +265,20 @@
 			fileType = archive.ar;
 			path = libReactKit.a;
 			remoteRef = 587651341A9EB168008B8F17 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		5876514F1A9F8619008B8F17 /* libRCTDataManager.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTDataManager.a;
+			remoteRef = 5876514E1A9F8619008B8F17 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		587651511A9F8619008B8F17 /* RCTDataManagerTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RCTDataManagerTests.xctest;
+			remoteRef = 587651501A9F8619008B8F17 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
