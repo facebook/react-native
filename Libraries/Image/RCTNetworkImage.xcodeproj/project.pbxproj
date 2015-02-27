@@ -1,0 +1,367 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		58B511691A9E6B3D00147676 /* libRCTNetworkImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */; };
+		58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */; };
+		58B511901A9E6BD600147676 /* RCTNetworkImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */; };
+		58B511911A9E6BD600147676 /* RCTNetworkImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118E1A9E6BD600147676 /* RCTNetworkImageViewManager.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		58B5116A1A9E6B3D00147676 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 58B511551A9E6B3D00147676 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 58B5115C1A9E6B3D00147676;
+			remoteInfo = RCTNetworkImage;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		58B5115B1A9E6B3D00147676 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetworkImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		58B511681A9E6B3D00147676 /* RCTNetworkImageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RCTNetworkImageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		58B511891A9E6BD600147676 /* RCTImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageDownloader.h; sourceTree = "<group>"; };
+		58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageDownloader.m; sourceTree = "<group>"; };
+		58B5118B1A9E6BD600147676 /* RCTNetworkImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworkImageView.h; sourceTree = "<group>"; };
+		58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNetworkImageView.m; sourceTree = "<group>"; };
+		58B5118D1A9E6BD600147676 /* RCTNetworkImageViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworkImageViewManager.h; sourceTree = "<group>"; };
+		58B5118E1A9E6BD600147676 /* RCTNetworkImageViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNetworkImageViewManager.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		58B5115A1A9E6B3D00147676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58B511651A9E6B3D00147676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58B511691A9E6B3D00147676 /* libRCTNetworkImage.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		58B511541A9E6B3D00147676 = {
+			isa = PBXGroup;
+			children = (
+				58B511891A9E6BD600147676 /* RCTImageDownloader.h */,
+				58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */,
+				58B5118B1A9E6BD600147676 /* RCTNetworkImageView.h */,
+				58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */,
+				58B5118D1A9E6BD600147676 /* RCTNetworkImageViewManager.h */,
+				58B5118E1A9E6BD600147676 /* RCTNetworkImageViewManager.m */,
+				58B5115E1A9E6B3D00147676 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		58B5115E1A9E6B3D00147676 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */,
+				58B511681A9E6B3D00147676 /* RCTNetworkImageTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		58B5115C1A9E6B3D00147676 /* RCTNetworkImage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58B511711A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTNetworkImage" */;
+			buildPhases = (
+				58B511591A9E6B3D00147676 /* Sources */,
+				58B5115A1A9E6B3D00147676 /* Frameworks */,
+				58B5115B1A9E6B3D00147676 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RCTNetworkImage;
+			productName = RCTNetworkImage;
+			productReference = 58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		58B511671A9E6B3D00147676 /* RCTNetworkImageTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58B511741A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTNetworkImageTests" */;
+			buildPhases = (
+				58B511641A9E6B3D00147676 /* Sources */,
+				58B511651A9E6B3D00147676 /* Frameworks */,
+				58B511661A9E6B3D00147676 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				58B5116B1A9E6B3D00147676 /* PBXTargetDependency */,
+			);
+			name = RCTNetworkImageTests;
+			productName = RCTNetworkImageTests;
+			productReference = 58B511681A9E6B3D00147676 /* RCTNetworkImageTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		58B511551A9E6B3D00147676 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = Facebook;
+				TargetAttributes = {
+					58B5115C1A9E6B3D00147676 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					58B511671A9E6B3D00147676 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 58B511581A9E6B3D00147676 /* Build configuration list for PBXProject "RCTNetworkImage" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 58B511541A9E6B3D00147676;
+			productRefGroup = 58B5115E1A9E6B3D00147676 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				58B5115C1A9E6B3D00147676 /* RCTNetworkImage */,
+				58B511671A9E6B3D00147676 /* RCTNetworkImageTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		58B511661A9E6B3D00147676 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		58B511591A9E6B3D00147676 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */,
+				58B511911A9E6BD600147676 /* RCTNetworkImageViewManager.m in Sources */,
+				58B511901A9E6BD600147676 /* RCTNetworkImageView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58B511641A9E6B3D00147676 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		58B5116B1A9E6B3D00147676 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 58B5115C1A9E6B3D00147676 /* RCTNetworkImage */;
+			targetProxy = 58B5116A1A9E6B3D00147676 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		58B5116F1A9E6B3D00147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		58B511701A9E6B3D00147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		58B511721A9E6B3D00147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../ReactKit/**",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		58B511731A9E6B3D00147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../ReactKit/**",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		58B511751A9E6B3D00147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = RCTNetworkImageTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		58B511761A9E6B3D00147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = RCTNetworkImageTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58B511581A9E6B3D00147676 /* Build configuration list for PBXProject "RCTNetworkImage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B5116F1A9E6B3D00147676 /* Debug */,
+				58B511701A9E6B3D00147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58B511711A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTNetworkImage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511721A9E6B3D00147676 /* Debug */,
+				58B511731A9E6B3D00147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58B511741A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTNetworkImageTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511751A9E6B3D00147676 /* Debug */,
+				58B511761A9E6B3D00147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 58B511551A9E6B3D00147676 /* Project object */;
+}
