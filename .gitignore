@@ -1,5 +1,4 @@
 # Xcode
-#
 !**/*.xcodeproj
 !**/*.pbxproj
 !**/*.xcworkspacedata
@@ -22,4 +21,8 @@ DerivedData
 *.ipa
 *.xcuserstate
 
+# OS X
+.DS_Store
+
+# Node
 node_modules

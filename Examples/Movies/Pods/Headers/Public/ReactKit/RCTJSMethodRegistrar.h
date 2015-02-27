@@ -1,0 +1,1 @@
+../../../../../../ReactKit/Base/RCTJSMethodRegistrar.h

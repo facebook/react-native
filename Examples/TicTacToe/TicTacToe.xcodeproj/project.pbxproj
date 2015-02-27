@@ -11,33 +11,8 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		587650E91A9EB103008B8F17 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 587650E01A9EB0DB008B8F17 /* libRCTText.a */; };
-		587650EA1A9EB103008B8F17 /* libReactKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 587650E81A9EB0E0008B8F17 /* libReactKit.a */; };
+		94A5470E6B9ACC86C8946DD4 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57D137B3557DA44DA129DF68 /* libPods.a */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		587650DF1A9EB0DB008B8F17 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
-			remoteInfo = RCTText;
-		};
-		587650E11A9EB0DB008B8F17 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 58B511A61A9E6C1300147676;
-			remoteInfo = RCTTextTests;
-		};
-		587650E71A9EB0E0008B8F17 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
-			remoteInfo = ReactKit;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* TicTacToe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TicTacToe.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -47,8 +22,9 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "/Users/sahrens/src/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/RCTStandardLibrary/../Text/RCTText.xcodeproj"; sourceTree = "<absolute>"; };
-		587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactKit.xcodeproj; path = "/Users/sahrens/src/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/RCTStandardLibrary/../../ReactKit/ReactKit.xcodeproj"; sourceTree = "<absolute>"; };
+		57D137B3557DA44DA129DF68 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE37E9319424945F93F61AC9 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		BE166B25F931D53146DC44FD /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,8 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				587650E91A9EB103008B8F17 /* libRCTText.a in Frameworks */,
-				587650EA1A9EB103008B8F17 /* libReactKit.a in Frameworks */,
+				94A5470E6B9ACC86C8946DD4 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,30 +52,21 @@
 			name = TicTacToe;
 			sourceTree = "<group>";
 		};
-		587650DB1A9EB0DB008B8F17 /* Products */ = {
+		626AAA547F04E200EB1B13D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				587650E01A9EB0DB008B8F17 /* libRCTText.a */,
-				587650E21A9EB0DB008B8F17 /* RCTTextTests.xctest */,
+				57D137B3557DA44DA129DF68 /* libPods.a */,
 			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		587650E41A9EB0DF008B8F17 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				587650E81A9EB0E0008B8F17 /* libReactKit.a */,
-			);
-			name = Products;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
 				13B07FAE1A68108700A75B9A /* TicTacToe */,
-				587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */,
-				587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				C661FA21FC43E8C4E3D76705 /* Pods */,
+				626AAA547F04E200EB1B13D5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,6 +78,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		C661FA21FC43E8C4E3D76705 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AE37E9319424945F93F61AC9 /* Pods.debug.xcconfig */,
+				BE166B25F931D53146DC44FD /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -119,9 +94,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "TicTacToe" */;
 			buildPhases = (
+				1604B0DABE720C58B4BD7B85 /* Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				90FB29DB1D5DDA0C9E91F4D0 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -152,46 +129,12 @@
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 587650DB1A9EB0DB008B8F17 /* Products */;
-					ProjectRef = 587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */;
-				},
-				{
-					ProductGroup = 587650E41A9EB0DF008B8F17 /* Products */;
-					ProjectRef = 587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* TicTacToe */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		587650E01A9EB0DB008B8F17 /* libRCTText.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRCTText.a;
-			remoteRef = 587650DF1A9EB0DB008B8F17 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		587650E21A9EB0DB008B8F17 /* RCTTextTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RCTTextTests.xctest;
-			remoteRef = 587650E11A9EB0DB008B8F17 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		587650E81A9EB0E0008B8F17 /* libReactKit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libReactKit.a;
-			remoteRef = 587650E71A9EB0E0008B8F17 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		13B07F8E1A680F5B00A75B9A /* Resources */ = {
@@ -204,6 +147,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1604B0DABE720C58B4BD7B85 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		90FB29DB1D5DDA0C9E91F4D0 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		13B07F871A680F5B00A75B9A /* Sources */ = {
@@ -231,22 +207,22 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE37E9319424945F93F61AC9 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = TicTacToe;
 			};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BE166B25F931D53146DC44FD /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = TicTacToe;
 			};
 			name = Release;
