@@ -77,9 +77,10 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
       }
       targetView = targetView.superview;
     }
-    
-    RCTAssert(targetView.reactTag && targetView.userInteractionEnabled,
-              @"No react view found for touch - something went wrong.");
+
+    if (!targetView.reactTag || !targetView.userInteractionEnabled) {
+      return;
+    }
 
     // Get new, unique touch id
     const NSUInteger RCTMaxTouches = 11; // This is the maximum supported by iDevices
@@ -113,7 +114,10 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 {
   for (UITouch *touch in touches) {
     NSUInteger index = [_nativeTouches indexOfObject:touch];
-    RCTAssert(index != NSNotFound, @"Touch is already removed. This is a critical bug.");
+    if(index == NSNotFound) {
+      continue;
+    }
+
     [_touchViews removeObjectAtIndex:index];
     [_nativeTouches removeObjectAtIndex:index];
     [_reactTouches removeObjectAtIndex:index];
@@ -159,9 +163,16 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   NSMutableArray *changedIndexes = [[NSMutableArray alloc] init];
   for (UITouch *touch in touches) {
     NSInteger index = [_nativeTouches indexOfObject:touch];
-    RCTAssert(index != NSNotFound, @"Touch not found. This is a critical bug.");
+    if (index == NSNotFound) {
+      continue;
+    }
+
     [self _updateReactTouchAtIndex:index];
     [changedIndexes addObject:@(index)];
+  }
+
+  if (changedIndexes.count == 0) {
+    return;
   }
   
   // Deep copy the touches because they will be accessed from another thread
