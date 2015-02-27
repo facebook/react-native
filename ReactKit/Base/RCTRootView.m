@@ -131,6 +131,7 @@ static Class _globalExecutorClass;
 
   // Clean up
   [self removeGestureRecognizer:_touchHandler];
+  [_touchHandler invalidate];
   [_executor invalidate];
   [_bridge invalidate];
 
@@ -229,6 +230,16 @@ static Class _globalExecutorClass;
 + (void)reloadAll
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewReloadNotification object:nil];
+}
+
+- (void)startOrResetInteractionTiming
+{
+  [_touchHandler startOrResetInteractionTiming];
+}
+
+- (NSDictionary *)endAndResetInteractionTiming
+{
+  return [_touchHandler endAndResetInteractionTiming];
 }
 
 @end
