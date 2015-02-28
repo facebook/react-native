@@ -25,7 +25,7 @@ describe('Package', function() {
       ppackage.addModule('transformed foo;', 'source foo', 'foo path');
       ppackage.addModule('transformed bar;', 'source bar', 'bar path');
       ppackage.finalize({});
-      expect(ppackage.getSource()).toBe([
+      expect(ppackage.getSource({inlineSourceMap: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         'RAW_SOURCE_MAP = "test-source-map";',
@@ -38,7 +38,7 @@ describe('Package', function() {
       ppackage.addModule('transformed bar;', 'source bar', 'bar path');
       ppackage.setMainModuleId('foo');
       ppackage.finalize({runMainModule: true});
-      expect(ppackage.getSource()).toBe([
+      expect(ppackage.getSource({inlineSourceMap: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         ';require("foo");',

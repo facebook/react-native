@@ -48,6 +48,7 @@ var validateOpts = declareOpts({
 
 function Server(options) {
   var opts = validateOpts(options);
+  this._dev = opts.dev;
   this._projectRoots = opts.projectRoots;
   this._packages = Object.create(null);
   this._packager = new Packager(opts);
@@ -69,13 +70,14 @@ Server.prototype._onFileChange = function(type, filepath, root) {
 };
 
 Server.prototype._rebuildPackages = function() {
+  var dev = this._dev;
   var buildPackage = this._buildPackage.bind(this);
   var packages = this._packages;
   Object.keys(packages).forEach(function(key) {
     var options = getOptionsFromPath(url.parse(key).pathname);
     packages[key] = buildPackage(options).then(function(p) {
       // Make a throwaway call to getSource to cache the source string.
-      p.getSource();
+      p.getSource({inlineSourceMap: dev});
       return p;
     });
   });
@@ -154,12 +156,13 @@ Server.prototype.processRequest = function(req, res, next) {
 
   var startReqEventId = Activity.startEvent('request:' + req.url);
   var options = getOptionsFromPath(url.parse(req.url).pathname);
-  var building = this._packages[req.url] || this._buildPackage(options)
+  var building = this._packages[req.url] || this._buildPackage(options);
   this._packages[req.url] = building;
+  var dev = this._dev;
   building.then(
     function(p) {
       if (requestType === 'bundle') {
-        res.end(p.getSource());
+        res.end(p.getSource({inlineSourceMap: dev}));
         Activity.endEvent(startReqEventId);
       } else if (requestType === 'map') {
         res.end(JSON.stringify(p.getSourceMap()));
