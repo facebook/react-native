@@ -3,9 +3,13 @@
 jest.setMock('worker-farm', function() { return function() {}; })
     .dontMock('q')
     .dontMock('os')
-    .dontMock('errno/custom')
     .dontMock('path')
     .dontMock('url')
+    .setMock('timers', {
+      setImmediate: function(fn) {
+        return setTimeout(fn, 0);
+      }
+    })
     .dontMock('../');
 
 var q = require('q');
@@ -75,16 +79,16 @@ describe('processRequest', function() {
   });
 
   pit('returns sourcemap on request of *.map', function() {
-    makeRequest(
+    return makeRequest(
       requestHandler,
       'mybundle.includeRequire.runModule.bundle.map'
     ).then(function(response) {
-      expect(response).toEqual('this is the source map');
+      expect(response).toEqual('"this is the source map"');
     });
   });
 
   pit('watches all files in projectRoot', function() {
-    makeRequest(
+    return makeRequest(
       requestHandler,
       'mybundle.includeRequire.runModule.bundle'
     ).then(function(response) {
@@ -107,7 +111,7 @@ describe('processRequest', function() {
     });
 
     pit('invalides files in package when file is updated', function() {
-      makeRequest(
+      return makeRequest(
         requestHandler,
         'mybundle.includeRequire.runModule.bundle'
       ).then(function(response) {

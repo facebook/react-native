@@ -3,7 +3,6 @@
 jest
   .dontMock('underscore')
   .dontMock('path')
-  .dontMock('q')
   .dontMock('absolute-path')
   .dontMock('../Cache');
 
@@ -194,7 +193,7 @@ describe('JSTransformer Cache', function() {
         return q('baz value');
       });
 
-      jest.runAllTimers();
+      jest.runAllTicks();
       expect(fs.writeFile).toBeCalled();
     });
   });
