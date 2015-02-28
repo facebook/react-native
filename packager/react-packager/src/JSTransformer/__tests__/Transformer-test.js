@@ -2,7 +2,6 @@
 
 jest
   .dontMock('worker-farm')
-  .dontMock('q')
   .dontMock('os')
   .dontMock('../index');
 

@@ -5,7 +5,6 @@ jest
   .dontMock('q')
   .dontMock('path')
   .dontMock('absolute-path')
-  .dontMock('../../../../fb-path-utils')
   .dontMock('../docblock')
   .setMock('../../../ModuleDescriptor', function(data) {return data;});
 

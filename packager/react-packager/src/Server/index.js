@@ -6,6 +6,7 @@ var declareOpts = require('../lib/declareOpts');
 var FileWatcher = require('../FileWatcher');
 var Packager = require('../Packager');
 var Activity = require('../Activity');
+var setImmediate = require('timers').setImmediate;
 var q = require('q');
 
 module.exports = Server;

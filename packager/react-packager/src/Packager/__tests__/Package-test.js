@@ -1,10 +1,6 @@
 'use strict';
 
-jest
-  .dontMock('underscore')
-  .dontMock('../base64-vlq')
-  .dontMock('source-map')
-  .dontMock('../Package');
+jest.autoMockOff();
 
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 
