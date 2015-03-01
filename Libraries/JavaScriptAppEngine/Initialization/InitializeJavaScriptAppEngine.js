@@ -139,9 +139,15 @@ function setupXHR() {
   GLOBAL.fetch = require('fetch');
 }
 
+function setupGeolocation() {
+  GLOBAL.navigator = GLOBAL.navigator || {};
+  GLOBAL.navigator.geolocation = require('GeoLocation');
+}
+
 setupRedBoxErrorHandler();
 setupDocumentShim();
 setupTimers();
 setupAlert();
 setupPromise();
 setupXHR();
+setupGeolocation();
