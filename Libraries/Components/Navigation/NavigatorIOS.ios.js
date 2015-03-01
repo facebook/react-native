@@ -8,7 +8,7 @@
 var EventEmitter = require('EventEmitter');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var { RKUIManager } = require('NativeModules');
+var { RKNavigatorManager } = require('NativeModules');
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
@@ -127,7 +127,7 @@ var RKNavigatorItem = createReactIOSNativeComponentClass({
 
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
-    RKUIManager.requestSchedulingJavaScriptNavigation(
+    RKNavigatorManager.requestSchedulingJavaScriptNavigation(
       this.getNodeHandle(),
       logError,
       cb

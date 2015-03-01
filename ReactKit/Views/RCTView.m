@@ -34,8 +34,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (NSString *)accessibilityLabel
 {
-  if (self.overrideAccessibilityLabel) {
-    return self.overrideAccessibilityLabel;
+  if (super.accessibilityLabel) {
+    return super.accessibilityLabel;
   }
   return RCTRecursiveAccessibilityLabel(self);
 }
@@ -84,7 +84,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   UIEdgeInsets baseInset = parentView.contentInset;
   CGFloat previousInsetTop = scrollView.contentInset.top;
   CGPoint contentOffset = scrollView.contentOffset;
-  
+
   if (parentView.automaticallyAdjustContentInsets) {
     UIEdgeInsets autoInset = [self contentInsetsForView:parentView];
     baseInset.top += autoInset.top;
@@ -94,7 +94,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
   [scrollView setContentInset:baseInset];
   [scrollView setScrollIndicatorInsets:baseInset];
-  
+
   if (updateOffset) {
     // If we're adjusting the top inset, then let's also adjust the contentOffset so that the view
     // elements above the top guide do not cover the content.

@@ -14,11 +14,6 @@
   BOOL _jsRequestingFirstResponder;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
@@ -44,7 +39,7 @@
 
 - (void)removeReactSubview:(UIView *)subview
 {
-  // TODO: this is a bit broken - if the TextView inserts any of
+  // TODO: this is a bit broken - if the TextField inserts any of
   // it's own views below or between React's, the indices won't match
   [_reactSubviews removeObject:subview];
   [subview removeFromSuperview];
@@ -52,7 +47,7 @@
 
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
-  // TODO: this is a bit broken - if the TextView inserts any of
+  // TODO: this is a bit broken - if the TextField inserts any of
   // it's own views below or between React's, the indices won't match
   [_reactSubviews insertObject:view atIndex:atIndex];
   [super insertSubview:view atIndex:atIndex];

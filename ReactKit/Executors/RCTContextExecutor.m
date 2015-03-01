@@ -45,7 +45,7 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object,
     fprintf(stderr, "%s\n", [modifiedString UTF8String]); // don't print timestamps and other junk
 #else
     // Print normal errors with timestamps to files when not in simulator.
-    _RCTLogObjects(@[modifiedString], @"log");
+    RCTLogObjects(@[modifiedString], @"log");
 #endif
     JSStringRelease(string);
   }

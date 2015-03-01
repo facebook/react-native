@@ -27,11 +27,6 @@
   return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 - (NSURL *)imageURL
 {
   // We clear our backing layer's imageURL when we are not in a window for a while,

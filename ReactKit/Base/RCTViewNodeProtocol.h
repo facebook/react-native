@@ -8,7 +8,7 @@
  */
 @protocol RCTViewNodeProtocol <NSObject>
 
-@property (nonatomic, strong) NSNumber *reactTag;
+@property (nonatomic, copy) NSNumber *reactTag;
 
 - (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTViewNodeProtocol>)subview;
@@ -21,6 +21,8 @@
 @optional
 
 // TODO: Deprecate this
+// This method is called after layout has been performed for all views known
+// to the RCTViewManager. It is only called on UIViews, not shadow views.
 - (void)reactBridgeDidFinishTransaction;
 
 @end

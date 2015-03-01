@@ -24,17 +24,7 @@
 }
 
 RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
-
-- (void)set_textAlign:(id)json
-        forShadowView:(RCTShadowText *)shadowView
-      withDefaultView:(RCTShadowText *)defaultView
-{
-  shadowView.textAlign = json ? [RCTConvert NSTextAlignment:json] : defaultView.textAlign;
-}
-
-- (void)set_numberOfLines:(id)json
-                  forView:(RCTText *)view
-          withDefaultView:(RCTText *)defaultView
+RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText *)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
   view.numberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.numberOfLines;
@@ -44,31 +34,33 @@ RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
   view.lineBreakMode = truncationMode;
 }
 
-- (void)set_numberOfLines:(id)json
-            forShadowView:(RCTShadowText *)shadowView
-          withDefaultView:(RCTShadowText *)defaultView
+RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowText *)
+{
+  view.textBackgroundColor = json ? [RCTConvert UIColor:json] : defaultView.textBackgroundColor;
+}
+RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, RCTShadowText *)
+{
+  view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
+  view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
+}
+RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, RCTShadowText *)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
-  shadowView.maxNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maxNumberOfLines;
-  if (shadowView.maxNumberOfLines > 0) {
+  view.maxNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maxNumberOfLines;
+  if (view.maxNumberOfLines > 0) {
     truncationMode = NSLineBreakByTruncatingTail;
   }
-  shadowView.truncationMode = truncationMode;
+  view.truncationMode = truncationMode;
+}
+RCT_CUSTOM_SHADOW_PROPERTY(textAlign, RCTShadowText *)
+{
+  view.textAlign = json ? [RCTConvert NSTextAlignment:json] : defaultView.textAlign;
 }
 
-- (void)set_backgroundColor:(id)json
-              forShadowView:(RCTShadowText *)shadowView
-            withDefaultView:(RCTShadowText *)defaultView
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowText *)shadowView
 {
-  shadowView.textBackgroundColor = json ? [RCTConvert UIColor:json] : defaultView.textBackgroundColor;
-}
-
-- (void)set_containerBackgroundColor:(id)json
-                       forShadowView:(RCTShadowText *)shadowView
-                     withDefaultView:(RCTShadowText *)defaultView
-{
-  shadowView.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
-  shadowView.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
+  //TODO: This could be a cleaner replacement for uiBlockToAmendWithShadowViewRegistry
+  return nil;
 }
 
 // TODO: the purpose of this block is effectively just to copy properties from the shadow views

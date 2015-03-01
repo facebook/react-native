@@ -4,10 +4,17 @@
 
 #import "RCTBridge.h"
 
-static RCTLogFunction injectedLogFunction;
+__unsafe_unretained NSString *RCTLogLevels[] = {
+  @"info",
+  @"warn",
+  @"error",
+  @"mustfix"
+};
 
-void RCTInjectLogFunction(RCTLogFunction func) {
-  injectedLogFunction = func;
+static void (^RCTInjectedLogFunction)(NSString *msg);
+
+void RCTInjectLogFunction(void (^logFunction)(NSString *msg)) {
+  RCTInjectedLogFunction = logFunction;
 }
 
 static inline NSString *_RCTLogPreamble(const char *file, int lineNumber, const char *funcName)
@@ -21,7 +28,7 @@ static inline NSString *_RCTLogPreamble(const char *file, int lineNumber, const 
 }
 
 // TODO (#5906496): // kinda ugly that this is tied to RCTBridge
-NSString *_RCTLogObjects(NSArray *objects, NSString *level)
+NSString *RCTLogObjects(NSArray *objects, NSString *level)
 {
   NSString *str = objects[0];
 #if TARGET_IPHONE_SIMULATOR
@@ -33,8 +40,8 @@ NSString *_RCTLogObjects(NSArray *objects, NSString *level)
   {
     // Print normal errors with timestamps when not in simulator.
     // Non errors are already compiled out above, so log as error here.
-    if (injectedLogFunction) {
-      injectedLogFunction(@">\n  %@", str);
+    if (RCTInjectedLogFunction) {
+      RCTInjectedLogFunction(str);
     } else {
       NSLog(@">\n  %@", str);
     }
@@ -42,14 +49,14 @@ NSString *_RCTLogObjects(NSArray *objects, NSString *level)
   return str;
 }
 
-// Returns array of objects.  First arg is a simple string to print, remaining args are objects to pass through to the debugger so they are
-// inspectable in the console.
-NSArray *_RCTLogFormat(const char *file, int lineNumber, const char *funcName, NSString *format, ...)
+// Returns array of objects.  First arg is a simple string to print, remaining args
+// are objects to pass through to the debugger so they are inspectable in the console.
+NSArray *RCTLogFormat(const char *file, int lineNumber, const char *funcName, NSString *format, ...)
 {
   va_list args;
   va_start(args, format);
   NSString *preamble = _RCTLogPreamble(file, lineNumber, funcName);
-  
+
   // Pull out NSObjects so we can pass them through as inspectable objects to the js debugger
   NSArray *formatParts = [format componentsSeparatedByString:@"%"];
   NSMutableArray *objects = [NSMutableArray arrayWithObject:preamble];
@@ -76,13 +83,4 @@ NSArray *_RCTLogFormat(const char *file, int lineNumber, const char *funcName, N
   NSMutableArray *objectsOut = [NSMutableArray arrayWithObject:strOut];
   [objectsOut addObjectsFromArray:objects];
   return objectsOut;
-}
-
-NSString *_RCTLogFormatString(const char *file, int lineNumber, const char *funcName, NSString *format, ...)
-{
-  va_list args;
-  va_start (args, format);
-  NSString *body =  [[NSString alloc] initWithFormat:format arguments:args];
-  va_end (args);
-  return [NSString stringWithFormat:@"%@ %@", _RCTLogPreamble(file, lineNumber, funcName), body];
 }

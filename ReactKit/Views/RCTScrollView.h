@@ -12,6 +12,8 @@
 
 @interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
 
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+
 /**
  * If the `contentSize` is not provided, then the `contentSize` will
  * automatically be determined by the size of the `RKScrollView` subview.
@@ -31,7 +33,5 @@
 @property (nonatomic, assign) NSUInteger throttleScrollCallbackMS;
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, copy) NSArray *stickyHeaderIndices;
-
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @end

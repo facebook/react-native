@@ -10,46 +10,6 @@
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
 
-@interface RCTLayoutAction : NSObject
-
-@property (nonatomic, readwrite, copy) RCTActionBlock block;
-@property (nonatomic, readwrite, copy) RCTResetActionBlock resetBlock;
-@property (nonatomic, readwrite, assign) NSInteger precedence;
-
-@end
-
-@implementation RCTLayoutAction @end
-
-#define ACTION_FOR_KEY_DEFAULT(name, default, blockIn) \
-do { \
-  RCTLayoutAction *action = [[RCTLayoutAction alloc] init]; \
-  action.block = blockIn; \
-  action.resetBlock = ^(id idSelf1) {            \
-    blockIn(idSelf1, default); \
-  }; \
-  actions[@"" #name ""] = action; \
-} while(0)
-
-#define ACTION_FOR_KEY(name, blockIn) \
-ACTION_FOR_KEY_DEFAULT(name, @([defaultShadowView name]), (blockIn))
-
-#define ACTION_FOR_FLOAT_KEY_DEFAULT(name, default, blockIn)                   \
-ACTION_FOR_KEY_DEFAULT(name, @(default), ^(id idSelf2, NSNumber *n) {            \
-  if (isnan([n floatValue])) {                           \
-    RCTLogWarn(@"Got NaN for `"#name"` prop, ignoring");  \
-    return;                                              \
-  }                                                      \
-  blockIn(idSelf2, RCTNumberToFloat(n));                       \
-});
-
-#define ACTION_FOR_FLOAT_KEY(name, blockIn)                   \
-ACTION_FOR_FLOAT_KEY_DEFAULT(name, [defaultShadowView name], (blockIn))
-
-#define ACTION_FOR_DEFAULT_UNDEFINED_KEY(name, blockIn)                   \
-ACTION_FOR_KEY_DEFAULT(name, nil, ^(id idSelf2, NSNumber *n) {            \
-  blockIn(idSelf2, n == nil ? CSS_UNDEFINED : [n floatValue]);                       \
-});
-
 #define MAX_TREE_DEPTH 30
 
 const NSString *const RCTBackgroundColorProp = @"backgroundColor";
@@ -65,22 +25,16 @@ typedef enum {
   META_PROP_COUNT,
 } meta_prop_t;
 
-@interface RCTShadowView()
-{
-  float _paddingMetaProps[META_PROP_COUNT];
-  float _marginMetaProps[META_PROP_COUNT];
-}
-
-@end
-
 @implementation RCTShadowView
 {
-  RCTPropagationLifecycle _propagationLifecycle;
-  RCTTextLifecycle _textLifecycle;
+  RCTUpdateLifecycle _propagationLifecycle;
+  RCTUpdateLifecycle _textLifecycle;
   NSDictionary *_lastParentProperties;
   NSMutableArray *_reactSubviews;
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
+  float _paddingMetaProps[META_PROP_COUNT];
+  float _marginMetaProps[META_PROP_COUNT];
 }
 
 @synthesize reactTag = _reactTag;
@@ -131,11 +85,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   node->children_count = (int)_reactSubviews.count;
 }
 
-- (void)applyLayoutNode:(css_node_t *)node viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
-{
-  [self _applyLayoutNode:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
-}
-
 // The absolute stuff is so that we can take into account our absolute position when rounding in order to
 // snap to the pixel grid. For example, say you have the following structure:
 //
@@ -165,24 +114,24 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 // width = 213.5 - 106.5 = 107
 // You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
 
-- (void)_applyLayoutNode:(css_node_t *)node viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame absolutePosition:(CGPoint)absolutePosition
+- (void)applyLayoutNode:(css_node_t *)node viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame absolutePosition:(CGPoint)absolutePosition
 {
   if (!node->layout.should_update) {
     return;
   }
   node->layout.should_update = false;
-  _layoutLifecycle = RCTLayoutLifecycleComputed;
+  _layoutLifecycle = RCTUpdateLifecycleComputed;
 
   CGPoint absoluteTopLeft = {
     RCTRoundPixelValue(absolutePosition.x + node->layout.position[CSS_LEFT]),
     RCTRoundPixelValue(absolutePosition.y + node->layout.position[CSS_TOP])
   };
-  
+
   CGPoint absoluteBottomRight = {
     RCTRoundPixelValue(absolutePosition.x + node->layout.position[CSS_LEFT] + node->layout.dimensions[CSS_WIDTH]),
     RCTRoundPixelValue(absolutePosition.y + node->layout.position[CSS_TOP] + node->layout.dimensions[CSS_HEIGHT])
   };
-  
+
   CGRect frame = {
     RCTRoundPixelValue(node->layout.position[CSS_LEFT]),
     RCTRoundPixelValue(node->layout.position[CSS_TOP]),
@@ -205,7 +154,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
   for (int i = 0; i < node->children_count; ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
-    [child _applyLayoutNode:node->get_child(node->context, i) viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+    [child applyLayoutNode:node->get_child(node->context, i) viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
   }
 }
 
@@ -238,10 +187,10 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
 - (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties
 {
-  if (_propagationLifecycle == RCTPropagationLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
+  if (_propagationLifecycle == RCTUpdateLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
     return;
   }
-  _propagationLifecycle = RCTPropagationLifecycleComputed;
+  _propagationLifecycle = RCTUpdateLifecycleComputed;
   _lastParentProperties = parentProperties;
   NSDictionary *nextProps = [self processBackgroundColor:applierBlocks parentProperties:parentProperties];
   for (RCTShadowView *child in _reactSubviews) {
@@ -253,7 +202,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 {
   [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, CSS_UNDEFINED);
-  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame];
+  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
 }
 
 + (CGRect)measureLayout:(RCTShadowView *)shadowView relativeTo:(RCTShadowView *)ancestor
@@ -277,7 +226,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 - (instancetype)init
 {
   if ((self = [super init])) {
-    
+
     _frame = CGRectMake(0, 0, CSS_UNDEFINED, CSS_UNDEFINED);
 
     for (int ii = 0; ii < META_PROP_COUNT; ii++) {
@@ -286,9 +235,9 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     }
 
     _newView = YES;
-    _layoutLifecycle = RCTLayoutLifecycleUninitialized;
-    _propagationLifecycle = RCTPropagationLifecycleUninitialized;
-    _textLifecycle = RCTTextLifecycleUninitialized;
+    _layoutLifecycle = RCTUpdateLifecycleUninitialized;
+    _propagationLifecycle = RCTUpdateLifecycleUninitialized;
+    _textLifecycle = RCTUpdateLifecycleUninitialized;
 
     _reactSubviews = [NSMutableArray array];
 
@@ -309,46 +258,46 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
 - (void)dirtyLayout
 {
-  if (_layoutLifecycle != RCTLayoutLifecycleDirtied) {
-    _layoutLifecycle = RCTLayoutLifecycleDirtied;
+  if (_layoutLifecycle != RCTUpdateLifecycleDirtied) {
+    _layoutLifecycle = RCTUpdateLifecycleDirtied;
     [_superview dirtyLayout];
   }
 }
 
 - (BOOL)isLayoutDirty
 {
-  return _layoutLifecycle != RCTLayoutLifecycleComputed;
+  return _layoutLifecycle != RCTUpdateLifecycleComputed;
 }
 
 - (void)dirtyPropagation
 {
-  if (_propagationLifecycle != RCTPropagationLifecycleDirtied) {
-    _propagationLifecycle = RCTPropagationLifecycleDirtied;
+  if (_propagationLifecycle != RCTUpdateLifecycleDirtied) {
+    _propagationLifecycle = RCTUpdateLifecycleDirtied;
     [_superview dirtyPropagation];
   }
 }
 
 - (BOOL)isPropagationDirty
 {
-  return _propagationLifecycle != RCTLayoutLifecycleComputed;
+  return _propagationLifecycle != RCTUpdateLifecycleComputed;
 }
 
 - (void)dirtyText
 {
-  if (_textLifecycle != RCTTextLifecycleDirtied) {
-    _textLifecycle = RCTTextLifecycleDirtied;
+  if (_textLifecycle != RCTUpdateLifecycleDirtied) {
+    _textLifecycle = RCTUpdateLifecycleDirtied;
     [_superview dirtyText];
   }
 }
 
 - (BOOL)isTextDirty
 {
-  return _textLifecycle != RCTTextLifecycleComputed;
+  return _textLifecycle != RCTUpdateLifecycleComputed;
 }
 
 - (void)setTextComputed
 {
-  _textLifecycle = RCTTextLifecycleComputed;
+  _textLifecycle = RCTUpdateLifecycleComputed;
 }
 
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
@@ -387,7 +336,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
       return [shadowView reactTagAtPoint:relativePoint];
     }
   }
-
   return self.reactTag;
 }
 

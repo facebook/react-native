@@ -31,8 +31,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  self = [super initWithFrame:frame];
-  if (self) {
+  if ((self = [super initWithFrame:frame])) {
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];
   }
   return self;
@@ -256,11 +255,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 }
 
 @synthesize nativeMainScrollDelegate = _nativeMainScrollDelegate;
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {

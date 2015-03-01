@@ -14,13 +14,13 @@
 #import "RCTWebViewExecutor.h"
 #import "UIView+ReactKit.h"
 
-NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification";
+NSString *const RCTReloadNotification = @"RCTReloadNotification";
 
 @implementation RCTRootView
 {
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
-  id <RCTJavaScriptExecutor> _executor;
+  id<RCTJavaScriptExecutor> _executor;
 }
 
 static Class _globalExecutorClass;
@@ -77,7 +77,7 @@ static Class _globalExecutorClass;
   // Add reload observer
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(reload)
-                                               name:RCTRootViewReloadNotification
+                                               name:RCTReloadNotification
                                              object:nil];
 }
 
@@ -95,6 +95,10 @@ static Class _globalExecutorClass;
 
   [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
                     args:@[self.reactTag]];
+
+  // TODO: eventually we'll want to be able to share the bridge between
+  // multiple rootviews, in which case we'll need to move this elsewhere
+  [_bridge invalidate];
 }
 
 - (void)bundleFinishedLoading:(NSError *)error
@@ -108,7 +112,7 @@ static Class _globalExecutorClass;
     }
   } else {
 
-    [_bridge registerRootView:self];
+    [_bridge.uiManager registerRootView:self];
 
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
@@ -137,7 +141,7 @@ static Class _globalExecutorClass;
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
-  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor moduleProvider:nil];
+  _bridge = [[RCTBridge alloc] initWithExecutor:_executor moduleProvider:nil];
   _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
   [self addGestureRecognizer:_touchHandler];
 
@@ -229,7 +233,7 @@ static Class _globalExecutorClass;
 
 + (void)reloadAll
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewReloadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
 }
 
 - (void)startOrResetInteractionTiming

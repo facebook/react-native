@@ -51,35 +51,35 @@
 @implementation RCTTiming
 {
   RCTSparseArray *_timers;
-  RCTBridge *_bridge;
   id _updateTimer;
 }
+
+@synthesize bridge = _bridge;
 
 + (NSArray *)JSMethods
 {
   return @[@"RCTJSTimers.callTimers"];
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)init
 {
   if ((self = [super init])) {
-    _bridge = bridge;
+
     _timers = [[RCTSparseArray alloc] init];
-    [self startTimers];
-    
+
     for (NSString *name in @[UIApplicationWillResignActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
                              UIApplicationWillTerminateNotification]) {
-      
+
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(stopTimers)
                                                    name:name
                                                  object:nil];
     }
-    
+
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationWillEnterForegroundNotification]) {
-      
+
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(startTimers)
                                                    name:name
@@ -114,14 +114,14 @@
 - (void)startTimers
 {
   RCTAssertMainThread();
-  
-  if (![self isValid] || _updateTimer != nil) {
+
+  if (![self isValid] || _updateTimer != nil || _timers.count == 0) {
     return;
   }
 
   _updateTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
   if (_updateTimer) {
-    [_updateTimer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [_updateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
   } else {
     RCTLogWarn(@"Failed to create a display link (probably on buildbot) - using an NSTimer for AppEngine instead.");
     _updateTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60)
@@ -135,7 +135,7 @@
 - (void)update
 {
   RCTAssertMainThread();
-  
+
   NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
   for (RCTTimer *timer in _timers.allObjects) {
     if ([timer updateFoundNeedsJSUpdate]) {
@@ -145,7 +145,7 @@
       _timers[timer.callbackID] = nil;
     }
   }
-  
+
   // call timers that need to be called
   if ([timersToCall count] > 0) {
     [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[timersToCall]];
@@ -185,6 +185,7 @@
                                                  repeats:repeats];
   dispatch_async(dispatch_get_main_queue(), ^{
     _timers[callbackID] = timer;
+    [self startTimers];
   });
 }
 
@@ -195,6 +196,9 @@
   if (timerID) {
     dispatch_async(dispatch_get_main_queue(), ^{
       _timers[timerID] = nil;
+      if (_timers.count == 0) {
+        [self stopTimers];
+      }
     });
   } else {
     RCTLogWarn(@"Called deleteTimer: with a nil timerID");
