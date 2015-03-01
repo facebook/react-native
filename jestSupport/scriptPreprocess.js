@@ -2,8 +2,8 @@
 
 var transformer = require('../packager/transformer.js');
 
-function transformSource(src) {
-  return transformer.transform(null, src).code;
+function transformSource(src, filename) {
+  return transformer.transform(src, filename).code;
 }
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
     }
 
     try {
-      return transformSource(src);
+      return transformSource(src, fileName);
     } catch(e) {
       throw new Error('\nError transforming file:\n  js/' +
         (fileName.split('/js/')[1] || fileName) + ':' + e.lineNumber + ': \'' +

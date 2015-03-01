@@ -126,9 +126,7 @@ Packager.prototype.getDependencies = function(main) {
 Packager.prototype._transformModule = function(module) {
   var resolver = this._resolver;
   return this._transformer.loadFileAndTransform(
-    ['es6'],
-    path.resolve(module.path),
-    this._opts.transformer || {}
+    path.resolve(module.path)
   ).then(function(transformed) {
     return _.extend(
       {},
