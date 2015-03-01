@@ -65,8 +65,7 @@
 
   } else {
     
-    RCTLogMustFix(@"unsupported query type %@", queryType);
-    return;
+    RCTLogError(@"unsupported query type %@", queryType);
   }
 }
 

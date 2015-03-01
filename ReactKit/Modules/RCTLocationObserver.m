@@ -5,6 +5,9 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
 
+#import <FBReactKit/RCTAssert.h>
+#import <FBReactKit/RCTLog.h>
+
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
@@ -29,17 +32,17 @@ const CLLocationAccuracy RCTLocationAccuracy = 500.0; // meters
 @implementation RCTLocationObserver
 {
   CLLocationManager *_locationManager;
-  RCTEventDispatcher *_eventDispatcher;
   NSDictionary *_lastLocationEvent;
   NSMutableDictionary *_pendingRequests;
 }
 
+@synthesize bridge = _bridge;
+
 #pragma mark - Lifecycle
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)init
 {
-  if (self = [super init]) {
-    _eventDispatcher = bridge.eventDispatcher;
+  if ((self = [super init])) {
     _pendingRequests = [[NSMutableDictionary alloc] init];
   }
   return self;
@@ -107,7 +110,7 @@ const CLLocationAccuracy RCTLocationAccuracy = 500.0; // meters
     },
     @"timestamp": @(CACurrentMediaTime())
   };
-  [_eventDispatcher sendDeviceEventWithName:@"geoLocationDidChange" body:event];
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"geoLocationDidChange" body:event];
   NSArray *pendingRequestsCopy;
 
   // TODO (#5906496): is this locking neccessary? If so, use something better than @synchronize

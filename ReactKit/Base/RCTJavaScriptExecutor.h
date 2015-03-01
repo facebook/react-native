@@ -5,7 +5,7 @@
 #import "RCTInvalidating.h"
 
 typedef void (^RCTJavaScriptCompleteBlock)(NSError *error);
-typedef void (^RCTJavaScriptCallback)(id objcValue, NSError *error);
+typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 
 /**
  * Abstracts away a JavaScript execution context - we may be running code in a

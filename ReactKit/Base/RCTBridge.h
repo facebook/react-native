@@ -6,32 +6,16 @@
 
 @class RCTBridge;
 @class RCTEventDispatcher;
-@class RCTRootView;
-
-/**
- * Utilities for constructing common response objects. When sending a
- * systemError back to JS, it's important to describe whether or not it was a
- * system error, or API usage error. System errors should never happen and are
- * therefore logged using `RCTLogError()`. API usage errors are expected if the
- * API is misused and will therefore not be logged using `RCTLogError()`. The JS
- * application code is expected to handle them. Regardless of type, each error
- * should be logged at most once.
- */
-static inline NSDictionary *RCTSystemErrorObject(NSString *msg)
-{
-  return @{@"systemError": msg ?: @""};
-}
-
-static inline NSDictionary *RCTAPIErrorObject(NSString *msg)
-{
-  return @{@"apiError": msg ?: @""};
-}
 
 /**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
+ * The bridge will call this block to instatiate the modules, and will
+ * be responsible for invalidating/releasing them when the bridge is destroyed.
+ * For this reason, the block should always return new module instances, and
+ * module instances should not be shared between bridges.
  */
-typedef NSArray *(^RCTBridgeModuleProviderBlock)(RCTBridge *bridge);
+typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.
@@ -42,12 +26,12 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(RCTBridge *bridge);
  * The designated initializer. This creates a new bridge on top of the specified
  * executor. The bridge should then be used for all subsequent communication
  * with the JavaScript code running in the executor. Modules will be automatically
- * instantiated using the default contructor, but you can optionally pass in a
- * module provider block to manually instantiate modules that require additional
- * init parameters or configuration.
+ * instantiated using the default contructor, but you can optionally pass in an
+ * array of pre-initialized module instances if they require additional init
+ * parameters or configuration.
  */
-- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                            moduleProvider:(RCTBridgeModuleProviderBlock)block NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)executor
+                  moduleProvider:(RCTBridgeModuleProviderBlock)block NS_DESIGNATED_INITIALIZER;
 
 /**
  * This method is used to call functions in the JavaScript application context.
@@ -80,16 +64,6 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(RCTBridge *bridge);
  * queue.
  */
 @property (nonatomic, readonly) dispatch_queue_t shadowQueue;
-
-// For use in implementing delegates, which may need to queue responses.
-- (RCTResponseSenderBlock)createResponseSenderBlock:(NSInteger)callbackID;
-
-/**
- * Register a root view with the bridge. Theorectically, a single bridge can
- * support multiple root views, however this feature is not currently exposed
- * and may eventually be removed.
- */
-- (void)registerRootView:(RCTRootView *)rootView;
 
 /**
  * Global logging function that will print to both xcode and JS debugger consoles.

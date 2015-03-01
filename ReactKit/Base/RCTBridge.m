@@ -3,10 +3,11 @@
 #import "RCTBridge.h"
 
 #import <dlfcn.h>
-#import <mach-o/getsect.h>
-#import <mach-o/dyld.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
+
+#import <mach-o/dyld.h>
+#import <mach-o/getsect.h>
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
@@ -27,77 +28,11 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 };
 
 /**
- * This private class is used as a container for exported method info
- */
-@interface RCTModuleMethod : NSObject
-
-@property (readonly, nonatomic, assign) SEL selector;
-@property (readonly, nonatomic, copy) NSString *JSMethodName;
-@property (readonly, nonatomic, assign) NSUInteger arity;
-@property (readonly, nonatomic, copy) NSIndexSet *blockArgumentIndexes;
-
-@end
-
-@implementation RCTModuleMethod
-
-- (instancetype)initWithSelector:(SEL)selector
-                    JSMethodName:(NSString *)JSMethodName
-                           arity:(NSUInteger)arity
-            blockArgumentIndexes:(NSIndexSet *)blockArgumentIndexes
-{
-  if ((self = [super init])) {
-    _selector = selector;
-    _JSMethodName = [JSMethodName copy];
-    _arity = arity;
-    _blockArgumentIndexes = [blockArgumentIndexes copy];
-  }
-  return self;
-}
-
-- (NSString *)description
-{
-  NSString *blocks = @"no block args";
-  if (self.blockArgumentIndexes.count > 0) {
-    NSMutableString *indexString = [NSMutableString string];
-    [self.blockArgumentIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-      [indexString appendFormat:@", %tu", idx];
-    }];
-    blocks = [NSString stringWithFormat:@"block args at %@", [indexString substringFromIndex:2]];
-  }
-  
-  return [NSString stringWithFormat:@"<%@: %p; exports -%@ as %@; %@>", NSStringFromClass(self.class), self, NSStringFromSelector(self.selector), self.JSMethodName, blocks];
-}
-
-@end
-
-#ifdef __LP64__
-typedef uint64_t RCTExportValue;
-typedef struct section_64 RCTExportSection;
-#define RCTGetSectByNameFromHeader getsectbynamefromheader_64
-#else
-typedef uint32_t RCTExportValue;
-typedef struct section RCTExportSection;
-#define RCTGetSectByNameFromHeader getsectbynamefromheader
-#endif
-
-/**
  * This function returns the module name for a given class.
  */
 static NSString *RCTModuleNameForClass(Class cls)
 {
   return [cls respondsToSelector:@selector(moduleName)] ? [cls moduleName] : NSStringFromClass(cls);
-}
-
-/**
- * This function instantiates a new module instance.
- */
-static id<RCTBridgeModule> RCTCreateModuleInstance(Class cls, RCTBridge *bridge)
-{
-  if ([cls instancesRespondToSelector:@selector(initWithBridge:)]) {
-    return [[cls alloc] initWithBridge:bridge];
-  } else {
-    return [[cls alloc] init];
-  }
 }
 
 /**
@@ -111,22 +46,11 @@ static NSArray *RCTJSMethods(void)
   dispatch_once(&onceToken, ^{
     NSMutableSet *uniqueMethods = [NSMutableSet set];
 
-    unsigned int classCount;
-    Class *classes = objc_copyClassList(&classCount);
-    for (unsigned int i = 0; i < classCount; i++) {
-
-      Class cls = classes[i];
-
-      if (!class_getSuperclass(cls)) {
-        // Class has no superclass - it's probably something weird
-        continue;
-      }
-
+    RCTEnumerateClasses(^(__unsafe_unretained Class cls) {
       if (RCTClassOverridesClassMethod(cls, @selector(JSMethods))) {
         [uniqueMethods addObjectsFromArray:[cls JSMethods]];
       }
-    }
-    free(classes);
+    });
 
     JSMethods = [uniqueMethods allObjects];
   });
@@ -147,37 +71,215 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
     modules = [NSMutableArray array];
     RCTModuleNamesByID = [NSMutableArray array];
 
-    unsigned int classCount;
-    Class *classes = objc_copyClassList(&classCount);
-    for (unsigned int i = 0; i < classCount; i++) {
+    RCTEnumerateClasses(^(__unsafe_unretained Class cls) {
+      if ([cls conformsToProtocol:@protocol(RCTBridgeModule)]) {
 
-      Class cls = classes[i];
+        // Add module
+        [(NSMutableArray *)modules addObject:cls];
 
-      if (!class_getSuperclass(cls)) {
-        // Class has no superclass - it's probably something weird
-        continue;
+        // Add module name
+        NSString *moduleName = RCTModuleNameForClass(cls);
+        [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
       }
-
-      if (![cls conformsToProtocol:@protocol(RCTBridgeModule)]) {
-        // Not an RCTBridgeModule
-        continue;
-      }
-
-      // Add module
-      [(NSMutableArray *)modules addObject:cls];
-
-      // Add module name
-      NSString *moduleName = RCTModuleNameForClass(cls);
-      [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
-    }
-    free(classes);
+    });
 
     modules = [modules copy];
     RCTModuleNamesByID = [RCTModuleNamesByID copy];
   });
-  
+
   return modules;
 }
+
+@interface RCTBridge ()
+
+- (void)_invokeAndProcessModule:(NSString *)module
+                         method:(NSString *)method
+                      arguments:(NSArray *)args;
+
+@end
+
+/**
+ * This private class is used as a container for exported method info
+ */
+@interface RCTModuleMethod : NSObject
+
+@property (nonatomic, copy, readonly) NSString *moduleClassName;
+@property (nonatomic, copy, readonly) NSString *JSMethodName;
+
+@end
+
+@implementation RCTModuleMethod
+{
+  BOOL _isClassMethod;
+  Class _moduleClass;
+  SEL _selector;
+  NSMethodSignature *_methodSignature;
+  NSArray *_argumentBlocks;
+  NSString *_methodName;
+}
+
+- (instancetype)initWithMethodName:(NSString *)methodName
+                      JSMethodName:(NSString *)JSMethodName
+{
+  if ((self = [super init])) {
+
+    _methodName = methodName;
+    NSArray *parts = [[methodName substringWithRange:NSMakeRange(2, methodName.length - 3)] componentsSeparatedByString:@" "];
+
+    // Parse class and method
+    _moduleClassName = parts[0];
+    NSRange categoryRange = [_moduleClassName rangeOfString:@"("];
+    if (categoryRange.length)
+    {
+      _moduleClassName = [_moduleClassName substringToIndex:categoryRange.location];
+    }
+
+    // Extract class and method details
+    _isClassMethod = [methodName characterAtIndex:0] == '+';
+    _moduleClass = NSClassFromString(_moduleClassName);
+    _selector = NSSelectorFromString(parts[1]);
+    _JSMethodName = JSMethodName ?: [NSStringFromSelector(_selector) componentsSeparatedByString:@":"][0];
+
+#if DEBUG
+
+    // Sanity check
+    RCTAssert([_moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
+              @"You are attempting to export the method %@, but %@ does not \
+              conform to the RCTBridgeModule Protocol", methodName, _moduleClassName);
+#endif
+
+    // Get method signature
+    _methodSignature = _isClassMethod ?
+      [_moduleClass methodSignatureForSelector:_selector] :
+      [_moduleClass instanceMethodSignatureForSelector:_selector];
+
+    // Process arguments
+    NSUInteger numberOfArguments = _methodSignature.numberOfArguments;
+    NSMutableArray *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
+    for (NSUInteger i = 2; i < numberOfArguments; i++) {
+      const char *argumentType = [_methodSignature getArgumentTypeAtIndex:i];
+      switch (argumentType[0]) {
+
+#define RCT_ARG_BLOCK(_logic) \
+          [argumentBlocks addObject:^(RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) { \
+            _logic \
+            [invocation setArgument:&value atIndex:index]; \
+          }]; \
+
+#define RCT_CASE(_value, _class, _logic) \
+        case _value: {                   \
+          RCT_ARG_BLOCK( \
+            if (json && ![json isKindOfClass:[_class class]]) { \
+              RCTLogError(@"Argument %tu (%@) of %@.%@ should be of type %@", index, \
+                json, RCTModuleNameForClass(_moduleClass), _JSMethodName, [_class class]); \
+              return; \
+            } \
+            _logic \
+          ) \
+          break; \
+        }
+
+        RCT_CASE(':', NSString, SEL value = NSSelectorFromString(json); );
+        RCT_CASE('*', NSString, const char *value = [json UTF8String]; );
+
+#define RCT_SIMPLE_CASE(_value, _type, _selector) \
+        case _value: {                              \
+          RCT_ARG_BLOCK( \
+            if (json && ![json respondsToSelector:@selector(_selector)]) { \
+              RCTLogError(@"Argument %tu (%@) of %@.%@ does not respond to selector: %@", \
+                index, json, RCTModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
+              return; \
+            } \
+            _type value = [json _selector];                     \
+          ) \
+          break; \
+        }
+
+        RCT_SIMPLE_CASE('c', char, charValue)
+        RCT_SIMPLE_CASE('C', unsigned char, unsignedCharValue)
+        RCT_SIMPLE_CASE('s', short, shortValue)
+        RCT_SIMPLE_CASE('S', unsigned short, unsignedShortValue)
+        RCT_SIMPLE_CASE('i', int, intValue)
+        RCT_SIMPLE_CASE('I', unsigned int, unsignedIntValue)
+        RCT_SIMPLE_CASE('l', long, longValue)
+        RCT_SIMPLE_CASE('L', unsigned long, unsignedLongValue)
+        RCT_SIMPLE_CASE('q', long long, longLongValue)
+        RCT_SIMPLE_CASE('Q', unsigned long long, unsignedLongLongValue)
+        RCT_SIMPLE_CASE('f', float, floatValue)
+        RCT_SIMPLE_CASE('d', double, doubleValue)
+        RCT_SIMPLE_CASE('B', BOOL, boolValue)
+
+        default: {
+          static const char *blockType = @encode(typeof(^{}));
+          if (!strcmp(argumentType, blockType)) {
+            RCT_ARG_BLOCK(
+              if (json && ![json isKindOfClass:[NSNumber class]]) {
+                RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
+                            json, RCTModuleNameForClass(_moduleClass), _JSMethodName);
+                return;
+              }
+              // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+              __autoreleasing id value = (json ? ^(NSArray *args) {
+                [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                         method:@"invokeCallbackAndReturnFlushedQueue"
+                                      arguments:@[json, args]];
+              } : ^(NSArray *unused) {});
+            )
+          } else {
+            RCT_ARG_BLOCK( id value = json; )
+          }
+          break;
+        }
+      }
+    }
+    _argumentBlocks = [argumentBlocks copy];
+  }
+  return self;
+}
+
+- (void)invokeWithBridge:(RCTBridge *)bridge
+                  module:(id)module
+               arguments:(NSArray *)arguments
+{
+
+#if DEBUG
+
+  // Sanity check
+  RCTAssert([module class] == _moduleClass, @"Attempted to invoke method \
+            %@ on a module of class %@", _methodName, [module class]);
+#endif
+
+  // Safety check
+  if (arguments.count != _argumentBlocks.count) {
+    RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
+                RCTModuleNameForClass(_moduleClass), _JSMethodName,
+                arguments.count, _argumentBlocks.count);
+    return;
+  }
+
+  // Create invocation (we can't re-use this as it wouldn't be thread-safe)
+  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:_methodSignature];
+  [invocation setArgument:&_selector atIndex:1];
+
+  // Set arguments
+  NSUInteger index = 0;
+  for (id json in arguments) {
+    id arg = (json == [NSNull null]) ? nil : json;
+    void (^block)(RCTBridge *, NSInvocation *, NSUInteger, id) = _argumentBlocks[index];
+    block(bridge, invocation, index + 2, arg);
+    index ++;
+  }
+
+  // Invoke method
+  [invocation invokeWithTarget:_isClassMethod ? [module class] : module];
+}
+
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"<%@: %p; exports %@ as %@;>", NSStringFromClass(self.class), self, _methodName, _JSMethodName];
+}
+
+@end
 
 /**
  * This function parses the exported methods inside RCTBridgeModules and
@@ -193,6 +295,16 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
     Dl_info info;
     dladdr(&RCTExportedMethodsByModuleID, &info);
 
+#ifdef __LP64__
+    typedef uint64_t RCTExportValue;
+    typedef struct section_64 RCTExportSection;
+#define RCTGetSectByNameFromHeader getsectbynamefromheader_64
+#else
+    typedef uint32_t RCTExportValue;
+    typedef struct section RCTExportSection;
+#define RCTGetSectByNameFromHeader getsectbynamefromheader
+#endif
+
     const RCTExportValue mach_header = (RCTExportValue)info.dli_fbase;
     const RCTExportSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExport");
 
@@ -202,53 +314,23 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
 
     NSArray *classes = RCTBridgeModuleClassesByModuleID();
     NSMutableDictionary *methodsByModuleClassName = [NSMutableDictionary dictionaryWithCapacity:[classes count]];
-    NSCharacterSet *plusMinusCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"+-"];
 
     for (RCTExportValue addr = section->offset;
          addr < section->offset + section->size;
-         addr += sizeof(id) * 2) {
+         addr += sizeof(const char **) * 2) {
 
-      const char **entry = (const char **)(mach_header + addr);
-      NSScanner *scanner = [NSScanner scannerWithString:@(entry[0])];
+      // Get data entry
+      const char **entries = (const char **)(mach_header + addr);
 
-      NSString *plusMinus;
-      if (![scanner scanCharactersFromSet:plusMinusCharacterSet intoString:&plusMinus]) continue;
-      if (![scanner scanString:@"[" intoString:NULL]) continue;
-
-      NSString *className;
-      if (![scanner scanUpToString:@" " intoString:&className]) continue;
-      [scanner scanString:@" " intoString:NULL];
-
-      NSString *selectorName;
-      if (![scanner scanUpToString:@"]" intoString:&selectorName]) continue;
-
-      Class moduleClass = NSClassFromString(className);
-      if (moduleClass == Nil) continue;
-
-      SEL selector = NSSelectorFromString(selectorName);
-      Method method = ([plusMinus characterAtIndex:0] == '+' ? class_getClassMethod : class_getInstanceMethod)(moduleClass, selector);
-      if (method == nil) continue;
-
-      unsigned int argumentCount = method_getNumberOfArguments(method);
-      NSMutableIndexSet *blockArgumentIndexes = [NSMutableIndexSet indexSet];
-      static const char *blockType = @encode(typeof(^{}));
-      for (unsigned int i = 2; i < argumentCount; i++) {
-        char *type = method_copyArgumentType(method, i);
-        if (!strcmp(type, blockType)) {
-          [blockArgumentIndexes addIndex:i - 2];
-        }
-        free(type);
-      }
-
-      NSString *JSMethodName = strlen(entry[1]) ? @(entry[1]) : [NSStringFromSelector(selector) componentsSeparatedByString:@":"][0];
+      // Create method
       RCTModuleMethod *moduleMethod =
-      [[RCTModuleMethod alloc] initWithSelector:selector
-                                   JSMethodName:JSMethodName
-                                          arity:method_getNumberOfArguments(method) - 2
-                           blockArgumentIndexes:blockArgumentIndexes];
+        [[RCTModuleMethod alloc] initWithMethodName:@(entries[0])
+                                       JSMethodName:strlen(entries[1]) ? @(entries[1]) : nil];
 
-      NSArray *methods = methodsByModuleClassName[className];
-      methodsByModuleClassName[className] = methods ? [methods arrayByAddingObject:moduleMethod] : @[moduleMethod];
+      // Cache method
+      NSArray *methods = methodsByModuleClassName[moduleMethod.moduleClassName];
+      methodsByModuleClassName[moduleMethod.moduleClassName] =
+        methods ? [methods arrayByAddingObject:moduleMethod] : @[moduleMethod];
     }
 
     methodsByModuleID = [[RCTSparseArray alloc] initWithCapacity:[classes count]];
@@ -256,7 +338,7 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
       methodsByModuleID[moduleID] = methodsByModuleClassName[NSStringFromClass(moduleClass)];
     }];
   });
-  
+
   return methodsByModuleID;
 }
 
@@ -303,18 +385,11 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
           @"type": @"remote",
         };
       }];
-      
+
       NSDictionary *module = @{
         @"moduleID": @(moduleID),
         @"methods": methodsByName
       };
-
-      // Add static constants
-      if (RCTClassOverridesClassMethod(moduleClass, @selector(constantsToExport))) {
-        NSMutableDictionary *mutableModule = [module mutableCopy];
-        mutableModule[@"constants"] = [moduleClass constantsToExport] ?: @{};
-        module = [mutableModule copy];
-      }
 
       remoteModuleConfigByClassName[NSStringFromClass(moduleClass)] = module;
     }];
@@ -324,14 +399,15 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
   NSMutableDictionary *moduleConfig = [[NSMutableDictionary alloc] init];
   [modulesByName enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, id<RCTBridgeModule> module, BOOL *stop) {
 
-    // Add "psuedo-constants"
+    // Add constants
     NSMutableDictionary *config = remoteModuleConfigByClassName[NSStringFromClass([module class])];
-    if (RCTClassOverridesInstanceMethod([module class], @selector(constantsToExport))) {
-      NSMutableDictionary *mutableConfig = [NSMutableDictionary dictionaryWithDictionary:config];
-      NSMutableDictionary *mutableConstants = [NSMutableDictionary dictionaryWithDictionary:config[@"constants"]];
-      [mutableConstants addEntriesFromDictionary:[module constantsToExport]];
-      mutableConfig[@"constants"] = mutableConstants; // There's no real need to copy this
-      config = mutableConfig; // Nor this - receiver is unlikely to mutate it
+    if ([module respondsToSelector:@selector(constantsToExport)]) {
+      NSDictionary *constants = [module constantsToExport];
+      if (constants) {
+        NSMutableDictionary *mutableConfig = [NSMutableDictionary dictionaryWithDictionary:config];
+        mutableConfig[@"constants"] = constants; // There's no real need to copy this
+        config = mutableConfig; // Nor this - receiver is unlikely to mutate it
+      }
     }
 
     moduleConfig[moduleName] = config;
@@ -339,6 +415,7 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
 
   return moduleConfig;
 }
+
 
 /**
  * As above, but for local modules/methods, which represent JS classes
@@ -417,21 +494,19 @@ static NSDictionary *RCTLocalModulesConfig()
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
-- (instancetype)initWithJavaScriptExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                            moduleProvider:(RCTBridgeModuleProviderBlock)block
+- (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)executor
+                  moduleProvider:(RCTBridgeModuleProviderBlock)block
 {
   if ((self = [super init])) {
-    _javaScriptExecutor = javaScriptExecutor;
+    _javaScriptExecutor = executor;
     _latestJSExecutor = _javaScriptExecutor;
     _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
     _shadowQueue = dispatch_queue_create("com.facebook.ReactKit.ShadowQueue", DISPATCH_QUEUE_SERIAL);
 
     // Register passed-in module instances
     NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
-    if (block) {
-      for (id<RCTBridgeModule> module in block(self)) {
-        preregisteredModules[RCTModuleNameForClass([module class])] = module;
-      }
+    for (id<RCTBridgeModule> module in block ? block() : nil) {
+      preregisteredModules[RCTModuleNameForClass([module class])] = module;
     }
 
     // Instantiate modules
@@ -444,14 +519,14 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
         // Preregistered instances takes precedence, no questions asked
         if (!preregisteredModules[moduleName]) {
           // It's OK to have a name collision as long as the second instance is nil
-          RCTAssert(RCTCreateModuleInstance(moduleClass, self) == nil,
+          RCTAssert([[moduleClass alloc] init] == nil,
                     @"Attempted to register RCTBridgeModule class %@ for the name '%@', \
                     but name was already registered by class %@", moduleClass,
                     moduleName, [modulesByName[moduleName] class]);
         }
       } else {
         // Module name hasn't been used before, so go ahead and instantiate
-        id<RCTBridgeModule> module = RCTCreateModuleInstance(moduleClass, self);
+        id<RCTBridgeModule> module = [[moduleClass alloc] init];
         if (module) {
           _modulesByID[moduleID] = modulesByName[moduleName] = module;
         }
@@ -460,6 +535,13 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
     // Store modules
     _modulesByName = [modulesByName copy];
+
+    // Set bridge
+    for (id<RCTBridgeModule> module in _modulesByName.allValues) {
+      if ([module respondsToSelector:@selector(setBridge:)]) {
+        module.bridge = self;
+      }
+    }
 
     // Inject module data into JS context
     NSString *configJSON = RCTJSONStringify(@{
@@ -470,12 +552,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     [_javaScriptExecutor injectJSONText:configJSON asGlobalObjectNamed:@"__fbBatchedBridgeConfig" callback:^(id err) {
       dispatch_semaphore_signal(semaphore);
     }];
-    
+
     if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) != 0) {
       RCTLogMustFix(@"JavaScriptExecutor took too long to inject JSON object");
     }
   }
-  
+
   return self;
 }
 
@@ -501,23 +583,29 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)invalidate
 {
+  // Release executor
   if (_latestJSExecutor == _javaScriptExecutor) {
     _latestJSExecutor = nil;
   }
   [_javaScriptExecutor invalidate];
   _javaScriptExecutor = nil;
-  
-  dispatch_sync(_shadowQueue, ^{
+
+  // Wait for queued methods to finish
+  dispatch_sync(self.shadowQueue, ^{
     // Make sure all dispatchers have been executed before continuing
     // TODO: is this still needed?
   });
-  
+
+  // Invalidate modules
   for (id target in _modulesByID.allObjects) {
     if ([target respondsToSelector:@selector(invalidate)]) {
       [(id<RCTInvalidating>)target invalidate];
     }
   }
-  [_modulesByID removeAllObjects];
+
+  // Release modules (breaks retain cycle if module has strong bridge reference)
+  _modulesByID = nil;
+  _modulesByName = nil;
 }
 
 /**
@@ -537,10 +625,10 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
   RCTAssert(moduleID != nil, @"Module '%@' not registered.",
             [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
-  
+
   NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
   RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
-  
+
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
                       arguments:@[moduleID, methodID, args ?: @[]]];
@@ -554,12 +642,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       onComplete(scriptLoadError);
       return;
     }
-    
+
     [_javaScriptExecutor executeJSCall:@"BatchedBridge"
                                 method:@"flushedQueue"
                              arguments:@[]
-                              callback:^(id objcValue, NSError *error) {
-                                [self _handleBuffer:objcValue];
+                              callback:^(id json, NSError *error) {
+                                [self _handleBuffer:json];
                                 onComplete(error);
                               }];
   }];
@@ -570,33 +658,26 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
 {
   NSTimeInterval startJS = RCTTGetAbsoluteTime();
-  
-  RCTJavaScriptCallback processResponse = ^(id objcValue, NSError *error) {
+
+  RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     NSTimeInterval startNative = RCTTGetAbsoluteTime();
-    [self _handleBuffer:objcValue];
-    
+    [self _handleBuffer:json];
+
     NSTimeInterval end = RCTTGetAbsoluteTime();
     NSTimeInterval timeJS = startNative - startJS;
     NSTimeInterval timeNative = end - startNative;
-    
+
     // TODO: surface this performance information somewhere
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"PERF" object:nil userInfo:@{@"JS": @(timeJS * 1000000), @"Native": @(timeNative * 1000000)}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"PERF" object:nil userInfo:@{
+      @"JS": @(timeJS * 1000000),
+      @"Native": @(timeNative * 1000000)
+    }];
   };
-  
+
   [_javaScriptExecutor executeJSCall:module
                               method:method
                            arguments:args
                             callback:processResponse];
-}
-
-/**
- * TODO (#5906496): Have responses piggy backed on a round trip with ObjC->JS requests.
- */
-- (void)_sendResponseToJavaScriptCallbackID:(NSInteger)cbID args:(NSArray *)args
-{
-  [self _invokeAndProcessModule:@"BatchedBridge"
-                         method:@"invokeCallbackAndReturnFlushedQueue"
-                      arguments:@[@(cbID), args]];
 }
 
 #pragma mark - Payload Processing
@@ -606,12 +687,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   if (buffer == nil || buffer == (id)kCFNull) {
     return;
   }
-  
+
   if (![buffer isKindOfClass:[NSArray class]]) {
     RCTLogError(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
     return;
   }
-  
+
   NSArray *requestsArray = (NSArray *)buffer;
   NSUInteger bufferRowCount = [requestsArray count];
   NSUInteger expectedFieldsCount = RCTBridgeFieldResponseReturnValues + 1;
@@ -619,7 +700,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     RCTLogError(@"Must pass all fields to buffer - expected %zd, saw %zd", expectedFieldsCount, bufferRowCount);
     return;
   }
-  
+
   for (NSUInteger fieldIndex = RCTBridgeFieldRequestModuleIDs; fieldIndex <= RCTBridgeFieldParamss; fieldIndex++) {
     id field = [requestsArray objectAtIndex:fieldIndex];
     if (![field isKindOfClass:[NSArray class]]) {
@@ -627,18 +708,18 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       return;
     }
   }
-  
+
   NSArray *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
   NSArray *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
   NSArray *paramsArrays = requestsArray[RCTBridgeFieldParamss];
-  
+
   NSUInteger numRequests = [moduleIDs count];
   BOOL allSame = numRequests == [methodIDs count] && numRequests == [paramsArrays count];
   if (!allSame) {
     RCTLogError(@"Invalid data message - all must be length: %zd", numRequests);
     return;
   }
-  
+
   for (NSUInteger i = 0; i < numRequests; i++) {
     @autoreleasepool {
       [self _handleRequestNumber:i
@@ -647,9 +728,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                           params:paramsArrays[i]];
     }
   }
-  
+
   // TODO: only used by RCTUIManager - can we eliminate this special case?
-  dispatch_async(_shadowQueue, ^{
+  dispatch_async(self.shadowQueue, ^{
     for (id module in _modulesByID.allObjects) {
       if ([module respondsToSelector:@selector(batchDidComplete)]) {
         [module batchDidComplete];
@@ -668,168 +749,40 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     return NO;
   }
 
+  // Look up method
   NSArray *methods = RCTExportedMethodsByModuleID()[moduleID];
   if (methodID >= methods.count) {
     RCTLogError(@"Unknown methodID: %zd for module: %zd (%@)", methodID, moduleID, RCTModuleNamesByID[moduleID]);
     return NO;
   }
-  
   RCTModuleMethod *method = methods[methodID];
-  NSUInteger methodArity = method.arity;
-  if (params.count != methodArity) {
-    RCTLogError(@"Expected %tu arguments but got %tu invoking %@.%@",
-                methodArity,
-                params.count,
-                RCTModuleNamesByID[moduleID],
-                method.JSMethodName);
-    return NO;
-  }
-  
+
   __weak RCTBridge *weakSelf = self;
-  dispatch_async(_shadowQueue, ^{
+  dispatch_async(self.shadowQueue, ^{
     __strong RCTBridge *strongSelf = weakSelf;
-    
+
     if (!strongSelf.isValid) {
       // strongSelf has been invalidated since the dispatch_async call and this
       // invocation should not continue.
       return;
     }
-    
-    // TODO: we should just store module instances by index, since that's how we look them up anyway
-    id target = strongSelf->_modulesByID[moduleID];
-    RCTAssert(target != nil, @"No module found for name '%@'", RCTModuleNamesByID[moduleID]);
-    
-    SEL selector = method.selector;
-    NSMethodSignature *methodSignature = [target methodSignatureForSelector:selector];
-    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-    [invocation setArgument:&target atIndex:0];
-    [invocation setArgument:&selector atIndex:1];
-    
-    // Retain used blocks until after invocation completes.
-    NS_VALID_UNTIL_END_OF_SCOPE NSMutableArray *blocks = [NSMutableArray array];
-    
-    [params enumerateObjectsUsingBlock:^(id param, NSUInteger idx, BOOL *stop) {
-      if ([param isEqual:[NSNull null]]) {
-        param = nil;
-      } else if ([method.blockArgumentIndexes containsIndex:idx]) {
-        id block = [strongSelf createResponseSenderBlock:[param integerValue]];
-        [blocks addObject:block];
-        param = block;
-      }
-      
-      NSUInteger argIdx = idx + 2;
-      
-      // TODO: can we do this lookup in advance and cache the logic instead of
-      // recalculating it every time for every parameter?
-      BOOL shouldSet = YES;
-      const char *argumentType = [methodSignature getArgumentTypeAtIndex:argIdx];
-      switch (argumentType[0]) {
-        case ':':
-          if ([param isKindOfClass:[NSString class]]) {
-            SEL sel = NSSelectorFromString(param);
-            [invocation setArgument:&sel atIndex:argIdx];
-            shouldSet = NO;
-          }
-          break;
-          
-        case '*':
-          if ([param isKindOfClass:[NSString class]]) {
-            const char *string = [param UTF8String];
-            [invocation setArgument:&string atIndex:argIdx];
-            shouldSet = NO;
-          }
-          break;
-          
-          // TODO: it seems like an error if the param doesn't respond
-          // so we should probably surface that error rather than failing silently
-#define CASE(_value, _type, _selector)                           \
-        case _value:                                             \
-          if ([param respondsToSelector:@selector(_selector)]) { \
-            _type value = [param _selector];                     \
-            [invocation setArgument:&value atIndex:argIdx];      \
-            shouldSet = NO;                                      \
-          }                                                      \
-          break;
-          
-          CASE('c', char, charValue)
-          CASE('C', unsigned char, unsignedCharValue)
-          CASE('s', short, shortValue)
-          CASE('S', unsigned short, unsignedShortValue)
-          CASE('i', int, intValue)
-          CASE('I', unsigned int, unsignedIntValue)
-          CASE('l', long, longValue)
-          CASE('L', unsigned long, unsignedLongValue)
-          CASE('q', long long, longLongValue)
-          CASE('Q', unsigned long long, unsignedLongLongValue)
-          CASE('f', float, floatValue)
-          CASE('d', double, doubleValue)
-          CASE('B', BOOL, boolValue)
-          
-        default:
-          break;
-      }
-      
-      if (shouldSet) {
-        [invocation setArgument:&param atIndex:argIdx];
-      }
-    }];
-    
+
+    // Look up module
+    id module = strongSelf->_modulesByID[moduleID];
+    if (!module) {
+      RCTLogError(@"No module found for name '%@'", RCTModuleNamesByID[moduleID]);
+      return;
+    }
+
     @try {
-      [invocation invoke];
+      [method invokeWithBridge:strongSelf module:module arguments:params];
     }
     @catch (NSException *exception) {
-      RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, target, params, exception);
+      RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
     }
   });
-  
+
   return YES;
-}
-
-/**
- * Returns a callback that reports values back to the JS thread.
- * TODO (#5906496): These responses should go into their own queue `MessageQueue.m` that
- * mirrors the JS queue and protocol. For now, we speak the "language" of the JS
- * queue by packing it into an array that matches the wire protocol.
- */
-- (RCTResponseSenderBlock)createResponseSenderBlock:(NSInteger)cbID
-{
-  if (!cbID) {
-    return nil;
-  }
-  
-  return ^(NSArray *args) {
-    [self _sendResponseToJavaScriptCallbackID:cbID args:args];
-  };
-}
-
-+ (NSInvocation *)invocationForAdditionalArguments:(NSUInteger)argCount
-{
-  static NSMutableDictionary *invocations;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    invocations = [NSMutableDictionary dictionary];
-  });
-  
-  id key = @(argCount);
-  NSInvocation *invocation = invocations[key];
-  if (invocation == nil) {
-    NSString *objCTypes = [@"v@:" stringByPaddingToLength:3 + argCount withString:@"@" startingAtIndex:0];
-    NSMethodSignature *methodSignature = [NSMethodSignature signatureWithObjCTypes:objCTypes.UTF8String];
-    invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-    invocations[key] = invocation;
-  }
-  
-  return invocation;
-}
-
-- (void)registerRootView:(RCTRootView *)rootView
-{
-  // TODO: only used by RCTUIManager - can we eliminate this special case?
-  for (id module in _modulesByID.allObjects) {
-    if ([module respondsToSelector:@selector(registerRootView:)]) {
-      [module registerRootView:rootView];
-    }
-  }
 }
 
 + (BOOL)hasValidJSExecutor
@@ -844,7 +797,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     return;
   }
   NSMutableArray *args = [NSMutableArray arrayWithObject:level];
-  
+
   // TODO (#5906496): Find out and document why we skip the first object
   for (id ob in [objects subarrayWithRange:(NSRange){1, [objects count] - 1}]) {
     if ([NSJSONSerialization isValidJSONObject:@[ob]]) {
@@ -853,11 +806,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       [args addObject:[ob description]];
     }
   }
-  // Note the js executor could get invalidated while we're trying to call this...need to watch out for that.
+
+  // Note: the js executor could get invalidated while we're trying to call this...need to watch out for that.
   [_latestJSExecutor executeJSCall:@"RCTLog"
                             method:@"logIfNoNativeHook"
                          arguments:args
-                          callback:^(id objcValue, NSError *error) {}];
+                          callback:^(id json, NSError *error) {}];
 }
 
 @end

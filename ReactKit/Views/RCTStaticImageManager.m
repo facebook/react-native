@@ -16,8 +16,7 @@
 
 RCT_EXPORT_VIEW_PROPERTY(capInsets)
 RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
-
-- (void)set_src:(id)json forView:(RCTStaticImage *)view withDefaultView:(RCTStaticImage *)defaultView
+RCT_CUSTOM_VIEW_PROPERTY(src, RCTStaticImage *)
 {
   if (json) {
     if ([[[json description] pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
@@ -29,8 +28,7 @@ RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
     view.image = defaultView.image;
   }
 }
-
-- (void)set_tintColor:(id)json forView:(RCTStaticImage *)view withDefaultView:(RCTStaticImage *)defaultView
+RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage *)
 {
   if (json) {
     view.renderingMode = UIImageRenderingModeAlwaysTemplate;

@@ -15,8 +15,11 @@ didMoveToNavigationController:(UINavigationController *)navigationController;
 
 @interface RCTWrapperViewController : UIViewController
 
-- (instancetype)initWithContentView:(UIView *)contentView eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
-- (instancetype)initWithNavItem:(RCTNavItem *)navItem eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+- (instancetype)initWithContentView:(UIView *)contentView
+                    eventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNavItem:(RCTNavItem *)navItem
+                eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @property (nonatomic, readwrite, weak) id<RCTWrapperViewControllerNavigationListener> navigationListener;
 @property (nonatomic, strong, readwrite) RCTNavItem *navItem;

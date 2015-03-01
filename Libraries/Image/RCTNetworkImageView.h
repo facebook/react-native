@@ -6,7 +6,8 @@
 
 @interface RCTNetworkImageView : UIView
 
-- (instancetype)initWithFrame:(CGRect)frame imageDownloader:(RCTImageDownloader *)imageDownloader;
+- (instancetype)initWithFrame:(CGRect)frame
+              imageDownloader:(RCTImageDownloader *)imageDownloader NS_DESIGNATED_INITIALIZER;
 
 /**
  * An image that will appear while the view is loading the image from the network,

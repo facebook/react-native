@@ -49,7 +49,7 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   });
 }
 
-+ (NSDictionary *)constantsToExport
+- (NSDictionary *)constantsToExport
 {
   return @{
     @"Style": @{

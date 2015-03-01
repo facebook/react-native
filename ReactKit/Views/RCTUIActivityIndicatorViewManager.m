@@ -13,12 +13,9 @@
 
 RCT_EXPORT_VIEW_PROPERTY(activityIndicatorViewStyle)
 RCT_EXPORT_VIEW_PROPERTY(color)
-
-- (void)set_animating:(NSNumber *)value
-              forView:(UIActivityIndicatorView *)view
-      withDefaultView:(UIActivityIndicatorView *)defaultView
+RCT_CUSTOM_VIEW_PROPERTY(animating, UIActivityIndicatorView *)
 {
-  BOOL animating = value ? [value boolValue] : [defaultView isAnimating];
+  BOOL animating = json ? [json boolValue] : [defaultView isAnimating];
   if (animating != [view isAnimating]) {
     if (animating) {
       [view startAnimating];
@@ -28,7 +25,7 @@ RCT_EXPORT_VIEW_PROPERTY(color)
   }
 }
 
-+ (NSDictionary *)constantsToExport
+- (NSDictionary *)constantsToExport
 {
   return
   @{
