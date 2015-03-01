@@ -78,11 +78,7 @@ Transformer.prototype.invalidateFile = function(filePath) {
   this._cache.invalidate(filePath);
 };
 
-Transformer.prototype.loadFileAndTransform = function(
-  transformSets,
-  filePath,
-  options
-) {
+Transformer.prototype.loadFileAndTransform = function(filePath) {
   if (this._failedToStart) {
     return this._failedToStart;
   }
@@ -92,15 +88,14 @@ Transformer.prototype.loadFileAndTransform = function(
     return readFile(filePath)
       .then(function(buffer) {
         var sourceCode = buffer.toString();
-        var opts = _.extend({}, options, {filename: filePath});
+
         return q.nfbind(workers)({
-          transformSets: transformSets,
           sourceCode: sourceCode,
-          options: opts,
+          filename: filePath,
         }).then(
           function(res) {
             if (res.error) {
-              throw formatEsprimaError(res.error, filePath, sourceCode);
+              throw formatError(res.error, filePath, sourceCode);
             }
 
             return {
@@ -117,11 +112,26 @@ Transformer.prototype.loadFileAndTransform = function(
 function TransformError() {}
 util.inherits(TransformError, SyntaxError);
 
-function formatEsprimaError(err, filename, source) {
-  if (!(err.lineNumber && err.column)) {
-    return err;
+function formatError(err, filename, source) {
+  if (err.lineNumber && err.column) {
+    return formatEsprimaError(err, filename, source);
+  } else {
+    return formatGenericError(err, filename, source);
   }
+}
 
+function formatGenericError(err, filename) {
+  var msg = 'TransformError: ' + filename + ': ' + err.message;
+  var error = new TransformError();
+  var stack = err.stack.split('\n').slice(0, -1);
+  stack.push(msg);
+  error.stack = stack.join('\n');
+  error.message = msg;
+  error.type = 'TransformError';
+  return error;
+}
+
+function formatEsprimaError(err, filename, source) {
   var stack = err.stack.split('\n');
   stack.shift();
 

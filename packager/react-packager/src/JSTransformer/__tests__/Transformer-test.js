@@ -35,7 +35,7 @@ describe('Transformer', function() {
       callback(null, 'content');
     });
 
-    return new Transformer(OPTIONS).loadFileAndTransform([], 'file', {})
+    return new Transformer(OPTIONS).loadFileAndTransform('file')
       .then(function(data) {
         expect(data).toEqual({
           code: 'transformed',
@@ -58,7 +58,7 @@ describe('Transformer', function() {
       callback(null, {error: esprimaError});
     });
 
-    return new Transformer(OPTIONS).loadFileAndTransform([], 'foo-file.js', {})
+    return new Transformer(OPTIONS).loadFileAndTransform('foo-file.js')
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
         expect(error.snippet).toEqual([
