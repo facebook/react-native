@@ -9,7 +9,6 @@ var React = require('React');
 var Touchable = require('Touchable');
 var TouchableFeedbackPropType = require('TouchableFeedbackPropType');
 
-var copyProperties = require('copyProperties');
 var onlyChild = require('onlyChild');
 
 /**
@@ -66,7 +65,7 @@ var TouchableWithoutFeedback = React.createClass({
   render: function() {
     // Note(vjeux): use cloneWithProps once React has been upgraded
     var child = onlyChild(this.props.children);
-    copyProperties(child.props, {
+    Object.assign(child.props, {
       accessible: true,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
