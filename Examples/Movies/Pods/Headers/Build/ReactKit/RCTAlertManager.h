@@ -1,1 +1,0 @@
-../../../../../../ReactKit/Modules/RCTAlertManager.h

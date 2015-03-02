@@ -1,5 +1,0 @@
-#include "Pods-RCTText.xcconfig"
-GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Build" "${PODS_ROOT}/Headers/Build/RCTText" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/RCTDataManager" "${PODS_ROOT}/Headers/Public/RCTNetworkImage" "${PODS_ROOT}/Headers/Public/RCTText" "${PODS_ROOT}/Headers/Public/ReactKit"
-OTHER_LDFLAGS = -ObjC
-PODS_ROOT = ${SRCROOT}

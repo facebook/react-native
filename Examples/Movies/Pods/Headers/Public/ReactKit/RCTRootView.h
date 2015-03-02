@@ -1,1 +1,0 @@
-../../../../../../ReactKit/Base/RCTRootView.h

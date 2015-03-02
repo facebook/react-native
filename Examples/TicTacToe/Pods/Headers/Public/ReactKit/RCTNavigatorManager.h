@@ -1,1 +1,0 @@
-../../../../../../ReactKit/Views/RCTNavigatorManager.h

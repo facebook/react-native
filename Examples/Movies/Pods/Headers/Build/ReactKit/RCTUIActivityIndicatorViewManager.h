@@ -1,1 +1,0 @@
-../../../../../../ReactKit/Views/RCTUIActivityIndicatorViewManager.h
