@@ -67,11 +67,6 @@
   NSMutableArray *_bridgeInteractionTiming;
 }
 
-- (instancetype)initWithTarget:(id)target action:(SEL)action
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super initWithTarget:nil action:NULL])) {

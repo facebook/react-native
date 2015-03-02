@@ -8,7 +8,7 @@
 
 @interface RCTTouchHandler : UIGestureRecognizer<RCTInvalidating>
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 - (void)startOrResetInteractionTiming;
 - (NSDictionary *)endAndResetInteractionTiming;
 

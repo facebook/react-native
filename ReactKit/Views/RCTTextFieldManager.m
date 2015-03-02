@@ -4,6 +4,7 @@
 
 #import "RCTConvert.h"
 #import "RCTShadowView.h"
+#import "RCTSparseArray.h"
 #import "RCTTextField.h"
 
 @implementation RCTTextFieldManager
@@ -15,38 +16,34 @@
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden)
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect)
+RCT_REMAP_VIEW_PROPERTY(autoCapitalize, autocapitalizationType)
 RCT_EXPORT_VIEW_PROPERTY(enabled)
 RCT_EXPORT_VIEW_PROPERTY(placeholder)
 RCT_EXPORT_VIEW_PROPERTY(text)
 RCT_EXPORT_VIEW_PROPERTY(font)
 RCT_EXPORT_VIEW_PROPERTY(clearButtonMode)
-RCT_REMAP_VIEW_PROPERTY(autoCapitalize, autocapitalizationType)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType)
 RCT_REMAP_VIEW_PROPERTY(color, textColor)
-
-- (void)set_fontSize:(id)json
-             forView:(RCTTextField *)view
-     withDefaultView:(RCTTextField *)defaultView
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, RCTTextField *)
 {
   view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }
-
-- (void)set_FontWeight:(id)json
-               forView:(RCTTextField *)view
-       withDefaultView:(RCTTextField *)defaultView
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, RCTTextField *)
 {
   view.font = [RCTConvert UIFont:view.font withWeight:json]; // TODO
 }
-
-- (void)set_fontFamily:(id)json
-               forView:(RCTTextField *)view
-       withDefaultView:(RCTTextField *)defaultView
+RCT_CUSTOM_VIEW_PROPERTY(fontFamily, RCTTextField *)
 {
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 
-// TODO: original code set view.paddingEdgeInsets from shadowView.paddingAsInsets
-// could it be that this property is calculated asynchrously on shadow thread?
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
+{
+  NSNumber *reactTag = shadowView.reactTag;
+  UIEdgeInsets padding = shadowView.paddingAsInsets;
+  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    ((RCTTextField *)viewRegistry[reactTag]).paddingEdgeInsets = padding;
+  };
+}
 
 @end
-

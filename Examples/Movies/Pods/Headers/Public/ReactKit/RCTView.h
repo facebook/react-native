@@ -11,7 +11,6 @@
 @interface RCTView : UIView
 
 @property (nonatomic, assign) RCTPointerEvents pointerEvents;
-@property (nonatomic, copy) NSString *overrideAccessibilityLabel;
 
 + (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView
                  withScrollView:(UIScrollView *)scrollView

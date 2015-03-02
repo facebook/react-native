@@ -16,10 +16,11 @@ var staticTypeSyntax =
 var visitorList = reactVisitors;
 
 
-function transform(transformSets, srcTxt) {
+function transform(srcTxt, filename) {
   var options = {
     es3: true,
-    sourceType: 'nonStrictModule'
+    sourceType: 'nonStrictModule',
+    filename: filename,
   };
 
   // These tranforms mostly just erase type annotations and static typing
@@ -42,8 +43,8 @@ module.exports = function(data, callback) {
   var result;
   try {
     result = transform(
-      data.transformSets,
-      data.sourceCode
+      data.sourceCode,
+      data.filename
     );
   } catch (e) {
     return callback(null, {

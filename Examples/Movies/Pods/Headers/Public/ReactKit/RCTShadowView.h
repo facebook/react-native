@@ -3,29 +3,15 @@
 #import <UIKit/UIKit.h>
 
 #import "Layout.h"
+#import "RCTUIManager.h"
 #import "RCTViewNodeProtocol.h"
 
 @class RCTSparseArray;
 
-// TODO: amalgamate these enums?
-typedef NS_ENUM(NSUInteger, RCTLayoutLifecycle) {
-  RCTLayoutLifecycleUninitialized = 0,
-  RCTLayoutLifecycleComputed,
-  RCTLayoutLifecycleDirtied,
-};
-
-// TODO: is this still needed?
-typedef NS_ENUM(NSUInteger, RCTPropagationLifecycle) {
-  RCTPropagationLifecycleUninitialized = 0,
-  RCTPropagationLifecycleComputed,
-  RCTPropagationLifecycleDirtied,
-};
-
-// TODO: move this to text node?
-typedef NS_ENUM(NSUInteger, RCTTextLifecycle) {
-  RCTTextLifecycleUninitialized = 0,
-  RCTTextLifecycleComputed,
-  RCTTextLifecycleDirtied,
+typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
+  RCTUpdateLifecycleUninitialized = 0,
+  RCTUpdateLifecycleComputed,
+  RCTUpdateLifecycleDirtied,
 };
 
 // TODO: is this redundact now?
@@ -48,7 +34,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, copy) NSString *moduleName;
 @property (nonatomic, assign) BOOL isBGColorExplicitlySet; // Used to propogate to children
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propogate to children
-@property (nonatomic, assign) RCTLayoutLifecycle layoutLifecycle;
+@property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
@@ -122,11 +108,23 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, assign) css_wrap_type_t flexWrap;
 @property (nonatomic, assign) CGFloat flex;
 
-- (void)collectUpdatedProperties:(NSMutableSet *)viewsWithNewProperties parentProperties:(NSDictionary *)parentProperties;
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame parentConstraint:(CGSize)parentConstraint;
-- (void)fillCSSNode:(css_node_t *)node;
+/**
+ * Calculate property changes that need to be propagated to the view.
+ * The applierBlocks set contains RCTApplierBlock functions that must be applied
+ * on the main thread in order to update the view.
+ */
+- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties;
 
-// The following are implementation details exposed to subclasses. Do not call them directly
+/**
+ * Calculate all views whose frame needs updating after layout has been calculated.
+ * The viewsWithNewFrame set contains the reactTags of the views that need updating.
+ */
+- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame parentConstraint:(CGSize)parentConstraint;
+
+/**
+ * The following are implementation details exposed to subclasses. Do not call them directly
+ */
+- (void)fillCSSNode:(css_node_t *)node;
 - (void)dirtyLayout;
 - (BOOL)isLayoutDirty;
 

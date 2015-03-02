@@ -19,10 +19,12 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 @optional
 
 /**
- * Optional initializer for modules that require access
- * to bridge features, such as sending events or making JS calls
+ * A reference to the RCTBridge. Useful for modules that require access
+ * to bridge features, such as sending events or making JS calls. This
+ * will be set automatically by the bridge when it initializes the module.
+* To implement this in your module, just add @synthesize bridge = _bridge;
  */
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+@property (nonatomic, strong) RCTBridge *bridge;
 
 /**
  * The module name exposed to JS. If omitted, this will be inferred
@@ -42,17 +44,11 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
  * Injects constants into JS. These constants are made accessible via
- * NativeModules.moduleName.X. Note that this method is not inherited when you
- * subclass a module, and you should not call [super constantsToExport] when
- * implementing it.
- */
-+ (NSDictionary *)constantsToExport;
-
-/**
- * Some "constants" are not really constant, and need to be re-generated
- * each time the bridge module is created. Support for this feature is
- * deprecated and may be going away or changing, but for now you can use
- * the -constantsToExport instance method to register these "pseudo-constants".
+ * NativeModules.ModuleName.X. This method is called when the module is
+ * registered by the bridge. It is only called once for the lifetime of the
+ * bridge, so it is not suitable for returning dynamic values, but may be
+ * used for long-lived values such as session keys, that are regenerated only
+ * as part of a reload of the entire React application.
  */
 - (NSDictionary *)constantsToExport;
 

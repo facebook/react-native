@@ -49,7 +49,7 @@ describe('Packager', function() {
     });
 
     require('../../JSTransformer').prototype.loadFileAndTransform
-      .mockImpl(function(tsets, path) {
+      .mockImpl(function(path) {
         return q({
           code: 'transformed ' + path,
           sourceCode: 'source ' + path,

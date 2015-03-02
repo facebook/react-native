@@ -48,10 +48,10 @@
   NSArray *buttons = args[@"buttons"];
 
   if (!title && !message) {
-    RCTLogMustFix(@"Must specify either an alert title, or message, or both");
+    RCTLogError(@"Must specify either an alert title, or message, or both");
     return;
   } else if (buttons.count == 0) {
-    RCTLogMustFix(@"Must have at least one button.");
+    RCTLogError(@"Must have at least one button.");
     return;
   }
 
@@ -68,7 +68,7 @@
     NSInteger index = 0;
     for (NSDictionary *button in buttons) {
       if (button.count != 1) {
-        RCTLogMustFix(@"Button definitions should have exactly one key.");
+        RCTLogError(@"Button definitions should have exactly one key.");
       }
       NSString *buttonKey = [button.allKeys firstObject];
       NSString *buttonTitle = [button[buttonKey] description];

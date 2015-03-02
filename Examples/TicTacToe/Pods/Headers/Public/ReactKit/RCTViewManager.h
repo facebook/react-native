@@ -2,9 +2,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTBridgeModule.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 
+@class RCTBridge;
 @class RCTEventDispatcher;
 @class RCTShadowView;
 @class RCTSparseArray;
@@ -12,19 +14,22 @@
 
 typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *viewRegistry);
 
-@interface RCTViewManager : NSObject
+@interface RCTViewManager : NSObject <RCTBridgeModule>
 
 /**
- * Designated initializer for view modules. Override this when subclassing.
+ * The bridge can be used to access both the RCTUIIManager and the RCTEventDispatcher,
+ * allowing the manager (or the views that it manages) to manipulate the view
+ * hierarchy and send events back to the JS context.
  */
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, strong) RCTBridge *bridge;
 
 /**
  * The event dispatcher is used to send events back to the JavaScript application.
  * It can either be used directly by the module, or passed on to instantiated
  * view subclasses so that they can handle their own events.
  */
-@property (nonatomic, readonly, weak) RCTEventDispatcher *eventDispatcher;
+// TODO: remove this, as it can be accessed directly from bridge
+@property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 
 /**
  * The module name exposed to React JS. If omitted, this will be inferred
@@ -88,33 +93,18 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 + (NSDictionary *)customDirectEventTypes;
 
 /**
- * Injects constants into JS. These constants are made accessible via
- * NativeModules.moduleName.X. Note that this method is not inherited when you
- * subclass a view module, and you should not call [super constantsToExport]
- * when overriding it.
+ * Called to notify manager that layout has finished, in case any calculated
+ * properties need to be copied over from shadow view to view.
  */
-+ (NSDictionary *)constantsToExport;
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView;
 
 /**
- * To deprecate, hopefully
+ * Called after view hierarchy manipulation has finished, and all shadow props
+ * have been set, but before layout has been performed. Useful for performing
+ * custo  layout logic or tasks that involve walking the view hierarchy.
+ * To be deprecated, hopefully.
  */
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry;
-
-/**
- * Informal protocol for setting view and shadowView properties.
- * Implement methods matching these patterns to set any properties that
- * require special treatment (e.g. where the type or name cannot be inferred).
- *
- * - (void)set_<propertyName>:(id)property
- *                    forView:(UIView *)view
- *            withDefaultView:(UIView *)defaultView;
- *
- * - (void)set_<propertyName>:(id)property
- *              forShadowView:(RCTShadowView *)view
- *            withDefaultView:(RCTShadowView *)defaultView;
- *
- * For simple cases, use the macros below:
- */
 
 /**
  * This handles the simple case, where JS and native property names match
@@ -131,9 +121,20 @@ RCT_REMAP_VIEW_PROPERTY(name, name)
 - (void)set_##name:(id)json forView:(id)view withDefaultView:(id)defaultView { \
   if ((json && !RCTSetProperty(view, @#keypath, json)) ||                      \
       (!json && !RCTCopyProperty(view, defaultView, @#keypath))) {             \
-    RCTLogMustFix(@"%@ does not have setter for `%s` property", [view class], #name); \
+    RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
   } \
 }
+
+/**
+ * These macros can be used when you need to provide custom logic for setting
+ * view properties. The macro should be followed by a method body, which can
+ * refer to "json", "view" and "defaultView" to implement the required logic.
+ */
+#define RCT_CUSTOM_VIEW_PROPERTY(name, viewType) \
+- (void)set_##name:(id)json forView:(viewType)view withDefaultView:(viewType)defaultView
+
+#define RCT_CUSTOM_SHADOW_PROPERTY(name, viewType) \
+- (void)set_##name:(id)json forShadowView:(viewType)view withDefaultView:(viewType)defaultView
 
 /**
  * These are useful in cases where the module's superclass handles a

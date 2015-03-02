@@ -1,17 +1,15 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+#import <tgmath.h>
+
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-#import <tgmath.h>
 
 #import "RCTAssert.h"
 
-// Macro to indicate when inherited initializer is not to be used
-#define RCT_NOT_DESIGNATED_INITIALIZER() \
-do { \
-  RCTAssert(NO, @"%@ is not the designated initializer for instances of %@.", NSStringFromSelector(_cmd), [self class]); \
-  return nil; \
-} while (0)
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Utility functions for JSON object <-> string serialization/deserialization
 NSString *RCTJSONStringify(id jsonObject, NSError **error);
@@ -39,3 +37,10 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);
 // Module subclass support
 BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
+
+// Enumerate all classes that conform to NSObject protocol
+void RCTEnumerateClasses(void (^block)(Class cls));
+
+#ifdef __cplusplus
+}
+#endif

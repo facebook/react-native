@@ -15,11 +15,6 @@
   CGFloat _previousBottomLayout;
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 - (instancetype)initWithContentView:(UIView *)contentView eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithNibName:nil bundle:nil])) {

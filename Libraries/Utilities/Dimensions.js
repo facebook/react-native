@@ -8,7 +8,6 @@
 var NativeModules = require('NativeModules');
 
 var invariant = require('invariant');
-var mergeInto = require('mergeInto');
 
 var dimensions = NativeModules.RKUIManager.Dimensions;
 
@@ -19,7 +18,7 @@ class Dimensions {
    * @param {object} dims Simple string-keyed object of dimensions to set
    */
   static set(dims) {
-    mergeInto(dimensions, dims);
+    Object.assign(dimensions, dims);
     return true;
   }
 
