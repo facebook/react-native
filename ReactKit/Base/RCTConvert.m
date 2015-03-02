@@ -446,6 +446,9 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
     }
 
     imageSource = CGImageSourceCreateWithData((CFDataRef)data, NULL);
+  } else {
+      RCTLogMustFix(@"Expected NSString or NSData for GIF, received %@: %@", [json class], json);
+      return nil;
   }
 
   if (!UTTypeConformsTo(CGImageSourceGetType(imageSource), kUTTypeGIF)) {

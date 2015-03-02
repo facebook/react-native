@@ -68,6 +68,15 @@ var autoCapitalizeMode = {
   characters: nativeConstants.AllCharacters
 };
 
+var clearButtonModeConstants = NativeModulesDeprecated.RKUIManager.UITextField.clearButtonMode;
+
+var clearButtonModeTypes = {
+  never: clearButtonModeConstants.Never,
+  whileEditing: clearButtonModeConstants.WhileEditing,
+  unlessEditing: clearButtonModeConstants.UnlessEditing,
+  always: clearButtonModeConstants.Always,
+};
+
 var keyboardType = {
   default: 'default',
   numeric: 'numeric',
@@ -90,6 +99,7 @@ var RKTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
 var RKTextFieldAttributes = merge(RKTextViewAttributes, {
   caretHidden: true,
   enabled: true,
+  clearButtonMode: true,
 });
 
 var onlyMultiline = {
@@ -105,6 +115,7 @@ var notMultiline = {
 var TextInput = React.createClass({
   statics: {
     autoCapitalizeMode: autoCapitalizeMode,
+    clearButtonModeTypes: clearButtonModeTypes,
     keyboardType: keyboardType,
   },
 
@@ -188,6 +199,10 @@ var TextInput = React.createClass({
      * and/or laggy typing, depending on how you process onChange events.
      */
     controlled: PropTypes.bool,
+    /**
+     * When the clear button should appear on the right side of the text view
+     */
+    clearButtonMode: PropTypes.oneOf(getObjectValues(clearButtonModeTypes)),
 
     style: Text.stylePropType,
   },
@@ -316,6 +331,7 @@ var TextInput = React.createClass({
           text={this.state.bufferedValue}
           autoCapitalize={this.props.autoCapitalize}
           autoCorrect={this.props.autoCorrect}
+          clearButtonMode={this.props.clearButtonMode}
         />;
     } else {
       for (var propKey in notMultiline) {
