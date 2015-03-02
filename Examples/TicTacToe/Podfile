@@ -1,0 +1,5 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+pod 'RCTText', :path => '../../Libraries/Text'
+pod 'RCTNetworkImage', :path => '../../Libraries/Image'
+pod 'ReactKit', :path => '../../ReactKit'

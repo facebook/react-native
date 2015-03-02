@@ -1293,6 +1293,14 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
         @"None": @(UITextAutocapitalizationTypeNone),
       },
     },
+    @"UITextField": @{
+      @"clearButtonMode": @{
+        @"Never": @(UITextFieldViewModeNever),
+        @"WhileEditing": @(UITextFieldViewModeWhileEditing),
+        @"UnlessEditing": @(UITextFieldViewModeUnlessEditing),
+        @"Always": @(UITextFieldViewModeAlways),
+      },
+    },
     @"UIView": @{
       @"ContentMode": @{
         @"ScaleToFill": @(UIViewContentModeScaleToFill),
@@ -1340,6 +1348,37 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     RCTLogError(@"LayoutAnimation only supports create and update right now.  Config: %@", config);
   }
   _nextLayoutAnimation = [[RCTLayoutAnimation alloc] initWithDictionary:config callback:callback];
+}
+
+- (void)startOrResetInteractionTiming
+{
+  RCT_EXPORT();
+
+  NSSet *rootViewTags = [_rootViewTags copy];
+  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    for (NSNumber *reactTag in rootViewTags) {
+      RCTRootView *rootView = viewRegistry[reactTag];
+      [rootView startOrResetInteractionTiming];
+    }
+  }];
+}
+
+- (void)endAndResetInteractionTiming:(RCTResponseSenderBlock)onSuccess
+                       onError:(RCTResponseSenderBlock)onError
+{
+  RCT_EXPORT();
+
+  NSSet *rootViewTags = [_rootViewTags copy];
+  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    NSMutableDictionary *timingData = [[NSMutableDictionary alloc] init];
+    for (NSNumber *reactTag in rootViewTags) {
+      RCTRootView *rootView = viewRegistry[reactTag];
+      if (rootView) {
+        timingData[reactTag.stringValue] = [rootView endAndResetInteractionTiming];
+      }
+    }
+    onSuccess(@[ timingData ]);
+  }];
 }
 
 static UIView *_jsResponder;

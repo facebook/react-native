@@ -185,4 +185,37 @@ exports.examples = [
       );
     }
   },
+  {
+    title: 'Clear button mode',
+    render: function () {
+      return (
+        <View>
+          <WithLabel label="never">
+            <TextInput
+              style={styles.default}
+              clearButtonMode={TextInput.clearButtonModeTypes.never}
+            />
+          </WithLabel>
+          <WithLabel label="while editing">
+            <TextInput
+              style={styles.default}
+              clearButtonMode={TextInput.clearButtonModeTypes.whileEditing}
+            />
+          </WithLabel>
+          <WithLabel label="unless editing">
+            <TextInput
+              style={styles.default}
+              clearButtonMode={TextInput.clearButtonModeTypes.unlessEditing}
+            />
+          </WithLabel>
+          <WithLabel label="always">
+            <TextInput
+              style={styles.default}
+              clearButtonMode={TextInput.clearButtonModeTypes.always}
+            />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
 ];

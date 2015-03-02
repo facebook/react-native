@@ -40,7 +40,7 @@ var validateOpts = declareOpts({
   },
   transformModulePath: {
     type:'string',
-    required: true,
+    required: false,
   },
   nonPersistent: {
     type: 'boolean',
