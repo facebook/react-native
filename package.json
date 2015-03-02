@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Build native apps with React!",
   "repository": {
     "type": "git",
@@ -8,12 +8,15 @@
   },
   "jest": {
     "scriptPreprocessor": "jestSupport/scriptPreprocess.js",
+    "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/packager/"
+      "/node_modules/"
     ],
     "testFileExtensions": [
       "js"
+    ],
+    "unmockedModulePathPatterns": [
+      "source-map"
     ]
   },
   "scripts": {

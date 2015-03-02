@@ -1,3 +1,5 @@
+'use strict';
+
 var url = require('url');
 var path = require('path');
 var declareOpts = require('../lib/declareOpts');
@@ -154,7 +156,7 @@ Server.prototype.processRequest = function(req, res, next) {
 
   var startReqEventId = Activity.startEvent('request:' + req.url);
   var options = getOptionsFromPath(url.parse(req.url).pathname);
-  var building = this._packages[req.url] || this._buildPackage(options)
+  var building = this._packages[req.url] || this._buildPackage(options);
   this._packages[req.url] = building;
   building.then(
     function(p) {

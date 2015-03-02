@@ -1,3 +1,5 @@
+'use strict';
+
 function ModuleDescriptor(fields) {
   if (!fields.id) {
     throw new Error('Missing required fields id');
@@ -28,7 +30,7 @@ ModuleDescriptor.prototype.toJSON = function() {
     id: this.id,
     path: this.path,
     dependencies: this.dependencies
-  }
+  };
 };
 
 module.exports = ModuleDescriptor;

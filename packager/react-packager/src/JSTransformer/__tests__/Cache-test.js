@@ -5,7 +5,6 @@ jest
   .dontMock('path')
   .dontMock('q')
   .dontMock('absolute-path')
-  .dontMock('../../fb-path-utils')
   .dontMock('../Cache');
 
 var q = require('q');

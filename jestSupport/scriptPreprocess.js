@@ -10,6 +10,10 @@ module.exports = {
   transformSource: transformSource,
 
   process: function(src, fileName) {
+    if (fileName.match(/node_modules/)) {
+      return src;
+    }
+
     try {
       return transformSource(src);
     } catch(e) {

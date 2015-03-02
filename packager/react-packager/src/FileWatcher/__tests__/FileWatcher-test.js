@@ -1,8 +1,12 @@
 'use strict';
 
-jest.dontMock('../')
-    .dontMock('q')
-    .setMock('child_process', { exec: function(cmd, cb) { cb(null, '/usr/bin/watchman') } });
+jest
+  .dontMock('../')
+  .dontMock('q')
+  .setMock(
+    'child_process',
+    { exec: function(cmd, cb) { cb(null, '/usr/bin/watchman'); } }
+  );
 
 describe('FileWatcher', function() {
   var FileWatcher;

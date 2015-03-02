@@ -1,3 +1,5 @@
+'use strict';
+
 var COLLECTION_PERIOD = 1000;
 
 var _endedEvents = Object.create(null);

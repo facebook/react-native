@@ -10,6 +10,8 @@
  * var myOptions = validate(someOptions);
  */
 
+'use strict';
+
 var Joi = require('joi');
 
 module.exports = function(descriptor) {

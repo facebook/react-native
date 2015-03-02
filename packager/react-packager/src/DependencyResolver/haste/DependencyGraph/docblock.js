@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+'use strict';
 
 var docblockRe = /^\s*(\/\*\*(.|\r?\n)*?\*\/)/;
 
@@ -35,7 +36,8 @@ var commentStartRe = /^\/\*\*?/;
 var commentEndRe = /\*\/$/;
 var wsRe = /[\t ]+/g;
 var stringStartRe = /(\r?\n|^) *\*/g;
-var multilineRe = /(?:^|\r?\n) *(@[^\r\n]*?) *\r?\n *([^@\r\n\s][^@\r\n]+?) *\r?\n/g;
+var multilineRe =
+      /(?:^|\r?\n) *(@[^\r\n]*?) *\r?\n *([^@\r\n\s][^@\r\n]+?) *\r?\n/g;
 var propertyRe = /(?:^|\r?\n) *@(\S+) *([^\r\n]*)/g;
 
 /**
@@ -51,15 +53,15 @@ function parse(docblock) {
 
   // Normalize multi-line directives
   var prev = '';
-  while (prev != docblock) {
+  while (prev !== docblock) {
     prev = docblock;
-    docblock = docblock.replace(multilineRe, "\n$1 $2\n");
+    docblock = docblock.replace(multilineRe, '\n$1 $2\n');
   }
   docblock = docblock.trim();
 
   var result = [];
   var match;
-  while (match = propertyRe.exec(docblock)) {
+  while ((match = propertyRe.exec(docblock))) {
     result.push([match[1], match[2]]);
   }
 
