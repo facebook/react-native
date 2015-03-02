@@ -1,1 +1,0 @@
-../../../../../../ReactKit/Views/RCTNavItemManager.h
