@@ -5,9 +5,6 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
 
-#import <FBReactKit/RCTAssert.h>
-#import <FBReactKit/RCTLog.h>
-
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
