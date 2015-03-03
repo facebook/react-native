@@ -1,6 +1,0 @@
-source 'https://github.com/CocoaPods/Specs.git'
-
-pod 'RCTDataManager', :path => '../../Libraries/Network'
-pod 'RCTNetworkImage', :path => '../../Libraries/Image'
-pod 'RCTText', :path => '../../Libraries/Text'
-pod 'ReactKit', :path => '../../ReactKit'

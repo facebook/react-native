@@ -6,6 +6,7 @@ jest
   .dontMock('q')
   .dontMock('os')
   .dontMock('underscore')
+  .setMock('uglify-js')
   .dontMock('../');
 
 var q = require('q');

@@ -5,6 +5,7 @@
  */
 'use strict';
 
+var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModulesDeprecated = require('NativeModulesDeprecated');
@@ -180,7 +181,7 @@ var TextInput = React.createClass({
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
      */
-//    selectionState: PropTypes.instanceOf(DocumentSelectionState),
+    selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
      * The default value for the text input
      */

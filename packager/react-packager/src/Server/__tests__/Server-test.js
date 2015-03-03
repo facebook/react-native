@@ -10,6 +10,7 @@ jest.setMock('worker-farm', function() { return function() {}; })
         return setTimeout(fn, 0);
       }
     })
+    .setMock('uglify-js')
     .dontMock('../');
 
 var q = require('q');

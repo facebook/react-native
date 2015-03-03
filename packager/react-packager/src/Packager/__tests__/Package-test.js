@@ -21,7 +21,7 @@ describe('Package', function() {
       ppackage.addModule('transformed foo;', 'source foo', 'foo path');
       ppackage.addModule('transformed bar;', 'source bar', 'bar path');
       ppackage.finalize({});
-      expect(ppackage.getSource()).toBe([
+      expect(ppackage.getSource({inlineSourceMap: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         'RAW_SOURCE_MAP = "test-source-map";',
@@ -34,13 +34,28 @@ describe('Package', function() {
       ppackage.addModule('transformed bar;', 'source bar', 'bar path');
       ppackage.setMainModuleId('foo');
       ppackage.finalize({runMainModule: true});
-      expect(ppackage.getSource()).toBe([
+      expect(ppackage.getSource({inlineSourceMap: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         ';require("foo");',
         'RAW_SOURCE_MAP = "test-source-map";',
         '\/\/@ sourceMappingURL=test_url',
       ].join('\n'));
+    });
+
+    it('should get minified source', function() {
+      var minified = {
+        code: 'minified',
+        map: 'map',
+      };
+
+      require('uglify-js').minify = function() {
+        return minified;
+      };
+
+      ppackage.addModule('transformed foo;', 'source foo', 'foo path');
+      ppackage.finalize();
+      expect(ppackage.getMinifiedSourceAndMap()).toBe(minified);
     });
   });
 
