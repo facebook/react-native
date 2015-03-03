@@ -18,13 +18,15 @@ var Documentation = require('../Documentation');
 var types = require('recast').types.namedTypes;
 var getDocblock = require('../utils/docblock').getDocblock;
 var getPropertyName = require('../utils/getPropertyName');
+var getPropertyValuePath = require('../utils/getPropertyValuePath');
 
 function propDocBlockHandler(documentation: Documentation, path: NodePath) {
-  if (!types.ObjectExpression.check(path.node)) {
+  var propTypesPath = getPropertyValuePath(path, 'propTypes');
+  if (!propTypesPath || !types.ObjectExpression.check(propTypesPath.node)) {
     return;
   }
 
-  path.get('properties').each(function(propertyPath) {
+  propTypesPath.get('properties').each(function(propertyPath) {
     // we only support documentation of actual properties, not spread
     if (types.Property.check(propertyPath.node)) {
       var propDescriptor = documentation.getPropDescriptor(

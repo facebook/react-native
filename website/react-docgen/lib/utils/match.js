@@ -30,7 +30,7 @@ function match(node: ASTNOde, pattern: Object): boolean {
       if (!match(node[prop], pattern[prop])) {
         return false;
       }
-    } else if (pattern[prop] !== pattern[prop]) {
+    } else if (node[prop] !== pattern[prop]) {
       return false;
     }
   }

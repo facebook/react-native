@@ -1,15 +1,10 @@
 # react-docgen
 
-`react-docgen` extracts information from React components with which
-you can generate documentation for those components.
+`react-docgen` is a CLI and toolbox to help extracting information from React components, and generate documentation from it.
 
-It uses [recast][] to parse the provided files into an AST, looks for React
-component definitions, and inspects the `propTypes` and `getDefaultProps`
-declarations. The output is a JSON blob with the extracted information.
+It uses [recast][] to parse the source into an AST and provides methods to process this AST to extract the desired information. The output / return value is a JSON blob / JavaScript object.
 
-Note that component definitions must follow certain guidelines in order to be
-analyzable by this tool. We will work towards less strict guidelines, but there
-is a limit to what is statically analyzable.
+It provides a default implementation for React components defined via `React.createClass`. These component definitions must follow certain guidelines in order to be analyzable (see below for more info)
 
 ## Install
 
@@ -41,22 +36,62 @@ Extract meta information from React components.
 If a directory is passed, it is recursively traversed.
 ```
 
+By default, `react-docgen` will look for the exported component created through `React.createClass` in each file. Have a look below for how to customize this behavior.
+
 ## API
 
-The tool can also be used programmatically to extract component information:
+The tool can be used programmatically to extract component information and customize the extraction process:
 
 ```js
 var reactDocs = require('react-docgen');
-var componentInfo reactDocs.parseSource(src);
+var componentInfo = reactDocs.parse(src);
 ```
 
-## Guidelines
+As with the CLI, this will look for the exported component created through `React.createClass` in the provided source. The whole process of analyzing the source code is separated into two parts:
+
+- Locating/finding the nodes in the AST which define the component
+- Extracting information from those nodes
+
+`parse` accepts more arguments with which this behavior can be customized.
+
+### parse(source \[, resolver \[, handlers\]\])
+
+| Parameter |  Type | Description |
+| -------------- | ------ | --------------- |
+| source       | string | The source text |
+| resolver     | function | A function of the form `(ast: ASTNode, recast: Object) => (NodePath|Array<NodePath>)`. Given an AST and a reference to recast, it returns an (array of) NodePath which represents the component definition. |
+| handlers    | Array\<function\> | An array of functions of the form `(documentation: Documentation, definition: NodePath) => void`. Each function is called with a `Documentation` object and a reference to the component definition as returned by `resolver`. Handlers extract relevant information from the definition and augment `documentation`.
+
+
+#### resolver
+
+The resolver's task is to extract those parts from the source code which the handlers can analyze. For example, the `findExportedReactCreateClassCall` resolver inspects the AST to find
+
+```js
+var Component = React.createClass(<def>);
+module.exports = Component;
+```
+
+and returns the ObjectExpression to which `<def>` resolves.
+
+`findAllReactCreateClassCalls` works similarly, but simply finds all `React.createClass` calls, not only the one that creates the exported component.
+
+ This makes it easy, together with the utility methods created to analyze the AST, to introduce new or custom resolver methods. For example, a resolver could look for plain ObjectExpressions with a `render` method or `class Component extends React.Component` instead (**note:** a default resolver for `class` based react components is planned).
+ 
+#### handlers
+
+Handlers do the actual work and extract the desired information from the result the resolver returned. Like the resolver, they try to delegate as much work as possible to the reusable utility functions.
+
+For example, while the `propTypesHandler` expects the prop types definition to be an ObjectExpression and be located inside an ObjectExpression under the property name `propTypes`, most of the work is actually performed by the `getPropType` utility function.
+
+## Guidelines for default resolvers and handlers
 
 - Modules have to export a single component, and only that component is
   analyzed.
+- The component definition must be an object literal.
 - `propTypes` must be an object literal or resolve to an object literal in the
   same file.
-- The `return` statement in `getDefaultProps` must consist of an object literal.
+- The `return` statement in `getDefaultProps` must contain an object literal.
 
 ## Example
 

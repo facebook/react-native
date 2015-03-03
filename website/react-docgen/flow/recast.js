@@ -28,3 +28,8 @@ declare class NodePath {
   each(f: (p: NodePath) => void): void;
   map<T>(f: (p: NodePath) => T): Array<T>;
 }
+
+type Recast = {
+  parse: (src: string) => ASTNode;
+  print: (path: NodePath) => {code: string};
+};

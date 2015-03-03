@@ -13,17 +13,6 @@
  */
 "use strict";
 
-type PropDescriptor = {
-  type?: {
-    name: string;
-    value?: any;
-    raw?: string;
-  };
-  required?: boolean;
-  defaultValue?: any;
-  description?: string;
-};
-
 class Documentation {
   _props: Object;
   _description: string;

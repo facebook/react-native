@@ -11,28 +11,25 @@
 "use strict";
 
 jest.autoMockOff();
+jest.mock('../../Documentation');
 
-var module_template = [
-  'var React = require("React");',
-  'var PropTypes = React.PropTypes;',
-  'var Component = React.createClass(%s);',
-  'module.exports = Component;'
-].join('\n');
-
-function getSource(definition) {
-  return module_template.replace('%s', definition);
-}
-
-describe('React documentation parser', function() {
-  var parser;
+describe('propDocblockHandler', function() {
+  var utils;
+  var documentation;
+  var propDocblockHandler;
 
   beforeEach(function() {
-    parser = new (require('../../ReactDocumentationParser'));
-    parser.addHandler(require('../propDocblockHandler'), 'propTypes');
+    utils = require('../../../tests/utils');
+    documentation = new (require('../../Documentation'));
+    propDocblockHandler = require('../propDocblockHandler');
   });
 
+  function parse(definition) {
+    return utils.parse('(' + definition + ')').get('body', 0, 'expression');
+  }
+
   it('finds docblocks for prop types', function() {
-    var source = getSource([
+    var definition = parse([
       '{',
       '  propTypes: {',
       '    /**',
@@ -48,24 +45,19 @@ describe('React documentation parser', function() {
       '}'
     ].join('\n'));
 
-    var expectedResult = {
-      description: '',
-      props: {
-        foo: {
-          description: 'Foo comment'
-        },
-        bar: {
-          description: 'Bar comment'
-        }
+    propDocblockHandler(documentation, definition);
+    expect(documentation.descriptors).toEqual({
+      foo: {
+        description: 'Foo comment'
+      },
+      bar: {
+        description: 'Bar comment'
       }
-    };
-
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+    });
   });
 
   it('can handle multline comments', function() {
-    var source = getSource([
+    var definition = parse([
       '{',
       '  propTypes: {',
       '    /**',
@@ -79,22 +71,17 @@ describe('React documentation parser', function() {
       '}'
     ].join('\n'));
 
-    var expectedResult = {
-      description: '',
-      props: {
-        foo: {
-          description:
+    propDocblockHandler(documentation, definition);
+    expect(documentation.descriptors).toEqual({
+      foo: {
+        description:
             'Foo comment with\nmany lines!\n\neven with empty lines in between'
-        }
-      }
-    };
-
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+      },
+    });
   });
 
   it('ignores non-docblock comments', function() {
-    var source = getSource([
+    var definition = parse([
       '{',
       '  propTypes: {',
       '    /**',
@@ -112,24 +99,19 @@ describe('React documentation parser', function() {
       '}'
     ].join('\n'));
 
-    var expectedResult = {
-      description: '',
-      props: {
-        foo: {
-          description: 'Foo comment'
-        },
-        bar: {
-          description: 'Bar comment'
-        }
+    propDocblockHandler(documentation, definition);
+    expect(documentation.descriptors).toEqual({
+      foo: {
+        description: 'Foo comment'
+      },
+      bar: {
+        description: 'Bar comment'
       }
-    };
-
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+    });
   });
 
   it('only considers the comment with the property below it', function() {
-    var source = getSource([
+    var definition = parse([
       '{',
       '  propTypes: {',
       '    /**',
@@ -141,24 +123,19 @@ describe('React documentation parser', function() {
       '}'
     ].join('\n'));
 
-    var expectedResult = {
-      description: '',
-      props: {
-        foo: {
-          description: 'Foo comment'
-        },
-        bar: {
-          description: ''
-        }
+    propDocblockHandler(documentation, definition);
+    expect(documentation.descriptors).toEqual({
+      foo: {
+        description: 'Foo comment'
+      },
+      bar: {
+        description: ''
       }
-    };
-
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+    });
   });
 
   it('understands and ignores the spread operator', function() {
-    var source = getSource([
+    var definition = parse([
       '{',
       '  propTypes: {',
       '    ...Foo.propTypes,',
@@ -166,24 +143,15 @@ describe('React documentation parser', function() {
       '     * Foo comment',
       '     */',
       '    foo: Prop.bool,',
-      '    bar: Prop.bool,',
       '  }',
       '}'
     ].join('\n'));
 
-    var expectedResult = {
-      description: '',
-      props: {
-        foo: {
-          description: 'Foo comment'
-        },
-        bar: {
-          description: ''
-        }
+    propDocblockHandler(documentation, definition);
+    expect(documentation.descriptors).toEqual({
+      foo: {
+        description: 'Foo comment'
       }
-    };
-
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+    });
   });
 });

@@ -11,86 +11,74 @@
 "use strict";
 
 jest.autoMockOff();
+jest.mock('../../Documentation');
 
-describe('React documentation parser', function() {
-  var parser;
+describe('componentDocblockHandler', function() {
+  var utils;
+  var documentation;
+  var componentDocblockHandler;
+
+  function parse(src) {
+    var programPath = utils.parse(src);
+    return programPath.get(
+      'body',
+      programPath.node.body.length - 1,
+      'declarations',
+      0,
+      'init',
+      'arguments',
+      0
+    );
+  }
 
   beforeEach(function() {
-    parser = new (require('../../ReactDocumentationParser'));
-    parser.addHandler(require('../componentDocblockHandler'));
+    utils = require('../../../tests/utils');
+    documentation = new (require('../../Documentation'));
+    componentDocblockHandler = require('../componentDocblockHandler');
   });
 
   it('finds docblocks for component definitions', function() {
-    var source = [
-      'var React = require("React");',
+    var definition = parse([
       '/**',
       ' * Component description',
       ' */',
       'var Component = React.createClass({});',
-      'module.exports = Component;'
-    ].join('\n');
+    ].join('\n'));
 
-    var expectedResult = {
-      props: {},
-      description: 'Component description'
-    };
-
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+    componentDocblockHandler(documentation, definition);
+    expect(documentation.description).toBe('Component description');
   });
 
   it('ignores other types of comments', function() {
-    var source = [
-      'var React = require("React");',
+    var definition = parse([
       '/*',
       ' * This is not a docblock',
       ' */',
       'var Component = React.createClass({});',
-      'module.exports = Component;'
-    ].join('\n');
+    ].join('\n'));
 
-    var expectedResult = {
-      props: {},
-      description: ''
-    };
+    componentDocblockHandler(documentation, definition);
+    expect(documentation.description).toBe('');
 
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
-
-
-    source = [
-      'var React = require("React");',
+    definition = parse([
       '// Inline comment',
       'var Component = React.createClass({});',
-      'module.exports = Component;'
-    ].join('\n');
+    ].join('\n'));
 
-    expectedResult = {
-      props: {},
-      description: ''
-    };
-
-    result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+    componentDocblockHandler(documentation, definition);
+    expect(documentation.description).toBe('');
   });
 
   it('only considers the docblock directly above the definition', function() {
-    var source = [
-      'var React = require("React");',
+    var definition = parse([
       '/**',
       ' * This is the wrong docblock',
       ' */',
       'var something_else = "foo";',
       'var Component = React.createClass({});',
-      'module.exports = Component;'
-    ].join('\n');
+    ].join('\n'));
 
-    var expectedResult = {
-      props: {},
-      description: ''
-    };
-
-    var result = parser.parseSource(source);
-    expect(result).toEqual(expectedResult);
+    componentDocblockHandler(documentation, definition);
+    expect(documentation.description).toBe('');
   });
 });

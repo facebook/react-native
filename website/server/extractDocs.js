@@ -1,10 +1,4 @@
 var docs = require('../react-docgen');
-var findExportedReactCreateClassCall = require(
-  '../react-docgen/dist/strategies/findExportedReactCreateClassCall'
-);
-var findAllReactCreateClassCalls = require(
-  '../react-docgen/dist/strategies/findAllReactCreateClassCalls'
-);
 var fs = require('fs');
 var path = require('path');
 var slugify = require('../core/slugify');
@@ -18,11 +12,11 @@ function getNameFromPath(filepath) {
 }
 
 function docsToMarkdown(filepath, i) {
-  var json = docs.parseSource(
+  var json = docs.parse(
     fs.readFileSync(filepath),
     function(node, recast) {
-      return findExportedReactCreateClassCall(node, recast) ||
-        findAllReactCreateClassCalls(node, recast)[0];
+      return docs.resolver.findExportedReactCreateClassCall(node, recast) ||
+        docs.resolver.findAllReactCreateClassCalls(node, recast)[0];
     }
   )
 
@@ -50,11 +44,11 @@ function docsToMarkdown(filepath, i) {
 
 var components = [
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
-  '../Libraries/Components/Image/Image.ios.js',
+  '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/ListView/ListView.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.ios.js',
-  '../Libraries/Components/Text/Text.js',
+  '../Libraries/Text/Text.js',
   '../Libraries/Components/TextInput/TextInput.ios.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',

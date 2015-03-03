@@ -13,27 +13,49 @@
  */
 "use strict";
 
+var handlers = require('./handlers');
+var parse = require('./parse');
+var resolver = require('./resolver');
+var utils = require('./utils');
+
+var defaultResolver = resolver.findExportedReactCreateClassCall;
+var defaultHandlers = [
+  handlers.propTypeHandler,
+  handlers.propDocBlockHandler,
+  handlers.defaultPropsHandler,
+  handlers.componentDocblockHandler,
+];
+
 /**
- *  Extractor for React documentation in JavaScript.
+ * See `lib/parse.js` for more information about the arguments. This function
+ * simply sets default values for convenience.
+ *
+ * The default resolver looks for *exported* `React.createClass(def)` calls
+ * and expected `def` to resolve to an object expression.
+ *
+ * The default `handlers` look for `propTypes` and `getDefaultProps` in the
+ * provided object expression, and extract prop type information, prop
+ * documentation (from docblocks), default prop values and component
+ * documentation (from a docblock).
  */
-var ReactDocumentationParser = require('./ReactDocumentationParser');
-var parser = new ReactDocumentationParser();
+function defaultParse(
+  src: string,
+  resolver?: ?Resolver,
+  handlers?: ?Array<Handler>
+): (Array<Object>|Object) {
+  if (!resolver) {
+    resolver = defaultResolver;
+  }
+  if (!handlers) {
+    handlers = defaultHandlers;
+  }
 
-parser.addHandler(
-  require('./handlers/propTypeHandler'),
-  'propTypes'
-);
-parser.addHandler(
-  require('./handlers/propDocBlockHandler'),
-  'propTypes'
-);
-parser.addHandler(
-  require('./handlers/defaultValueHandler'),
-  'getDefaultProps'
-);
+  return parse(src, resolver, handlers);
+}
 
-parser.addHandler(
-  require('./handlers/componentDocblockHandler')
-);
-
-module.exports = parser;
+module.exports = {
+  parse: defaultParse,
+  handlers,
+  resolver,
+  utils
+};

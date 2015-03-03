@@ -25,15 +25,26 @@ function componentDocblockHandler(
   documentation: Documentation,
   path: NodePath
 ) {
-  var description = '';
-  // Find parent statement (e.g. var Component = React.createClass(path);)
+  var description = null;
+  // Find parent statement (e.g. var Component = React.createClass(<path>);)
   while (path && !n.Statement.check(path.node)) {
     path = path.parent;
   }
   if (path) {
-    description = getDocblock(path) || '';
+    description = getDocblock(path);
   }
-  documentation.setDescription(description);
+  if (description == null) {
+    // If this is the first statement in the module body, the comment is attached
+    // to the program node
+    var programPath = path;
+    while (programPath && !n.Program.check(programPath.node)) {
+      programPath = programPath.parent;
+    }
+    if (programPath.get('body', 0) === path) {
+      description = getDocblock(programPath);
+    }
+  }
+  documentation.setDescription(description || '');
 }
 
 module.exports = componentDocblockHandler;

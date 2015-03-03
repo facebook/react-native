@@ -29,7 +29,8 @@
     "react-tools": "^0.12.2"
   },
   "jest": {
-    "scriptPreprocessor": "./preprocessor",
-    "testPathDirs": ["lib"]
+    "scriptPreprocessor": "./tests/preprocessor",
+    "testPathDirs": ["lib"],
+    "unmockedModulePathPatterns": ["tests/utils"]
   }
 }

@@ -96,7 +96,7 @@ if (paths.length === 0) {
     source += chunk;
   });
   process.stdin.on('end', function () {
-    exitWithResult(parser.parseSource(source));
+    exitWithResult(parser.parse(source));
   });
 }
 
@@ -112,7 +112,7 @@ function traverseDir(path, result, done) {
         exitWithError(error);
       }
       try {
-        result[filename] = parser.parseSource(content);
+        result[filename] = parser.parse(content);
       } catch(error) {
         writeError(error, path);
       }
@@ -143,7 +143,7 @@ async.eachSeries(paths, function(path, done) {
     }
     else {
       try {
-        result[path] = parser.parseSource(fs.readFileSync(path));
+        result[path] = parser.parse(fs.readFileSync(path));
       } catch(error) {
         writeError(error, path);
       }
