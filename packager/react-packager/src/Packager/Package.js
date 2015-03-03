@@ -40,12 +40,17 @@ Package.prototype.finalize = function(options) {
   Object.seal(this._modules);
 };
 
-Package.prototype.getSource = function() {
-  return this._source || (
-    this._source = _.pluck(this._modules, 'transformedCode').join('\n') + '\n' +
-    'RAW_SOURCE_MAP = ' + JSON.stringify(this.getSourceMap({excludeSource: true})) +
-    ';\n' + '\/\/@ sourceMappingURL=' + this._sourceMapUrl
-  );
+Package.prototype.getSource = function(options) {
+  if (!this._source) {
+    options = options || {};
+    this._source = _.pluck(this._modules, 'transformedCode').join('\n');
+    if (options.inlineSourceMap) {
+      var sourceMap = this.getSourceMap({excludeSource: true});
+      this._source += '\nRAW_SOURCE_MAP = ' + JSON.stringify(sourceMap) + ';';
+    }
+    this._source += '\n\/\/@ sourceMappingURL=' + this._sourceMapUrl;
+  }
+  return this._source;
 };
 
 Package.prototype.getSourceMap = function(options) {
