@@ -2,7 +2,7 @@
 
 #import "AppDelegate.h"
 
-#import <ReactKit/RCTRootView.h>
+#import "RCTRootView.h"
 
 @implementation AppDelegate
 
