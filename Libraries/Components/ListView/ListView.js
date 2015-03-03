@@ -77,6 +77,10 @@ var SCROLLVIEW_REF = 'listviewscroll';
 var ListView = React.createClass({
   mixins: [ScrollResponder.Mixin, TimerMixin],
 
+  statics: {
+    DataSource: ListViewDataSource,
+  },
+
   /**
    * You must provide a renderRow function. If you omit any of the other render
    * functions, ListView will simply skip rendering them.

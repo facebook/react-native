@@ -7,7 +7,6 @@
 var React = require('react-native');
 var {
   ListView,
-  ListViewDataSource,
   ScrollView,
   ActivityIndicatorIOS,
   StyleSheet,
@@ -44,7 +43,7 @@ var SearchScreen = React.createClass({
     return {
       isLoading: false,
       isLoadingTail: false,
-      dataSource: new ListViewDataSource({
+      dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       }),
       filter: '',
@@ -192,7 +191,7 @@ var SearchScreen = React.createClass({
       });
   },
 
-  getDataSource: function(movies: Array<any>): ListViewDataSource {
+  getDataSource: function(movies: Array<any>): ListView.DataSource {
     return this.state.dataSource.cloneWithRows(movies);
   },
 
