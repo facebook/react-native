@@ -24,7 +24,7 @@ var ScrollViewPropTypes = {
   showsHorizontalScrollIndicator: nativePropType(PropTypes.bool),
   showsVerticalScrollIndicator: nativePropType(PropTypes.bool),
   style: StyleSheetPropType(ViewStylePropTypes),
-  throttleScrollCallbackMS: nativePropType(PropTypes.number), // 200ms
+  throttleScrollCallbackMS: nativePropType(PropTypes.number), // null
 };
 
 module.exports = ScrollViewPropTypes;
