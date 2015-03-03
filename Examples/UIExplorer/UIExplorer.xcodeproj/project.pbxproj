@@ -14,7 +14,7 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		587651571A9F862F008B8F17 /* libRCTDataManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5876514F1A9F8619008B8F17 /* libRCTDataManager.a */; };
+		58C572891AA624A900CDF9C8 /* libRCTDataManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C572851AA6249E00CDF9C8 /* libRCTDataManager.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,26 +25,12 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
-		1316A2091AA386C700C0188E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5876511F1A9EB168008B8F17 /* RCTText.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 58B511A61A9E6C1300147676;
-			remoteInfo = RCTTextTests;
-		};
 		1316A20F1AA3871A00C0188E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5876511C1A9EB168008B8F17 /* RCTNetworkImage.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 58B5115D1A9E6B3D00147676;
 			remoteInfo = RCTNetworkImage;
-		};
-		1316A2111AA3871A00C0188E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5876511C1A9EB168008B8F17 /* RCTNetworkImage.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 58B511681A9E6B3D00147676;
-			remoteInfo = RCTNetworkImageTests;
 		};
 		1316A2161AA3875D00C0188E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -53,19 +39,12 @@
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = ReactKit;
 		};
-		5876514E1A9F8619008B8F17 /* PBXContainerItemProxy */ = {
+		58C572841AA6249E00CDF9C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 58B511DB1A9E6C8500147676;
 			remoteInfo = RCTDataManager;
-		};
-		587651501A9F8619008B8F17 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 58B511E61A9E6C8500147676;
-			remoteInfo = RCTDataManagerTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -80,7 +59,7 @@
 		5876511C1A9EB168008B8F17 /* RCTNetworkImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetworkImage.xcodeproj; path = ../../Libraries/Image/RCTNetworkImage.xcodeproj; sourceTree = SOURCE_ROOT; };
 		5876511F1A9EB168008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = SOURCE_ROOT; };
 		587651221A9EB168008B8F17 /* ReactKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactKit.xcodeproj; path = ../../ReactKit/ReactKit.xcodeproj; sourceTree = SOURCE_ROOT; };
-		587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTDataManager.xcodeproj; path = ../../Libraries/Network/RCTDataManager.xcodeproj; sourceTree = "<group>"; };
+		587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTDataManager.xcodeproj; path = ../../Libraries/Network/RCTDataManager.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,8 +69,8 @@
 			files = (
 				1316A21A1AA397CA00C0188E /* libRCTNetworkImage.a in Frameworks */,
 				1316A21B1AA397CA00C0188E /* libRCTText.a in Frameworks */,
+				58C572891AA624A900CDF9C8 /* libRCTDataManager.a in Frameworks */,
 				1316A21C1AA397CA00C0188E /* libReactKit.a in Frameworks */,
-				587651571A9F862F008B8F17 /* libRCTDataManager.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +81,6 @@
 			isa = PBXGroup;
 			children = (
 				1316A2081AA386C700C0188E /* libRCTText.a */,
-				1316A20A1AA386C700C0188E /* RCTTextTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,7 +89,6 @@
 			isa = PBXGroup;
 			children = (
 				1316A2101AA3871A00C0188E /* libRCTNetworkImage.a */,
-				1316A2121AA3871A00C0188E /* RCTNetworkImageTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -148,11 +125,10 @@
 			name = UIExplorer;
 			sourceTree = "<group>";
 		};
-		5876514A1A9F8619008B8F17 /* Products */ = {
+		58C572811AA6249E00CDF9C8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5876514F1A9F8619008B8F17 /* libRCTDataManager.a */,
-				587651511A9F8619008B8F17 /* RCTDataManagerTests.xctest */,
+				58C572851AA6249E00CDF9C8 /* libRCTDataManager.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -216,7 +192,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 5876514A1A9F8619008B8F17 /* Products */;
+					ProductGroup = 58C572811AA6249E00CDF9C8 /* Products */;
 					ProjectRef = 587651491A9F8619008B8F17 /* RCTDataManager.xcodeproj */;
 				},
 				{
@@ -247,25 +223,11 @@
 			remoteRef = 1316A2071AA386C700C0188E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1316A20A1AA386C700C0188E /* RCTTextTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RCTTextTests.xctest;
-			remoteRef = 1316A2091AA386C700C0188E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		1316A2101AA3871A00C0188E /* libRCTNetworkImage.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libRCTNetworkImage.a;
 			remoteRef = 1316A20F1AA3871A00C0188E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		1316A2121AA3871A00C0188E /* RCTNetworkImageTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RCTNetworkImageTests.xctest;
-			remoteRef = 1316A2111AA3871A00C0188E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		1316A2171AA3875D00C0188E /* libReactKit.a */ = {
@@ -275,18 +237,11 @@
 			remoteRef = 1316A2161AA3875D00C0188E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		5876514F1A9F8619008B8F17 /* libRCTDataManager.a */ = {
+		58C572851AA6249E00CDF9C8 /* libRCTDataManager.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libRCTDataManager.a;
-			remoteRef = 5876514E1A9F8619008B8F17 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		587651511A9F8619008B8F17 /* RCTDataManagerTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RCTDataManagerTests.xctest;
-			remoteRef = 587651501A9F8619008B8F17 /* PBXContainerItemProxy */;
+			remoteRef = 58C572841AA6249E00CDF9C8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -335,10 +290,12 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../ReactKit/**",
-					"$(SRCROOT)/../../ReactKitModules/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UIExplorer;
 			};
@@ -352,10 +309,12 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../ReactKit/**",
-					"$(SRCROOT)/../../ReactKitModules/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UIExplorer;
 			};

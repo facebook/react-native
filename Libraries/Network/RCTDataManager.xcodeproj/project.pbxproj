@@ -7,19 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		58B511E71A9E6C8500147676 /* libRCTDataManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58B511DB1A9E6C8500147676 /* libRCTDataManager.a */; };
 		58B512081A9E6CE300147676 /* RCTDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTDataManager.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		58B511E81A9E6C8500147676 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 58B511D31A9E6C8500147676 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 58B511DA1A9E6C8500147676;
-			remoteInfo = RCTDataManager;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
@@ -35,7 +24,6 @@
 
 /* Begin PBXFileReference section */
 		58B511DB1A9E6C8500147676 /* libRCTDataManager.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTDataManager.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		58B511E61A9E6C8500147676 /* RCTDataManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RCTDataManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B512061A9E6CE300147676 /* RCTDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDataManager.h; sourceTree = "<group>"; };
 		58B512071A9E6CE300147676 /* RCTDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDataManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -45,14 +33,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		58B511E31A9E6C8500147676 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				58B511E71A9E6C8500147676 /* libRCTDataManager.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +52,6 @@
 			isa = PBXGroup;
 			children = (
 				58B511DB1A9E6C8500147676 /* libRCTDataManager.a */,
-				58B511E61A9E6C8500147676 /* RCTDataManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,24 +76,6 @@
 			productReference = 58B511DB1A9E6C8500147676 /* libRCTDataManager.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		58B511E51A9E6C8500147676 /* RCTDataManagerTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511F21A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTDataManagerTests" */;
-			buildPhases = (
-				58B511E21A9E6C8500147676 /* Sources */,
-				58B511E31A9E6C8500147676 /* Frameworks */,
-				58B511E41A9E6C8500147676 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				58B511E91A9E6C8500147676 /* PBXTargetDependency */,
-			);
-			name = RCTDataManagerTests;
-			productName = RCTDataManagerTests;
-			productReference = 58B511E61A9E6C8500147676 /* RCTDataManagerTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -125,9 +86,6 @@
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
-						CreatedOnToolsVersion = 6.1.1;
-					};
-					58B511E51A9E6C8500147676 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
 				};
@@ -145,20 +103,9 @@
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* RCTDataManager */,
-				58B511E51A9E6C8500147676 /* RCTDataManagerTests */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXResourcesBuildPhase section */
-		58B511E41A9E6C8500147676 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58B511D71A9E6C8500147676 /* Sources */ = {
@@ -169,22 +116,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		58B511E21A9E6C8500147676 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		58B511E91A9E6C8500147676 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 58B511DA1A9E6C8500147676 /* RCTDataManager */;
-			targetProxy = 58B511E81A9E6C8500147676 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		58B511ED1A9E6C8500147676 /* Debug */ = {
@@ -297,36 +229,6 @@
 			};
 			name = Release;
 		};
-		58B511F31A9E6C8500147676 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = RCTDataManagerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		58B511F41A9E6C8500147676 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = RCTDataManagerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -344,15 +246,6 @@
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
 				58B511F11A9E6C8500147676 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		58B511F21A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTDataManagerTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				58B511F31A9E6C8500147676 /* Debug */,
-				58B511F41A9E6C8500147676 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
