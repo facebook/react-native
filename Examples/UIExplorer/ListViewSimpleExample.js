@@ -9,7 +9,6 @@ var React = require('react-native');
 var {
   Image,
   ListView,
-  ListViewDataSource,
   TouchableHighlight,
   StyleSheet,
   Text,
@@ -25,7 +24,7 @@ var ListViewSimpleExample = React.createClass({
   },
 
   getInitialState: function() {
-    var ds = new ListViewDataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return {
       dataSource: ds.cloneWithRows(this._genRows({})),
     };

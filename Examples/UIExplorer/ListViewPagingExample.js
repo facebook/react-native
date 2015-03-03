@@ -11,7 +11,6 @@ var {
   Image,
   LayoutAnimation,
   ListView,
-  ListViewDataSource,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -72,7 +71,7 @@ var ListViewPagingExample = React.createClass({
       return dataBlob[rowID];
     };
 
-    var dataSource = new ListViewDataSource({
+    var dataSource = new ListView.DataSource({
       getRowData: getRowData,
       getSectionHeaderData: getSectionData,
       rowHasChanged: (row1, row2) => row1 !== row2,
