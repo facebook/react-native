@@ -7,21 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		58B511691A9E6B3D00147676 /* libRCTNetworkImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */; };
 		58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */; };
 		58B511901A9E6BD600147676 /* RCTNetworkImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */; };
 		58B511911A9E6BD600147676 /* RCTNetworkImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118E1A9E6BD600147676 /* RCTNetworkImageViewManager.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		58B5116A1A9E6B3D00147676 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 58B511551A9E6B3D00147676 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 58B5115C1A9E6B3D00147676;
-			remoteInfo = RCTNetworkImage;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		58B5115B1A9E6B3D00147676 /* CopyFiles */ = {
@@ -37,7 +26,6 @@
 
 /* Begin PBXFileReference section */
 		58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetworkImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		58B511681A9E6B3D00147676 /* RCTNetworkImageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RCTNetworkImageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B511891A9E6BD600147676 /* RCTImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageDownloader.h; sourceTree = "<group>"; };
 		58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageDownloader.m; sourceTree = "<group>"; };
 		58B5118B1A9E6BD600147676 /* RCTNetworkImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworkImageView.h; sourceTree = "<group>"; };
@@ -51,14 +39,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		58B511651A9E6B3D00147676 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				58B511691A9E6B3D00147676 /* libRCTNetworkImage.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,7 +62,6 @@
 			isa = PBXGroup;
 			children = (
 				58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */,
-				58B511681A9E6B3D00147676 /* RCTNetworkImageTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,24 +86,6 @@
 			productReference = 58B5115D1A9E6B3D00147676 /* libRCTNetworkImage.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		58B511671A9E6B3D00147676 /* RCTNetworkImageTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511741A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTNetworkImageTests" */;
-			buildPhases = (
-				58B511641A9E6B3D00147676 /* Sources */,
-				58B511651A9E6B3D00147676 /* Frameworks */,
-				58B511661A9E6B3D00147676 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				58B5116B1A9E6B3D00147676 /* PBXTargetDependency */,
-			);
-			name = RCTNetworkImageTests;
-			productName = RCTNetworkImageTests;
-			productReference = 58B511681A9E6B3D00147676 /* RCTNetworkImageTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -135,9 +96,6 @@
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					58B5115C1A9E6B3D00147676 = {
-						CreatedOnToolsVersion = 6.1.1;
-					};
-					58B511671A9E6B3D00147676 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
 				};
@@ -155,20 +113,9 @@
 			projectRoot = "";
 			targets = (
 				58B5115C1A9E6B3D00147676 /* RCTNetworkImage */,
-				58B511671A9E6B3D00147676 /* RCTNetworkImageTests */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXResourcesBuildPhase section */
-		58B511661A9E6B3D00147676 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58B511591A9E6B3D00147676 /* Sources */ = {
@@ -181,22 +128,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		58B511641A9E6B3D00147676 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		58B5116B1A9E6B3D00147676 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 58B5115C1A9E6B3D00147676 /* RCTNetworkImage */;
-			targetProxy = 58B5116A1A9E6B3D00147676 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		58B5116F1A9E6B3D00147676 /* Debug */ = {
@@ -301,36 +233,6 @@
 			};
 			name = Release;
 		};
-		58B511751A9E6B3D00147676 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = RCTNetworkImageTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		58B511761A9E6B3D00147676 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = RCTNetworkImageTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -348,15 +250,6 @@
 			buildConfigurations = (
 				58B511721A9E6B3D00147676 /* Debug */,
 				58B511731A9E6B3D00147676 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		58B511741A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTNetworkImageTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				58B511751A9E6B3D00147676 /* Debug */,
-				58B511761A9E6B3D00147676 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
