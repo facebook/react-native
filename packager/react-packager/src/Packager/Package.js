@@ -2,6 +2,7 @@
 
 var _ = require('underscore');
 var base64VLQ = require('./base64-vlq');
+var UglifyJS = require('uglify-js');
 
 module.exports = Package;
 
@@ -27,6 +28,7 @@ Package.prototype.addModule = function(
 };
 
 Package.prototype.finalize = function(options) {
+  options = options || {};
   if (options.runMainModule) {
     var runCode = ';require("' + this._mainModuleId + '");';
     this.addModule(
@@ -51,6 +53,38 @@ Package.prototype.getSource = function(options) {
     this._source += '\n\/\/@ sourceMappingURL=' + this._sourceMapUrl;
   }
   return this._source;
+};
+
+Package.prototype.getMinifiedSourceAndMap = function() {
+  var source = this.getSource({inlineSourceMap: false});
+  try {
+    return UglifyJS.minify(source, {
+      fromString: true,
+      outSourceMap: 'bundle.js',
+      inSourceMap: this.getSourceMap(),
+    });
+  } catch(e) {
+    // Sometimes, when somebody is using a new syntax feature that we
+    // don't yet have transform for, the untransformed line is sent to
+    // uglify, and it chokes on it. This code tries to print the line
+    // and the module for easier debugging
+    var errorMessage = 'Error while minifying JS\n';
+    if (e.line) {
+      errorMessage += 'Transformed code line: "' +
+        source.split('\n')[e.line - 1] + '"\n';
+    }
+    if (e.pos) {
+      var fromIndex = source.lastIndexOf('__d(\'', e.pos);
+      if (fromIndex > -1) {
+        fromIndex += '__d(\''.length;
+        var toIndex = source.indexOf('\'', fromIndex);
+        errorMessage += 'Module name (best guess): ' +
+          source.substring(fromIndex, toIndex) + '\n';
+      }
+    }
+    errorMessage += e.toString();
+    throw new Error(errorMessage);
+  }
 };
 
 Package.prototype.getSourceMap = function(options) {

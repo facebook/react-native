@@ -42,6 +42,21 @@ describe('Package', function() {
         '\/\/@ sourceMappingURL=test_url',
       ].join('\n'));
     });
+
+    it('should get minified source', function() {
+      var minified = {
+        code: 'minified',
+        map: 'map',
+      };
+
+      require('uglify-js').minify = function() {
+        return minified;
+      };
+
+      ppackage.addModule('transformed foo;', 'source foo', 'foo path');
+      ppackage.finalize();
+      expect(ppackage.getMinifiedSourceAndMap()).toBe(minified);
+    });
   });
 
   describe('sourcemap package', function() {
