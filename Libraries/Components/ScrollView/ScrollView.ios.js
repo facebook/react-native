@@ -31,6 +31,12 @@ var PropTypes = React.PropTypes;
 var SCROLLVIEW = 'ScrollView';
 var INNERVIEW = 'InnerScrollView';
 
+var keyboardDismissModeConstants = {
+  'none': RKScrollViewConsts.KeyboardDismissMode.None, // default
+  'interactive': RKScrollViewConsts.KeyboardDismissMode.Interactive,
+  'onDrag': RKScrollViewConsts.KeyboardDismissMode.OnDrag,
+};
+
 /**
  * `React` component that wraps platform `RKScrollView` while providing
  * integration with touch locking "responder" system.
@@ -80,8 +86,8 @@ var INNERVIEW = 'InnerScrollView';
     /**
      * A floating-point number that determines how quickly the scroll view
      * decelerates after the user lifts their finger. Reasonable choices include
-     * `RKScrollView.Constants.DecelerationRate.Normal` (the default) and
-     * `RKScrollView.Constants.DecelerationRate.Fast`.
+     *   - Normal: 0.998 (the default)
+     *   - Fast: 0.9
      */
     decelerationRate: nativePropType(PropTypes.number),
     /**
@@ -91,18 +97,17 @@ var INNERVIEW = 'InnerScrollView';
     horizontal: PropTypes.bool,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
-     * When `ScrollView.keyboardDismissMode.None` (the default), drags do not
-     * dismiss the keyboard. When `ScrollView.keyboardDismissMode.OnDrag`, the
-     * keyboard is dismissed when a drag begins. When
-     * `ScrollView.keyboardDismissMode.Interactive`, the keyboard is dismissed
-     * interactively with the drag and moves in synchrony with the touch;
-     * dragging upwards cancels the dismissal.
+     *   - 'none' (the default), drags do not dismiss the keyboard.
+     *   - 'onDrag', the keyboard is dismissed when a drag begins.
+     *   - 'interactive', the keyboard is dismissed interactively with the drag
+     *     and moves in synchrony with the touch; dragging upwards cancels the
+     *     dismissal.
      */
-    keyboardDismissMode: nativePropType(PropTypes.oneOf([
-      RKScrollViewConsts.KeyboardDismissMode.None, // default
-      RKScrollViewConsts.KeyboardDismissMode.Interactive,
-      RKScrollViewConsts.KeyboardDismissMode.OnDrag,
-    ])),
+    keyboardDismissMode: PropTypes.oneOf([
+      'none', // default
+      'interactive',
+      'onDrag',
+    ]),
     /**
      * When false, tapping outside of the focused text input when the keyboard
      * is up dismisses the keyboard. When true, the scroll view will not catch
@@ -154,7 +159,6 @@ var INNERVIEW = 'InnerScrollView';
 var ScrollView = React.createClass({
   statics: {
     PropTypes: RKScrollViewPropTypes,
-    keyboardDismissMode: RKScrollViewConsts.KeyboardDismissMode,
   },
 
   propTypes: RKScrollViewPropTypes,
@@ -230,6 +234,9 @@ var ScrollView = React.createClass({
       this.props, {
         alwaysBounceHorizontal,
         alwaysBounceVertical,
+        keyboardDismissMode: this.props.keyboardDismissMode ?
+          keyboardDismissModeConstants[this.props.keyboardDismissMode] :
+          undefined,
         style: [styles.base, this.props.style],
         onTouchStart: this.scrollResponderHandleTouchStart,
         onTouchMove: this.scrollResponderHandleTouchMove,
