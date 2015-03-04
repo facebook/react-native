@@ -25,12 +25,17 @@ describe('propDocblockHandler', function() {
   });
 
   function parse(definition) {
-    return utils.parse('(' + definition + ')').get('body', 0, 'expression');
+    var programPath = utils.parse(definition);
+    return programPath.get(
+      'body',
+      programPath.node.body.length - 1,
+      'expression'
+    );
   }
 
   it('finds docblocks for prop types', function() {
     var definition = parse([
-      '{',
+      '({',
       '  propTypes: {',
       '    /**',
       '     * Foo comment',
@@ -42,7 +47,7 @@ describe('propDocblockHandler', function() {
       '     */',
       '    bar: Prop.bool,',
       '  }',
-      '}'
+      '})'
     ].join('\n'));
 
     propDocblockHandler(documentation, definition);
@@ -58,7 +63,7 @@ describe('propDocblockHandler', function() {
 
   it('can handle multline comments', function() {
     var definition = parse([
-      '{',
+      '({',
       '  propTypes: {',
       '    /**',
       '     * Foo comment with',
@@ -68,7 +73,7 @@ describe('propDocblockHandler', function() {
       '     */',
       '    foo: Prop.bool',
       '  }',
-      '}'
+      '})'
     ].join('\n'));
 
     propDocblockHandler(documentation, definition);
@@ -82,7 +87,7 @@ describe('propDocblockHandler', function() {
 
   it('ignores non-docblock comments', function() {
     var definition = parse([
-      '{',
+      '({',
       '  propTypes: {',
       '    /**',
       '     * Foo comment',
@@ -96,7 +101,7 @@ describe('propDocblockHandler', function() {
       '    /* This is not a doc comment */',
       '    bar: Prop.bool,',
       '  }',
-      '}'
+      '})'
     ].join('\n'));
 
     propDocblockHandler(documentation, definition);
@@ -112,7 +117,7 @@ describe('propDocblockHandler', function() {
 
   it('only considers the comment with the property below it', function() {
     var definition = parse([
-      '{',
+      '({',
       '  propTypes: {',
       '    /**',
       '     * Foo comment',
@@ -120,7 +125,7 @@ describe('propDocblockHandler', function() {
       '    foo: Prop.bool,',
       '    bar: Prop.bool,',
       '  }',
-      '}'
+      '})'
     ].join('\n'));
 
     propDocblockHandler(documentation, definition);
@@ -136,7 +141,7 @@ describe('propDocblockHandler', function() {
 
   it('understands and ignores the spread operator', function() {
     var definition = parse([
-      '{',
+      '({',
       '  propTypes: {',
       '    ...Foo.propTypes,',
       '    /**',
@@ -144,7 +149,28 @@ describe('propDocblockHandler', function() {
       '     */',
       '    foo: Prop.bool,',
       '  }',
-      '}'
+      '})'
+    ].join('\n'));
+
+    propDocblockHandler(documentation, definition);
+    expect(documentation.descriptors).toEqual({
+      foo: {
+        description: 'Foo comment'
+      }
+    });
+  });
+
+  it('resolves variables', function() {
+    var definition = parse([
+      'var Props = {',
+      '  /**',
+      '   * Foo comment',
+      '   */',
+      '  foo: Prop.bool,',
+      '};',
+      '({',
+      '  propTypes: Props',
+      '})'
     ].join('\n'));
 
     propDocblockHandler(documentation, definition);

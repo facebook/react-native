@@ -171,4 +171,21 @@ describe('propTypeHandler', function() {
       },
     });
   });
+
+  it('resolves variables', function() {
+    var definition = parse([
+      'var props = {bar: PropTypes.bool};',
+      '({',
+      '  propTypes: props',
+      '})',
+    ].join('\n'));
+
+    propTypeHandler(documentation, definition);
+    expect(documentation.descriptors).toEqual({
+      bar: {
+        type: {},
+        required: false
+      },
+    });
+  });
 });

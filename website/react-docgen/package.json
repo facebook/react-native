@@ -1,7 +1,12 @@
 {
   "name": "react-docgen",
   "version": "1.0.0",
-  "description": "Extract information from React components for documentation generation",
+  "description": "A CLI and toolkit to extract information from React components for documentation generation.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reactjs/react-docgen.git"
+  },
+  "bugs": "https://github.com/reactjs/react-docgen/issues",
   "bin": {
     "react-docgen": "bin/react-docgen.js"
   },
@@ -14,7 +19,7 @@
   },
   "keywords": [
     "react",
-    "documentation"
+    "documentation-generation"
   ],
   "author": "Felix Kling",
   "license": "BSD-3-Clause",

@@ -4,7 +4,7 @@
 
 It uses [recast][] to parse the source into an AST and provides methods to process this AST to extract the desired information. The output / return value is a JSON blob / JavaScript object.
 
-It provides a default implementation for React components defined via `React.createClass`. These component definitions must follow certain guidelines in order to be analyzable (see below for more info)
+It provides a default implementation for React components defined via `React.createClass`. These component definitions must follow certain guidelines in order to be analyzable (see below for more info).
 
 ## Install
 
@@ -37,6 +37,9 @@ If a directory is passed, it is recursively traversed.
 ```
 
 By default, `react-docgen` will look for the exported component created through `React.createClass` in each file. Have a look below for how to customize this behavior.
+
+Have a look at `example/` for an example of how to use the result to generate
+a markdown version of the documentation.
 
 ## API
 
@@ -209,5 +212,11 @@ The structure of the JSON blob / JavaScript object is as follows:
   ["composes": <componentNames>]
 }
 ```
+(`[...]` means the property may not exist if such information was not found in the component definition)
+
+- `<propName>`:  For each prop that was found, there will be an entry in `props` under the same name.
+- `<typeName>`: The name of the type, which is usually corresponds to the function name in `React.PropTypes`. However, for types define with `oneOf`, we use `"enum"`  and for `oneOfType` we use `"union"`. If a custom function is provided or the type cannot be resolved to anything of `React.PropTypes`, we use `"custom"`.
+- `<typeValue>`: Some types accept parameters which define the type in more detail (such as `arrayOf`, `instanceOf`, `oneOf`, etc). Those are stored in `<typeValue>`. The data type of `<typeValue>` depends on the type definition.
+
 
 [recast]: https://github.com/benjamn/recast

@@ -15,13 +15,14 @@
 
 var Documentation = require('../Documentation');
 
-var types = require('recast').types.namedTypes;
 var getDocblock = require('../utils/docblock').getDocblock;
 var getPropertyName = require('../utils/getPropertyName');
 var getPropertyValuePath = require('../utils/getPropertyValuePath');
+var types = require('recast').types.namedTypes;
+var resolveToValue = require('../utils/resolveToValue');
 
 function propDocBlockHandler(documentation: Documentation, path: NodePath) {
-  var propTypesPath = getPropertyValuePath(path, 'propTypes');
+  var propTypesPath = resolveToValue(getPropertyValuePath(path, 'propTypes'));
   if (!propTypesPath || !types.ObjectExpression.check(propTypesPath.node)) {
     return;
   }

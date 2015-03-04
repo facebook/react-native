@@ -100,7 +100,7 @@ function amendPropTypes(documentation, path) {
 }
 
 function propTypeHandler(documentation: Documentation, path: NodePath) {
-  var propTypesPath = getPropertyValuePath(resolveToValue(path), 'propTypes');
+  var propTypesPath = resolveToValue(getPropertyValuePath(path, 'propTypes'));
   if (!propTypesPath || !types.ObjectExpression.check(propTypesPath.node)) {
     return;
   }
