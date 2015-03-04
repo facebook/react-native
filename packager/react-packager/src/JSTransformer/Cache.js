@@ -112,13 +112,23 @@ Cache.prototype._persistCache = function() {
   return this._persisting;
 };
 
-function loadCacheSync(cacheFilepath) {
+function loadCacheSync(cachePath) {
   var ret = Object.create(null);
-  if (!fs.existsSync(cacheFilepath)) {
+  if (!fs.existsSync(cachePath)) {
     return ret;
   }
 
-  var cacheOnDisk = JSON.parse(fs.readFileSync(cacheFilepath));
+  var cacheOnDisk;
+  try {
+    cacheOnDisk = JSON.parse(fs.readFileSync(cachePath));
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      console.warn('Unable to parse cache file. Will clear and continue.');
+      fs.unlinkSync(cachePath);
+      return ret;
+    }
+    throw e;
+  }
 
   // Filter outdated cache and convert to promises.
   Object.keys(cacheOnDisk).forEach(function(key) {
