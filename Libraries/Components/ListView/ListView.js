@@ -88,80 +88,80 @@ var ListView = React.createClass({
    * - renderRow(rowData, sectionID, rowID);
    * - renderSectionHeader(sectionData, sectionID);
    */
-  propTypes:
-    merge(
-      ScrollView.PropTypes, {
-      dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
-      /**
-       * (rowData, sectionID, rowID) => renderable
-       * Takes a data entry from the data source and its ids and should return
-       * a renderable component to be rendered as the row.  By default the data
-       * is exactly what was put into the data source, but it's also possible to
-       * provide custom extractors.
-       */
-      renderRow: PropTypes.func.isRequired,
-      /**
-       * How many rows to render on initial component mount.  Use this to make
-       * it so that the first screen worth of data apears at one time instead of
-       * over the course of multiple frames.
-       */
-      initialListSize: PropTypes.number,
-      /**
-       * Called when all rows have been rendered and the list has been scrolled
-       * to within onEndReachedThreshold of the bottom.  The native scroll
-       * event is provided.
-       */
-      onEndReached: PropTypes.func,
-      /**
-       * Threshold in pixels for onEndReached.
-       */
-      onEndReachedThreshold: PropTypes.number,
-      /**
-       * Number of rows to render per event loop.
-       */
-      pageSize: PropTypes.number,
-      /**
-       * () => renderable
-       *
-       * The header and footer are always rendered (if these props are provided)
-       * on every render pass.  If they are expensive to re-render, wrap them
-       * in StaticContainer or other mechanism as appropriate.  Footer is always
-       * at the bottom of the list, and header at the top, on every render pass.
-       */
-      renderFooter: PropTypes.func,
-      renderHeader: PropTypes.func,
-      /**
-       * (sectionData, sectionID) => renderable
-       *
-       * If provided, a sticky header is rendered for this section.  The sticky
-       * behavior means that it will scroll with the content at the top of the
-       * section until it reaches the top of the screen, at which point it will
-       * stick to the top until it is pushed off the screen by the next section
-       * header.
-       */
-      renderSectionHeader: PropTypes.func,
-      /**
-       * How early to start rendering rows before they come on screen, in
-       * pixels.
-       */
-      scrollRenderAheadDistance: React.PropTypes.number,
-      /**
-       * (visibleRows, changedRows) => void
-       *
-       * Called when the set of visible rows changes.  `visibleRows` maps
-       * { sectionID: { rowID: true }} for all the visible rows, and
-       * `changedRows` maps { sectionID: { rowID: true | false }} for the rows
-       * that have changed their visibility, with true indicating visible, and
-       * false indicating the view has moved out of view.
-       */
-      onChangeVisibleRows: React.PropTypes.func,
-      /**
-       * An experimental performance optimization for improving scroll perf of
-       * large lists, used in conjunction with overflow: 'hidden' on the row
-       * containers.  Use at your own risk.
-       */
-      removeClippedSubviews: React.PropTypes.bool,
-  }),
+  propTypes: {
+    ...ScrollView.propTypes,
+
+    dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
+    /**
+     * (rowData, sectionID, rowID) => renderable
+     * Takes a data entry from the data source and its ids and should return
+     * a renderable component to be rendered as the row.  By default the data
+     * is exactly what was put into the data source, but it's also possible to
+     * provide custom extractors.
+     */
+    renderRow: PropTypes.func.isRequired,
+    /**
+     * How many rows to render on initial component mount.  Use this to make
+     * it so that the first screen worth of data apears at one time instead of
+     * over the course of multiple frames.
+     */
+    initialListSize: PropTypes.number,
+    /**
+     * Called when all rows have been rendered and the list has been scrolled
+     * to within onEndReachedThreshold of the bottom.  The native scroll
+     * event is provided.
+     */
+    onEndReached: PropTypes.func,
+    /**
+     * Threshold in pixels for onEndReached.
+     */
+    onEndReachedThreshold: PropTypes.number,
+    /**
+     * Number of rows to render per event loop.
+     */
+    pageSize: PropTypes.number,
+    /**
+     * () => renderable
+     *
+     * The header and footer are always rendered (if these props are provided)
+     * on every render pass.  If they are expensive to re-render, wrap them
+     * in StaticContainer or other mechanism as appropriate.  Footer is always
+     * at the bottom of the list, and header at the top, on every render pass.
+     */
+    renderFooter: PropTypes.func,
+    renderHeader: PropTypes.func,
+    /**
+     * (sectionData, sectionID) => renderable
+     *
+     * If provided, a sticky header is rendered for this section.  The sticky
+     * behavior means that it will scroll with the content at the top of the
+     * section until it reaches the top of the screen, at which point it will
+     * stick to the top until it is pushed off the screen by the next section
+     * header.
+     */
+    renderSectionHeader: PropTypes.func,
+    /**
+     * How early to start rendering rows before they come on screen, in
+     * pixels.
+     */
+    scrollRenderAheadDistance: React.PropTypes.number,
+    /**
+     * (visibleRows, changedRows) => void
+     *
+     * Called when the set of visible rows changes.  `visibleRows` maps
+     * { sectionID: { rowID: true }} for all the visible rows, and
+     * `changedRows` maps { sectionID: { rowID: true | false }} for the rows
+     * that have changed their visibility, with true indicating visible, and
+     * false indicating the view has moved out of view.
+     */
+    onChangeVisibleRows: React.PropTypes.func,
+    /**
+     * An experimental performance optimization for improving scroll perf of
+     * large lists, used in conjunction with overflow: 'hidden' on the row
+     * containers.  Use at your own risk.
+     */
+    removeClippedSubviews: React.PropTypes.bool,
+  },
 
   /**
    * Exports some data, e.g. for perf investigations or analytics.
