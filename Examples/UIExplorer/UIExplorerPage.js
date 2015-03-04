@@ -30,8 +30,7 @@ var UIExplorerPage = React.createClass({
     } else {
       ContentWrapper = ScrollView;
       wrapperProps.keyboardShouldPeristTaps = true;
-      wrapperProps.keyboardDismissMode =
-        ScrollView.keyboardDismissMode.Interactive;
+      wrapperProps.keyboardDismissMode = 'interactive';
     }
     var title = this.props.title ?
       <UIExplorerTitle title={this.props.title} /> :

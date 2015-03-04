@@ -131,9 +131,12 @@ RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
   return [NSURLRequest requestWithURL:[self NSURL:json]];
 }
 
-RCT_CONVERTER_CUSTOM(NSDate *, NSDate, [NSDate dateWithTimeIntervalSince1970:[json doubleValue]])
-RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[json doubleValue]])
-RCT_CONVERTER(NSTimeInterval, NSTimeInterval, doubleValue)
+// JS Standard for time is milliseconds
+RCT_CONVERTER_CUSTOM(NSDate *, NSDate, [NSDate dateWithTimeIntervalSince1970:[json doubleValue] / 1000.0])
+RCT_CONVERTER_CUSTOM(NSTimeInterval, NSTimeInterval, [json doubleValue] / 1000.0)
+
+// JS standard for time zones is minutes.
+RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[json doubleValue] * 60.0])
 
 /**
  * NOTE: We don't deliberately don't support NSTextAlignmentJustified in the

@@ -17,16 +17,8 @@
 /* eslint global-strict: 0 */
 /* globals GLOBAL: true, window: true */
 
-var JSTimers = require('JSTimers');
-
-// Just to make sure the JS gets packaged up
+// Just to make sure the JS gets packaged up.
 require('RCTDeviceEventEmitter');
-var ErrorUtils = require('ErrorUtils');
-var RKAlertManager = require('RKAlertManager');
-var RKExceptionsManager = require('NativeModules').RKExceptionsManager;
-
-var errorToString = require('errorToString');
-var loadSourceMap = require('loadSourceMap');
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;
@@ -36,7 +28,43 @@ if (typeof window === 'undefined') {
   window = GLOBAL;
 }
 
+/**
+ * The document must be shimmed before anything else that might define the
+ * `ExecutionEnvironment` module (which checks for `document.createElement`).
+ */
+function setupDocumentShim() {
+  // The browser defines Text and Image globals by default. If you forget to
+  // require them, then the error message is very confusing.
+  function getInvalidGlobalUseError(name) {
+    return new Error(
+      'You are trying to render the global ' + name + ' variable as a ' +
+      'React element. You probably forgot to require ' + name + '.'
+    );
+  }
+  GLOBAL.Text = {
+    get defaultProps() {
+      throw getInvalidGlobalUseError('Text');
+    }
+  };
+  GLOBAL.Image = {
+    get defaultProps() {
+      throw getInvalidGlobalUseError('Image');
+    }
+  };
+  if (!GLOBAL.document) {
+    // This shouldn't be needed but scroller library fails without it. If
+    // we fixed the scroller, we wouldn't need this.
+    GLOBAL.document = {body: {}};
+  }
+  // Force `ExecutionEnvironment.canUseDOM` to be false.
+  GLOBAL.document.createElement = null;
+}
+
 function handleErrorWithRedBox(e) {
+  var RKExceptionsManager = require('NativeModules').RKExceptionsManager;
+  var errorToString = require('errorToString');
+  var loadSourceMap = require('loadSourceMap');
+
   GLOBAL.console.error(
     'Error: ' +
     '\n stack: \n' + e.stack +
@@ -60,36 +88,8 @@ function handleErrorWithRedBox(e) {
 }
 
 function setupRedBoxErrorHandler() {
+  var ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
-}
-
-function setupDocumentShim() {
-  // The browser defines Text and Image globals by default. If you forget to
-  // require them, then the error message is very confusing.
-  function getInvalidGlobalUseError(name) {
-    return new Error(
-      'You are trying to render the global ' + name + ' variable as a ' +
-      'React element. You probably forgot to require ' + name + '.'
-    );
-  }
-  GLOBAL.Text = {
-    get defaultProps() {
-      throw getInvalidGlobalUseError('Text');
-    }
-  };
-  GLOBAL.Image = {
-    get defaultProps() {
-      throw getInvalidGlobalUseError('Image');
-    }
-  };
-
-  GLOBAL.document = {
-    // This shouldn't be needed but scroller library fails without it. If
-    // we fixed the scroller, we wouldn't need this.
-    body: {},
-    // Workaround for setImmediate
-    createElement: function() {return {};}
-  };
 }
 
 /**
@@ -100,6 +100,7 @@ function setupDocumentShim() {
  * unexplainably dropped timing signals.
  */
 function setupTimers() {
+  var JSTimers = require('JSTimers');
   GLOBAL.setTimeout = JSTimers.setTimeout;
   GLOBAL.setInterval = JSTimers.setInterval;
   GLOBAL.setImmediate = JSTimers.setImmediate;
@@ -114,6 +115,7 @@ function setupTimers() {
 }
 
 function setupAlert() {
+  var RKAlertManager = require('RKAlertManager');
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
       var alertOpts = {
@@ -144,8 +146,8 @@ function setupGeolocation() {
   GLOBAL.navigator.geolocation = require('GeoLocation');
 }
 
-setupRedBoxErrorHandler();
 setupDocumentShim();
+setupRedBoxErrorHandler();
 setupTimers();
 setupAlert();
 setupPromise();
