@@ -51,13 +51,10 @@ function setupDocumentShim() {
       throw getInvalidGlobalUseError('Image');
     }
   };
-  if (!GLOBAL.document) {
-    // This shouldn't be needed but scroller library fails without it. If
-    // we fixed the scroller, we wouldn't need this.
-    GLOBAL.document = {body: {}};
-  }
   // Force `ExecutionEnvironment.canUseDOM` to be false.
-  GLOBAL.document.createElement = null;
+  if (GLOBAL.document) {
+    GLOBAL.document.createElement = null;
+  }
 }
 
 function handleErrorWithRedBox(e) {
