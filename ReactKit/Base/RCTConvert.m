@@ -161,7 +161,7 @@ RCT_ENUM_CONVERTER(UITextAutocapitalizationType, (@{
   @"none": @(UITextAutocapitalizationTypeNone),
   @"words": @(UITextAutocapitalizationTypeWords),
   @"sentences": @(UITextAutocapitalizationTypeSentences),
-  @"all": @(UITextAutocapitalizationTypeAllCharacters)
+  @"characters": @(UITextAutocapitalizationTypeAllCharacters)
 }), UITextAutocapitalizationTypeSentences, integerValue)
 
 RCT_ENUM_CONVERTER(UIKeyboardType, (@{
@@ -658,8 +658,9 @@ RCT_ENUM_CONVERTER(css_wrap_type_t, (@{
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"none": @(RCTPointerEventsNone),
-  @"boxonly": @(RCTPointerEventsBoxOnly),
-  @"boxnone": @(RCTPointerEventsBoxNone)
+  @"box-only": @(RCTPointerEventsBoxOnly),
+  @"box-none": @(RCTPointerEventsBoxNone),
+  @"auto": @(RCTPointerEventsUnspecified)
 }), RCTPointerEventsUnspecified, integerValue)
 
 RCT_ENUM_CONVERTER(RCTAnimationType, (@{

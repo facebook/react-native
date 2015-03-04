@@ -41,7 +41,7 @@ var ToggleAnimatingActivityIndicator = React.createClass({
       <ActivityIndicatorIOS
         animating={this.state.animating}
         style={[styles.centering, {height: 80}]}
-        size={ActivityIndicatorIOS.size.large}
+        size="large"
       />
     );
   }
@@ -98,7 +98,7 @@ exports.examples = [
         <ActivityIndicatorIOS
           style={[styles.centering, styles.gray, {height: 80}]}
           color="white"
-          size={ActivityIndicatorIOS.size.large}
+          size="large"
         />
       );
     }
@@ -109,19 +109,19 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <ActivityIndicatorIOS
-            size={ActivityIndicatorIOS.size.large}
+            size="large"
             color="#0000ff"
           />
           <ActivityIndicatorIOS
-            size={ActivityIndicatorIOS.size.large}
+            size="large"
             color="#aa00aa"
           />
           <ActivityIndicatorIOS
-            size={ActivityIndicatorIOS.size.large}
+            size="large"
             color="#aa3300"
           />
           <ActivityIndicatorIOS
-            size={ActivityIndicatorIOS.size.large}
+            size="large"
             color="#00aa00"
           />
         </View>

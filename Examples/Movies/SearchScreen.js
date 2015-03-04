@@ -282,7 +282,7 @@ var SearchBar = React.createClass({
     return (
       <View style={styles.searchBar}>
         <TextInput
-          autoCapitalize={TextInput.autoCapitalizeMode.none}
+          autoCapitalize="none"
           autoCorrect={false}
           onChange={this.props.onSearchChange}
           placeholder="Search a movie..."
