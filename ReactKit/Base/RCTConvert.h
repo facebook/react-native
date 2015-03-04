@@ -33,7 +33,6 @@
 
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
-+ (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
 
 + (CGFloat)CGFloat:(id)json;

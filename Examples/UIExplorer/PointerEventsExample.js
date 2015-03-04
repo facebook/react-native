@@ -61,7 +61,7 @@ var NoneExample = React.createClass({
           A: unspecified
         </DemoText>
         <View
-          pointerEvents={View.pointerEvents.none}
+          pointerEvents="none"
           onTouchStart={() => this.props.onLog('B none touched')}
           style={[styles.box, styles.boxPassedThrough]}>
           <DemoText style={[styles.text, styles.textPassedThrough]}>
@@ -87,7 +87,7 @@ var NoneExample = React.createClass({
 var DemoText = React.createClass({
   render: function() {
     return (
-      <View pointerEvents={View.pointerEvents.none}>
+      <View pointerEvents="none">
         <Text
           style={this.props.style}>
           {this.props.children}
@@ -107,11 +107,11 @@ var BoxNoneExample = React.createClass({
           A: unspecified
         </DemoText>
         <View
-          pointerEvents={View.pointerEvents.boxNone}
-          onTouchStart={() => this.props.onLog('B boxNone touched')}
+          pointerEvents="box-none"
+          onTouchStart={() => this.props.onLog('B box-none touched')}
           style={[styles.box, styles.boxPassedThrough]}>
           <DemoText style={[styles.text, styles.textPassedThrough]}>
-            B: boxNone
+            B: box-none
           </DemoText>
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
@@ -121,7 +121,7 @@ var BoxNoneExample = React.createClass({
             </DemoText>
           </View>
           <View
-            pointerEvents={View.pointerEvents.unspecified}
+            pointerEvents="auto"
             onTouchStart={() => this.props.onLog('C explicitly unspecified touched')}
             style={[styles.box]}>
             <DemoText style={[styles.text]}>
@@ -144,11 +144,11 @@ var BoxOnlyExample = React.createClass({
           A: unspecified
         </DemoText>
         <View
-          pointerEvents={View.pointerEvents.boxOnly}
-          onTouchStart={() => this.props.onLog('B boxOnly touched')}
+          pointerEvents="box-only"
+          onTouchStart={() => this.props.onLog('B box-only touched')}
           style={styles.box}>
           <DemoText style={styles.text}>
-            B: boxOnly
+            B: box-only
           </DemoText>
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
@@ -158,7 +158,7 @@ var BoxOnlyExample = React.createClass({
             </DemoText>
           </View>
           <View
-            pointerEvents={View.pointerEvents.unspecified}
+            pointerEvents="auto"
             onTouchStart={() => this.props.onLog('C explicitly unspecified touched')}
             style={[styles.box, styles.boxPassedThrough]}>
             <DemoText style={[styles.text, styles.textPassedThrough]}>
@@ -179,13 +179,13 @@ var exampleClasses = [
   },
   {
     Component: BoxNoneExample,
-    title: '`boxNone`',
-    description: '`boxNone` causes touch events on the container to pass through and will only detect touch events on its child components.',
+    title: '`box-none`',
+    description: '`box-none` causes touch events on the container to pass through and will only detect touch events on its child components.',
   },
   {
     Component: BoxOnlyExample,
-    title: '`boxOnly`',
-    description: '`boxOnly` causes touch events on the container\'s child components to pass through and will only detect touch events on the container itself.',
+    title: '`box-only`',
+    description: '`box-only` causes touch events on the container\'s child components to pass through and will only detect touch events on the container itself.',
   }
 ];
 

@@ -8,7 +8,7 @@
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModulesDeprecated = require('NativeModulesDeprecated');
+var RKUIManager = require('NativeModules').RKUIManager;
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
@@ -59,28 +59,8 @@ var merge = require('merge');
  * More example code in `TextInputExample.js`.
  */
 
-var nativeConstants = NativeModulesDeprecated.RKUIManager.UIText.AutocapitalizationType;
-
-var autoCapitalizeMode = {
-  none: nativeConstants.None,
-  sentences: nativeConstants.Sentences,
-  words: nativeConstants.Words,
-  characters: nativeConstants.AllCharacters
-};
-
-var clearButtonModeConstants = NativeModulesDeprecated.RKUIManager.UITextField.clearButtonMode;
-
-var clearButtonModeTypes = {
-  never: clearButtonModeConstants.Never,
-  whileEditing: clearButtonModeConstants.WhileEditing,
-  unlessEditing: clearButtonModeConstants.UnlessEditing,
-  always: clearButtonModeConstants.Always,
-};
-
-var keyboardType = {
-  default: 'default',
-  numeric: 'numeric',
-};
+var autoCapitalizeConsts = RKUIManager.UIText.AutocapitalizationType;
+var clearButtonModeConsts = RKUIManager.UITextField.clearButtonMode;
 
 var RKTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   autoCorrect: true,
@@ -113,12 +93,6 @@ var notMultiline = {
 };
 
 var TextInput = React.createClass({
-  statics: {
-    autoCapitalizeMode: autoCapitalizeMode,
-    clearButtonModeTypes: clearButtonModeTypes,
-    keyboardType: keyboardType,
-  },
-
   propTypes: {
     /**
      * Can tell TextInput to automatically capitalize certain characters.
@@ -127,11 +101,13 @@ var TextInput = React.createClass({
      * - words: first letter of each word
      * - sentences: first letter of each sentence (default)
      * - none: don't auto capitalize anything
-     *
-     * example:
-     *   autoCapitalize={TextInput.autoCapitalizeMode.words}
      */
-    autoCapitalize: PropTypes.oneOf(getObjectValues(autoCapitalizeMode)),
+    autoCapitalize: PropTypes.oneOf([
+      'none',
+      'sentences',
+      'words',
+      'characters',
+    ]),
     /**
      * If false, disables auto-correct. Default value is true.
      */
@@ -145,9 +121,12 @@ var TextInput = React.createClass({
      */
     editable: PropTypes.bool,
     /**
-     * Determines which keyboard to open, e.g.`TextInput.keyboardType.numeric`.
+     * Determines which keyboard to open, e.g.`numeric`.
      */
-    keyboardType: PropTypes.oneOf(getObjectValues(keyboardType)),
+    keyboardType: PropTypes.oneOf([
+      'default',
+      'numeric',
+    ]),
     /**
      * If true, the text input can be multiple lines. Default value is false.
      */
@@ -202,7 +181,12 @@ var TextInput = React.createClass({
     /**
      * When the clear button should appear on the right side of the text view
      */
-    clearButtonMode: PropTypes.oneOf(getObjectValues(clearButtonModeTypes)),
+    clearButtonMode: PropTypes.oneOf([
+      'never',
+      'while-editing',
+      'unless-editing',
+      'always',
+    ]),
 
     style: Text.stylePropType,
   },
@@ -307,6 +291,9 @@ var TextInput = React.createClass({
   render: function() {
     var textContainer;
 
+    var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
+    var clearButtonMode = clearButtonModeConsts[this.props.clearButtonMode];
+
     if (!this.props.multiline) {
       for (var propKey in onlyMultiline) {
         if (this.props[propKey]) {
@@ -329,9 +316,9 @@ var TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={() => true}
           placeholder={this.props.placeholder}
           text={this.state.bufferedValue}
-          autoCapitalize={this.props.autoCapitalize}
+          autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
-          clearButtonMode={this.props.clearButtonMode}
+          clearButtonMode={clearButtonMode}
         />;
     } else {
       for (var propKey in notMultiline) {
@@ -372,8 +359,9 @@ var TextInput = React.createClass({
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
-          autoCapitalize={this.props.autoCapitalize}
+          autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
+          clearButtonMode={clearButtonMode}
         />;
     }
 

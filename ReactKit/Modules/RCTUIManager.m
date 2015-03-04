@@ -1282,25 +1282,25 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     @"StyleConstants": @{
       @"PointerEventsValues": @{
         @"none": @(RCTPointerEventsNone),
-        @"boxNone": @(RCTPointerEventsBoxNone),
-        @"boxOnly": @(RCTPointerEventsBoxOnly),
-        @"unspecified": @(RCTPointerEventsUnspecified),
+        @"box-none": @(RCTPointerEventsBoxNone),
+        @"box-only": @(RCTPointerEventsBoxOnly),
+        @"auto": @(RCTPointerEventsUnspecified),
       },
     },
     @"UIText": @{
       @"AutocapitalizationType": @{
-        @"AllCharacters": @(UITextAutocapitalizationTypeAllCharacters),
-        @"Sentences": @(UITextAutocapitalizationTypeSentences),
-        @"Words": @(UITextAutocapitalizationTypeWords),
-        @"None": @(UITextAutocapitalizationTypeNone),
+        @"characters": @(UITextAutocapitalizationTypeAllCharacters),
+        @"sentences": @(UITextAutocapitalizationTypeSentences),
+        @"words": @(UITextAutocapitalizationTypeWords),
+        @"none": @(UITextAutocapitalizationTypeNone),
       },
     },
     @"UITextField": @{
       @"clearButtonMode": @{
-        @"Never": @(UITextFieldViewModeNever),
-        @"WhileEditing": @(UITextFieldViewModeWhileEditing),
-        @"UnlessEditing": @(UITextFieldViewModeUnlessEditing),
-        @"Always": @(UITextFieldViewModeAlways),
+        @"never": @(UITextFieldViewModeNever),
+        @"while-editing": @(UITextFieldViewModeWhileEditing),
+        @"unless-editing": @(UITextFieldViewModeUnlessEditing),
+        @"always": @(UITextFieldViewModeAlways),
       },
     },
     @"UIView": @{
