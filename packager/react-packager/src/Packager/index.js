@@ -36,10 +36,6 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   transformModulePath: {
     type:'string',
     required: false,
@@ -59,7 +55,6 @@ function Packager(options) {
     projectRoots: opts.projectRoots,
     blacklistRE: opts.blacklistRE,
     polyfillModuleNames: opts.polyfillModuleNames,
-    dev: opts.dev,
     nonPersistent: opts.nonPersistent,
     moduleFormat: opts.moduleFormat
   });
@@ -69,7 +64,6 @@ function Packager(options) {
     blacklistRE: opts.blacklistRE,
     cacheVersion: opts.cacheVersion,
     resetCache: opts.resetCache,
-    dev: opts.dev,
     transformModulePath: opts.transformModulePath,
     nonPersistent: opts.nonPersistent,
   });
@@ -82,14 +76,14 @@ Packager.prototype.kill = function() {
   ]);
 };
 
-Packager.prototype.package = function(main, runModule, sourceMapUrl) {
+Packager.prototype.package = function(main, runModule, sourceMapUrl, isDev) {
   var transformModule = this._transformModule.bind(this);
   var ppackage = new Package(sourceMapUrl);
 
   var findEventId = Activity.startEvent('find dependencies');
   var transformEventId;
 
-  return this.getDependencies(main)
+  return this.getDependencies(main, isDev)
     .then(function(result) {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
@@ -119,8 +113,8 @@ Packager.prototype.invalidateFile = function(filePath) {
   this._transformer.invalidateFile(filePath);
 };
 
-Packager.prototype.getDependencies = function(main) {
-  return this._resolver.getDependencies(main);
+Packager.prototype.getDependencies = function(main, isDev) {
+  return this._resolver.getDependencies(main, { dev: isDev });
 };
 
 Packager.prototype._transformModule = function(module) {

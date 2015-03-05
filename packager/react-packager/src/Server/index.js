@@ -35,10 +35,6 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   transformModulePath: {
     type:'string',
     required: false,
@@ -51,7 +47,6 @@ var validateOpts = declareOpts({
 
 function Server(options) {
   var opts = validateOpts(options);
-  this._dev = opts.dev;
   this._projectRoots = opts.projectRoots;
   this._packages = Object.create(null);
   this._packager = new Packager(opts);
@@ -73,14 +68,13 @@ Server.prototype._onFileChange = function(type, filepath, root) {
 };
 
 Server.prototype._rebuildPackages = function() {
-  var dev = this._dev;
   var buildPackage = this._buildPackage.bind(this);
   var packages = this._packages;
   Object.keys(packages).forEach(function(key) {
     var options = getOptionsFromUrl(key);
     packages[key] = buildPackage(options).then(function(p) {
       // Make a throwaway call to getSource to cache the source string.
-      p.getSource({inlineSourceMap: dev});
+      p.getSource({inlineSourceMap: options.dev});
       return p;
     });
   });
@@ -97,7 +91,8 @@ Server.prototype._buildPackage = function(options) {
   return this._packager.package(
     options.main,
     options.runModule,
-    options.sourceMapUrl
+    options.sourceMapUrl,
+    options.dev
   );
 };
 
@@ -166,11 +161,10 @@ Server.prototype.processRequest = function(req, res, next) {
   var building = this._packages[req.url] || this._buildPackage(options);
 
   this._packages[req.url] = building;
-  var dev = this._dev;
-  building.then(
+    building.then(
     function(p) {
       if (requestType === 'bundle') {
-        res.end(p.getSource({inlineSourceMap: dev}));
+        res.end(p.getSource({inlineSourceMap: options.dev}));
         Activity.endEvent(startReqEventId);
       } else if (requestType === 'map') {
         res.end(JSON.stringify(p.getSourceMap()));
@@ -196,6 +190,8 @@ function getOptionsFromUrl(reqUrl) {
   return {
     sourceMapUrl: urlObj.pathname.replace(/\.bundle$/, '.map'),
     main: main,
+    dev: urlObj.query.dev === 'true' ||
+      urlObj.query.dev === '1',
     runModule: urlObj.query.runModule === 'true' ||
       urlObj.query.runModule === '1' ||
       // Backwards compatibility.
