@@ -32,7 +32,7 @@ var styles = StyleSheet.create({
  * More example code in `ExpandingTextExample.js`
  */
 var ExpandingText = React.createClass({
-  PropTypes: {
+  propTypes: {
     /**
      * Text to be displayed. Text will be truncated if the character length
      * is greater than the truncLength property.
