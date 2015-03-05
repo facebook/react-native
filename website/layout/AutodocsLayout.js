@@ -17,8 +17,9 @@ var Autodocs = React.createClass({
         <Header level={4} className="propTitle" toSlug={name}>
           {name}
           {' '}
-          <span className="propType">{prop.type.name}</span></Header>
-        <Marked>{prop.description}</Marked>
+          {prop.type && <span className="propType">{prop.type.name}</span>}
+        </Header>
+        {prop.description && <Marked>{prop.description}</Marked>}
       </div>
     );
   },
@@ -43,6 +44,9 @@ var Autodocs = React.createClass({
               {content.description}
             </Marked>
             {this.renderProps(content.props)}
+            <Marked>
+              {content.fullDescription}
+            </Marked>
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}

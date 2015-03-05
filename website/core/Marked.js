@@ -1085,7 +1085,9 @@ marked.parse = marked;
 
 var Marked = React.createClass({
   render: function() {
-    return React.DOM.div(null, marked(this.props.children, this.props));
+    return this.props.children ?
+      React.DOM.div(null, marked(this.props.children, this.props)) :
+      null;
   }
 });
 

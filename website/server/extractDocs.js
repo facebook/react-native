@@ -19,8 +19,12 @@ function docsToMarkdown(filepath, i) {
         docs.resolver.findAllReactCreateClassCalls(node, recast)[0];
     }
   );
-
   var componentName = getNameFromPath(filepath);
+
+  var docFilePath = '../docs/' + componentName + '.md';
+  if (fs.existsSync(docFilePath)) {
+    json.fullDescription = fs.readFileSync(docFilePath).toString();
+  }
 
   var res = [
     '---',
@@ -37,15 +41,16 @@ function docsToMarkdown(filepath, i) {
 }
 
 var components = [
-  '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
+  '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
+  '../Libraries/Text/ExpandingText.js',
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/ListView/ListView.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.ios.js',
   '../Libraries/Text/Text.js',
-  '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/TextInput/TextInput.ios.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
+  '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
 ];
