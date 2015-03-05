@@ -9,7 +9,7 @@ var Metadata = require('Metadata');
 var DocsSidebar = React.createClass({
   getCategories: function() {
     var metadatas = Metadata.files.filter(function(metadata) {
-      return metadata.layout === 'docs';
+      return metadata.layout === 'docs' || metadata.layout === 'autodocs';
     });
 
     // Build a hashmap of article_id -> metadata

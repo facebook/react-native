@@ -18,7 +18,7 @@ function docsToMarkdown(filepath, i) {
       return docs.resolver.findExportedReactCreateClassCall(node, recast) ||
         docs.resolver.findAllReactCreateClassCalls(node, recast)[0];
     }
-  )
+  );
 
   var componentName = getNameFromPath(filepath);
 
@@ -26,18 +26,12 @@ function docsToMarkdown(filepath, i) {
     '---',
     'id: ' + slugify(componentName),
     'title: ' + componentName,
-    'layout: docs',
+    'layout: autodocs',
     'category: Components',
     'permalink: docs/' + slugify(componentName) + '.html',
     components[i + 1] && ('next: ' + slugify(getNameFromPath(components[i + 1]))),
     '---',
-    ' ',
-    json.description,
-    ' ',
-    '# Props',
-    '```',
-    JSON.stringify(json.props, null, 2),
-    '```',
+    JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
   return res;
 }
@@ -49,6 +43,7 @@ var components = [
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.ios.js',
   '../Libraries/Text/Text.js',
+  '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/TextInput/TextInput.ios.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',

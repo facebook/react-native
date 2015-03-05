@@ -30,7 +30,7 @@ function backtickify(str) {
 function execute() {
   var MD_DIR = '../docs/';
 
-  var files = glob.sync('src/react-native/docs/*.*')
+  var files = glob.sync('src/react-native/docs/*.*');
   files.forEach(function(file) {
     try {
       fs.unlinkSync(file);

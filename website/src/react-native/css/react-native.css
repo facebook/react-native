@@ -895,6 +895,29 @@ div[data-twttr-id] iframe {
   text-align: center;
 }
 
+
+.props {
+  background-color: hsl(198, 100%, 96%);
+}
+
+.prop:nth-child(2n) {
+  background-color: hsl(198, 100%, 94%);
+}
+
+.propTitle {
+  font-weight: bold;
+}
+
+.prop {
+  padding: 5px 10px;
+}
+
+.propType {
+  font-weight: normal;
+  font-size: 15px;
+}
+
+
 #content {
   display: none;
 }
@@ -965,3 +988,4 @@ div[data-twttr-id] iframe {
     margin: 0;
   }
 }
+
