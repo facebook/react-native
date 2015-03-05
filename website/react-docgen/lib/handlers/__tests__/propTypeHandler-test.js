@@ -188,4 +188,16 @@ describe('propTypeHandler', function() {
       },
     });
   });
+
+  it('does not error if propTypes cannot be found', function() {
+    var definition = parse([
+      '({',
+      '  fooBar: 42',
+      '})',
+    ].join('\n'));
+
+    expect(function() {
+      propTypeHandler(documentation, definition);
+    }).not.toThrow();
+  });
 });

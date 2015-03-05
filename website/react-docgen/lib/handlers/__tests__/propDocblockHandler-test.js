@@ -180,4 +180,16 @@ describe('propDocblockHandler', function() {
       }
     });
   });
+
+  it('does not error if propTypes cannot be found', function() {
+    var definition = parse([
+      '({',
+      '  fooBar: 42',
+      '})',
+    ].join('\n'));
+
+    expect(function() {
+      propDocblockHandler(documentation, definition);
+    }).not.toThrow();
+  });
 });

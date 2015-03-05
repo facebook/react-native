@@ -22,7 +22,11 @@ var types = require('recast').types.namedTypes;
 var resolveToValue = require('../utils/resolveToValue');
 
 function propDocBlockHandler(documentation: Documentation, path: NodePath) {
-  var propTypesPath = resolveToValue(getPropertyValuePath(path, 'propTypes'));
+  var propTypesPath = getPropertyValuePath(path, 'propTypes');
+  if (!propTypesPath) {
+    return;
+  }
+  propTypesPath = resolveToValue(propTypesPath);
   if (!propTypesPath || !types.ObjectExpression.check(propTypesPath.node)) {
     return;
   }
