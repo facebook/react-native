@@ -32,10 +32,6 @@ var validateOpts = declareOpts({
     type: 'array',
     default: [],
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   nonPersistent: {
     type: 'boolean',
     default: false,
@@ -62,20 +58,20 @@ function HasteDependencyResolver(options) {
     fileWatcher: this._fileWatcher
   });
 
-  this._polyfillModuleNames = [
-    opts.dev
-      ? path.join(__dirname, 'polyfills/prelude_dev.js')
-      : path.join(__dirname, 'polyfills/prelude.js'),
-    path.join(__dirname, 'polyfills/require.js'),
-    path.join(__dirname, 'polyfills/polyfills.js'),
-    path.join(__dirname, 'polyfills/console.js'),
-    path.join(__dirname, 'polyfills/error-guard.js'),
-  ].concat(
-    opts.polyfillModuleNames || []
-  );
+
+  this._polyfillModuleNames = opts.polyfillModuleNames || [];
 }
 
-HasteDependencyResolver.prototype.getDependencies = function(main) {
+var getDependenciesValidateOpts = declareOpts({
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+});
+
+HasteDependencyResolver.prototype.getDependencies = function(main, options) {
+  var opts = getDependenciesValidateOpts(options);
+
   var depGraph = this._depGraph;
   var self = this;
 
@@ -84,7 +80,7 @@ HasteDependencyResolver.prototype.getDependencies = function(main) {
       var dependencies = depGraph.getOrderedDependencies(main);
       var mainModuleId = dependencies[0].id;
 
-      self._prependPolyfillDependencies(dependencies);
+      self._prependPolyfillDependencies(dependencies, opts.dev);
 
       return {
         mainModuleId: mainModuleId,
@@ -94,22 +90,30 @@ HasteDependencyResolver.prototype.getDependencies = function(main) {
 };
 
 HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
-  dependencies
+  dependencies,
+  isDev
 ) {
-  var polyfillModuleNames = this._polyfillModuleNames;
-  if (polyfillModuleNames.length > 0) {
-    var polyfillModules = polyfillModuleNames.map(
-      function(polyfillModuleName, idx) {
-        return new ModuleDescriptor({
-          path: polyfillModuleName,
-          id: polyfillModuleName,
-          dependencies: polyfillModuleNames.slice(0, idx),
-          isPolyfill: true
-        });
-      }
-    );
-    dependencies.unshift.apply(dependencies, polyfillModules);
-  }
+  var polyfillModuleNames = [
+   isDev
+      ? path.join(__dirname, 'polyfills/prelude_dev.js')
+      : path.join(__dirname, 'polyfills/prelude.js'),
+    path.join(__dirname, 'polyfills/require.js'),
+    path.join(__dirname, 'polyfills/polyfills.js'),
+    path.join(__dirname, 'polyfills/console.js'),
+    path.join(__dirname, 'polyfills/error-guard.js'),
+  ].concat(this._polyfillModuleNames);
+
+  var polyfillModules = polyfillModuleNames.map(
+    function(polyfillModuleName, idx) {
+      return new ModuleDescriptor({
+        path: polyfillModuleName,
+        id: polyfillModuleName,
+        dependencies: polyfillModuleNames.slice(0, idx),
+        isPolyfill: true
+      });
+    }
+  );
+  dependencies.unshift.apply(dependencies, polyfillModules);
 };
 
 HasteDependencyResolver.prototype.wrapModule = function(module, code) {

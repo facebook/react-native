@@ -29,10 +29,6 @@ var options = parseCommandLine([{
 }, {
   command: 'root',
   description: 'add another root(s) to be used by the packager in this project',
-}, {
-  command: 'dev',
-  default: true,
-  description: 'produce development packages with extra warnings enabled',
 }]);
 
 if (!options.projectRoots) {
@@ -97,7 +93,6 @@ function openStackFrameInEditor(req, res, next) {
 
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
-    dev: options.dev,
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(false),
     cacheVersion: '2',
@@ -106,7 +101,7 @@ function getAppMiddleware(options) {
 }
 
 function runServer(
-  options, /* {string projectRoot, bool web, bool dev} */
+  options, /* {[]string projectRoot, bool web} */
   readyCallback
 ) {
   var app = connect()
