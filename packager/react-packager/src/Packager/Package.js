@@ -7,6 +7,7 @@ var UglifyJS = require('uglify-js');
 module.exports = Package;
 
 function Package(sourceMapUrl) {
+  this._finalized = false;
   this._modules = [];
   this._sourceMapUrl = sourceMapUrl;
 }
@@ -40,23 +41,56 @@ Package.prototype.finalize = function(options) {
 
   Object.freeze(this._modules);
   Object.seal(this._modules);
+  this._finalized = true;
 };
 
-Package.prototype.getSource = function(options) {
-  if (!this._source) {
-    options = options || {};
+Package.prototype._assertFinalized = function() {
+  if (!this._finalized) {
+    throw new Error('Package need to be finalized before getting any source');
+  }
+};
+
+Package.prototype._getSource = function() {
+  if (this._source == null) {
     this._source = _.pluck(this._modules, 'transformedCode').join('\n');
-    if (options.inlineSourceMap) {
-      var sourceMap = this.getSourceMap({excludeSource: true});
-      this._source += '\nRAW_SOURCE_MAP = ' + JSON.stringify(sourceMap) + ';';
-    }
-    this._source += '\n\/\/@ sourceMappingURL=' + this._sourceMapUrl;
   }
   return this._source;
 };
 
+Package.prototype._getInlineSourceMap = function() {
+  if (this._inlineSourceMap == null) {
+    var sourceMap = this.getSourceMap({excludeSource: true});
+    this._inlineSourceMap = '\nRAW_SOURCE_MAP = ' +
+      JSON.stringify(sourceMap) + ';';
+  }
+
+  return this._inlineSourceMap;
+};
+
+Package.prototype.getSource = function(options) {
+  this._assertFinalized();
+
+  options = options || {};
+
+  if (options.minify) {
+    return this.getMinifiedSourceAndMap().code;
+  }
+
+  var source = this._getSource();
+
+  if (options.inlineSourceMap) {
+    source += this._getInlineSourceMap();
+  }
+
+  source += '\n\/\/@ sourceMappingURL=' + this._sourceMapUrl;
+
+  return source;
+};
+
 Package.prototype.getMinifiedSourceAndMap = function() {
-  var source = this.getSource({inlineSourceMap: false});
+  this._assertFinalized();
+
+  var source = this._getSource();
   try {
     return UglifyJS.minify(source, {
       fromString: true,
@@ -88,6 +122,8 @@ Package.prototype.getMinifiedSourceAndMap = function() {
 };
 
 Package.prototype.getSourceMap = function(options) {
+  this._assertFinalized();
+
   options = options || {};
   var mappings = this._getMappings();
   var map = {
@@ -101,7 +137,6 @@ Package.prototype.getSourceMap = function(options) {
   };
   return map;
 };
-
 
 Package.prototype._getMappings = function() {
   var modules = this._modules;
