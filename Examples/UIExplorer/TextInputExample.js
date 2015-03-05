@@ -45,7 +45,7 @@ var TextEventsExample = React.createClass({
     return (
       <View>
         <TextInput
-          autoCapitalize={TextInput.autoCapitalizeMode.none}
+          autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
           onFocus={() => this.updateText('onFocus')}
@@ -123,25 +123,25 @@ exports.examples = [
         <View>
           <WithLabel label="none">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.none}
+              autoCapitalize="none"
               style={styles.default}
             />
           </WithLabel>
           <WithLabel label="sentences">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.sentences}
+              autoCapitalize="sentences"
               style={styles.default}
             />
           </WithLabel>
           <WithLabel label="words">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.words}
+              autoCapitalize="words"
               style={styles.default}
             />
           </WithLabel>
           <WithLabel label="characters">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.characters}
+              autoCapitalize="characters"
               style={styles.default}
             />
           </WithLabel>
@@ -193,25 +193,25 @@ exports.examples = [
           <WithLabel label="never">
             <TextInput
               style={styles.default}
-              clearButtonMode={TextInput.clearButtonModeTypes.never}
+              clearButtonMode="never"
             />
           </WithLabel>
           <WithLabel label="while editing">
             <TextInput
               style={styles.default}
-              clearButtonMode={TextInput.clearButtonModeTypes.whileEditing}
+              clearButtonMode="while-editing"
             />
           </WithLabel>
           <WithLabel label="unless editing">
             <TextInput
               style={styles.default}
-              clearButtonMode={TextInput.clearButtonModeTypes.unlessEditing}
+              clearButtonMode="unless-editing"
             />
           </WithLabel>
           <WithLabel label="always">
             <TextInput
               style={styles.default}
-              clearButtonMode={TextInput.clearButtonModeTypes.always}
+              clearButtonMode="always"
             />
           </WithLabel>
         </View>

@@ -6,7 +6,6 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
@@ -45,15 +44,12 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
  * examples.
  */
 
-var StyleConstants = NativeModules.RKUIManager.StyleConstants;
-
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 
 var stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
 var View = React.createClass({
   statics: {
-    pointerEvents: StyleConstants.PointerEventsValues,
     stylePropType,
   },
 
@@ -96,7 +92,7 @@ var View = React.createClass({
 
     /**
      * In the absence of `auto` property, `none` is much like `CSS`'s `none`
-     * value. `boxNone` is as if you had applied the `CSS` class:
+     * value. `box-none` is as if you had applied the `CSS` class:
      *
      *   .cantTouchThis * {
      *     pointer-events: auto;
@@ -112,10 +108,10 @@ var View = React.createClass({
      * implementation detail of the platform.
      */
     pointerEvents: PropTypes.oneOf([
-      StyleConstants.PointerEventsValues.boxNone,
-      StyleConstants.PointerEventsValues.none,
-      StyleConstants.PointerEventsValues.boxOnly,
-      StyleConstants.PointerEventsValues.unspecified
+      'box-none',
+      'none',
+      'box-only',
+      'auto',
     ]),
 
     /**
@@ -151,7 +147,6 @@ if (__DEV__) {
   ViewToExport = View;
 }
 
-ViewToExport.pointerEvents = View.pointerEvents;
 ViewToExport.stylePropType = stylePropType;
 
 module.exports = ViewToExport;

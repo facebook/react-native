@@ -73,7 +73,16 @@ describe('processRequest', function() {
   pit('returns JS bundle source on request of *.bundle',function() {
     return makeRequest(
       requestHandler,
-      'mybundle.includeRequire.runModule.bundle'
+      'mybundle.bundle?runModule=true'
+    ).then(function(response) {
+      expect(response).toEqual('this is the source');
+    });
+  });
+
+  pit('returns JS bundle source on request of *.bundle (compat)',function() {
+    return makeRequest(
+      requestHandler,
+      'mybundle.runModule.bundle'
     ).then(function(response) {
       expect(response).toEqual('this is the source');
     });
@@ -82,7 +91,7 @@ describe('processRequest', function() {
   pit('returns sourcemap on request of *.map', function() {
     return makeRequest(
       requestHandler,
-      'mybundle.includeRequire.runModule.bundle.map'
+      'mybundle.map?runModule=true'
     ).then(function(response) {
       expect(response).toEqual('"this is the source map"');
     });
@@ -91,8 +100,8 @@ describe('processRequest', function() {
   pit('watches all files in projectRoot', function() {
     return makeRequest(
       requestHandler,
-      'mybundle.includeRequire.runModule.bundle'
-    ).then(function(response) {
+      'mybundle.bundle?runModule=true'
+    ).then(function() {
       expect(watcherFunc.mock.calls[0][0]).toEqual('all');
       expect(watcherFunc.mock.calls[0][1]).not.toBe(null);
     });
@@ -114,8 +123,8 @@ describe('processRequest', function() {
     pit('invalides files in package when file is updated', function() {
       return makeRequest(
         requestHandler,
-        'mybundle.includeRequire.runModule.bundle'
-      ).then(function(response) {
+        'mybundle.bundle?runModule=true'
+      ).then(function() {
         var onFileChange = watcherFunc.mock.calls[0][1];
         onFileChange('all','path/file.js', options.projectRoots[0]);
         expect(invalidatorFunc.mock.calls[0][0]).toEqual('root/path/file.js');
@@ -150,7 +159,7 @@ describe('processRequest', function() {
       requestHandler = server.processRequest.bind(server);
 
 
-      return makeRequest(requestHandler,'mybundle.includeRequire.runModule.bundle')
+      return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .then(function(response) {
           expect(response).toEqual('this is the first source');
           expect(packageFunc.mock.calls.length).toBe(1);
@@ -159,7 +168,7 @@ describe('processRequest', function() {
         })
         .then(function() {
           expect(packageFunc.mock.calls.length).toBe(2);
-          return makeRequest(requestHandler,'mybundle.includeRequire.runModule.bundle')
+          return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
             .then(function(response) {
               expect(response).toEqual('this is the rebuilt source');
             });

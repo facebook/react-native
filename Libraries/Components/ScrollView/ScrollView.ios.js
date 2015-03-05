@@ -45,9 +45,10 @@ var keyboardDismissModeConstants = {
  * view from becoming the responder.
  */
 
- var RKScrollViewPropTypes = merge(
-  ScrollViewPropTypes,
-  {
+var ScrollView = React.createClass({
+  propTypes: {
+    ...ScrollViewPropTypes,
+
     /**
      * When true, the scroll view bounces horizontally when it reaches the end
      * even if the content is smaller than the scroll view itself. The default
@@ -153,15 +154,7 @@ var keyboardDismissModeConstants = {
      * The current scale of the scroll view content. The default value is 1.0.
      */
     zoomScale: nativePropType(PropTypes.number),
-  }
-);
-
-var ScrollView = React.createClass({
-  statics: {
-    PropTypes: RKScrollViewPropTypes,
   },
-
-  propTypes: RKScrollViewPropTypes,
 
   mixins: [ScrollResponder.Mixin],
 
