@@ -74,7 +74,10 @@ Server.prototype._rebuildPackages = function() {
     var options = getOptionsFromUrl(key);
     packages[key] = buildPackage(options).then(function(p) {
       // Make a throwaway call to getSource to cache the source string.
-      p.getSource({inlineSourceMap: options.dev});
+      p.getSource({
+        inlineSourceMap: options.dev,
+        minify: options.minify,
+      });
       return p;
     });
   });
@@ -164,7 +167,10 @@ Server.prototype.processRequest = function(req, res, next) {
     building.then(
     function(p) {
       if (requestType === 'bundle') {
-        res.end(p.getSource({inlineSourceMap: options.dev}));
+        res.end(p.getSource({
+          inlineSourceMap: options.dev,
+          minify: options.minify,
+        }));
         Activity.endEvent(startReqEventId);
       } else if (requestType === 'map') {
         res.end(JSON.stringify(p.getSourceMap()));
@@ -190,15 +196,18 @@ function getOptionsFromUrl(reqUrl) {
   return {
     sourceMapUrl: urlObj.pathname.replace(/\.bundle$/, '.map'),
     main: main,
-    dev: urlObj.query.dev === 'true' ||
-      urlObj.query.dev === '1',
-    runModule: urlObj.query.runModule === 'true' ||
-      urlObj.query.runModule === '1' ||
+    dev: getBoolOptionFromQuery(urlObj.query, 'dev'),
+    minify: getBoolOptionFromQuery(urlObj.query, 'minify'),
+    runModule: getBoolOptionFromQuery(urlObj.query, 'runModule') ||
       // Backwards compatibility.
       urlObj.pathname.split('.').some(function(part) {
         return part === 'runModule';
       }),
   };
+}
+
+function getBoolOptionFromQuery(query, opt) {
+  return query[opt] === 'true' || query[opt] === '1';
 }
 
 function handleError(res, error) {
