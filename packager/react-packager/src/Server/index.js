@@ -77,7 +77,7 @@ Server.prototype._rebuildPackages = function() {
   var buildPackage = this._buildPackage.bind(this);
   var packages = this._packages;
   Object.keys(packages).forEach(function(key) {
-    var options = getOptionsFromPath(url.parse(key).pathname);
+    var options = getOptionsFromUrl(key);
     packages[key] = buildPackage(options).then(function(p) {
       // Make a throwaway call to getSource to cache the source string.
       p.getSource({inlineSourceMap: dev});
@@ -102,7 +102,7 @@ Server.prototype._buildPackage = function(options) {
 };
 
 Server.prototype.buildPackageFromUrl = function(reqUrl) {
-  var options = getOptionsFromPath(url.parse(reqUrl).pathname);
+  var options = getOptionsFromUrl(reqUrl);
   return this._buildPackage(options);
 };
 
@@ -145,21 +145,26 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
 };
 
 Server.prototype.processRequest = function(req, res, next) {
+  var urlObj = url.parse(req.url, true);
+  var pathname = urlObj.pathname;
+
   var requestType;
-  if (req.url.match(/\.bundle$/)) {
+  if (pathname.match(/\.bundle$/)) {
     requestType = 'bundle';
-  } else if (req.url.match(/\.map$/)) {
+  } else if (pathname.match(/\.map$/)) {
     requestType = 'map';
-  } else if (req.url.match(/^\/debug/)) {
+  } else if (pathname.match(/^\/debug/)) {
     this._processDebugRequest(req.url, res);
     return;
   } else {
-    return next();
+    next();
+    return;
   }
 
   var startReqEventId = Activity.startEvent('request:' + req.url);
-  var options = getOptionsFromPath(url.parse(req.url).pathname);
+  var options = getOptionsFromUrl(req.url);
   var building = this._packages[req.url] || this._buildPackage(options);
+
   this._packages[req.url] = building;
   var dev = this._dev;
   building.then(
@@ -178,16 +183,25 @@ Server.prototype.processRequest = function(req, res, next) {
   ).done();
 };
 
-function getOptionsFromPath(pathname) {
-  var parts = pathname.split('.');
-  // Remove the leading slash.
-  var main = parts[0].slice(1) + '.js';
+function getOptionsFromUrl(reqUrl) {
+  // `true` to parse the query param as an object.
+  var urlObj = url.parse(reqUrl, true);
+
+  var match = urlObj.pathname.match(/^\/?([^\.]+)\..*(bundle|map)$/);
+  if (!(match && match[1])) {
+    throw new Error('Invalid url format, expected "/path/to/file.bundle"');
+  }
+  var main = match[1] + '.js';
+
   return {
-    runModule: parts.slice(1).some(function(part) {
-      return part === 'runModule';
-    }),
+    sourceMapUrl: urlObj.pathname.replace(/\.bundle$/, '.map'),
     main: main,
-    sourceMapUrl: parts.slice(0, -1).join('.') + '.map'
+    runModule: urlObj.query.runModule === 'true' ||
+      urlObj.query.runModule === '1' ||
+      // Backwards compatibility.
+      urlObj.pathname.split('.').some(function(part) {
+        return part === 'runModule';
+      }),
   };
 }
 
