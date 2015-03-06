@@ -71,7 +71,7 @@ var View = React.createClass({
     accessible: PropTypes.bool,
 
     /**
-     * This string can be used to identify the accessible element.
+     * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
 
