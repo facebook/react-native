@@ -45,6 +45,7 @@ describe('processRequest', function() {
   var invalidatorFunc = jest.genMockFunction();
   var watcherFunc = jest.genMockFunction();
   var requestHandler;
+  var triggerFileChange;
 
   beforeEach(function() {
     Packager = require('../../Packager');
@@ -61,7 +62,15 @@ describe('processRequest', function() {
       });
     };
 
-    FileWatcher.prototype.on = watcherFunc;
+
+    FileWatcher.prototype.on = function(eventType, callback) {
+      if (eventType !== 'all') {
+        throw new Error('Can only handle "all" event in watcher.');
+      }
+      watcherFunc.apply(this, arguments);
+      triggerFileChange = callback;
+      return this;
+    };
 
     Packager.prototype.invalidateFile = invalidatorFunc;
 
@@ -109,17 +118,6 @@ describe('processRequest', function() {
 
 
   describe('file changes', function() {
-    var triggerFileChange;
-    beforeEach(function() {
-      FileWatcher.prototype.on = function(eventType, callback) {
-        if (eventType !== 'all') {
-          throw new Error('Can only handle "all" event in watcher.');
-        }
-        triggerFileChange = callback;
-        return this;
-      };
-    });
-
     pit('invalides files in package when file is updated', function() {
       return makeRequest(
         requestHandler,
@@ -173,6 +171,38 @@ describe('processRequest', function() {
               expect(response).toEqual('this is the rebuilt source');
             });
         });
+    });
+  });
+
+  describe('/onchange endpoint', function() {
+    var EventEmitter;
+    var req;
+    var res;
+
+    beforeEach(function() {
+      EventEmitter = require.requireActual('events').EventEmitter;
+      req = new EventEmitter();
+      req.url = '/onchange';
+      res = {
+        writeHead: jest.genMockFn(),
+        end: jest.genMockFn()
+      };
+    });
+
+    it('should hold on to request and inform on change', function() {
+      server.processRequest(req, res);
+      triggerFileChange('all', 'path/file.js', options.projectRoots[0]);
+      jest.runAllTimers();
+      expect(res.end).toBeCalledWith(JSON.stringify({changed: true}));
+    });
+
+    it('should not inform changes on disconnected clients', function() {
+      server.processRequest(req, res);
+      req.emit('close');
+      jest.runAllTimers();
+      triggerFileChange('all', 'path/file.js', options.projectRoots[0]);
+      jest.runAllTimers();
+      expect(res.end).not.toBeCalled();
     });
   });
 });
