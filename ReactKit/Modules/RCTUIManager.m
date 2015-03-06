@@ -1109,8 +1109,8 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
     // Bubble dispatched events
     @"topTap": @{
       @"phasedRegistrationNames": @{
-        @"bubbled": @"notActuallyTapDontUseMe",
-        @"captured": @"notActuallyTapCaptureDontUseMe"
+        @"bubbled": @"onPress",
+        @"captured": @"onPressCapture"
       }
     },
     @"topVisibleCellsChange": @{

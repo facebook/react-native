@@ -11,7 +11,7 @@
 
 - (UIView *)view
 {
-  return [[RCTTextField alloc] initWithEventDispatcher:self.eventDispatcher];
+  return [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden)

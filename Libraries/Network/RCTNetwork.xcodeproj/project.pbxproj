@@ -23,7 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		58B511DB1A9E6C8500147676 /* libRCTDataManager.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTDataManager.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		58B511DB1A9E6C8500147676 /* libRCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B512061A9E6CE300147676 /* RCTDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDataManager.h; sourceTree = "<group>"; };
 		58B512071A9E6CE300147676 /* RCTDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDataManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,7 +51,7 @@
 		58B511DC1A9E6C8500147676 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				58B511DB1A9E6C8500147676 /* libRCTDataManager.a */,
+				58B511DB1A9E6C8500147676 /* libRCTNetwork.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -59,9 +59,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* RCTDataManager */ = {
+		58B511DA1A9E6C8500147676 /* RCTNetwork */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTDataManager" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTNetwork" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -71,9 +71,9 @@
 			);
 			dependencies = (
 			);
-			name = RCTDataManager;
+			name = RCTNetwork;
 			productName = RCTDataManager;
-			productReference = 58B511DB1A9E6C8500147676 /* libRCTDataManager.a */;
+			productReference = 58B511DB1A9E6C8500147676 /* libRCTNetwork.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -90,7 +90,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTDataManager" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTNetwork" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -102,7 +102,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* RCTDataManager */,
+				58B511DA1A9E6C8500147676 /* RCTNetwork */,
 			);
 		};
 /* End PBXProject section */
@@ -206,7 +206,7 @@
 					"/Users/nicklockwood/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/ReactKit/build/Debug-iphoneos",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RCTNetwork;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -224,7 +224,7 @@
 					"/Users/nicklockwood/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/ReactKit/build/Debug-iphoneos",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RCTNetwork;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -232,7 +232,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTDataManager" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTNetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -241,7 +241,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTDataManager" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTNetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,

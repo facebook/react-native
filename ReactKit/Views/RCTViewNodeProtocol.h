@@ -13,6 +13,7 @@
 - (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTViewNodeProtocol>)subview;
 - (NSMutableArray *)reactSubviews;
+- (id<RCTViewNodeProtocol>)reactSuperview;
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 
 // View is an RCTRootView
@@ -26,3 +27,9 @@
 - (void)reactBridgeDidFinishTransaction;
 
 @end
+
+// TODO: this is kinda dumb - let's come up with a
+// better way of identifying root react views please!
+static inline BOOL RCTIsReactRootView(NSNumber *reactTag) {
+  return reactTag.integerValue % 10 == 1;
+}

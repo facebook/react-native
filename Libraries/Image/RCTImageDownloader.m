@@ -109,38 +109,36 @@ typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *e
 
 - (id)downloadImageForURL:(NSURL *)url size:(CGSize)size scale:(CGFloat)scale block:(RCTImageDownloadBlock)block
 {
-  NSString *cacheKey = [self cacheKeyForURL:url];
-  __weak RCTImageDownloader *weakSelf = self;
-  return [self _downloadDataForURL:url block:^(BOOL cached, NSData *data, NSError *error) {
-    if (!data) {
-      return dispatch_async(dispatch_get_main_queue(), ^{
-        block(nil, error);
-      });
-    }
+  return [self downloadDataForURL:url block:^(NSData *data, NSError *error) {
 
     UIImage *image = [UIImage imageWithData:data scale:scale];
-
     if (image) {
+
+      // Resize (TODO: should we take aspect ratio into account?)
       CGSize imageSize = size;
       if (CGSizeEqualToSize(imageSize, CGSizeZero)) {
         imageSize = image.size;
+      } else {
+        imageSize = (CGSize){
+          MIN(size.width, image.size.width),
+          MIN(size.height, image.size.height)
+        };
       }
 
+      // Rescale image if required size is smaller
       CGFloat imageScale = scale;
-      if (imageScale == 0 || imageScale > image.scale) {
+      if (imageScale == 0 || imageScale < image.scale) {
         imageScale = image.scale;
       }
 
+      // Decompress image at required size
       UIGraphicsBeginImageContextWithOptions(imageSize, NO, imageScale);
       [image drawInRect:(CGRect){{0, 0}, imageSize}];
       image = UIGraphicsGetImageFromCurrentImageContext();
       UIGraphicsEndImageContext();
-
-      if (!cached) {
-        RCTImageDownloader *strongSelf = weakSelf;
-        [strongSelf->_cache setData:UIImagePNGRepresentation(image) forKey:cacheKey];
-      }
     }
+
+    // TODO: should we cache the decompressed image?
 
     dispatch_async(dispatch_get_main_queue(), ^{
       block(image, nil);

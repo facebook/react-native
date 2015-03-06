@@ -14,11 +14,6 @@
 
 @synthesize bridge = _bridge;
 
-- (RCTEventDispatcher *)eventDispatcher
-{
-  return _bridge.eventDispatcher;
-}
-
 + (NSString *)moduleName
 {
   // Default implementation, works in most cases

@@ -325,6 +325,11 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return _reactSubviews;
 }
 
+- (RCTShadowView *)reactSuperview
+{
+  return _superview;
+}
+
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
   for (RCTShadowView *shadowView in _reactSubviews) {

@@ -2,9 +2,10 @@
 
 #import "RCTNetworkImageView.h"
 
+#import "RCTConvert.h"
+#import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTUtils.h"
-#import "RCTConvert.h"
 
 @implementation RCTNetworkImageView
 {
@@ -53,7 +54,7 @@
     if ([imageURL.pathExtension caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
       _downloadToken = [_imageDownloader downloadDataForURL:imageURL block:^(NSData *data, NSError *error) {
         if (data) {
-          CAKeyframeAnimation *animation = [RCTConvert GIF:data];
+          CAKeyframeAnimation *animation = RCTGIFImageWithData(data);
           CGImageRef firstFrame = (__bridge CGImageRef)animation.values.firstObject;
           self.layer.bounds = CGRectMake(0, 0, CGImageGetWidth(firstFrame), CGImageGetHeight(firstFrame));
           self.layer.contentsScale = 1.0;
