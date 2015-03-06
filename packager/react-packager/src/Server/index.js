@@ -196,7 +196,7 @@ function getOptionsFromUrl(reqUrl) {
   return {
     sourceMapUrl: urlObj.pathname.replace(/\.bundle$/, '.map'),
     main: main,
-    dev: getBoolOptionFromQuery(urlObj.query, 'dev'),
+    dev: getBoolOptionFromQuery(urlObj.query, 'dev', true),
     minify: getBoolOptionFromQuery(urlObj.query, 'minify'),
     runModule: getBoolOptionFromQuery(urlObj.query, 'runModule') ||
       // Backwards compatibility.
@@ -206,7 +206,11 @@ function getOptionsFromUrl(reqUrl) {
   };
 }
 
-function getBoolOptionFromQuery(query, opt) {
+function getBoolOptionFromQuery(query, opt, defaultVal) {
+  if (query[opt] == null && defaultVal != null) {
+    return defaultVal;
+  }
+
   return query[opt] === 'true' || query[opt] === '1';
 }
 
