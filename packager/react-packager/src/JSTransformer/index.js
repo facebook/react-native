@@ -34,10 +34,6 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   transformModulePath: {
     type:'string',
     required: false,

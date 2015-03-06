@@ -20,39 +20,49 @@ var styles = StyleSheet.create({
 });
 
 /**
- * <ExpandingText> - A react component for displaying text which supports truncating
- * based on a set truncLength. In the following example, the text will truncate
+ * A react component for displaying text which supports truncating
+ * based on a set truncLength.
+ *
+ * In the following example, the text will truncate
  * to show only the first 17 characters plus '...' with a See More button to
- * expand the text to its full length
+ * expand the text to its full length.
  *
- *   renderText: function() {
- *     return <ExpandingText truncLength={20} text={EXAMPLE_TEXT} />;
- *   },
- *
- * More example code in `ExpandingTextExample.js`
+ * ```
+ * render: function() {
+ *   return <ExpandingText truncLength={20} text={EXAMPLE_TEXT} />;
+ * },
+ * ```
  */
 var ExpandingText = React.createClass({
-  PropTypes: {
+  propTypes: {
     /**
-     * Text to be displayed. Text will be truncated if the character length
-     * is greater than the truncLength property.
+     * Text to be displayed. It will be truncated if the character length
+     * is greater than the `truncLength` property.
      */
-    text: React.PropTypes.string.isRequired,
+    text: React.PropTypes.string,
     /**
-     * The styles that will be applied to the text (both truncated and expanded).
+     * The styles that will be applied to the text (both truncated and
+     * expanded).
      */
-    textStyle: Text.stylePropType,
+    textStyle: Text.propTypes.style,
     /**
-     * The styles that will be applied to the See More button
+     * The styles that will be applied to the See More button. Default
+     * is bold.
      */
-    seeMoreStyle: Text.stylePropType,
+    seeMoreStyle: Text.propTypes.style,
+    /**
+     * The caption that will be appended at the end, by default it is
+     * `'See More'`.
+     */
+    seeMoreText: React.PropTypes.string,
     /**
      * The maximum character length for the text that will
      * be displayed by default. Note that ... will be
      * appended to the truncated text which is counted towards
-     * the total truncLength of the default displayed string
+     * the total truncLength of the default displayed string.
+     * The default is 130.
      */
-    truncLength: React.PropTypes.number
+    truncLength: React.PropTypes.number,
   },
 
   getDefaultProps: function() {

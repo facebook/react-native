@@ -87,6 +87,10 @@ var Text = React.createClass({
      */
     suppressHighlighting: React.PropTypes.bool,
     style: stylePropType,
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID: React.PropTypes.string,
   },
 
   viewConfig: viewConfig,

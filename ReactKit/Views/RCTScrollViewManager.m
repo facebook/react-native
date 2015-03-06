@@ -2,6 +2,7 @@
 
 #import "RCTScrollViewManager.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTScrollView.h"
 
@@ -9,7 +10,7 @@
 
 - (UIView *)view
 {
-  return [[RCTScrollView alloc] initWithEventDispatcher:self.eventDispatcher];
+  return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(alwaysBounceHorizontal)

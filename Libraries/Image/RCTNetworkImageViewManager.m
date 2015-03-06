@@ -23,4 +23,3 @@ RCT_REMAP_VIEW_PROPERTY(src, imageURL)
 RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
 
 @end
-

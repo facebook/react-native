@@ -5,6 +5,7 @@
 #import "RCTAutoInsetsProtocol.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "UIView+ReactKit.h"
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
@@ -22,15 +23,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 @implementation RCTView
-
-- (id)initWithFrame:(CGRect)frame
-{
-  self = [super initWithFrame:frame];
-  if (self) {
-    _pointerEvents = RCTPointerEventsUnspecified;
-  }
-  return self;
-}
 
 - (NSString *)accessibilityLabel
 {
@@ -108,19 +100,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
-+ (UIViewController *)backingViewControllerForView:(UIView *)view
-{
-  id responder = [view nextResponder];
-  if ([responder isKindOfClass:[UIViewController class]]) {
-    return responder;
-  }
-  return nil;
-}
-
 + (UIEdgeInsets)contentInsetsForView:(UIView *)view
 {
   while (view) {
-    UIViewController *controller = [self backingViewControllerForView:view];
+    UIViewController *controller = view.backingViewController;
     if (controller) {
       return (UIEdgeInsets){
         controller.topLayoutGuide.length, 0,

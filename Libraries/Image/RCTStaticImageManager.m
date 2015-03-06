@@ -4,8 +4,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTStaticImage.h"
 #import "RCTConvert.h"
+#import "RCTGIFImage.h"
+#import "RCTStaticImage.h"
 
 @implementation RCTStaticImageManager
 
@@ -20,7 +21,7 @@ RCT_CUSTOM_VIEW_PROPERTY(src, RCTStaticImage *)
 {
   if (json) {
     if ([[[json description] pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
-      [view.layer addAnimation:[RCTConvert GIF:json] forKey:@"contents"];
+      [view.layer addAnimation:RCTGIFImageWithFileURL([RCTConvert NSURL:json]) forKey:@"contents"];
     } else {
       view.image = [RCTConvert UIImage:json];
     }
@@ -40,4 +41,3 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage *)
 }
 
 @end
-

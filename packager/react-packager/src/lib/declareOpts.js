@@ -42,6 +42,8 @@ module.exports = function(descriptor) {
   var schema = Joi.object().keys(joiKeys);
 
   return function(opts) {
+    opts = opts || {};
+
     var res = Joi.validate(opts, schema, {
       abortEarly: true,
       allowUnknown: false,

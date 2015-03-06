@@ -41,7 +41,6 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-
 /**
  * In general, `RCTNavigator` examines `_currentViews` (which are React child
  * views), and compares them to `_navigationController.viewControllers` (which
@@ -138,7 +137,6 @@ NSInteger kNeverProgressed = -10000;
   return self;
 }
 
-
 /**
  * Invoked when either a navigation item has been popped off, or when a
  * swipe-back gesture has began. The swipe-back gesture doesn't respect the
@@ -184,7 +182,6 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -204,7 +201,7 @@ NSInteger kNeverProgressed = -10000;
  *
  * - The run loop retains the displayLink.
  * - `displayLink` retains its target.
- * - We use `reactWillDestroy` to remove the `RCTNavigator`'s reference to the
+ * - We use `invalidate` to remove the `RCTNavigator`'s reference to the
  * `displayLink` and remove the `displayLink` from the run loop.
  *
  *
@@ -212,7 +209,7 @@ NSInteger kNeverProgressed = -10000;
  * --------------
  *
  * - Even though we could implement the `displayLink` cleanup without the
- * `reactWillDestroy` hook by adding and removing it from the run loop at the
+ * `invalidate` hook by adding and removing it from the run loop at the
  * right times (begin/end animation), we need to account for the possibility
  * that the view itself is destroyed mid-interaction. So we always keep it
  * added to the run loop, but start/stop it with interactions/animations. We
@@ -343,7 +340,7 @@ NSInteger kNeverProgressed = -10000;
     NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
-    _dummyView.frame = (CGRect){destination};
+    _dummyView.frame = (CGRect){{destination}};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
     if (indexOfFrom != indexOfTo) {
@@ -450,24 +447,10 @@ NSInteger kNeverProgressed = -10000;
   return self.superview ? self.superview : self.reactNavSuperviewLink;
 }
 
-- (void)addControllerToClosestParent:(UIViewController *)controller
-{
-  if (!controller.parentViewController) {
-    id responder = [self.superview nextResponder];
-    while (responder && ![responder isKindOfClass:[UIViewController class]]) {
-      responder = [responder nextResponder];
-    }
-    if (responder) {
-      [responder addChildViewController:controller];
-      [controller didMoveToParentViewController:responder];
-    }
-  }
-}
-
 - (void)reactBridgeDidFinishTransaction
 {
-  // we can't hook up the VC hierarchy in 'init' because the subviews aren't hooked up yet,
-  // so we do it on demand here
+  // we can't hook up the VC hierarchy in 'init' because the subviews aren't
+  // hooked up yet, so we do it on demand here
   [self addControllerToClosestParent:_navigationController];
 
   NSInteger viewControllerCount = _navigationController.viewControllers.count;

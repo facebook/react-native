@@ -4,9 +4,6 @@
 
 #import <objc/message.h>
 
-#import <ImageIO/ImageIO.h>
-#import <MobileCoreServices/MobileCoreServices.h>
-
 #import "RCTLog.h"
 
 CGFloat const RCTDefaultFontSize = 14;
@@ -431,88 +428,11 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   return [self UIColor:json].CGColor;
 }
 
-+ (CAKeyframeAnimation *)GIF:(id)json
-{
-  CGImageSourceRef imageSource = NULL;
-  if ([json isKindOfClass:[NSString class]]) {
-    NSString *path = json;
-    if (path.length == 0) {
-      return nil;
-    }
-
-    NSURL *fileURL = [path isAbsolutePath] ? [NSURL fileURLWithPath:path] : [[NSBundle mainBundle] URLForResource:path withExtension:nil];
-    imageSource = CGImageSourceCreateWithURL((CFURLRef)fileURL, NULL);
-  } else if ([json isKindOfClass:[NSData class]]) {
-    NSData *data = json;
-    if (data.length == 0) {
-      return nil;
-    }
-
-    imageSource = CGImageSourceCreateWithData((CFDataRef)data, NULL);
-  } else {
-      RCTLogMustFix(@"Expected NSString or NSData for GIF, received %@: %@", [json class], json);
-      return nil;
-  }
-
-  if (!UTTypeConformsTo(CGImageSourceGetType(imageSource), kUTTypeGIF)) {
-    CFRelease(imageSource);
-    return nil;
-  }
-
-  NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
-  NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
-
-  size_t imageCount = CGImageSourceGetCount(imageSource);
-  NSTimeInterval duration = 0;
-  NSMutableArray *delays = [NSMutableArray arrayWithCapacity:imageCount];
-  NSMutableArray *images = [NSMutableArray arrayWithCapacity:imageCount];
-  for (size_t i = 0; i < imageCount; i++) {
-    CGImageRef image = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
-    NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-    NSDictionary *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
-
-    const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
-    NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];
-    if (delayTime == nil) {
-      if (i == 0) {
-        delayTime = @(kDelayTimeIntervalDefault);
-      } else {
-        delayTime = delays[i - 1];
-      }
-    }
-
-    const NSTimeInterval kDelayTimeIntervalMinimum = 0.02;
-    if (delayTime.floatValue < (float)kDelayTimeIntervalMinimum - FLT_EPSILON) {
-      delayTime = @(kDelayTimeIntervalDefault);
-    }
-
-    duration += delayTime.doubleValue;
-    delays[i] = delayTime;
-    images[i] = (__bridge_transfer id)image;
-  }
-
-  CFRelease(imageSource);
-
-  NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
-  NSTimeInterval runningDuration = 0;
-  for (NSNumber *delayNumber in delays) {
-    [keyTimes addObject:@(runningDuration / duration)];
-    runningDuration += delayNumber.doubleValue;
-  }
-
-  [keyTimes addObject:@1.0];
-
-  CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
-  animation.calculationMode = kCAAnimationDiscrete;
-  animation.repeatCount = loopCount == 0 ? HUGE_VALF : loopCount;
-  animation.keyTimes = keyTimes;
-  animation.values = images;
-  animation.duration = duration;
-  return animation;
-}
-
 + (UIImage *)UIImage:(id)json
 {
+  // TODO: we might as well cache the result of these checks (and possibly the
+  // image itself) so as to reduce overhead on subsequent checks of the same input
+
   if (![json isKindOfClass:[NSString class]]) {
     RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json class], json);
     return nil;
@@ -532,9 +452,8 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
       image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
     }
   }
-  if (!image) {
-    RCTLogWarn(@"No image was found at path %@", json);
-  }
+  // NOTE: we don't warn about nil images because there are legitimate
+  // case where we find out if a string is an image by using this method
   return image;
 }
 

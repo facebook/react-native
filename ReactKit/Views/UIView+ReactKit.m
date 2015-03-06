@@ -5,6 +5,7 @@
 #import <objc/runtime.h>
 
 #import "RCTAssert.h"
+#import "RCTWrapperViewController.h"
 
 @implementation UIView (ReactKit)
 
@@ -20,7 +21,7 @@
 
 - (BOOL)isReactRootView
 {
-  return NO;
+  return RCTIsReactRootView(self.reactTag);
 }
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
@@ -39,13 +40,43 @@
 
 - (void)removeReactSubview:(UIView *)subview
 {
-  RCTAssert(subview.superview == self, @"");
+  RCTAssert(subview.superview == self, @"%@ is a not a subview of %@", subview, self);
   [subview removeFromSuperview];
 }
 
 - (NSArray *)reactSubviews
 {
   return self.subviews;
+}
+
+- (UIView *)reactSuperview
+{
+  return self.superview;
+}
+
+- (UIViewController *)backingViewController
+{
+  id responder = [self nextResponder];
+  if ([responder isKindOfClass:[RCTWrapperViewController class]]) {
+    return responder;
+  }
+  return nil;
+}
+
+- (void)addControllerToClosestParent:(UIViewController *)controller
+{
+  if (!controller.parentViewController) {
+    UIView *parentView = (UIView *)self.reactSuperview;
+    while (parentView) {
+      if (parentView.backingViewController) {
+        [parentView.backingViewController addChildViewController:controller];
+        [controller didMoveToParentViewController:parentView.backingViewController];
+        break;
+      }
+      parentView = (UIView *)parentView.reactSuperview;
+    }
+    return;
+  }
 }
 
 @end

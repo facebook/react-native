@@ -2,9 +2,9 @@
 
 #import "RCTNavigatorManager.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTNavigator.h"
-#import "RCTShadowView.h"
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
 
@@ -12,7 +12,7 @@
 
 - (UIView *)view
 {
-  return [[RCTNavigator alloc] initWithEventDispatcher:self.eventDispatcher];
+  return [[RCTNavigator alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack)
@@ -34,16 +34,12 @@ RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack)
   RCT_EXPORT();
 
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
-    if (reactTag) {
-      RCTNavigator *navigator = viewRegistry[reactTag];
-      if ([navigator isKindOfClass:[RCTNavigator class]]) {
-        BOOL wasAcquired = [navigator requestSchedulingJavaScriptNavigation];
-        callback(@[@(wasAcquired)]);
-      } else {
-        RCTLogError(@"Cannot set lock: %@ (tag #%@) is not an RCTNavigator", navigator, reactTag);
-      }
+    RCTNavigator *navigator = viewRegistry[reactTag];
+    if ([navigator isKindOfClass:[RCTNavigator class]]) {
+      BOOL wasAcquired = [navigator requestSchedulingJavaScriptNavigation];
+      callback(@[@(wasAcquired)]);
     } else {
-      RCTLogError(@"Tag not specified for requestSchedulingJavaScriptNavigation");
+      RCTLogError(@"Cannot set lock: %@ (tag #%@) is not an RCTNavigator", navigator, reactTag);
     }
   }];
 }
