@@ -1,0 +1,83 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+#import "RCTTabBarItem.h"
+
+#import "RCTConvert.h"
+#import "RCTLog.h"
+#import "UIView+ReactKit.h"
+
+@implementation RCTTabBarItem
+
+@synthesize barItem = _barItem;
+
+- (UITabBarItem *)barItem
+{
+  if (!_barItem) {
+    _barItem = [[UITabBarItem alloc] init];
+  }
+  return _barItem;
+}
+
+- (void)setIcon:(NSString *)icon
+{
+  static NSDictionary *systemIcons;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    systemIcons = @{
+      @"more": @(UITabBarSystemItemMore),
+      @"favorites": @(UITabBarSystemItemFavorites),
+      @"featured": @(UITabBarSystemItemFeatured),
+      @"topRated": @(UITabBarSystemItemTopRated),
+      @"recents": @(UITabBarSystemItemRecents),
+      @"contacts": @(UITabBarSystemItemContacts),
+      @"history": @(UITabBarSystemItemHistory),
+      @"bookmarks": @(UITabBarSystemItemBookmarks),
+      @"search": @(UITabBarSystemItemSearch),
+      @"downloads": @(UITabBarSystemItemDownloads),
+      @"mostRecent": @(UITabBarSystemItemMostRecent),
+      @"mostViewed": @(UITabBarSystemItemMostViewed),
+    };
+  });
+
+  // Update icon
+  BOOL wasSystemIcon = (systemIcons[_icon] != nil);
+  _icon = [icon copy];
+
+  // Check if string matches any custom images first
+  UIImage *image = [RCTConvert UIImage:_icon];
+  UITabBarItem *oldItem = _barItem;
+  if (image) {
+
+    // Recreate barItem if previous item was a system icon
+    if (wasSystemIcon) {
+      _barItem = nil;
+      self.barItem.image = image;
+    } else {
+      self.barItem.image = image;
+      return;
+    }
+
+  } else {
+
+    // Not a custom image, may be a system item?
+    NSNumber *systemIcon = systemIcons[icon];
+    if (!systemIcon) {
+      RCTLogError(@"The tab bar icon '%@' did not match any known image or system icon", icon);
+      return;
+    }
+    _barItem = [[UITabBarItem alloc] initWithTabBarSystemItem:[systemIcon integerValue] tag:oldItem.tag];
+  }
+
+  // Reapply previous properties
+  _barItem.title = oldItem.title;
+  _barItem.imageInsets = oldItem.imageInsets;
+  _barItem.selectedImage = oldItem.selectedImage;
+  _barItem.badgeValue = oldItem.badgeValue;
+}
+
+- (UIViewController *)backingViewController
+{
+  return self.superview.backingViewController;
+}
+
+@end

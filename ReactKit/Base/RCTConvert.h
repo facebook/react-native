@@ -3,9 +3,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-#import "Layout.h"
-#import "RCTPointerEvents.h"
-#import "RCTAnimationType.h"
+#import "../Layout/Layout.h"
+#import "../Views/RCTAnimationType.h"
+#import "../Views/RCTPointerEvents.h"
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -47,7 +47,6 @@
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json;
 
-+ (CAKeyframeAnimation *)GIF:(id)json;
 + (UIImage *)UIImage:(id)json;
 + (CGImageRef)CGImage:(id)json;
 
@@ -68,6 +67,10 @@
 
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * This function will attempt to set a property using a json value by first
  * inferring the correct type from all available information, and then
@@ -82,3 +85,7 @@ BOOL RCTSetProperty(id target, NSString *keypath, id json);
  * be set, it will do nothing and return NO.
  */
 BOOL RCTCopyProperty(id target, id source, NSString *keypath);
+
+#ifdef __cplusplus
+}
+#endif

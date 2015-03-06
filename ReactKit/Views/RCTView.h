@@ -10,14 +10,18 @@
 
 @interface RCTView : UIView
 
+/**
+ * Used to control how touch events are processed.
+ */
 @property (nonatomic, assign) RCTPointerEvents pointerEvents;
 
 + (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView
                  withScrollView:(UIScrollView *)scrollView
                    updateOffset:(BOOL)updateOffset;
 
-+ (UIViewController *)backingViewControllerForView:(UIView *)view;
-
+/**
+ * Find the first view controller whose view, or any subview is the specified view.
+ */
 + (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
 
 @end

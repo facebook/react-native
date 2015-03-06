@@ -24,14 +24,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 @property (nonatomic, strong) RCTBridge *bridge;
 
 /**
- * The event dispatcher is used to send events back to the JavaScript application.
- * It can either be used directly by the module, or passed on to instantiated
- * view subclasses so that they can handle their own events.
- */
-// TODO: remove this, as it can be accessed directly from bridge
-@property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
-
-/**
  * The module name exposed to React JS. If omitted, this will be inferred
  * automatically by using the view module's class name. It is better to not
  * override this, and just follow standard naming conventions for your view
