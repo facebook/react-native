@@ -31,6 +31,7 @@ var EXAMPLES = [
   require('./TouchableExample'),
   require('./ActivityIndicatorExample'),
   require('./ScrollViewExample'),
+  require('./DatePickerExample'),
   require('./GeoLocationExample'),
   require('./TabBarExample'),
 ];
