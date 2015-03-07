@@ -50,6 +50,7 @@ function Server(options) {
   this._projectRoots = opts.projectRoots;
   this._packages = Object.create(null);
   this._packager = new Packager(opts);
+  this._changeWatchers = [];
 
   this._fileWatcher = options.nonPersistent
     ? FileWatcher.createDummyWatcher()
@@ -65,6 +66,7 @@ Server.prototype._onFileChange = function(type, filepath, root) {
   // Make sure the file watcher event runs through the system before
   // we rebuild the packages.
   setImmediate(this._rebuildPackages.bind(this, absPath));
+  setImmediate(this._informChangeWatchers.bind(this));
 };
 
 Server.prototype._rebuildPackages = function() {
@@ -81,6 +83,20 @@ Server.prototype._rebuildPackages = function() {
       return p;
     });
   });
+};
+
+Server.prototype._informChangeWatchers = function() {
+  var watchers = this._changeWatchers;
+  var headers = {
+    'Content-Type': 'application/json; charset=UTF-8',
+  };
+
+  watchers.forEach(function(w) {
+    w.res.writeHead(205, headers);
+    w.res.end(JSON.stringify({ changed: true }));
+  });
+
+  this._changeWatchers = [];
 };
 
 Server.prototype.end = function() {
@@ -142,6 +158,24 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
   }
 };
 
+Server.prototype._processOnChangeRequest = function(req, res) {
+  var watchers = this._changeWatchers;
+
+  watchers.push({
+    req: req,
+    res: res,
+  });
+
+  req.on('close', function() {
+    for (var i = 0; i < watchers.length; i++) {
+      if (watchers[i] && watchers[i].req === req) {
+        watchers.splice(i, 1);
+        break;
+      }
+    }
+  });
+};
+
 Server.prototype.processRequest = function(req, res, next) {
   var urlObj = url.parse(req.url, true);
   var pathname = urlObj.pathname;
@@ -153,6 +187,9 @@ Server.prototype.processRequest = function(req, res, next) {
     requestType = 'map';
   } else if (pathname.match(/^\/debug/)) {
     this._processDebugRequest(req.url, res);
+    return;
+  } else if (pathname.match(/^\/onchange\/?$/)) {
+    this._processOnChangeRequest(req, res);
     return;
   } else {
     next();
@@ -196,7 +233,7 @@ function getOptionsFromUrl(reqUrl) {
   return {
     sourceMapUrl: urlObj.pathname.replace(/\.bundle$/, '.map'),
     main: main,
-    dev: getBoolOptionFromQuery(urlObj.query, 'dev'),
+    dev: getBoolOptionFromQuery(urlObj.query, 'dev', true),
     minify: getBoolOptionFromQuery(urlObj.query, 'minify'),
     runModule: getBoolOptionFromQuery(urlObj.query, 'runModule') ||
       // Backwards compatibility.
@@ -206,7 +243,11 @@ function getOptionsFromUrl(reqUrl) {
   };
 }
 
-function getBoolOptionFromQuery(query, opt) {
+function getBoolOptionFromQuery(query, opt, defaultVal) {
+  if (query[opt] == null && defaultVal != null) {
+    return defaultVal;
+  }
+
   return query[opt] === 'true' || query[opt] === '1';
 }
 
