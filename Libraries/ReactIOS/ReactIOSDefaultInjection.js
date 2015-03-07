@@ -15,20 +15,19 @@ var EventPluginUtils = require('EventPluginUtils');
 var IOSDefaultEventPluginOrder = require('IOSDefaultEventPluginOrder');
 var IOSNativeBridgeEventPlugin = require('IOSNativeBridgeEventPlugin');
 var NodeHandle = require('NodeHandle');
-var ReactComponent = require('ReactComponent');
-var ReactCompositeComponent = require('ReactCompositeComponent');
+var ReactClass = require('ReactClass');
+var ReactComponentEnvironment = require('ReactComponentEnvironment');
 var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
-var ReactElement = require('ReactElement');
 var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactIOSComponentEnvironment = require('ReactIOSComponentEnvironment');
 var ReactIOSComponentMixin = require('ReactIOSComponentMixin');
 var ReactIOSGlobalInteractionHandler = require('ReactIOSGlobalInteractionHandler');
 var ReactIOSGlobalResponderHandler = require('ReactIOSGlobalResponderHandler');
 var ReactIOSMount = require('ReactIOSMount');
-var ReactTextComponent = require('ReactTextComponent');
+var ReactIOSTextComponent = require('ReactIOSTextComponent');
+var ReactNativeComponent = require('ReactNativeComponent');
 var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
-var RKRawText = require('RKRawText');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
@@ -68,23 +67,17 @@ function inject() {
     ReactDefaultBatchingStrategy
   );
 
-  ReactComponent.injection.injectEnvironment(
+  ReactComponentEnvironment.injection.injectEnvironment(
     ReactIOSComponentEnvironment
   );
 
   EventPluginUtils.injection.injectMount(ReactIOSMount);
 
-  ReactCompositeComponent.injection.injectMixin(ReactIOSComponentMixin);
+  ReactClass.injection.injectMixin(ReactIOSComponentMixin);
 
-  ReactTextComponent.inject(function(initialText) {
-    // RKRawText is a class so we can't invoke it directly. Instead of using
-    // a factory, we use the internal fast path to create a descriptor.
-    // RKRawText is not quite a class yet, so we access the real class from
-    // the type property. TODO: Change this once factory wrappers are gone.
-    return new ReactElement(RKRawText.type, null, null, null, null, {
-      text: initialText
-    });
-  });
+  ReactNativeComponent.injection.injectTextComponentClass(
+    ReactIOSTextComponent
+  );
 
   NodeHandle.injection.injectImplementation(UniversalWorkerNodeHandle);
 }

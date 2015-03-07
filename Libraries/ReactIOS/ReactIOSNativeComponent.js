@@ -6,7 +6,6 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var ReactComponent = require('ReactComponent');
 var ReactIOSComponentMixin = require('ReactIOSComponentMixin');
 var ReactIOSEventEmitter = require('ReactIOSEventEmitter');
 var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
@@ -32,8 +31,6 @@ var deleteAllListeners = ReactIOSEventEmitter.deleteAllListeners;
  */
 var ReactIOSNativeComponent = function(viewConfig) {
   this.viewConfig = viewConfig;
-  this.props = null;
-  this.previousFlattenedStyle = null;
 };
 
 /**
@@ -65,10 +62,19 @@ cachedIndexArray._cache = {};
  * which is a `viewID` ... see the return value for `mountComponent` !
  */
 ReactIOSNativeComponent.Mixin = {
+  getPublicInstance: function() {
+    // TODO: This should probably use a composite wrapper
+    return this;
+  },
+
+  construct: function(element) {
+    this._currentElement = element;
+  },
+
   unmountComponent: function() {
     deleteAllListeners(this._rootNodeID);
-    ReactComponent.Mixin.unmountComponent.call(this);
     this.unmountChildren();
+    this._rootNodeID = null;
   },
 
   /**
@@ -79,8 +85,8 @@ ReactIOSNativeComponent.Mixin = {
    * a child of a container can confidently record that in
    * `ReactIOSTagHandles`.
    */
-  initializeChildren: function(children, containerTag, transaction) {
-    var mountImages = this.mountChildren(children, transaction);
+  initializeChildren: function(children, containerTag, transaction, context) {
+    var mountImages = this.mountChildren(children, transaction, context);
     // In a well balanced tree, half of the nodes are in the bottom row and have
     // no children - let's avoid calling out to the native bridge for a large
     // portion of the children.
@@ -158,21 +164,18 @@ ReactIOSNativeComponent.Mixin = {
   /**
    * Updates the component's currently mounted representation.
    *
+   * @param {object} nextElement
    * @param {ReactReconcileTransaction} transaction
-   * @param {object} prevDescriptor
+   * @param {object} context
    * @internal
    */
-  updateComponent: function(transaction, prevDescriptor) {
-    ReactComponent.Mixin.updateComponent.call(
-      this,
-      transaction,
-      prevDescriptor
-    );
-    var nextDescriptor = this._currentElement;
+  receiveComponent: function(nextElement, transaction, context) {
+    var prevElement = this._currentElement;
+    this._currentElement = nextElement;
 
     var updatePayload = this.computeUpdatedProperties(
-      prevDescriptor.props,
-      nextDescriptor.props,
+      prevElement.props,
+      nextElement.props,
       this.viewConfig.validAttributes
     );
 
@@ -185,10 +188,10 @@ ReactIOSNativeComponent.Mixin = {
     }
 
     this._reconcileListenersUponUpdate(
-      prevDescriptor.props,
-      nextDescriptor.props
+      prevElement.props,
+      nextElement.props
     );
-    this.updateChildren(this.props.children, transaction);
+    this.updateChildren(nextElement.props.children, transaction, context);
   },
 
   /**
@@ -223,25 +226,26 @@ ReactIOSNativeComponent.Mixin = {
    * @param {Transaction} transaction For creating/updating.
    * @return {string} Unique iOS view tag.
    */
-  mountComponent: function(rootID, transaction, mountDepth) {
-    ReactComponent.Mixin.mountComponent.call(
-      this,
-      rootID,
-      transaction,
-      mountDepth
-    );
+  mountComponent: function(rootID, transaction, context) {
+    this._rootNodeID = rootID;
+
     var tag = ReactIOSTagHandles.allocateTag();
 
     this.previousFlattenedStyle = {};
     var updatePayload = this.computeUpdatedProperties(
       {}, // previous props
-      this.props, // next props
+      this._currentElement.props, // next props
       this.viewConfig.validAttributes
     );
     RKUIManager.createView(tag, this.viewConfig.uiViewClassName, updatePayload);
 
-    this._registerListenersUponCreation(this.props);
-    this.initializeChildren(this.props.children, tag, transaction);
+    this._registerListenersUponCreation(this._currentElement.props);
+    this.initializeChildren(
+      this._currentElement.props.children,
+      tag,
+      transaction,
+      context
+    );
     return {
       rootNodeID: rootID,
       tag: tag
@@ -255,7 +259,6 @@ ReactIOSNativeComponent.Mixin = {
  */
 Object.assign(
   ReactIOSNativeComponent.prototype,
-  ReactComponent.Mixin,
   ReactMultiChild.Mixin,
   ReactIOSNativeComponent.Mixin,
   NativeMethodsMixin,

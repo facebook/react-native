@@ -13,10 +13,9 @@ var ReactPerf = require('ReactPerf');
 
 var ReactIOSComponentEnvironment = {
 
-  /**
-   * Will need to supply something that implements this.
-   */
-  BackendIDOperations: ReactIOSDOMIDOperations,
+  processChildrenUpdates: ReactIOSDOMIDOperations.dangerouslyProcessChildrenUpdates,
+
+  replaceNodeWithMarkupByID: ReactIOSDOMIDOperations.dangerouslyReplaceNodeWithMarkupByID,
 
   /**
    * Nothing to do for UIKit bridge.
@@ -33,34 +32,6 @@ var ReactIOSComponentEnvironment = {
   clearNode: function(/*containerView*/) {
 
   },
-
-  /**
-   * @param {View} view View tree image.
-   * @param {number} containerViewID View to insert sub-view into.
-   */
-  mountImageIntoNode: ReactPerf.measure(
-    // FIXME(frantic): #4441289 Hack to avoid modifying react-tools
-    'ReactComponentBrowserEnvironment',
-    'mountImageIntoNode',
-    function(mountImage, containerID) {
-      // Since we now know that the `mountImage` has been mounted, we can
-      // mark it as such.
-      ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(
-        mountImage.rootNodeID,
-        mountImage.tag
-      );
-      var addChildTags = [mountImage.tag];
-      var addAtIndices = [0];
-      RKUIManager.manageChildren(
-        ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
-        null,         // moveFromIndices
-        null,         // moveToIndices
-        addChildTags,
-        addAtIndices,
-        null          // removeAtIndices
-      );
-    }
-  ),
 
   ReactReconcileTransaction: ReactIOSReconcileTransaction,
 };
