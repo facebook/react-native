@@ -7,7 +7,6 @@
 "use strict";
 
 var ReactElement = require('ReactElement');
-var ReactLegacyElement = require('ReactLegacyElement');
 var ReactIOSNativeComponent = require('ReactIOSNativeComponent');
 
 /**
@@ -15,15 +14,17 @@ var ReactIOSNativeComponent = require('ReactIOSNativeComponent');
  * @private
  */
 var createReactIOSNativeComponentClass = function(viewConfig) {
-  var Constructor = function(props) {
+  var Constructor = function(element) {
+    this._currentElement = element;
+
+    this._rootNodeID = null;
+    this._renderedChildren = null;
+    this.previousFlattenedStyle = null;
   };
   Constructor.displayName = viewConfig.uiViewClassName;
   Constructor.prototype = new ReactIOSNativeComponent(viewConfig);
-  Constructor.prototype.constructor = Constructor;
 
-  return ReactLegacyElement.wrapFactory(
-    ReactElement.createFactory(Constructor)
-  );
+  return Constructor;
 };
 
 module.exports = createReactIOSNativeComponentClass;

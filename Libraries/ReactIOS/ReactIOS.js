@@ -7,8 +7,8 @@
 "use strict";
 
 var ReactChildren = require('ReactChildren');
+var ReactClass = require('ReactClass');
 var ReactComponent = require('ReactComponent');
-var ReactCompositeComponent = require('ReactCompositeComponent');
 var ReactContext = require('ReactContext');
 var ReactCurrentOwner = require('ReactCurrentOwner');
 var ReactElement = require('ReactElement');
@@ -16,7 +16,6 @@ var ReactElementValidator = require('ReactElementValidator');
 var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactIOSDefaultInjection = require('ReactIOSDefaultInjection');
 var ReactIOSMount = require('ReactIOSMount');
-var ReactLegacyElement = require('ReactLegacyElement');
 var ReactPropTypes = require('ReactPropTypes');
 
 var deprecated = require('deprecated');
@@ -27,19 +26,13 @@ ReactIOSDefaultInjection.inject();
 
 var createElement = ReactElement.createElement;
 var createFactory = ReactElement.createFactory;
+var cloneElement = ReactElement.cloneElement;
 
 if (__DEV__) {
   createElement = ReactElementValidator.createElement;
   createFactory = ReactElementValidator.createFactory;
+  cloneElement = ReactElementValidator.cloneElement;
 }
-
-// TODO: Drop legacy elements once classes no longer export these factories
-createElement = ReactLegacyElement.wrapCreateElement(
-  createElement
-);
-createFactory = ReactLegacyElement.wrapCreateFactory(
-  createFactory
-);
 
 var resolveDefaultProps = function(element) {
   // Could be optimized, but not currently in heavy use.
@@ -82,9 +75,10 @@ var ReactIOS = {
     only: onlyChild
   },
   PropTypes: ReactPropTypes,
-  createClass: ReactCompositeComponent.createClass,
+  createClass: ReactClass.createClass,
   createElement: createElement,
   createFactory: createFactory,
+  cloneElement: cloneElement,
   _augmentElement: augmentElement,
   render: render,
   unmountComponentAtNode: ReactIOSMount.unmountComponentAtNode,
