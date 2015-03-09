@@ -6,7 +6,9 @@
 'use strict';
 
 var ArrayOfPropType = require('ArrayOfPropType');
+var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
+var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').RKUIManager.RCTScrollView;
 var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
@@ -14,7 +16,6 @@ var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
 var ScrollResponder = require('ScrollResponder');
-var ScrollViewPropTypes = require('ScrollViewPropTypes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
@@ -59,7 +60,17 @@ var ScrollView = React.createClass({
   },
 
   propTypes: {
-    ...ScrollViewPropTypes,
+    automaticallyAdjustContentInsets: nativePropType(PropTypes.bool), // true
+    contentInset: nativePropType(EdgeInsetsPropType), // zeroes
+    contentOffset: nativePropType(PointPropType), // zeroes
+    onScroll: PropTypes.func,
+    onScrollAnimationEnd: PropTypes.func,
+    scrollEnabled: nativePropType(PropTypes.bool), // true
+    scrollIndicatorInsets: nativePropType(EdgeInsetsPropType), // zeros
+    showsHorizontalScrollIndicator: nativePropType(PropTypes.bool),
+    showsVerticalScrollIndicator: nativePropType(PropTypes.bool),
+    style: StyleSheetPropType(ViewStylePropTypes),
+    throttleScrollCallbackMS: nativePropType(PropTypes.number), // null
 
     /**
      * When true, the scroll view bounces horizontally when it reaches the end
