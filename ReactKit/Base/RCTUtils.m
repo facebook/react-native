@@ -2,10 +2,14 @@
 
 #import "RCTUtils.h"
 
-#import <CommonCrypto/CommonCrypto.h>
 #import <mach/mach_time.h>
 #import <objc/runtime.h>
+
 #import <UIKit/UIKit.h>
+
+#import <CommonCrypto/CommonCrypto.h>
+
+#import "RCTLog.h"
 
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
@@ -15,7 +19,14 @@ NSString *RCTJSONStringify(id jsonObject, NSError **error)
 
 id RCTJSONParse(NSString *jsonString, NSError **error)
 {
-  NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+  if (!jsonString) {
+    return nil;
+  }
+  NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
+  if (!jsonData) {
+    RCTLog(@"RCTJSONParse received the following string, which could not be losslessly converted to UTF8 data: '%@'", jsonString);
+    jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+  }
   return [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:error];
 }
 
@@ -63,7 +74,7 @@ CGSize RCTScreenSize()
       size = [UIScreen mainScreen].bounds.size;
     }
   });
-  
+
   return size;
 }
 
@@ -93,7 +104,7 @@ NSTimeInterval RCTTGetAbsoluteTime(void)
     int ret = mach_timebase_info(&tb_info);
     assert(0 == ret);
   });
-  
+
   uint64_t timeInNanoseconds = (mach_absolute_time() * tb_info.numer) / tb_info.denom;
   return ((NSTimeInterval)timeInNanoseconds) / 1000000;
 }
@@ -103,11 +114,11 @@ void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)
   Method originalMethod = class_getClassMethod(cls, original);
   IMP originalImplementation = method_getImplementation(originalMethod);
   const char *originalArgTypes = method_getTypeEncoding(originalMethod);
-  
+
   Method replacementMethod = class_getClassMethod(cls, replacement);
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
-  
+
   if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
   {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
@@ -123,11 +134,11 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement)
   Method originalMethod = class_getInstanceMethod(cls, original);
   IMP originalImplementation = method_getImplementation(originalMethod);
   const char *originalArgTypes = method_getTypeEncoding(originalMethod);
-  
+
   Method replacementMethod = class_getInstanceMethod(cls, replacement);
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
-  
+
   if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
   {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
