@@ -35,6 +35,7 @@ var EXAMPLES = [
   require('./GeolocationExample'),
   require('./TabBarExample'),
   require('./SwitchExample'),
+  require('./SliderExample'),
 ];
 
 var UIExplorerList = React.createClass({

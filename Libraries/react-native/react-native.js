@@ -18,6 +18,7 @@ var ReactNative = {
   PixelRatio: require('PixelRatio'),
   ScrollView: require('ScrollView'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  Slider: require('Slider'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
   SwitchIOS: require('SwitchIOS'),
