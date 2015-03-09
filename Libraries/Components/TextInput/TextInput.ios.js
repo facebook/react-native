@@ -188,7 +188,7 @@ var TextInput = React.createClass({
       'always',
     ]),
 
-    style: Text.stylePropType,
+    style: Text.propTypes.style,
   },
 
   /**

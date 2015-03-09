@@ -64,10 +64,6 @@ var Text = React.createClass({
 
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
-  statics: {
-    stylePropType: stylePropType,
-  },
-
   propTypes: {
     /**
      * Used to truncate the text with an elipsis after computing the text
