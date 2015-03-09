@@ -12,13 +12,38 @@ var slugify = require('slugify');
 
 
 var Autodocs = React.createClass({
+  renderType: function(type) {
+    if (type.name === 'enum') {
+      return 'enum(' + type.value.map((v => v.value)).join(', ') + ')';
+    }
+
+    if (type.name === 'shape') {
+      return '{' + Object.keys(type.value).map((key => key + ': ' + this.renderType(type.value[key]))).join(', ') + '}';
+    }
+
+    if (type.name === 'arrayOf') {
+      return '[' + this.renderType(type.value) + ']';
+    }
+
+    if (type.name === 'instanceOf') {
+      return type.value;
+    }
+
+    if (type.name === 'custom') {
+      return type.raw;
+    }
+
+    return type.name;
+  },
   renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
           {name}
           {' '}
-          {prop.type && <span className="propType">{prop.type.name}</span>}
+          {prop.type && <span className="propType">
+            {this.renderType(prop.type)}
+          </span>}
         </Header>
         {prop.description && <Marked>{prop.description}</Marked>}
       </div>
