@@ -15,7 +15,6 @@ var View = require('View');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var keyMirror = require('keyMirror');
-var keyOf = require('keyOf');
 var merge = require('merge');
 
 var SpinnerSize = keyMirror({

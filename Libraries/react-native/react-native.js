@@ -8,6 +8,7 @@
 var ReactNative = {
   ...require('React'),
   AppRegistry: require('AppRegistry'),
+  DatePickerIOS: require('DatePickerIOS'),
   ExpandingText: require('ExpandingText'),
   Image: require('Image'),
   LayoutAnimation: require('LayoutAnimation'),
@@ -17,8 +18,10 @@ var ReactNative = {
   PixelRatio: require('PixelRatio'),
   ScrollView: require('ScrollView'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  Slider: require('Slider'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  SwitchIOS: require('SwitchIOS'),
   Text: require('Text'),
   TextInput: require('TextInput'),
   TimerMixin: require('TimerMixin'),

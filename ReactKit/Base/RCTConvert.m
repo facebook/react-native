@@ -99,6 +99,8 @@ RCT_CONVERTER(double, double, doubleValue)
 RCT_CONVERTER(float, float, floatValue)
 RCT_CONVERTER(int, int, intValue)
 
+RCT_CONVERTER_CUSTOM(NSArray *, NSArray, [NSArray arrayWithArray:json])
+RCT_CONVERTER_CUSTOM(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
 RCT_CONVERTER(NSString *, NSString, description)
 RCT_CONVERTER_CUSTOM(NSNumber *, NSNumber, @([json doubleValue]))
 RCT_CONVERTER(NSInteger, NSInteger, integerValue)

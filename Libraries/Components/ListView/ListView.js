@@ -19,29 +19,42 @@ var isEmpty = require('isEmpty');
 
 var PropTypes = React.PropTypes;
 
+var DEFAULT_PAGE_SIZE = 1;
+var DEFAULT_INITIAL_ROWS = 10;
+var DEFAULT_SCROLL_RENDER_AHEAD = 1000;
+var DEFAULT_END_REACHED_THRESHOLD = 1000;
+var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
+var RENDER_INTERVAL = 20;
+var SCROLLVIEW_REF = 'listviewscroll';
+
+
 /**
  * ListView - A core component designed for efficient display of vertically
  * scrolling lists of changing data.  The minimal API is to create a
- * `ListViewDataSource`, populate it with a simple array of data blobs, and
+ * `ListView.DataSource`, populate it with a simple array of data blobs, and
  * instantiate a `ListView` component with that data source and a `renderRow`
  * callback which takes a blob from the data array and returns a renderable
- * component. Minimal example:
+ * component.
  *
- *   getInitialState: function() {
- *     var ds = new ListViewDataSource({rowHasChanged: (r1, r2) => r1 !== r2});
- *     return {
- *       dataSource: ds.cloneWithRows(['row 1', 'row 2']),
- *     };
- *   },
+ * Minimal example:
  *
- *   render: function() {
- *     return (
- *       <ListView
- *         dataSource={this.state.dataSource}
- *         renderRow={(rowData) => <Text>{rowData}</Text>}
- *       />
- *     );
- *   },
+ * ```
+ * getInitialState: function() {
+ *   var ds = new ListViewDataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+ *   return {
+ *     dataSource: ds.cloneWithRows(['row 1', 'row 2']),
+ *   };
+ * },
+ *
+ * render: function() {
+ *   return (
+ *     <ListView
+ *       dataSource={this.state.dataSource}
+ *       renderRow={(rowData) => <Text>{rowData}</Text>}
+ *     />
+ *   );
+ * },
+ * ```
  *
  * ListView also supports more advanced features, including sections with sticky
  * section headers, header and footer support, callbacks on reaching the end of
@@ -61,18 +74,7 @@ var PropTypes = React.PropTypes;
  *    event-loop (customizable with the `pageSize` prop).  This breaks up the
  *    work into smaller chunks to reduce the chance of dropping frames while
  *    rendering rows.
- *
- * Check out `ListViewSimpleExample.js`, `ListViewDataSource.js`, and the Movies
- * app for more info and example usage.
  */
-
-var DEFAULT_PAGE_SIZE = 1;
-var DEFAULT_INITIAL_ROWS = 10;
-var DEFAULT_SCROLL_RENDER_AHEAD = 1000;
-var DEFAULT_END_REACHED_THRESHOLD = 1000;
-var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
-var RENDER_INTERVAL = 20;
-var SCROLLVIEW_REF = 'listviewscroll';
 
 var ListView = React.createClass({
   mixins: [ScrollResponder.Mixin, TimerMixin],

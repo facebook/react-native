@@ -15,6 +15,4 @@ var PointPropType = createStrictShapeTypeChecker({
   y: PropTypes.number,
 });
 
-PointPropType.differ = pointsDiffer;
-
 module.exports = PointPropType;

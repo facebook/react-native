@@ -17,25 +17,25 @@ var keyOf = require('keyOf');
 var onlyChild = require('onlyChild');
 
 /**
- * TouchableOpacity - A wrapper for making views respond properly to touches.
+ * A wrapper for making views respond properly to touches.
  * On press down, the opacity of the wrapped view is decreased, dimming it.
  * This is done without actually changing the view hierarchy, and in general is
- * easy to add to an app without weird side-effects.  Example:
+ * easy to add to an app without weird side-effects.
  *
- *   renderButton: function() {
- *     return (
- *       <TouchableOpacity onPress={this._onPressButton}>
- *         <Image
- *           style={styles.button}
- *           source={ix('myButton')}
- *         />
- *       </View>
- *     );
- *   },
+ * Example:
  *
- * More example code in TouchableExample.js, and more in-depth discussion in
- * Touchable.js.  See also TouchableHighlight.js and
- * TouchableWithoutFeedback.js.
+ * ```
+ * renderButton: function() {
+ *   return (
+ *     <TouchableOpacity onPress={this._onPressButton}>
+ *       <Image
+ *         style={styles.button}
+ *         source={ix('myButton')}
+ *       />
+ *     </View>
+ *   );
+ * },
+ * ```
  */
 
 var TouchableOpacity = React.createClass({

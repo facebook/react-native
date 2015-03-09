@@ -18,12 +18,12 @@ var merge = require('merge');
 
 var TabBarItemIOS = React.createClass({
   propTypes: {
-    icon: Image.sourcePropType.isRequired,
+    icon: Image.propTypes.source.isRequired,
     onPress: React.PropTypes.func.isRequired,
     selected: React.PropTypes.bool.isRequired,
     badgeValue: React.PropTypes.string,
     title: React.PropTypes.string,
-    style: View.stylePropType,
+    style: View.propTypes.style,
   },
 
   getInitialState: function() {

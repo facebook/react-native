@@ -10,7 +10,6 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModulesDeprecated = require('NativeModulesDeprecated');
 var PropTypes = require('ReactPropTypes');
 var ImageResizeMode = require('ImageResizeMode');
-var ImageSourcePropType = require('ImageSourcePropType');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
@@ -25,31 +24,40 @@ var merge = require('merge');
 var warning = require('warning');
 
 /**
- * <Image> - A react component for displaying different types of images,
+ * A react component for displaying different types of images,
  * including network images, static resources, temporary local images, and
- * images from local disk, such as the camera roll.  Example usage:
+ * images from local disk, such as the camera roll.
  *
- *   renderImages: function() {
- *     return (
- *       <View>
- *         <Image
- *           style={styles.icon}
- *           source={ix('myIcon')}
- *         />
- *         <Image
- *           style={styles.logo}
- *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
- *         />
- *       </View>
- *     );
- *   },
+ * Example usage:
  *
- * More example code in ImageExample.js
+ * ```
+ * renderImages: function() {
+ *   return (
+ *     <View>
+ *       <Image
+ *         style={styles.icon}
+ *         source={ix('myIcon')}
+ *       />
+ *       <Image
+ *         style={styles.logo}
+ *         source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *       />
+ *     </View>
+ *   );
+ * },
+ * ```
  */
 
 var Image = React.createClass({
   propTypes: {
-    source: ImageSourcePropType,
+    source: PropTypes.shape({
+      /**
+       * A string representing the resource identifier for the image, which
+       * could be an http address, a local file path, or the name of a static image
+       * resource (which should be wrapped in the `ix` function).
+       */
+      uri: PropTypes.string,
+    }).isRequired,
     /**
      * accessible - Whether this element should be revealed as an accessible
      * element.
@@ -78,7 +86,6 @@ var Image = React.createClass({
 
   statics: {
     resizeMode: ImageResizeMode,
-    sourcePropType: ImageSourcePropType,
   },
 
   mixins: [NativeMethodsMixin],

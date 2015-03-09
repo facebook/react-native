@@ -1,12 +1,12 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule GeoLocation
+ * @providesModule Geolocation
  */
 'use strict';
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTLocationObserver = require('NativeModules').RKLocationObserver;
+var RCTLocationObserver = require('NativeModulesDeprecated').RKLocationObserver;
 
 var invariant = require('invariant');
 var logError = require('logError');
@@ -16,13 +16,6 @@ var subscriptions = [];
 
 var updatesEnabled = false;
 
-var ensureObserving = function() {
-  if (!updatesEnabled) {
-    RCTLocationObserver.startObserving();
-    updatesEnabled = true;
-  }
-};
-
 /**
  * /!\ ATTENTION /!\
  * You need to add NSLocationWhenInUseUsageDescription key
@@ -30,43 +23,51 @@ var ensureObserving = function() {
  * to *fail silently*!
  * \!/           \!/
  *
- * GeoLocation follows the MDN specification:
+ * Geolocation follows the MDN specification:
  * https://developer.mozilla.org/en-US/docs/Web/API/Geolocation
  */
-class GeoLocation {
-  static getCurrentPosition(geo_success, geo_error, geo_options) {
+var Geolocation = {
+
+  getCurrentPosition: function(geo_success, geo_error, geo_options) {
     invariant(
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.'
     );
-    if (geo_options) {
-      warning('geo_options are not yet supported.');
-    }
-    ensureObserving();
     RCTLocationObserver.getCurrentPosition(
       geo_success,
-      geo_error || logError
+      geo_error || logError,
+      geo_options || {}
     );
-  }
-  static watchPosition(callback) {
-    ensureObserving();
+  },
+
+  watchPosition: function(success, error, options) {
+    if (!updatesEnabled) {
+      RCTLocationObserver.startObserving(options || {});
+      updatesEnabled = true;
+    }
     var watchID = subscriptions.length;
-    subscriptions.push(
+    subscriptions.push([
       RCTDeviceEventEmitter.addListener(
-        'geoLocationDidChange',
-        callback
-      )
-    );
+        'geolocationDidChange',
+        success
+      ),
+      error ? RCTDeviceEventEmitter.addListener(
+        'geolocationError',
+        error
+      ) : null,
+    ]);
     return watchID;
-  }
-  static clearWatch(watchID) {
+  },
+
+  clearWatch: function(watchID) {
     var sub = subscriptions[watchID];
     if (!sub) {
       // Silently exit when the watchID is invalid or already cleared
       // This is consistent with timers
       return;
     }
-    sub.remove();
+    sub[0].remove();
+    sub[1] && sub[1].remove();
     subscriptions[watchID] = undefined;
     var noWatchers = true;
     for (var ii = 0; ii < subscriptions.length; ii++) {
@@ -75,10 +76,11 @@ class GeoLocation {
       }
     }
     if (noWatchers) {
-      GeoLocation.stopObserving();
+      Geolocation.stopObserving();
     }
-  }
-  static stopObserving() {
+  },
+
+  stopObserving: function() {
     if (updatesEnabled) {
       RCTLocationObserver.stopObserving();
       updatesEnabled = false;
@@ -89,10 +91,8 @@ class GeoLocation {
         }
       }
       subscriptions = [];
-    } else {
-      warning('Tried to stop observing when not observing.');
     }
   }
 }
 
-module.exports = GeoLocation;
+module.exports = Geolocation;

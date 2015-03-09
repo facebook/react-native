@@ -1,7 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 /**
-
  * Logical node in a tree of application components. Both `ShadowView`s and
  * `UIView+ReactKit`s conform to this. Allows us to write utilities that
  * reason about trees generally.
