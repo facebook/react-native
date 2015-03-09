@@ -25,26 +25,28 @@ var merge = require('merge');
 var warning = require('warning');
 
 /**
- * <Image> - A react component for displaying different types of images,
+ * A react component for displaying different types of images,
  * including network images, static resources, temporary local images, and
- * images from local disk, such as the camera roll.  Example usage:
+ * images from local disk, such as the camera roll.
  *
- *   renderImages: function() {
- *     return (
- *       <View>
- *         <Image
- *           style={styles.icon}
- *           source={ix('myIcon')}
- *         />
- *         <Image
- *           style={styles.logo}
- *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
- *         />
- *       </View>
- *     );
- *   },
+ * Example usage:
  *
- * More example code in ImageExample.js
+ * ```
+ * renderImages: function() {
+ *   return (
+ *     <View>
+ *       <Image
+ *         style={styles.icon}
+ *         source={ix('myIcon')}
+ *       />
+ *       <Image
+ *         style={styles.logo}
+ *         source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *       />
+ *     </View>
+ *   );
+ * },
+ * ```
  */
 
 var Image = React.createClass({

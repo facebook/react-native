@@ -28,36 +28,36 @@ var viewConfig = {
 };
 
 /**
- * <Text> - A react component for displaying text which supports nesting,
+ * A react component for displaying text which supports nesting,
  * styling, and touch handling.  In the following example, the nested title and
  * body text will inherit the `fontFamily` from `styles.baseText`, but the title
  * provides its own additional styles.  The title and body will stack on top of
  * each other on account of the literal newlines:
  *
- *   renderText: function() {
- *     return (
- *       <Text style={styles.baseText}>
- *         <Text style={styles.titleText} onPress={this._onPressTitle}>
- *           {this.state.titleText + '\n\n'}
- *         </Text>
- *         <Text numberOfLines={5}>
- *           {this.state.bodyText}
- *         </Text>
+ * ```
+ * renderText: function() {
+ *   return (
+ *     <Text style={styles.baseText}>
+ *       <Text style={styles.titleText} onPress={this.onPressTitle}>
+ *         {this.state.titleText + '\n\n'}
  *       </Text>
- *     );
+ *       <Text numberOfLines={5}>
+ *         {this.state.bodyText}
+ *       </Text>
+ *     </Text>
+ *   );
+ * },
+ * ...
+ * var styles = StyleSheet.create({
+ *   baseText: {
+ *     fontFamily: 'Cochin',
  *   },
- *   ...
- *   var styles = StyleSheet.create({
- *     baseText: {
- *       fontFamily: 'Cochin',
- *     },
- *     titleText: {
- *       fontSize: 20,
- *       fontWeight: 'bold',
- *     },
- *   };
- *
- * More example code in `TextExample.ios.js`
+ *   titleText: {
+ *     fontSize: 20,
+ *     fontWeight: 'bold',
+ *   },
+ * };
+ * ```
  */
 
 var Text = React.createClass({

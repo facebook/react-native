@@ -38,7 +38,7 @@ var keyboardDismissModeConstants = {
 };
 
 /**
- * `React` component that wraps platform `RKScrollView` while providing
+ * Component that wraps platform ScrollView while providing
  * integration with touch locking "responder" system.
  *
  * Doesn't yet support other contained responders from blocking this scroll

@@ -12,8 +12,13 @@ var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
+
+var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+
+var stylePropType = StyleSheetPropType(ViewStylePropTypes);
+
 /**
- * <View> - The most fundamental component for building UI, `View` is a
+ * The most fundamental component for building UI, `View` is a
  * container that supports layout with flexbox, style, some touch handling, and
  * accessibility controls, and is designed to be nested inside other views and
  * to have 0 to many children of any type. `View` maps directly to the native
@@ -21,11 +26,13 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
  * `UIView`, `<div>`, `android.view`, etc.  This example creates a `View` that
  * wraps two colored boxes and custom component in a row with padding.
  *
- *  <View style={{flexDirection: 'row', height: 100, padding: 20}}>
- *    <View style={{backgroundColor: 'blue', flex: 0.3}} />
- *    <View style={{backgroundColor: 'red', flex: 0.5}} />
- *    <MyCustomComponent {...customProps} />
- *  </View>
+ * ```
+ * <View style={{flexDirection: 'row', height: 100, padding: 20}}>
+ *   <View style={{backgroundColor: 'blue', flex: 0.3}} />
+ *   <View style={{backgroundColor: 'red', flex: 0.5}} />
+ *   <MyCustomComponent {...customProps} />
+ * </View>
+ * ```
  *
  * By default, `View`s have a primary flex direction of 'column', so children
  * will stack up vertically by default.  `View`s also expand to fill the parent
@@ -39,15 +46,7 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
  * `View`s are designed to be used with `StyleSheet`s for clarity and
  * performance, although inline styles are also supported.  It is common for
  * `StyleSheet`s to be combined dynamically.  See `StyleSheet.js` for more info.
- *
- * Check out `ViewExample.js`, `LayoutExample.js`, and other apps for more code
- * examples.
  */
-
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
-
-var stylePropType = StyleSheetPropType(ViewStylePropTypes);
-
 var View = React.createClass({
   statics: {
     stylePropType,
