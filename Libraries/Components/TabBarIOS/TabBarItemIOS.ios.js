@@ -23,7 +23,7 @@ var TabBarItemIOS = React.createClass({
     selected: React.PropTypes.bool.isRequired,
     badgeValue: React.PropTypes.string,
     title: React.PropTypes.string,
-    style: View.stylePropType,
+    style: View.propTypes.style,
   },
 
   getInitialState: function() {
