@@ -53,10 +53,12 @@ var AppRegistry = {
 
   runApplication: function(appKey, appParameters) {
     console.log(
-      'Running application "' + appKey + '" with appParams: ',
-      appParameters
+      'Running application "' + appKey + '" with appParams: ' +
+      JSON.stringify(appParameters) + '. ' +
+      '__DEV__ === ' + __DEV__ +
+      ', development-level warning are ' + (__DEV__ ? 'ON' : 'OFF') +
+      ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON')
     );
-
     invariant(
       runnables[appKey] && runnables[appKey].run,
       'Application ' + appKey + ' has not been registered.'
