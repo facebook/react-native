@@ -9,7 +9,10 @@ var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactPerf = require('ReactPerf');
+var ReactReconciler = require('ReactReconciler');
+var ReactUpdates = require('ReactUpdates');
 
+var emptyObject = require('emptyObject');
 var instantiateReactComponent = require('instantiateReactComponent');
 var invariant = require('invariant');
 
@@ -17,6 +20,49 @@ var TOP_ROOT_NODE_IDS = {};
 
 function instanceNumberToChildRootID(rootNodeID, instanceNumber) {
   return rootNodeID + '[' + instanceNumber + ']';
+}
+
+/**
+ * Mounts this component and inserts it into the DOM.
+ *
+ * @param {ReactComponent} componentInstance The instance to mount.
+ * @param {number} rootID ID of the root node.
+ * @param {number} container container element to mount into.
+ * @param {ReactReconcileTransaction} transaction
+ */
+function mountComponentIntoNode(
+    componentInstance,
+    rootID,
+    container,
+    transaction) {
+  var markup = ReactReconciler.mountComponent(
+    componentInstance, rootID, transaction, emptyObject
+  );
+  componentInstance._isTopLevel = true;
+  ReactIOSMount._mountImageIntoNode(markup, container);
+}
+
+/**
+ * Batched mount.
+ *
+ * @param {ReactComponent} componentInstance The instance to mount.
+ * @param {number} rootID ID of the root node.
+ * @param {number} container container element to mount into.
+ */
+function batchedMountComponentIntoNode(
+    componentInstance,
+    rootID,
+    container) {
+  var transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
+  transaction.perform(
+    mountComponentIntoNode,
+    null,
+    componentInstance,
+    rootID,
+    container,
+    transaction
+  );
+  ReactUpdates.ReactReconcileTransaction.release(transaction);
 }
 
 /**
@@ -52,8 +98,46 @@ var ReactIOSMount = {
       ReactIOSMount.instanceCount++
     );
     ReactIOSMount._instancesByContainerID[topRootNodeID] = instance;
-    instance.mountComponentIntoNode(childRootNodeID, topRootNodeID);
+
+    // The initial render is synchronous but any updates that happen during
+    // rendering, in componentWillMount or componentDidMount, will be batched
+    // according to the current batching strategy.
+
+    ReactUpdates.batchedUpdates(
+      batchedMountComponentIntoNode,
+      instance,
+      childRootNodeID,
+      topRootNodeID
+    );
   },
+
+  /**
+   * @param {View} view View tree image.
+   * @param {number} containerViewID View to insert sub-view into.
+   */
+  _mountImageIntoNode: ReactPerf.measure(
+    // FIXME(frantic): #4441289 Hack to avoid modifying react-tools
+    'ReactComponentBrowserEnvironment',
+    'mountImageIntoNode',
+    function(mountImage, containerID) {
+      // Since we now know that the `mountImage` has been mounted, we can
+      // mark it as such.
+      ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(
+        mountImage.rootNodeID,
+        mountImage.tag
+      );
+      var addChildTags = [mountImage.tag];
+      var addAtIndices = [0];
+      RKUIManager.manageChildren(
+        ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
+        null,         // moveFromIndices
+        null,         // moveToIndices
+        addChildTags,
+        addAtIndices,
+        null          // removeAtIndices
+      );
+    }
+  ),
 
   /**
    * Standard unmounting of the component that is rendered into `containerID`,

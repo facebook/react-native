@@ -65,7 +65,7 @@ var TouchableWithoutFeedback = React.createClass({
   render: function() {
     // Note(vjeux): use cloneWithProps once React has been upgraded
     var child = onlyChild(this.props.children);
-    Object.assign(child.props, {
+    return React.cloneElement(child, {
       accessible: true,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
@@ -75,7 +75,6 @@ var TouchableWithoutFeedback = React.createClass({
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate
     });
-    return child;
   }
 });
 
