@@ -6,16 +6,17 @@
 'use strict';
 
 var ArrayOfPropType = require('ArrayOfPropType');
+var Platform = require('Platform');
+var RCTScrollView = require('NativeModules').RKUIManager.RCTScrollView;
+var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
-var RKScrollView = require('NativeModules').RKUIManager.RCTScrollView;
-var RKScrollViewConsts = RKScrollView.Constants;
+var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
 var ScrollResponder = require('ScrollResponder');
 var ScrollViewPropTypes = require('ScrollViewPropTypes');
-var StyleSheetPropType = require('StyleSheetPropType');
 var StyleSheet = require('StyleSheet');
+var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
@@ -32,9 +33,9 @@ var SCROLLVIEW = 'ScrollView';
 var INNERVIEW = 'InnerScrollView';
 
 var keyboardDismissModeConstants = {
-  'none': RKScrollViewConsts.KeyboardDismissMode.None, // default
-  'interactive': RKScrollViewConsts.KeyboardDismissMode.Interactive,
-  'onDrag': RKScrollViewConsts.KeyboardDismissMode.OnDrag,
+  'none': RCTScrollViewConsts.KeyboardDismissMode.None, // default
+  'interactive': RCTScrollViewConsts.KeyboardDismissMode.Interactive,
+  'onDrag': RCTScrollViewConsts.KeyboardDismissMode.OnDrag,
 };
 
 /**
@@ -46,6 +47,17 @@ var keyboardDismissModeConstants = {
  */
 
 var ScrollView = React.createClass({
+
+  // Only for compatibility with Android which is not yet up to date,
+  // DO NOT ADD NEW CALL SITES!
+  statics: {
+    keyboardDismissMode: {
+      None: 'none',
+      Interactive: 'interactive',
+      OnDrag: 'onDrag',
+    },
+  },
+
   propTypes: {
     ...ScrollViewPropTypes,
 
@@ -171,7 +183,11 @@ var ScrollView = React.createClass({
   },
 
   scrollTo: function(destY, destX) {
-    RKUIManager.scrollTo(ReactIOSTagHandles.rootNodeIDToTag[this._rootNodeID], destX, destY);
+    RKUIManager.scrollTo(
+      ReactIOSTagHandles.rootNodeIDToTag[this._rootNodeID],
+      destX || 0,
+      destY || 0
+    );
   },
 
   render: function() {
@@ -249,10 +265,22 @@ var ScrollView = React.createClass({
         onResponderReject: this.scrollResponderHandleResponderReject,
       }
     );
+
+    var ScrollViewClass;
+    if (Platform.OS === 'ios') {
+      ScrollViewClass = RCTScrollView;
+    } else if (Platform.OS === 'android') {
+      if (this.props.horizontal) {
+        ScrollViewClass = AndroidHorizontalScrollView;
+      } else {
+        ScrollViewClass = AndroidScrollView;
+      }
+    }
+
     return (
-      <RKScrollView {...props} ref={SCROLLVIEW}>
+      <ScrollViewClass {...props} ref={SCROLLVIEW}>
         {contentContainer}
-      </RKScrollView>
+      </ScrollViewClass>
     );
   }
 });
@@ -267,12 +295,30 @@ var styles = StyleSheet.create({
   },
 });
 
-var RKScrollView = createReactIOSNativeComponentClass({
-  validAttributes: merge(
-    ReactIOSViewAttributes.UIView,
-    validAttributesFromPropTypes(ScrollView.propTypes)
-  ),
-  uiViewClassName: 'RCTScrollView',
-});
+if (Platform.OS === 'android') {
+  var AndroidScrollView = createReactIOSNativeComponentClass({
+    validAttributes: merge(
+      ReactIOSViewAttributes.UIView,
+      validAttributesFromPropTypes(ScrollView.propTypes)
+    ),
+    uiViewClassName: 'AndroidScrollView',
+  });
+
+  var AndroidHorizontalScrollView = createReactIOSNativeComponentClass({
+    validAttributes: merge(
+      ReactIOSViewAttributes.UIView,
+      validAttributesFromPropTypes(ScrollView.propTypes)
+    ),
+    uiViewClassName: 'AndroidHorizontalScrollView',
+  });
+} else if (Platform.OS === 'ios') {
+  var RCTScrollView = createReactIOSNativeComponentClass({
+    validAttributes: merge(
+      ReactIOSViewAttributes.UIView,
+      validAttributesFromPropTypes(ScrollView.propTypes)
+    ),
+    uiViewClassName: 'RCTScrollView',
+  });
+}
 
 module.exports = ScrollView;
