@@ -37,6 +37,7 @@
 		58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */; };
 		14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F362081AABD06A001CE568 /* RCTSwitch.m */; };
 		14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F3620A1AABD06A001CE568 /* RCTSwitchManager.m */; };
+		14F484561AABFCE100FDF6B9 /* RCTSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		830BA4551A8E3BDA00D53203 /* RCTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 830BA4541A8E3BDA00D53203 /* RCTCache.m */; };
 		832348161A77A5AA00B55238 /* Layout.c in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FC71A68125100A75B9A /* Layout.c */; };
@@ -131,6 +132,8 @@
 		14F362081AABD06A001CE568 /* RCTSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSwitch.m; sourceTree = "<group>"; };
 		14F362091AABD06A001CE568 /* RCTSwitchManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSwitchManager.h; sourceTree = "<group>"; };
 		14F3620A1AABD06A001CE568 /* RCTSwitchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSwitchManager.m; sourceTree = "<group>"; };
+		14F484541AABFCE100FDF6B9 /* RCTSliderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSliderManager.h; sourceTree = "<group>"; };
+		14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSliderManager.m; sourceTree = "<group>"; };
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
 		830A229C1A66C68A008503DA /* RCTRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootView.h; sourceTree = "<group>"; };
 		830A229D1A66C68A008503DA /* RCTRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootView.m; sourceTree = "<group>"; };
@@ -214,6 +217,8 @@
 				14F362081AABD06A001CE568 /* RCTSwitch.m */,
 				14F362091AABD06A001CE568 /* RCTSwitchManager.h */,
 				14F3620A1AABD06A001CE568 /* RCTSwitchManager.m */,
+				14F484541AABFCE100FDF6B9 /* RCTSliderManager.h */,
+				14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */,
 				13442BF21AA90E0B0037E5B0 /* RCTAnimationType.h */,
 				58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */,
 				58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */,
@@ -421,6 +426,7 @@
 				13B0801F1A69489C00A75B9A /* RCTTextFieldManager.m in Sources */,
 				134FCB3D1A6E7F0800051CC8 /* RCTContextExecutor.m in Sources */,
 				13E067591A70F44B002CDEE1 /* UIView+ReactKit.m in Sources */,
+				14F484561AABFCE100FDF6B9 /* RCTSliderManager.m in Sources */,
 				83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */,
 				83CBBA521A601E3B00E9B192 /* RCTLog.m in Sources */,
 				13B0801D1A69489C00A75B9A /* RCTNavItemManager.m in Sources */,
