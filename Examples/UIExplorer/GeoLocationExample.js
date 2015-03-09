@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule GeoLocationExample
+ * @providesModule GeolocationExample
  */
 /* eslint no-console: 0 */
 'use strict';
@@ -15,19 +15,19 @@ var {
 } = React;
 
 exports.framework = 'React';
-exports.title = 'GeoLocation';
-exports.description = 'Examples of using the GeoLocation API.';
+exports.title = 'Geolocation';
+exports.description = 'Examples of using the Geolocation API.';
 
 exports.examples = [
   {
     title: 'navigator.geolocation',
     render: function() {
-      return <GeoLocationExample />;
+      return <GeolocationExample />;
     },
   }
 ];
 
-var GeoLocationExample = React.createClass({
+var GeolocationExample = React.createClass({
   getInitialState: function() {
     return {
       initialPosition: 'unknown',

@@ -19,6 +19,8 @@
 + (float)float:(id)json;
 + (int)int:(id)json;
 
++ (NSArray *)NSArray:(id)json;
++ (NSDictionary *)NSDictionary:(id)json;
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;
 + (NSInteger)NSInteger:(id)json;

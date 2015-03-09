@@ -74,8 +74,9 @@ UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimationType t
     _property = [RCTConvert NSString:config[@"property"]];
 
     // TODO: this should be provided in ms, not seconds
-    _duration = [RCTConvert NSTimeInterval:config[@"duration"]] ?: duration;
-    _delay = [RCTConvert NSTimeInterval:config[@"delay"]];
+    // (this will require changing all call sites to ms as well)
+    _duration = [RCTConvert NSTimeInterval:config[@"duration"]] * 1000.0 ?: duration;
+    _delay = [RCTConvert NSTimeInterval:config[@"delay"]]  * 1000.0;
     _animationType = [RCTConvert RCTAnimationType:config[@"type"]];
     if (_animationType == RCTAnimationTypeSpring) {
       _springDamping = [RCTConvert CGFloat:config[@"springDamping"]];
@@ -135,7 +136,8 @@ UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimationType t
   if ((self = [super init])) {
 
     // TODO: this should be provided in ms, not seconds
-    NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]];
+    // (this will require changing all call sites to ms as well)
+    NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]] * 1000.0;
 
     _createAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"create"]];
     _updateAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"update"]];

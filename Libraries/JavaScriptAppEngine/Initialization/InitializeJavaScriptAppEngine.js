@@ -140,7 +140,7 @@ function setupXHR() {
 
 function setupGeolocation() {
   GLOBAL.navigator = GLOBAL.navigator || {};
-  GLOBAL.navigator.geolocation = require('GeoLocation');
+  GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
 setupDocumentShim();
