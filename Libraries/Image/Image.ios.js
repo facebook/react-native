@@ -10,7 +10,6 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModulesDeprecated = require('NativeModulesDeprecated');
 var PropTypes = require('ReactPropTypes');
 var ImageResizeMode = require('ImageResizeMode');
-var ImageSourcePropType = require('ImageSourcePropType');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
@@ -51,7 +50,14 @@ var warning = require('warning');
 
 var Image = React.createClass({
   propTypes: {
-    source: ImageSourcePropType,
+    source: PropTypes.shape({
+      /**
+       * A string representing the resource identifier for the image, which
+       * could be an http address, a local file path, or the name of a static image
+       * resource (which should be wrapped in the `ix` function).
+       */
+      uri: PropTypes.string,
+    }).isRequired,
     /**
      * accessible - Whether this element should be revealed as an accessible
      * element.
