@@ -34,6 +34,7 @@ var EXAMPLES = [
   require('./DatePickerExample'),
   require('./GeolocationExample'),
   require('./TabBarExample'),
+  require('./SwitchExample'),
 ];
 
 var UIExplorerList = React.createClass({
