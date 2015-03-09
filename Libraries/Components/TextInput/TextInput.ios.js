@@ -26,39 +26,6 @@ var getObjectValues = require('getObjectValues');
 var invariant = require('invariant');
 var merge = require('merge');
 
-/**
- * <TextInput> - A foundational component for inputting text into the app via a
- * keyboard.  Props provide configurability for several features, such as auto-
- * correction, auto-capitalization, placeholder text, and different keyboard
- * types, such as a numeric keypad.
- *
- * The simplest use case is to plop down a `TextInput` and subscribe to the
- * `onChangeText` events to read the user input.  There are also other events, such
- * as `onSubmitEditing` and `onFocus` that can be subscribed to.  A simple
- * example:
- *
- *   <View>
- *     <TextInput
- *       style={{height: 40, borderColor: 'gray', borderWidth: 1}}
- *       onChangeText={(text) => this.setState({input: text})}
- *     />
- *     <Text>{'user input: ' + this.state.input}</Text>
- *   </View>
- *
- * The `value` prop can be used to set the value of the input in order to make
- * the state of the component clear, but <TextInput> does not behave as a true
- * controlled component by default because all operations are asynchronous.
- * Setting `value` once is like setting the default value, but you can change it
- * continuously based on `onChangeText` events as well.  If you really want to
- * force the component to always revert to the value you are setting, you can
- * set `controlled={true}`.
- *
- * The `multiline` prop is not supported in all releases, and some props are
- * multiline only.
- *
- * More example code in `TextInputExample.js`.
- */
-
 var autoCapitalizeConsts = RKUIManager.UIText.AutocapitalizationType;
 var clearButtonModeConsts = RKUIManager.UITextField.clearButtonMode;
 
@@ -91,6 +58,39 @@ var onlyMultiline = {
 var notMultiline = {
   onSubmitEditing: true,
 };
+
+/**
+ * A foundational component for inputting text into the app via a
+ * keyboard.  Props provide configurability for several features, such as auto-
+ * correction, auto-capitalization, placeholder text, and different keyboard
+ * types, such as a numeric keypad.
+ *
+ * The simplest use case is to plop down a `TextInput` and subscribe to the
+ * `onChangeText` events to read the user input.  There are also other events, such
+ * as `onSubmitEditing` and `onFocus` that can be subscribed to.  A simple
+ * example:
+ *
+ * ```
+ * <View>
+ *   <TextInput
+ *     style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+ *     onChangeText={(text) => this.setState({input: text})}
+ *   />
+ *   <Text>{'user input: ' + this.state.input}</Text>
+ * </View>
+ * ```
+ *
+ * The `value` prop can be used to set the value of the input in order to make
+ * the state of the component clear, but <TextInput> does not behave as a true
+ * controlled component by default because all operations are asynchronous.
+ * Setting `value` once is like setting the default value, but you can change it
+ * continuously based on `onChangeText` events as well.  If you really want to
+ * force the component to always revert to the value you are setting, you can
+ * set `controlled={true}`.
+ *
+ * The `multiline` prop is not supported in all releases, and some props are
+ * multiline only.
+ */
 
 var TextInput = React.createClass({
   propTypes: {

@@ -20,34 +20,34 @@ var keyOf = require('keyOf');
 var merge = require('merge');
 var onlyChild = require('onlyChild');
 
+var DEFAULT_PROPS = {
+  activeOpacity: 0.8,
+  underlayColor: 'black',
+};
+
 /**
- * TouchableHighlight - A wrapper for making views respond properly to touches.
+ * A wrapper for making views respond properly to touches.
  * On press down, the opacity of the wrapped view is decreased, which allows
  * the underlay color to show through, darkening or tinting the view.  The
  * underlay comes from adding a view to the view hierarchy, which can sometimes
  * cause unwanted visual artifacts if not used correctly, for example if the
  * backgroundColor of the wrapped view isn't explicitly set to an opaque color.
+ *
  * Example:
  *
- *   renderButton: function() {
- *     return (
- *       <TouchableHighlight onPress={this._onPressButton}>
- *         <Image
- *           style={styles.button}
- *           source={ix('myButton')}
- *         />
- *       </View>
- *     );
- *   },
- *
- * More example code in TouchableExample.js, and more in-depth discussion in
- * Touchable.js. See also TouchableWithoutFeedback.js.
+ * ```
+ * renderButton: function() {
+ *   return (
+ *     <TouchableHighlight onPress={this._onPressButton}>
+ *       <Image
+ *         style={styles.button}
+ *         source={ix('myButton')}
+ *       />
+ *     </View>
+ *   );
+ * },
+ * ```
  */
-
-var DEFAULT_PROPS = {
-  activeOpacity: 0.8,
-  underlayColor: 'black',
-};
 
 var TouchableHighlight = React.createClass({
   propTypes: {
