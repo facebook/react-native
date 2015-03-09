@@ -20,6 +20,7 @@ var ReactNative = {
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  SwitchIOS: require('SwitchIOS'),
   Text: require('Text'),
   TextInput: require('TextInput'),
   TimerMixin: require('TimerMixin'),
