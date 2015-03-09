@@ -80,7 +80,6 @@ var Image = React.createClass({
 
   statics: {
     resizeMode: ImageResizeMode,
-    sourcePropType: ImageSourcePropType,
   },
 
   mixins: [NativeMethodsMixin],
