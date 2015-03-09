@@ -8,12 +8,13 @@ var Header = require('Header');
 var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
+var slugify = require('slugify');
 
 
 var Autodocs = React.createClass({
   renderProp: function(name, prop) {
     return (
-      <div className="prop">
+      <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
           {name}
           {' '}
@@ -23,12 +24,26 @@ var Autodocs = React.createClass({
       </div>
     );
   },
-  renderProps: function(props) {
-    var result = Object.keys(props).sort().map((name) =>
-      this.renderProp(name, props[name])
+  renderCompose: function(name) {
+    return (
+      <div className="prop" key={name}>
+        <Header level={4} className="propTitle" toSlug={name}>
+          <a href={slugify(name) + '.html#proptypes'}>{name} props...</a>
+        </Header>
+      </div>
     );
-
-    return <div className="props">{result}</div>;
+  },
+  renderProps: function(props, composes) {
+    return (
+      <div className="props">
+        {(composes || []).map((name) =>
+          this.renderCompose(name)
+        )}
+        {Object.keys(props).sort().map((name) =>
+          this.renderProp(name, props[name])
+        )}
+      </div>
+    );
   },
   render: function() {
     var metadata = this.props.metadata;
@@ -43,7 +58,7 @@ var Autodocs = React.createClass({
             <Marked>
               {content.description}
             </Marked>
-            {this.renderProps(content.props)}
+            {this.renderProps(content.props, content.composes)}
             <Marked>
               {content.fullDescription}
             </Marked>

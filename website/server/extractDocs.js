@@ -46,7 +46,7 @@ var components = [
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/ListView/ListView.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
-  '../Libraries/Components/ScrollView/ScrollView.ios.js',
+  '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Text/Text.js',
   '../Libraries/Components/TextInput/TextInput.ios.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
