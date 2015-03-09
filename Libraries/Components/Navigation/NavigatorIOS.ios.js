@@ -202,7 +202,7 @@ var NavigatorIOS = React.createClass({
       /**
        * Styles for the navigation item containing the component
        */
-      wrapperStyle: View.stylePropType,
+      wrapperStyle: View.propTypes.style,
 
     }).isRequired,
 
@@ -210,7 +210,7 @@ var NavigatorIOS = React.createClass({
      * The default wrapper style for components in the navigator.
      * A common use case is to set the backgroundColor for every page
      */
-    itemWrapperStyle: View.stylePropType,
+    itemWrapperStyle: View.propTypes.style,
 
     /**
      * The color used for buttons in the navigation bar

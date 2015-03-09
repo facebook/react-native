@@ -67,7 +67,7 @@ var TouchableHighlight = React.createClass({
      * active.
      */
     underlayColor: React.PropTypes.string,
-    style: View.stylePropType,
+    style: View.propTypes.style,
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],

@@ -48,10 +48,6 @@ var stylePropType = StyleSheetPropType(ViewStylePropTypes);
  * `StyleSheet`s to be combined dynamically.  See `StyleSheet.js` for more info.
  */
 var View = React.createClass({
-  statics: {
-    stylePropType,
-  },
-
   mixins: [NativeMethodsMixin],
 
   /**
@@ -140,12 +136,12 @@ var RKView = createReactIOSNativeComponentClass({
   validAttributes: ReactIOSViewAttributes.RKView,
   uiViewClassName: 'RCTView',
 });
+RKView.propTypes = View.propTypes;
 
 var ViewToExport = RKView;
 if (__DEV__) {
   ViewToExport = View;
 }
 
-ViewToExport.stylePropType = stylePropType;
 
 module.exports = ViewToExport;
