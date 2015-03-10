@@ -4,8 +4,8 @@
 
 #define RCTErrorDomain @"RCTErrorDomain"
 
-#define RCTAssert(condition, message, ...) _RCTAssert(condition, message, ##__VA_ARGS__)
-#define RCTCAssert(condition, message, ...) _RCTCAssert(condition, message, ##__VA_ARGS__)
+#define RCTAssert(condition, message, ...) _RCTAssert((condition) != 0, message, ##__VA_ARGS__)
+#define RCTCAssert(condition, message, ...) _RCTCAssert((condition) != 0, message, ##__VA_ARGS__)
 
 typedef void (^RCTAssertFunction)(BOOL condition, NSString *message, ...);
 
