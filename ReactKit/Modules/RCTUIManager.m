@@ -329,7 +329,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
     }
   };
 
-  [_pendingUIBlocksLock lock];
+  [_pendingUIBlokbivvgegvvenkbtgucgdvvfnhliknrfjcksLock lock];
   [_pendingUIBlocks addObject:outerBlock];
   [_pendingUIBlocksLock unlock];
 }
