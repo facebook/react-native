@@ -45,6 +45,7 @@
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		830BA4551A8E3BDA00D53203 /* RCTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 830BA4541A8E3BDA00D53203 /* RCTCache.m */; };
 		832348161A77A5AA00B55238 /* Layout.c in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FC71A68125100A75B9A /* Layout.c */; };
+		83C911101AAE6521001323A3 /* RCTAnimationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C9110F1AAE6521001323A3 /* RCTAnimationManager.m */; };
 		83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA4B1A601E3B00E9B192 /* RCTAssert.m */; };
 		83CBBA521A601E3B00E9B192 /* RCTLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA4E1A601E3B00E9B192 /* RCTLog.m */; };
 		83CBBA531A601E3B00E9B192 /* RCTUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA501A601E3B00E9B192 /* RCTUtils.m */; };
@@ -153,6 +154,8 @@
 		830BA4541A8E3BDA00D53203 /* RCTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCache.m; sourceTree = "<group>"; };
 		83BEE46C1A6D19BC00B5863B /* RCTSparseArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSparseArray.h; sourceTree = "<group>"; };
 		83BEE46D1A6D19BC00B5863B /* RCTSparseArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSparseArray.m; sourceTree = "<group>"; };
+		83C9110E1AAE6521001323A3 /* RCTAnimationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAnimationManager.h; sourceTree = "<group>"; };
+		83C9110F1AAE6521001323A3 /* RCTAnimationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAnimationManager.m; sourceTree = "<group>"; };
 		83CBBA2E1A601D0E00E9B192 /* libReactKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReactKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		83CBBA4A1A601E3B00E9B192 /* RCTAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAssert.h; sourceTree = "<group>"; };
 		83CBBA4B1A601E3B00E9B192 /* RCTAssert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAssert.m; sourceTree = "<group>"; };
@@ -210,6 +213,8 @@
 			children = (
 				13B07FE71A69327A00A75B9A /* RCTAlertManager.h */,
 				13B07FE81A69327A00A75B9A /* RCTAlertManager.m */,
+				83C9110E1AAE6521001323A3 /* RCTAnimationManager.h */,
+				83C9110F1AAE6521001323A3 /* RCTAnimationManager.m */,
 				13B07FE91A69327A00A75B9A /* RCTExceptionsManager.h */,
 				13B07FEA1A69327A00A75B9A /* RCTExceptionsManager.m */,
 				5F5F0D971A9E456B001279FA /* RCTLocationObserver.h */,
@@ -458,6 +463,7 @@
 				13A1F71E1A75392D00D3D453 /* RCTKeyCommands.m in Sources */,
 				83CBBA531A601E3B00E9B192 /* RCTUtils.m in Sources */,
 				14435CE61AAC4AE100FC20F4 /* RCTMapManager.m in Sources */,
+				83C911101AAE6521001323A3 /* RCTAnimationManager.m in Sources */,
 				83CBBA601A601EAA00E9B192 /* RCTBridge.m in Sources */,
 				58114A161AAE854800E7D092 /* RCTPicker.m in Sources */,
 				137327E81AA5CF210034F82E /* RCTTabBarItem.m in Sources */,

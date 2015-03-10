@@ -608,7 +608,7 @@ static NSString *RCTGuessTypeEncoding(id target, NSString *key, id value, NSStri
   return nil;
 }
 
-static NSDictionary *RCTConvertValue(id value, NSString *encoding)
+static id RCTConvertValueWithEncoding(id value, NSString *encoding)
 {
   static NSDictionary *converters = nil;
   static dispatch_once_t onceToken;
@@ -690,18 +690,7 @@ static NSDictionary *RCTConvertValue(id value, NSString *encoding)
   return converter ? converter(value) : value;
 }
 
-BOOL RCTSetProperty(id target, NSString *keypath, id value)
-{
-  // Split keypath
-  NSArray *parts = [keypath componentsSeparatedByString:@"."];
-  NSString *key = [parts lastObject];
-  for (NSUInteger i = 0; i < parts.count - 1; i++) {
-    target = [target valueForKey:parts[i]];
-    if (!target) {
-      return NO;
-    }
-  }
-
+static NSString *RCTPropertyEncoding(id target, NSString *key, id value) {
   // Check target class for property definition
   NSString *encoding = nil;
   objc_property_t property = class_getProperty([target class], [key UTF8String]);
@@ -720,7 +709,7 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
                                        [key substringFromIndex:1]]);
 
     if (![target respondsToSelector:setter]) {
-      return NO;
+      return nil;
     }
 
     // Get type of first method argument
@@ -730,17 +719,92 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
       encoding = @(typeEncoding);
       free(typeEncoding);
     }
+
+    if (encoding.length == 0 || [encoding isEqualToString:@(@encode(id))]) {
+      // Not enough info about the type encoding to be useful, so
+      // try to guess the type from the value and property name
+      encoding = RCTGuessTypeEncoding(target, key, value, encoding);
+    }
+
   }
 
-  if (encoding.length == 0 || [encoding isEqualToString:@(@encode(id))]) {
-    // Not enough info about the type encoding to be useful, so
-    // try to guess the type from the value and property name
-    encoding = RCTGuessTypeEncoding(target, key, value, encoding);
+  return encoding;
+}
+
+static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json, NSString *encoding) {
+  if (!encoding) return nil;
+
+  // Special case for numeric encodings, which may be enums
+  if ([json isKindOfClass:[NSString class]] &&
+      [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length) {
+
+    /**
+     * NOTE: the property names below may seem weird, but it's
+     * because they are tested as case-sensitive suffixes, so
+     * "apitalizationType" will match any of the following
+     *
+     * - capitalizationType
+     * - autocapitalizationType
+     * - autoCapitalizationType
+     * - titleCapitalizationType
+     * - etc.
+     */
+    static NSDictionary *converters = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      converters =
+      @{
+        @"apitalizationType": ^(id val) {
+          return [RCTConvert UITextAutocapitalizationType:val];
+        },
+        @"eyboardType": ^(id val) {
+          return [RCTConvert UIKeyboardType:val];
+        },
+        @"extAlignment": ^(id val) {
+          return [RCTConvert NSTextAlignment:val];
+        },
+        @"ointerEvents": ^(id val) {
+          return [RCTConvert RCTPointerEvents:val];
+        },
+      };
+    });
+    for (NSString *subkey in converters) {
+      if ([key hasSuffix:subkey]) {
+        NSInteger (^converter)(NSString *) = converters[subkey];
+        json = @(converter(json));
+        break;
+      }
+    }
   }
+
+  return RCTConvertValueWithEncoding(json, encoding);
+}
+
+id RCTConvertValue(id target, NSString *key, id json) {
+  NSString *encoding = RCTPropertyEncoding(target, key, json);
+  return RCTConvertValueWithExplicitEncoding(target, key, json, encoding);
+}
+
+BOOL RCTSetProperty(id target, NSString *keypath, id value)
+{
+  // Split keypath
+  NSArray *parts = [keypath componentsSeparatedByString:@"."];
+  NSString *key = [parts lastObject];
+  for (NSUInteger i = 0; i < parts.count - 1; i++) {
+    target = [target valueForKey:parts[i]];
+    if (!target) {
+      return NO;
+    }
+  }
+
+  NSString *encoding = RCTPropertyEncoding(target, key, value);
+  if (!encoding) return NO;
+
+  value = RCTConvertValueWithExplicitEncoding(target, keypath, value, encoding);
 
   // Special case for numeric encodings, which may be enums
   if ([value isKindOfClass:[NSString class]] &&
-      [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length) {
+      [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].location != NSNotFound) {
 
     /**
      * NOTE: the property names below may seem weird, but it's
@@ -798,15 +862,15 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
     });
 
     void (^block)(UITextField *f, NSInteger v) = specialCases[key];
-    if (block)
-    {
+    if (block) {
       block(target, [value integerValue]);
       return YES;
     }
   }
 
   // Set converted value
-  [target setValue:RCTConvertValue(value, encoding) forKey:key];
+  [target setValue:value forKey:key];
+
   return YES;
 }
 

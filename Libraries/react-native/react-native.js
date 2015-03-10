@@ -7,6 +7,7 @@
 
 var ReactNative = {
   ...require('React'),
+  Animation: require('Animation'),
   AppRegistry: require('AppRegistry'),
   CameraRoll: require('CameraRoll'),
   DatePickerIOS: require('DatePickerIOS'),

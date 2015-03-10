@@ -88,6 +88,12 @@ BOOL RCTSetProperty(id target, NSString *keypath, id json);
  */
 BOOL RCTCopyProperty(id target, id source, NSString *keypath);
 
+/**
+ * This function attempts to convert a JSON value to an object that can be used
+ * in KVC with the specific target and key path.
+ */
+id RCTConvertValue(id target, NSString *keypath, id json);
+
 #ifdef __cplusplus
 }
 #endif
