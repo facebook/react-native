@@ -36,6 +36,7 @@ var EXAMPLES = [
   require('./TabBarExample'),
   require('./SwitchExample'),
   require('./SliderExample'),
+  require('./CameraRollExample.ios'),
 ];
 
 var UIExplorerList = React.createClass({
