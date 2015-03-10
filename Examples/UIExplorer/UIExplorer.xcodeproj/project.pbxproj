@@ -90,9 +90,9 @@
 		1316A21D1AA397F400C0188E /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
 				13417FFA1AA91531003F314A /* ReactKit.xcodeproj */,
 				134180261AA91779003F314A /* RCTNetwork.xcodeproj */,
+				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
 				13417FEA1AA914B8003F314A /* RCTText.xcodeproj */,
 				13417FE31AA91428003F314A /* RCTImage.xcodeproj */,
 			);
