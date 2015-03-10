@@ -2,6 +2,7 @@ var docs = require('../react-docgen');
 var fs = require('fs');
 var path = require('path');
 var slugify = require('../core/slugify');
+var jsDocs = require('../jsdocs/jsdocs.js')
 
 function getNameFromPath(filepath) {
   var ext = null;
@@ -11,7 +12,7 @@ function getNameFromPath(filepath) {
   return filepath;
 }
 
-function docsToMarkdown(filepath, i) {
+function componentsToMarkdown(filepath, i) {
   var json = docs.parse(
     fs.readFileSync(filepath),
     function(node, recast) {
@@ -42,11 +43,15 @@ function docsToMarkdown(filepath, i) {
 
 var components = [
   '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
+  '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Text/ExpandingText.js',
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/ListView/ListView.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
+  '../Libraries/Components/Slider/Slider.js',
+  '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
+  '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Text/Text.js',
   '../Libraries/Components/TextInput/TextInput.ios.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
@@ -55,6 +60,16 @@ var components = [
   '../Libraries/Components/View/View.js',
 ];
 
+
+function apisToMarkdown(filepath, i) {
+  var json = jsDocs(fs.readFileSync(filepath).toString());
+  console.log(JSON.stringify(json, null, 2));
+}
+
+var apis = [
+  '../Libraries/AppRegistry/AppRegistry.js',
+];
+
 module.exports = function() {
-  return components.map(docsToMarkdown);
+  return components.map(componentsToMarkdown);
 };

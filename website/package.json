@@ -10,6 +10,9 @@
     "glob": "*",
     "mkdirp": "*",
     "request": "*",
-    "fs.extra": "*"
+    "fs.extra": "*",
+    "esprima": "*",
+    "esprima-fb": "*",
+    "jstransform": "*"
   }
 }
