@@ -16,6 +16,7 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		832C81C71AAF73C5007FA2F7 /* libRCTAdSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832C81A61AAF6EFF007FA2F7 /* libRCTAdSupport.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTGeolocation;
 		};
+		832C81A51AAF6EFF007FA2F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 832C81A11AAF6EFE007FA2F7 /* RCTAdSupport.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 832C81801AAF6DEF007FA2F7;
+			remoteInfo = RCTAdSupport;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +77,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		832C81A11AAF6EFE007FA2F7 /* RCTAdSupport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAdSupport.xcodeproj; path = ../../Libraries/AdSupport/RCTAdSupport.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				832C81C71AAF73C5007FA2F7 /* libRCTAdSupport.a in Frameworks */,
 				134A8A2A1AACED7A00945AAE /* libRCTGeolocation.a in Frameworks */,
 				1341802C1AA9178B003F314A /* libRCTNetwork.a in Frameworks */,
 				134180011AA9153C003F314A /* libRCTText.a in Frameworks */,
@@ -91,10 +101,11 @@
 			isa = PBXGroup;
 			children = (
 				13417FFA1AA91531003F314A /* ReactKit.xcodeproj */,
-				134180261AA91779003F314A /* RCTNetwork.xcodeproj */,
+				832C81A11AAF6EFE007FA2F7 /* RCTAdSupport.xcodeproj */,
 				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
-				13417FEA1AA914B8003F314A /* RCTText.xcodeproj */,
 				13417FE31AA91428003F314A /* RCTImage.xcodeproj */,
+				134180261AA91779003F314A /* RCTNetwork.xcodeproj */,
+				13417FEA1AA914B8003F314A /* RCTText.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -150,6 +161,14 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = UIExplorer;
+			sourceTree = "<group>";
+		};
+		832C81A21AAF6EFE007FA2F7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				832C81A61AAF6EFF007FA2F7 /* libRCTAdSupport.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		83CBB9F61A601CBA00E9B192 = {
@@ -210,6 +229,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 832C81A21AAF6EFE007FA2F7 /* Products */;
+					ProjectRef = 832C81A11AAF6EFE007FA2F7 /* RCTAdSupport.xcodeproj */;
+				},
 				{
 					ProductGroup = 134A8A211AACED6A00945AAE /* Products */;
 					ProjectRef = 134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */;
@@ -272,6 +295,13 @@
 			fileType = archive.ar;
 			path = libRCTGeolocation.a;
 			remoteRef = 134A8A241AACED6A00945AAE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		832C81A61AAF6EFF007FA2F7 /* libRCTAdSupport.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAdSupport.a;
+			remoteRef = 832C81A51AAF6EFF007FA2F7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
