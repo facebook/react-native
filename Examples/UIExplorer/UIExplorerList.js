@@ -32,7 +32,7 @@ var EXAMPLES = [
   require('./ActivityIndicatorExample'),
   require('./ScrollViewExample'),
   require('./DatePickerExample'),
-  require('./GeolocationExample'),
+  require('./GeoLocationExample'),
   require('./TabBarExample'),
   require('./SwitchExample'),
   require('./SliderExample'),
