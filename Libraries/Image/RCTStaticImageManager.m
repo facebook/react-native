@@ -6,6 +6,7 @@
 
 #import "RCTConvert.h"
 #import "RCTGIFImage.h"
+#import "RCTImageLoader.h"
 #import "RCTStaticImage.h"
 
 @implementation RCTStaticImageManager
@@ -37,6 +38,20 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage *)
   } else {
     view.renderingMode = defaultView.renderingMode;
     view.tintColor = defaultView.tintColor;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(imageTag, RCTStaticImage *)
+{
+  if (json) {
+    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] callback:^(NSError *error, UIImage *image) {
+      if (error) {
+        RCTLogWarn(@"%@", error.localizedDescription);
+      } else {
+        view.image = image;
+      }
+    }];
+  } else {
+    view.image = defaultView.image;
   }
 }
 

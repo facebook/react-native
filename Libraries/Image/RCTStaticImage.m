@@ -24,7 +24,7 @@
   // Apply trilinear filtering to smooth out mis-sized images
   self.layer.minificationFilter = kCAFilterTrilinear;
   self.layer.magnificationFilter = kCAFilterTrilinear;
-  
+
   super.image = image;
 }
 

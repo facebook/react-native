@@ -8,6 +8,7 @@
 var ReactNative = {
   ...require('React'),
   AppRegistry: require('AppRegistry'),
+  CameraRoll: require('CameraRoll'),
   DatePickerIOS: require('DatePickerIOS'),
   ExpandingText: require('ExpandingText'),
   Image: require('Image'),
