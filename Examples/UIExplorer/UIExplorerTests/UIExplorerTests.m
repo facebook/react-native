@@ -3,6 +3,8 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#define TIMEOUT_SECONDS 30
+
 @interface UIExplorerTests : XCTestCase
 
 @end
@@ -25,7 +27,7 @@
 - (void)testRootViewLoadsAndRenders {
   UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
 
-  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:5];
+  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   BOOL foundElement = NO;
 
   while ([date timeIntervalSinceNow] > 0 && !foundElement) {
@@ -43,7 +45,7 @@
     }];
   }
 
-  XCTAssertTrue(foundElement, @"Cound't find element with '<View>' text in 5 seconds");
+  XCTAssertTrue(foundElement, @"Cound't find element with '<View>' text in %d seconds", TIMEOUT_SECONDS);
 }
 
 
