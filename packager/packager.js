@@ -96,7 +96,7 @@ function getAppMiddleware(options) {
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(false),
     cacheVersion: '2',
-    transformModulePath: require.resolve('./transformer.js'),
+    transformModulePath: require.resolve('./transformer-does-not-exist.js'),
   });
 }
 
