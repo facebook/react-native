@@ -14,7 +14,6 @@ var React = require('React');
 var ReactChildren = require('ReactChildren');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
-var Subscribable = require('Subscribable');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('TimerMixin');
@@ -195,7 +194,7 @@ var TextInput = React.createClass({
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
    */
-  mixins: [NativeMethodsMixin, TimerMixin, Subscribable.Mixin],
+  mixins: [NativeMethodsMixin, TimerMixin],
 
   viewConfig: {
     uiViewClassName: 'RCTTextField',
@@ -232,16 +231,23 @@ var TextInput = React.createClass({
       }
       return;
     }
-    this.addListenerOn(this.context.focusEmitter, 'focus', (el) => {
-      if (this === el) {
-        this.requestAnimationFrame(this.focus);
-      } else if (this.isFocused()) {
-        this.blur();
+    this._focusSubscription = this.context.focusEmitter.addListener(
+      'focus',
+      (el) => {
+        if (this === el) {
+          this.requestAnimationFrame(this.focus);
+        } else if (this.isFocused()) {
+          this.blur();
+        }
       }
-    });
+    );
     if (this.props.autoFocus) {
       this.context.onFocusRequested(this);
     }
+  },
+
+  componentWillUnmount: function() {
+    this._focusSubscription && this._focusSubscription.remove();
   },
 
   componentWillReceiveProps: function(newProps) {
