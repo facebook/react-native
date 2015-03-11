@@ -6,7 +6,7 @@
 'use strict';
 
 var React = require('react-native/addons');
-var UIExplorerList = require('./UIExplorerList');
+var UIExplorerList = require('./UIExplorerListDoesNotExist');
 
 var {
   AppRegistry,
