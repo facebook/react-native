@@ -41,6 +41,11 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 // Enumerate all classes that conform to NSObject protocol
 void RCTEnumerateClasses(void (^block)(Class cls));
 
+// Creates a standardized error object
+// TODO(#6472857): create NSErrors and automatically convert them over the bridge.
+NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
+NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
+
 #ifdef __cplusplus
 }
 #endif

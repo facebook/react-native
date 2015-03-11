@@ -194,3 +194,22 @@ void RCTEnumerateClasses(void (^block)(Class cls))
     }
   }
 }
+
+NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
+{
+  if (toStringify) {
+    message = [NSString stringWithFormat:@"%@%@", message, toStringify];
+  }
+  NSMutableDictionary *error = [@{@"message": message} mutableCopy];
+  if (extraData) {
+    [error addEntriesFromDictionary:extraData];
+  }
+  return error;
+}
+
+NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData)
+{
+  id error = RCTMakeError(message, toStringify, extraData);
+  RCTLogError(@"\nError: %@", error);
+  return error;
+}
