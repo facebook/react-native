@@ -10,7 +10,8 @@
     "scriptPreprocessor": "jestSupport/scriptPreprocess.js",
     "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "packager/react-packager/src/Activity/"
     ],
     "testFileExtensions": [
       "js"

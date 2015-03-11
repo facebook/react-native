@@ -73,7 +73,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		004D289E1AAF61C70097A701 /* UIExplorerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UIExplorerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		004D289E1AAF61C70097A701 /* UIExplorerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		004D28A11AAF61C70097A701 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		004D28A21AAF61C70097A701 /* UIExplorerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIExplorerTests.m; sourceTree = "<group>"; };
 		13417FE31AA91428003F314A /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = ../../Libraries/Image/RCTImage.xcodeproj; sourceTree = "<group>"; };
@@ -121,7 +121,7 @@
 				004D28A21AAF61C70097A701 /* UIExplorerTests.m */,
 				004D28A01AAF61C70097A701 /* Supporting Files */,
 			);
-			path = "UIExplorerTests";
+			path = UIExplorerTests;
 			sourceTree = "<group>";
 		};
 		004D28A01AAF61C70097A701 /* Supporting Files */ = {
@@ -241,8 +241,8 @@
 			dependencies = (
 				004D28A51AAF61C70097A701 /* PBXTargetDependency */,
 			);
-			name = "UIExplorerTests";
-			productName = "UIExplorerTests";
+			name = UIExplorerTests;
+			productName = UIExplorerTests;
 			productReference = 004D289E1AAF61C70097A701 /* UIExplorerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
@@ -439,7 +439,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "UIExplorerTests/Info.plist";
+				INFOPLIST_FILE = UIExplorerTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -455,7 +455,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "UIExplorerTests/Info.plist";
+				INFOPLIST_FILE = UIExplorerTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
