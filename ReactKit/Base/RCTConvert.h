@@ -19,12 +19,13 @@
 + (float)float:(id)json;
 + (int)int:(id)json;
 
++ (NSInteger)NSInteger:(id)json;
++ (NSUInteger)NSUInteger:(id)json;
+
 + (NSArray *)NSArray:(id)json;
 + (NSDictionary *)NSDictionary:(id)json;
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;
-+ (NSInteger)NSInteger:(id)json;
-+ (NSUInteger)NSUInteger:(id)json;
 
 + (NSURL *)NSURL:(id)json;
 + (NSURLRequest *)NSURLRequest:(id)json;
@@ -56,6 +57,11 @@
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json size:(id)json weight:(id)json;
+
++ (NSArray *)NSStringArray:(id)json;
++ (NSArray *)NSNumberArray:(id)json;
++ (NSArray *)UIColorArray:(id)json;
++ (NSArray *)CGColorArray:(id)json;
 
 + (BOOL)css_overflow:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;

@@ -2,8 +2,6 @@
 
 #import "RCTAdSupport.h"
 
-#import <AdSupport/ASIdentifierManager.h>
-
 @implementation RCTAdSupport
 
 - (void)getAdvertisingId:(RCTResponseSenderBlock)callback withErrorCallback:(RCTResponseSenderBlock)errorCallback

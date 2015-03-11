@@ -99,8 +99,8 @@
 
 - (void)loadView
 {
-  // add a wrapper so that UIViewControllerWrapperView (managed by the
-  // UINavigationController) doesn't end up resetting the frames for
+  // Add a wrapper so that the wrapper view managed by the
+  // UINavigationController doesn't end up resetting the frames for
   //`contentView` which is a react-managed view.
   _wrapperView = [[UIView alloc] initWithFrame:_contentView.bounds];
   [_wrapperView addSubview:_contentView];

@@ -1058,25 +1058,6 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   }];
 }
 
-- (void)getScrollViewContentSize:(NSNumber *)reactTag callback:(RCTResponseSenderBlock)callback failCallback:(RCTResponseSenderBlock)failCallback
-{
-  RCT_EXPORT();
-
-  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
-    if (!view) {
-      NSString *error = [[NSString alloc] initWithFormat:@"cannot find view with tag %@", reactTag];
-      RCTLogError(@"%@", error);
-      failCallback(@[@{@"error": error}]);
-      return;
-    }
-
-    CGSize size = ((id<RCTScrollableProtocol>)view).contentSize;
-    NSDictionary *dict = @{@"width" : @(size.width), @"height" : @(size.height)};
-    callback(@[dict]);
-  }];
-}
-
 /**
  * JS sets what *it* considers to be the responder. Later, scroll views can use
  * this in order to determine if scrolling is appropriate.
