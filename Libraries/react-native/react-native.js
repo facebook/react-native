@@ -10,6 +10,7 @@ var ReactNative = {
   Animation: require('Animation'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   AppRegistry: require('AppRegistry'),
+  AppState: require('AppState'),
   AsyncStorage: require('AsyncStorage'),
   CameraRoll: require('CameraRoll'),
   DatePickerIOS: require('DatePickerIOS'),

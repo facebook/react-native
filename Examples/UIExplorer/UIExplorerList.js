@@ -41,6 +41,7 @@ var EXAMPLES = [
   require('./CameraRollExample.ios'),
   require('./MapViewExample'),
   require('./AdSupportIOSExample'),
+  require('./AppStateExample'),
 ];
 
 var UIExplorerList = React.createClass({

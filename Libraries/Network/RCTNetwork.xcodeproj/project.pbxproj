@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1372B7371AB03E7B00659ED6 /* RCTReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 1372B7361AB03E7B00659ED6 /* RCTReachability.m */; };
 		58B512081A9E6CE300147676 /* RCTDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTDataManager.m */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1372B7351AB03E7B00659ED6 /* RCTReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReachability.h; sourceTree = "<group>"; };
+		1372B7361AB03E7B00659ED6 /* RCTReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReachability.m; sourceTree = "<group>"; };
 		58B511DB1A9E6C8500147676 /* libRCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B512061A9E6CE300147676 /* RCTDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDataManager.h; sourceTree = "<group>"; };
 		58B512071A9E6CE300147676 /* RCTDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDataManager.m; sourceTree = "<group>"; };
@@ -44,6 +47,8 @@
 			children = (
 				58B512061A9E6CE300147676 /* RCTDataManager.h */,
 				58B512071A9E6CE300147676 /* RCTDataManager.m */,
+				1372B7351AB03E7B00659ED6 /* RCTReachability.h */,
+				1372B7361AB03E7B00659ED6 /* RCTReachability.m */,
 				58B511DC1A9E6C8500147676 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -112,6 +117,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1372B7371AB03E7B00659ED6 /* RCTReachability.m in Sources */,
 				58B512081A9E6CE300147676 /* RCTDataManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
