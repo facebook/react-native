@@ -74,6 +74,7 @@ var ReactIOS = {
     count: ReactChildren.count,
     only: onlyChild
   },
+  Component: ReactComponent,
   PropTypes: ReactPropTypes,
   createClass: ReactClass.createClass,
   createElement: createElement,
