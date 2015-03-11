@@ -5,6 +5,8 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTScrollView.h"
+#import "RCTSparseArray.h"
+#import "RCTUIManager.h"
 
 @implementation RCTScrollViewManager
 
@@ -50,6 +52,27 @@ RCT_EXPORT_VIEW_PROPERTY(contentOffset);
       @"OnDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
     },
   };
+}
+
+- (void)getContentSize:(NSNumber *)reactTag
+              callback:(RCTResponseSenderBlock)callback
+{
+  RCT_EXPORT();
+
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+
+    UIView *view = viewRegistry[reactTag];
+    if (!view) {
+      RCTLogError(@"Cannot find view with tag %@", reactTag);
+      return;
+    }
+
+    CGSize size = ((id<RCTScrollableProtocol>)view).contentSize;
+    callback(@[@{
+      @"width" : @(size.width),
+      @"height" : @(size.height)
+    }]);
+  }];
 }
 
 @end
