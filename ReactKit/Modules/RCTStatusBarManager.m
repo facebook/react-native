@@ -11,18 +11,18 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   static BOOL value;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
+    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] ?: @YES boolValue];
   });
-  
+
   return value;
 }
 
 - (void)setStyle:(UIStatusBarStyle)statusBarStyle animated:(BOOL)animated
 {
   RCT_EXPORT();
-  
+
   dispatch_async(dispatch_get_main_queue(), ^{
-    
+
     if (RCTViewControllerBasedStatusBarAppearance()) {
       RCTLogError(@"RCTStatusBarManager module requires that the \
                   UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
@@ -36,9 +36,9 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 - (void)setHidden:(BOOL)hidden withAnimation:(UIStatusBarAnimation)animation
 {
   RCT_EXPORT();
-  
+
   dispatch_async(dispatch_get_main_queue(), ^{
-    
+
     if (RCTViewControllerBasedStatusBarAppearance()) {
       RCTLogError(@"RCTStatusBarManager module requires that the \
                   UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");

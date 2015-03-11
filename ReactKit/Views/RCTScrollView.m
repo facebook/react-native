@@ -259,14 +259,14 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
-    
+
     _eventDispatcher = eventDispatcher;
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    
+
     _throttleScrollCallbackMS = 0;
     _lastScrollDispatchTime = CACurrentMediaTime();
     _cachedChildFrames = [[NSMutableArray alloc] init];
@@ -337,6 +337,8 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_scrollView
                       updateOffset:YES];
+
+  [self updateClippedSubviews];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
@@ -387,9 +389,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+  [self updateClippedSubviews];
+
   NSTimeInterval now = CACurrentMediaTime();
   NSTimeInterval throttleScrollCallbackSeconds = _throttleScrollCallbackMS / 1000.0;
-  
+
   /**
    * TODO: this logic looks wrong, and it may be because it is. Currently, if _throttleScrollCallbackMS
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
@@ -398,11 +402,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
    */
   if (_allowNextScrollNoMatterWhat ||
       (_throttleScrollCallbackMS != 0 && throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
-    
+
     // Calculate changed frames
     NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
     [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
-      
+
       // Check if new or changed
       CGRect newFrame = subview.frame;
       BOOL frameChanged = NO;
@@ -413,7 +417,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
         frameChanged = YES;
         _cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
       }
-      
+
       // Create JS frame object
       if (frameChanged) {
         [updatedChildFrames addObject: @{
@@ -424,9 +428,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
           @"height": @(newFrame.size.height),
         }];
       }
-      
+
     }];
-    
+
     // If there are new frames, add them to event data
     NSDictionary *userData = nil;
     if (updatedChildFrames.count > 0) {
@@ -568,13 +572,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (BOOL)respondsToSelector:(SEL)aSelector
 {
-  if ([super respondsToSelector:aSelector]) {
-    return YES;
-  }
-  if ([NSStringFromSelector(aSelector) hasPrefix:@"set"]) {
-    return [_scrollView respondsToSelector:aSelector];
-  }
-  return NO;
+  return [super respondsToSelector:aSelector] || [_scrollView respondsToSelector:aSelector];
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key

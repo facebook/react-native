@@ -92,6 +92,19 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
   } \
 }
 
+#define RCT_ARRAY_CONVERTER(type)                         \
++ (NSArray *)type##Array:(id)json                         \
+{                                                         \
+  NSMutableArray *values = [[NSMutableArray alloc] init]; \
+  for (id jsonValue in [self NSArray:json]) {             \
+    id value = [self type:jsonValue];                     \
+    if (!value) {                                         \
+      [values addObject:value];                           \
+    }                                                     \
+  }                                                       \
+  return values;                                          \
+}
+
 @implementation RCTConvert
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
@@ -99,12 +112,13 @@ RCT_CONVERTER(double, double, doubleValue)
 RCT_CONVERTER(float, float, floatValue)
 RCT_CONVERTER(int, int, intValue)
 
+RCT_CONVERTER(NSInteger, NSInteger, integerValue)
+RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
+
 RCT_CONVERTER_CUSTOM(NSArray *, NSArray, [NSArray arrayWithArray:json])
 RCT_CONVERTER_CUSTOM(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
 RCT_CONVERTER(NSString *, NSString, description)
 RCT_CONVERTER_CUSTOM(NSNumber *, NSNumber, @([json doubleValue]))
-RCT_CONVERTER(NSInteger, NSInteger, integerValue)
-RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
 
 + (NSURL *)NSURL:(id)json
 {
@@ -137,17 +151,12 @@ RCT_CONVERTER_CUSTOM(NSTimeInterval, NSTimeInterval, [json doubleValue] / 1000.0
 // JS standard for time zones is minutes.
 RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[json doubleValue] * 60.0])
 
-/**
- * NOTE: We don't deliberately don't support NSTextAlignmentJustified in the
- * X-platform RCTText implementation because it isn't available on Android.
- * We may wish to support this for iOS-specific controls such as UILabel.
- */
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
   @"left": @(NSTextAlignmentLeft),
   @"center": @(NSTextAlignmentCenter),
   @"right": @(NSTextAlignmentRight),
-  /* @"justify": @(NSTextAlignmentJustify), */
+  @"justify": @(NSTextAlignmentJustified),
 }), NSTextAlignmentNatural, integerValue)
 
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{
@@ -491,7 +500,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   }
 
   // Get font family
-  NSString *familyName = [RCTConvert NSString:family];
+  NSString *familyName = [self NSString:family];
   if (familyName) {
       if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
       font = [UIFont fontWithName:familyName size:fontDescriptor.pointSize];
@@ -511,7 +520,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   }
 
   // Get font weight
-  NSString *fontWeight = [RCTConvert NSString:weight];
+  NSString *fontWeight = [self NSString:weight];
   if (fontWeight) {
 
     static NSSet *values;
@@ -537,6 +546,20 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
 
   // Create font
   return [UIFont fontWithDescriptor:fontDescriptor size:fontDescriptor.pointSize];
+}
+
+RCT_ARRAY_CONVERTER(NSString)
+RCT_ARRAY_CONVERTER(NSNumber)
+RCT_ARRAY_CONVERTER(UIColor)
+
+// Can't use RCT_ARRAY_CONVERTER due to bridged cast
++ (NSArray *)CGColorArray:(id)json
+{
+  NSMutableArray *colors = [[NSMutableArray alloc] init];
+  for (id value in [self NSArray:json]) {
+    [colors addObject:(__bridge id)[self CGColor:value]];
+  }
+  return colors;
 }
 
 typedef BOOL css_overflow;
@@ -596,15 +619,31 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
 
 static NSString *RCTGuessTypeEncoding(id target, NSString *key, id value, NSString *encoding)
 {
+  /**
+   * NOTE: the property names below may seem weird, but it's
+   * because they are tested as case-sensitive suffixes, so
+   * "ffset" will match any of the following
+   *
+   * - offset
+   * - contentOffset
+   */
+
   // TODO (#5906496): handle more cases
-  if ([key rangeOfString:@"color" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+  if ([key hasSuffix:@"olor"]) {
     if ([target isKindOfClass:[CALayer class]]) {
       return @(@encode(CGColorRef));
     } else {
       return @"@\"UIColor\"";
     }
+  } else if ([key hasSuffix:@"Inset"] || [key hasSuffix:@"Insets"]) {
+    return @(@encode(UIEdgeInsets));
+  } else if ([key hasSuffix:@"rame"] || [key hasSuffix:@"ounds"]) {
+    return @(@encode(CGRect));
+  } else if ([key hasSuffix:@"ffset"] || [key hasSuffix:@"osition"]) {
+    return @(@encode(CGPoint));
+  } else if ([key hasSuffix:@"ize"]) {
+    return @(@encode(CGSize));
   }
-
   return nil;
 }
 
@@ -690,7 +729,8 @@ static id RCTConvertValueWithEncoding(id value, NSString *encoding)
   return converter ? converter(value) : value;
 }
 
-static NSString *RCTPropertyEncoding(id target, NSString *key, id value) {
+static NSString *RCTPropertyEncoding(id target, NSString *key, id value)
+{
   // Check target class for property definition
   NSString *encoding = nil;
   objc_property_t property = class_getProperty([target class], [key UTF8String]);
@@ -728,15 +768,16 @@ static NSString *RCTPropertyEncoding(id target, NSString *key, id value) {
 
   }
 
-  return encoding;
+  // id encoding means unknown, as opposed to nil which means no setter exists.
+  return encoding ?: @(@encode(id));
 }
 
-static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json, NSString *encoding) {
-  if (!encoding) return nil;
-
+static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json, NSString *encoding)
+{
   // Special case for numeric encodings, which may be enums
   if ([json isKindOfClass:[NSString class]] &&
-      [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length) {
+      ([encoding isEqualToString:@(@encode(id))] ||
+       [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length)) {
 
     /**
      * NOTE: the property names below may seem weird, but it's
@@ -780,7 +821,8 @@ static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json,
   return RCTConvertValueWithEncoding(json, encoding);
 }
 
-id RCTConvertValue(id target, NSString *key, id json) {
+id RCTConvertValue(id target, NSString *key, id json)
+{
   NSString *encoding = RCTPropertyEncoding(target, key, json);
   return RCTConvertValueWithExplicitEncoding(target, key, json, encoding);
 }
@@ -797,53 +839,14 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
     }
   }
 
+  // Get encoding
   NSString *encoding = RCTPropertyEncoding(target, key, value);
-  if (!encoding) return NO;
-
-  value = RCTConvertValueWithExplicitEncoding(target, keypath, value, encoding);
-
-  // Special case for numeric encodings, which may be enums
-  if ([value isKindOfClass:[NSString class]] &&
-      [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].location != NSNotFound) {
-
-    /**
-     * NOTE: the property names below may seem weird, but it's
-     * because they are tested as case-sensitive suffixes, so
-     * "apitalizationType" will match any of the following
-     *
-     * - capitalizationType
-     * - autocapitalizationType
-     * - autoCapitalizationType
-     * - titleCapitalizationType
-     * - etc.
-     */
-    static NSDictionary *converters = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      converters =
-      @{
-        @"apitalizationType": ^(id val) {
-          return [RCTConvert UITextAutocapitalizationType:val];
-        },
-        @"eyboardType": ^(id val) {
-          return [RCTConvert UIKeyboardType:val];
-        },
-        @"extAlignment": ^(id val) {
-          return [RCTConvert NSTextAlignment:val];
-        },
-        @"ointerEvents": ^(id val) {
-          return [RCTConvert RCTPointerEvents:val];
-        },
-      };
-    });
-    for (NSString *subkey in converters) {
-      if ([key hasSuffix:subkey]) {
-        NSInteger (^converter)(NSString *) = converters[subkey];
-        value = @(converter(value));
-        break;
-      }
-    }
+  if (!encoding) {
+    return NO;
   }
+
+  // Convert value
+  value = RCTConvertValueWithExplicitEncoding(target, keypath, value, encoding);
 
   // Another nasty special case
   if ([target isKindOfClass:[UITextField class]]) {
