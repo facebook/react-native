@@ -20,6 +20,20 @@
                ReferencedContainer = "container:UIExplorer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "004D289D1AAF61C70097A701"
+               BuildableName = "UIExplorerTests.xctest"
+               BlueprintName = "UIExplorerTests"
+               ReferencedContainer = "container:UIExplorer.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -28,6 +42,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "004D289D1AAF61C70097A701"
+               BuildableName = "UIExplorerTests.xctest"
+               BlueprintName = "UIExplorerTests"
+               ReferencedContainer = "container:UIExplorer.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

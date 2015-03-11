@@ -1,3 +1,7 @@
-language: node_js
-node_js:
-  - "0.10"
+language: objective-c
+xcode_project: Examples/UIExplorer/UIExplorer.xcodeproj
+xcode_scheme: UIExplorer
+xcode_sdk: iphonesimulator8.1
+install:
+  - npm install
+  - npm test

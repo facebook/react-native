@@ -7,14 +7,18 @@
 
 var ReactNative = {
   ...require('React'),
+  Animation: require('Animation'),
   AppRegistry: require('AppRegistry'),
+  CameraRoll: require('CameraRoll'),
   DatePickerIOS: require('DatePickerIOS'),
   ExpandingText: require('ExpandingText'),
+  MapView: require('MapView'),
   Image: require('Image'),
   LayoutAnimation: require('LayoutAnimation'),
   ListView: require('ListView'),
   ListViewDataSource: require('ListViewDataSource'),
   NavigatorIOS: require('NavigatorIOS'),
+  PickerIOS: require('PickerIOS'),
   PixelRatio: require('PixelRatio'),
   ScrollView: require('ScrollView'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),

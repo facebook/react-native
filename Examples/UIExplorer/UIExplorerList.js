@@ -31,11 +31,15 @@ var EXAMPLES = [
   require('./TouchableExample'),
   require('./ActivityIndicatorExample'),
   require('./ScrollViewExample'),
+  require('./PickerExample'),
   require('./DatePickerExample'),
-  require('./GeoLocationExample'),
+  require('./GeolocationExample'),
   require('./TabBarExample'),
   require('./SwitchExample'),
   require('./SliderExample'),
+  require('./CameraRollExample.ios'),
+  require('./MapViewExample'),
+  require('./AdSupportIOSExample'),
 ];
 
 var UIExplorerList = React.createClass({

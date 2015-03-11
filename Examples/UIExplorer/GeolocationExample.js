@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule GeoLocationExample
+ * @providesModule GeolocationExample
  */
 /* eslint no-console: 0 */
 'use strict';
