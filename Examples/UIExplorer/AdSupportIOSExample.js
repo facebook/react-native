@@ -1,9 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
- *
- * @providesModule AdSupportIOSExample
  */
-/* eslint no-console: 0 */
 'use strict';
 
 var AdSupportIOS = require('AdSupportIOS');

@@ -1,7 +1,5 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
- *
- * @providesModule TextInputExample
  */
 'use strict';
 
