@@ -401,8 +401,8 @@ var ListView = React.createClass({
     var header = this.props.renderHeader && this.props.renderHeader();
     var totalIndex = header ? 1 : 0;
     var visibilityChanged = false;
-      var changedRows = {};
-      for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
+    var changedRows = {};
+    for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
       var rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         continue;
