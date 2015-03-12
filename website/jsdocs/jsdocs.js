@@ -74,7 +74,7 @@ function stripStaticUpstreamWarning(docblock) {
 }
 
 /**
- * Parse a typehint, but swallow any errors.
+ * Parse a typehint into the 'nice' form, if possible.
  */
 function safeParseTypehint(typehint) {
   if (!typehint) {
@@ -83,7 +83,7 @@ function safeParseTypehint(typehint) {
   try {
     return JSON.stringify(parseTypehint(typehint));
   } catch (e) {
-    return null;
+    return typehint;
   }
 }
 
@@ -218,7 +218,12 @@ function getFunctionData(node, state, source, commentsForFile, linesForFile) {
     // TODO: Handle other things like Syntax.ObjectPattern
     if (param.type === Syntax.Identifier) {
       var typehint;
-      if (typehintsFromBlock && typehintsFromBlock.params) {
+      if (param.typeAnnotation) {
+        typehint = sanitizeTypehint(source.substring(
+          param.typeAnnotation.range[0],
+          param.typeAnnotation.range[1]
+        ));
+      } else if (typehintsFromBlock && typehintsFromBlock.params) {
         typehintsFromBlock.params.some(function(paramTypehint) {
           if (paramTypehint[0] === param.name) {
             typehint = paramTypehint[1];
@@ -237,7 +242,7 @@ function getFunctionData(node, state, source, commentsForFile, linesForFile) {
       }
       params.push({
         typehint: safeParseTypehint(typehint),
-        name: param.name
+        name: param.name + (param.optional ? '?' : ''),
       });
     } else if (param.type === Syntax.TypeAnnotatedIdentifier) {
       params.push({
@@ -258,12 +263,19 @@ function getFunctionData(node, state, source, commentsForFile, linesForFile) {
   } else if (typehintsFromBlock) {
     returnTypehint = typehintsFromBlock.returns;
   }
+  var tparams = null;
+  if (node.typeParameters) {
+    tparams = node.typeParameters.params.map(function(x) {
+      return x.name;
+    });
+  }
   return {
     line: node.loc.start.line,
     source: source.substring.apply(source, node.range),
     docblock: getDocBlock(node, commentsForFile, linesForFile),
     modifiers: [],
     params: params,
+    tparams: tparams,
     returntypehint: safeParseTypehint(returnTypehint)
   };
 }
@@ -376,6 +388,11 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
   };
   if (node.superClass && node.superClass.type === Syntax.Identifier) {
     data.superClass = node.superClass.name;
+  }
+  if (node.typeParameters) {
+    data.tparams = node.typeParameters.params.map(function(x) {
+      return x.name;
+    });
   }
   return data;
 }

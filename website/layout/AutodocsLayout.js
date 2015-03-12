@@ -110,7 +110,18 @@ var APIDoc = React.createClass({
           {method.name}(
           <span className="propType">
             {method.params
-              .map(function(param) { return param.name; })
+              .map(function(param) {
+                var res = param.name;
+                if (param.typehint) {
+                  try {
+                    var typehint = JSON.parse(param.typehint).value;
+                  } catch(e) {
+                    var typehint = param.typehint;
+                  }
+                  res += ': ' + typehint;
+                }
+                return res;
+              })
               .join(', ')}
           </span>
           )
