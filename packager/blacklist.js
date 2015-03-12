@@ -6,13 +6,11 @@
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  'node_modules/JSAppServer',
-  'packager/react-packager',
+  __dirname,
   'node_modules/parse/node_modules/xmlhttprequest/lib/XMLHttpRequest.js',
   'node_modules/react-tools/src/utils/ImmutableObject.js',
   'node_modules/react-tools/src/core/ReactInstanceHandles.js',
-  'node_modules/react-tools/src/event/EventPropagators.js',
-  'node_modules/jest-cli',
+  'node_modules/react-tools/src/event/EventPropagators.js'
 ];
 
 var webBlacklist = [
@@ -31,9 +29,9 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
 
-function blacklist(isWeb) {
+function blacklist(isWeb, additionalBlacklist) {
   return new RegExp('(' +
-    sharedBlacklist
+    (additionalBlacklist || []).concat(sharedBlacklist)
       .concat(isWeb ? webBlacklist : iosBlacklist)
       .map(escapeRegExp)
       .join('|') +
