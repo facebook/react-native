@@ -37,9 +37,12 @@ var EXAMPLES = [
   require('./TabBarExample'),
   require('./SwitchExample'),
   require('./SliderExample'),
+  require('./AsyncStorageExample'),
   require('./CameraRollExample.ios'),
   require('./MapViewExample'),
+  require('./AppStateIOSExample'),
   require('./AdSupportIOSExample'),
+  require('./AppStateExample'),
 ];
 
 var UIExplorerList = React.createClass({

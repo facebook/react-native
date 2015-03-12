@@ -7,11 +7,9 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "jest": {
-    "scriptPreprocessor": "jestSupport/scriptPreprocess.js",
     "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "packager/react-packager/src/Activity/"
+      "/node_modules/"
     ],
     "testFileExtensions": [
       "js"
@@ -23,15 +21,22 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
-    "start": "./packager/packager.sh",
-    "postinstall": "cd packager && npm install"
+    "start": "./packager/packager.sh"
   },
   "dependencies": {
-    "connect": "2.8.3",
-    "jstransform": "10.0.1",
+    "absolute-path": "0.0.0",
+    "debug": "~2.1.0",
+    "joi": "~5.1.0",
+    "module-deps": "3.5.6",
+    "optimist": "0.6.1",
+    "q": "1.0.1",
+    "sane": "1.0.1",
     "source-map": "0.1.31",
     "stacktrace-parser": "0.1.1",
-    "react-tools": "0.13.0-rc2"
+    "uglify-js": "~2.4.16",
+    "underscore": "1.7.0",
+    "worker-farm": "1.1.0",
+    "yargs": "1.3.2"
   },
   "devDependencies": {
     "jest-cli": "0.2.1",
