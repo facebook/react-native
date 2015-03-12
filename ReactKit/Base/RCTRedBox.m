@@ -104,6 +104,8 @@
 - (void)dismiss
 {
   self.hidden = YES;
+  [self resignFirstResponder];
+  [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
 }
 
 - (void)reload
