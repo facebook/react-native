@@ -11,6 +11,7 @@ var ReactNative = {
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   AppRegistry: require('AppRegistry'),
   AppState: require('AppState'),
+  AppStateIOS: require('AppStateIOS'),
   AsyncStorage: require('AsyncStorage'),
   CameraRoll: require('CameraRoll'),
   DatePickerIOS: require('DatePickerIOS'),
