@@ -11,7 +11,7 @@ var Site = require('Site');
 var slugify = require('slugify');
 
 
-var Autodocs = React.createClass({
+var ComponentDoc = React.createClass({
   renderType: function(type) {
     if (type.name === 'enum') {
       return 'enum(' + type.value.map((v => v.value)).join(', ') + ')';
@@ -35,6 +35,7 @@ var Autodocs = React.createClass({
 
     return type.name;
   },
+
   renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
@@ -49,6 +50,7 @@ var Autodocs = React.createClass({
       </div>
     );
   },
+
   renderCompose: function(name) {
     return (
       <div className="prop" key={name}>
@@ -58,6 +60,7 @@ var Autodocs = React.createClass({
       </div>
     );
   },
+
   renderProps: function(props, composes) {
     return (
       <div className="props">
@@ -70,6 +73,79 @@ var Autodocs = React.createClass({
       </div>
     );
   },
+
+  render: function() {
+    var content = this.props.content;
+    return (
+      <div>
+        <Marked>
+          {content.description}
+        </Marked>
+        {this.renderProps(content.props, content.composes)}
+      </div>
+    );
+  }
+});
+
+var APIDoc = React.createClass({
+  removeCommentsFromDocblock: function(docblock) {
+    return docblock
+      .trim('\n ')
+      .replace(/^\/\*+/, '')
+      .replace(/\*\/$/, '')
+      .split('\n')
+      .map(function(line) {
+        return line.trim().replace(/^\* */, '');
+      })
+      .join('\n');
+  },
+
+  renderMethod: function(method) {
+    return (
+      <div className="prop" key={method.name}>
+        <Header level={4} className="propTitle" toSlug={method.name}>
+          {method.modifiers.length && <span className="propType">
+            {method.modifiers.join(' ') + ' '}
+          </span>}
+          {method.name}(
+          <span className="propType">
+            {method.params
+              .map(function(param) { return param.name; })
+              .join(', ')}
+          </span>
+          )
+        </Header>
+      </div>
+    );
+  },
+
+
+  renderMethods: function(methods) {
+    return (
+      <div className="props">
+        {methods.map(this.renderMethod)}
+      </div>
+    );
+  },
+
+  render: function() {
+    var content = this.props.content;
+    if (!content.methods) {
+      return <div>Error</div>;
+    }
+    return (
+      <div>
+        <Marked>
+          {this.removeCommentsFromDocblock(content.docblock)}
+        </Marked>
+        {this.renderMethods(content.methods)}
+        <pre>{JSON.stringify(content, null, 2)}</pre>
+      </div>
+    );
+  }
+});
+
+var Autodocs = React.createClass({
   render: function() {
     var metadata = this.props.metadata;
     var content = JSON.parse(this.props.children);
@@ -80,10 +156,9 @@ var Autodocs = React.createClass({
           <div className="inner-content">
             <a id="content" />
             <h1>{metadata.title}</h1>
-            <Marked>
-              {content.description}
-            </Marked>
-            {this.renderProps(content.props, content.composes)}
+            {content.type === 'component' ?
+              <ComponentDoc content={content} /> :
+              <APIDoc content={content} />}
             <Marked>
               {content.fullDescription}
             </Marked>

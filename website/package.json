@@ -11,7 +11,6 @@
     "mkdirp": "*",
     "request": "*",
     "fs.extra": "*",
-    "esprima": "*",
     "esprima-fb": "*",
     "jstransform": "*"
   }

@@ -12,29 +12,23 @@ function getNameFromPath(filepath) {
   return filepath;
 }
 
-function componentsToMarkdown(filepath, i) {
-  var json = docs.parse(
-    fs.readFileSync(filepath),
-    function(node, recast) {
-      return docs.resolver.findExportedReactCreateClassCall(node, recast) ||
-        docs.resolver.findAllReactCreateClassCalls(node, recast)[0];
-    }
-  );
+function componentsToMarkdown(type, json, filepath, i) {
   var componentName = getNameFromPath(filepath);
 
   var docFilePath = '../docs/' + componentName + '.md';
   if (fs.existsSync(docFilePath)) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
+  json.type = type;
 
   var res = [
     '---',
     'id: ' + slugify(componentName),
     'title: ' + componentName,
     'layout: autodocs',
-    'category: Components',
+    'category: ' + type + 's',
     'permalink: docs/' + slugify(componentName) + '.html',
-    components[i + 1] && ('next: ' + slugify(getNameFromPath(components[i + 1]))),
+    all[i + 1] && ('next: ' + slugify(getNameFromPath(all[i + 1]))),
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
@@ -60,16 +54,39 @@ var components = [
   '../Libraries/Components/View/View.js',
 ];
 
-
-function apisToMarkdown(filepath, i) {
-  var json = jsDocs(fs.readFileSync(filepath).toString());
-  console.log(JSON.stringify(json, null, 2));
-}
-
 var apis = [
   '../Libraries/AppRegistry/AppRegistry.js',
+  '../Libraries/Animation/Animation.js',
+  '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Animation/LayoutAnimation.js',
+  '../Libraries/Utilities/PixelRatio.js',
+  '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
+  '../Libraries/StyleSheet/StyleSheet.js',
 ];
 
+var all = components.concat(apis);
+
 module.exports = function() {
-  return components.map(componentsToMarkdown);
+  var i = 0;
+  return [].concat(
+    components.map(function(filepath) {
+      var json = docs.parse(
+        fs.readFileSync(filepath),
+        function(node, recast) {
+          return docs.resolver.findExportedReactCreateClassCall(node, recast) ||
+            docs.resolver.findAllReactCreateClassCalls(node, recast)[0];
+        }
+      );
+      return componentsToMarkdown('component', json, filepath, i++);
+    }),
+    apis.map(function(filepath) {
+      try {
+        var json = jsDocs(fs.readFileSync(filepath).toString());
+      } catch(e) {
+        console.error('Cannot parse file', filepath);
+        var json = {};
+      }
+      return componentsToMarkdown('api', json, filepath, i++);
+    })
+  );
 };

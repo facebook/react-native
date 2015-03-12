@@ -3,7 +3,7 @@
 /*jslint node: true */
 "use strict";
 
-var esprima = require('esprima');
+var esprima = require('esprima-fb');
 var fs = require('fs');
 var Syntax = esprima.Syntax;
 
@@ -482,7 +482,7 @@ function parseSource(source) {
         }
       });
     }
-    console.log(definition.type);
+
     switch (definition.type) {
       case Syntax.ClassDeclaration:
         data = getClassData(definition, _state, source, ast.comments, lines);
