@@ -21,21 +21,9 @@ var AppState = {
 
   getApplicationIconBadgeNumber: function(callback) {
     RKAppState.getApplicationIconBadgeNumber(callback);
-  }
-}
+  },
 
-AppState.backgroundStatus = new Subscribable(
-  RCTDeviceEventEmitter,
-  'appStateDidChange',
-  (resp) => resp.app_state,
-  RKAppState.getCurrentAppState
-);
-
-AppState.BackgroundStatus = keyMirror({
-  active: true,
-  background: true,
-  inactive: true,
-});
+};
 
 // This check avoids redboxing if native RKReachability library isn't included in app
 // TODO: Move reachability API into separate JS module to prevent need for this
