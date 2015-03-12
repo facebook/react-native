@@ -57,7 +57,7 @@ var Image = React.createClass({
        * resource (which should be wrapped in the `ix` function).
        */
       uri: PropTypes.string,
-    }).isRequired,
+    }),
     /**
      * accessible - Whether this element should be revealed as an accessible
      * element.

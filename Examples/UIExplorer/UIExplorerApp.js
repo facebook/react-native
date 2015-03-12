@@ -16,6 +16,7 @@ var {
 
 
 var UIExplorerApp = React.createClass({
+
   render: function() {
     return (
       <NavigatorIOS
@@ -25,7 +26,8 @@ var UIExplorerApp = React.createClass({
           component: UIExplorerList,
         }}
         itemWrapperStyle={styles.itemWrapper}
-        tintColor='#008888'/>
+        tintColor='#008888'
+      />
     );
   }
 });
