@@ -15,4 +15,16 @@
   }
 }
 
+- (void)getAdvertisingTrackingEnabled:(RCTResponseSenderBlock)callback withErrorCallback:(RCTResponseSenderBlock)errorCallback
+{
+  RCT_EXPORT();
+
+  if ([ASIdentifierManager class]) {
+    bool hasTracking = [[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled];
+    callback(@[@(hasTracking)]);
+  } else {
+    return errorCallback(@[@"as_identifier_unavailable"]);
+  }
+}
+
 @end

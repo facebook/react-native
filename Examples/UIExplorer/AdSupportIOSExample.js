@@ -29,23 +29,41 @@ var AdSupportIOSExample = React.createClass({
   getInitialState: function() {
     return {
       deviceID: 'No IDFA yet',
+      hasAdvertiserTracking: 'unset',
     };
   },
 
   componentDidMount: function() {
     AdSupportIOS.getAdvertisingId(
-      this._onSuccess,
-      this._onFailure
+      this._onDeviceIDSuccess,
+      this._onDeviceIDFailure
+    );
+
+    AdSupportIOS.getAdvertisingTrackingEnabled(
+      this._onHasTrackingSuccess,
+      this._onHasTrackingFailure
     );
   },
 
-  _onSuccess: function(deviceID) {
+  _onHasTrackingSuccess: function(hasTracking) {
+    this.setState({
+      'hasAdvertiserTracking': hasTracking,
+    });
+  },
+
+  _onHasTrackingFailure: function(e) {
+    this.setState({
+      'hasAdvertiserTracking': 'Error!',
+    });
+  },
+
+  _onDeviceIDSuccess: function(deviceID) {
     this.setState({
       'deviceID': deviceID,
     });
   },
 
-  _onFailure: function(e) {
+  _onDeviceIDFailure: function(e) {
     this.setState({
       'deviceID': 'Error!',
     });
@@ -57,6 +75,10 @@ var AdSupportIOSExample = React.createClass({
         <Text>
           <Text style={styles.title}>Advertising ID: </Text>
           {JSON.stringify(this.state.deviceID)}
+        </Text>
+        <Text>
+          <Text style={styles.title}>Has Advertiser Tracking: </Text>
+          {JSON.stringify(this.state.hasAdvertiserTracking)}
         </Text>
       </View>
     );
