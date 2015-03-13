@@ -99,6 +99,15 @@ var SearchScreen = React.createClass({
 
     fetch(this._urlForQueryAndPage(query, 1))
       .then((response) => response.json())
+      .catch((error) => {
+        LOADING[query] = false;
+        resultsCache.dataForQuery[query] = undefined;
+
+        this.setState({
+          dataSource: this.getDataSource([]),
+          isLoading: false,
+        });
+      })
       .then((responseData) => {
         LOADING[query] = false;
         resultsCache.totalForQuery[query] = responseData.total;
@@ -115,15 +124,7 @@ var SearchScreen = React.createClass({
           dataSource: this.getDataSource(responseData.movies),
         });
       })
-      .catch((error) => {
-        LOADING[query] = false;
-        resultsCache.dataForQuery[query] = undefined;
-
-        this.setState({
-          dataSource: this.getDataSource([]),
-          isLoading: false,
-        });
-      });
+      .done();
   },
 
   hasMore: function(): boolean {
@@ -157,6 +158,13 @@ var SearchScreen = React.createClass({
     var page = resultsCache.nextPageNumberForQuery[query];
     fetch(this._urlForQueryAndPage(query, page))
       .then((response) => response.json())
+      .catch((error) => {
+        console.error(error);
+        LOADING[query] = false;
+        this.setState({
+          isLoadingTail: false,
+        });
+      })
       .then((responseData) => {
         var moviesForQuery = resultsCache.dataForQuery[query].slice();
 
@@ -182,13 +190,7 @@ var SearchScreen = React.createClass({
           dataSource: this.getDataSource(resultsCache.dataForQuery[query]),
         });
       })
-      .catch((error) => {
-        console.error(error);
-        LOADING[query] = false;
-        this.setState({
-          isLoadingTail: false,
-        });
-      });
+      .done();
   },
 
   getDataSource: function(movies: Array<any>): ListView.DataSource {
