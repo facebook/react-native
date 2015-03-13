@@ -44,6 +44,10 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  assetRoots: {
+    type: 'array',
+    required: false,
+  },
 });
 
 function Packager(options) {
@@ -56,7 +60,8 @@ function Packager(options) {
     blacklistRE: opts.blacklistRE,
     polyfillModuleNames: opts.polyfillModuleNames,
     nonPersistent: opts.nonPersistent,
-    moduleFormat: opts.moduleFormat
+    moduleFormat: opts.moduleFormat,
+    assetRoots: opts.assetRoots,
   });
 
   this._transformer = new Transformer({
@@ -118,10 +123,18 @@ Packager.prototype.getDependencies = function(main, isDev) {
 };
 
 Packager.prototype._transformModule = function(module) {
+  var transform;
+
+  if (module.isAsset) {
+    transform = q(generateAssetModule(module));
+  } else {
+    transform = this._transformer.loadFileAndTransform(
+      path.resolve(module.path)
+    );
+  }
+
   var resolver = this._resolver;
-  return this._transformer.loadFileAndTransform(
-    path.resolve(module.path)
-  ).then(function(transformed) {
+  return transform.then(function(transformed) {
     return _.extend(
       {},
       transformed,
@@ -140,5 +153,17 @@ Packager.prototype.getGraphDebugInfo = function() {
   return this._resolver.getDebugInfo();
 };
 
+function generateAssetModule(module) {
+  var code = 'module.exports = ' + JSON.stringify({
+    uri: module.id.replace(/^[^!]+!/, ''),
+    isStatic: true,
+  }) + ';';
+
+  return {
+    code: code,
+    sourceCode: code,
+    sourcePath: module.path,
+  };
+}
 
 module.exports = Packager;
