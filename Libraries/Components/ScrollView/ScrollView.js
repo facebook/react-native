@@ -183,7 +183,7 @@ var ScrollView = React.createClass({
 
   scrollTo: function(destY, destX) {
     RKUIManager.scrollTo(
-      ReactIOSTagHandles.rootNodeIDToTag[this._rootNodeID],
+      this.getNodeHandle(),
       destX || 0,
       destY || 0
     );
