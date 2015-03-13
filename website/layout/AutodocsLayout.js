@@ -100,6 +100,20 @@ var APIDoc = React.createClass({
       .join('\n');
   },
 
+  renderTypehint: function(typehint) {
+    try {
+      var typehint = JSON.parse(typehint);
+    } catch(e) {
+      return typehint;
+    }
+
+    if (typehint.type === 'simple') {
+      return typehint.value;
+    }
+
+    return ':(' + JSON.stringify(typehint);
+  },
+
   renderMethod: function(method) {
     return (
       <div className="prop" key={method.name}>
@@ -110,15 +124,10 @@ var APIDoc = React.createClass({
           {method.name}(
           <span className="propType">
             {method.params
-              .map(function(param) {
+              .map((param) => {
                 var res = param.name;
                 if (param.typehint) {
-                  try {
-                    var typehint = JSON.parse(param.typehint).value;
-                  } catch(e) {
-                    var typehint = param.typehint;
-                  }
-                  res += ': ' + typehint;
+                  res += ': ' + this.renderTypehint(param.typehint);
                 }
                 return res;
               })
@@ -126,6 +135,9 @@ var APIDoc = React.createClass({
           </span>
           )
         </Header>
+        {method.docblock && <Marked>
+          {this.removeCommentsFromDocblock(method.docblock)}
+        </Marked>}
       </div>
     );
   },

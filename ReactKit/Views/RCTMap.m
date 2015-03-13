@@ -2,6 +2,7 @@
 
 #import "RCTMap.h"
 
+#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -90,18 +91,9 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   if (region) {
     MKCoordinateRegion coordinateRegion = self.region;
-    if ([region[@"latitude"] isKindOfClass:[NSNumber class]]) {
-      coordinateRegion.center.latitude = [region[@"latitude"] doubleValue];
-    } else {
-      RCTLogError(@"region must include numeric latitude, got: %@", region);
-      return;
-    }
-    if ([region[@"longitude"] isKindOfClass:[NSNumber class]]) {
-      coordinateRegion.center.longitude = [region[@"longitude"] doubleValue];
-    } else {
-      RCTLogError(@"region must include numeric longitude, got: %@", region);
-      return;
-    }
+    coordinateRegion.center.latitude = [RCTConvert double:region[@"latitude"]];
+    coordinateRegion.center.longitude = [RCTConvert double:region[@"longitude"]];
+
     if ([region[@"latitudeDelta"] isKindOfClass:[NSNumber class]]) {
       coordinateRegion.span.latitudeDelta = [region[@"latitudeDelta"] doubleValue];
     }
