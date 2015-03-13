@@ -57,6 +57,8 @@ function setupDocumentShim() {
   }
 }
 
+var sourceMapPromise;
+
 function handleErrorWithRedBox(e) {
   var RKExceptionsManager = require('NativeModules').RKExceptionsManager;
   var errorToString = require('errorToString');
@@ -73,13 +75,14 @@ function handleErrorWithRedBox(e) {
   if (RKExceptionsManager) {
     RKExceptionsManager.reportUnhandledException(e.message, errorToString(e));
     if (__DEV__) {
-      try {
-        var sourceMapInstance = loadSourceMap();
-        var prettyStack = errorToString(e, sourceMapInstance);
-        RKExceptionsManager.updateExceptionMessage(e.message, prettyStack);
-      } catch (ee) {
-        GLOBAL.console.error('#CLOWNTOWN (error while displaying error): ' + ee.message);
-      }
+      (sourceMapPromise = sourceMapPromise || loadSourceMap())
+        .then(map => {
+          var prettyStack = errorToString(e, map);
+          RKExceptionsManager.updateExceptionMessage(e.message, prettyStack);
+        })
+        .then(null, error => {
+          GLOBAL.console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
+        });
     }
   }
 }
