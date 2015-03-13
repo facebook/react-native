@@ -15,20 +15,20 @@ var {
   View,
 } = React;
 
-var GameBoard = require('./GameBoard');
+var GameBoard = require('GameBoard');
 var TouchableBounce = require('TouchableBounce');
 
 var BOARD_PADDING = 3;
 var CELL_MARGIN = 4;
 var CELL_SIZE = 60;
 
-var Cell = React.createClass({
-  render: function() {
+class Cell extends React.Component {
+  render() {
     return <View style={styles.cell} />;
   }
-});
+}
 
-var Board = React.createClass({
+class Board extends React.Component {
   render() {
     return (
       <View style={styles.board}>
@@ -40,12 +40,10 @@ var Board = React.createClass({
       </View>
     );
   }
-});
+}
 
-var Tile = React.createClass({
-  mixins: [Animation.Mixin],
-
-  calculateOffset() {
+class Tile extends React.Component {
+  calculateOffset(): {top: number; left: number; opacity: number} {
     var tile = this.props.tile;
 
     var pos = (i) => {
@@ -59,6 +57,7 @@ var Tile = React.createClass({
     var offset = {
       top: pos(tile.toRow()),
       left: pos(tile.toColumn()),
+      opacity: 1,
     };
 
     if (tile.isNew()) {
@@ -68,18 +67,18 @@ var Tile = React.createClass({
         animationPosition(tile.toColumn()),
         animationPosition(tile.toRow()),
       ];
-      this.startAnimation('this', 100, 0, 'easeInOutQuad', {position: point});
+      Animation.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {position: point});
     }
 
     return offset;
-  },
+  }
 
   componentDidMount() {
     setTimeout(() => {
-      this.startAnimation('this', 300, 0, 'easeInOutQuad', {scaleXY: [1, 1]});
-      this.startAnimation('this', 100, 0, 'easeInOutQuad', {opacity: 1});
+      Animation.startAnimation(this.refs['this'], 300, 0, 'easeInOutQuad', {scaleXY: [1, 1]});
+      Animation.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {opacity: 1});
     }, 0);
-  },
+  }
 
   render() {
     var tile = this.props.tile;
@@ -103,9 +102,9 @@ var Tile = React.createClass({
       </View>
     );
   }
-});
+}
 
-var GameEndOverlay = React.createClass({
+class GameEndOverlay extends React.Component {
   render() {
     var board = this.props.board;
 
@@ -127,27 +126,30 @@ var GameEndOverlay = React.createClass({
       </View>
     );
   }
-});
+}
 
-var Game2048 = React.createClass({
-  getInitialState() {
-    return { board: new GameBoard() };
-  },
+class Game2048 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      board: new GameBoard(),
+    };
+  }
 
   restartGame() {
-    this.setState(this.getInitialState());
-  },
+    this.setState({board: new GameBoard()});
+  }
 
-  handleTouchStart(event) {
+  handleTouchStart(event: Object) {
     if (this.state.board.hasWon()) {
       return;
     }
 
     this.startX = event.nativeEvent.pageX;
     this.startY = event.nativeEvent.pageY;
-  },
+  }
 
-  handleTouchEnd(event) {
+  handleTouchEnd(event: Object) {
     if (this.state.board.hasWon()) {
       return;
     }
@@ -165,7 +167,7 @@ var Game2048 = React.createClass({
     if (direction !== -1) {
       this.setState({board: this.state.board.move(direction)});
     }
-  },
+  }
 
   render() {
     var tiles = this.state.board.tiles
@@ -175,16 +177,16 @@ var Game2048 = React.createClass({
     return (
       <View
         style={styles.container}
-        onTouchStart={this.handleTouchStart}
-        onTouchEnd={this.handleTouchEnd}>
+        onTouchStart={(event) => this.handleTouchStart(event)}
+        onTouchEnd={(event) => this.handleTouchEnd(event)}>
         <Board>
           {tiles}
         </Board>
-        <GameEndOverlay board={this.state.board} onRestart={this.restartGame} />
+        <GameEndOverlay board={this.state.board} onRestart={() => this.restartGame()} />
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
