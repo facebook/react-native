@@ -8,6 +8,7 @@
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTRedBox.h"
+#import "RCTSourceCode.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
@@ -200,6 +201,10 @@ static Class _globalExecutorClass;
     }
 
     // Success!
+    RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
+    sourceCodeModule.scriptURL = _scriptURL;
+    sourceCodeModule.scriptText = rawText;
+
     [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *error) {
       dispatch_async(dispatch_get_main_queue(), ^{
         [self bundleFinishedLoading:error];
