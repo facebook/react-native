@@ -60,11 +60,11 @@ RCT_REMAP_VIEW_PROPERTY(region, JSONRegion)
 
 - (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-  [self _regionChanged:mapView];
-  [self _emitRegionChangeEvent:mapView continuous:NO];
-
   [mapView.regionChangeObserveTimer invalidate];
   mapView.regionChangeObserveTimer = nil;
+
+  [self _regionChanged:mapView];
+  [self _emitRegionChangeEvent:mapView continuous:NO];
 }
 
 #pragma mark Private
