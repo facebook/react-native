@@ -43,6 +43,10 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  assetRoots: {
+    type: 'array',
+    required: false,
+  },
 });
 
 function Server(options) {
