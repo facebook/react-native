@@ -506,7 +506,9 @@ var NavigatorIOS = React.createClass({
           backButtonTitle={route.backButtonTitle}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
-          tintColor={this.props.tintColor}>
+          tintColor={this.props.tintColor}
+          barTintColor={this.props.barTintColor}
+          titleTextColor={this.props.titleTextColor}>
           <Component
             navigator={this.navigator}
             route={route}
