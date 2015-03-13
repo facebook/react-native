@@ -180,9 +180,9 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
   });
 }
 
-- (void)getCurrentPosition:(RCTResponseSenderBlock)successBlock
-         withErrorCallback:(RCTResponseSenderBlock)errorBlock
-                   options:(NSDictionary *)optionsJSON
+- (void)getCurrentPosition:(NSDictionary *)optionsJSON
+       withSuccessCallback:(RCTResponseSenderBlock)successBlock
+             errorCallback:(RCTResponseSenderBlock)errorBlock
 {
   RCT_EXPORT();
 
