@@ -343,10 +343,14 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
+  CGPoint contentOffset = _scrollView.contentOffset;
+
   _contentInset = contentInset;
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_scrollView
                       updateOffset:NO];
+
+  _scrollView.contentOffset = contentOffset;
 }
 
 - (void)scrollToOffset:(CGPoint)offset
@@ -570,6 +574,39 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   }
 }
 
+// Note: setting several properties of UIScrollView has the effect of
+// resetting its contentOffset to {0, 0}. To prevent this, we generate
+// setters here that will record the contentOffset beforehand, and
+// restore it after the property has been set.
+
+#define RCT_SET_AND_PRESERVE_OFFSET(setter, type)    \
+- (void)setter:(type)value                           \
+{                                                    \
+  CGPoint contentOffset = _scrollView.contentOffset; \
+  [_scrollView setter:value];                        \
+  _scrollView.contentOffset = contentOffset;         \
+}
+
+RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceHorizontal, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceVertical, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setBounces, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setBouncesZoom, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setCanCancelContentTouches, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setDecelerationRate, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setDirectionalLockEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, UIScrollViewKeyboardDismissMode)
+RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, CGFloat);
+RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
+
+#pragma mark - Forward methods and properties to underlying UIScrollView
+
 - (BOOL)respondsToSelector:(SEL)aSelector
 {
   return [super respondsToSelector:aSelector] || [_scrollView respondsToSelector:aSelector];
@@ -577,13 +614,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
-  // Pipe unrecognized properties to scrollview
   [_scrollView setValue:value forKey:key];
 }
 
 - (id)valueForUndefinedKey:(NSString *)key
 {
-  // Pipe unrecognized properties from scrollview
   return [_scrollView valueForKey:key];
 }
 
