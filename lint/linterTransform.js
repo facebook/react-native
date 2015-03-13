@@ -47,7 +47,7 @@ function setLinterTransform(transformSource) {
   eslint.linter.verify = function(text, config, filename, saveState) {
     var transformedText;
     try {
-      transformedText = transformSource(text);
+      transformedText = transformSource(text, filename);
     } catch (e) {
       return [{
         severity: 2,

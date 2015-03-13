@@ -6,7 +6,7 @@
 'use strict';
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTLocationObserver = require('NativeModulesDeprecated').RKLocationObserver;
+var RCTLocationObserver = require('NativeModules').RCTLocationObserver;
 
 var invariant = require('invariant');
 var logError = require('logError');
@@ -34,9 +34,9 @@ var Geolocation = {
       'Must provide a valid geo_success callback.'
     );
     RCTLocationObserver.getCurrentPosition(
+      geo_options || {},
       geo_success,
-      geo_error || logError,
-      geo_options || {}
+      geo_error || logError
     );
   },
 

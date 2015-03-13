@@ -47,17 +47,6 @@ var keyboardDismissModeConstants = {
  */
 
 var ScrollView = React.createClass({
-
-  // Only for compatibility with Android which is not yet up to date,
-  // DO NOT ADD NEW CALL SITES!
-  statics: {
-    keyboardDismissMode: {
-      None: 'none',
-      Interactive: 'interactive',
-      OnDrag: 'onDrag',
-    },
-  },
-
   propTypes: {
     automaticallyAdjustContentInsets: PropTypes.bool, // true
     contentInset: EdgeInsetsPropType, // zeros
@@ -194,7 +183,7 @@ var ScrollView = React.createClass({
 
   scrollTo: function(destY, destX) {
     RKUIManager.scrollTo(
-      ReactIOSTagHandles.rootNodeIDToTag[this._rootNodeID],
+      this.getNodeHandle(),
       destX || 0,
       destY || 0
     );
