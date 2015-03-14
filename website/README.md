@@ -6,14 +6,6 @@ The first time, get all the dependencies loaded via
 npm install
 ```
 
-You also have to run `npm install` inside the `react-docgen` folder. This is only temporary until `react-docgen` is available as npm module.
-
-```
-cd react-docgen
-npm install
-cd ..
-```
-
 Then, run the server via
 
 ```

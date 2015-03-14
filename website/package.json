@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "postinstall": "cd react-docgen && npm install"
   },
   "dependencies": {
     "react": "~0.12.0",
