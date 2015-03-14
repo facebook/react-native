@@ -9,6 +9,7 @@ var ReactNative = {
   ...require('React'),
   Animation: require('Animation'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  AlertIOS: require('AlertIOS'),
   AppRegistry: require('AppRegistry'),
   AppState: require('AppState'),
   AppStateIOS: require('AppStateIOS'),
@@ -36,6 +37,7 @@ var ReactNative = {
   TouchableOpacity: require('TouchableOpacity'),
   TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
   View: require('View'),
+  WebView: require('WebView'),
   invariant: require('invariant'),
   ix: require('ix'),
 };
