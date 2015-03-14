@@ -8,7 +8,7 @@ native implementation.  We are committed to improving and expanding the
 capabilities of this project as fast as we can, and look forward to working with
 the community.
 
-# React Native
+# React Native [![Build Status](https://magnum.travis-ci.com/facebook/react-native.svg?token=L5Egb3B4dyQzH5wDijCB&branch=master)](https://magnum.travis-ci.com/facebook/react-native)
 
 Our first React Native implementation is `ReactKit`, targeting iOS.  We are also
 working on an Android implementation which we will release later.  `ReactKit`
