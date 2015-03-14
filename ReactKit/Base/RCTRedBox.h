@@ -11,6 +11,8 @@
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack;
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack;
 
+- (NSString *)currentErrorMessage;
+
 - (void)dismiss;
 
 @end
