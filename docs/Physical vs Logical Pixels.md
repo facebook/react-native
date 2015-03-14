@@ -1,3 +1,11 @@
+---
+id: pixels
+title: Physical vs Logical Pixels
+layout: docs
+category: Guides
+permalink: docs/pixels.html
+next: style
+---
 
 
 ## Pixel Grid Snapping
