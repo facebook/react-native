@@ -38,7 +38,7 @@ var deepDiffer = function(one: any, two: any): bool {
   for (var twoKey in two) {
     // The only case we haven't checked yet is keys that are in two but aren't
     // in one, which means they are different.
-    if (one[twoKey] === undefined) {
+    if (one[twoKey] === undefined && two[twoKey] !== undefined) {
       return true;
     }
   }

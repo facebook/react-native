@@ -34,10 +34,10 @@ RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator)
 RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices);
 RCT_EXPORT_VIEW_PROPERTY(throttleScrollCallbackMS);
-RCT_EXPORT_VIEW_PROPERTY(zoomScale); // TODO: this needs to be set first because it resets other props like contentOffset
+RCT_EXPORT_VIEW_PROPERTY(zoomScale);
 RCT_EXPORT_VIEW_PROPERTY(contentInset);
 RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets);
-RCT_EXPORT_VIEW_PROPERTY(contentOffset);
+RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset);
 
 - (NSDictionary *)constantsToExport
 {

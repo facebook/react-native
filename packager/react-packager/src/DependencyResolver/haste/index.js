@@ -17,7 +17,6 @@ var DEFINE_MODULE_CODE = [
 ].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
-
 var REL_REQUIRE_STMT = /require\(['"]([\.\/0-9A-Z_$\-]*)['"]\)/gi;
 
 var validateOpts = declareOpts({
@@ -40,6 +39,10 @@ var validateOpts = declareOpts({
     type: 'string',
     default: 'haste',
   },
+  assetRoots: {
+    type: 'array',
+    default: [],
+  },
 });
 
 function HasteDependencyResolver(options) {
@@ -51,11 +54,12 @@ function HasteDependencyResolver(options) {
 
   this._depGraph = new DependencyGraph({
     roots: opts.projectRoots,
+    assetRoots: opts.assetRoots,
     ignoreFilePath: function(filepath) {
       return filepath.indexOf('__tests__') !== -1 ||
         (opts.blacklistRE && opts.blacklistRE.test(filepath));
     },
-    fileWatcher: this._fileWatcher
+    fileWatcher: this._fileWatcher,
   });
 
 

@@ -2,6 +2,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTBridge.h"
+
 @interface RCTRootView : UIView
 
 /**
@@ -20,12 +22,19 @@
 @property (nonatomic, copy) NSString *moduleName;
 
 /**
+ * A block that returns an array of pre-allocated modules.  These
+ * modules will take precedence over any automatically registered
+ * modules of the same name.
+ */
+@property (nonatomic, copy) RCTBridgeModuleProviderBlock moduleProvider;
+
+/**
  * The default properties to apply to the view when the script bundle
  * is first loaded. Defaults to nil/empty.
  */
 @property (nonatomic, copy) NSDictionary *initialProperties;
 
-/** 
+/**
  * The class of the RCTJavaScriptExecutor to use with this view.
  * If not specified, it will default to using RCTContextExecutor.
  * Changes will take effect next time the bundle is reloaded.

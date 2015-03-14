@@ -56,6 +56,40 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should get dependencies', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("image!a")'
+          ].join('\n'),
+          'imgs': {
+            'a.png': ''
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetRoots: ['/root/imgs']
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: 'index', path: '/root/index.js', dependencies: ['image!a']},
+            {  id: 'image!a',
+               path: '/root/imgs/a.png',
+               dependencies: [],
+               isAsset: true
+            },
+          ]);
+      });
+    });
+
     pit('should get recursive dependencies', function() {
       var root = '/root';
       fs.__setMockFilesystem({

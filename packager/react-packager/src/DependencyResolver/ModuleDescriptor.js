@@ -22,6 +22,8 @@ function ModuleDescriptor(fields) {
 
   this.isPolyfill = fields.isPolyfill || false;
 
+  this.isAsset = fields.isAsset || false;
+
   this._fields = fields;
 }
 

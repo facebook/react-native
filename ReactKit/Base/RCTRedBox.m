@@ -6,6 +6,8 @@
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
 
+@property (nonatomic, copy) NSString *lastErrorMessage;
+
 @end
 
 @implementation RCTRedBoxWindow
@@ -13,7 +15,6 @@
   UIView *_rootView;
   UITableView *_stackTraceTableView;
 
-  NSString *_lastErrorMessage;
   NSArray *_lastStackTrace;
 
   UITableViewCell *_cachedMessageCell;
@@ -287,6 +288,15 @@
 
 #endif
 
+}
+
+- (NSString *)currentErrorMessage
+{
+  if (_window && !_window.hidden) {
+    return _window.lastErrorMessage;
+  } else {
+    return nil;
+  }
 }
 
 - (void)dismiss
