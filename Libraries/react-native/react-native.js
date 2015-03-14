@@ -37,6 +37,7 @@ var ReactNative = {
   TouchableOpacity: require('TouchableOpacity'),
   TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
   View: require('View'),
+  WebView: require('WebView'),
   invariant: require('invariant'),
   ix: require('ix'),
 };
