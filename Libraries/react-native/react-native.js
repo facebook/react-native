@@ -9,6 +9,7 @@ var ReactNative = {
   ...require('React'),
   Animation: require('Animation'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  AlertIOS: require('AlertIOS'),
   AppRegistry: require('AppRegistry'),
   AppState: require('AppState'),
   AppStateIOS: require('AppStateIOS'),

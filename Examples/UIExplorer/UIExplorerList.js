@@ -41,6 +41,7 @@ var EXAMPLES = [
   require('./CameraRollExample.ios'),
   require('./MapViewExample'),
   require('./AppStateIOSExample'),
+  require('./AlertIOSExample'),
   require('./AdSupportIOSExample'),
   require('./AppStateExample'),
   require('./ActionSheetIOSExample'),
