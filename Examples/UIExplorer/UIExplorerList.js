@@ -40,6 +40,7 @@ var EXAMPLES = [
   require('./AsyncStorageExample'),
   require('./CameraRollExample.ios'),
   require('./MapViewExample'),
+  require('./WebViewExample'),
   require('./AppStateIOSExample'),
   require('./AlertIOSExample'),
   require('./AdSupportIOSExample'),
