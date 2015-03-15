@@ -18,7 +18,7 @@
 
 RCT_EXPORT_VIEW_PROPERTY(capInsets)
 RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
-RCT_CUSTOM_VIEW_PROPERTY(src, RCTStaticImage *)
+RCT_CUSTOM_VIEW_PROPERTY(src, RCTStaticImage)
 {
   if (json) {
     if ([[[json description] pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
@@ -30,7 +30,7 @@ RCT_CUSTOM_VIEW_PROPERTY(src, RCTStaticImage *)
     view.image = defaultView.image;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage *)
+RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage)
 {
   if (json) {
     view.renderingMode = UIImageRenderingModeAlwaysTemplate;
@@ -40,7 +40,7 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage *)
     view.tintColor = defaultView.tintColor;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(imageTag, RCTStaticImage *)
+RCT_CUSTOM_VIEW_PROPERTY(imageTag, RCTStaticImage)
 {
   if (json) {
     [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] callback:^(NSError *error, UIImage *image) {

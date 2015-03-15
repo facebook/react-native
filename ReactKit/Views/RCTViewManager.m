@@ -78,11 +78,11 @@ RCT_REMAP_VIEW_PROPERTY(borderColor, layer.borderColor);
 RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius)
 RCT_REMAP_VIEW_PROPERTY(borderWidth, layer.borderWidth)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, UIView *)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, UIView)
 {
   view.clipsToBounds = json ? ![RCTConvert css_overflow:json] : defaultView.clipsToBounds;
 }
-RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView *)
+RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
     view.pointerEvents = json ? [RCTConvert RCTPointerEvents:json] : defaultView.pointerEvents;
@@ -112,32 +112,32 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView *)
 
 // ShadowView properties
 
-RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowView *)
+RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowView)
 {
   view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
   view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(flexDirection, RCTShadowView *)
+RCT_CUSTOM_SHADOW_PROPERTY(flexDirection, RCTShadowView)
 {
   view.flexDirection = json? [RCTConvert css_flex_direction_t:json] : defaultView.flexDirection;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(flexWrap, RCTShadowView *)
+RCT_CUSTOM_SHADOW_PROPERTY(flexWrap, RCTShadowView)
 {
   view.flexWrap = json ? [RCTConvert css_wrap_type_t:json] : defaultView.flexWrap;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(justifyContent, RCTShadowView *)
+RCT_CUSTOM_SHADOW_PROPERTY(justifyContent, RCTShadowView)
 {
   view.justifyContent = json ? [RCTConvert css_justify_t:json] : defaultView.justifyContent;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(alignItems, RCTShadowView *)
+RCT_CUSTOM_SHADOW_PROPERTY(alignItems, RCTShadowView)
 {
   view.alignItems = json ? [RCTConvert css_align_t:json] : defaultView.alignItems;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(alignSelf, RCTShadowView *)
+RCT_CUSTOM_SHADOW_PROPERTY(alignSelf, RCTShadowView)
 {
   view.alignSelf = json ? [RCTConvert css_align_t:json] : defaultView.alignSelf;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(position, RCTShadowView *)
+RCT_CUSTOM_SHADOW_PROPERTY(position, RCTShadowView)
 {
   view.positionType = json ? [RCTConvert css_position_type_t:json] : defaultView.positionType;
 }
