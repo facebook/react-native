@@ -4,6 +4,7 @@
  */
 
 var DocsSidebar = require('DocsSidebar');
+var H = require('Header');
 var Header = require('Header');
 var Marked = require('Marked');
 var React = require('React');
@@ -14,6 +15,9 @@ var slugify = require('slugify');
 var ComponentDoc = React.createClass({
   renderType: function(type) {
     if (type.name === 'enum') {
+      if (typeof type.value === 'string') {
+        return type.value;
+      }
       return 'enum(' + type.value.map((v => v.value)).join(', ') + ')';
     }
 
@@ -81,6 +85,7 @@ var ComponentDoc = React.createClass({
         <Marked>
           {content.description}
         </Marked>
+        <H level={3}>Props</H>
         {this.renderProps(content.props, content.composes)}
       </div>
     );
@@ -100,6 +105,19 @@ var APIDoc = React.createClass({
       .join('\n');
   },
 
+  renderTypehintRec: function(typehint) {
+    if (typehint.type === 'simple') {
+      return typehint.value;
+    }
+
+    if (typehint.type === 'generic') {
+      return this.renderTypehintRec(typehint.value[0]) + '<' + this.renderTypehintRec(typehint.value[1]) + '>';
+    }
+
+    return JSON.stringify(typehint);
+
+  },
+
   renderTypehint: function(typehint) {
     try {
       var typehint = JSON.parse(typehint);
@@ -107,11 +125,7 @@ var APIDoc = React.createClass({
       return typehint;
     }
 
-    if (typehint.type === 'simple') {
-      return typehint.value;
-    }
-
-    return ':(' + JSON.stringify(typehint);
+    return this.renderTypehintRec(typehint);
   },
 
   renderMethod: function(method) {
@@ -161,8 +175,8 @@ var APIDoc = React.createClass({
         <Marked>
           {this.removeCommentsFromDocblock(content.docblock)}
         </Marked>
+        <H level={3}>Methods</H>
         {this.renderMethods(content.methods)}
-        <pre>{JSON.stringify(content, null, 2)}</pre>
       </div>
     );
   }
