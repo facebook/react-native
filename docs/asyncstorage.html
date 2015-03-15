@@ -1,0 +1,246 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>React Native | Build Native Apps Using React</title><meta name="viewport" content="width=device-width"><meta property="og:title" content="React Native | Build Native Apps Using React"><meta property="og:type" content="website"><meta property="og:url" content="http://facebook.github.io/react-native/index.html"><meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png"><meta property="og:description" content="Build Native Apps Using React"><link rel="shortcut icon" href="/react-native/img/favicon.png"><link rel="stylesheet" href="/react-native/css/react-native.css"><script type="text/javascript" src="//use.typekit.net/vqa1hcx.js"></script><script type="text/javascript">try{Typekit.load();}catch(e){}</script></head><body><div class="container"><div class="nav-main"><div class="wrap"><a class="nav-home" href="/react-native/"><img src="/react-native/img/logo.png">React Native</a><ul class="nav-site"><li><a href="/react-native/docs/getting-started.html#content" class="active">docs</a></li><li><a href="/react-native/support.html" class="">support</a></li><li><a href="http://github.com/facebook/react-native" class="">github</a></li></ul></div></div><section class="content wrap documentationContent"><div class="nav-docs"><div class="nav-docs-section"><h3>Quick Start</h3><ul><li><a style="margin-left:0;" class="" href="/react-native/docs/getting-started.html#content">Getting Started</a></li></ul></div><div class="nav-docs-section"><h3>Guides</h3><ul><li><a style="margin-left:0;" class="" href="/react-native/docs/network.html#content">Network</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/pixels.html#content">Physical vs Logical Pixels</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/style.html#content">Style</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/timers.html#content">Timers</a></li></ul></div><div class="nav-docs-section"><h3>components</h3><ul><li><a style="margin-left:0;" class="" href="/react-native/docs/activityindicatorios.html#content">ActivityIndicatorIOS</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/datepickerios.html#content">DatePickerIOS</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/expandingtext.html#content">ExpandingText</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/image.html#content">Image</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/listview.html#content">ListView</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/mapview.html#content">MapView</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/navigatorios.html#content">NavigatorIOS</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/pickerios.html#content">PickerIOS</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/scrollview.html#content">ScrollView</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/slider.html#content">Slider</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/switchios.html#content">SwitchIOS</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/tabbarios.html#content">TabBarIOS</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/text.html#content">Text</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/textinput.html#content">TextInput</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/touchablehighlight.html#content">TouchableHighlight</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/touchableopacity.html#content">TouchableOpacity</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/touchablewithoutfeedback.html#content">TouchableWithoutFeedback</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/view.html#content">View</a></li></ul></div><div class="nav-docs-section"><h3>apis</h3><ul><li><a style="margin-left:0;" class="" href="/react-native/docs/animation.html#content">Animation</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/appregistry.html#content">AppRegistry</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/appstate.html#content">AppState</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/appstateios.html#content">AppStateIOS</a></li><li><a style="margin-left:0;" class="active" href="/react-native/docs/asyncstorage.html#content">AsyncStorage</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/cameraroll.html#content">CameraRoll</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/layoutanimation.html#content">LayoutAnimation</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/pixelratio.html#content">PixelRatio</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/statusbarios.html#content">StatusBarIOS</a></li><li><a style="margin-left:0;" class="" href="/react-native/docs/stylesheet.html#content">StyleSheet</a></li></ul></div></div><div class="inner-content"><a id="content"></a><h1>AsyncStorage</h1><div><div><p>AsyncStorage is a simple, asynchronous, persistent, global, key-value storage
+system.  It should be used instead of LocalStorage.</p><p>It is recommended that you use an abstraction on top of AsyncStorage instead
+of AsyncStorage directly for anything more than light usage since it
+operates globally.</p><p>This JS code is a simple facad over the native iOS implementation to provide
+a clear JS API, real Error objects, and simple non-multi functions.</p></div><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="getitem"></a><span class="propType">static </span>getItem(<span class="propType">key: string, callback: (error: ?Error, result: ?string) =&gt; void</span>) <a class="hash-link" href="#getitem">#</a></h4><div><p>Fetches <code>key</code> and passes the result to <code>callback</code>, along with an <code>Error</code> if
+there is any.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="setitem"></a><span class="propType">static </span>setItem(<span class="propType">key: string, value: string, callback: ?(error: ?Error) =&gt; void</span>) <a class="hash-link" href="#setitem">#</a></h4><div><p>Sets <code>value</code> for <code>key</code> and calls <code>callback</code> on completion, along with an
+<code>Error</code> if there is any.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="removeitem"></a><span class="propType">static </span>removeItem(<span class="propType">key: string, callback: ?(error: ?Error) =&gt; void</span>) <a class="hash-link" href="#removeitem">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="mergeitem"></a><span class="propType">static </span>mergeItem(<span class="propType">key: string, value: string, callback: ?(error: ?Error) =&gt; void</span>) <a class="hash-link" href="#mergeitem">#</a></h4><div><p>Merges existing value with input value, assuming they are stringified json.</p><p>Not supported by all native implementations.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="clear"></a><span class="propType">static </span>clear(<span class="propType">callback: ?(error: ?Error) =&gt; void</span>) <a class="hash-link" href="#clear">#</a></h4><div><p>Erases <em>all</em> AsyncStorage for all clients, libraries, etc.  You probably
+don&#x27;t want to call this - use removeItem or multiRemove to clear only your
+own keys instead.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="getallkeys"></a><span class="propType">static </span>getAllKeys(<span class="propType">callback: (error: ?Error) =&gt; void</span>) <a class="hash-link" href="#getallkeys">#</a></h4><div><p>Gets <em>all</em> keys known to the system, for all callers, libraries, etc.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="multiget"></a><span class="propType">static </span>multiGet(<span class="propType">keys: :({&quot;type&quot;:&quot;generic&quot;,&quot;value&quot;:[{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;Array&quot;,&quot;length&quot;:1},{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;string&quot;,&quot;length&quot;:1}],&quot;length&quot;:4}, callback: (errors: ?Array&lt;Error&gt;, result: ?Array&lt;Array&lt;string&gt;&gt;) =&gt; void</span>) <a class="hash-link" href="#multiget">#</a></h4><div><p>multiGet invokes callback with an array of key-value pair arrays that
+matches the input format of multiSet.</p><p>multiGet([&#x27;k1&#x27;, &#x27;k2&#x27;], cb) -&gt; cb([[&#x27;k1&#x27;, &#x27;val1&#x27;], [&#x27;k2&#x27;, &#x27;val2&#x27;]])</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="multiset"></a><span class="propType">static </span>multiSet(<span class="propType">keyValuePairs: :({&quot;type&quot;:&quot;generic&quot;,&quot;value&quot;:[{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;Array&quot;,&quot;length&quot;:1},{&quot;type&quot;:&quot;generic&quot;,&quot;value&quot;:[{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;Array&quot;,&quot;length&quot;:1},{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;string&quot;,&quot;length&quot;:1}],&quot;length&quot;:4}],&quot;length&quot;:7}, callback: ?(errors: ?Array&lt;Error&gt;) =&gt; void</span>) <a class="hash-link" href="#multiset">#</a></h4><div><p>multiSet and multiMerge take arrays of key-value array pairs that match
+the output of multiGet, e.g.</p><p>multiSet([[&#x27;k1&#x27;, &#x27;val1&#x27;], [&#x27;k2&#x27;, &#x27;val2&#x27;]], cb);</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="multiremove"></a><span class="propType">static </span>multiRemove(<span class="propType">keys: :({&quot;type&quot;:&quot;generic&quot;,&quot;value&quot;:[{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;Array&quot;,&quot;length&quot;:1},{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;string&quot;,&quot;length&quot;:1}],&quot;length&quot;:4}, callback: ?(errors: ?Array&lt;Error&gt;) =&gt; void</span>) <a class="hash-link" href="#multiremove">#</a></h4><div><p>Delete all the keys in the <code>keys</code> array.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="multimerge"></a><span class="propType">static </span>multiMerge(<span class="propType">keyValuePairs: :({&quot;type&quot;:&quot;generic&quot;,&quot;value&quot;:[{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;Array&quot;,&quot;length&quot;:1},{&quot;type&quot;:&quot;generic&quot;,&quot;value&quot;:[{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;Array&quot;,&quot;length&quot;:1},{&quot;type&quot;:&quot;simple&quot;,&quot;value&quot;:&quot;string&quot;,&quot;length&quot;:1}],&quot;length&quot;:4}],&quot;length&quot;:7}, callback: ?(errors: ?Array&lt;Error&gt;) =&gt; void</span>) <a class="hash-link" href="#multimerge">#</a></h4><div><p>Merges existing values with input values, assuming they are stringified
+json.</p><p>Not supported by all native implementations.</p></div></div></div><pre>{
+  &quot;methods&quot;: [
+    {
+      &quot;line&quot;: 32,
+      &quot;source&quot;: &quot;getItem: function(\n    key: string,\n    callback: (error: ?Error, result: ?string) =&gt; void\n  ): void {\n    RKAsyncStorage.multiGet([key], function(errors, result) {\n      // Unpack result to get value from [[key,value]]\n      var value = (result &amp;&amp; result[0] &amp;&amp; result[0][1]) ? result[0][1] : null;\n      callback((errors &amp;&amp; convertError(errors[0])) || null, value);\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * Fetches `key` and passes the result to `callback`, along with an `Error` if\n   * there is any.\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}&quot;,
+          &quot;name&quot;: &quot;key&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;(error: ?Error, result: ?string) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;getItem&quot;
+    },
+    {
+      &quot;line&quot;: 47,
+      &quot;source&quot;: &quot;setItem: function(\n    key: string,\n    value: string,\n    callback: ?(error: ?Error) =&gt; void\n  ): void {\n    RKAsyncStorage.multiSet([[key,value]], function(errors) {\n      callback &amp;&amp; callback((errors &amp;&amp; convertError(errors[0])) || null);\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * Sets `value` for `key` and calls `callback` on completion, along with an\n   * `Error` if there is any.\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}&quot;,
+          &quot;name&quot;: &quot;key&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}&quot;,
+          &quot;name&quot;: &quot;value&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;?(error: ?Error) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;setItem&quot;
+    },
+    {
+      &quot;line&quot;: 57,
+      &quot;source&quot;: &quot;removeItem: function(\n    key: string,\n    callback: ?(error: ?Error) =&gt; void\n  ): void {\n    RKAsyncStorage.multiRemove([key], function(errors) {\n      callback &amp;&amp; callback((errors &amp;&amp; convertError(errors[0])) || null);\n    });\n  }&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}&quot;,
+          &quot;name&quot;: &quot;key&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;?(error: ?Error) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;removeItem&quot;
+    },
+    {
+      &quot;line&quot;: 71,
+      &quot;source&quot;: &quot;mergeItem: function(\n    key: string,\n    value: string,\n    callback: ?(error: ?Error) =&gt; void\n  ): void {\n    RKAsyncStorage.multiMerge([[key,value]], function(errors) {\n      callback &amp;&amp; callback((errors &amp;&amp; convertError(errors[0])) || null);\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * Merges existing value with input value, assuming they are stringified json.\n   *\n   * Not supported by all native implementations.\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}&quot;,
+          &quot;name&quot;: &quot;key&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}&quot;,
+          &quot;name&quot;: &quot;value&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;?(error: ?Error) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;mergeItem&quot;
+    },
+    {
+      &quot;line&quot;: 86,
+      &quot;source&quot;: &quot;clear: function(callback: ?(error: ?Error) =&gt; void) {\n    RKAsyncStorage.clear(function(error) {\n      callback &amp;&amp; callback(convertError(error));\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * Erases *all* AsyncStorage for all clients, libraries, etc.  You probably\n   * don&#x27;t want to call this - use removeItem or multiRemove to clear only your\n   * own keys instead.\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;?(error: ?Error) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: null,
+      &quot;name&quot;: &quot;clear&quot;
+    },
+    {
+      &quot;line&quot;: 95,
+      &quot;source&quot;: &quot;getAllKeys: function(callback: (error: ?Error) =&gt; void) {\n    RKAsyncStorage.getAllKeys(function(error, keys) {\n      callback(convertError(error), keys);\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * Gets *all* keys known to the system, for all callers, libraries, etc.\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;(error: ?Error) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: null,
+      &quot;name&quot;: &quot;getAllKeys&quot;
+    },
+    {
+      &quot;line&quot;: 117,
+      &quot;source&quot;: &quot;multiGet: function(\n    keys: Array&lt;string&gt;,\n    callback: (errors: ?Array&lt;Error&gt;, result: ?Array&lt;Array&lt;string&gt;&gt;) =&gt; void\n  ): void {\n    RKAsyncStorage.multiGet(keys, function(errors, result) {\n      callback(\n        (errors &amp;&amp; errors.map((error) =&gt; convertError(error))) || null,\n        result\n      );\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * multiGet invokes callback with an array of key-value pair arrays that\n   * matches the input format of multiSet.\n   *\n   *   multiGet([&#x27;k1&#x27;, &#x27;k2&#x27;], cb) -&gt; cb([[&#x27;k1&#x27;, &#x27;val1&#x27;], [&#x27;k2&#x27;, &#x27;val2&#x27;]])\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;generic\&quot;,\&quot;value\&quot;:[{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;Array\&quot;,\&quot;length\&quot;:1},{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}],\&quot;length\&quot;:4}&quot;,
+          &quot;name&quot;: &quot;keys&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;(errors: ?Array&lt;Error&gt;, result: ?Array&lt;Array&lt;string&gt;&gt;) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;multiGet&quot;
+    },
+    {
+      &quot;line&quot;: 135,
+      &quot;source&quot;: &quot;multiSet: function(\n    keyValuePairs: Array&lt;Array&lt;string&gt;&gt;,\n    callback: ?(errors: ?Array&lt;Error&gt;) =&gt; void\n  ): void {\n    RKAsyncStorage.multiSet(keyValuePairs, function(errors) {\n      callback &amp;&amp; callback(\n        (errors &amp;&amp; errors.map((error) =&gt; convertError(error))) || null\n      );\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * multiSet and multiMerge take arrays of key-value array pairs that match\n   * the output of multiGet, e.g.\n   *\n   *   multiSet([[&#x27;k1&#x27;, &#x27;val1&#x27;], [&#x27;k2&#x27;, &#x27;val2&#x27;]], cb);\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;generic\&quot;,\&quot;value\&quot;:[{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;Array\&quot;,\&quot;length\&quot;:1},{\&quot;type\&quot;:\&quot;generic\&quot;,\&quot;value\&quot;:[{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;Array\&quot;,\&quot;length\&quot;:1},{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}],\&quot;length\&quot;:4}],\&quot;length\&quot;:7}&quot;,
+          &quot;name&quot;: &quot;keyValuePairs&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;?(errors: ?Array&lt;Error&gt;) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;multiSet&quot;
+    },
+    {
+      &quot;line&quot;: 149,
+      &quot;source&quot;: &quot;multiRemove: function(\n    keys: Array&lt;string&gt;,\n    callback: ?(errors: ?Array&lt;Error&gt;) =&gt; void\n  ): void {\n    RKAsyncStorage.multiRemove(keys, function(errors) {\n      callback &amp;&amp; callback(\n        (errors &amp;&amp; errors.map((error) =&gt; convertError(error))) || null\n      );\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * Delete all the keys in the `keys` array.\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;generic\&quot;,\&quot;value\&quot;:[{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;Array\&quot;,\&quot;length\&quot;:1},{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}],\&quot;length\&quot;:4}&quot;,
+          &quot;name&quot;: &quot;keys&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;?(errors: ?Array&lt;Error&gt;) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;multiRemove&quot;
+    },
+    {
+      &quot;line&quot;: 166,
+      &quot;source&quot;: &quot;multiMerge: function(\n    keyValuePairs: Array&lt;Array&lt;string&gt;&gt;,\n    callback: ?(errors: ?Array&lt;Error&gt;) =&gt; void\n  ): void {\n    RKAsyncStorage.multiMerge(keyValuePairs, function(errors) {\n      callback &amp;&amp; callback(\n        (errors &amp;&amp; errors.map((error) =&gt; convertError(error))) || null\n      );\n    });\n  }&quot;,
+      &quot;docblock&quot;: &quot;/**\n   * Merges existing values with input values, assuming they are stringified\n   * json.\n   *\n   * Not supported by all native implementations.\n   */\n&quot;,
+      &quot;modifiers&quot;: [
+        &quot;static&quot;
+      ],
+      &quot;params&quot;: [
+        {
+          &quot;typehint&quot;: &quot;{\&quot;type\&quot;:\&quot;generic\&quot;,\&quot;value\&quot;:[{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;Array\&quot;,\&quot;length\&quot;:1},{\&quot;type\&quot;:\&quot;generic\&quot;,\&quot;value\&quot;:[{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;Array\&quot;,\&quot;length\&quot;:1},{\&quot;type\&quot;:\&quot;simple\&quot;,\&quot;value\&quot;:\&quot;string\&quot;,\&quot;length\&quot;:1}],\&quot;length\&quot;:4}],\&quot;length\&quot;:7}&quot;,
+          &quot;name&quot;: &quot;keyValuePairs&quot;
+        },
+        {
+          &quot;typehint&quot;: &quot;?(errors: ?Array&lt;Error&gt;) =&gt; void&quot;,
+          &quot;name&quot;: &quot;callback&quot;
+        }
+      ],
+      &quot;tparams&quot;: null,
+      &quot;returntypehint&quot;: &quot;void&quot;,
+      &quot;name&quot;: &quot;multiMerge&quot;
+    }
+  ],
+  &quot;properties&quot;: [],
+  &quot;superClass&quot;: null,
+  &quot;type&quot;: &quot;api&quot;,
+  &quot;line&quot;: 27,
+  &quot;name&quot;: &quot;AsyncStorage&quot;,
+  &quot;docblock&quot;: &quot;/**\n * AsyncStorage is a simple, asynchronous, persistent, global, key-value storage\n * system.  It should be used instead of LocalStorage.\n *\n * It is recommended that you use an abstraction on top of AsyncStorage instead\n * of AsyncStorage directly for anything more than light usage since it\n * operates globally.\n *\n * This JS code is a simple facad over the native iOS implementation to provide\n * a clear JS API, real Error objects, and simple non-multi functions.\n */\n&quot;,
+  &quot;requires&quot;: [
+    {
+      &quot;name&quot;: &quot;NativeModulesDeprecated&quot;
+    }
+  ]
+}</pre></div><noscript></noscript><div class="docs-prevnext"><a class="docs-next" href="cameraroll.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-41298772-2', 'facebook.github.io');
+            ga('send', 'pageview');
+
+            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)
+            ){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";
+            fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+          </script></body></html>
