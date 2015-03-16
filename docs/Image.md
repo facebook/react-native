@@ -8,7 +8,7 @@ In React Native, this behavior is intentionally not implemented. It is more work
 
 ## Background Image via Nesting
 
-A common feature request from developers familiar with the web is `background-image`. It turns out that iOS has a very elegant solution to this: you can add elements as a children to an `<Image>` component. This simplifies the API and solves the use case.
+A common feature request from developers familiar with the web is `background-image`. To handle this use case, simply create a normal `<Image>` component and add whatever children to it you would like to layer on top of it.
 
 ```javascript
 return (
@@ -24,7 +24,7 @@ Image decoding can take more than a frame-worth of time. This is one of the majo
 
 ## Static Assets
 
-In the course of a project you add and remove images and in many instances, you end up shipping images you are not using anymore in the app. In order to fight this, we need to find a way to know statically which images are being used in the app. To do that, we introduced a marker called `ix`. The only allowed way to refer to an image in the bundle is to literally write `ix('name-of-the-asset')` in the source.
+In the course of a project, it is not uncommon to add and remove many images and accidentally end up shipping images you are no longer using in the app. In order to fight this, we need to find a way to know statically which images are being used in the app. To do that, we introduced a marker called `ix`. The only allowed way to refer to an image in the bundle is to literally write `ix('name-of-the-asset')` in the source.
 
 ```javascript
 var { ix } = React;
@@ -55,6 +55,6 @@ In React Native, one interesting decision is that the `src` attribute is named `
 <Image source={{uri: 'something.jpg'}} />
 ```
 
-On the infrastructure side, the reason is that it allows to attach metadata to this object. For example if you are using `ix`, then we add a `isStored` attribute to flag it as a local file (don't rely on this fact, it's likely to change in the future!). This is also future proofing, for example we may want to support sprites at some point, instead of outputting `{uri: ...}`, we can output `{uri: ..., crop: {left: 10, top: 50, width: 20, height: 40}}` and transparently support spriting on all the existing call sites.
+On the infrastructure side, the reason is that it allows to attach metadata to this object. For example if you are using `ix`, then we add an `isStatic` attribute to flag it as a local file (don't rely on this fact, it's likely to change in the future!). This is also future proofing, for example we may want to support sprites at some point, instead of outputting `{uri: ...}`, we can output `{uri: ..., crop: {left: 10, top: 50, width: 20, height: 40}}` and transparently support spriting on all the existing call sites.
 
 On the user side, this lets you annotate the object with useful attributes such as the dimension of the image in order to compute the size it's going to be displayed in. Feel free to use it as your data structure to store more information about your image.
