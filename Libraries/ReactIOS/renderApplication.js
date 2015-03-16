@@ -15,12 +15,10 @@ function renderApplication(RootComponent, initialProps, rootTag) {
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
-  var pushNotification = initialProps.launchOptions &&
-    initialProps.launchOptions.remoteNotification &&
-    new PushNotificationIOS(initialProps.launchOptions.remoteNotification);
+  var initialNotification = PushNotificationIOS.popInitialNotification();
   React.render(
     <RootComponent
-      pushNotification={pushNotification}
+      pushNotification={initialNotification}
       {...initialProps}
     />,
     rootTag
