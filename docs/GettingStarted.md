@@ -7,7 +7,6 @@ permalink: docs/getting-started.html
 next: network
 ---
 
-
 Our first React Native implementation is `ReactKit`, targeting iOS.  We are also
 working on an Android implementation which we will release later.  `ReactKit`
 apps are built using the [React JS](https://github.com/facebook/react) framework, and render directly to
