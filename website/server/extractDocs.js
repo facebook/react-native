@@ -67,7 +67,6 @@ var apis = [
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
-  '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
 var all = components.concat(apis);
