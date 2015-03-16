@@ -122,11 +122,11 @@ RCT_REMAP_VIEW_PROPERTY(name, name)
  * view properties. The macro should be followed by a method body, which can
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
-#define RCT_CUSTOM_VIEW_PROPERTY(name, viewType) \
-- (void)set_##name:(id)json forView:(viewType)view withDefaultView:(viewType)defaultView
+#define RCT_CUSTOM_VIEW_PROPERTY(name, viewClass) \
+- (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
-#define RCT_CUSTOM_SHADOW_PROPERTY(name, viewType) \
-- (void)set_##name:(id)json forShadowView:(viewType)view withDefaultView:(viewType)defaultView
+#define RCT_CUSTOM_SHADOW_PROPERTY(name, viewClass) \
+- (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 /**
  * These are useful in cases where the module's superclass handles a
