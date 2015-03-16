@@ -42,6 +42,7 @@ var EXAMPLES = [
   require('./MapViewExample'),
   require('./WebViewExample'),
   require('./AppStateIOSExample'),
+  require('./NetInfoExample'),
   require('./AlertIOSExample'),
   require('./AdSupportIOSExample'),
   require('./AppStateExample'),

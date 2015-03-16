@@ -24,6 +24,7 @@ var ReactNative = {
   ListViewDataSource: require('ListViewDataSource'),
   MapView: require('MapView'),
   NavigatorIOS: require('NavigatorIOS'),
+  NetInfo: require('NetInfo'),
   PickerIOS: require('PickerIOS'),
   PixelRatio: require('PixelRatio'),
   ScrollView: require('ScrollView'),
