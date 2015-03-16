@@ -146,6 +146,11 @@ function setupGeolocation() {
   GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
+function setupVibration() {
+  GLOBAL.navigator = GLOBAL.navigator || {};
+  GLOBAL.navigator.vibrate = require('VibrationIOS').vibrate;
+}
+
 setupDocumentShim();
 setupRedBoxErrorHandler();
 setupTimers();
@@ -153,3 +158,4 @@ setupAlert();
 setupPromise();
 setupXHR();
 setupGeolocation();
+setupVibration();
