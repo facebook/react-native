@@ -1,4 +1,4 @@
-var docs = require('../react-docgen');
+var docs = require('react-docgen');
 var fs = require('fs');
 var path = require('path');
 var slugify = require('../core/slugify');
