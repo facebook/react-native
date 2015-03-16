@@ -10,41 +10,7 @@ by the pixel ratio.</p><p>var image = getImage({
 width: 200 <em> PixelRatio.get(),
 height: 100 </em> PixelRatio.get()
 });</p>&lt;Image source={image} style={{width: 200, height: 100}} /&gt;
-</div><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="get"></a><span class="propType">static </span>get(<span class="propType"></span>) <a class="hash-link" href="#get">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="startdetecting"></a><span class="propType">static </span>startDetecting(<span class="propType"></span>) <a class="hash-link" href="#startdetecting">#</a></h4></div></div><pre>{
-  &quot;methods&quot;: [
-    {
-      &quot;line&quot;: 45,
-      &quot;source&quot;: &quot;static get() {\n    return Dimensions.get(&#x27;window&#x27;).scale;\n  }&quot;,
-      &quot;modifiers&quot;: [
-        &quot;static&quot;
-      ],
-      &quot;params&quot;: [],
-      &quot;tparams&quot;: null,
-      &quot;returntypehint&quot;: null,
-      &quot;name&quot;: &quot;get&quot;
-    },
-    {
-      &quot;line&quot;: 49,
-      &quot;source&quot;: &quot;static startDetecting() {\n    // no-op for iOS, but this is useful for other platforms\n  }&quot;,
-      &quot;modifiers&quot;: [
-        &quot;static&quot;
-      ],
-      &quot;params&quot;: [],
-      &quot;tparams&quot;: null,
-      &quot;returntypehint&quot;: null,
-      &quot;name&quot;: &quot;startDetecting&quot;
-    }
-  ],
-  &quot;type&quot;: &quot;api&quot;,
-  &quot;line&quot;: 44,
-  &quot;name&quot;: &quot;PixelRatio&quot;,
-  &quot;docblock&quot;: &quot;/**\n * PixelRatio class gives access to the device pixel density.\n *\n * Some examples:\n *   - PixelRatio.get() === 2\n *     - iPhone 4, 4S\n *     - iPhone 5, 5c, 5s\n *     - iPhone 6\n *\n *   - PixelRatio.get() === 3\n *     - iPhone 6 plus\n *\n * There are a few use cases for using PixelRatio:\n *\n * == Displaying a line that&#x27;s as thin as the device permits\n *\n * A width of 1 is actually pretty thick on an iPhone 4+, we can do one that&#x27;s\n * thinner using a width of 1 / PixelRatio.get(). It&#x27;s a technique that works\n * on all the devices independent of their pixel density.\n *\n *   style={{ borderWidth: 1 / PixelRatio.get() }}\n *\n * == Fetching a correctly sized image\n *\n * You should get a higher resolution image if you are on a high pixel density\n * device. A good rule of thumb is to multiply the size of the image you display\n * by the pixel ratio.\n *\n *   var image = getImage({\n *     width: 200 * PixelRatio.get(),\n *     height: 100 * PixelRatio.get()\n *   });\n *   &lt;Image source={image} style={{width: 200, height: 100}} /&gt;\n */\n&quot;,
-  &quot;requires&quot;: [
-    {
-      &quot;name&quot;: &quot;Dimensions&quot;
-    }
-  ]
-}</pre></div><noscript></noscript><div class="docs-prevnext"><a class="docs-next" href="statusbarios.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
+</div><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="#methods">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="get"></a><span class="propType">static </span>get(<span class="propType"></span>) <a class="hash-link" href="#get">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="startdetecting"></a><span class="propType">static </span>startDetecting(<span class="propType"></span>) <a class="hash-link" href="#startdetecting">#</a></h4></div></div></div><noscript></noscript><div class="docs-prevnext"><a class="docs-next" href="statusbarios.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
