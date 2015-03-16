@@ -9,7 +9,7 @@ var {RCTVibration} = require('NativeModules');
 var invariant = require('invariant');
 
 /**
- * The Vibration API is exposed at `navigator.vibrate()`. On iOS, calling this
+ * The Vibration API is exposed at `VibrationIOS.vibrate()`. On iOS, calling this
  * function will trigger a one second vibration. The vibration is asynchronous
  * so this method will return immediately.
  *
@@ -17,7 +17,6 @@ var invariant = require('invariant');
  * simulator.
  *
  * Vibration patterns are currently unsupported.
- *
  */
 
 var VibrationIOS = {

@@ -9,18 +9,19 @@ var {
   View,
   Text,
   TouchableHighlight,
+  VibrationIOS
 } = React;
 
 exports.framework = 'React';
-exports.title = 'Vibration';
+exports.title = 'VibrationIOS';
 exports.description = 'Vibration API for iOS';
 exports.examples = [{
-  title: 'navigator.vibrate()',
+  title: 'VibrationIOS.vibrate()',
   render() {
     return (
       <View>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => navigator.vibrate()}>
+          onPress={() => VibrationIOS.vibrate()}>
           <View style={styles.button}>
             <Text>Vibrate</Text>
           </View>
