@@ -20,3 +20,4 @@ git add --all
 git commit -m "update website"
 git push
 cd ../react-native/website
+exit 0
