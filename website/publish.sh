@@ -18,4 +18,5 @@ rm -Rf build/
 cd ../../react-native-gh-pages
 git add --all
 git commit -m "update website"
-git push; cd ../react-native/website; exit 0
+git push
+cd ../react-native/website
