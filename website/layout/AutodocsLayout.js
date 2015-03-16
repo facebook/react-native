@@ -100,7 +100,7 @@ var APIDoc = React.createClass({
       .replace(/\*\/$/, '')
       .split('\n')
       .map(function(line) {
-        return line.trim().replace(/^\* */, '');
+        return line.trim().replace(/^\* ?/, '');
       })
       .join('\n');
   },
