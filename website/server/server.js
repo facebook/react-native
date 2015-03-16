@@ -36,7 +36,9 @@ var app = connect()
   .use(function(req, res, next) {
     // convert all the md files on every request. This is not optimal
     // but fast enough that we don't really need to care right now.
-    convert();
+    if (!server.noconvert) {
+      convert();
+    }
     next();
   })
   .use(reactMiddleware.provide(buildOptions))
@@ -49,5 +51,5 @@ var app = connect()
 var portToUse = port || 8080;
 var server = http.createServer(app);
 server.listen(portToUse);
-console.log('Open http://localhost:' + portToUse + '/react-native/index.html');
+console.log('Open http://localhost:' + portToUse + '/react-native/_index.html');
 module.exports = server;

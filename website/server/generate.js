@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp');
 var server = require('./server.js');
 
 require('./convert.js')();
+server.noconvert = true;
 
 // Sadly, our setup fatals when doing multiple concurrent requests
 // I don't have the time to dig into why, it's easier to just serialize
