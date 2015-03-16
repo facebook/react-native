@@ -11,100 +11,6 @@ NSString *const RCTDefaultFontName = @"HelveticaNeue";
 NSString *const RCTDefaultFontWeight = @"normal";
 NSString *const RCTBoldFontWeight = @"bold";
 
-#define RCT_CONVERTER_CUSTOM(type, name, code) \
-+ (type)name:(id)json                          \
-{                                              \
-  @try {                                       \
-    return code;                               \
-  }                                            \
-  @catch (__unused NSException *e) {           \
-    RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
-    json, [json class], #type); \
-    json = nil; \
-    return code; \
-  } \
-}
-
-#define RCT_CONVERTER(type, name, getter) \
-RCT_CONVERTER_CUSTOM(type, name, [json getter])
-
-#define RCT_ENUM_CONVERTER(type, values, default, getter) \
-+ (type)type:(id)json                                     \
-{                                                         \
-  static NSDictionary *mapping;                           \
-  static dispatch_once_t onceToken;                       \
-  dispatch_once(&onceToken, ^{                            \
-    mapping = values;                                     \
-  });                                                     \
-  if (!json) {                                            \
-    return default;                                       \
-  }                                                       \
-  if ([json isKindOfClass:[NSNumber class]]) {            \
-    if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
-      return [json getter];                               \
-    }                                                     \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
-    return default;                                       \
-  }                                                       \
-  if (![json isKindOfClass:[NSString class]]) {           \
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", #type, [json class], json); \
-  }                                                       \
-  id value = mapping[json];                               \
-  if(!value && [json description].length > 0) {           \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
-  }                                                       \
-  return value ? [value getter] : default;                \
-}
-
-#define RCT_STRUCT_CONVERTER(type, values)               \
-+ (type)type:(id)json                                    \
-{                                                        \
-  @try {                                                 \
-    static NSArray *fields;                              \
-    static NSUInteger count;                             \
-    static dispatch_once_t onceToken;                    \
-    dispatch_once(&onceToken, ^{                         \
-      fields = values;                                   \
-      count = [fields count];                            \
-    });                                                  \
-    type result;                                         \
-    if ([json isKindOfClass:[NSArray class]]) {          \
-      if ([json count] != count) {                       \
-        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
-      } else {                                           \
-        for (NSUInteger i = 0; i < count; i++) {         \
-          ((CGFloat *)&result)[i] = [json[i] doubleValue]; \
-        }                                                \
-      }                                                  \
-    } else if ([json isKindOfClass:[NSDictionary class]]) { \
-      for (NSUInteger i = 0; i < count; i++) {           \
-        ((CGFloat *)&result)[i] = [json[fields[i]] doubleValue]; \
-      }                                                  \
-    } else if (json) {                                   \
-      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
-    }                                                    \
-    return result;                                       \
-  }                                                      \
-  @catch (__unused NSException *e) {                     \
-    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
-    type result; \
-    return result; \
-  } \
-}
-
-#define RCT_ARRAY_CONVERTER(type)                         \
-+ (NSArray *)type##Array:(id)json                         \
-{                                                         \
-  NSMutableArray *values = [[NSMutableArray alloc] init]; \
-  for (id jsonValue in [self NSArray:json]) {             \
-    id value = [self type:jsonValue];                     \
-    if (!value) {                                         \
-      [values addObject:value];                           \
-    }                                                     \
-  }                                                       \
-  return values;                                          \
-}
-
 @implementation RCTConvert
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
@@ -178,19 +84,31 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
 }), UIKeyboardTypeDefault, integerValue)
 
 RCT_CONVERTER(CGFloat, CGFloat, doubleValue)
-RCT_STRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
-RCT_STRUCT_CONVERTER(CGSize, (@[@"w", @"h"]))
-RCT_STRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"w", @"h"]))
-RCT_STRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
+RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"w", @"h"]))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"w", @"h"]))
+RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
 
-RCT_STRUCT_CONVERTER(CATransform3D, (@[
+RCT_ENUM_CONVERTER(CGLineJoin, (@{
+  @"miter": @(kCGLineJoinMiter),
+  @"round": @(kCGLineJoinRound),
+  @"bevel": @(kCGLineJoinBevel),
+}), kCGLineJoinMiter, intValue)
+
+RCT_ENUM_CONVERTER(CGLineCap, (@{
+  @"butt": @(kCGLineCapButt),
+  @"round": @(kCGLineCapRound),
+  @"square": @(kCGLineCapSquare),
+}), kCGLineCapButt, intValue)
+
+RCT_CGSTRUCT_CONVERTER(CATransform3D, (@[
   @"m11", @"m12", @"m13", @"m14",
   @"m21", @"m22", @"m23", @"m24",
   @"m31", @"m32", @"m33", @"m34",
   @"m41", @"m42", @"m43", @"m44"
 ]))
 
-RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]))
+RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]))
 
 + (UIColor *)UIColor:(id)json
 {
@@ -803,6 +721,12 @@ static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json,
         },
         @"extAlignment": ^(id val) {
           return [RCTConvert NSTextAlignment:val];
+        },
+        @"Cap": ^(id val) {
+          return [RCTConvert CGLineCap:val];
+        },
+        @"Join": ^(id val) {
+          return [RCTConvert CGLineJoin:val];
         },
         @"ointerEvents": ^(id val) {
           return [RCTConvert RCTPointerEvents:val];

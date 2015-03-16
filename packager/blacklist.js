@@ -7,6 +7,7 @@
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
   __dirname,
+  'website',
   'node_modules/parse/node_modules/xmlhttprequest/lib/XMLHttpRequest.js',
   'node_modules/react-tools/src/utils/ImmutableObject.js',
   'node_modules/react-tools/src/core/ReactInstanceHandles.js',

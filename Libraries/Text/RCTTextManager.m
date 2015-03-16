@@ -24,7 +24,7 @@
 }
 
 RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
-RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText *)
+RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
   view.numberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.numberOfLines;
@@ -34,16 +34,16 @@ RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText *)
   view.lineBreakMode = truncationMode;
 }
 
-RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowText *)
+RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowText)
 {
   view.textBackgroundColor = json ? [RCTConvert UIColor:json] : defaultView.textBackgroundColor;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, RCTShadowText *)
+RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, RCTShadowText)
 {
   view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
   view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, RCTShadowText *)
+RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, RCTShadowText)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
   view.maxNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maxNumberOfLines;
@@ -52,7 +52,7 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, RCTShadowText *)
   }
   view.truncationMode = truncationMode;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(textAlign, RCTShadowText *)
+RCT_CUSTOM_SHADOW_PROPERTY(textAlign, RCTShadowText)
 {
   view.textAlign = json ? [RCTConvert NSTextAlignment:json] : defaultView.textAlign;
 }

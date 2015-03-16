@@ -23,15 +23,15 @@ RCT_EXPORT_VIEW_PROPERTY(text)
 RCT_EXPORT_VIEW_PROPERTY(clearButtonMode)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType)
 RCT_REMAP_VIEW_PROPERTY(color, textColor)
-RCT_CUSTOM_VIEW_PROPERTY(fontSize, RCTTextField *)
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontWeight, RCTTextField *)
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withWeight:json]; // TODO
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontFamily, RCTTextField *)
+RCT_CUSTOM_VIEW_PROPERTY(fontFamily, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }

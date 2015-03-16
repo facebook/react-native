@@ -44,6 +44,9 @@
 + (CGRect)CGRect:(id)json;
 + (UIEdgeInsets)UIEdgeInsets:(id)json;
 
++ (CGLineCap)CGLineCap:(id)json;
++ (CGLineJoin)CGLineJoin:(id)json;
+
 + (CATransform3D)CATransform3D:(id)json;
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
@@ -103,3 +106,117 @@ id RCTConvertValue(id target, NSString *keypath, id json);
 #ifdef __cplusplus
 }
 #endif
+
+/**
+ * This macro is used for creating converter functions with arbitrary logic.
+ */
+#define RCT_CONVERTER_CUSTOM(type, name, code) \
++ (type)name:(id)json                          \
+{                                              \
+  if (json == [NSNull null]) {                 \
+    json = nil;                                \
+  }                                            \
+  @try {                                       \
+    return code;                               \
+  }                                            \
+  @catch (__unused NSException *e) {           \
+    RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
+    json, [json class], #type); \
+    json = nil; \
+    return code; \
+  } \
+}
+
+/**
+ * This macro is used for creating simple converter functions that just call
+ * the specified getter method on the json value.
+ */
+#define RCT_CONVERTER(type, name, getter) \
+RCT_CONVERTER_CUSTOM(type, name, [json getter])
+
+/**
+ * This macro is used for creating converters for enum types.
+ */
+#define RCT_ENUM_CONVERTER(type, values, default, getter) \
++ (type)type:(id)json                                     \
+{                                                         \
+  static NSDictionary *mapping;                           \
+  static dispatch_once_t onceToken;                       \
+  dispatch_once(&onceToken, ^{                            \
+    mapping = values;                                     \
+  });                                                     \
+  if (!json || json == [NSNull null]) {                   \
+    return default;                                       \
+  }                                                       \
+  if ([json isKindOfClass:[NSNumber class]]) {            \
+    if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
+      return [json getter];                               \
+    }                                                     \
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
+    return default;                                       \
+  }                                                       \
+  if (![json isKindOfClass:[NSString class]]) {           \
+    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", #type, [json class], json); \
+  }                                                       \
+  id value = mapping[json];                               \
+  if(!value && [json description].length > 0) {           \
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
+  }                                                       \
+  return value ? [value getter] : default;                \
+}
+
+/**
+ * This macro is used for creating converter functions for structs that consist
+ * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
+ */
+#define RCT_CGSTRUCT_CONVERTER(type, values)             \
++ (type)type:(id)json                                    \
+{                                                        \
+  @try {                                                 \
+    static NSArray *fields;                              \
+    static NSUInteger count;                             \
+    static dispatch_once_t onceToken;                    \
+    dispatch_once(&onceToken, ^{                         \
+      fields = values;                                   \
+      count = [fields count];                            \
+    });                                                  \
+    type result;                                         \
+    if ([json isKindOfClass:[NSArray class]]) {          \
+      if ([json count] != count) {                       \
+        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
+      } else {                                           \
+        for (NSUInteger i = 0; i < count; i++) {         \
+          ((CGFloat *)&result)[i] = [json[i] doubleValue]; \
+        }                                                \
+      }                                                  \
+    } else if ([json isKindOfClass:[NSDictionary class]]) { \
+      for (NSUInteger i = 0; i < count; i++) {           \
+        ((CGFloat *)&result)[i] = [json[fields[i]] doubleValue]; \
+      }                                                  \
+    } else if (json && json != [NSNull null]) {          \
+      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
+    }                                                    \
+    return result;                                       \
+  }                                                      \
+  @catch (__unused NSException *e) {                     \
+    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
+    type result; \
+    return result; \
+  } \
+}
+
+/**
+ * This macro is used for creating converter functions for typed arrays.
+ */
+#define RCT_ARRAY_CONVERTER(type)                         \
++ (NSArray *)type##Array:(id)json                         \
+{                                                         \
+  NSMutableArray *values = [[NSMutableArray alloc] init]; \
+  for (id jsonValue in [self NSArray:json]) {             \
+    id value = [self type:jsonValue];                     \
+    if (value) {                                          \
+      [values addObject:value];                           \
+    }                                                     \
+  }                                                       \
+  return values;                                          \
+}
