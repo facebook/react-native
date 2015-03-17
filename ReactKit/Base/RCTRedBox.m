@@ -85,10 +85,9 @@
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
 {
-  _lastStackTrace = stack;
-  _lastErrorMessage = message;
-
   if (self.hidden && shouldShow) {
+    _lastStackTrace = stack;
+    _lastErrorMessage = message;
 
     _cachedMessageCell = [self reuseCell:nil forErrorMessage:message];
     [_stackTraceTableView reloadData];
