@@ -47,6 +47,7 @@ var EXAMPLES = [
   require('./AdSupportIOSExample'),
   require('./AppStateExample'),
   require('./ActionSheetIOSExample'),
+  require('./VibrationIOSExample'),
 ];
 
 var UIExplorerList = React.createClass({
