@@ -11,7 +11,7 @@ var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('TimerMixin');
 var Touchable = require('Touchable');
-var TouchableFeedbackPropType = require('TouchableFeedbackPropType');
+var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
 
 var cloneWithProps = require('cloneWithProps');
@@ -51,12 +51,7 @@ var DEFAULT_PROPS = {
 
 var TouchableHighlight = React.createClass({
   propTypes: {
-    ...TouchableFeedbackPropType,
-    /**
-     * Called when the touch is released, but not if cancelled (e.g. by
-     * a scroll that steals the responder lock).
-     */
-    onPress: React.PropTypes.func.isRequired,
+    ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
      * active.
