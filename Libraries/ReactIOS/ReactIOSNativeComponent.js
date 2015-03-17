@@ -11,7 +11,7 @@ var ReactIOSEventEmitter = require('ReactIOSEventEmitter');
 var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
-var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 
 var styleDiffer = require('styleDiffer');
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');

@@ -7,13 +7,13 @@
 "use strict";
 
 var EventPropagators = require('EventPropagators');
-var NativeModulesDeprecated = require('NativeModulesDeprecated');
+var NativeModules = require('NativeModules');
 var SyntheticEvent = require('SyntheticEvent');
 
 var merge = require('merge');
 var warning = require('warning');
 
-var RCTUIManager = NativeModulesDeprecated.RCTUIManager;
+var RCTUIManager = NativeModules.RCTUIManager;
 
 var customBubblingEventTypes = RCTUIManager.customBubblingEventTypes;
 var customDirectEventTypes = RCTUIManager.customDirectEventTypes;

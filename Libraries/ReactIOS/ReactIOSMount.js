@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactPerf = require('ReactPerf');

@@ -6,9 +6,7 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModulesDeprecated');
-
-var RCTAlertManager = NativeModules.RCTAlertManager;
+var { RCTAlertManager } = require('NativeModules');
 
 var DEFAULT_BUTTON_TEXT = 'OK';
 var DEFAULT_BUTTON = {

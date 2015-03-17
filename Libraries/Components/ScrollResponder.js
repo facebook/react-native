@@ -6,13 +6,13 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var NativeModulesDeprecated = require('NativeModulesDeprecated');
+var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 
 var RCTUIManager = NativeModules.RCTUIManager;
-var RCTUIManagerDeprecated = NativeModulesDeprecated.RCTUIManager;
+var RCTUIManagerDeprecated = NativeModules.RCTUIManager;
 var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
 
 var warning = require('warning');
