@@ -7,7 +7,7 @@
 
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
-var RKUIManager = require('NativeModules').RKUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
@@ -323,13 +323,13 @@ var ListView = React.createClass({
    */
 
   _measureAndUpdateScrollProps: function() {
-    RKUIManager.measureLayout(
+    RCTUIManager.measureLayout(
       this.refs[SCROLLVIEW_REF].getInnerViewNode(),
       this.refs[SCROLLVIEW_REF].getNodeHandle(),
       logError,
       this._setScrollContentHeight
     );
-    RKUIManager.measureLayoutRelativeToParent(
+    RCTUIManager.measureLayoutRelativeToParent(
       this.refs[SCROLLVIEW_REF].getNodeHandle(),
       logError,
       this._setScrollVisibleHeight

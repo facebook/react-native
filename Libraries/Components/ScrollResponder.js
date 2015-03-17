@@ -11,9 +11,9 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 
-var RKUIManager = NativeModules.RKUIManager;
-var RKUIManagerDeprecated = NativeModulesDeprecated.RKUIManager;
-var RKScrollViewConsts = RKUIManager.RCTScrollView.Constants;
+var RCTUIManager = NativeModules.RCTUIManager;
+var RCTUIManagerDeprecated = NativeModulesDeprecated.RCTUIManager;
+var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
 
 var warning = require('warning');
 
@@ -99,7 +99,7 @@ var IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
 var ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
-  statics: RKScrollViewConsts,
+  statics: RCTScrollViewConsts,
   scrollResponderMixinGetInitialState: function() {
     return {
       isTouching: false,
@@ -336,7 +336,7 @@ var ScrollResponderMixin = {
    * can also be used to quickly scroll to any element we want to focus
    */
   scrollResponderScrollTo: function(offsetX, offsetY) {
-    RKUIManagerDeprecated.scrollTo(this.getNodeHandle(), offsetX, offsetY);
+    RCTUIManagerDeprecated.scrollTo(this.getNodeHandle(), offsetX, offsetY);
   },
 
   /**
@@ -344,7 +344,7 @@ var ScrollResponderMixin = {
    * @param {object} rect Should have shape {x, y, w, h}
    */
   scrollResponderZoomTo: function(rect) {
-    RKUIManagerDeprecated.zoomToRect(this.getNodeHandle(), rect);
+    RCTUIManagerDeprecated.zoomToRect(this.getNodeHandle(), rect);
   },
 
   /**
@@ -354,7 +354,7 @@ var ScrollResponderMixin = {
    */
   scrollResponderScrollNativeHandleToKeyboard: function(nodeHandle, additionalOffset) {
     this.additionalScrollOffset = additionalOffset || 0;
-    RKUIManager.measureLayout(
+    RCTUIManager.measureLayout(
       nodeHandle,
       this.getNodeHandle(),
       this.scrollResponderTextInputFocusError,

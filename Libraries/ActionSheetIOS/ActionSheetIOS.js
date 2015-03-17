@@ -6,7 +6,7 @@
 'use strict';
 
 var invariant = require('invariant');
-var RCTActionSheetManager = require('NativeModulesDeprecated').RKActionSheetManager;
+var RCTActionSheetManager = require('NativeModulesDeprecated').RCTActionSheetManager;
 
 var ActionSheetIOS = {
   showActionSheetWithOptions(options, callback) {

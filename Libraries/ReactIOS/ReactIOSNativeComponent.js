@@ -11,7 +11,7 @@ var ReactIOSEventEmitter = require('ReactIOSEventEmitter');
 var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
+var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
 
 var styleDiffer = require('styleDiffer');
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
@@ -109,7 +109,7 @@ ReactIOSNativeComponent.Mixin = {
         );
         createdTags[i] = mountImage.tag;
       }
-      RKUIManager
+      RCTUIManager
         .manageChildren(containerTag, null, null, createdTags, indexes, null);
     }
   },
@@ -180,7 +180,7 @@ ReactIOSNativeComponent.Mixin = {
     );
 
     if (updatePayload) {
-      RKUIManager.updateView(
+      RCTUIManager.updateView(
         ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
         this.viewConfig.uiViewClassName,
         updatePayload
@@ -237,7 +237,7 @@ ReactIOSNativeComponent.Mixin = {
       this._currentElement.props, // next props
       this.viewConfig.validAttributes
     );
-    RKUIManager.createView(tag, this.viewConfig.uiViewClassName, updatePayload);
+    RCTUIManager.createView(tag, this.viewConfig.uiViewClassName, updatePayload);
 
     this._registerListenersUponCreation(this._currentElement.props);
     this.initializeChildren(

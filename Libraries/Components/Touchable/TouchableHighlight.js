@@ -118,7 +118,7 @@ var TouchableHighlight = React.createClass({
 
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactIOSViewAttributes.RKView
+    validAttributes: ReactIOSViewAttributes.RCTView
   },
 
   /**

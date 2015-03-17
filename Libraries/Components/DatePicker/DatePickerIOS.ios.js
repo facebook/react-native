@@ -3,7 +3,7 @@
  *
  * @providesModule DatePickerIOS
  *
- * This is a controlled component version of RKDatePickerIOS
+ * This is a controlled component version of RCTDatePickerIOS
  */
 'use strict';
 
@@ -11,7 +11,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var RKDatePickerIOSConsts = require('NativeModules').RKUIManager.RCTDatePicker.Constants;
+var RCTDatePickerIOSConsts = require('NativeModules').RCTUIManager.RCTDatePicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
@@ -65,7 +65,7 @@ var DatePickerIOS = React.createClass({
      *
      * Valid modes on iOS are: 'date', 'time', 'datetime'.
      */
-    mode: PropTypes.oneOf(Object.keys(RKDatePickerIOSConsts.DatePickerModes)),
+    mode: PropTypes.oneOf(Object.keys(RCTDatePickerIOSConsts.DatePickerModes)),
 
     /**
      * The interval at which minutes can be selected.
@@ -111,7 +111,7 @@ var DatePickerIOS = React.createClass({
     var props = this.props;
     return (
       <View style={props.style}>
-        <RKDatePickerIOS
+        <RCTDatePickerIOS
           ref={DATEPICKER}
           style={styles.rkDatePickerIOS}
           date={props.date.getTime()}
@@ -121,7 +121,7 @@ var DatePickerIOS = React.createClass({
           minimumDate={
             props.minimumDate ? props.minimumDate.getTime() : undefined
           }
-          mode={RKDatePickerIOSConsts.DatePickerModes[props.mode]}
+          mode={RCTDatePickerIOSConsts.DatePickerModes[props.mode]}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
@@ -133,8 +133,8 @@ var DatePickerIOS = React.createClass({
 
 var styles = StyleSheet.create({
   rkDatePickerIOS: {
-    height: RKDatePickerIOSConsts.ComponentHeight,
-    width: RKDatePickerIOSConsts.ComponentWidth,
+    height: RCTDatePickerIOSConsts.ComponentHeight,
+    width: RCTDatePickerIOSConsts.ComponentWidth,
   },
 });
 
@@ -147,7 +147,7 @@ var rkDatePickerIOSAttributes = merge(ReactIOSViewAttributes.UIView, {
   timeZoneOffsetInMinutes: true,
 });
 
-var RKDatePickerIOS = createReactIOSNativeComponentClass({
+var RCTDatePickerIOS = createReactIOSNativeComponentClass({
   validAttributes: rkDatePickerIOSAttributes,
   uiViewClassName: 'RCTDatePicker',
 });

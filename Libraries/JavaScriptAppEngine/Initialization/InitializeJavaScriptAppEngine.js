@@ -60,7 +60,7 @@ function setupDocumentShim() {
 var sourceMapPromise;
 
 function handleErrorWithRedBox(e) {
-  var RKExceptionsManager = require('NativeModules').RKExceptionsManager;
+  var RCTExceptionsManager = require('NativeModules').RCTExceptionsManager;
   var errorToString = require('errorToString');
   var loadSourceMap = require('loadSourceMap');
 
@@ -72,13 +72,13 @@ function handleErrorWithRedBox(e) {
     '\n message: ' + e.message
   );
 
-  if (RKExceptionsManager) {
-    RKExceptionsManager.reportUnhandledException(e.message, errorToString(e));
+  if (RCTExceptionsManager) {
+    RCTExceptionsManager.reportUnhandledException(e.message, errorToString(e));
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = errorToString(e, map);
-          RKExceptionsManager.updateExceptionMessage(e.message, prettyStack);
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
         })
         .then(null, error => {
           GLOBAL.console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
@@ -95,7 +95,7 @@ function setupRedBoxErrorHandler() {
 /**
  * Sets up a set of window environment wrappers that ensure that the
  * BatchedBridge is flushed after each tick. In both the case of the
- * `UIWebView` based `RKJavaScriptCaller` and `RKContextCaller`, we
+ * `UIWebView` based `RCTJavaScriptCaller` and `RCTContextCaller`, we
  * implement our own custom timing bridge that should be immune to
  * unexplainably dropped timing signals.
  */
@@ -115,7 +115,7 @@ function setupTimers() {
 }
 
 function setupAlert() {
-  var RKAlertManager = require('RKAlertManager');
+  var RCTAlertManager = require('RCTAlertManager');
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
       var alertOpts = {
@@ -123,7 +123,7 @@ function setupAlert() {
         message: '' + text,
         buttons: [{'cancel': 'Okay'}],
       };
-      RKAlertManager.alertWithArgs(alertOpts, null);
+      RCTAlertManager.alertWithArgs(alertOpts, null);
     };
   }
 }
