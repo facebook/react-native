@@ -5,7 +5,6 @@
  */
 'use strict';
 
-var PushNotificationIOS = require('PushNotificationIOS');
 var React = require('React');
 
 var invariant = require('invariant');
@@ -15,10 +14,8 @@ function renderApplication(RootComponent, initialProps, rootTag) {
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
-  var initialNotification = PushNotificationIOS.popInitialNotification();
-  React.render(
+   React.render(
     <RootComponent
-      pushNotification={initialNotification}
       {...initialProps}
     />,
     rootTag
