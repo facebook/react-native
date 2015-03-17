@@ -16,9 +16,9 @@ var keyMirror = require('keyMirror');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;
-var RKUIManager = require('NativeModules').RKUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 
-var RK_WEBVIEW_REF = 'webview';
+var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
   IDLE: null,
@@ -81,7 +81,7 @@ var WebView = React.createClass({
 
     var webView =
       <RCTWebView
-        ref={RK_WEBVIEW_REF}
+        ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
@@ -102,15 +102,15 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RKUIManager.webViewGoForward(this.getWebWiewHandle());
+    RCTUIManager.webViewGoForward(this.getWebWiewHandle());
   },
 
   goBack: function() {
-    RKUIManager.webViewGoBack(this.getWebWiewHandle());
+    RCTUIManager.webViewGoBack(this.getWebWiewHandle());
   },
 
   reload: function() {
-    RKUIManager.webViewReload(this.getWebWiewHandle());
+    RCTUIManager.webViewReload(this.getWebWiewHandle());
   },
 
   /**
@@ -124,7 +124,7 @@ var WebView = React.createClass({
   },
 
   getWebWiewHandle: function() {
-    return this.refs[RK_WEBVIEW_REF].getNodeHandle();
+    return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
   },
 
   onLoadingStart: function(event) {

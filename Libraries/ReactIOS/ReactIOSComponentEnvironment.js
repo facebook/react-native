@@ -4,12 +4,9 @@
  * @providesModule ReactIOSComponentEnvironment
  */
 'use strict';
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
 
 var ReactIOSDOMIDOperations = require('ReactIOSDOMIDOperations');
 var ReactIOSReconcileTransaction = require('ReactIOSReconcileTransaction');
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
-var ReactPerf = require('ReactPerf');
 
 var ReactIOSComponentEnvironment = {
 

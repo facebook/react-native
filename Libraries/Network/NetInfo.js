@@ -8,7 +8,7 @@
 
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RKReachability = NativeModules.RKReachability;
+var RCTReachability = NativeModules.RCTReachability;
 
 var DEVICE_REACHABILITY_EVENT = 'reachabilityDidChange';
 
@@ -49,7 +49,7 @@ type ChangeEventName = $Enum<{
 
 var NetInfo = {};
 
-if (RKReachability) {
+if (RCTReachability) {
   var _reachabilitySubscriptions = {};
 
   NetInfo.reachabilityIOS = {
@@ -78,7 +78,7 @@ if (RKReachability) {
 
     fetch: function(): Promise {
       return new Promise((resolve, reject) => {
-        RKReachability.getCurrentReachability(
+        RCTReachability.getCurrentReachability(
           (resp) => {
             resolve(resp.network_reachability);
           },

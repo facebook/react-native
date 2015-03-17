@@ -8,7 +8,7 @@
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var RKUIManager = require('NativeModules').RKUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
@@ -25,10 +25,10 @@ var getObjectValues = require('getObjectValues');
 var invariant = require('invariant');
 var merge = require('merge');
 
-var autoCapitalizeConsts = RKUIManager.UIText.AutocapitalizationType;
-var clearButtonModeConsts = RKUIManager.UITextField.clearButtonMode;
+var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
+var clearButtonModeConsts = RCTUIManager.UITextField.clearButtonMode;
 
-var RKTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
+var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   autoCorrect: true,
   autoCapitalize: true,
   color: true,
@@ -42,7 +42,7 @@ var RKTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   text: true,
 });
 
-var RKTextFieldAttributes = merge(RKTextViewAttributes, {
+var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   caretHidden: true,
   enabled: true,
   clearButtonMode: true,
@@ -198,7 +198,7 @@ var TextInput = React.createClass({
 
   viewConfig: {
     uiViewClassName: 'RCTTextField',
-    validAttributes: RKTextFieldAttributes,
+    validAttributes: RCTTextFieldAttributes,
   },
 
   isFocused: function() {
@@ -309,7 +309,7 @@ var TextInput = React.createClass({
         }
       }
       textContainer =
-        <RKTextField
+        <RCTTextField
           ref="input"
           style={[styles.input, this.props.style]}
           enabled={this.props.editable}
@@ -349,7 +349,7 @@ var TextInput = React.createClass({
         children = [children, this.props.inputView];
       }
       textContainer =
-        <RKTextView
+        <RCTTextView
           ref="input"
           style={[styles.input, this.props.style]}
           children={children}
@@ -428,13 +428,13 @@ var styles = StyleSheet.create({
   },
 });
 
-var RKTextView = createReactIOSNativeComponentClass({
-  validAttributes: RKTextViewAttributes,
+var RCTTextView = createReactIOSNativeComponentClass({
+  validAttributes: RCTTextViewAttributes,
   uiViewClassName: 'RCTTextView',
 });
 
-var RKTextField = createReactIOSNativeComponentClass({
-  validAttributes: RKTextFieldAttributes,
+var RCTTextField = createReactIOSNativeComponentClass({
+  validAttributes: RCTTextFieldAttributes,
   uiViewClassName: 'RCTTextField',
 });
 

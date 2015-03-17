@@ -7,7 +7,7 @@
 'use strict';
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
+var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
 
 var assign = require('Object.assign');
 
@@ -27,7 +27,7 @@ assign(ReactIOSTextComponent.prototype, {
   mountComponent: function(rootID, transaction, context) {
     this._rootNodeID = rootID;
     var tag = ReactIOSTagHandles.allocateTag();
-    RKUIManager.createView(tag, 'RCTRawText', {text: this._stringText});
+    RCTUIManager.createView(tag, 'RCTRawText', {text: this._stringText});
     return {
       rootNodeID: rootID,
       tag: tag,
@@ -40,7 +40,7 @@ assign(ReactIOSTextComponent.prototype, {
       var nextStringText = '' + nextText;
       if (nextStringText !== this._stringText) {
         this._stringText = nextStringText;
-        RKUIManager.updateView(
+        RCTUIManager.updateView(
           ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(
             this._rootNodeID
           ),

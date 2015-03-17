@@ -8,12 +8,12 @@
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
 var PointPropType = require('PointPropType');
-var RCTScrollView = require('NativeModules').RKUIManager.RCTScrollView;
+var RCTScrollView = require('NativeModules').RCTUIManager.RCTScrollView;
 var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
+var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
 var ScrollResponder = require('ScrollResponder');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
@@ -182,7 +182,7 @@ var ScrollView = React.createClass({
   },
 
   scrollTo: function(destY, destX) {
-    RKUIManager.scrollTo(
+    RCTUIManager.scrollTo(
       this.getNodeHandle(),
       destX || 0,
       destY || 0

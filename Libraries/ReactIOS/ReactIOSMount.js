@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
+var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactPerf = require('ReactPerf');
@@ -128,7 +128,7 @@ var ReactIOSMount = {
       );
       var addChildTags = [mountImage.tag];
       var addAtIndices = [0];
-      RKUIManager.manageChildren(
+      RCTUIManager.manageChildren(
         ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
         null,         // moveFromIndices
         null,         // moveToIndices
@@ -150,7 +150,7 @@ var ReactIOSMount = {
   unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
     ReactIOSMount.unmountComponentAtNode(containerTag);
     // call back into native to remove all of the subviews from this container
-    RKUIManager.removeRootView(containerTag);
+    RCTUIManager.removeRootView(containerTag);
   },
 
   /**
@@ -190,7 +190,7 @@ var ReactIOSMount = {
     instance.unmountComponent();
     var containerTag =
       ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID);
-    RKUIManager.removeSubviewsFromContainerWithID(containerTag);
+    RCTUIManager.removeSubviewsFromContainerWithID(containerTag);
   },
 
   getNode: function(id) {

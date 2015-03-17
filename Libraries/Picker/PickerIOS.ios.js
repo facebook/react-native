@@ -3,7 +3,7 @@
  *
  * @providesModule PickerIOS
  *
- * This is a controlled component version of RKPickerIOS
+ * This is a controlled component version of RCTPickerIOS
  */
 'use strict';
 
@@ -11,7 +11,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var RKPickerIOSConsts = require('NativeModules').RKUIManager.RCTPicker.Constants;
+var RCTPickerIOSConsts = require('NativeModules').RCTUIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
@@ -37,7 +37,7 @@ var PickerIOS = React.createClass({
     this.setState(this._stateFromProps(nextProps));
   },
 
-  // Translate PickerIOS prop and children into stuff that RKPickerIOS understands.
+  // Translate PickerIOS prop and children into stuff that RCTPickerIOS understands.
   _stateFromProps: function(props) {
     var selectedIndex = 0;
     var items = [];
@@ -53,7 +53,7 @@ var PickerIOS = React.createClass({
   render: function() {
     return (
       <View style={this.props.style}>
-        <RKPickerIOS
+        <RCTPickerIOS
           ref={PICKER}
           style={styles.rkPickerIOS}
           items={this.state.items}
@@ -103,7 +103,7 @@ var styles = StyleSheet.create({
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
     // surrounding view to ensure it gets rendered.
-    height: RKPickerIOSConsts.ComponentHeight,
+    height: RCTPickerIOSConsts.ComponentHeight,
   },
 });
 
@@ -112,7 +112,7 @@ var rkPickerIOSAttributes = merge(ReactIOSViewAttributes.UIView, {
   selectedIndex: true,
 });
 
-var RKPickerIOS = createReactIOSNativeComponentClass({
+var RCTPickerIOS = createReactIOSNativeComponentClass({
   validAttributes: rkPickerIOSAttributes,
   uiViewClassName: 'RCTPicker',
 });

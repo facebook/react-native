@@ -108,13 +108,13 @@ var Image = React.createClass({
       'static image uris cannot start with "http": "' + source.uri + '"'
     );
     var isStored = !source.isStatic && !isNetwork;
-    var RawImage = isNetwork ? RKNetworkImage : RKStaticImage;
+    var RawImage = isNetwork ? RCTNetworkImage : RCTStaticImage;
 
     if (this.props.style && this.props.style.tintColor) {
-      warning(RawImage === RKStaticImage, 'tintColor style only supported on static images.');
+      warning(RawImage === RCTStaticImage, 'tintColor style only supported on static images.');
     }
 
-    var contentModes = NativeModulesDeprecated.RKUIManager.UIView.ContentMode;
+    var contentModes = NativeModulesDeprecated.RCTUIManager.UIView.ContentMode;
     var resizeMode;
     if (style.resizeMode === ImageResizeMode.stretch) {
       resizeMode = contentModes.ScaleToFill;
@@ -155,12 +155,12 @@ var CommonImageViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   testID: PropTypes.string,
 });
 
-var RKStaticImage = createReactIOSNativeComponentClass({
+var RCTStaticImage = createReactIOSNativeComponentClass({
   validAttributes: merge(CommonImageViewAttributes, { tintColor: true }),
   uiViewClassName: 'RCTStaticImage',
 });
 
-var RKNetworkImage = createReactIOSNativeComponentClass({
+var RCTNetworkImage = createReactIOSNativeComponentClass({
   validAttributes: merge(CommonImageViewAttributes, { defaultImageSrc: true }),
   uiViewClassName: 'RCTNetworkImageView',
 });

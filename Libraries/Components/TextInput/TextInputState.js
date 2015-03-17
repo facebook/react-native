@@ -9,7 +9,7 @@
  */
 'use strict';
 
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
+var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
 
 var TextInputState = {
    /**
@@ -33,7 +33,7 @@ var TextInputState = {
   focusTextInput: function(textFieldID) {
     if (this._currentlyFocusedID != textFieldID && textFieldID != null) {
       this._currentlyFocusedID = textFieldID;
-      RKUIManager.focus(textFieldID);
+      RCTUIManager.focus(textFieldID);
     }
   },
 
@@ -45,7 +45,7 @@ var TextInputState = {
   blurTextInput: function(textFieldID) {
     if (this._currentlyFocusedID == textFieldID && textFieldID != null) {
       this._currentlyFocusedID = null;
-      RKUIManager.blur(textFieldID);
+      RCTUIManager.blur(textFieldID);
     }
   }
 };

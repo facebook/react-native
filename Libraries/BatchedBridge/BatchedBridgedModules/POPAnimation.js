@@ -5,8 +5,8 @@
  */
 'use strict';
 
-var RKPOPAnimationManager = require('NativeModulesDeprecated').RKPOPAnimationManager;
-if (!RKPOPAnimationManager) {
+var RCTPOPAnimationManager = require('NativeModulesDeprecated').RCTPOPAnimationManager;
+if (!RCTPOPAnimationManager) {
   // POP animation isn't available in the OSS fork - this is a temporary
   // workaround to enable its availability to be determined at runtime.
   module.exports = null;
@@ -18,45 +18,45 @@ var getObjectValues = require('getObjectValues');
 var invariant = require('invariant');
 var merge = require('merge');
 
-var RKTypes = RKPOPAnimationManager.Types;
-var RKProperties = RKPOPAnimationManager.Properties;
+var RCTTypes = RCTPOPAnimationManager.Types;
+var RCTProperties = RCTPOPAnimationManager.Properties;
 
 var Properties = {
-  bounds: RKProperties.bounds,
-  opacity: RKProperties.opacity,
-  position: RKProperties.position,
-  positionX: RKProperties.positionX,
-  positionY: RKProperties.positionY,
-  zPosition: RKProperties.zPosition,
-  rotation: RKProperties.rotation,
-  rotationX: RKProperties.rotationX,
-  rotationY: RKProperties.rotationY,
-  scaleX: RKProperties.scaleX,
-  scaleXY: RKProperties.scaleXY,
-  scaleY: RKProperties.scaleY,
-  shadowColor: RKProperties.shadowColor,
-  shadowOffset: RKProperties.shadowOffset,
-  shadowOpacity: RKProperties.shadowOpacity,
-  shadowRadius: RKProperties.shadowRadius,
-  size: RKProperties.size,
-  subscaleXY: RKProperties.subscaleXY,
-  subtranslationX: RKProperties.subtranslationX,
-  subtranslationXY: RKProperties.subtranslationXY,
-  subtranslationY: RKProperties.subtranslationY,
-  subtranslationZ: RKProperties.subtranslationZ,
-  translationX: RKProperties.translationX,
-  translationXY: RKProperties.translationXY,
-  translationY: RKProperties.translationY,
-  translationZ: RKProperties.translationZ,
+  bounds: RCTProperties.bounds,
+  opacity: RCTProperties.opacity,
+  position: RCTProperties.position,
+  positionX: RCTProperties.positionX,
+  positionY: RCTProperties.positionY,
+  zPosition: RCTProperties.zPosition,
+  rotation: RCTProperties.rotation,
+  rotationX: RCTProperties.rotationX,
+  rotationY: RCTProperties.rotationY,
+  scaleX: RCTProperties.scaleX,
+  scaleXY: RCTProperties.scaleXY,
+  scaleY: RCTProperties.scaleY,
+  shadowColor: RCTProperties.shadowColor,
+  shadowOffset: RCTProperties.shadowOffset,
+  shadowOpacity: RCTProperties.shadowOpacity,
+  shadowRadius: RCTProperties.shadowRadius,
+  size: RCTProperties.size,
+  subscaleXY: RCTProperties.subscaleXY,
+  subtranslationX: RCTProperties.subtranslationX,
+  subtranslationXY: RCTProperties.subtranslationXY,
+  subtranslationY: RCTProperties.subtranslationY,
+  subtranslationZ: RCTProperties.subtranslationZ,
+  translationX: RCTProperties.translationX,
+  translationXY: RCTProperties.translationXY,
+  translationY: RCTProperties.translationY,
+  translationZ: RCTProperties.translationZ,
 };
 
 var Types = {
-  decay: RKTypes.decay,
-  easeIn: RKTypes.easeIn,
-  easeInEaseOut: RKTypes.easeInEaseOut,
-  easeOut: RKTypes.easeOut,
-  linear: RKTypes.linear,
-  spring: RKTypes.spring,
+  decay: RCTTypes.decay,
+  easeIn: RCTTypes.easeIn,
+  easeInEaseOut: RCTTypes.easeInEaseOut,
+  easeOut: RCTTypes.easeOut,
+  linear: RCTTypes.linear,
+  spring: RCTTypes.spring,
 };
 
 var POPAnimation = {
@@ -98,7 +98,7 @@ var POPAnimation = {
       );
     }
 
-    RKPOPAnimationManager.createAnimationInternal(tag, typeName, attrs);
+    RCTPOPAnimationManager.createAnimationInternal(tag, typeName, attrs);
     return tag;
   },
 
@@ -127,35 +127,35 @@ var POPAnimation = {
   },
 
   addAnimation: function(nodeHandle, anim, callback) {
-    RKPOPAnimationManager.addAnimation(nodeHandle, anim, callback);
+    RCTPOPAnimationManager.addAnimation(nodeHandle, anim, callback);
   },
 
   removeAnimation: function(nodeHandle, anim) {
-    RKPOPAnimationManager.removeAnimation(nodeHandle, anim);
+    RCTPOPAnimationManager.removeAnimation(nodeHandle, anim);
   },
 };
 
-// Make sure that we correctly propagate RKPOPAnimationManager constants
+// Make sure that we correctly propagate RCTPOPAnimationManager constants
 // to POPAnimation
 if (__DEV__) {
   var allProperties = merge(
-    RKPOPAnimationManager.Properties,
-    RKPOPAnimationManager.Properties
+    RCTPOPAnimationManager.Properties,
+    RCTPOPAnimationManager.Properties
   );
   for (var key in allProperties) {
     invariant(
-      POPAnimation.Properties[key] === RKPOPAnimationManager.Properties[key],
+      POPAnimation.Properties[key] === RCTPOPAnimationManager.Properties[key],
       'POPAnimation doesn\'t copy property ' + key + ' correctly'
     );
   }
 
   var allTypes = merge(
-    RKPOPAnimationManager.Types,
-    RKPOPAnimationManager.Types
+    RCTPOPAnimationManager.Types,
+    RCTPOPAnimationManager.Types
   );
   for (var key in allTypes) {
     invariant(
-      POPAnimation.Types[key] === RKPOPAnimationManager.Types[key],
+      POPAnimation.Types[key] === RCTPOPAnimationManager.Types[key],
       'POPAnimation doesn\'t copy type ' + key + ' correctly'
     );
   }

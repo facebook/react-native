@@ -29,7 +29,7 @@
  *   RCTDeviceEventEmitter,
  *   'reachabilityDidChange',
  *   (resp) => resp.network_reachability,
- *   RKReachability.getCurrentReachability
+ *   RCTReachability.getCurrentReachability
  * );
  *
  * var myComponent = React.createClass({

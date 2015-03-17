@@ -6,7 +6,7 @@
 'use strict';
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
+var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
 
 /**
  * Queries the layout of a view. The layout does not reflect the element as
@@ -29,7 +29,7 @@ var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
  */
 var queryLayoutByID = function(rootNodeID, onError, onSuccess) {
   // Native bridge doesn't *yet* surface errors.
-  RKUIManager.measure(
+  RCTUIManager.measure(
     ReactIOSTagHandles.rootNodeIDToTag[rootNodeID],
     onSuccess
   );

@@ -6,7 +6,7 @@
 'use strict';
 
 var ReactPropTypes = require('ReactPropTypes');
-var RKCameraRollManager = require('NativeModules').RKCameraRollManager;
+var RCTCameraRollManager = require('NativeModules').RCTCameraRollManager;
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var deepFreezeAndThrowOnMutationInDev =
@@ -98,7 +98,7 @@ class CameraRoll {
       typeof tag === 'string',
       'CameraRoll.saveImageWithTag tag must be a valid string.'
     );
-    RKCameraRollManager.saveImageWithTag(
+    RCTCameraRollManager.saveImageWithTag(
       tag,
       (imageTag) => {
         successCallback && successCallback(imageTag);
@@ -140,7 +140,7 @@ class CameraRoll {
         callback(response);
       };
     }
-    RKCameraRollManager.getPhotos(params, metaCallback, errorCallback);
+    RCTCameraRollManager.getPhotos(params, metaCallback, errorCallback);
   }
 }
 

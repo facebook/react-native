@@ -5,12 +5,10 @@
  */
 'use strict';
 
-var RemoteModulesDeprecated = require('BatchedBridge').RemoteModulesDeprecated;
+var NativeModulesDeprecated = require('BatchedBridge').RemoteModulesDeprecated;
 
-// Dirty hack to support old (RK) and new (RCT) native module name conventions
-Object.keys(RemoteModulesDeprecated).forEach((moduleName) => {
-  var rkModuleName = moduleName.replace(/^RCT/, 'RK');
-  RemoteModulesDeprecated[rkModuleName] = RemoteModulesDeprecated[moduleName];
-});
+var nativeModulePrefixDuplicator = require('nativeModulePrefixDuplicator');
 
-module.exports = RemoteModulesDeprecated;
+nativeModulePrefixDuplicator(NativeModulesDeprecated);
+
+module.exports = NativeModulesDeprecated;

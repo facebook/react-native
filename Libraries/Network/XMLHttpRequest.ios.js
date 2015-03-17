@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var RKDataManager = require('NativeModulesDeprecated').RKDataManager;
+var RCTDataManager = require('NativeModulesDeprecated').RCTDataManager;
 
 var crc32 = require('crc32');
 
@@ -91,7 +91,7 @@ class XMLHttpRequest {
     }
     this._sent = true;
 
-    RKDataManager.queryData(
+    RCTDataManager.queryData(
       'http',
       JSON.stringify({
         method: this._method,

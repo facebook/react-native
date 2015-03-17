@@ -9,7 +9,7 @@
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactMultiChildUpdateTypes = require('ReactMultiChildUpdateTypes');
-var RKUIManager = require('NativeModulesDeprecated').RKUIManager;
+var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
 var ReactPerf = require('ReactPerf');
 
 /**
@@ -55,7 +55,7 @@ var dangerouslyProcessChildrenUpdates = function(childrenUpdates, markupList) {
   for (var updateParentTagString in byContainerTag) {
     var updateParentTagNumber = +updateParentTagString;
     var childUpdatesToSend = byContainerTag[updateParentTagNumber];
-    RKUIManager.manageChildren(
+    RCTUIManager.manageChildren(
       updateParentTagNumber,
       childUpdatesToSend.moveFromIndices,
       childUpdatesToSend.moveToIndices,
@@ -89,7 +89,7 @@ var ReactIOSDOMIDOperations = {
     'dangerouslyReplaceNodeWithMarkupByID',
     function(id, mountImage) {
       var oldTag = ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(id);
-      RKUIManager.replaceExistingNonRootView(oldTag, mountImage.tag);
+      RCTUIManager.replaceExistingNonRootView(oldTag, mountImage.tag);
       ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(id, mountImage.tag);
     }
   ),

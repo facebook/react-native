@@ -7,11 +7,11 @@
 'use strict';
 
 var NativeModules = require('NativeModulesDeprecated');
-var RKAsyncLocalStorage = NativeModules.RKAsyncLocalStorage;
-var RKAsyncRocksDBStorage = NativeModules.RKAsyncRocksDBStorage;
+var RCTAsyncLocalStorage = NativeModules.RCTAsyncLocalStorage;
+var RCTAsyncRocksDBStorage = NativeModules.RCTAsyncRocksDBStorage;
 
 // We use RocksDB if available.
-var RKAsyncStorage = RKAsyncRocksDBStorage || RKAsyncLocalStorage;
+var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncLocalStorage;
 
 /**
  * AsyncStorage is a simple, asynchronous, persistent, global, key-value storage
@@ -33,7 +33,7 @@ var AsyncStorage = {
     key: string,
     callback: (error: ?Error, result: ?string) => void
   ): void {
-    RKAsyncStorage.multiGet([key], function(errors, result) {
+    RCTAsyncStorage.multiGet([key], function(errors, result) {
       // Unpack result to get value from [[key,value]]
       var value = (result && result[0] && result[0][1]) ? result[0][1] : null;
       callback((errors && convertError(errors[0])) || null, value);
@@ -49,7 +49,7 @@ var AsyncStorage = {
     value: string,
     callback: ?(error: ?Error) => void
   ): void {
-    RKAsyncStorage.multiSet([[key,value]], function(errors) {
+    RCTAsyncStorage.multiSet([[key,value]], function(errors) {
       callback && callback((errors && convertError(errors[0])) || null);
     });
   },
@@ -58,7 +58,7 @@ var AsyncStorage = {
     key: string,
     callback: ?(error: ?Error) => void
   ): void {
-    RKAsyncStorage.multiRemove([key], function(errors) {
+    RCTAsyncStorage.multiRemove([key], function(errors) {
       callback && callback((errors && convertError(errors[0])) || null);
     });
   },
@@ -73,7 +73,7 @@ var AsyncStorage = {
     value: string,
     callback: ?(error: ?Error) => void
   ): void {
-    RKAsyncStorage.multiMerge([[key,value]], function(errors) {
+    RCTAsyncStorage.multiMerge([[key,value]], function(errors) {
       callback && callback((errors && convertError(errors[0])) || null);
     });
   },
@@ -84,7 +84,7 @@ var AsyncStorage = {
    * own keys instead.
    */
   clear: function(callback: ?(error: ?Error) => void) {
-    RKAsyncStorage.clear(function(error) {
+    RCTAsyncStorage.clear(function(error) {
       callback && callback(convertError(error));
     });
   },
@@ -93,7 +93,7 @@ var AsyncStorage = {
    * Gets *all* keys known to the system, for all callers, libraries, etc.
    */
   getAllKeys: function(callback: (error: ?Error) => void) {
-    RKAsyncStorage.getAllKeys(function(error, keys) {
+    RCTAsyncStorage.getAllKeys(function(error, keys) {
       callback(convertError(error), keys);
     });
   },
@@ -118,7 +118,7 @@ var AsyncStorage = {
     keys: Array<string>,
     callback: (errors: ?Array<Error>, result: ?Array<Array<string>>) => void
   ): void {
-    RKAsyncStorage.multiGet(keys, function(errors, result) {
+    RCTAsyncStorage.multiGet(keys, function(errors, result) {
       callback(
         (errors && errors.map((error) => convertError(error))) || null,
         result
@@ -136,7 +136,7 @@ var AsyncStorage = {
     keyValuePairs: Array<Array<string>>,
     callback: ?(errors: ?Array<Error>) => void
   ): void {
-    RKAsyncStorage.multiSet(keyValuePairs, function(errors) {
+    RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
       callback && callback(
         (errors && errors.map((error) => convertError(error))) || null
       );
@@ -150,7 +150,7 @@ var AsyncStorage = {
     keys: Array<string>,
     callback: ?(errors: ?Array<Error>) => void
   ): void {
-    RKAsyncStorage.multiRemove(keys, function(errors) {
+    RCTAsyncStorage.multiRemove(keys, function(errors) {
       callback && callback(
         (errors && errors.map((error) => convertError(error))) || null
       );
@@ -167,7 +167,7 @@ var AsyncStorage = {
     keyValuePairs: Array<Array<string>>,
     callback: ?(errors: ?Array<Error>) => void
   ): void {
-    RKAsyncStorage.multiMerge(keyValuePairs, function(errors) {
+    RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
       callback && callback(
         (errors && errors.map((error) => convertError(error))) || null
       );
@@ -176,7 +176,7 @@ var AsyncStorage = {
 };
 
 // Not all native implementations support merge.
-if (!RKAsyncStorage.multiMerge) {
+if (!RCTAsyncStorage.multiMerge) {
   delete AsyncStorage.mergeItem;
   delete AsyncStorage.multiMerge;
 }
