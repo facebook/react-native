@@ -126,7 +126,7 @@ var MapView = React.createClass({
 
   render: function() {
     return (
-      <RKMap
+      <RCTMap
         style={this.props.style}
         showsUserLocation={this.props.showsUserLocation}
         zoomEnabled={this.props.zoomEnabled}
@@ -145,7 +145,7 @@ var MapView = React.createClass({
 
 });
 
-var RKMap = createReactIOSNativeComponentClass({
+var RCTMap = createReactIOSNativeComponentClass({
   validAttributes: merge(
     ReactIOSViewAttributes.UIView, {
       showsUserLocation: true,

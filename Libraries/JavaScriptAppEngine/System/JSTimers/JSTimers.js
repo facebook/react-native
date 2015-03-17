@@ -7,7 +7,7 @@
 
 // Note that the module JSTimers is split into two in order to solve a cycle
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
-var RKTiming = require('NativeModules').RKTiming;
+var RCTTiming = require('NativeModules').RCTTiming;
 var JSTimersExecution = require('JSTimersExecution');
 
 /**
@@ -43,7 +43,7 @@ var JSTimers = {
       return func.apply(undefined, args);
     };
     JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.setTimeout;
-    RKTiming.createTimer(newID, duration, Date.now(), /** recurring */ false);
+    RCTTiming.createTimer(newID, duration, Date.now(), /** recurring */ false);
     return newID;
   },
 
@@ -60,7 +60,7 @@ var JSTimers = {
       return func.apply(undefined, args);
     };
     JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.setInterval;
-    RKTiming.createTimer(newID, duration, Date.now(), /** recurring */ true);
+    RCTTiming.createTimer(newID, duration, Date.now(), /** recurring */ true);
     return newID;
   },
 
@@ -90,7 +90,7 @@ var JSTimers = {
     JSTimersExecution.timerIDs[freeIndex] = newID;
     JSTimersExecution.callbacks[freeIndex] = func;
     JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.requestAnimationFrame;
-    RKTiming.createTimer(newID, 0, Date.now(), /** recurring */ false);
+    RCTTiming.createTimer(newID, 0, Date.now(), /** recurring */ false);
     return newID;
   },
 
@@ -126,7 +126,7 @@ var JSTimers = {
     if (index !== -1) {
       JSTimersExecution._clearIndex(index);
       if (JSTimersExecution.types[index] !== JSTimersExecution.Type.setImmediate) {
-        RKTiming.deleteTimer(timerID);
+        RCTTiming.deleteTimer(timerID);
       }
     }
   },

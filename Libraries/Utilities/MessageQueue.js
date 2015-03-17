@@ -415,28 +415,6 @@ var MessageQueueMixin = {
     return ret;
   },
 
-  callDeprecated: function(moduleName, methodName, params, cb, scope) {
-    invariant(
-      !cb || typeof cb === 'function',
-      'Last argument (callback) must be function'
-    );
-    // Store callback _before_ sending the request, just in case the MailBox
-    // returns the response in a blocking manner
-    if (cb) {
-      this._storeCallbacksInCurrentThread(null, cb, scope, this._POOLED_CBIDS);
-      params.push(this._POOLED_CBIDS.successCallbackID);
-    }
-    var moduleID = this._remoteModuleNameToModuleID[moduleName];
-    if (moduleID === undefined || moduleID === null) {
-      throw new Error('Unrecognized module name:' + moduleName);
-    }
-    var methodID = this._remoteModuleNameToMethodNameToID[moduleName][methodName];
-    if (methodID === undefined || moduleID === null) {
-      throw new Error('Unrecognized method name:' + methodName);
-    }
-    this._pushRequestToOutgoingItems(moduleID, methodID, params);
-  },
-
   call: function(moduleName, methodName, params, onFail, onSucc, scope) {
     invariant(
       (!onFail || typeof onFail === 'function') &&
@@ -445,9 +423,9 @@ var MessageQueueMixin = {
     );
     // Store callback _before_ sending the request, just in case the MailBox
     // returns the response in a blocking manner.
-    if (onFail || onSucc) {
+    if (onSucc) {
       this._storeCallbacksInCurrentThread(onFail, onSucc, scope, this._POOLED_CBIDS);
-      params.push(this._POOLED_CBIDS.errorCallbackID);
+      onFail && params.push(this._POOLED_CBIDS.errorCallbackID);
       params.push(this._POOLED_CBIDS.successCallbackID);
     }
     var moduleID = this._remoteModuleNameToModuleID[moduleName];

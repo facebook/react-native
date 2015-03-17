@@ -44,7 +44,7 @@ typedef enum {
 static void RCTPrint(void *context)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
-  printf("%s(%zd), ", [[shadowView moduleName] UTF8String], [[shadowView reactTag] integerValue]);
+  printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
 }
 
 static css_node_t *RCTGetChild(void *context, int i)
@@ -132,12 +132,13 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     RCTRoundPixelValue(absolutePosition.y + node->layout.position[CSS_TOP] + node->layout.dimensions[CSS_HEIGHT])
   };
 
-  CGRect frame = {
+  CGRect frame = {{
     RCTRoundPixelValue(node->layout.position[CSS_LEFT]),
     RCTRoundPixelValue(node->layout.position[CSS_TOP]),
+  }, {
     RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),
     RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
-  };
+  }};
 
   if (!CGRectEqualToRect(frame, _frame)) {
     _frame = frame;

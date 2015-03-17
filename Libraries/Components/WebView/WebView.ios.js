@@ -17,9 +17,9 @@ var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;
-var { RKWebViewManager } = require('NativeModules');
+var { RCTWebViewManager } = require('NativeModules');
 
-var RK_WEBVIEW_REF = 'webview';
+var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
   IDLE: null,
@@ -28,12 +28,12 @@ var WebViewState = keyMirror({
 });
 
 var NavigationType = {
-  click: RKWebViewManager.NavigationType.LinkClicked,
-  formsubmit: RKWebViewManager.NavigationType.FormSubmitted,
-  backforward: RKWebViewManager.NavigationType.BackForward,
-  reload: RKWebViewManager.NavigationType.Reload,
-  formresubmit: RKWebViewManager.NavigationType.FormResubmitted,
-  other: RKWebViewManager.NavigationType.Other,
+  click: RCTWebViewManager.NavigationType.LinkClicked,
+  formsubmit: RCTWebViewManager.NavigationType.FormSubmitted,
+  backforward: RCTWebViewManager.NavigationType.BackForward,
+  reload: RCTWebViewManager.NavigationType.Reload,
+  formresubmit: RCTWebViewManager.NavigationType.FormResubmitted,
+  other: RCTWebViewManager.NavigationType.Other,
 };
 
 var WebView = React.createClass({
@@ -79,7 +79,7 @@ var WebView = React.createClass({
         errorEvent.code,
         errorEvent.description);
     } else if (this.state.viewState !== WebViewState.IDLE) {
-      console.error("RKWebView invalid state encountered: " + this.state.loading);
+      console.error('RCTWebView invalid state encountered: ' + this.state.loading);
     }
 
     var webViewStyles = [styles.container, this.props.style];
@@ -91,7 +91,7 @@ var WebView = React.createClass({
 
     var webView =
       <RCTWebView
-        ref={RK_WEBVIEW_REF}
+        ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
@@ -112,15 +112,15 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RKWebViewManager.goForward(this.getWebWiewHandle());
+    RCTWebViewManager.goForward(this.getWebWiewHandle());
   },
 
   goBack: function() {
-    RKWebViewManager.goBack(this.getWebWiewHandle());
+    RCTWebViewManager.goBack(this.getWebWiewHandle());
   },
 
   reload: function() {
-    RKWebViewManager.reload(this.getWebWiewHandle());
+    RCTWebViewManager.reload(this.getWebWiewHandle());
   },
 
   /**
@@ -134,7 +134,7 @@ var WebView = React.createClass({
   },
 
   getWebWiewHandle: function() {
-    return this.refs[RK_WEBVIEW_REF].getNodeHandle();
+    return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
   },
 
   onLoadingStart: function(event) {

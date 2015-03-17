@@ -184,12 +184,12 @@ var Text = React.createClass({
     props.onResponderMove = this.handleResponderMove;
     props.onResponderRelease = this.handleResponderRelease;
     props.onResponderTerminate = this.handleResponderTerminate;
-    return <RKText {...props} />;
+    return <RCTText {...props} />;
   },
 });
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
-var RKText = createReactIOSNativeComponentClass(viewConfig);
+var RCTText = createReactIOSNativeComponentClass(viewConfig);
 
 module.exports = Text;

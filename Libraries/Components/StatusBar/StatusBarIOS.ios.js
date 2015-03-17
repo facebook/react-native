@@ -6,29 +6,29 @@
  */
 'use strict';
 
-var { RKStatusBarManager } = require('NativeModules');
+var { RCTStatusBarManager } = require('NativeModules');
 
 var StatusBarIOS = {
 
   Style: {
-    default: RKStatusBarManager.Style.default,
-    lightContent: RKStatusBarManager.Style.lightContent
+    default: RCTStatusBarManager.Style.default,
+    lightContent: RCTStatusBarManager.Style.lightContent
   },
 
   Animation: {
-    none: RKStatusBarManager.Animation.none,
-    fade: RKStatusBarManager.Animation.fade,
-    slide: RKStatusBarManager.Animation.slide,
+    none: RCTStatusBarManager.Animation.none,
+    fade: RCTStatusBarManager.Animation.fade,
+    slide: RCTStatusBarManager.Animation.slide,
   },
 
   setStyle(style: number, animated: boolean) {
     animated = animated || false;
-    RKStatusBarManager.setStyle(style, animated);
+    RCTStatusBarManager.setStyle(style, animated);
   },
 
   setHidden(hidden: boolean, animation: number) {
     animation = animation || StatusBarIOS.Animation.none;
-    RKStatusBarManager.setHidden(hidden, animation);
+    RCTStatusBarManager.setHidden(hidden, animation);
   },
 };
 

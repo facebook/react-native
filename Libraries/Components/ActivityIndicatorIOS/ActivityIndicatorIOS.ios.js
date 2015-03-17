@@ -53,7 +53,7 @@ var ActivityIndicatorIOS = React.createClass({
 
   render: function() {
     var style = styles.sizeSmall;
-    var NativeConstants = NativeModules.RKUIManager.UIActivityIndicatorView.Constants;
+    var NativeConstants = NativeModules.RCTUIManager.UIActivityIndicatorView.Constants;
     var activityIndicatorViewStyle = NativeConstants.StyleWhite;
     if (this.props.size === 'large') {
       style = styles.sizeLarge;

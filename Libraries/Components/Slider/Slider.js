@@ -60,7 +60,7 @@ var Slider = React.createClass({
 
   render: function() {
     return (
-      <RKSlider
+      <RCTSlider
         style={[styles.slider, this.props.style]}
         value={this.props.value}
         onChange={this._onValueChange}
@@ -75,7 +75,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var RKSlider = createReactIOSNativeComponentClass({
+var RCTSlider = createReactIOSNativeComponentClass({
   validAttributes: merge(ReactIOSViewAttributes.UIView, {value: true}),
   uiViewClassName: 'RCTSlider',
 });

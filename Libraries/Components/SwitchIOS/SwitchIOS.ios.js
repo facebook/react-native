@@ -3,7 +3,7 @@
  *
  * @providesModule SwitchIOS
  *
- * This is a controlled component version of RKSwitch.
+ * This is a controlled component version of RCTSwitch.
  */
 'use strict';
 
@@ -80,7 +80,7 @@ var SwitchIOS = React.createClass({
 
   render: function() {
     return (
-      <RKSwitch
+      <RCTSwitch
         ref={SWITCH}
         style={[styles.rkSwitch, this.props.style]}
         enabled={!this.props.disabled}
@@ -109,7 +109,7 @@ var rkSwitchAttributes = merge(ReactIOSViewAttributes.UIView, {
   enabled: true,
 });
 
-var RKSwitch = createReactIOSNativeComponentClass({
+var RCTSwitch = createReactIOSNativeComponentClass({
   validAttributes: rkSwitchAttributes,
   uiViewClassName: 'RCTSwitch',
 });

@@ -3,7 +3,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#define TIMEOUT_SECONDS 30
+#define TIMEOUT_SECONDS 240
 
 @interface UIExplorerTests : XCTestCase
 
