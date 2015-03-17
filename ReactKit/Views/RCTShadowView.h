@@ -2,8 +2,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "Layout.h"
-#import "RCTUIManager.h"
+#import "../Layout/Layout.h"
+
 #import "RCTViewNodeProtocol.h"
 
 @class RCTSparseArray;
@@ -31,7 +31,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
-@property (nonatomic, copy) NSString *moduleName;
+@property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, assign) BOOL isBGColorExplicitlySet; // Used to propagate to children
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
@@ -54,6 +54,9 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
  */
 @property (nonatomic, assign) CGFloat top;
 @property (nonatomic, assign) CGFloat left;
+@property (nonatomic, assign) CGFloat bottom;
+@property (nonatomic, assign) CGFloat right;
+
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
 @property (nonatomic, assign) CGRect frame;
@@ -66,8 +69,8 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
  */
 @property (nonatomic, assign) CGFloat borderTop;
 @property (nonatomic, assign) CGFloat borderLeft;
-@property (nonatomic, assign) CGFloat borderWidth;
-@property (nonatomic, assign) CGFloat borderHeight;
+@property (nonatomic, assign) CGFloat borderBottom;
+@property (nonatomic, assign) CGFloat borderRight;
 
 - (void)setBorderWidth:(CGFloat)value;
 

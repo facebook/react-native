@@ -2,6 +2,7 @@
 
 #import "RCTTextFieldManager.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTShadowView.h"
 #import "RCTSparseArray.h"

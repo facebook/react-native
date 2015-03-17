@@ -718,7 +718,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   }
 
   RCTShadowView *shadowView = [manager shadowView];
-  shadowView.moduleName = viewName;
+  shadowView.viewName = viewName;
   shadowView.reactTag = reactTag;
   RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], manager);
   _shadowViewRegistry[shadowView.reactTag] = shadowView;
@@ -973,8 +973,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:[childShadowViews count]];
   CGRect layoutRect = [RCTConvert CGRect:rect];
   
-  for (int ii = 0; ii < [childShadowViews count]; ii++) {
-    RCTShadowView *childShadowView = [childShadowViews objectAtIndex:ii];
+  [childShadowViews enumerateObjectsUsingBlock:^(RCTShadowView *childShadowView, NSUInteger idx, BOOL *stop) {
     CGRect childLayout = [RCTShadowView measureLayout:childShadowView relativeTo:shadowView];
     if (CGRectIsNull(childLayout)) {
       RCTLogError(@"View %@ (tag #%@) is not a decendant of %@ (tag #%@)",
@@ -992,7 +991,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
         topOffset <= layoutRect.origin.y + layoutRect.size.height &&
         topOffset + height >= layoutRect.origin.y) {
       // This view is within the layout rect
-      NSDictionary *result = @{@"index": @(ii),
+      NSDictionary *result = @{@"index": @(idx),
                                @"left": @(leftOffset),
                                @"top": @(topOffset),
                                @"width": @(width),
@@ -1000,7 +999,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
 
       [results addObject:result];
     }
-  }
+  }];
   callback(@[results]);
 }
 
