@@ -17,20 +17,24 @@
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden)
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect)
-RCT_REMAP_VIEW_PROPERTY(autoCapitalize, autocapitalizationType)
 RCT_EXPORT_VIEW_PROPERTY(enabled)
 RCT_EXPORT_VIEW_PROPERTY(placeholder)
 RCT_EXPORT_VIEW_PROPERTY(text)
 RCT_EXPORT_VIEW_PROPERTY(clearButtonMode)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType)
 RCT_REMAP_VIEW_PROPERTY(color, textColor)
+RCT_CUSTOM_VIEW_PROPERTY(autoCapitalize, RCTTextField)
+{
+  view.autocapitalizationType = json ? [RCTConvert UITextAutocapitalizationType:json]
+                                     : defaultView.autocapitalizationType;
+}
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontWeight, RCTTextField)
 {
-  view.font = [RCTConvert UIFont:view.font withWeight:json]; // TODO
+  view.font = [RCTConvert UIFont:view.font withWeight:json]; // TODO: default value
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, RCTTextField)
 {

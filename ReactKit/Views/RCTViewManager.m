@@ -62,7 +62,7 @@
   return nil;
 }
 
-// View properties
+#pragma mark - View properties
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel)
 RCT_EXPORT_VIEW_PROPERTY(hidden)
@@ -110,7 +110,7 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView)
   }
 }
 
-// ShadowView properties
+#pragma mark - ShadowView properties
 
 RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowView)
 {
