@@ -7,7 +7,7 @@
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
 
-#define TIMEOUT_SECONDS 30
+#define TIMEOUT_SECONDS 240
 
 @implementation RCTTestRunner
 
