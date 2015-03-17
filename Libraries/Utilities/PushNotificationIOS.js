@@ -9,8 +9,10 @@ var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var RCTPushNotificationManager = NativeModules.RCTPushNotificationManager;
+if (RCTPushNotificationManager) {
+  var _initialNotification = RCTPushNotificationManager.initialNotification;
+}
 
-var _initialNotification = RCTPushNotificationManager.initialNotification;
 var _notifHandlers = {};
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
