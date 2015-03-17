@@ -56,7 +56,7 @@ var View = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactIOSViewAttributes.RKView
+    validAttributes: ReactIOSViewAttributes.RCTView
   },
 
   propTypes: {
@@ -116,7 +116,7 @@ var View = React.createClass({
     style: stylePropType,
 
     /**
-     * This is a special performance property exposed by RKView and is useful
+     * This is a special performance property exposed by RCTView and is useful
      * for scrolling content when there are many subviews, most of which are
      * offscreen. For this property to be effective, it must be applied to a
      * view that contains many subviews that extend outside its bound. The
@@ -127,18 +127,18 @@ var View = React.createClass({
   },
 
   render: function() {
-    return <RKView {...this.props} />;
+    return <RCTView {...this.props} />;
   },
 });
 
 
-var RKView = createReactIOSNativeComponentClass({
-  validAttributes: ReactIOSViewAttributes.RKView,
+var RCTView = createReactIOSNativeComponentClass({
+  validAttributes: ReactIOSViewAttributes.RCTView,
   uiViewClassName: 'RCTView',
 });
-RKView.propTypes = View.propTypes;
+RCTView.propTypes = View.propTypes;
 
-var ViewToExport = RKView;
+var ViewToExport = RCTView;
 if (__DEV__) {
   ViewToExport = View;
 }

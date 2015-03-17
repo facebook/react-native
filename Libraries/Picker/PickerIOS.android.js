@@ -3,7 +3,7 @@
  *
  * @providesModule PickerIOS
  *
- * This is a controlled component version of RKPickerIOS
+ * This is a controlled component version of RCTPickerIOS
  */
 'use strict';
 

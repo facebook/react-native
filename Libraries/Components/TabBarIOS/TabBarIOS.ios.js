@@ -14,9 +14,9 @@ var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentC
 var TabBarIOS = React.createClass({
   render: function() {
     return (
-      <RKTabBar style={[styles.tabGroup, this.props.style]}>
+      <RCTTabBar style={[styles.tabGroup, this.props.style]}>
         {this.props.children}
-      </RKTabBar>
+      </RCTTabBar>
     );
   }
 });
@@ -31,6 +31,6 @@ var config = {
   validAttributes: ReactIOSViewAttributes.UIView,
   uiViewClassName: 'RCTTabBar',
 };
-var RKTabBar = createReactIOSNativeComponentClass(config);
+var RCTTabBar = createReactIOSNativeComponentClass(config);
 
 module.exports = TabBarIOS;

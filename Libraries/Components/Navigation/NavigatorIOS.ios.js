@@ -8,7 +8,7 @@
 var EventEmitter = require('EventEmitter');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var { RKNavigatorManager } = require('NativeModules');
+var { RCTNavigatorManager } = require('NativeModules');
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
@@ -28,14 +28,14 @@ function getuid() {
   return __uid++;
 }
 
-var RKNavigator = createReactIOSNativeComponentClass({
+var RCTNavigator = createReactIOSNativeComponentClass({
   validAttributes: merge(ReactIOSViewAttributes.UIView, {
     requestedTopOfStack: true
   }),
   uiViewClassName: 'RCTNavigator',
 });
 
-var RKNavigatorItem = createReactIOSNativeComponentClass({
+var RCTNavigatorItem = createReactIOSNativeComponentClass({
   validAttributes: {
     // TODO: Remove or fix the attributes that are not fully functional.
     //  NavigatorIOS does not use them all, because some are problematic
@@ -53,7 +53,7 @@ var RKNavigatorItem = createReactIOSNativeComponentClass({
 
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
-    RKNavigatorManager.requestSchedulingJavaScriptNavigation(
+    RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       this.getNodeHandle(),
       logError,
       cb
@@ -62,7 +62,7 @@ var NavigatorTransitionerIOS = React.createClass({
 
   render: function() {
     return (
-      <RKNavigator {...this.props}/>
+      <RCTNavigator {...this.props}/>
     );
   },
 });
@@ -70,12 +70,12 @@ var NavigatorTransitionerIOS = React.createClass({
 
 /**
  * Think of `<NavigatorIOS>` as simply a component that renders an
- * `RKNavigator`, and moves the `RKNavigator`'s `requestedTopOfStack` pointer
- * forward and backward. The `RKNavigator` interprets changes in
+ * `RCTNavigator`, and moves the `RCTNavigator`'s `requestedTopOfStack` pointer
+ * forward and backward. The `RCTNavigator` interprets changes in
  * `requestedTopOfStack` to be pushes and pops of children that are rendered.
  * `<NavigatorIOS>` always ensures that whenever the `requestedTopOfStack`
  * pointer is moved, that we've also rendered enough children so that the
- * `RKNavigator` can carry out the push/pop with those children.
+ * `RCTNavigator` can carry out the push/pop with those children.
  * `<NavigatorIOS>` also removes children that will no longer be needed
  * (after the pop of a child has been fully completed/animated out).
  */
@@ -496,7 +496,7 @@ var NavigatorIOS = React.createClass({
 
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
-        <RKNavigatorItem
+        <RCTNavigatorItem
           title={route.title}
           style={[
             styles.stackItem,
@@ -512,7 +512,7 @@ var NavigatorIOS = React.createClass({
             route={route}
             {...route.passProps}
           />
-        </RKNavigatorItem>
+        </RCTNavigatorItem>
       </StaticContainer>
     );
   },

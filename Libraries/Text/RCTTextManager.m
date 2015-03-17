@@ -23,6 +23,8 @@
   return [[RCTShadowText alloc] init];
 }
 
+#pragma mark - View properties
+
 RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
 RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText)
 {
@@ -33,6 +35,8 @@ RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText)
   }
   view.lineBreakMode = truncationMode;
 }
+
+#pragma mark - Shadow properties
 
 RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowText)
 {

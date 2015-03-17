@@ -7,7 +7,7 @@
 
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RKAppState = NativeModules.RKAppState;
+var RCTAppState = NativeModules.RCTAppState;
 
 var logError = require('logError');
 
@@ -45,7 +45,7 @@ RCTDeviceEventEmitter.addListener(
   }
 );
 
-RKAppState.getCurrentAppState(
+RCTAppState.getCurrentAppState(
   (appStateData) => {
     AppStateIOS.currentState = appStateData.app_state;
   },

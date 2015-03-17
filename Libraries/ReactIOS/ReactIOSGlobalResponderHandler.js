@@ -3,17 +3,17 @@
  */
 'use strict';
 
-var RKUIManager = require('NativeModules').RKUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 
 var ReactIOSGlobalResponderHandler = {
   onChange: function(from, to) {
     if (to !== null) {
-      RKUIManager.setJSResponder(
+      RCTUIManager.setJSResponder(
         ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(to)
       );
     } else {
-      RKUIManager.clearJSResponder();
+      RCTUIManager.clearJSResponder();
     }
   }
 };

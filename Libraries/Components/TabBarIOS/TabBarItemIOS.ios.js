@@ -58,7 +58,7 @@ var TabBarItemIOS = React.createClass({
     }
 
     return (
-      <RKTabBarItem
+      <RCTTabBarItem
         icon={this.props.icon.uri}
         selectedIcon={this.props.selectedIcon && this.props.selectedIcon.uri}
         onPress={this.props.onPress}
@@ -67,7 +67,7 @@ var TabBarItemIOS = React.createClass({
         title={this.props.title}
         style={[styles.tab, this.props.style]}>
         {tabContents}
-      </RKTabBarItem>
+      </RCTTabBarItem>
     );
   }
 });
@@ -80,7 +80,7 @@ var styles = StyleSheet.create({
   }
 });
 
-var RKTabBarItem = createReactIOSNativeComponentClass({
+var RCTTabBarItem = createReactIOSNativeComponentClass({
   validAttributes: merge(ReactIOSViewAttributes.UIView, {
     title: true,
     icon: true,
