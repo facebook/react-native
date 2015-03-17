@@ -25,22 +25,4 @@ var AppState = {
 
 };
 
-// This check avoids redboxing if native RKReachability library isn't included in app
-// TODO: Move reachability API into separate JS module to prevent need for this
-if (RKReachability) {
-  AppState.networkReachability = new Subscribable(
-    RCTDeviceEventEmitter,
-    'reachabilityDidChange',
-    (resp) => resp.network_reachability,
-    RKReachability.getCurrentReachability
-  );
-}
-
-AppState.NetworkReachability = keyMirror({
-  wifi: true,
-  cell: true,
-  none: true,
-  unknown: true,
-});
-
 module.exports = AppState;

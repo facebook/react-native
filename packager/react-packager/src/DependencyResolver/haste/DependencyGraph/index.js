@@ -134,13 +134,17 @@ DependecyGraph.prototype.resolveDependency = function(
   fromModule,
   depModuleId
 ) {
-  // Process asset requires.
-  var assetMatch = depModuleId.match(/^image!(.+)/);
-  if (assetMatch && assetMatch[1]) {
-    if (!this._assetMap[assetMatch[1]]) {
-      throw new Error('Cannot find asset: ' + assetMatch[1]);
+
+  if (this._assetMap != null) {
+    // Process asset requires.
+    var assetMatch = depModuleId.match(/^image!(.+)/);
+    if (assetMatch && assetMatch[1]) {
+      if (!this._assetMap[assetMatch[1]]) {
+        console.warn('Cannot find asset: ' + assetMatch[1]);
+        return null;
+      }
+      return this._assetMap[assetMatch[1]];
     }
-    return this._assetMap[assetMatch[1]];
   }
 
   var packageJson, modulePath, dep;
@@ -577,7 +581,8 @@ function buildAssetMap(roots, exts) {
         } else {
           var ext = path.extname(file).replace(/^\./, '');
           if (exts.indexOf(ext) !== -1) {
-            var assetName = path.basename(file, '.' + ext);
+            var assetName = path.basename(file, '.' + ext)
+                  .replace(/@[\d\.]+x/, '');
             if (map[assetName] != null) {
               debug('Conflcting assets', assetName);
             }
