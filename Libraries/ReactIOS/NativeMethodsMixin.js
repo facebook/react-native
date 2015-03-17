@@ -6,10 +6,9 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var NativeModulesDeprecated = require('NativeModulesDeprecated');
-var RCTPOPAnimationManagerDeprecated = NativeModulesDeprecated.RCTPOPAnimationManager;
+var NativeModules = require('NativeModules');
+var RCTPOPAnimationManager = NativeModules.RCTPOPAnimationManager;
 var RCTUIManager = NativeModules.RCTUIManager;
-var RCTUIManagerDeprecated = NativeModulesDeprecated.RCTUIManager;
 var TextInputState = require('TextInputState');
 
 var flattenStyle = require('flattenStyle');
@@ -27,16 +26,16 @@ var animationIDInvariant = function(funcName, anim) {
 var NativeMethodsMixin = {
   addAnimation: function(anim, callback) {
     animationIDInvariant('addAnimation', anim);
-    RCTPOPAnimationManagerDeprecated.addAnimation(this.getNodeHandle(), anim, callback);
+    RCTPOPAnimationManager.addAnimation(this.getNodeHandle(), anim, callback);
   },
 
   removeAnimation: function(anim) {
     animationIDInvariant('removeAnimation', anim);
-    RCTPOPAnimationManagerDeprecated.removeAnimation(this.getNodeHandle(), anim);
+    RCTPOPAnimationManager.removeAnimation(this.getNodeHandle(), anim);
   },
 
   measure: function(callback) {
-    RCTUIManagerDeprecated.measure(this.getNodeHandle(), callback);
+    RCTUIManager.measure(this.getNodeHandle(), callback);
   },
 
   measureLayout: function(relativeToNativeNode, onSuccess, onFail) {
@@ -77,7 +76,7 @@ var NativeMethodsMixin = {
       props = mergeFast(nativeProps, style);
     }
 
-    RCTUIManagerDeprecated.updateView(
+    RCTUIManager.updateView(
       this.getNodeHandle(),
       this.viewConfig.uiViewClassName,
       props

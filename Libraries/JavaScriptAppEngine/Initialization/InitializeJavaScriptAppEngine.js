@@ -115,7 +115,7 @@ function setupTimers() {
 }
 
 function setupAlert() {
-  var RCTAlertManager = require('RCTAlertManager');
+  var { RCTAlertManager } = require('NativeModules');
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
       var alertOpts = {

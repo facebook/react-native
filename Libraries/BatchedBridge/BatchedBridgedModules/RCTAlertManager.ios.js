@@ -5,6 +5,6 @@
  */
 'use strict';
 
-var RCTAlertManager = require('NativeModulesDeprecated').RCTAlertManager;
+var { RCTAlertManager } = require('NativeModules');
 
 module.exports = RCTAlertManager;

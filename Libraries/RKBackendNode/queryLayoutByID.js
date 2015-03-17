@@ -6,7 +6,7 @@
 'use strict';
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
-var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 
 /**
  * Queries the layout of a view. The layout does not reflect the element as

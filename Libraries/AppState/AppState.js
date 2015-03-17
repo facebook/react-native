@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModulesDeprecated');
+var NativeModules = require('NativeModules');
 var RCTAppState = NativeModules.RCTAppState;
 
 var AppState = {

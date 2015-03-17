@@ -65,8 +65,6 @@ var BatchedBridgeFactory = {
       invokeCallbackAndReturnFlushedQueue:
         messageQueue.invokeCallbackAndReturnFlushedQueue.bind(messageQueue),
       flushedQueue: messageQueue.flushedQueue.bind(messageQueue),
-      // These deprecated modules do not accept an error callback.
-      RemoteModulesDeprecated: mapObject(modulesConfig, this._createBridgedModule.bind(this, messageQueue)),
       RemoteModules: mapObject(modulesConfig, this._createBridgedModule.bind(this, messageQueue)),
       setLoggingEnabled: messageQueue.setLoggingEnabled.bind(messageQueue),
       getLoggedOutgoingItems: messageQueue.getLoggedOutgoingItems.bind(messageQueue),

@@ -7,7 +7,7 @@
 'use strict';
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
-var RCTUIManager = require('NativeModulesDeprecated').RCTUIManager;
+var RCTUIManager = require('NativeModules').RCTUIManager;
 
 var assign = require('Object.assign');
 

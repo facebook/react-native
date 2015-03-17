@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var RCTPOPAnimationManager = require('NativeModulesDeprecated').RCTPOPAnimationManager;
+var RCTPOPAnimationManager = require('NativeModules').RCTPOPAnimationManager;
 if (!RCTPOPAnimationManager) {
   // POP animation isn't available in the OSS fork - this is a temporary
   // workaround to enable its availability to be determined at runtime.
