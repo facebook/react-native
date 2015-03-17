@@ -554,7 +554,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }];
 
     if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) != 0) {
-      RCTLogMustFix(@"JavaScriptExecutor took too long to inject JSON object");
+      RCTLogError(@"JavaScriptExecutor took too long to inject JSON object");
     }
   }
 
