@@ -23,33 +23,6 @@ var MethodTypes = keyMirror({
 var BatchedBridgeFactory = {
   MethodTypes: MethodTypes,
   /**
-   * @deprecated: Remove callsites and delete this method.
-   *
-   * @param {MessageQueue} messageQueue Message queue that has been created with
-   * the `moduleConfig` (among others perhaps).
-   * @param {object} moduleConfig Configuration of module names/method
-   * names to callback types.
-   * @return {object} Remote representation of configured module.
-   */
-  _createDeprecatedBridgedModule: function(messageQueue, moduleConfig, moduleName) {
-    var remoteModule = mapObject(moduleConfig.methods, function(methodConfig, memberName) {
-      return methodConfig.type === MethodTypes.local ? null : function() {
-        var lastArg = arguments.length ? arguments[arguments.length - 1] : null;
-        var hasCB =
-          typeof lastArg == 'function';
-        var args = slice.call(arguments, 0, arguments.length - (hasCB ? 1 : 0));
-        var cb = hasCB ? lastArg : null;
-        return messageQueue.callDeprecated(moduleName, memberName, args, cb);
-      };
-    });
-    for (var constName in moduleConfig.constants) {
-      warning(!remoteModule[constName], 'saw constant and method named %s', constName);
-      remoteModule[constName] = moduleConfig.constants[constName];
-    }
-    return remoteModule;
-  },
-
-  /**
    * @param {MessageQueue} messageQueue Message queue that has been created with
    * the `moduleConfig` (among others perhaps).
    * @param {object} moduleConfig Configuration of module names/method
@@ -63,14 +36,14 @@ var BatchedBridgeFactory = {
         var secondLastArg = arguments.length > 1 ? arguments[arguments.length - 2] : null;
         var hasSuccCB = typeof lastArg === 'function';
         var hasErrorCB = typeof secondLastArg === 'function';
-        var hasCBs = hasSuccCB;
-        invariant(
-          (hasSuccCB && hasErrorCB) || (!hasSuccCB && !hasErrorCB),
-          'You must supply error callbacks and success callbacks or neither'
+        hasErrorCB && invariant(
+          hasSuccCB,
+          'Cannot have a non-function arg after a function arg.'
         );
-        var args = slice.call(arguments, 0, arguments.length - (hasCBs ? 2 : 0));
-        var onSucc = hasCBs ? lastArg : null;
-        var onFail = hasCBs ? secondLastArg : null;
+        var numCBs = (hasSuccCB ? 1 : 0) + (hasErrorCB ? 1 : 0);
+        var args = slice.call(arguments, 0, arguments.length - numCBs);
+        var onSucc = hasSuccCB ? lastArg : null;
+        var onFail = hasErrorCB ? secondLastArg : null;
         return messageQueue.call(moduleName, memberName, args, onFail, onSucc);
       };
     });
@@ -93,7 +66,7 @@ var BatchedBridgeFactory = {
         messageQueue.invokeCallbackAndReturnFlushedQueue.bind(messageQueue),
       flushedQueue: messageQueue.flushedQueue.bind(messageQueue),
       // These deprecated modules do not accept an error callback.
-      RemoteModulesDeprecated: mapObject(modulesConfig, this._createDeprecatedBridgedModule.bind(this, messageQueue)),
+      RemoteModulesDeprecated: mapObject(modulesConfig, this._createBridgedModule.bind(this, messageQueue)),
       RemoteModules: mapObject(modulesConfig, this._createBridgedModule.bind(this, messageQueue)),
       setLoggingEnabled: messageQueue.setLoggingEnabled.bind(messageQueue),
       getLoggedOutgoingItems: messageQueue.getLoggedOutgoingItems.bind(messageQueue),

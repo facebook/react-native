@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModulesDeprecated');
+var NativeModules = require('NativeModules');
 var RCTAsyncLocalStorage = NativeModules.RCTAsyncLocalStorage;
 var RCTAsyncRocksDBStorage = NativeModules.RCTAsyncRocksDBStorage;
 
