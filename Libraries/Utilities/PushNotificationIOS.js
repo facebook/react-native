@@ -5,7 +5,13 @@
  */
 'use strict';
 
+var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+
+var RCTPushNotificationManager = NativeModules.RCTPushNotificationManager;
+if (RCTPushNotificationManager) {
+  var _initialNotification = RCTPushNotificationManager.initialNotification;
+}
 
 var _notifHandlers = {};
 
@@ -28,6 +34,14 @@ class PushNotificationIOS {
     }
     _notifHandlers[handler].remove();
     _notifHandlers[handler] = null;
+  }
+
+
+  static popInitialNotification() {
+    var initialNotification = _initialNotification &&
+      new PushNotificationIOS(_initialNotification);
+    _initialNotification = null;
+    return initialNotification;
   }
 
   constructor(nativeNotif) {
