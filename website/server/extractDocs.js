@@ -54,19 +54,24 @@ var components = [
   '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
+  '../Libraries/Components/WebView/WebView.ios.js',
 ];
 
 var apis = [
+  '../Libraries/Utilities/AlertIOS.js',
   '../Libraries/Animation/Animation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppState/AppState.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/Animation/LayoutAnimation.js',
+  '../Libraries/Network/NetInfo.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
+  '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
 var all = components.concat(apis);
