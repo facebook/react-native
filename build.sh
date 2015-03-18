@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -e
+
 xctool \
   -project IntegrationTests/IntegrationTests.xcodeproj \
   -scheme IntegrationTests \
