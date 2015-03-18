@@ -37,7 +37,7 @@ var EXAMPLES = [
   require('./GeolocationExample'),
   require('./TabBarExample'),
   require('./SwitchExample'),
-  require('./SliderExample'),
+  require('./SliderIOSExample'),
   require('./AsyncStorageExample'),
   require('./CameraRollExample.ios'),
   require('./MapViewExample'),

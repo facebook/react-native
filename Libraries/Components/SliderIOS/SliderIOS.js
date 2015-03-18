@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule Slider
+ * @providesModule SliderIOS
  */
 'use strict';
 
@@ -16,7 +16,7 @@ var createReactIOSNativeComponentClass =
   require('createReactIOSNativeComponentClass');
 var merge = require('merge');
 
-var Slider = React.createClass({
+var SliderIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
@@ -80,4 +80,4 @@ var RCTSlider = createReactIOSNativeComponentClass({
   uiViewClassName: 'RCTSlider',
 });
 
-module.exports = Slider;
+module.exports = SliderIOS;
