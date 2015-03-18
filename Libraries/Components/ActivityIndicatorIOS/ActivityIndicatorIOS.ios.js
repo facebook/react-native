@@ -37,8 +37,11 @@ var ActivityIndicatorIOS = React.createClass({
      */
     color: PropTypes.string,
 
+    /**
+     * Size of the indicator. Small has a height of 20, large has a height of 36.
+     */
     size: PropTypes.oneOf([
-      'small', // default
+      'small',
       'large',
     ]),
   },
