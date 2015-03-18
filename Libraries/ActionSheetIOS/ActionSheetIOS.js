@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var { RCTActionSheetManager } = require('NativeModules');
+var RCTActionSheetManager = require('NativeModules').ActionSheetManager;
 
 var invariant = require('invariant');
 

@@ -9,7 +9,7 @@
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactMultiChildUpdateTypes = require('ReactMultiChildUpdateTypes');
-var RCTUIManager = require('NativeModules').RCTUIManager;
+var RCTUIManager = require('NativeModules').UIManager;
 var ReactPerf = require('ReactPerf');
 
 /**

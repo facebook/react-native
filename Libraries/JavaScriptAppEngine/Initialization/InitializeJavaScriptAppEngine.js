@@ -60,7 +60,7 @@ function setupDocumentShim() {
 var sourceMapPromise;
 
 function handleErrorWithRedBox(e) {
-  var RCTExceptionsManager = require('NativeModules').RCTExceptionsManager;
+  var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
   var errorToString = require('errorToString');
   var loadSourceMap = require('loadSourceMap');
 
@@ -115,7 +115,7 @@ function setupTimers() {
 }
 
 function setupAlert() {
-  var { RCTAlertManager } = require('NativeModules');
+  var RCTAlertManager = require('NativeModules').AlertManager;
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
       var alertOpts = {

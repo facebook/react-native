@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var { RCTAlertManager } = require('NativeModules');
+var RCTAlertManager = require('NativeModules').AlertManager;
 
 var DEFAULT_BUTTON_TEXT = 'OK';
 var DEFAULT_BUTTON = {

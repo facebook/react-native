@@ -99,11 +99,11 @@ var ListViewPagingExample = React.createClass({
     };
   },
 
-  renderRow: function(rowData, sectionID, rowID) {
+  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement {
     return (<Thumb text={rowData}/>);
   },
 
-  renderSectionHeader: function(sectionData, sectionID) {
+  renderSectionHeader: function(sectionData: string, sectionID: string) {
     return (
       <View style={styles.section}>
         <Text style={styles.text}>

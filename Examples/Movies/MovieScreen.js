@@ -6,7 +6,6 @@
 
 var React = require('react-native');
 var {
-  ExpandingText,
   Image,
   PixelRatio,
   ScrollView,
@@ -40,10 +39,9 @@ var MovieScreen = React.createClass({
           </View>
         </View>
         <View style={styles.separator} />
-        <ExpandingText
-          truncLength={200}
-          text={this.props.movie.synopsis}
-        />
+        <Text>
+          {this.props.movie.synopsis}
+        </Text>
         <View style={styles.separator} />
         <Cast actors={this.props.movie.abridged_cast} />
       </ScrollView>

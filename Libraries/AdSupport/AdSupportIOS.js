@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var AdSupport = require('NativeModules').RCTAdSupport;
+var AdSupport = require('NativeModules').AdSupport;
 
 module.exports = {
   getAdvertisingId: function(onSuccess, onFailure) {

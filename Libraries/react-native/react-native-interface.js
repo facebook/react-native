@@ -4,7 +4,6 @@ declare module "react-native" {
   }
 
   declare var AppRegistry: ReactClass<any, any, any>;
-  declare var ExpandingText: ReactClass<any, any, any>;
   declare var Image: ReactClass<any, any, any>;
   declare var ListView: ReactClass<any, any, any>;
   declare var NavigatorIOS: ReactClass<any, any, any>;

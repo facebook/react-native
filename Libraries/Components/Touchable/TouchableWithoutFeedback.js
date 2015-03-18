@@ -7,7 +7,6 @@
 
 var React = require('React');
 var Touchable = require('Touchable');
-var TouchableFeedbackPropType = require('TouchableFeedbackPropType');
 
 var onlyChild = require('onlyChild');
 
@@ -28,7 +27,16 @@ var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 var TouchableWithoutFeedback = React.createClass({
   mixins: [Touchable.Mixin],
 
-  propTypes: TouchableFeedbackPropType,
+  propTypes: {
+    /**
+     * Called when the touch is released, but not if cancelled (e.g. by a scroll
+     * that steals the responder lock).
+     */
+    onPress: React.PropTypes.func,
+    onPressIn: React.PropTypes.func,
+    onPressOut: React.PropTypes.func,
+    onLongPress: React.PropTypes.func,
+  },
 
   getInitialState: function() {
     return this.touchableGetInitialState();

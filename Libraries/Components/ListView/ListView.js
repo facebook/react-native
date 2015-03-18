@@ -7,7 +7,7 @@
 
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
-var RCTUIManager = require('NativeModules').RCTUIManager;
+var RCTUIManager = require('NativeModules').UIManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
