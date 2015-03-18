@@ -85,7 +85,7 @@
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
 {
-  if (self.hidden && shouldShow) {
+  if ((self.hidden && shouldShow) || (!self.hidden && [_lastErrorMessage isEqualToString:message])) {
     _lastStackTrace = stack;
     _lastErrorMessage = message;
 
@@ -93,9 +93,12 @@
     [_stackTraceTableView reloadData];
     [_stackTraceTableView setNeedsLayout];
 
-    [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                atScrollPosition:UITableViewScrollPositionTop
-                                        animated:NO];
+    if (self.hidden) {
+      [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                                  atScrollPosition:UITableViewScrollPositionTop
+                                          animated:NO];
+    }
+
     [self makeKeyAndVisible];
     [self becomeFirstResponder];
   }
