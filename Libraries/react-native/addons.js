@@ -19,6 +19,8 @@ var addons = {
   batchedUpdates: ReactUpdates.batchedUpdates,
   cloneWithProps: cloneWithProps,
   update: update,
+  Perf: undefined,
+  TestUtils: undefined,
 };
 
 if (__DEV__) {
