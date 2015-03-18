@@ -166,6 +166,12 @@
 {
   RCT_EXPORT();
 
+  if (jsDuration == 0 && repeats == NO) {
+    // For super fast, one-off timers, just enqueue them immediately rather than waiting a frame.
+    [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[@[callbackID]]];
+    return;
+  }
+
   NSTimeInterval interval = jsDuration / 1000;
   NSTimeInterval jsCreationTimeSinceUnixEpoch = jsSchedulingTime / 1000;
   NSTimeInterval currentTimeSinceUnixEpoch = [[NSDate date] timeIntervalSince1970];

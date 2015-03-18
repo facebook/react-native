@@ -90,7 +90,7 @@ var JSTimers = {
     JSTimersExecution.timerIDs[freeIndex] = newID;
     JSTimersExecution.callbacks[freeIndex] = func;
     JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.requestAnimationFrame;
-    RCTTiming.createTimer(newID, 0, Date.now(), /** recurring */ false);
+    RCTTiming.createTimer(newID, 1, Date.now(), /** recurring */ false);
     return newID;
   },
 
