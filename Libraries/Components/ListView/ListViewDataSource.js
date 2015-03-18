@@ -215,9 +215,10 @@ class ListViewDataSource {
   /**
    * @param {number} index
    *
-   * Gets the rowID at index provided if the dataSource arrays were flattened
+   * Gets the rowID at index provided if the dataSource arrays were flattened,
+   * or null of out of range indexes.
    */
-  getRowIDForFlatIndex(index: number): string {
+  getRowIDForFlatIndex(index: number): ?string {
     var accessIndex = index;
     for (var ii = 0; ii < this.sectionIdentities.length; ii++) {
       if (accessIndex >= this.rowIdentities[ii].length) {
@@ -226,14 +227,16 @@ class ListViewDataSource {
         return this.rowIdentities[ii][accessIndex];
       }
     }
+    return null;
   }
 
   /**
    * @param {number} index
    *
-   * Gets the sectionID at index provided if the dataSource arrays were flattened
+   * Gets the sectionID at index provided if the dataSource arrays were flattened,
+   * or null for out of range indexes.
    */
-  getSectionIDForFlatIndex(index: number): string {
+  getSectionIDForFlatIndex(index: number): ?string {
     var accessIndex = index;
     for (var ii = 0; ii < this.sectionIdentities.length; ii++) {
       if (accessIndex >= this.rowIdentities[ii].length) {
@@ -242,6 +245,7 @@ class ListViewDataSource {
         return this.sectionIdentities[ii];
       }
     }
+    return null;
   }
 
   /**
