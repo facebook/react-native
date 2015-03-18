@@ -1,15 +1,15 @@
 language: objective-c
-xcode_project: Examples/UIExplorer/UIExplorer.xcodeproj
-xcode_scheme: UIExplorer
-xcode_sdk: iphonesimulator8.1
+before_install:
+  - brew update
+  - brew reinstall xctool
 install:
   - npm install
   - npm test
-
-# Automatically publish the website
-after_success: '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && (cd website; npm install; ./setup.sh; ./publish.sh; echo) || echo'
 env:
   - secure: "g8Xjbslq4R+3oLVgBvXM5QhiJ+7q+H+dH4+sXReyyZ64M5gf32U7oOjQNVkdx79dnGFc6a619otGsX4RiEkQlkiR+4uCgJUIgPwN4YFCIgYu4Z/0FnbbRu5yyywh5zv4WwGmAtMkgGztoMBnps5gCiPUM/RGIqwVk0Ghbmh5c2k="
+script: ./build.sh 8.1
+# Automatically publish the website
+after_success: '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && (cd website; npm install; ./setup.sh; ./publish.sh; echo) || echo'
 branches:
   only:
     - master
