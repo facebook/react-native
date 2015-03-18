@@ -20,6 +20,7 @@ var EXAMPLES = [
   require('./ViewExample'),
   require('./LayoutExample'),
   require('./TextExample.ios'),
+  require('./TimerExample'),
   require('./TextInputExample'),
   require('./ExpandingTextExample'),
   require('./ImageExample'),
