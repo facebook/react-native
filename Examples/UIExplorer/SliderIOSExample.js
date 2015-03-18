@@ -5,7 +5,7 @@
 
 var React = require('react-native');
 var {
-  Slider,
+  SliderIOS,
   Text,
   StyleSheet,
   View,
@@ -24,7 +24,7 @@ var SliderExample = React.createClass({
         <Text style={styles.text} >
           {this.state.value}
         </Text>
-        <Slider
+        <SliderIOS
           style={styles.slider}
           onValueChange={(value) => this.setState({value: value})} />
       </View>
@@ -45,11 +45,11 @@ var styles = StyleSheet.create({
   },
 });
 
-exports.title = '<Slider>';
+exports.title = '<SliderIOS>';
 exports.description = 'Slider input for numeric values';
 exports.examples = [
   {
-    title: 'Slider',
+    title: 'SliderIOS',
     render() { return <SliderExample />; }
   }
 ];

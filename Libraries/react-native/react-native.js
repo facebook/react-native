@@ -28,7 +28,7 @@ var ReactNative = {
   PickerIOS: require('PickerIOS'),
   PixelRatio: require('PixelRatio'),
   ScrollView: require('ScrollView'),
-  Slider: require('Slider'),
+  SliderIOS: require('SliderIOS'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
   SwitchIOS: require('SwitchIOS'),
