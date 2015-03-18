@@ -6,8 +6,12 @@ install:
   - npm install
   - npm test
 env:
-  - secure: "g8Xjbslq4R+3oLVgBvXM5QhiJ+7q+H+dH4+sXReyyZ64M5gf32U7oOjQNVkdx79dnGFc6a619otGsX4RiEkQlkiR+4uCgJUIgPwN4YFCIgYu4Z/0FnbbRu5yyywh5zv4WwGmAtMkgGztoMBnps5gCiPUM/RGIqwVk0Ghbmh5c2k="
-script: ./build.sh 8.1
+  global:
+    - secure: "g8Xjbslq4R+3oLVgBvXM5QhiJ+7q+H+dH4+sXReyyZ64M5gf32U7oOjQNVkdx79dnGFc6a619otGsX4RiEkQlkiR+4uCgJUIgPwN4YFCIgYu4Z/0FnbbRu5yyywh5zv4WwGmAtMkgGztoMBnps5gCiPUM/RGIqwVk0Ghbmh5c2k="
+  matrix:
+    - IOS_VERSION=8.1
+    - IOS_VERSION=7.1
+script: ./runXcodeTests.sh $IOS_VERSION
 # Automatically publish the website
 after_success: '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && (cd website; npm install; ./setup.sh; ./publish.sh; echo) || echo'
 branches:
