@@ -42,4 +42,9 @@
   [_runner runTest:@"TimersTest"];
 }
 
+- (void)testAsyncStorage
+{
+  [_runner runTest:@"AsyncStorageTest"];
+}
+
 @end
