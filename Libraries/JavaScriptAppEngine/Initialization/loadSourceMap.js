@@ -8,7 +8,7 @@
 'use strict';
 
 var Promise = require('Promise');
-var RCTSourceCode = require('NativeModules').RCTSourceCode;
+var RCTSourceCode = require('NativeModules').SourceCode;
 var SourceMapConsumer = require('SourceMap').SourceMapConsumer;
 var SourceMapURL = require('./source-map-url');
 

@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var RCTTestModule = require('NativeModules').RCTTestModule;
+var RCTTestModule = require('NativeModules').TestModule;
 var React = require('react-native');
 var {
   Text,

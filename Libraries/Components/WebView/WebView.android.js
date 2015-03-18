@@ -16,7 +16,7 @@ var keyMirror = require('keyMirror');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;
-var RCTUIManager = require('NativeModules').RCTUIManager;
+var RCTUIManager = require('NativeModules').UIManager;
 
 var RCT_WEBVIEW_REF = 'webview';
 

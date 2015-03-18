@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var { RCTStatusBarManager } = require('NativeModules');
+var RCTStatusBarManager = require('NativeModules').StatusBarManager;
 
 var StatusBarIOS = {
 

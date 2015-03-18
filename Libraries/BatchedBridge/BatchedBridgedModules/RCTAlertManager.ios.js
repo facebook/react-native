@@ -5,6 +5,6 @@
  */
 'use strict';
 
-var { RCTAlertManager } = require('NativeModules');
+var RCTAlertManager = require('NativeModules').AlertManager;
 
 module.exports = RCTAlertManager;

@@ -6,7 +6,7 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var RCTAppState = NativeModules.RCTAppState;
+var RCTAppState = NativeModules.AppState;
 
 var AppState = {
 
