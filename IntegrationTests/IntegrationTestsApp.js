@@ -18,6 +18,7 @@ var {
 
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
+  require('./TimersTest'),
 ];
 
 TESTS.forEach(
