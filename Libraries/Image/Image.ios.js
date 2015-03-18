@@ -114,7 +114,7 @@ var Image = React.createClass({
       warning(RawImage === RCTStaticImage, 'tintColor style only supported on static images.');
     }
 
-    var contentModes = NativeModules.RCTUIManager.UIView.ContentMode;
+    var contentModes = NativeModules.UIManager.UIView.ContentMode;
     var resizeMode;
     if (style.resizeMode === ImageResizeMode.stretch) {
       resizeMode = contentModes.ScaleToFill;

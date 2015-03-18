@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var { RCTAnimationManager } = require('NativeModules');
+var RCTAnimationManager = require('NativeModules').AnimationManager;
 var AnimationUtils = require('AnimationUtils');
 
 type EasingFunction = (t: number) => number;

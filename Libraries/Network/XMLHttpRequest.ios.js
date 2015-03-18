@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var RCTDataManager = require('NativeModules').RCTDataManager;
+var RCTDataManager = require('NativeModules').DataManager;
 
 var crc32 = require('crc32');
 

@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModules').RCTUIManager;
+var RCTUIManager = require('NativeModules').UIManager;
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactPerf = require('ReactPerf');

@@ -7,7 +7,7 @@
 
 // Note that the module JSTimers is split into two in order to solve a cycle
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
-var RCTTiming = require('NativeModules').RCTTiming;
+var RCTTiming = require('NativeModules').Timing;
 var JSTimersExecution = require('JSTimersExecution');
 
 /**

@@ -9,7 +9,7 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModules').RCTUIManager;
+var RCTUIManager = require('NativeModules').UIManager;
 
 var TextInputState = {
    /**

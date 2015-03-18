@@ -13,7 +13,7 @@ var SyntheticEvent = require('SyntheticEvent');
 var merge = require('merge');
 var warning = require('warning');
 
-var RCTUIManager = NativeModules.RCTUIManager;
+var RCTUIManager = NativeModules.UIManager;
 
 var customBubblingEventTypes = RCTUIManager.customBubblingEventTypes;
 var customDirectEventTypes = RCTUIManager.customDirectEventTypes;

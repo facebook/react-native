@@ -8,7 +8,7 @@
 var EventEmitter = require('EventEmitter');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var { RCTNavigatorManager } = require('NativeModules');
+var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');

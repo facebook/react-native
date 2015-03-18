@@ -11,7 +11,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var RCTDatePickerIOSConsts = require('NativeModules').RCTUIManager.RCTDatePicker.Constants;
+var RCTDatePickerIOSConsts = require('NativeModules').UIManager.RCTDatePicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 

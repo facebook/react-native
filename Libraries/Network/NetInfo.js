@@ -8,7 +8,7 @@
 
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTReachability = NativeModules.RCTReachability;
+var RCTReachability = NativeModules.Reachability;
 
 var DEVICE_REACHABILITY_EVENT = 'reachabilityDidChange';
 

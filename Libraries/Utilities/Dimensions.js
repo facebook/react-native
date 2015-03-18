@@ -9,7 +9,7 @@ var NativeModules = require('NativeModules');
 
 var invariant = require('invariant');
 
-var dimensions = NativeModules.RCTUIManager.Dimensions;
+var dimensions = NativeModules.UIManager.Dimensions;
 
 class Dimensions {
   /**
