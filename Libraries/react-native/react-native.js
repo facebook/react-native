@@ -11,7 +11,6 @@ var ReactNative = {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   DatePickerIOS: require('DatePickerIOS'),
-  ExpandingText: require('ExpandingText'),
   Image: require('Image'),
   ListView: require('ListView'),
   ListViewDataSource: require('ListViewDataSource'),

@@ -22,7 +22,6 @@ var EXAMPLES = [
   require('./TextExample.ios'),
   require('./TimerExample'),
   require('./TextInputExample'),
-  require('./ExpandingTextExample'),
   require('./ImageExample'),
   require('./ListViewSimpleExample'),
   require('./ListViewPagingExample'),
