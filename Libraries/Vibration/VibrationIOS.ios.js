@@ -5,7 +5,8 @@
  */
 'use strict';
 
-var {RCTVibration} = require('NativeModules');
+var RCTVibration = require('NativeModules').Vibration;
+
 var invariant = require('invariant');
 
 /**

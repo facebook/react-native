@@ -11,8 +11,8 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 
-var RCTUIManager = NativeModules.RCTUIManager;
-var RCTUIManagerDeprecated = NativeModules.RCTUIManager;
+var RCTUIManager = NativeModules.UIManager;
+var RCTUIManagerDeprecated = NativeModules.UIManager;
 var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
 
 var warning = require('warning');

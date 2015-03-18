@@ -25,6 +25,13 @@
   'use strict';
 
   var OBJECT_COLUMN_NAME = '(index)';
+  var LOG_LEVELS = {
+    trace: 0,
+    log: 1,
+    info: 2,
+    warn: 3,
+    error: 4
+  };
 
   function setupConsole(global) {
 
@@ -32,29 +39,31 @@
       return;
     }
 
-    function doNativeLog() {
-      var str = Array.prototype.map.call(arguments, function(arg) {
-        if (arg == null) {
-          return arg === null ? 'null' : 'undefined';
-        } else if (typeof arg === 'string') {
-          return '"' + arg + '"';
-        } else {
-          // Perform a try catch, just in case the object has a circular
-          // reference or stringify throws for some other reason.
-          try {
-            return JSON.stringify(arg);
-          } catch (e) {
-            if (typeof arg.toString === 'function') {
-              try {
-                return arg.toString();
-              } catch (E) {
-                return 'unknown';
+    function getNativeLogFunction(level) {
+      return function() {
+        var str = Array.prototype.map.call(arguments, function(arg) {
+          if (arg == null) {
+            return arg === null ? 'null' : 'undefined';
+          } else if (typeof arg === 'string') {
+            return '"' + arg + '"';
+          } else {
+            // Perform a try catch, just in case the object has a circular
+            // reference or stringify throws for some other reason.
+            try {
+              return JSON.stringify(arg);
+            } catch (e) {
+              if (typeof arg.toString === 'function') {
+                try {
+                  return arg.toString();
+                } catch (E) {
+                  return 'unknown';
+                }
               }
             }
           }
-        }
-      }).join(', ');
-      global.nativeLoggingHook(str);
+        }).join(', ');
+        global.nativeLoggingHook(str, level);
+      };
     }
 
     var repeat = function(element, n) {
@@ -75,7 +84,7 @@
         }
       }
       if (rows.length === 0) {
-        global.nativeLoggingHook('');
+        global.nativeLoggingHook('', LOG_LEVELS.log);
         return;
       }
 
@@ -121,14 +130,15 @@
       // Native logging hook adds "RCTLog >" at the front of every
       // logged string, which would shift the header and screw up
       // the table
-      global.nativeLoggingHook('\n' + table.join('\n'));
+      global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.log);
     }
 
     global.console = {
-      error: doNativeLog,
-      info: doNativeLog,
-      log: doNativeLog,
-      warn: doNativeLog,
+      error: getNativeLogFunction(LOG_LEVELS.error),
+      info: getNativeLogFunction(LOG_LEVELS.info),
+      log: getNativeLogFunction(LOG_LEVELS.log),
+      warn: getNativeLogFunction(LOG_LEVELS.warn),
+      trace: getNativeLogFunction(LOG_LEVELS.trace),
       table: consoleTablePolyfill
     };
 

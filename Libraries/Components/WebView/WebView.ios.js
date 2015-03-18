@@ -17,7 +17,7 @@ var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;
-var { RCTWebViewManager } = require('NativeModules');
+var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var RCT_WEBVIEW_REF = 'webview';
 

@@ -7,8 +7,8 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var RCTAsyncLocalStorage = NativeModules.RCTAsyncLocalStorage;
-var RCTAsyncRocksDBStorage = NativeModules.RCTAsyncRocksDBStorage;
+var RCTAsyncLocalStorage = NativeModules.AsyncLocalStorage;
+var RCTAsyncRocksDBStorage = NativeModules.AsyncRocksDBStorage;
 
 // We use RocksDB if available.
 var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncLocalStorage;

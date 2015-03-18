@@ -9,7 +9,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var POPAnimationMixin = require('POPAnimationMixin');
 var React = require('React');
 var Touchable = require('Touchable');
-var TouchableFeedbackPropType = require('TouchableFeedbackPropType');
+var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
@@ -42,7 +42,7 @@ var TouchableOpacity = React.createClass({
   mixins: [Touchable.Mixin, NativeMethodsMixin, POPAnimationMixin],
 
   propTypes: {
-    ...TouchableFeedbackPropType,
+    ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
      * active.

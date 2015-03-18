@@ -11,7 +11,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var RCTDatePickerIOSConsts = require('NativeModules').RCTUIManager.RCTDatePicker.Constants;
+var RCTDatePickerIOSConsts = require('NativeModules').UIManager.RCTDatePicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
@@ -62,10 +62,8 @@ var DatePickerIOS = React.createClass({
 
     /**
      * The date picker mode.
-     *
-     * Valid modes on iOS are: 'date', 'time', 'datetime'.
      */
-    mode: PropTypes.oneOf(Object.keys(RCTDatePickerIOSConsts.DatePickerModes)),
+    mode: PropTypes.oneOf(['date', 'time', 'datetime']),
 
     /**
      * The interval at which minutes can be selected.
@@ -73,7 +71,7 @@ var DatePickerIOS = React.createClass({
     minuteInterval: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30]),
 
     /**
-     * Timezone offset in seconds.
+     * Timezone offset in minutes.
      *
      * By default, the date picker will use the device's timezone. With this
      * parameter, it is possible to force a certain timezone offset. For

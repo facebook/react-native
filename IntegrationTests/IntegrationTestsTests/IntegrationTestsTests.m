@@ -37,4 +37,14 @@
   expectErrorRegex:[NSRegularExpression regularExpressionWithPattern:@"because shouldThrow" options:0 error:nil]];
 }
 
+- (void)testTimers
+{
+  [_runner runTest:@"TimersTest"];
+}
+
+- (void)testAsyncStorage
+{
+  [_runner runTest:@"AsyncStorageTest"];
+}
+
 @end

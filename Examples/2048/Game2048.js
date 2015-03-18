@@ -129,11 +129,16 @@ class GameEndOverlay extends React.Component {
 }
 
 class Game2048 extends React.Component {
+  startX: number;
+  startY: number;
+
   constructor(props) {
     super(props);
     this.state = {
       board: new GameBoard(),
     };
+    this.startX = 0;
+    this.startY = 0;
   }
 
   restartGame() {

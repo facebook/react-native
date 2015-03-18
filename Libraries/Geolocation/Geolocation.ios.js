@@ -6,7 +6,7 @@
 'use strict';
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTLocationObserver = require('NativeModules').RCTLocationObserver;
+var RCTLocationObserver = require('NativeModules').LocationObserver;
 
 var invariant = require('invariant');
 var logError = require('logError');

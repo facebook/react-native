@@ -8,7 +8,7 @@
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-var RCTPushNotificationManager = NativeModules.RCTPushNotificationManager;
+var RCTPushNotificationManager = NativeModules.PushNotificationManager;
 if (RCTPushNotificationManager) {
   var _initialNotification = RCTPushNotificationManager.initialNotification;
 }

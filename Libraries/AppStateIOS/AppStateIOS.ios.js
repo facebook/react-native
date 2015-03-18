@@ -7,7 +7,7 @@
 
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTAppState = NativeModules.RCTAppState;
+var RCTAppState = NativeModules.AppState;
 
 var logError = require('logError');
 

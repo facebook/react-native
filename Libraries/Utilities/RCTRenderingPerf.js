@@ -37,6 +37,19 @@ var RCTRenderingPerf = {
     ReactDefaultPerf.stop();
     ReactDefaultPerf.printInclusive();
     ReactDefaultPerf.printWasted();
+
+    var totalRender = 0;
+    var totalTime = 0;
+    var measurements = ReactDefaultPerf.getLastMeasurements();
+    for (var ii = 0; ii < measurements.length; ii++) {
+      var render = measurements[ii].render;
+      for (var nodeName in render) {
+        totalRender += render[nodeName];
+      }
+      totalTime += measurements[ii].totalTime;
+    }
+    console.log('Total time spent in render(): ' + totalRender + 'ms');
+
     perfModules.forEach((module) => module.stop());
   },
 

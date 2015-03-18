@@ -6,7 +6,7 @@
 'use strict';
 
 var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').RCTUIManager;
+var RCTUIManager = require('NativeModules').UIManager;
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var keyMirror = require('keyMirror');

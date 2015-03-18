@@ -11,7 +11,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var RCTPickerIOSConsts = require('NativeModules').RCTUIManager.RCTPicker.Constants;
+var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 

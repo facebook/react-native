@@ -7,7 +7,7 @@
 'use strict';
 
 var AnimationUtils = require('AnimationUtils');
-var { RCTAnimationManager } = require('NativeModules');
+var RCTAnimationManager = require('NativeModules').AnimationManager;
 
 var invariant = require('invariant');
 

@@ -7,8 +7,8 @@
 
 var NativeModules = require('BatchedBridge').RemoteModules;
 
-var nativeModulePrefixDuplicator = require('nativeModulePrefixDuplicator');
+var nativeModulePrefixNormalizer = require('nativeModulePrefixNormalizer');
 
-nativeModulePrefixDuplicator(NativeModules);
+nativeModulePrefixNormalizer(NativeModules);
 
 module.exports = NativeModules;

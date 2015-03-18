@@ -7,8 +7,8 @@
 
 var NativeModules = require('NativeModules');
 var NativeModules = require('NativeModules');
-var RCTPOPAnimationManager = NativeModules.RCTPOPAnimationManager;
-var RCTUIManager = NativeModules.RCTUIManager;
+var RCTPOPAnimationManager = NativeModules.POPAnimationManager;
+var RCTUIManager = NativeModules.UIManager;
 var TextInputState = require('TextInputState');
 
 var flattenStyle = require('flattenStyle');

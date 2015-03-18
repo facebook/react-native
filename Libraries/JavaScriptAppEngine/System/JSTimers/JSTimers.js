@@ -7,7 +7,7 @@
 
 // Note that the module JSTimers is split into two in order to solve a cycle
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
-var RCTTiming = require('NativeModules').RCTTiming;
+var RCTTiming = require('NativeModules').Timing;
 var JSTimersExecution = require('JSTimersExecution');
 
 /**
@@ -90,7 +90,7 @@ var JSTimers = {
     JSTimersExecution.timerIDs[freeIndex] = newID;
     JSTimersExecution.callbacks[freeIndex] = func;
     JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.requestAnimationFrame;
-    RCTTiming.createTimer(newID, 0, Date.now(), /** recurring */ false);
+    RCTTiming.createTimer(newID, 1, Date.now(), /** recurring */ false);
     return newID;
   },
 
