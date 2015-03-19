@@ -134,13 +134,12 @@ DependecyGraph.prototype.resolveDependency = function(
   fromModule,
   depModuleId
 ) {
-
   if (this._assetMap != null) {
     // Process asset requires.
     var assetMatch = depModuleId.match(/^image!(.+)/);
     if (assetMatch && assetMatch[1]) {
       if (!this._assetMap[assetMatch[1]]) {
-        console.warn('Cannot find asset: ' + assetMatch[1]);
+        debug('WARINING: Cannot find asset:', assetMatch[1]);
         return null;
       }
       return this._assetMap[assetMatch[1]];
