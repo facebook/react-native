@@ -45,6 +45,10 @@ if (options.root) {
   }
 }
 
+if (!options.assetRoots) {
+  options.assetRoots = [path.resolve(__dirname, '..')];
+}
+
 console.log('\n' +
 ' ===============================================================\n' +
 ' |  Running packager on port ' + options.port +          '.       \n' +
@@ -97,6 +101,7 @@ function getAppMiddleware(options) {
     blacklistRE: blacklist(false),
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
+    assetRoots: options.assetRoots,
   });
 }
 
