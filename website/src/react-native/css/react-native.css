@@ -901,7 +901,13 @@ div[data-twttr-id] iframe {
   background-color: hsl(198, 100%, 96%);
 }
 
-.prop:nth-child(2n) {
+.compactProps {
+  border-left: 2px solid hsl(198, 100%, 94%);
+  margin-left: 20px;
+  padding-left: 5px;
+}
+
+.props > .prop:nth-child(2n) {
   background-color: hsl(198, 100%, 94%);
 }
 
@@ -910,13 +916,28 @@ div[data-twttr-id] iframe {
   font-size: 16px;
 }
 
+.compactProps .propTitle {
+  font-size: 14px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
 .prop {
   padding: 5px 10px;
+}
+
+.compactProps .prop {
+  padding: 3px 10px;
 }
 
 .propType {
   font-weight: normal;
   font-size: 15px;
+}
+
+.compactProps .propType {
+  font-weight: normal;
+  font-size: 13px;
 }
 
 

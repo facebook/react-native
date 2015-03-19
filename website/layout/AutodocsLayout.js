@@ -17,6 +17,7 @@ var React = require('React');
 var Site = require('Site');
 var slugify = require('slugify');
 
+var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
 var ComponentDoc = React.createClass({
   renderType: function(type) {
@@ -40,10 +41,18 @@ var ComponentDoc = React.createClass({
     }
 
     if (type.name === 'custom') {
+      if (styleReferencePattern.test(type.raw)) {
+        var name = type.raw.substring(0, type.raw.indexOf('.'));
+        return <a href={slugify(name) + '.html#style'}>{name}#style</a>
+      }
       if (type.raw === 'EdgeInsetsPropType') {
         return '{top: number, left: number, bottom: number, right: number}';
       }
       return type.raw;
+    }
+
+    if (type.name === 'stylesheet') {
+      return 'style';
     }
 
     if (type.name === 'func') {
@@ -63,6 +72,8 @@ var ComponentDoc = React.createClass({
             {this.renderType(prop.type)}
           </span>}
         </Header>
+        {prop.type && prop.type.name === 'stylesheet' &&
+          this.renderStylesheetProps(prop.type.value)}
         {prop.description && <Marked>{prop.description}</Marked>}
       </div>
     );
@@ -74,6 +85,41 @@ var ComponentDoc = React.createClass({
         <Header level={4} className="propTitle" toSlug={name}>
           <a href={slugify(name) + '.html#proptypes'}>{name} props...</a>
         </Header>
+      </div>
+    );
+  },
+
+  renderStylesheetProps: function(stylesheetName) {
+    var style = this.props.content.styles[stylesheetName];
+    return (
+      <div className="compactProps">
+        {(style.composes || []).map((name) => {
+          var link;
+          if (name !== 'LayoutPropTypes') {
+            name = name.replace('StylePropTypes', '');
+            link =
+              <a href={slugify(name) + '.html#style'}>{name}#style...</a>;
+          } else {
+            link =
+              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+          }
+          return (
+            <div className="prop" key={name}>
+              <h6 className="propTitle">{link}</h6>
+            </div>
+          );
+        })}
+        {Object.keys(style.props).sort().map((name) =>
+          <div className="prop" key={name}>
+            <h6 className="propTitle">
+              {name}
+              {' '}
+              {style.props[name].type && <span className="propType">
+                {this.renderType(style.props[name].type)}
+              </span>}
+            </h6>
+          </div>
+        )}
       </div>
     );
   },
@@ -197,7 +243,11 @@ var APIDoc = React.createClass({
 var Autodocs = React.createClass({
   render: function() {
     var metadata = this.props.metadata;
-    var content = JSON.parse(this.props.children);
+    var docs = JSON.parse(this.props.children);
+    var content  = docs.type === 'component' || docs.type === 'style' ?
+      <ComponentDoc content={docs} /> :
+      <APIDoc content={docs} />;
+
     return (
       <Site section="docs">
         <section className="content wrap documentationContent">
@@ -205,11 +255,9 @@ var Autodocs = React.createClass({
           <div className="inner-content">
             <a id="content" />
             <h1>{metadata.title}</h1>
-            {content.type === 'component' ?
-              <ComponentDoc content={content} /> :
-              <APIDoc content={content} />}
+            {content}
             <Marked>
-              {content.fullDescription}
+              {docs.fullDescription}
             </Marked>
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
