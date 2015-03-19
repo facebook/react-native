@@ -8,6 +8,7 @@ var Packager = require('../Packager');
 var Activity = require('../Activity');
 var setImmediate = require('timers').setImmediate;
 var q = require('q');
+var _ = require('underscore');
 
 module.exports = Server;
 
@@ -62,6 +63,12 @@ function Server(options) {
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);
+
+  var self = this;
+  this._debouncedFileChangeHandler = _.debounce(function(filePath) {
+    self._rebuildPackages(filePath);
+    self._informChangeWatchers();
+  }, 50, true);
 }
 
 Server.prototype._onFileChange = function(type, filepath, root) {
@@ -69,8 +76,7 @@ Server.prototype._onFileChange = function(type, filepath, root) {
   this._packager.invalidateFile(absPath);
   // Make sure the file watcher event runs through the system before
   // we rebuild the packages.
-  setImmediate(this._rebuildPackages.bind(this, absPath));
-  setImmediate(this._informChangeWatchers.bind(this));
+  this._debouncedFileChangeHandler(absPath);
 };
 
 Server.prototype._rebuildPackages = function() {
@@ -78,13 +84,16 @@ Server.prototype._rebuildPackages = function() {
   var packages = this._packages;
   Object.keys(packages).forEach(function(key) {
     var options = getOptionsFromUrl(key);
-    packages[key] = buildPackage(options).then(function(p) {
-      // Make a throwaway call to getSource to cache the source string.
-      p.getSource({
-        inlineSourceMap: options.dev,
-        minify: options.minify,
+    // Wait for a previous build (if exists) to finish.
+    packages[key] = (packages[key] || q()).then(function() {
+      return buildPackage(options).then(function(p) {
+        // Make a throwaway call to getSource to cache the source string.
+        p.getSource({
+          inlineSourceMap: options.dev,
+          minify: options.minify,
+        });
+        return p;
       });
-      return p;
     });
   });
 };
