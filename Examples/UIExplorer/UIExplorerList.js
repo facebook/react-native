@@ -10,6 +10,7 @@ var {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableHighlight,
   View,
 } = React;
@@ -53,33 +54,48 @@ var APIS = [
   require('./VibrationIOSExample'),
 ];
 
-var UIExplorerList = React.createClass({
+var ds = new ListView.DataSource({
+  rowHasChanged: (r1, r2) => r1 !== r2,
+  sectionHeaderHasChanged: (h1, h2) => h1 !== h2,
+});
 
-  getInitialState: function() {
-    var ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2,
-      sectionHeaderHasChanged: (h1, h2) => h1 !== h2,
-    });
-    return {
+class UIExplorerList extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
       dataSource: ds.cloneWithRowsAndSections({
         components: COMPONENTS,
         apis: APIS,
       }),
     };
-  },
+  }
 
-  render: function() {
+  render() {
     return (
-      <ListView
-        style={styles.list}
-        dataSource={this.state.dataSource}
-        renderRow={this._renderRow}
-        renderSectionHeader={this._renderSectionHeader}
-      />
+      <View style={styles.listContainer}>
+        <View style={styles.searchRow}>
+          <TextInput
+            autoCapitalize="none"
+            autoCorrect={false}
+            clearButtonMode="always"
+            onChangeText={this._search.bind(this)}
+            placeholder="Search..."
+            style={styles.searchTextInput}
+          />
+        </View>
+        <ListView
+          style={styles.list}
+          dataSource={this.state.dataSource}
+          renderRow={this._renderRow.bind(this)}
+          renderSectionHeader={this._renderSectionHeader}
+          automaticallyAdjustContentInsets={false}
+        />
+      </View>
     );
-  },
+  }
 
-  _renderSectionHeader: function(data, section) {
+  _renderSectionHeader(data, section) {
     return (
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionHeaderTitle}>
@@ -87,9 +103,9 @@ var UIExplorerList = React.createClass({
         </Text>
       </View>
     );
-  },
+  }
 
-  _renderRow: function(example, i) {
+  _renderRow(example, i) {
     return (
       <View key={i}>
         <TouchableHighlight onPress={() => this._onPressRow(example)}>
@@ -105,9 +121,21 @@ var UIExplorerList = React.createClass({
         <View style={styles.separator} />
       </View>
     );
-  },
+  }
 
-  _onPressRow: function(example) {
+  _search(text) {
+    var regex = new RegExp(text, 'i');
+    var filter = (component) => regex.test(component.title);
+
+    this.setState({
+      dataSource: ds.cloneWithRowsAndSections({
+        components: COMPONENTS.filter(filter),
+        apis: APIS.filter(filter),
+      })
+    });
+  }
+
+  _onPressRow(example) {
     var Component = example.examples ?
       createExamplePage(null, example) :
       example;
@@ -115,15 +143,21 @@ var UIExplorerList = React.createClass({
       title: Component.title,
       component: Component,
     });
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
+  listContainer: {
+    flex: 1,
+  },
   list: {
     backgroundColor: '#eeeeee',
   },
   sectionHeader: {
     padding: 5,
+  },
+  group: {
+    backgroundColor: 'white',
   },
   sectionHeaderTitle: {
     fontWeight: 'bold',
@@ -148,6 +182,21 @@ var styles = StyleSheet.create({
     fontSize: 15,
     color: '#888888',
     lineHeight: 20,
+  },
+  searchRow: {
+    backgroundColor: '#eeeeee',
+    paddingTop: 75,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+  },
+  searchTextInput: {
+    backgroundColor: 'white',
+    borderColor: '#cccccc',
+    borderRadius: 3,
+    borderWidth: 1,
+    height: 30,
+    paddingLeft: 8,
   },
 });
 
