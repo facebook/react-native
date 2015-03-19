@@ -34,7 +34,14 @@ var ComponentDoc = React.createClass({
     }
 
     if (type.name === 'custom') {
+      if (type.raw === 'EdgeInsetsPropType') {
+        return '{top: number, left: number, bottom: number, right: number}';
+      }
       return type.raw;
+    }
+
+    if (type.name === 'func') {
+      return 'function';
     }
 
     return type.name;
@@ -135,9 +142,9 @@ var APIDoc = React.createClass({
           {method.modifiers.length && <span className="propType">
             {method.modifiers.join(' ') + ' '}
           </span>}
-          {method.name}(
+          {method.name}
           <span className="propType">
-            {method.params
+            ({method.params
               .map((param) => {
                 var res = param.name;
                 if (param.typehint) {
@@ -145,9 +152,8 @@ var APIDoc = React.createClass({
                 }
                 return res;
               })
-              .join(', ')}
+              .join(', ')})
           </span>
-          )
         </Header>
         {method.docblock && <Marked>
           {this.removeCommentsFromDocblock(method.docblock)}
