@@ -13,7 +13,6 @@ var ReactNative = {
   DatePickerIOS: require('DatePickerIOS'),
   Image: require('Image'),
   ListView: require('ListView'),
-  ListViewDataSource: require('ListViewDataSource'),
   MapView: require('MapView'),
   NavigatorIOS: require('NavigatorIOS'),
   PickerIOS: require('PickerIOS'),
