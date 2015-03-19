@@ -50,8 +50,9 @@
         } else {
           encoding = NSUTF8StringEncoding;
         }
+        int responseCode = (int)[((NSHTTPURLResponse *)response) statusCode];
         NSString *returnData = [[NSString alloc] initWithData:data encoding:encoding];
-        responseJSON = @{@"status": @200, @"responseText": returnData};
+        responseJSON = @{@"status": @(responseCode), @"responseText": returnData};
       } else {
         responseJSON = @{@"status": @0, @"responseText": [connectionError localizedDescription]};
       }
