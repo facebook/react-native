@@ -21,7 +21,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (instancetype)init
 {
-  return [self initWithURL:[NSURL URLWithString:@"http://localhost:8081"]];
+  return [self initWithURL:[NSURL URLWithString:@"http://localhost:8081/debugger-proxy"]];
 }
 
 - (instancetype)initWithURL:(NSURL *)url
@@ -34,6 +34,10 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
     _callbacks = [NSMutableDictionary dictionary];
     _injectedObjects = [NSMutableDictionary dictionary];
     [_socket setDelegateOperationQueue:_jsQueue];
+
+
+    NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:url];
+    [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
     if (![self connectToProxy]) {
       RCTLogError(@"Connection to %@ timed out. Are you running node proxy?", url);
