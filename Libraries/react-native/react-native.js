@@ -45,7 +45,6 @@ var ReactNative = {
   TimerMixin: require('TimerMixin'),
   VibrationIOS: require('VibrationIOS'),
 
-  invariant: require('invariant'),
   ix: require('ix'),
 };
 
