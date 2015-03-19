@@ -5,66 +5,91 @@
 
 var React = require('react-native/addons');
 var {
+  ListView,
   PixelRatio,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-  invariant,
 } = React;
 
 var createExamplePage = require('./createExamplePage');
 
-var EXAMPLES = [
-  require('./ViewExample'),
-  require('./LayoutExample'),
-  require('./TextExample.ios'),
-  require('./TimerExample'),
-  require('./TextInputExample'),
-  require('./ImageExample'),
-  require('./ListViewSimpleExample'),
-  require('./ListViewPagingExample'),
-  require('./NavigatorIOSExample'),
-  require('./StatusBarIOSExample'),
-  require('./PointerEventsExample'),
-  require('./TouchableExample'),
+var COMPONENTS = [
   require('./ActivityIndicatorExample'),
-  require('./ScrollViewExample'),
-  require('./PickerExample'),
   require('./DatePickerExample'),
-  require('./GeolocationExample'),
-  require('./TabBarExample'),
-  require('./SwitchExample'),
+  require('./ImageExample'),
+  require('./ListViewPagingExample'),
+  require('./ListViewSimpleExample'),
+  require('./MapViewExample'),
+  require('./NavigatorIOSExample'),
+  require('./PickerExample'),
+  require('./ScrollViewExample'),
   require('./SliderIOSExample'),
+  require('./SwitchExample'),
+  require('./TabBarExample'),
+  require('./TextExample.ios'),
+  require('./TextInputExample'),
+  require('./TouchableExample'),
+  require('./ViewExample'),
+  require('./WebViewExample'),
+];
+
+var APIS = [
+  require('./ActionSheetIOSExample'),
+  require('./AdSupportIOSExample'),
+  require('./AlertIOSExample'),
+  require('./AppStateExample'),
+  require('./AppStateIOSExample'),
   require('./AsyncStorageExample'),
   require('./CameraRollExample.ios'),
-  require('./MapViewExample'),
-  require('./WebViewExample'),
-  require('./AppStateIOSExample'),
+  require('./GeolocationExample'),
+  require('./LayoutExample'),
   require('./NetInfoExample'),
-  require('./AlertIOSExample'),
-  require('./AdSupportIOSExample'),
-  require('./AppStateExample'),
-  require('./ActionSheetIOSExample'),
+  require('./PointerEventsExample'),
+  require('./StatusBarIOSExample'),
+  require('./TimerExample'),
   require('./VibrationIOSExample'),
 ];
 
 var UIExplorerList = React.createClass({
+
+  getInitialState: function() {
+    var ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2,
+      sectionHeaderHasChanged: (h1, h2) => h1 !== h2,
+    });
+    return {
+      dataSource: ds.cloneWithRowsAndSections({
+        components: COMPONENTS,
+        apis: APIS,
+      }),
+    };
+  },
+
   render: function() {
     return (
-      <ScrollView style={styles.list}>
-        <View style={styles.group}>
-          <View style={styles.line} />
-          {EXAMPLES.map(this._renderRow)}
-          <View style={styles.line} />
-        </View>
-      </ScrollView>
+      <ListView
+        style={styles.list}
+        dataSource={this.state.dataSource}
+        renderRow={this._renderRow}
+        renderSectionHeader={this._renderSectionHeader}
+      />
+    );
+  },
+
+  _renderSectionHeader: function(data, section) {
+    return (
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionHeaderTitle}>
+          {section.toUpperCase()}
+        </Text>
+      </View>
     );
   },
 
   _renderRow: function(example, i) {
-    invariant(example.title, 'Example must provide a title.');
     return (
       <View key={i}>
         <TouchableHighlight onPress={() => this._onPressRow(example)}>
@@ -97,13 +122,12 @@ var styles = StyleSheet.create({
   list: {
     backgroundColor: '#eeeeee',
   },
-  group: {
-    backgroundColor: 'white',
-    marginVertical: 25,
+  sectionHeader: {
+    padding: 5,
   },
-  line: {
-    backgroundColor: '#bbbbbb',
-    height: 1 / PixelRatio.get(),
+  sectionHeaderTitle: {
+    fontWeight: 'bold',
+    fontSize: 11,
   },
   row: {
     backgroundColor: 'white',
