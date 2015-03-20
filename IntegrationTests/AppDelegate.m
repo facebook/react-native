@@ -2,14 +2,13 @@
 
 #import "AppDelegate.h"
 
-#import "RCTRootView.h"
+#import "RCTRootViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
-  RCTRootView *rootView = [[RCTRootView alloc] init];
 
   // Loading JavaScript code - uncomment the one you want.
 
@@ -30,13 +29,12 @@
   // and uncomment the next following line
   // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 
-  rootView.scriptURL = jsCodeLocation;
-  rootView.moduleName = @"IntegrationTestsApp";
+  RCTRootViewController *viewController = [[RCTRootViewController alloc] init];
+  viewController.moduleName = @"IntegrationTestsApp";
+  viewController.scriptURL = jsCodeLocation;
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [[UIViewController alloc] init];
-  rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
+  self.window.rootViewController = viewController;
   [self.window makeKeyAndVisible];
   return YES;
 }

@@ -7,7 +7,7 @@
 #import "RCTInvalidating.h"
 #import "RCTViewManager.h"
 
-@class RCTRootView;
+@class RCTRootViewController;
 
 @protocol RCTScrollableProtocol;
 
@@ -25,11 +25,16 @@
 @property (nonatomic, readwrite, weak) id<UIScrollViewDelegate> nativeMainScrollDelegate;
 
 /**
- * Register a root view with the RCTUIManager. Theoretically, a single manager
- * can support multiple root views, however this feature is not currently exposed
- * and may eventually be removed.
+ * Register a root view controller with the RCTUIManager. Theoretically, a
+ * single manager can support multiple root views, however this feature is not
+ * currently exposed and may eventually be removed.
  */
-- (void)registerRootView:(RCTRootView *)rootView;
+- (void)registerRootViewController:(RCTRootViewController *)rootViewController;
+
+/**
+ * Removes the given root view controller from the RCTUIManager.
+ */
+- (void)removeRootViewController:(RCTRootViewController *)rootViewController;
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute

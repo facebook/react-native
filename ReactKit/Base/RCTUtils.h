@@ -11,6 +11,9 @@
 extern "C" {
 #endif
 
+// NSNotification specifying that the application should reload its JavaScript and views
+extern NSString *const RCTReloadNotification;
+
 // Utility functions for JSON object <-> string serialization/deserialization
 NSString *RCTJSONStringify(id jsonObject, NSError **error);
 id RCTJSONParse(NSString *jsonString, NSError **error);

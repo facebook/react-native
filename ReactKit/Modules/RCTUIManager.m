@@ -14,6 +14,7 @@
 #import "RCTLog.h"
 #import "RCTNavigator.h"
 #import "RCTRootView.h"
+#import "RCTRootViewController.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
 #import "RCTSparseArray.h"
@@ -155,7 +156,7 @@ UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimationType t
   dispatch_queue_t _shadowQueue;
 
   // Root views are only mutated on the shadow queue
-  NSMutableSet *_rootViewTags;
+  NSMutableSet *_rootViewControllers;
   NSMutableArray *_pendingUIBlocks;
   NSLock *_pendingUIBlocksLock;
 
@@ -218,7 +219,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 
     // Internal resources
     _pendingUIBlocks = [[NSMutableArray alloc] init];
-    _rootViewTags = [[NSMutableSet alloc] init];
+    _rootViewControllers = [[NSMutableSet alloc] init];
   }
   return self;
 }
@@ -270,10 +271,11 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
   [_pendingUIBlocksLock unlock];
 }
 
-- (void)registerRootView:(RCTRootView *)rootView;
+- (void)registerRootViewController:(RCTRootViewController *)rootViewController;
 {
   RCTAssertMainThread();
 
+  UIView *rootView = rootViewController.view;
   NSNumber *reactTag = rootView.reactTag;
   UIView *existingView = _viewRegistry[reactTag];
   RCTCAssert(existingView == nil || existingView == rootView,
@@ -296,7 +298,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
     shadowView.reactRootView = YES; // can this just be inferred from the fact that it has no superview?
     _shadowViewRegistry[shadowView.reactTag] = shadowView;
 
-    [_rootViewTags addObject:reactTag];
+    [_rootViewControllers addObject:rootViewController];
   });
 }
 
@@ -536,14 +538,15 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
   }
 }
 
-- (void)removeRootView:(NSNumber *)rootReactTag
+- (void)removeRootViewController:(RCTRootViewController *)rootViewController
 {
   RCT_EXPORT();
 
+  NSNumber *rootReactTag = rootViewController.view.reactTag;
   RCTShadowView *rootShadowView = _shadowViewRegistry[rootReactTag];
   RCTAssert(rootShadowView.superview == nil, @"root view cannot have superview (ID %@)", rootReactTag);
   [self _purgeChildren:@[rootShadowView] fromRegistry:_shadowViewRegistry];
-  [_rootViewTags removeObject:rootReactTag];
+  [_rootViewControllers removeObject:rootViewController];
 
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTCAssertMainThread();
@@ -809,8 +812,8 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   }
 
   // Perform layout
-  for (NSNumber *reactTag in _rootViewTags) {
-    RCTShadowView *rootView = _shadowViewRegistry[reactTag];
+  for (RCTRootViewController *rootViewController in _rootViewControllers) {
+    RCTShadowView *rootView = _shadowViewRegistry[rootViewController.view.reactTag];
     [self addUIBlock:[self uiBlockWithLayoutUpdateForRootView:rootView]];
     [self _amendPendingUIBlocksWithStylePropagationUpdateForRootView:rootView];
   }
@@ -1340,11 +1343,10 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
 {
   RCT_EXPORT();
 
-  NSSet *rootViewTags = [_rootViewTags copy];
+  NSSet *rootViewControllers = [_rootViewControllers copy];
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    for (NSNumber *reactTag in rootViewTags) {
-      RCTRootView *rootView = viewRegistry[reactTag];
-      [rootView startOrResetInteractionTiming];
+    for (RCTRootViewController *rootViewController in rootViewControllers) {
+      [rootViewController startOrResetInteractionTiming];
     }
   }];
 }
@@ -1354,13 +1356,13 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
 {
   RCT_EXPORT();
 
-  NSSet *rootViewTags = [_rootViewTags copy];
+  NSSet *rootViewControllers = [_rootViewControllers copy];
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     NSMutableDictionary *timingData = [[NSMutableDictionary alloc] init];
-    for (NSNumber *reactTag in rootViewTags) {
-      RCTRootView *rootView = viewRegistry[reactTag];
-      if (rootView) {
-        timingData[reactTag.stringValue] = [rootView endAndResetInteractionTiming];
+    for (RCTRootViewController *rootViewController in rootViewControllers) {
+      NSNumber *reactTag = rootViewController.view.reactTag;
+      if (viewRegistry[reactTag]) {
+        timingData[reactTag.stringValue] = [rootViewController endAndResetInteractionTiming];
       }
     }
     onSuccess(@[ timingData ]);

@@ -5,11 +5,12 @@
 #import <mach/mach_time.h>
 #import <objc/runtime.h>
 
+#import <CommonCrypto/CommonCrypto.h>
 #import <UIKit/UIKit.h>
 
-#import <CommonCrypto/CommonCrypto.h>
-
 #import "RCTLog.h"
+
+NSString *const RCTReloadNotification = @"RCTReload";
 
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {

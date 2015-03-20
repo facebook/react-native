@@ -3,7 +3,7 @@
 #import "RCTTestRunner.h"
 
 #import "RCTRedBox.h"
-#import "RCTRootView.h"
+#import "RCTRootViewController.h"
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
 
@@ -34,15 +34,14 @@
 - (void)runTest:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
   RCTTestModule *testModule = [[RCTTestModule alloc] init];
-  RCTRootView *rootView = [[RCTRootView alloc] init];
-  UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-  vc.view = rootView;
-  rootView.moduleProvider = ^(void){
+  RCTRootViewController *rootViewController = [[RCTRootViewController alloc] init];
+  [[UIApplication sharedApplication].delegate window].rootViewController = rootViewController;
+  rootViewController.moduleProvider = ^(void){
     return @[testModule];
   };
-  rootView.moduleName = moduleName;
-  rootView.initialProperties = initialProps;
-  rootView.scriptURL = [NSURL URLWithString:_script];
+  rootViewController.moduleName = moduleName;
+  rootViewController.initialProperties = initialProps;
+  rootViewController.scriptURL = [NSURL URLWithString:_script];
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];

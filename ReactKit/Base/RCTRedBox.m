@@ -110,7 +110,7 @@
 
 - (void)reload
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTReloadNotification" object:nil userInfo:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:self];
   [self dismiss];
 }
 
