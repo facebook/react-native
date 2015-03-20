@@ -2,11 +2,12 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule GameBoard
+ * @flow
  */
 'use strict';
 
 // NB: Taken straight from: https://github.com/IvanVergiliev/2048-react/blob/master/src/board.js
-//     with no modificiation except to format it for CommonJS and fix lint errors
+//     with no modificiation except to format it for CommonJS and fix lint/flow errors
 
 var rotateLeft = function (matrix) {
   var rows = matrix.length;
@@ -21,9 +22,10 @@ var rotateLeft = function (matrix) {
   return res;
 };
 
-var Tile = function (value, row, column) {
+var Tile = function (value?: number, row?: number, column?: number) {
   this.value = value || 0;
   this.row = row || -1;
+
   this.column = column || -1;
   this.oldRow = -1;
   this.oldColumn = -1;
@@ -102,8 +104,8 @@ Board.prototype.moveLeft = function () {
         targetTile.value += tile2.value;
       }
       resultRow[target] = targetTile;
-      this.won |= (targetTile.value === 2048);
-      hasChanged |= (targetTile.value !== this.cells[row][target].value);
+      this.won = this.won || (targetTile.value === 2048);
+      hasChanged = hasChanged || (targetTile.value !== this.cells[row][target].value);
     }
     this.cells[row] = resultRow;
   }
@@ -172,14 +174,14 @@ Board.prototype.hasLost = function () {
   var canMove = false;
   for (var row = 0; row < Board.size; ++row) {
     for (var column = 0; column < Board.size; ++column) {
-      canMove |= (this.cells[row][column].value === 0);
+      canMove = canMove || (this.cells[row][column].value === 0);
       for (var dir = 0; dir < 4; ++dir) {
         var newRow = row + Board.deltaX[dir];
         var newColumn = column + Board.deltaY[dir];
         if (newRow < 0 || newRow >= Board.size || newColumn < 0 || newColumn >= Board.size) {
           continue;
         }
-        canMove |= (this.cells[row][column].value === this.cells[newRow][newColumn].value);
+        canMove = canMove || (this.cells[row][column].value === this.cells[newRow][newColumn].value);
       }
     }
   }
