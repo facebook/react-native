@@ -387,7 +387,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 83CBBA3F1A601D0F00E9B192 /* Build configuration list for PBXNativeTarget "ReactKit" */;
 			buildPhases = (
-				006B79A01A781F38006873D1 /* Launch Packager */,
+				006B79A01A781F38006873D1 /* ShellScript */,
 				83CBBA2A1A601D0E00E9B192 /* Sources */,
 				83CBBA2B1A601D0E00E9B192 /* Frameworks */,
 				83CBBA2C1A601D0E00E9B192 /* Copy Files */,
@@ -434,14 +434,13 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		006B79A01A781F38006873D1 /* Launch Packager */ = {
+		006B79A01A781F38006873D1 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Launch Packager";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;

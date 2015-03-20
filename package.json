@@ -1,5 +1,5 @@
 {
-  "name": "react-native",
+  "name": "react-native-github",
   "version": "0.1.0",
   "description": "Build native apps with React!",
   "repository": {
@@ -34,6 +34,7 @@
     "react-tools": "0.13.0-rc2"
   },
   "devDependencies": {
+    "ws": "0.4.31",
     "jest-cli": "0.2.1",
     "eslint": "0.9.2"
   }

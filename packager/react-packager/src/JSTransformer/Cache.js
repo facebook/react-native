@@ -1,13 +1,14 @@
 'use strict';
 
-var path = require('path');
-var version = require('../../../../package.json').version;
-var tmpdir = require('os').tmpDir();
-var isAbsolutePath = require('absolute-path');
+var _ = require('underscore');
+var crypto = require('crypto');
 var declareOpts = require('../lib/declareOpts');
 var fs = require('fs');
-var _ = require('underscore');
+var isAbsolutePath = require('absolute-path');
+var path = require('path');
 var q = require('q');
+var tmpdir = require('os').tmpDir();
+var version = require('../../../../package.json').version;
 
 var Promise = q.Promise;
 
@@ -146,15 +147,15 @@ function loadCacheSync(cachePath) {
 }
 
 function cacheFilePath(options) {
+  var hash = crypto.createHash('md5');
+  hash.update(version);
+
   var roots = options.projectRoots.join(',').split(path.sep).join('-');
+  hash.update(roots);
+
   var cacheVersion = options.cacheVersion || '0';
-  return path.join(
-    tmpdir,
-    [
-      'react-packager-cache',
-      version,
-      cacheVersion,
-      roots,
-    ].join('-')
-  );
+  hash.update(cacheVersion);
+
+  var name = 'react-packager-cache-' + hash.digest('hex');
+  return path.join(tmpdir, name);
 }

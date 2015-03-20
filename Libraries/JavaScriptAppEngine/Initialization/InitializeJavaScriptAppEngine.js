@@ -57,33 +57,11 @@ function setupDocumentShim() {
   }
 }
 
-var sourceMapPromise;
-
 function handleErrorWithRedBox(e) {
-  var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
-  var errorToString = require('errorToString');
-  var loadSourceMap = require('loadSourceMap');
-
-  GLOBAL.console.error(
-    'Error: ' +
-    '\n stack: \n' + e.stack +
-    '\n URL: ' + e.sourceURL +
-    '\n line: ' + e.line +
-    '\n message: ' + e.message
-  );
-
-  if (RCTExceptionsManager) {
-    RCTExceptionsManager.reportUnhandledException(e.message, errorToString(e));
-    if (__DEV__) {
-      (sourceMapPromise = sourceMapPromise || loadSourceMap())
-        .then(map => {
-          var prettyStack = errorToString(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
-        })
-        .then(null, error => {
-          GLOBAL.console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
-        });
-    }
+  try {
+    require('ExceptionsManager').handleException(e);
+  } catch(ee) {
+    console.log('Failed to print error: ', ee.message);
   }
 }
 

@@ -42,7 +42,10 @@ static Class _globalExecutorClass;
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          _globalExecutorClass = [RCTWebViewExecutor class];
+                                                          _globalExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+                                                          if (!_globalExecutorClass) {
+                                                            RCTLogWarn(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
+                                                          }
                                                           [self reloadAll];
                                                         }];
 

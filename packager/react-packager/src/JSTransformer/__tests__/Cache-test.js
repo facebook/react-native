@@ -4,6 +4,7 @@ jest
   .dontMock('underscore')
   .dontMock('path')
   .dontMock('absolute-path')
+  .dontMock('crypto')
   .dontMock('../Cache');
 
 var q = require('q');
@@ -19,7 +20,7 @@ describe('JSTransformer Cache', function() {
     Cache = require('../Cache');
   });
 
-  describe('getting/settig', function() {
+  describe('getting/setting', function() {
     it('calls loader callback for uncached file', function() {
       var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
