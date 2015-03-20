@@ -33,7 +33,11 @@ var options = parseCommandLine([{
   description: 'add another root(s) to be used by the packager in this project',
 }]);
 
-if (!options.projectRoots) {
+if (options.projectRoots) {
+  if (!Array.isArray(options.projectRoots)) {
+    options.projectRoots = options.projectRoots.split(',');
+  }
+} else {
   options.projectRoots = [path.resolve(__dirname, '..')];
 }
 
