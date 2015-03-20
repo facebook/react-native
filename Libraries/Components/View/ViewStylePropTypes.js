@@ -8,13 +8,11 @@
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
 
-var merge = require('merge');
-
 /**
  * Warning: Some of these properties may not be supported in all releases.
  */
-var ViewStylePropTypes = merge(
-  LayoutPropTypes, {
+var ViewStylePropTypes = {
+  ...LayoutPropTypes,
   backgroundColor: ReactPropTypes.string,
   borderColor: ReactPropTypes.string,
   borderTopColor: ReactPropTypes.string,
@@ -36,6 +34,6 @@ var ViewStylePropTypes = merge(
   scaleY: ReactPropTypes.number,
   translateX: ReactPropTypes.number,
   translateY: ReactPropTypes.number,
-});
+};
 
 module.exports = ViewStylePropTypes;
