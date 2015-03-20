@@ -81,8 +81,8 @@ var WebViewExample = React.createClass({
           automaticallyAdjustContentInsets={false}
           style={styles.webView}
           url={this.state.url}
-          renderErrorView={this.renderErrorView}
-          renderLoadingView={this.renderLoadingView}
+          renderError={this.renderError}
+          renderLoading={this.renderLoading}
           onNavigationStateChange={this.onNavigationStateChange}
           startInLoadingState={true}
         />
@@ -115,7 +115,7 @@ var WebViewExample = React.createClass({
     });
   },
 
-  renderErrorView: function(errorDomain, errorCode, errorDesc) {
+  renderError: function(errorDomain, errorCode, errorDesc) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorTextTitle}>
@@ -134,7 +134,7 @@ var WebViewExample = React.createClass({
     );
   },
 
-  renderLoadingView: function() {
+  renderLoading: function() {
     return (
       <View style={styles.loadingView}>
         <ActivityIndicatorIOS />

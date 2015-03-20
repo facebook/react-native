@@ -59,7 +59,7 @@ function Transformer(options) {
     this._failedToStart = q.Promise.reject(new Error('No transfrom module'));
   } else {
     this._workers = workerFarm(
-      {autoStart: true},
+      {autoStart: true, maxConcurrentCallsPerWorker: 1},
       options.transformModulePath
     );
   }

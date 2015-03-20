@@ -11,7 +11,6 @@ var {
   CameraRoll,
   Image,
   ListView,
-  ListViewDataSource,
   StyleSheet,
   View,
 } = React;
@@ -73,7 +72,7 @@ var CameraRollView = React.createClass({
   },
 
   getInitialState: function() {
-    var ds = new ListViewDataSource({rowHasChanged: this._rowHasChanged});
+    var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
 
     return {
       assets: [],
@@ -90,7 +89,7 @@ var CameraRollView = React.createClass({
    * component to re-render its assets.
    */
   rendererChanged: function() {
-    var ds = new ListViewDataSource({rowHasChanged: this._rowHasChanged});
+    var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
     this.state.dataSource = ds.cloneWithRows(
       groupByEveryN(this.state.assets, this.props.imagesPerRow)
     );
