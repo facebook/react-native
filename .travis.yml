@@ -12,7 +12,7 @@ before_script:
 script: ./build.sh 8.1
 
 after_script:
-  - pkill -9 `cat packager.pid`
+  - pkill -9 -F packager.pid
   - cat packager.log
   - rm packager.log
   - rm packager.pid
