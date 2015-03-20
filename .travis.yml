@@ -3,6 +3,7 @@ before_install:
   - brew update
   - brew reinstall xctool
 install:
+  - brew install watchman
   - npm install
 before_script:
   - npm test
