@@ -4,7 +4,7 @@ title: Style
 layout: docs
 category: Guides
 permalink: docs/style.html
-next: activityindicatorios
+next: nativemodulesios
 ---
 
 ## Declaring Styles
