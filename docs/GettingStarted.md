@@ -4,7 +4,7 @@ title: Getting Started
 layout: docs
 category: Quick Start
 permalink: docs/getting-started.html
-next: network
+next: pixels
 ---
 
 Our first React Native implementation is `ReactKit`, targeting iOS.  We are also

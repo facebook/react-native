@@ -2,9 +2,8 @@
 id: timers
 title: Timers
 layout: docs
-category: Guides
+category: Polyfills
 permalink: docs/timers.html
-next: activityindicatorios
 ---
 
 Timers are an important part of an application and React Native implements the [browser timers](https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Timers).
@@ -59,7 +58,7 @@ InteractionManager.clearInteractionHandle(handle);
 We found out that the primary cause of fatals in apps created with React Native was due to timers firing after a component was unmounted. To solve this recurring issue, we introduced `TimerMixin`. If you include `TimerMixin`, then you can replace your calls to `setTimeout(fn, 500)` with `this.setTimeout(fn, 500)` (just prepend `this.`) and everything will be properly cleaned up for you when the component unmounts.
 
 ```javascript
-var { TimerMixin } = React;
+var TimerMixin = require('react-timer-mixin');
 
 var Component = React.createClass({
   mixins: [TimerMixin],

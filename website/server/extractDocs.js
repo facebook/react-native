@@ -28,7 +28,9 @@ function componentsToMarkdown(type, json, filepath, i) {
     'layout: autodocs',
     'category: ' + type + 's',
     'permalink: docs/' + slugify(componentName) + '.html',
-    all[i + 1] && ('next: ' + slugify(getNameFromPath(all[i + 1]))),
+    'next: ' + (all[i + 1] ?
+      slugify(getNameFromPath(all[i + 1])) :
+      'network'),
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');

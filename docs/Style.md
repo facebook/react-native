@@ -4,7 +4,7 @@ title: Style
 layout: docs
 category: Guides
 permalink: docs/style.html
-next: timers
+next: activityindicatorios
 ---
 
 ## Declaring Styles
