@@ -1,4 +1,5 @@
 {
+  "name": "react-native-github",
   "version": "0.1.0",
   "description": "Build native apps with React!",
   "repository": {
