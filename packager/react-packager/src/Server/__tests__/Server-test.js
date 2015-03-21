@@ -51,7 +51,7 @@ describe('processRequest', function() {
     Packager = require('../../Packager');
     FileWatcher = require('../../FileWatcher');
 
-    Packager.prototype.package = function() {
+    Packager.prototype.package = jest.genMockFunction().mockImpl(function() {
       return q({
         getSource: function() {
           return 'this is the source';
@@ -60,7 +60,7 @@ describe('processRequest', function() {
           return 'this is the source map';
         },
       });
-    };
+    });
 
 
     FileWatcher.prototype.on = function(eventType, callback) {
@@ -103,6 +103,21 @@ describe('processRequest', function() {
       'mybundle.map?runModule=true'
     ).then(function(response) {
       expect(response).toEqual('"this is the source map"');
+    });
+  });
+
+  pit('works with .ios.js extension', function() {
+    return makeRequest(
+      requestHandler,
+      'index.ios.includeRequire.bundle'
+    ).then(function(response) {
+      expect(response).toEqual('this is the source');
+      expect(Packager.prototype.package).toBeCalledWith(
+        'index.ios.js',
+        true,
+        'index.ios.includeRequire.map',
+        true
+      );
     });
   });
 

@@ -10,7 +10,6 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var ix = require('ix');
 
 var TabBarExample = React.createClass({
 
@@ -42,7 +41,7 @@ var TabBarExample = React.createClass({
         selectedTab={this.state.selectedTab}>
         <TabBarItemIOS
           name="blueTab"
-          icon={ix('favorites')}
+          icon={require('image!favorites')}
           accessibilityLabel="Blue Tab"
           selected={this.state.selectedTab === 'blueTab'}
           onPress={() => {
@@ -55,7 +54,7 @@ var TabBarExample = React.createClass({
         <TabBarItemIOS
           accessibilityLabel="Red Tab"
           name="redTab"
-          icon={ix('history')}
+          icon={require('image!history')}
           badgeValue={this.state.notifCount ? String(this.state.notifCount) : null}
           selected={this.state.selectedTab === 'redTab'}
           onPress={() => {
@@ -68,7 +67,7 @@ var TabBarExample = React.createClass({
         </TabBarItemIOS>
         <TabBarItemIOS
           name="greenTab"
-          icon={ix('more')}
+          icon={require('image!more')}
           accessibilityLabel="Green Tab"
           selected={this.state.selectedTab === 'greenTab'}
           onPress={() => {

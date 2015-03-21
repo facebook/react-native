@@ -36,7 +36,7 @@ var warning = require('warning');
  *     <View>
  *       <Image
  *         style={styles.icon}
- *         source={ix('myIcon')}
+ *         source={require('image!myIcon')}
  *       />
  *       <Image
  *         style={styles.logo}
