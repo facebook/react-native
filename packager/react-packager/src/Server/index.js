@@ -6,7 +6,6 @@ var declareOpts = require('../lib/declareOpts');
 var FileWatcher = require('../FileWatcher');
 var Packager = require('../Packager');
 var Activity = require('../Activity');
-var setImmediate = require('timers').setImmediate;
 var q = require('q');
 var _ = require('underscore');
 
@@ -236,23 +235,24 @@ Server.prototype.processRequest = function(req, res, next) {
 function getOptionsFromUrl(reqUrl) {
   // `true` to parse the query param as an object.
   var urlObj = url.parse(reqUrl, true);
+  var pathname = urlObj.pathname;
 
-  var match = urlObj.pathname.match(/^\/?([^\.]+)\..*(bundle|map)$/);
-  if (!(match && match[1])) {
-    throw new Error('Invalid url format, expected "/path/to/file.bundle"');
-  }
-  var main = match[1] + '.js';
+  // Backwards compatibility. Options used to be as added as '.' to the
+  // entry module name. We can safely remove these options.
+  var entryFile = pathname.replace(/^\//, '').split('.').filter(function(part) {
+    if (part === 'includeRequire' || part === 'runModule' ||
+        part === 'bundle' || part === 'map') {
+      return false;
+    }
+    return true;
+  }).join('.') + '.js';
 
   return {
-    sourceMapUrl: urlObj.pathname.replace(/\.bundle$/, '.map'),
-    main: main,
+    sourceMapUrl: pathname.replace(/\.bundle$/, '.map'),
+    main: entryFile,
     dev: getBoolOptionFromQuery(urlObj.query, 'dev', true),
     minify: getBoolOptionFromQuery(urlObj.query, 'minify'),
-    runModule: getBoolOptionFromQuery(urlObj.query, 'runModule') ||
-      // Backwards compatibility.
-      urlObj.pathname.split('.').some(function(part) {
-        return part === 'runModule';
-      }),
+    runModule: getBoolOptionFromQuery(urlObj.query, 'runModule', true),
   };
 }
 
