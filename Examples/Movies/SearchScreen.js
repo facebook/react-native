@@ -39,6 +39,8 @@ var LOADING = {};
 var SearchScreen = React.createClass({
   mixins: [TimerMixin],
 
+  timeoutID: (null: any),
+
   getInitialState: function() {
     return {
       isLoading: false,
