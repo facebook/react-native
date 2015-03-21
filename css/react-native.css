@@ -345,15 +345,16 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .nav-docs {
-  color: #2d2d2d;
   font-size: 14px;
   float: left;
   width: 210px;
+  margin-top: 5px;
 }
 
 .nav-docs ul {
   list-style: none;
   margin: 0;
+  margin-left: 10px;
 }
 
 .nav-docs ul ul {
@@ -383,10 +384,10 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   color: #0485A9;
 }
 
-.nav-docs .nav-docs-section {
-  border-bottom: 1px solid #ccc;
-  border-top: 1px solid #eee;
-  padding: 12px 0;
+.nav-docs h3 {
+  margin: 0;
+  line-height: 25px;
+  margin-top: 5px;
 }
 
 .nav-docs .nav-docs-section:first-child {
