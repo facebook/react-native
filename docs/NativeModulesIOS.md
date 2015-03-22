@@ -95,11 +95,15 @@ CalendarManager.addEvent('Birthday Party', {
 })
 ```
 
-NOTE about array and map - React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's developer's responsibility to check array/map values types (see `RCTConvert` for helper methods).
+> **NOTE**: About array and map
+>
+> React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's developer's responsibility to check array/map values types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/ReactKit/Base/RCTConvert.h) for helper methods).
 
 # Callbacks
 
-WARNING: This section is even more experimental than others, we don't have a set of best practices around callbacks yet.
+> **WARNING**
+>
+> This section is even more experimental than others, we don't have a set of best practices around callbacks yet.
 
 Native module also supports a special kind of argument - callback. In most cases it is used to provide function call result to JavaScript.
 
@@ -124,9 +128,9 @@ CalendarManager.findEvents((error, events) => {
 })
 ```
 
-Native module is supposed to invoke callback only once. It can, however, store the callback as an ivar and invoke it later. This pattern is often used to wrap iOS APIs that require delegate. See `RCTAlertManager`.
+Native module is supposed to invoke callback only once. It can, however, store the callback as an ivar and invoke it later. This pattern is often used to wrap iOS APIs that require delegate. See [`RCTAlertManager`](https://github.com/facebook/react-native/blob/master/ReactKit/Modules/RCTAlertManager.m).
 
-If you want to pass error-like object to JavaScript, use `RCTMakeError` from `RCTUtils.h`.
+If you want to pass error-like object to JavaScript, use `RCTMakeError` from [`RCTUtils.h`](https://github.com/facebook/react-native/blob/master/ReactKit/Base/RCTUtils.h).
 
 ## Implementing native module
 
@@ -192,5 +196,5 @@ var subscription = DeviceEventEmitter.addListener(
 // Don't forget to unsubscribe
 subscription.remove();
 ```
-For more examples of sending events to JavaScript, see `RCTLocationObserver`.
+For more examples of sending events to JavaScript, see [`RCTLocationObserver`](https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m).
 
