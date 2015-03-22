@@ -4,8 +4,9 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  */
 
-var spawn = require('child_process').spawn;
+var fs = require('fs');
 var path = require('path');
+var spawn = require('child_process').spawn;
 
 var CLI_MODULE_PATH = path.resolve(
   process.cwd(),
@@ -25,13 +26,20 @@ if (cli) {
   var args = process.argv.slice(2);
   if (args.length === 0) {
     console.error(
-      'You did not pass any commands, did you mean to run init?'
+      'You did not pass any commands, did you mean to run `react-native init`?'
     );
     process.exit(1);
   }
 
   if (args[0] === 'init') {
-    init();
+    if (args[1]) {
+      init(args[1]);
+    } else {
+      console.error(
+        'Usage: react-native init <ProjectName>'
+      );
+      process.exit(1);
+    }
   } else {
     console.error(
       'Command `%s` unrecognized.' +
@@ -42,28 +50,35 @@ if (cli) {
   }
 }
 
-function init() {
+function init(name) {
+  var root = path.resolve(name);
+  var projectName = path.basename(root);
+
   console.log(
-    'This will walk you through creating a new react-native project',
-    'in the current directory'
+    'This will walk you through creating a new React Native project in',
+    root
   );
 
-  console.log('Running npm init');
-  run('npm init', function(e) {
+  if (!fs.existsSync(root)) {
+    fs.mkdirSync(root);
+  }
+
+  var packageJson = {
+    name: projectName,
+    version: '0.0.1',
+    private: true
+  };
+  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
+  process.chdir(root);
+
+  run('npm install --save react-native', function(e) {
     if (e) {
-      console.error('npm init failed');
+      console.error('`npm install --save react-native` failed');
       process.exit(1);
     }
 
-    run('npm install --save react-native', function(e) {
-      if (e) {
-        console.error('`npm install --save react-native` failed');
-        process.exit(1);
-      }
-
-      var cli = require(CLI_MODULE_PATH);
-      cli.init();
-    });
+    var cli = require(CLI_MODULE_PATH);
+    cli.init(root, projectName);
   });
 }
 
