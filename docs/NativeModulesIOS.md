@@ -7,13 +7,17 @@ permalink: docs/nativemodulesios.html
 next: activityindicatorios
 ---
 
-Sometimes an app needs access to platform API, and React Native doesn't have a corresponding wrapper yet. This is a more advanced guide that shows how to build a native module. It assumes the reader knows Objective-C (Swift is not supported yet) and core libraries (Foundation, UIKit).
+Sometimes an app needs access to platform API, and React Native doesn't have a corresponding wrapper yet. Maybe you want to reuse some existing Objective-C or C++ code without having to reimplement it in JavaScript. Or write some high performance, multi-threaded code such as image processing, network stack, database or rendering.
+
+We designed React Native such that it is possible for you to write real native code and have access to the full power of the platform. This is a more advanced feature and we don't expect it to be part of the usual development process, however it is essential that it exists. If React Native doesn't support a native feature that you need, you should be able to build it yourself.
+
+This is a more advanced guide that shows how to build a native module. It assumes the reader knows Objective-C (Swift is not supported yet) and core libraries (Foundation, UIKit).
 
 ## iOS Calendar module example
 
-This guide will use iOS Calendar API example. Let's say we would like to be able to access iOS calendar from JavaScript.
+This guide will use [iOS Calendar API](https://developer.apple.com/library/mac/documentation/DataManagement/Conceptual/EventKitProgGuide/Introduction/Introduction.html) example. Let's say we would like to be able to access iOS calendar from JavaScript.
 
-Native module is just an Objectve-C class that implements `RCTBridgeModule` protocol.
+Native module is just an Objectve-C class that implements `RCTBridgeModule` protocol. If you are wondering, RCT is a shorthand for ReaCT.
 
 ```objective-c
 // CalendarManager.h
@@ -54,7 +58,7 @@ The return type of the method should always be `void`. React Native bridge is as
 React Native supports several types of arguments that can be passed from JavaScript code to native module:
 
 - string (`NSString`)
-- number (`NSInteger`, `float`, double, CGFloat, `NSNumber`)
+- number (`NSInteger`, `float`, `double`, `CGFloat`, `NSNumber`)
 - boolean (`BOOL`, `NSNumber`)
 - array (`NSArray`) of any types from this list
 - map (`NSDictionary`) with string keys and values of any type from this list
@@ -188,5 +192,5 @@ var subscription = DeviceEventEmitter.addListener(
 // Don't forget to unsubscribe
 subscription.remove();
 ```
-
 For more examples of sending events to JavaScript, see `RCTLocationObserver`.
+
