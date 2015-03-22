@@ -67,7 +67,7 @@ RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset);
       return;
     }
 
-    CGSize size = ((id<RCTScrollableProtocol>)view).contentSize;
+    CGSize size = ((RCTScrollView *)view).scrollView.contentSize;
     callback(@[@{
       @"width" : @(size.width),
       @"height" : @(size.height)
