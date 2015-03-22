@@ -38,8 +38,8 @@ function run() {
   // Here goes any cli commands we need to
 }
 
-function init() {
-  spawn('sh', [path.resolve(__dirname, 'init.sh')], {stdio:'inherit'});
+function init(root, projectName) {
+  spawn(path.resolve(__dirname, 'init.sh'), [projectName], {stdio:'inherit'});
 }
 
 module.exports = {

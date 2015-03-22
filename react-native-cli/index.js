@@ -8,16 +8,18 @@ var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
 
-var CLI_MODULE_PATH = path.resolve(
-  process.cwd(),
-  'node_modules',
-  'react-native',
-  'cli'
-);
+var CLI_MODULE_PATH = function() {
+  return path.resolve(
+    process.cwd(),
+    'node_modules',
+    'react-native',
+    'cli'
+  );
+};
 
 var cli;
 try {
-  cli = require(CLI_MODULE_PATH);
+  cli = require(CLI_MODULE_PATH());
 } catch(e) {}
 
 if (cli) {
@@ -66,7 +68,10 @@ function init(name) {
   var packageJson = {
     name: projectName,
     version: '0.0.1',
-    private: true
+    private: true,
+    scripts: {
+      start: "react-native start"
+    }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
   process.chdir(root);
@@ -77,7 +82,7 @@ function init(name) {
       process.exit(1);
     }
 
-    var cli = require(CLI_MODULE_PATH);
+    var cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }

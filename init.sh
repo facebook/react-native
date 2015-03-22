@@ -14,7 +14,7 @@ def cp(src, dest, app_name)
 end
 
 def main(dest, app_name)
-  source = File.expand_path("../../Examples/SampleApp", __FILE__)
+  source = File.expand_path("../Examples/SampleApp", __FILE__)
   files = Dir.chdir(source) { Dir["**/*"] }
     .reject { |file| file["project.xcworkspace"] || file["xcuserdata"] }
     .each { |file|
