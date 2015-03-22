@@ -16,23 +16,23 @@ This guide will use iOS Calendar API example. Let's say we would like to be able
 Native module is just an Objectve-C class that implements `RCTBridgeModule` protocol.
 
 ```objective-c
-// RCTCalendarManager.h
+// CalendarManager.h
 #import "RCTBridgeModule.h"
 
-@interface RCTCalendarManager : NSObject <RCTBridgeModule>
+@interface CalendarManager : NSObject <RCTBridgeModule>
 @end
 ```
 
-React Native will not expose any methods of `RCTCalendarManager` to JavaScript unless explicitly asked. Fortunately this is pretty easy with `RCT_EXPORT`:
+React Native will not expose any methods of `CalendarManager` to JavaScript unless explicitly asked. Fortunately this is pretty easy with `RCT_EXPORT`:
 
 ```objective-c
-// RCTCalendarManager.m
-@implementation RCTCalendarManager
+// CalendarManager.m
+@implementation CalendarManager
 
 - (void)addEventWithName:(NSString *)name location:(NSString *)location
 {
   RCT_EXPORT();
-  RCTLogInfo(@"Pretending to create an event %@ at @%@", name, location);
+  RCTLogInfo(@"Pretending to create an event %@ at %@", name, location);
 }
 
 @end
@@ -45,7 +45,7 @@ var CalendarManager = require('NativeModules').CalendarManager;
 CalendarManager.addEventWithName('Birthday Party', '4 Privet Drive, Surrey');
 ```
 
-Notice that the module name doesn't have `RCT` prefix. Exported method name was generated from first part of Objective-C selector. Sometimes it results in a non-idiomatic JavaScript name (like the one in our example). You can change the name by supplying an optional argument to `RCT_EXPORT`, e.g. `RCT_EXPORT("addEvent")`.
+Notice that the exported method name was generated from first part of Objective-C selector. Sometimes it results in a non-idiomatic JavaScript name (like the one in our example). You can change the name by supplying an optional argument to `RCT_EXPORT`, e.g. `RCT_EXPORT(addEvent)`.
 
 The return type of the method should always be `void`. React Native bridge is asynchronous, so the only way to pass result to JavaScript is by using callbacks or emitting events (see below).
 
@@ -54,7 +54,7 @@ The return type of the method should always be `void`. React Native bridge is as
 React Native supports several types of arguments that can be passed from JavaScript code to native module:
 
 - string (`NSString`)
-- number (`NSInteger`, `float`, `NSNumber`)
+- number (`NSInteger`, `float`, double, CGFloat, `NSNumber`)
 - boolean (`BOOL`, `NSNumber`)
 - array (`NSArray`) of any types from this list
 - map (`NSDictionary`) with string keys and values of any type from this list
@@ -65,7 +65,7 @@ In our `CalendarManager` example, if we want to pass event date to native, we ha
 ```objective-c
 - (void)addEventWithName:(NSString *)name location:(NSString *)location date:(NSInteger)secondsSinceUnixEpoch
 {
-  RCT_EXPORT("addEvent");
+  RCT_EXPORT(addEvent);
   NSDate *date = [NSDate dateWithTimeIntervalSince1970:secondsSinceUnixEpoch];
 }
 ```
@@ -75,11 +75,9 @@ As `CalendarManager.addEvent` method gets more and more complex, the number of a
 ```objective-c
 - (void)addEventWithName:(NSString *)name details:(NSDictionary *)details
 {
-  RCT_EXPORT("addEvent");
-  NSString *location = details[@"location"];
-  if ([location isKindOfClass:[NSString class]]) {
-    ...
-  }
+  RCT_EXPORT(addEvent);
+  NSString *location = [RCTConvert NSString:details[@"location"]]; // ensure location is a string
+  ...
 }
 ```
 
@@ -93,7 +91,7 @@ CalendarManager.addEvent('Birthday Party', {
 })
 ```
 
-NOTE about array and map - React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's developer's responsibility to check array/map values types.
+NOTE about array and map - React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's developer's responsibility to check array/map values types (see `RCTConvert` for helper methods).
 
 # Callbacks
 
@@ -134,7 +132,7 @@ The native module should not have any assumptions about what thread it is being 
 ```objective-c
 - (void)addEventWithName:(NSString *)name callback:(RCTResponseSenderBlock)callback
 {
-  RCT_EXPORT("addEvent");
+  RCT_EXPORT(addEvent);
   dispatch_async(dispatch_get_main_queue(), ^{
     // Call iOS API on main thread
     ...
@@ -182,7 +180,7 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
-var subscription = RCTDeviceEventEmitter.addListener(
+var subscription = DeviceEventEmitter.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
 );
