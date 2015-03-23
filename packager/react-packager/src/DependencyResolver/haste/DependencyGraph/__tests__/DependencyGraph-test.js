@@ -166,6 +166,69 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should default main package to index.js', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': 'require("aPackage")',
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+            }),
+            'index.js': 'lol',
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: '/root/index.js', path: '/root/index.js', dependencies: ['aPackage']},
+            { id: 'aPackage/index',
+              path: '/root/aPackage/index.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
+    pit('should default use index.js if main is a dir', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': 'require("aPackage")',
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              main: 'lib',
+            }),
+            lib: {
+              'index.js': 'lol',
+            },
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: '/root/index.js', path: '/root/index.js', dependencies: ['aPackage']},
+            { id: 'aPackage/lib/index',
+              path: '/root/aPackage/lib/index.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
     pit('should ignore malformed packages', function() {
       var root = '/root';
       fs.__setMockFilesystem({
