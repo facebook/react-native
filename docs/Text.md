@@ -13,7 +13,7 @@ In iOS, the way to display formatted text is by using `NSAttributedString`: you 
 </Text>
 ```
 
-Behind the scenes, this is going to be converted to a flat NSAttributedString that contains the following information
+Behind the scenes, this is going to be converted to a flat `NSAttributedString` that contains the following information
 
 ```javascript
 "I am bold and red"
@@ -23,7 +23,7 @@ Behind the scenes, this is going to be converted to a flat NSAttributedString th
 
 ## Containers
 
-The `<Text>` element is special relative to layout, everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles but wrap when they see the end of the line.
+The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line. 
 
 ```javascript
 <Text>
@@ -47,7 +47,7 @@ The `<Text>` element is special relative to layout, everything inside is no long
 
 ## Limited Style Inheritance
 
-On the web, the usual way to set a font family and size for the entire document is to write
+On the web, the usual way to set a font family and size for the entire document is to write:
 
 ```css
 /* CSS, *not* React Native */
@@ -58,9 +58,9 @@ html {
 }
 ```
 
-When the browser is trying to render a text node, it's going to go all the way up to the root element of the tree and find an element with a `font-size` attribute. An unexpected property with this system is that **any** node can have `font-size` attribute, including a `<div>`. The reason why it was designed this way is that it is convenient, even though not really semantically correct.
+When the browser is trying to render a text node, it's going to go all the way up to the root element of the tree and find an element with a `font-size` attribute. An unexpected property of this system is that **any** node can have `font-size` attribute, including a `<div>`. This was designed for convenience, even though not really semantically correct.
 
-In React Native, we are more strict about it. The first place where it'll show up is that you have to wrap all the text nodes inside of a `<Text>` component. It is not allowed to have a text node directly under a `<View>`.
+In React Native, we are more strict about it: **you must wrap all the text nodes inside of a `<Text>` component**; you cannot have a text node directly under a `<View>`.
 
 ```javascript
 // BAD: will fatal, can't have a text node as child of a <View>
@@ -76,7 +76,7 @@ In React Native, we are more strict about it. The first place where it'll show u
 </View>
 ```
 
-You also lose the ability to setup a default font for an entire subtree. The recommended way to use consistent fonts and sizes across your application is to create a component `MyAppText` that's going to set them and use this component all across your app. You can also make other components such as `MyAppHeaderText` for other kind of texts.
+You also lose the ability to set up a default font for an entire subtree. The recommended way to use consistent fonts and sizes across your application is to create a component `MyAppText` that includes them and use this component across your app. You can also use this component to make more specific components like `MyAppHeaderText` for other kinds of text.
 
 ```javascript
 <View>
@@ -96,8 +96,8 @@ React Native still has the concept of style inheritance, but limited to text sub
 </Text>
 ```
 
-We believe that this more constrained way to style text will yield better apps.
+We believe that this more constrained way to style text will yield better apps:
 
-- (Developper) React components are designed with strong isolation properties in mind, you should be able to drop a component anywhere in your application and it will look and behave the same way, as long as the props are the same. Having text properties be inherited from outside of the props breaks isolation.
+- (Developer) React components are designed with strong isolation in mind: You should be able to drop a component anywhere in your application, trusting that as long as the props are the same, it will look and behave the same way. Text properties that could inherit from outside of the props would break this isolation.
 
-- (Implementor) The implementation of React Native is also simplified. We do not need to have a `fontFamily` field on every single element and we do not need to potentially traverse the tree up to the root every time we display a text node. The style inheritance is only encoded inside of the native Text component and doesn't leak to other components or the system itself.
+- (Implementor) The implementation of React Native is also simplified. We do not need to have a `fontFamily` field on every single element, and we do not need to potentially traverse the tree up to the root every time we display a text node. The style inheritance is only encoded inside of the native Text component and doesn't leak to other components or the system itself.
