@@ -657,21 +657,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
 {
-  NSTimeInterval startJS = RCTTGetAbsoluteTime();
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"JS_PERF_ENQUEUE" object:nil userInfo:nil];
 
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
-    NSTimeInterval startNative = RCTTGetAbsoluteTime();
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"JS_PERF_DEQUEUE" object:nil userInfo:nil];
     [self _handleBuffer:json];
-
-    NSTimeInterval end = RCTTGetAbsoluteTime();
-    NSTimeInterval timeJS = startNative - startJS;
-    NSTimeInterval timeNative = end - startNative;
-
-    // TODO: surface this performance information somewhere
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"PERF" object:nil userInfo:@{
-      @"JS": @(timeJS * 1000000),
-      @"Native": @(timeNative * 1000000)
-    }];
   };
 
   [_javaScriptExecutor executeJSCall:module
