@@ -1,3 +1,4 @@
+/* eslint global-strict:0,eqeqeq:0,no-bitwise:0,no-undef:0 */
 (function(global) {
 
   // avoid redefining require()

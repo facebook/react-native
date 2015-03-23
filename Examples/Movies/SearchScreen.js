@@ -7,7 +7,6 @@
 var React = require('react-native');
 var {
   ListView,
-  ListViewDataSource,
   ScrollView,
   ActivityIndicatorIOS,
   StyleSheet,
@@ -40,11 +39,13 @@ var LOADING = {};
 var SearchScreen = React.createClass({
   mixins: [TimerMixin],
 
+  timeoutID: (null: any),
+
   getInitialState: function() {
     return {
       isLoading: false,
       isLoadingTail: false,
-      dataSource: new ListViewDataSource({
+      dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       }),
       filter: '',
@@ -100,6 +101,15 @@ var SearchScreen = React.createClass({
 
     fetch(this._urlForQueryAndPage(query, 1))
       .then((response) => response.json())
+      .catch((error) => {
+        LOADING[query] = false;
+        resultsCache.dataForQuery[query] = undefined;
+
+        this.setState({
+          dataSource: this.getDataSource([]),
+          isLoading: false,
+        });
+      })
       .then((responseData) => {
         LOADING[query] = false;
         resultsCache.totalForQuery[query] = responseData.total;
@@ -116,15 +126,7 @@ var SearchScreen = React.createClass({
           dataSource: this.getDataSource(responseData.movies),
         });
       })
-      .catch((error) => {
-        LOADING[query] = false;
-        resultsCache.dataForQuery[query] = undefined;
-
-        this.setState({
-          dataSource: this.getDataSource([]),
-          isLoading: false,
-        });
-      });
+      .done();
   },
 
   hasMore: function(): boolean {
@@ -158,6 +160,13 @@ var SearchScreen = React.createClass({
     var page = resultsCache.nextPageNumberForQuery[query];
     fetch(this._urlForQueryAndPage(query, page))
       .then((response) => response.json())
+      .catch((error) => {
+        console.error(error);
+        LOADING[query] = false;
+        this.setState({
+          isLoadingTail: false,
+        });
+      })
       .then((responseData) => {
         var moviesForQuery = resultsCache.dataForQuery[query].slice();
 
@@ -183,16 +192,10 @@ var SearchScreen = React.createClass({
           dataSource: this.getDataSource(resultsCache.dataForQuery[query]),
         });
       })
-      .catch((error) => {
-        console.error(error);
-        LOADING[query] = false;
-        this.setState({
-          isLoadingTail: false,
-        });
-      });
+      .done();
   },
 
-  getDataSource: function(movies: Array<any>): ListViewDataSource {
+  getDataSource: function(movies: Array<any>): ListView.DataSource {
     return this.state.dataSource.cloneWithRows(movies);
   },
 
@@ -240,7 +243,7 @@ var SearchScreen = React.createClass({
         renderRow={this.renderRow}
         onEndReached={this.onEndReached}
         automaticallyAdjustContentInsets={false}
-        keyboardDismissMode={ScrollView.keyboardDismissMode.OnDrag}
+        keyboardDismissMode="onDrag"
         keyboardShouldPersistTaps={true}
         showsVerticalScrollIndicator={false}
       />;
@@ -283,7 +286,7 @@ var SearchBar = React.createClass({
     return (
       <View style={styles.searchBar}>
         <TextInput
-          autoCapitalize={TextInput.autoCapitalizeMode.none}
+          autoCapitalize="none"
           autoCorrect={false}
           onChange={this.props.onSearchChange}
           placeholder="Search a movie..."

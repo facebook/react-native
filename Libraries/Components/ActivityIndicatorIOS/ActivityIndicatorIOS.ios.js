@@ -6,7 +6,7 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModulesDeprecated = require('NativeModulesDeprecated');
+var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
@@ -15,7 +15,6 @@ var View = require('View');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var keyMirror = require('keyMirror');
-var keyOf = require('keyOf');
 var merge = require('merge');
 
 var SpinnerSize = keyMirror({
@@ -37,12 +36,14 @@ var ActivityIndicatorIOS = React.createClass({
      * The foreground color of the spinner (default is gray).
      */
     color: PropTypes.string,
+
     /**
-     * The size of the spinner, must be one of:
-     * - ActivityIndicatorIOS.size.large
-     * - ActivityIndicatorIOS.size.small (default)
+     * Size of the indicator. Small has a height of 20, large has a height of 36.
      */
-    size: PropTypes.oneOf([SpinnerSize.large, SpinnerSize.small]),
+    size: PropTypes.oneOf([
+      'small',
+      'large',
+    ]),
   },
 
   getDefaultProps: function() {
@@ -53,15 +54,11 @@ var ActivityIndicatorIOS = React.createClass({
     };
   },
 
-  statics: {
-    size: SpinnerSize,
-  },
-
   render: function() {
     var style = styles.sizeSmall;
-    var NativeConstants = NativeModulesDeprecated.RKUIManager.UIActivityIndicatorView.Constants;
+    var NativeConstants = NativeModules.UIManager.UIActivityIndicatorView.Constants;
     var activityIndicatorViewStyle = NativeConstants.StyleWhite;
-    if (this.props.size == SpinnerSize.large) {
+    if (this.props.size === 'large') {
       style = styles.sizeLarge;
       activityIndicatorViewStyle = NativeConstants.StyleWhiteLarge;
     }

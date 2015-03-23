@@ -11,7 +11,6 @@ var {
   StyleSheet,
   Text,
   View,
-  ix,
 } = React;
 
 var ImageCapInsetsExample = React.createClass({
@@ -23,7 +22,7 @@ var ImageCapInsetsExample = React.createClass({
             capInsets: none
           </Text>
           <Image
-            source={ix('story-background')}
+            source={require('image!story-background')}
             style={styles.storyBackground}
             capInsets={{left: 0, right: 0, bottom: 0, top: 0}}
           />
@@ -33,7 +32,7 @@ var ImageCapInsetsExample = React.createClass({
             capInsets: 15
           </Text>
           <Image
-            source={ix('story-background')}
+            source={require('image!story-background')}
             style={styles.storyBackground}
             capInsets={{left: 15, right: 15, bottom: 15, top: 15}}
           />

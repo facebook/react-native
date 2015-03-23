@@ -1,3 +1,5 @@
+'use strict';
+
 var url = require('url');
 var path = require('path');
 var declareOpts = require('../lib/declareOpts');
@@ -5,6 +7,7 @@ var FileWatcher = require('../FileWatcher');
 var Packager = require('../Packager');
 var Activity = require('../Activity');
 var q = require('q');
+var _ = require('underscore');
 
 module.exports = Server;
 
@@ -32,17 +35,17 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   transformModulePath: {
     type:'string',
-    required: true,
+    required: false,
   },
   nonPersistent: {
     type: 'boolean',
     default: false,
+  },
+  assetRoots: {
+    type: 'array',
+    required: false,
   },
 });
 
@@ -51,6 +54,7 @@ function Server(options) {
   this._projectRoots = opts.projectRoots;
   this._packages = Object.create(null);
   this._packager = new Packager(opts);
+  this._changeWatchers = [];
 
   this._fileWatcher = options.nonPersistent
     ? FileWatcher.createDummyWatcher()
@@ -58,6 +62,12 @@ function Server(options) {
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);
+
+  var self = this;
+  this._debouncedFileChangeHandler = _.debounce(function(filePath) {
+    self._rebuildPackages(filePath);
+    self._informChangeWatchers();
+  }, 50, true);
 }
 
 Server.prototype._onFileChange = function(type, filepath, root) {
@@ -65,20 +75,40 @@ Server.prototype._onFileChange = function(type, filepath, root) {
   this._packager.invalidateFile(absPath);
   // Make sure the file watcher event runs through the system before
   // we rebuild the packages.
-  setImmediate(this._rebuildPackages.bind(this, absPath));
+  this._debouncedFileChangeHandler(absPath);
 };
 
 Server.prototype._rebuildPackages = function() {
   var buildPackage = this._buildPackage.bind(this);
   var packages = this._packages;
   Object.keys(packages).forEach(function(key) {
-    var options = getOptionsFromPath(url.parse(key).pathname);
-    packages[key] = buildPackage(options).then(function(p) {
-      // Make a throwaway call to getSource to cache the source string.
-      p.getSource();
-      return p;
+    var options = getOptionsFromUrl(key);
+    // Wait for a previous build (if exists) to finish.
+    packages[key] = (packages[key] || q()).then(function() {
+      return buildPackage(options).then(function(p) {
+        // Make a throwaway call to getSource to cache the source string.
+        p.getSource({
+          inlineSourceMap: options.dev,
+          minify: options.minify,
+        });
+        return p;
+      });
     });
   });
+};
+
+Server.prototype._informChangeWatchers = function() {
+  var watchers = this._changeWatchers;
+  var headers = {
+    'Content-Type': 'application/json; charset=UTF-8',
+  };
+
+  watchers.forEach(function(w) {
+    w.res.writeHead(205, headers);
+    w.res.end(JSON.stringify({ changed: true }));
+  });
+
+  this._changeWatchers = [];
 };
 
 Server.prototype.end = function() {
@@ -92,12 +122,13 @@ Server.prototype._buildPackage = function(options) {
   return this._packager.package(
     options.main,
     options.runModule,
-    options.sourceMapUrl
+    options.sourceMapUrl,
+    options.dev
   );
 };
 
 Server.prototype.buildPackageFromUrl = function(reqUrl) {
-  var options = getOptionsFromPath(url.parse(reqUrl).pathname);
+  var options = getOptionsFromUrl(reqUrl);
   return this._buildPackage(options);
 };
 
@@ -139,27 +170,56 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
   }
 };
 
+Server.prototype._processOnChangeRequest = function(req, res) {
+  var watchers = this._changeWatchers;
+
+  watchers.push({
+    req: req,
+    res: res,
+  });
+
+  req.on('close', function() {
+    for (var i = 0; i < watchers.length; i++) {
+      if (watchers[i] && watchers[i].req === req) {
+        watchers.splice(i, 1);
+        break;
+      }
+    }
+  });
+};
+
 Server.prototype.processRequest = function(req, res, next) {
+  var urlObj = url.parse(req.url, true);
+  var pathname = urlObj.pathname;
+
   var requestType;
-  if (req.url.match(/\.bundle$/)) {
+  if (pathname.match(/\.bundle$/)) {
     requestType = 'bundle';
-  } else if (req.url.match(/\.map$/)) {
+  } else if (pathname.match(/\.map$/)) {
     requestType = 'map';
-  } else if (req.url.match(/^\/debug/)) {
+  } else if (pathname.match(/^\/debug/)) {
     this._processDebugRequest(req.url, res);
     return;
+  } else if (pathname.match(/^\/onchange\/?$/)) {
+    this._processOnChangeRequest(req, res);
+    return;
   } else {
-    return next();
+    next();
+    return;
   }
 
   var startReqEventId = Activity.startEvent('request:' + req.url);
-  var options = getOptionsFromPath(url.parse(req.url).pathname);
-  var building = this._packages[req.url] || this._buildPackage(options)
+  var options = getOptionsFromUrl(req.url);
+  var building = this._packages[req.url] || this._buildPackage(options);
+
   this._packages[req.url] = building;
-  building.then(
+    building.then(
     function(p) {
       if (requestType === 'bundle') {
-        res.end(p.getSource());
+        res.end(p.getSource({
+          inlineSourceMap: options.dev,
+          minify: options.minify,
+        }));
         Activity.endEvent(startReqEventId);
       } else if (requestType === 'map') {
         res.end(JSON.stringify(p.getSourceMap()));
@@ -172,17 +232,36 @@ Server.prototype.processRequest = function(req, res, next) {
   ).done();
 };
 
-function getOptionsFromPath(pathname) {
-  var parts = pathname.split('.');
-  // Remove the leading slash.
-  var main = parts[0].slice(1) + '.js';
+function getOptionsFromUrl(reqUrl) {
+  // `true` to parse the query param as an object.
+  var urlObj = url.parse(reqUrl, true);
+  var pathname = urlObj.pathname;
+
+  // Backwards compatibility. Options used to be as added as '.' to the
+  // entry module name. We can safely remove these options.
+  var entryFile = pathname.replace(/^\//, '').split('.').filter(function(part) {
+    if (part === 'includeRequire' || part === 'runModule' ||
+        part === 'bundle' || part === 'map') {
+      return false;
+    }
+    return true;
+  }).join('.') + '.js';
+
   return {
-    runModule: parts.slice(1).some(function(part) {
-      return part === 'runModule';
-    }),
-    main: main,
-    sourceMapUrl: parts.slice(0, -1).join('.') + '.map'
+    sourceMapUrl: pathname.replace(/\.bundle$/, '.map'),
+    main: entryFile,
+    dev: getBoolOptionFromQuery(urlObj.query, 'dev', true),
+    minify: getBoolOptionFromQuery(urlObj.query, 'minify'),
+    runModule: getBoolOptionFromQuery(urlObj.query, 'runModule', true),
   };
+}
+
+function getBoolOptionFromQuery(query, opt, defaultVal) {
+  if (query[opt] == null && defaultVal != null) {
+    return defaultVal;
+  }
+
+  return query[opt] === 'true' || query[opt] === '1';
 }
 
 function handleError(res, error) {

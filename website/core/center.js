@@ -7,8 +7,10 @@ var React = require('React');
 
 var center = React.createClass({
   render: function() {
-    return this.transferPropsTo(
-      <div style={{textAlign: 'center'}}>{this.props.children}</div>
+    return (
+      <div {...this.props} style={{textAlign: 'center'}}>
+        {this.props.children}
+      </div>
     );
   }
 });

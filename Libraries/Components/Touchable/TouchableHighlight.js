@@ -11,6 +11,7 @@ var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('TimerMixin');
 var Touchable = require('Touchable');
+var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
 
 var cloneWithProps = require('cloneWithProps');
@@ -19,42 +20,38 @@ var keyOf = require('keyOf');
 var merge = require('merge');
 var onlyChild = require('onlyChild');
 
-/**
- * TouchableHighlight - A wrapper for making views respond properly to touches.
- * On press down, the opacity of the wrapped view is decreased, which allows
- * the underlay color to show through, darkening or tinting the view.  The
- * underlay comes from adding a view to the view hierarchy, which can sometimes
- * cause unwanted visual artifacts if not used correctly, for example if the
- * backgroundColor of the wrapped view isn't explicitly set to an opaque color.
- * Example:
- *
- *   renderButton: function() {
- *     return (
- *       <TouchableHighlight onPress={this._onPressButton}>
- *         <Image
- *           style={styles.button}
- *           source={ix('myButton')}
- *         />
- *       </View>
- *     );
- *   },
- *
- * More example code in TouchableExample.js, and more in-depth discussion in
- * Touchable.js. See also TouchableWithoutFeedback.js.
- */
-
 var DEFAULT_PROPS = {
   activeOpacity: 0.8,
   underlayColor: 'black',
 };
 
+/**
+ * A wrapper for making views respond properly to touches.
+ * On press down, the opacity of the wrapped view is decreased, which allows
+ * the underlay color to show through, darkening or tinting the view.  The
+ * underlay comes from adding a view to the view hierarchy, which can sometimes
+ * cause unwanted visual artifacts if not used correctly, for example if the
+ * backgroundColor of the wrapped view isn't explicitly set to an opaque color.
+ *
+ * Example:
+ *
+ * ```
+ * renderButton: function() {
+ *   return (
+ *     <TouchableHighlight onPress={this._onPressButton}>
+ *       <Image
+ *         style={styles.button}
+ *         source={require('image!myButton')}
+ *       />
+ *     </View>
+ *   );
+ * },
+ * ```
+ */
+
 var TouchableHighlight = React.createClass({
   propTypes: {
-    /**
-     * Called when the touch is released, but not if cancelled (e.g. by
-     * a scroll that steals the responder lock).
-     */
-    onPress: React.PropTypes.func.isRequired,
+    ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
      * active.
@@ -65,7 +62,7 @@ var TouchableHighlight = React.createClass({
      * active.
      */
     underlayColor: React.PropTypes.string,
-    style: View.stylePropType,
+    style: View.propTypes.style,
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -116,7 +113,7 @@ var TouchableHighlight = React.createClass({
 
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactIOSViewAttributes.RKView
+    validAttributes: ReactIOSViewAttributes.RCTView
   },
 
   /**
@@ -127,12 +124,14 @@ var TouchableHighlight = React.createClass({
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     this._showUnderlay();
+    this.props.onPressIn && this.props.onPressIn();
   },
 
   touchableHandleActivePressOut: function() {
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
+    this.props.onPressOut && this.props.onPressOut();
   },
 
   touchableHandlePress: function() {
@@ -140,6 +139,10 @@ var TouchableHighlight = React.createClass({
     this._showUnderlay();
     this._hideTimeout = this.setTimeout(this._hideUnderlay, 100);
     this.props.onPress && this.props.onPress();
+  },
+
+  touchableHandleLongPress: function() {
+    this.props.onLongPress && this.props.onLongPress();
   },
 
   touchableGetPressRectOffset: function() {
@@ -156,7 +159,10 @@ var TouchableHighlight = React.createClass({
     this._hideTimeout = null;
     if (this.refs[UNDERLAY_REF]) {
       this.refs[CHILD_REF].setNativeProps(INACTIVE_CHILD_PROPS);
-      this.refs[UNDERLAY_REF].setNativeProps(INACTIVE_UNDERLAY_PROPS);
+      this.refs[UNDERLAY_REF].setNativeProps({
+        ...INACTIVE_UNDERLAY_PROPS,
+        style: this.state.underlayStyle,
+      });
     }
   },
 

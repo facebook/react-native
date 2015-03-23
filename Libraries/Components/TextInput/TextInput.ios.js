@@ -8,13 +8,12 @@
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModulesDeprecated = require('NativeModulesDeprecated');
+var RCTUIManager = require('NativeModules').UIManager;
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
-var Subscribable = require('Subscribable');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('TimerMixin');
@@ -26,54 +25,10 @@ var getObjectValues = require('getObjectValues');
 var invariant = require('invariant');
 var merge = require('merge');
 
-/**
- * <TextInput> - A foundational component for inputting text into the app via a
- * keyboard.  Props provide configurability for several features, such as auto-
- * correction, auto-capitalization, placeholder text, and different keyboard
- * types, such as a numeric keypad.
- *
- * The simplest use case is to plop down a `TextInput` and subscribe to the
- * `onChangeText` events to read the user input.  There are also other events, such
- * as `onSubmitEditing` and `onFocus` that can be subscribed to.  A simple
- * example:
- *
- *   <View>
- *     <TextInput
- *       style={{height: 40, borderColor: 'gray', borderWidth: 1}}
- *       onChangeText={(text) => this.setState({input: text})}
- *     />
- *     <Text>{'user input: ' + this.state.input}</Text>
- *   </View>
- *
- * The `value` prop can be used to set the value of the input in order to make
- * the state of the component clear, but <TextInput> does not behave as a true
- * controlled component by default because all operations are asynchronous.
- * Setting `value` once is like setting the default value, but you can change it
- * continuously based on `onChangeText` events as well.  If you really want to
- * force the component to always revert to the value you are setting, you can
- * set `controlled={true}`.
- *
- * The `multiline` prop is not supported in all releases, and some props are
- * multiline only.
- *
- * More example code in `TextInputExample.js`.
- */
+var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
+var clearButtonModeConsts = RCTUIManager.UITextField.clearButtonMode;
 
-var nativeConstants = NativeModulesDeprecated.RKUIManager.UIText.AutocapitalizationType;
-
-var autoCapitalizeMode = {
-  none: nativeConstants.None,
-  sentences: nativeConstants.Sentences,
-  words: nativeConstants.Words,
-  characters: nativeConstants.AllCharacters
-};
-
-var keyboardType = {
-  default: 'default',
-  numeric: 'numeric',
-};
-
-var RKTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
+var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   autoCorrect: true,
   autoCapitalize: true,
   color: true,
@@ -87,9 +42,10 @@ var RKTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   text: true,
 });
 
-var RKTextFieldAttributes = merge(RKTextViewAttributes, {
+var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   caretHidden: true,
   enabled: true,
+  clearButtonMode: true,
 });
 
 var onlyMultiline = {
@@ -102,12 +58,40 @@ var notMultiline = {
   onSubmitEditing: true,
 };
 
-var TextInput = React.createClass({
-  statics: {
-    autoCapitalizeMode: autoCapitalizeMode,
-    keyboardType: keyboardType,
-  },
+/**
+ * A foundational component for inputting text into the app via a
+ * keyboard.  Props provide configurability for several features, such as auto-
+ * correction, auto-capitalization, placeholder text, and different keyboard
+ * types, such as a numeric keypad.
+ *
+ * The simplest use case is to plop down a `TextInput` and subscribe to the
+ * `onChangeText` events to read the user input.  There are also other events, such
+ * as `onSubmitEditing` and `onFocus` that can be subscribed to.  A simple
+ * example:
+ *
+ * ```
+ * <View>
+ *   <TextInput
+ *     style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+ *     onChangeText={(text) => this.setState({input: text})}
+ *   />
+ *   <Text>{'user input: ' + this.state.input}</Text>
+ * </View>
+ * ```
+ *
+ * The `value` prop can be used to set the value of the input in order to make
+ * the state of the component clear, but <TextInput> does not behave as a true
+ * controlled component by default because all operations are asynchronous.
+ * Setting `value` once is like setting the default value, but you can change it
+ * continuously based on `onChangeText` events as well.  If you really want to
+ * force the component to always revert to the value you are setting, you can
+ * set `controlled={true}`.
+ *
+ * The `multiline` prop is not supported in all releases, and some props are
+ * multiline only.
+ */
 
+var TextInput = React.createClass({
   propTypes: {
     /**
      * Can tell TextInput to automatically capitalize certain characters.
@@ -116,11 +100,13 @@ var TextInput = React.createClass({
      * - words: first letter of each word
      * - sentences: first letter of each sentence (default)
      * - none: don't auto capitalize anything
-     *
-     * example:
-     *   autoCapitalize={TextInput.autoCapitalizeMode.words}
      */
-    autoCapitalize: PropTypes.oneOf(getObjectValues(autoCapitalizeMode)),
+    autoCapitalize: PropTypes.oneOf([
+      'none',
+      'sentences',
+      'words',
+      'characters',
+    ]),
     /**
      * If false, disables auto-correct. Default value is true.
      */
@@ -134,9 +120,12 @@ var TextInput = React.createClass({
      */
     editable: PropTypes.bool,
     /**
-     * Determines which keyboard to open, e.g.`TextInput.keyboardType.numeric`.
+     * Determines which keyboard to open, e.g.`numeric`.
      */
-    keyboardType: PropTypes.oneOf(getObjectValues(keyboardType)),
+    keyboardType: PropTypes.oneOf([
+      'default',
+      'numeric',
+    ]),
     /**
      * If true, the text input can be multiple lines. Default value is false.
      */
@@ -188,19 +177,28 @@ var TextInput = React.createClass({
      * and/or laggy typing, depending on how you process onChange events.
      */
     controlled: PropTypes.bool,
+    /**
+     * When the clear button should appear on the right side of the text view
+     */
+    clearButtonMode: PropTypes.oneOf([
+      'never',
+      'while-editing',
+      'unless-editing',
+      'always',
+    ]),
 
-    style: Text.stylePropType,
+    style: Text.propTypes.style,
   },
 
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
    */
-  mixins: [NativeMethodsMixin, TimerMixin, Subscribable.Mixin],
+  mixins: [NativeMethodsMixin, TimerMixin],
 
   viewConfig: {
     uiViewClassName: 'RCTTextField',
-    validAttributes: RKTextFieldAttributes,
+    validAttributes: RCTTextFieldAttributes,
   },
 
   isFocused: function() {
@@ -233,16 +231,23 @@ var TextInput = React.createClass({
       }
       return;
     }
-    this.addListenerOn(this.context.focusEmitter, 'focus', (el) => {
-      if (this === el) {
-        this.requestAnimationFrame(this.focus);
-      } else if (this.isFocused()) {
-        this.blur();
+    this._focusSubscription = this.context.focusEmitter.addListener(
+      'focus',
+      (el) => {
+        if (this === el) {
+          this.requestAnimationFrame(this.focus);
+        } else if (this.isFocused()) {
+          this.blur();
+        }
       }
-    });
+    );
     if (this.props.autoFocus) {
       this.context.onFocusRequested(this);
     }
+  },
+
+  componentWillUnmount: function() {
+    this._focusSubscription && this._focusSubscription.remove();
   },
 
   componentWillReceiveProps: function(newProps) {
@@ -292,6 +297,9 @@ var TextInput = React.createClass({
   render: function() {
     var textContainer;
 
+    var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
+    var clearButtonMode = clearButtonModeConsts[this.props.clearButtonMode];
+
     if (!this.props.multiline) {
       for (var propKey in onlyMultiline) {
         if (this.props[propKey]) {
@@ -301,7 +309,7 @@ var TextInput = React.createClass({
         }
       }
       textContainer =
-        <RKTextField
+        <RCTTextField
           ref="input"
           style={[styles.input, this.props.style]}
           enabled={this.props.editable}
@@ -314,8 +322,9 @@ var TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={() => true}
           placeholder={this.props.placeholder}
           text={this.state.bufferedValue}
-          autoCapitalize={this.props.autoCapitalize}
+          autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
+          clearButtonMode={clearButtonMode}
         />;
     } else {
       for (var propKey in notMultiline) {
@@ -340,7 +349,7 @@ var TextInput = React.createClass({
         children = [children, this.props.inputView];
       }
       textContainer =
-        <RKTextView
+        <RCTTextView
           ref="input"
           style={[styles.input, this.props.style]}
           children={children}
@@ -356,8 +365,9 @@ var TextInput = React.createClass({
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
-          autoCapitalize={this.props.autoCapitalize}
+          autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
+          clearButtonMode={clearButtonMode}
         />;
     }
 
@@ -418,13 +428,13 @@ var styles = StyleSheet.create({
   },
 });
 
-var RKTextView = createReactIOSNativeComponentClass({
-  validAttributes: RKTextViewAttributes,
+var RCTTextView = createReactIOSNativeComponentClass({
+  validAttributes: RCTTextViewAttributes,
   uiViewClassName: 'RCTTextView',
 });
 
-var RKTextField = createReactIOSNativeComponentClass({
-  validAttributes: RKTextFieldAttributes,
+var RCTTextField = createReactIOSNativeComponentClass({
+  validAttributes: RCTTextFieldAttributes,
   uiViewClassName: 'RCTTextField',
 });
 

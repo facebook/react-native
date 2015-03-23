@@ -7,10 +7,11 @@
 'use strict';
 
 var POPAnimation = require('POPAnimation');
+
 if (!POPAnimation) {
   // POP animation isn't available in the OSS fork - this is a temporary
   // workaround to enable its availability to be determined at runtime.
-  module.exports = null;
+  module.exports = (null : ?{});
 } else {
 
 var invariant = require('invariant');
@@ -224,12 +225,10 @@ var POPAnimationMixin = {
       w: frame.width,
       h: frame.height
     };
-    frame = undefined;
-    var velocity = velocity || [0, 0];
     var posAnim = POPAnimation.createAnimation(type, {
       property: POPAnimation.Properties.position,
       toValue: [animFrame.x, animFrame.y],
-      velocity: velocity,
+      velocity: velocity || [0, 0],
     });
     var sizeAnim = POPAnimation.createAnimation(type, {
       property: POPAnimation.Properties.size,

@@ -6,6 +6,7 @@
 'use strict';
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactInstanceMap = require('ReactInstanceMap');
 
 /**
  * ReactNative vs ReactWeb
@@ -55,11 +56,17 @@ var ReactIOSComponentMixin = {
    * `getNodeHandle`.
    */
   getNativeNode: function() {
-    return ReactIOSTagHandles.rootNodeIDToTag[this._rootNodeID];
+    // TODO (balpert): Wrap iOS native components in a composite wrapper, then
+    // ReactInstanceMap.get here will always succeed
+    return ReactIOSTagHandles.rootNodeIDToTag[
+      (ReactInstanceMap.get(this) || this)._rootNodeID
+    ];
   },
 
   getNodeHandle: function() {
-    return ReactIOSTagHandles.rootNodeIDToTag[this._rootNodeID];
+    return ReactIOSTagHandles.rootNodeIDToTag[
+      (ReactInstanceMap.get(this) || this)._rootNodeID
+    ];
   }
 };
 

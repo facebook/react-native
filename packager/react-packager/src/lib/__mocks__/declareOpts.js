@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(declared) {
   return function(opts) {
     for (var p in declared) {

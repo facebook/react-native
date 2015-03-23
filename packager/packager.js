@@ -16,12 +16,14 @@ if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   process.exit();
 }
 
+var exec = require('child_process').exec;
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
 var connect = require('connect');
 var http = require('http');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
+var webSocketProxy = require('./webSocketProxy.js');
 
 var options = parseCommandLine([{
   command: 'port',
@@ -31,8 +33,17 @@ var options = parseCommandLine([{
   description: 'add another root(s) to be used by the packager in this project',
 }]);
 
-if (!options.projectRoots) {
-  options.projectRoots = [path.resolve(__dirname, '..')];
+if (options.projectRoots) {
+  if (!Array.isArray(options.projectRoots)) {
+    options.projectRoots = options.projectRoots.split(',');
+  }
+} else {
+  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+    // packager is running from node_modules of another project
+    options.projectRoots = [path.resolve(__dirname, '../../..')];
+  } else {
+    options.projectRoots = [path.resolve(__dirname, '..')];
+  }
 }
 
 if (options.root) {
@@ -43,6 +54,10 @@ if (options.root) {
       options.projectRoots.push(path.resolve(root));
     });
   }
+}
+
+if (!options.assetRoots) {
+  options.assetRoots = [path.resolve(__dirname, '..')];
 }
 
 console.log('\n' +
@@ -57,6 +72,8 @@ console.log('\n' +
 ' ===============================================================\n'
 );
 
+console.log('Looking for JS files in\n  ', options.projectRoots.join('\n   '));
+
 process.on('uncaughtException', function(e) {
   console.error(e);
   console.error(e.stack);
@@ -64,9 +81,11 @@ process.on('uncaughtException', function(e) {
                 'any existing instances that are already running.\n\n');
 });
 
-runServer(options, function() {
+var server = runServer(options, function() {
   console.log('\nReact packager ready.\n');
 });
+
+webSocketProxy.attachToServer(server, '/debugger-proxy');
 
 function loadRawBody(req, res, next) {
   req.rawBody = '';
@@ -91,23 +110,48 @@ function openStackFrameInEditor(req, res, next) {
   }
 }
 
+function getDevToolsLauncher(options) {
+  return function(req, res, next) {
+    if (req.url === '/debugger-ui') {
+      var debuggerPath = path.join(__dirname, 'debugger.html');
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      fs.createReadStream(debuggerPath).pipe(res);
+    } else if (req.url === '/launch-chrome-devtools') {
+      var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
+      var script = 'launchChromeDevTools.applescript';
+      console.log('Launching Dev Tools...');
+      exec(path.join(__dirname, script) + ' ' + debuggerURL, function(err, stdout, stderr) {
+        if (err) {
+          console.log('Failed to run ' + script, err);
+        }
+        console.log(stdout);
+        console.warn(stderr);
+      });
+      res.end('OK');
+    } else {
+      next();
+    }
+  };
+}
+
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
-    dev: true,
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(false),
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
+    assetRoots: options.assetRoots,
   });
 }
 
 function runServer(
-  options, /* {string projectRoot, bool web, bool dev} */
+  options, /* {[]string projectRoot, bool web} */
   readyCallback
 ) {
   var app = connect()
     .use(loadRawBody)
     .use(openStackFrameInEditor)
+    .use(getDevToolsLauncher(options))
     .use(getAppMiddleware(options));
 
   options.projectRoots.forEach(function(root) {

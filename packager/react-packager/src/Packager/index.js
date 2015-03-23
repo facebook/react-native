@@ -36,17 +36,17 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   transformModulePath: {
     type:'string',
-    required: true,
+    required: false,
   },
   nonPersistent: {
     type: 'boolean',
     default: false,
+  },
+  assetRoots: {
+    type: 'array',
+    required: false,
   },
 });
 
@@ -59,9 +59,9 @@ function Packager(options) {
     projectRoots: opts.projectRoots,
     blacklistRE: opts.blacklistRE,
     polyfillModuleNames: opts.polyfillModuleNames,
-    dev: opts.dev,
     nonPersistent: opts.nonPersistent,
-    moduleFormat: opts.moduleFormat
+    moduleFormat: opts.moduleFormat,
+    assetRoots: opts.assetRoots,
   });
 
   this._transformer = new Transformer({
@@ -69,7 +69,6 @@ function Packager(options) {
     blacklistRE: opts.blacklistRE,
     cacheVersion: opts.cacheVersion,
     resetCache: opts.resetCache,
-    dev: opts.dev,
     transformModulePath: opts.transformModulePath,
     nonPersistent: opts.nonPersistent,
   });
@@ -82,14 +81,14 @@ Packager.prototype.kill = function() {
   ]);
 };
 
-Packager.prototype.package = function(main, runModule, sourceMapUrl) {
+Packager.prototype.package = function(main, runModule, sourceMapUrl, isDev) {
   var transformModule = this._transformModule.bind(this);
   var ppackage = new Package(sourceMapUrl);
 
   var findEventId = Activity.startEvent('find dependencies');
   var transformEventId;
 
-  return this.getDependencies(main)
+  return this.getDependencies(main, isDev)
     .then(function(result) {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
@@ -119,17 +118,23 @@ Packager.prototype.invalidateFile = function(filePath) {
   this._transformer.invalidateFile(filePath);
 };
 
-Packager.prototype.getDependencies = function(main) {
-  return this._resolver.getDependencies(main);
+Packager.prototype.getDependencies = function(main, isDev) {
+  return this._resolver.getDependencies(main, { dev: isDev });
 };
 
 Packager.prototype._transformModule = function(module) {
+  var transform;
+
+  if (module.isAsset) {
+    transform = q(generateAssetModule(module));
+  } else {
+    transform = this._transformer.loadFileAndTransform(
+      path.resolve(module.path)
+    );
+  }
+
   var resolver = this._resolver;
-  return this._transformer.loadFileAndTransform(
-    ['es6'],
-    path.resolve(module.path),
-    this._opts.transformer || {}
-  ).then(function(transformed) {
+  return transform.then(function(transformed) {
     return _.extend(
       {},
       transformed,
@@ -148,5 +153,17 @@ Packager.prototype.getGraphDebugInfo = function() {
   return this._resolver.getDebugInfo();
 };
 
+function generateAssetModule(module) {
+  var code = 'module.exports = ' + JSON.stringify({
+    uri: module.id.replace(/^[^!]+!/, ''),
+    isStatic: true,
+  }) + ';';
+
+  return {
+    code: code,
+    sourceCode: code,
+    sourcePath: module.path,
+  };
+}
 
 module.exports = Packager;

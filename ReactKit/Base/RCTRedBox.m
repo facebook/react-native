@@ -2,10 +2,11 @@
 
 #import "RCTRedBox.h"
 
-#import "RCTRootView.h"
 #import "RCTUtils.h"
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, copy) NSString *lastErrorMessage;
 
 @end
 
@@ -13,31 +14,30 @@
 {
   UIView *_rootView;
   UITableView *_stackTraceTableView;
-  
-  NSString *_lastErrorMessage;
+
   NSArray *_lastStackTrace;
-  
+
   UITableViewCell *_cachedMessageCell;
 }
 
 - (id)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    
+
     self.windowLevel = UIWindowLevelStatusBar + 5;
     self.backgroundColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
     self.hidden = YES;
-    
+
     UIViewController *rootController = [[UIViewController alloc] init];
     self.rootViewController = rootController;
     _rootView = rootController.view;
     _rootView.backgroundColor = [UIColor clearColor];
-    
+
     const CGFloat buttonHeight = 60;
 
     CGRect detailsFrame = _rootView.bounds;
     detailsFrame.size.height -= buttonHeight;
-    
+
     _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
@@ -45,21 +45,21 @@
     _stackTraceTableView.separatorColor = [[UIColor whiteColor] colorWithAlphaComponent:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_rootView addSubview:_stackTraceTableView];
-    
+
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
     [dismissButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
-    
+
     UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
     [reloadButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
-    
+
     CGFloat buttonWidth = self.bounds.size.width / 2;
     dismissButton.frame = CGRectMake(0, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
@@ -85,18 +85,20 @@
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
 {
-  _lastStackTrace = stack;
-  _lastErrorMessage = message;
-  
-  if (self.hidden && shouldShow) {
+  if ((self.hidden && shouldShow) || (!self.hidden && [_lastErrorMessage isEqualToString:message])) {
+    _lastStackTrace = stack;
+    _lastErrorMessage = message;
 
     _cachedMessageCell = [self reuseCell:nil forErrorMessage:message];
     [_stackTraceTableView reloadData];
     [_stackTraceTableView setNeedsLayout];
 
-    [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                atScrollPosition:UITableViewScrollPositionTop
-                                        animated:NO];
+    if (self.hidden) {
+      [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                                  atScrollPosition:UITableViewScrollPositionTop
+                                          animated:NO];
+    }
+
     [self makeKeyAndVisible];
     [self becomeFirstResponder];
   }
@@ -105,11 +107,13 @@
 - (void)dismiss
 {
   self.hidden = YES;
+  [self resignFirstResponder];
+  [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
 }
 
 - (void)reload
 {
-  [RCTRootView reloadAll];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTReloadNotification" object:nil userInfo:nil];
   [self dismiss];
 }
 
@@ -149,9 +153,9 @@
     cell.backgroundColor = [UIColor clearColor];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
-  
+
   cell.textLabel.text = message;
-  
+
   return cell;
 }
 
@@ -168,7 +172,7 @@
     cell.selectedBackgroundView = [[UIView alloc] init];
     cell.selectedBackgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
   }
-  
+
   cell.textLabel.text = stackFrame[@"methodName"];
   cell.detailTextLabel.text = cell.detailTextLabel.text = [NSString stringWithFormat:@"%@:%@", [stackFrame[@"file"] lastPathComponent], stackFrame[@"lineNumber"]];
   return cell;
@@ -179,7 +183,7 @@
   if ([indexPath section] == 0) {
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-    
+
     NSDictionary *attributes = @{NSFontAttributeName: [UIFont boldSystemFontOfSize:16],
                                  NSParagraphStyleAttributeName: paragraphStyle};
     CGRect boundingRect = [_lastErrorMessage boundingRectWithSize:CGSizeMake(tableView.frame.size.width - 30, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
@@ -206,14 +210,14 @@
   // NOTE: We could use RCTKeyCommands for this, but since
   // we control this window, we can use the standard, non-hacky
   // mechanism instead
-  
+
   return @[
-          
+
     // Dismiss red box
     [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
                         modifierFlags:0
                                action:@selector(dismiss)],
-    
+
     // Reload
     [UIKeyCommand keyCommandWithInput:@"r"
                         modifierFlags:UIKeyModifierCommand
@@ -269,12 +273,12 @@
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
 {
-  
+
 #if DEBUG
-  
+
   dispatch_block_t block = ^{
     if (!_window) {
-       _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+      _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     }
     [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
   };
@@ -283,9 +287,18 @@
   } else {
     dispatch_async(dispatch_get_main_queue(), block);
   }
-  
+
 #endif
-  
+
+}
+
+- (NSString *)currentErrorMessage
+{
+  if (_window && !_window.hidden) {
+    return _window.lastErrorMessage;
+  } else {
+    return nil;
+  }
 }
 
 - (void)dismiss

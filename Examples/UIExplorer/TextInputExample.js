@@ -1,7 +1,5 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
- *
- * @providesModule TextInputExample
  */
 'use strict';
 
@@ -45,7 +43,7 @@ var TextEventsExample = React.createClass({
     return (
       <View>
         <TextInput
-          autoCapitalize={TextInput.autoCapitalizeMode.none}
+          autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
           onFocus={() => this.updateText('onFocus')}
@@ -123,25 +121,25 @@ exports.examples = [
         <View>
           <WithLabel label="none">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.none}
+              autoCapitalize="none"
               style={styles.default}
             />
           </WithLabel>
           <WithLabel label="sentences">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.sentences}
+              autoCapitalize="sentences"
               style={styles.default}
             />
           </WithLabel>
           <WithLabel label="words">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.words}
+              autoCapitalize="words"
               style={styles.default}
             />
           </WithLabel>
           <WithLabel label="characters">
             <TextInput
-              autoCapitalize={TextInput.autoCapitalizeMode.characters}
+              autoCapitalize="characters"
               style={styles.default}
             />
           </WithLabel>
@@ -181,6 +179,39 @@ exports.examples = [
             style={[styles.default, {color: 'green'}]}
             value="Green"
           />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Clear button mode',
+    render: function () {
+      return (
+        <View>
+          <WithLabel label="never">
+            <TextInput
+              style={styles.default}
+              clearButtonMode="never"
+            />
+          </WithLabel>
+          <WithLabel label="while editing">
+            <TextInput
+              style={styles.default}
+              clearButtonMode="while-editing"
+            />
+          </WithLabel>
+          <WithLabel label="unless editing">
+            <TextInput
+              style={styles.default}
+              clearButtonMode="unless-editing"
+            />
+          </WithLabel>
+          <WithLabel label="always">
+            <TextInput
+              style={styles.default}
+              clearButtonMode="always"
+            />
+          </WithLabel>
         </View>
       );
     }

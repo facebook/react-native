@@ -1,3 +1,5 @@
+'use strict';
+
 function ModuleDescriptor(fields) {
   if (!fields.id) {
     throw new Error('Missing required fields id');
@@ -20,6 +22,8 @@ function ModuleDescriptor(fields) {
 
   this.isPolyfill = fields.isPolyfill || false;
 
+  this.isAsset = fields.isAsset || false;
+
   this._fields = fields;
 }
 
@@ -28,7 +32,7 @@ ModuleDescriptor.prototype.toJSON = function() {
     id: this.id,
     path: this.path,
     dependencies: this.dependencies
-  }
+  };
 };
 
 module.exports = ModuleDescriptor;

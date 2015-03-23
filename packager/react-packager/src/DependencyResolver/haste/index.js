@@ -6,17 +6,17 @@ var DependencyGraph = require('./DependencyGraph');
 var ModuleDescriptor = require('../ModuleDescriptor');
 var declareOpts = require('../../lib/declareOpts');
 
-var DEFINE_MODULE_CODE =
-  '__d(' +
-    '\'_moduleName_\',' +
-    '_deps_,' +
-    'function(global, require, requireDynamic, requireLazy, module, exports) {'+
-    '  _code_' +
-    '}' +
-  ');';
+var DEFINE_MODULE_CODE = [
+  '__d(',
+  '\'_moduleName_\',',
+  '_deps_,',
+  'function(global, require, requireDynamic, requireLazy, module, exports) {',
+  '  _code_',
+  '}',
+  ');',
+].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
-
 var REL_REQUIRE_STMT = /require\(['"]([\.\/0-9A-Z_$\-]*)['"]\)/gi;
 
 var validateOpts = declareOpts({
@@ -31,10 +31,6 @@ var validateOpts = declareOpts({
     type: 'array',
     default: [],
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   nonPersistent: {
     type: 'boolean',
     default: false,
@@ -42,6 +38,10 @@ var validateOpts = declareOpts({
   moduleFormat: {
     type: 'string',
     default: 'haste',
+  },
+  assetRoots: {
+    type: 'array',
+    default: [],
   },
 });
 
@@ -54,27 +54,28 @@ function HasteDependencyResolver(options) {
 
   this._depGraph = new DependencyGraph({
     roots: opts.projectRoots,
+    assetRoots: opts.assetRoots,
     ignoreFilePath: function(filepath) {
       return filepath.indexOf('__tests__') !== -1 ||
         (opts.blacklistRE && opts.blacklistRE.test(filepath));
     },
-    fileWatcher: this._fileWatcher
+    fileWatcher: this._fileWatcher,
   });
 
-  this._polyfillModuleNames = [
-    opts.dev
-      ? path.join(__dirname, 'polyfills/prelude_dev.js')
-      : path.join(__dirname, 'polyfills/prelude.js'),
-    path.join(__dirname, 'polyfills/require.js'),
-    path.join(__dirname, 'polyfills/polyfills.js'),
-    path.join(__dirname, 'polyfills/console.js'),
-    path.join(__dirname, 'polyfills/error-guard.js'),
-  ].concat(
-    opts.polyfillModuleNames || []
-  );
+
+  this._polyfillModuleNames = opts.polyfillModuleNames || [];
 }
 
-HasteDependencyResolver.prototype.getDependencies = function(main) {
+var getDependenciesValidateOpts = declareOpts({
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+});
+
+HasteDependencyResolver.prototype.getDependencies = function(main, options) {
+  var opts = getDependenciesValidateOpts(options);
+
   var depGraph = this._depGraph;
   var self = this;
 
@@ -83,7 +84,7 @@ HasteDependencyResolver.prototype.getDependencies = function(main) {
       var dependencies = depGraph.getOrderedDependencies(main);
       var mainModuleId = dependencies[0].id;
 
-      self._prependPolyfillDependencies(dependencies);
+      self._prependPolyfillDependencies(dependencies, opts.dev);
 
       return {
         mainModuleId: mainModuleId,
@@ -93,22 +94,30 @@ HasteDependencyResolver.prototype.getDependencies = function(main) {
 };
 
 HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
-  dependencies
+  dependencies,
+  isDev
 ) {
-  var polyfillModuleNames = this._polyfillModuleNames;
-  if (polyfillModuleNames.length > 0) {
-    var polyfillModules = polyfillModuleNames.map(
-      function(polyfillModuleName, idx) {
-        return new ModuleDescriptor({
-          path: polyfillModuleName,
-          id: polyfillModuleName,
-          dependencies: polyfillModuleNames.slice(0, idx),
-          isPolyfill: true
-        });
-      }
-    );
-    dependencies.unshift.apply(dependencies, polyfillModules);
-  }
+  var polyfillModuleNames = [
+   isDev
+      ? path.join(__dirname, 'polyfills/prelude_dev.js')
+      : path.join(__dirname, 'polyfills/prelude.js'),
+    path.join(__dirname, 'polyfills/require.js'),
+    path.join(__dirname, 'polyfills/polyfills.js'),
+    path.join(__dirname, 'polyfills/console.js'),
+    path.join(__dirname, 'polyfills/error-guard.js'),
+  ].concat(this._polyfillModuleNames);
+
+  var polyfillModules = polyfillModuleNames.map(
+    function(polyfillModuleName, idx) {
+      return new ModuleDescriptor({
+        path: polyfillModuleName,
+        id: polyfillModuleName,
+        dependencies: polyfillModuleNames.slice(0, idx),
+        isPolyfill: true
+      });
+    }
+  );
+  dependencies.unshift.apply(dependencies, polyfillModules);
 };
 
 HasteDependencyResolver.prototype.wrapModule = function(module, code) {
@@ -116,7 +125,6 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
     return code;
   }
 
-  var depGraph = this._depGraph;
   var resolvedDeps = Object.create(null);
   var resolvedDepsArr = [];
 
@@ -131,9 +139,9 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
 
   var relativizedCode =
     code.replace(REL_REQUIRE_STMT, function(codeMatch, depName) {
-      var dep = resolvedDeps[depName];
-      if (dep != null) {
-        return 'require(\'' + dep + '\')';
+      var depId = resolvedDeps[depName];
+      if (depId != null) {
+        return 'require(\'' + depId + '\')';
       } else {
         return codeMatch;
       }

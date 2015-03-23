@@ -1,10 +1,6 @@
 'use strict';
 
-jest
-  .dontMock('underscore')
-  .dontMock('../base64-vlq')
-  .dontMock('source-map')
-  .dontMock('../Package');
+jest.autoMockOff();
 
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 
@@ -25,7 +21,7 @@ describe('Package', function() {
       ppackage.addModule('transformed foo;', 'source foo', 'foo path');
       ppackage.addModule('transformed bar;', 'source bar', 'bar path');
       ppackage.finalize({});
-      expect(ppackage.getSource()).toBe([
+      expect(ppackage.getSource({inlineSourceMap: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         'RAW_SOURCE_MAP = "test-source-map";',
@@ -38,7 +34,7 @@ describe('Package', function() {
       ppackage.addModule('transformed bar;', 'source bar', 'bar path');
       ppackage.setMainModuleId('foo');
       ppackage.finalize({runMainModule: true});
-      expect(ppackage.getSource()).toBe([
+      expect(ppackage.getSource({inlineSourceMap: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         ';require("foo");',
@@ -46,17 +42,32 @@ describe('Package', function() {
         '\/\/@ sourceMappingURL=test_url',
       ].join('\n'));
     });
+
+    it('should get minified source', function() {
+      var minified = {
+        code: 'minified',
+        map: 'map',
+      };
+
+      require('uglify-js').minify = function() {
+        return minified;
+      };
+
+      ppackage.addModule('transformed foo;', 'source foo', 'foo path');
+      ppackage.finalize();
+      expect(ppackage.getMinifiedSourceAndMap()).toBe(minified);
+    });
   });
 
   describe('sourcemap package', function() {
     it('should create sourcemap', function() {
-      var ppackage = new Package('test_url');
-      ppackage.addModule('transformed foo;\n', 'source foo', 'foo path');
-      ppackage.addModule('transformed bar;\n', 'source bar', 'bar path');
-      ppackage.setMainModuleId('foo');
-      ppackage.finalize({runMainModule: true});
-      var s = ppackage.getSourceMap();
-      expect(s).toEqual(genSourceMap(ppackage._modules));
+      var p = new Package('test_url');
+      p.addModule('transformed foo;\n', 'source foo', 'foo path');
+      p.addModule('transformed bar;\n', 'source bar', 'bar path');
+      p.setMainModuleId('foo');
+      p.finalize({runMainModule: true});
+      var s = p.getSourceMap();
+      expect(s).toEqual(genSourceMap(p._modules));
     });
   });
 });
@@ -92,4 +103,4 @@ describe('Package', function() {
      );
    }
    return sourceMapGen.toJSON();
-};
+ }

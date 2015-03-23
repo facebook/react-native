@@ -17,6 +17,4 @@ var EdgeInsetsPropType = createStrictShapeTypeChecker({
   right: PropTypes.number,
 });
 
-EdgeInsetsPropType.differ = insetsDiffer;
-
 module.exports = EdgeInsetsPropType;

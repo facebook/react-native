@@ -3,9 +3,8 @@
 jest
   .dontMock('underscore')
   .dontMock('path')
-  .dontMock('q')
   .dontMock('absolute-path')
-  .dontMock('../../fb-path-utils')
+  .dontMock('crypto')
   .dontMock('../Cache');
 
 var q = require('q');
@@ -21,7 +20,7 @@ describe('JSTransformer Cache', function() {
     Cache = require('../Cache');
   });
 
-  describe('getting/settig', function() {
+  describe('getting/setting', function() {
     it('calls loader callback for uncached file', function() {
       var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
@@ -195,7 +194,7 @@ describe('JSTransformer Cache', function() {
         return q('baz value');
       });
 
-      jest.runAllTimers();
+      jest.runAllTicks();
       expect(fs.writeFile).toBeCalled();
     });
   });

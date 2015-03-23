@@ -5,11 +5,8 @@ jest
   .dontMock('q')
   .dontMock('path')
   .dontMock('absolute-path')
-  .dontMock('../../../../fb-path-utils')
   .dontMock('../docblock')
   .setMock('../../../ModuleDescriptor', function(data) {return data;});
-
-var q = require('q');
 
 describe('DependencyGraph', function() {
   var DependencyGraph;
@@ -46,12 +43,49 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
             {id: 'index', path: '/root/index.js', dependencies: ['a']},
             {id: 'a', path: '/root/a.js', dependencies: []},
+          ]);
+      });
+    });
+
+    pit('should get dependencies', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("image!a")'
+          ].join('\n'),
+          'imgs': {
+            'a.png': ''
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetRoots: ['/root/imgs']
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: 'index', path: '/root/index.js', dependencies: ['image!a']},
+            {  id: 'image!a',
+               path: '/root/imgs/a.png',
+               dependencies: [],
+               isAsset: true
+            },
           ]);
       });
     });
@@ -75,7 +109,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -105,7 +142,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -135,7 +175,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -175,7 +218,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/somedir/somefile.js'))
           .toEqual([
@@ -216,7 +262,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -245,7 +294,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -280,7 +332,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -320,7 +375,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -360,7 +418,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
@@ -386,7 +447,6 @@ describe('DependencyGraph', function() {
   });
 
   describe('file watch updating', function() {
-    var fileWatcher;
     var triggerFileChange;
 
     beforeEach(function() {
@@ -428,7 +488,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
@@ -476,7 +539,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
@@ -524,7 +590,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         delete filesystem.root.foo;
         triggerFileChange('delete', 'foo.js', root);
@@ -571,7 +640,10 @@ describe('DependencyGraph', function() {
         }
       });
 
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         filesystem.root['bar.js'] = [
           '/**',
@@ -679,7 +751,7 @@ describe('DependencyGraph', function() {
 
     pit('should ignore directory updates', function() {
       var root = '/root';
-      var filesystem = fs.__setMockFilesystem({
+      fs.__setMockFilesystem({
         'root': {
           'index.js': [
             '/**',
@@ -703,7 +775,10 @@ describe('DependencyGraph', function() {
           }
         }
       });
-      var dgraph = new DependencyGraph({roots: [root], fileWatcher: fileWatcher});
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
       return dgraph.load().then(function() {
         triggerFileChange('change', 'aPackage', '/root', {
           isDirectory: function(){ return true; }

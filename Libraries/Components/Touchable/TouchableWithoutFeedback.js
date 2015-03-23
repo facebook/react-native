@@ -7,9 +7,7 @@
 
 var React = require('React');
 var Touchable = require('Touchable');
-var View = require('View');
 
-var copyProperties = require('copyProperties');
 var onlyChild = require('onlyChild');
 
 /**
@@ -30,6 +28,10 @@ var TouchableWithoutFeedback = React.createClass({
   mixins: [Touchable.Mixin],
 
   propTypes: {
+    /**
+     * Called when the touch is released, but not if cancelled (e.g. by a scroll
+     * that steals the responder lock).
+     */
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
@@ -71,7 +73,7 @@ var TouchableWithoutFeedback = React.createClass({
   render: function() {
     // Note(vjeux): use cloneWithProps once React has been upgraded
     var child = onlyChild(this.props.children);
-    copyProperties(child.props, {
+    return React.cloneElement(child, {
       accessible: true,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
@@ -81,7 +83,6 @@ var TouchableWithoutFeedback = React.createClass({
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate
     });
-    return child;
   }
 });
 

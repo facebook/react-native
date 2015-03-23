@@ -31,8 +31,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  self = [super initWithFrame:frame];
-  if (self) {
+  if ((self = [super initWithFrame:frame])) {
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];
   }
   return self;
@@ -257,22 +256,17 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 @synthesize nativeMainScrollDelegate = _nativeMainScrollDelegate;
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
-    
+
     _eventDispatcher = eventDispatcher;
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    
+
     _throttleScrollCallbackMS = 0;
     _lastScrollDispatchTime = CACurrentMediaTime();
     _cachedChildFrames = [[NSMutableArray alloc] init];
@@ -343,14 +337,20 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_scrollView
                       updateOffset:YES];
+
+  [self updateClippedSubviews];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
+  CGPoint contentOffset = _scrollView.contentOffset;
+
   _contentInset = contentInset;
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_scrollView
                       updateOffset:NO];
+
+  _scrollView.contentOffset = contentOffset;
 }
 
 - (void)scrollToOffset:(CGPoint)offset
@@ -393,9 +393,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+  [self updateClippedSubviews];
+
   NSTimeInterval now = CACurrentMediaTime();
   NSTimeInterval throttleScrollCallbackSeconds = _throttleScrollCallbackMS / 1000.0;
-  
+
   /**
    * TODO: this logic looks wrong, and it may be because it is. Currently, if _throttleScrollCallbackMS
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
@@ -404,11 +406,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
    */
   if (_allowNextScrollNoMatterWhat ||
       (_throttleScrollCallbackMS != 0 && throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
-    
+
     // Calculate changed frames
     NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
     [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
-      
+
       // Check if new or changed
       CGRect newFrame = subview.frame;
       BOOL frameChanged = NO;
@@ -419,7 +421,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
         frameChanged = YES;
         _cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
       }
-      
+
       // Create JS frame object
       if (frameChanged) {
         [updatedChildFrames addObject: @{
@@ -430,9 +432,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
           @"height": @(newFrame.size.height),
         }];
       }
-      
+
     }];
-    
+
     // If there are new frames, add them to event data
     NSDictionary *userData = nil;
     if (updatedChildFrames.count > 0) {
@@ -572,26 +574,51 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   }
 }
 
+// Note: setting several properties of UIScrollView has the effect of
+// resetting its contentOffset to {0, 0}. To prevent this, we generate
+// setters here that will record the contentOffset beforehand, and
+// restore it after the property has been set.
+
+#define RCT_SET_AND_PRESERVE_OFFSET(setter, type)    \
+- (void)setter:(type)value                           \
+{                                                    \
+  CGPoint contentOffset = _scrollView.contentOffset; \
+  [_scrollView setter:value];                        \
+  _scrollView.contentOffset = contentOffset;         \
+}
+
+RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceHorizontal, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceVertical, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setBounces, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setBouncesZoom, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setCanCancelContentTouches, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setDecelerationRate, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setDirectionalLockEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, UIScrollViewKeyboardDismissMode)
+RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, CGFloat);
+RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
+
+#pragma mark - Forward methods and properties to underlying UIScrollView
+
 - (BOOL)respondsToSelector:(SEL)aSelector
 {
-  if ([super respondsToSelector:aSelector]) {
-    return YES;
-  }
-  if ([NSStringFromSelector(aSelector) hasPrefix:@"set"]) {
-    return [_scrollView respondsToSelector:aSelector];
-  }
-  return NO;
+  return [super respondsToSelector:aSelector] || [_scrollView respondsToSelector:aSelector];
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
-  // Pipe unrecognized properties to scrollview
   [_scrollView setValue:value forKey:key];
 }
 
 - (id)valueForUndefinedKey:(NSString *)key
 {
-  // Pipe unrecognized properties from scrollview
   return [_scrollView valueForKey:key];
 }
 

@@ -4,96 +4,12 @@
 
 #import <objc/message.h>
 
-#import <ImageIO/ImageIO.h>
-#import <MobileCoreServices/MobileCoreServices.h>
-
 #import "RCTLog.h"
 
 CGFloat const RCTDefaultFontSize = 14;
 NSString *const RCTDefaultFontName = @"HelveticaNeue";
 NSString *const RCTDefaultFontWeight = @"normal";
 NSString *const RCTBoldFontWeight = @"bold";
-
-#define RCT_CONVERTER_CUSTOM(type, name, code) \
-+ (type)name:(id)json                          \
-{                                              \
-  @try {                                       \
-    return code;                               \
-  }                                            \
-  @catch (__unused NSException *e) {           \
-    RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
-    json, [json class], #type); \
-    json = nil; \
-    return code; \
-  } \
-}
-
-#define RCT_CONVERTER(type, name, getter) \
-RCT_CONVERTER_CUSTOM(type, name, [json getter])
-
-#define RCT_ENUM_CONVERTER(type, values, default, getter) \
-+ (type)type:(id)json                                     \
-{                                                         \
-  static NSDictionary *mapping;                           \
-  static dispatch_once_t onceToken;                       \
-  dispatch_once(&onceToken, ^{                            \
-    mapping = values;                                     \
-  });                                                     \
-  if (!json) {                                            \
-    return default;                                       \
-  }                                                       \
-  if ([json isKindOfClass:[NSNumber class]]) {            \
-    if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
-      return [json getter];                               \
-    }                                                     \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
-    return default;                                       \
-  }                                                       \
-  if (![json isKindOfClass:[NSString class]]) {           \
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", #type, [json class], json); \
-  }                                                       \
-  id value = mapping[json];                               \
-  if(!value && [json description].length > 0) {           \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
-  }                                                       \
-  return value ? [value getter] : default;                \
-}
-
-#define RCT_STRUCT_CONVERTER(type, values)               \
-+ (type)type:(id)json                                    \
-{                                                        \
-  @try {                                                 \
-    static NSArray *fields;                              \
-    static NSUInteger count;                             \
-    static dispatch_once_t onceToken;                    \
-    dispatch_once(&onceToken, ^{                         \
-      fields = values;                                   \
-      count = [fields count];                            \
-    });                                                  \
-    type result;                                         \
-    if ([json isKindOfClass:[NSArray class]]) {          \
-      if ([json count] != count) {                       \
-        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
-      } else {                                           \
-        for (NSUInteger i = 0; i < count; i++) {         \
-          ((CGFloat *)&result)[i] = [json[i] doubleValue]; \
-        }                                                \
-      }                                                  \
-    } else if ([json isKindOfClass:[NSDictionary class]]) { \
-      for (NSUInteger i = 0; i < count; i++) {           \
-        ((CGFloat *)&result)[i] = [json[fields[i]] doubleValue]; \
-      }                                                  \
-    } else if (json) {                                   \
-      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
-    }                                                    \
-    return result;                                       \
-  }                                                      \
-  @catch (__unused NSException *e) {                     \
-    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
-    type result; \
-    return result; \
-  } \
-}
 
 @implementation RCTConvert
 
@@ -102,10 +18,13 @@ RCT_CONVERTER(double, double, doubleValue)
 RCT_CONVERTER(float, float, floatValue)
 RCT_CONVERTER(int, int, intValue)
 
-RCT_CONVERTER(NSString *, NSString, description)
-RCT_CONVERTER_CUSTOM(NSNumber *, NSNumber, @([json doubleValue]))
 RCT_CONVERTER(NSInteger, NSInteger, integerValue)
 RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
+
+RCT_CONVERTER_CUSTOM(NSArray *, NSArray, [NSArray arrayWithArray:json])
+RCT_CONVERTER_CUSTOM(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
+RCT_CONVERTER(NSString *, NSString, description)
+RCT_CONVERTER_CUSTOM(NSNumber *, NSNumber, @([json doubleValue]))
 
 + (NSURL *)NSURL:(id)json
 {
@@ -131,21 +50,19 @@ RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
   return [NSURLRequest requestWithURL:[self NSURL:json]];
 }
 
-RCT_CONVERTER_CUSTOM(NSDate *, NSDate, [NSDate dateWithTimeIntervalSince1970:[json doubleValue]])
-RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[json doubleValue]])
-RCT_CONVERTER(NSTimeInterval, NSTimeInterval, doubleValue)
+// JS Standard for time is milliseconds
+RCT_CONVERTER_CUSTOM(NSDate *, NSDate, [NSDate dateWithTimeIntervalSince1970:[json doubleValue] / 1000.0])
+RCT_CONVERTER_CUSTOM(NSTimeInterval, NSTimeInterval, [json doubleValue] / 1000.0)
 
-/**
- * NOTE: We don't deliberately don't support NSTextAlignmentJustified in the
- * X-platform RCTText implementation because it isn't available on Android.
- * We may wish to support this for iOS-specific controls such as UILabel.
- */
+// JS standard for time zones is minutes.
+RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[json doubleValue] * 60.0])
+
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
   @"left": @(NSTextAlignmentLeft),
   @"center": @(NSTextAlignmentCenter),
   @"right": @(NSTextAlignmentRight),
-  /* @"justify": @(NSTextAlignmentJustify), */
+  @"justify": @(NSTextAlignmentJustified),
 }), NSTextAlignmentNatural, integerValue)
 
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{
@@ -158,7 +75,7 @@ RCT_ENUM_CONVERTER(UITextAutocapitalizationType, (@{
   @"none": @(UITextAutocapitalizationTypeNone),
   @"words": @(UITextAutocapitalizationTypeWords),
   @"sentences": @(UITextAutocapitalizationTypeSentences),
-  @"all": @(UITextAutocapitalizationTypeAllCharacters)
+  @"characters": @(UITextAutocapitalizationTypeAllCharacters)
 }), UITextAutocapitalizationTypeSentences, integerValue)
 
 RCT_ENUM_CONVERTER(UIKeyboardType, (@{
@@ -167,19 +84,31 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
 }), UIKeyboardTypeDefault, integerValue)
 
 RCT_CONVERTER(CGFloat, CGFloat, doubleValue)
-RCT_STRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
-RCT_STRUCT_CONVERTER(CGSize, (@[@"w", @"h"]))
-RCT_STRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"w", @"h"]))
-RCT_STRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
+RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"w", @"h"]))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"w", @"h"]))
+RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
 
-RCT_STRUCT_CONVERTER(CATransform3D, (@[
+RCT_ENUM_CONVERTER(CGLineJoin, (@{
+  @"miter": @(kCGLineJoinMiter),
+  @"round": @(kCGLineJoinRound),
+  @"bevel": @(kCGLineJoinBevel),
+}), kCGLineJoinMiter, intValue)
+
+RCT_ENUM_CONVERTER(CGLineCap, (@{
+  @"butt": @(kCGLineCapButt),
+  @"round": @(kCGLineCapRound),
+  @"square": @(kCGLineCapSquare),
+}), kCGLineCapButt, intValue)
+
+RCT_CGSTRUCT_CONVERTER(CATransform3D, (@[
   @"m11", @"m12", @"m13", @"m14",
   @"m21", @"m22", @"m23", @"m24",
   @"m31", @"m32", @"m33", @"m34",
   @"m41", @"m42", @"m43", @"m44"
 ]))
 
-RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]))
+RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]))
 
 + (UIColor *)UIColor:(id)json
 {
@@ -428,85 +357,11 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   return [self UIColor:json].CGColor;
 }
 
-+ (CAKeyframeAnimation *)GIF:(id)json
-{
-  CGImageSourceRef imageSource = NULL;
-  if ([json isKindOfClass:[NSString class]]) {
-    NSString *path = json;
-    if (path.length == 0) {
-      return nil;
-    }
-
-    NSURL *fileURL = [path isAbsolutePath] ? [NSURL fileURLWithPath:path] : [[NSBundle mainBundle] URLForResource:path withExtension:nil];
-    imageSource = CGImageSourceCreateWithURL((CFURLRef)fileURL, NULL);
-  } else if ([json isKindOfClass:[NSData class]]) {
-    NSData *data = json;
-    if (data.length == 0) {
-      return nil;
-    }
-
-    imageSource = CGImageSourceCreateWithData((CFDataRef)data, NULL);
-  }
-
-  if (!UTTypeConformsTo(CGImageSourceGetType(imageSource), kUTTypeGIF)) {
-    CFRelease(imageSource);
-    return nil;
-  }
-
-  NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
-  NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
-
-  size_t imageCount = CGImageSourceGetCount(imageSource);
-  NSTimeInterval duration = 0;
-  NSMutableArray *delays = [NSMutableArray arrayWithCapacity:imageCount];
-  NSMutableArray *images = [NSMutableArray arrayWithCapacity:imageCount];
-  for (size_t i = 0; i < imageCount; i++) {
-    CGImageRef image = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
-    NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-    NSDictionary *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
-
-    const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
-    NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];
-    if (delayTime == nil) {
-      if (i == 0) {
-        delayTime = @(kDelayTimeIntervalDefault);
-      } else {
-        delayTime = delays[i - 1];
-      }
-    }
-
-    const NSTimeInterval kDelayTimeIntervalMinimum = 0.02;
-    if (delayTime.floatValue < (float)kDelayTimeIntervalMinimum - FLT_EPSILON) {
-      delayTime = @(kDelayTimeIntervalDefault);
-    }
-
-    duration += delayTime.doubleValue;
-    delays[i] = delayTime;
-    images[i] = (__bridge_transfer id)image;
-  }
-
-  CFRelease(imageSource);
-
-  NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
-  NSTimeInterval runningDuration = 0;
-  for (NSNumber *delayNumber in delays) {
-    [keyTimes addObject:@(runningDuration / duration)];
-    runningDuration += delayNumber.doubleValue;
-  }
-
-  [keyTimes addObject:@1.0];
-
-  CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
-  animation.calculationMode = kCAAnimationDiscrete;
-  animation.repeatCount = loopCount == 0 ? HUGE_VALF : loopCount;
-  animation.keyTimes = keyTimes;
-  animation.values = images;
-  animation.duration = duration;
-  return animation;
-}
-
 + (UIImage *)UIImage:(id)json
 {
+  // TODO: we might as well cache the result of these checks (and possibly the
+  // image itself) so as to reduce overhead on subsequent checks of the same input
+
   if (![json isKindOfClass:[NSString class]]) {
     RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json class], json);
     return nil;
@@ -526,9 +381,8 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
       image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
     }
   }
-  if (!image) {
-    RCTLogWarn(@"No image was found at path %@", json);
-  }
+  // NOTE: we don't warn about nil images because there are legitimate
+  // case where we find out if a string is an image by using this method
   return image;
 }
 
@@ -564,7 +418,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   }
 
   // Get font family
-  NSString *familyName = [RCTConvert NSString:family];
+  NSString *familyName = [self NSString:family];
   if (familyName) {
       if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
       font = [UIFont fontWithName:familyName size:fontDescriptor.pointSize];
@@ -584,7 +438,7 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
   }
 
   // Get font weight
-  NSString *fontWeight = [RCTConvert NSString:weight];
+  NSString *fontWeight = [self NSString:weight];
   if (fontWeight) {
 
     static NSSet *values;
@@ -610,6 +464,20 @@ RCT_STRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]
 
   // Create font
   return [UIFont fontWithDescriptor:fontDescriptor size:fontDescriptor.pointSize];
+}
+
+RCT_ARRAY_CONVERTER(NSString)
+RCT_ARRAY_CONVERTER(NSNumber)
+RCT_ARRAY_CONVERTER(UIColor)
+
+// Can't use RCT_ARRAY_CONVERTER due to bridged cast
++ (NSArray *)CGColorArray:(id)json
+{
+  NSMutableArray *colors = [[NSMutableArray alloc] init];
+  for (id value in [self NSArray:json]) {
+    [colors addObject:(__bridge id)[self CGColor:value]];
+  }
+  return colors;
 }
 
 typedef BOOL css_overflow;
@@ -652,8 +520,9 @@ RCT_ENUM_CONVERTER(css_wrap_type_t, (@{
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"none": @(RCTPointerEventsNone),
-  @"boxonly": @(RCTPointerEventsBoxOnly),
-  @"boxnone": @(RCTPointerEventsBoxNone)
+  @"box-only": @(RCTPointerEventsBoxOnly),
+  @"box-none": @(RCTPointerEventsBoxNone),
+  @"auto": @(RCTPointerEventsUnspecified)
 }), RCTPointerEventsUnspecified, integerValue)
 
 RCT_ENUM_CONVERTER(RCTAnimationType, (@{
@@ -668,19 +537,35 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
 
 static NSString *RCTGuessTypeEncoding(id target, NSString *key, id value, NSString *encoding)
 {
+  /**
+   * NOTE: the property names below may seem weird, but it's
+   * because they are tested as case-sensitive suffixes, so
+   * "ffset" will match any of the following
+   *
+   * - offset
+   * - contentOffset
+   */
+
   // TODO (#5906496): handle more cases
-  if ([key rangeOfString:@"color" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+  if ([key hasSuffix:@"olor"]) {
     if ([target isKindOfClass:[CALayer class]]) {
       return @(@encode(CGColorRef));
     } else {
       return @"@\"UIColor\"";
     }
+  } else if ([key hasSuffix:@"Inset"] || [key hasSuffix:@"Insets"]) {
+    return @(@encode(UIEdgeInsets));
+  } else if ([key hasSuffix:@"rame"] || [key hasSuffix:@"ounds"]) {
+    return @(@encode(CGRect));
+  } else if ([key hasSuffix:@"ffset"] || [key hasSuffix:@"osition"]) {
+    return @(@encode(CGPoint));
+  } else if ([key hasSuffix:@"ize"]) {
+    return @(@encode(CGSize));
   }
-
   return nil;
 }
 
-static NSDictionary *RCTConvertValue(id value, NSString *encoding)
+static id RCTConvertValueWithEncoding(id value, NSString *encoding)
 {
   static NSDictionary *converters = nil;
   static dispatch_once_t onceToken;
@@ -762,18 +647,8 @@ static NSDictionary *RCTConvertValue(id value, NSString *encoding)
   return converter ? converter(value) : value;
 }
 
-BOOL RCTSetProperty(id target, NSString *keypath, id value)
+static NSString *RCTPropertyEncoding(id target, NSString *key, id value)
 {
-  // Split keypath
-  NSArray *parts = [keypath componentsSeparatedByString:@"."];
-  NSString *key = [parts lastObject];
-  for (NSUInteger i = 0; i < parts.count - 1; i++) {
-    target = [target valueForKey:parts[i]];
-    if (!target) {
-      return NO;
-    }
-  }
-
   // Check target class for property definition
   NSString *encoding = nil;
   objc_property_t property = class_getProperty([target class], [key UTF8String]);
@@ -792,7 +667,7 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
                                        [key substringFromIndex:1]]);
 
     if (![target respondsToSelector:setter]) {
-      return NO;
+      return nil;
     }
 
     // Get type of first method argument
@@ -802,17 +677,25 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
       encoding = @(typeEncoding);
       free(typeEncoding);
     }
+
+    if (encoding.length == 0 || [encoding isEqualToString:@(@encode(id))]) {
+      // Not enough info about the type encoding to be useful, so
+      // try to guess the type from the value and property name
+      encoding = RCTGuessTypeEncoding(target, key, value, encoding);
+    }
+
   }
 
-  if (encoding.length == 0 || [encoding isEqualToString:@(@encode(id))]) {
-    // Not enough info about the type encoding to be useful, so
-    // try to guess the type from the value and property name
-    encoding = RCTGuessTypeEncoding(target, key, value, encoding);
-  }
+  // id encoding means unknown, as opposed to nil which means no setter exists.
+  return encoding ?: @(@encode(id));
+}
 
+static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json, NSString *encoding)
+{
   // Special case for numeric encodings, which may be enums
-  if ([value isKindOfClass:[NSString class]] &&
-      [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length) {
+  if ([json isKindOfClass:[NSString class]] &&
+      ([encoding isEqualToString:@(@encode(id))] ||
+       [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length)) {
 
     /**
      * NOTE: the property names below may seem weird, but it's
@@ -839,6 +722,12 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
         @"extAlignment": ^(id val) {
           return [RCTConvert NSTextAlignment:val];
         },
+        @"Cap": ^(id val) {
+          return [RCTConvert CGLineCap:val];
+        },
+        @"Join": ^(id val) {
+          return [RCTConvert CGLineJoin:val];
+        },
         @"ointerEvents": ^(id val) {
           return [RCTConvert RCTPointerEvents:val];
         },
@@ -847,11 +736,41 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
     for (NSString *subkey in converters) {
       if ([key hasSuffix:subkey]) {
         NSInteger (^converter)(NSString *) = converters[subkey];
-        value = @(converter(value));
+        json = @(converter(json));
         break;
       }
     }
   }
+
+  return RCTConvertValueWithEncoding(json, encoding);
+}
+
+id RCTConvertValue(id target, NSString *key, id json)
+{
+  NSString *encoding = RCTPropertyEncoding(target, key, json);
+  return RCTConvertValueWithExplicitEncoding(target, key, json, encoding);
+}
+
+BOOL RCTSetProperty(id target, NSString *keypath, id value)
+{
+  // Split keypath
+  NSArray *parts = [keypath componentsSeparatedByString:@"."];
+  NSString *key = [parts lastObject];
+  for (NSUInteger i = 0; i < parts.count - 1; i++) {
+    target = [target valueForKey:parts[i]];
+    if (!target) {
+      return NO;
+    }
+  }
+
+  // Get encoding
+  NSString *encoding = RCTPropertyEncoding(target, key, value);
+  if (!encoding) {
+    return NO;
+  }
+
+  // Convert value
+  value = RCTConvertValueWithExplicitEncoding(target, keypath, value, encoding);
 
   // Another nasty special case
   if ([target isKindOfClass:[UITextField class]]) {
@@ -870,15 +789,15 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
     });
 
     void (^block)(UITextField *f, NSInteger v) = specialCases[key];
-    if (block)
-    {
+    if (block) {
       block(target, [value integerValue]);
       return YES;
     }
   }
 
   // Set converted value
-  [target setValue:RCTConvertValue(value, encoding) forKey:key];
+  [target setValue:value forKey:key];
+
   return YES;
 }
 

@@ -28,12 +28,22 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  assetRoots: {
+    type: 'array',
+    default: [],
+  },
+  assetExts: {
+    type: 'array',
+    default: ['png'],
+  }
 });
 
 function DependecyGraph(options) {
   var opts = validateOpts(options);
 
   this._roots = opts.roots;
+  this._assetRoots = opts.assetRoots;
+  this._assetExts = opts.assetExts;
   this._ignoreFilePath = opts.ignoreFilePath;
   this._fileWatcher = options.fileWatcher;
 
@@ -50,7 +60,16 @@ function DependecyGraph(options) {
 }
 
 DependecyGraph.prototype.load = function() {
-  return this._loading || (this._loading = this._search());
+  if (this._loading != null) {
+    return this._loading;
+  }
+
+  this._loading = q.all([
+    this._search(),
+    this._buildAssetMap(),
+  ]);
+
+  return this._loading;
 };
 
 /**
@@ -115,6 +134,18 @@ DependecyGraph.prototype.resolveDependency = function(
   fromModule,
   depModuleId
 ) {
+  if (this._assetMap != null) {
+    // Process asset requires.
+    var assetMatch = depModuleId.match(/^image!(.+)/);
+    if (assetMatch && assetMatch[1]) {
+      if (!this._assetMap[assetMatch[1]]) {
+        debug('WARINING: Cannot find asset:', assetMatch[1]);
+        return null;
+      }
+      return this._assetMap[assetMatch[1]];
+    }
+  }
+
   var packageJson, modulePath, dep;
 
   // Package relative modules starts with '.' or '..'.
@@ -139,7 +170,7 @@ DependecyGraph.prototype.resolveDependency = function(
         depModuleId,
         fromModule.id
       );
-      return;
+      return null;
     }
 
     var main = packageJson.main || 'index';
@@ -147,7 +178,7 @@ DependecyGraph.prototype.resolveDependency = function(
     dep = this._graph[modulePath];
     if (dep == null) {
       throw new Error(
-        'Cannot find package main file for pacakge: ' + packageJson._root
+        'Cannot find package main file for package: ' + packageJson._root
       );
     }
     return dep;
@@ -214,32 +245,13 @@ DependecyGraph.prototype._search = function() {
   // 2. Filter the files and queue up the directories.
   // 3. Process any package.json in the files
   // 4. recur.
-  return readDir(dir)
-    .then(function(files){
-      return q.all(files.map(function(filePath) {
-        return realpath(path.join(dir, filePath)).catch(handleBrokenLink);
-      }));
-    })
-    .then(function(filePaths) {
-      filePaths = filePaths.filter(function(filePath) {
-        if (filePath == null) {
-          return false
-        }
-
-        return !self._ignoreFilePath(filePath);
-      });
-
-      var statsP = filePaths.map(function(filePath) {
-        return lstat(filePath).catch(handleBrokenLink);
-      });
-
-      return [
-        filePaths,
-        q.all(statsP)
-      ];
-    })
+  return readAndStatDir(dir)
     .spread(function(files, stats) {
       var modulePaths = files.filter(function(filePath, i) {
+        if (self._ignoreFilePath(filePath)) {
+          return false;
+        }
+
         if (stats[i].isDirectory()) {
           self._queue.push(filePath);
           return false;
@@ -454,7 +466,8 @@ DependecyGraph.prototype._getAbsolutePath = function(filePath) {
     return filePath;
   }
 
-  for (var i = 0, root; root = this._roots[i]; i++) {
+  for (var i = 0; i < this._roots.length; i++) {
+    var root = this._roots[i];
     var absPath = path.join(root, filePath);
     if (this._graph[absPath]) {
       return absPath;
@@ -462,6 +475,19 @@ DependecyGraph.prototype._getAbsolutePath = function(filePath) {
   }
 
   return null;
+};
+
+DependecyGraph.prototype._buildAssetMap = function() {
+  if (this._assetRoots == null || this._assetRoots.length === 0) {
+    return q();
+  }
+
+  var self = this;
+  return buildAssetMap(this._assetRoots, this._assetExts)
+    .then(function(map) {
+      self._assetMap = map;
+      return map;
+    });
 };
 
 /**
@@ -508,6 +534,73 @@ function withExtJs(file) {
 function handleBrokenLink(e) {
   debug('WARNING: error stating, possibly broken symlink', e.message);
   return q();
+}
+
+function readAndStatDir(dir) {
+  return readDir(dir)
+    .then(function(files){
+      return q.all(files.map(function(filePath) {
+        return realpath(path.join(dir, filePath)).catch(handleBrokenLink);
+      }));
+    }).then(function(files) {
+      files = files.filter(function(f) {
+        return !!f;
+      });
+
+      var stats = files.map(function(filePath) {
+        return lstat(filePath).catch(handleBrokenLink);
+      });
+
+      return [
+        files,
+        q.all(stats),
+      ];
+    });
+}
+
+/**
+ * Given a list of roots and list of extensions find all the files in
+ * the directory with that extension and build a map of those assets.
+ */
+function buildAssetMap(roots, exts) {
+  var queue = roots.slice(0);
+  var map = Object.create(null);
+
+  function search() {
+    var root = queue.shift();
+
+    if (root == null) {
+      return q(map);
+    }
+
+    return readAndStatDir(root).spread(function(files, stats) {
+      files.forEach(function(file, i) {
+        if (stats[i].isDirectory()) {
+          queue.push(file);
+        } else {
+          var ext = path.extname(file).replace(/^\./, '');
+          if (exts.indexOf(ext) !== -1) {
+            var assetName = path.basename(file, '.' + ext)
+                  .replace(/@[\d\.]+x/, '');
+            if (map[assetName] != null) {
+              debug('Conflcting assets', assetName);
+            }
+
+            map[assetName] = new ModuleDescriptor({
+              id: 'image!' + assetName,
+              path: path.resolve(file),
+              isAsset: true,
+              dependencies: [],
+            });
+          }
+        }
+      });
+
+      return search();
+    });
+  }
+
+  return search();
 }
 
 module.exports = DependecyGraph;

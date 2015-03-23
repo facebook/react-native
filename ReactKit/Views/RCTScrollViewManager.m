@@ -2,14 +2,17 @@
 
 #import "RCTScrollViewManager.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTScrollView.h"
+#import "RCTSparseArray.h"
+#import "RCTUIManager.h"
 
 @implementation RCTScrollViewManager
 
 - (UIView *)view
 {
-  return [[RCTScrollView alloc] initWithEventDispatcher:self.eventDispatcher];
+  return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(alwaysBounceHorizontal)
@@ -34,22 +37,42 @@ RCT_EXPORT_VIEW_PROPERTY(throttleScrollCallbackMS);
 RCT_EXPORT_VIEW_PROPERTY(zoomScale);
 RCT_EXPORT_VIEW_PROPERTY(contentInset);
 RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets);
-RCT_EXPORT_VIEW_PROPERTY(contentOffset);
+RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset);
 
-+ (NSDictionary *)constantsToExport
+- (NSDictionary *)constantsToExport
 {
-  return
-  @{
+  return @{
     @"DecelerationRate": @{
-        @"Normal": @(UIScrollViewDecelerationRateNormal),
-        @"Fast": @(UIScrollViewDecelerationRateFast),
+      @"Normal": @(UIScrollViewDecelerationRateNormal),
+      @"Fast": @(UIScrollViewDecelerationRateFast),
     },
     @"KeyboardDismissMode": @{
-        @"None": @(UIScrollViewKeyboardDismissModeNone),
-        @"Interactive": @(UIScrollViewKeyboardDismissModeInteractive),
-        @"OnDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
+      @"None": @(UIScrollViewKeyboardDismissModeNone),
+      @"Interactive": @(UIScrollViewKeyboardDismissModeInteractive),
+      @"OnDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
     },
   };
+}
+
+- (void)getContentSize:(NSNumber *)reactTag
+              callback:(RCTResponseSenderBlock)callback
+{
+  RCT_EXPORT();
+
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+
+    UIView *view = viewRegistry[reactTag];
+    if (!view) {
+      RCTLogError(@"Cannot find view with tag %@", reactTag);
+      return;
+    }
+
+    CGSize size = ((RCTScrollView *)view).scrollView.contentSize;
+    callback(@[@{
+      @"width" : @(size.width),
+      @"height" : @(size.height)
+    }]);
+  }];
 }
 
 @end

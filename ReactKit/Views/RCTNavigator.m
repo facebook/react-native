@@ -41,7 +41,6 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-
 /**
  * In general, `RCTNavigator` examines `_currentViews` (which are React child
  * views), and compares them to `_navigationController.viewControllers` (which
@@ -126,21 +125,6 @@ NSInteger kNeverProgressed = -10000;
  */
 @implementation RCTNavigationController
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
-- (instancetype)initWithNavigationBarClass:(Class)navigationBarClass toolbarClass:(Class)toolbarClass
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 /**
  * @param callback Callback that is invoked when a "scroll" interaction begins
  * so that `RCTNavigator` can notify `JavaScript`.
@@ -152,7 +136,6 @@ NSInteger kNeverProgressed = -10000;
   }
   return self;
 }
-
 
 /**
  * Invoked when either a navigation item has been popped off, or when a
@@ -199,7 +182,6 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -219,7 +201,7 @@ NSInteger kNeverProgressed = -10000;
  *
  * - The run loop retains the displayLink.
  * - `displayLink` retains its target.
- * - We use `reactWillDestroy` to remove the `RCTNavigator`'s reference to the
+ * - We use `invalidate` to remove the `RCTNavigator`'s reference to the
  * `displayLink` and remove the `displayLink` from the run loop.
  *
  *
@@ -227,7 +209,7 @@ NSInteger kNeverProgressed = -10000;
  * --------------
  *
  * - Even though we could implement the `displayLink` cleanup without the
- * `reactWillDestroy` hook by adding and removing it from the run loop at the
+ * `invalidate` hook by adding and removing it from the run loop at the
  * right times (begin/end animation), we need to account for the possibility
  * that the view itself is destroyed mid-interaction. So we always keep it
  * added to the run loop, but start/stop it with interactions/animations. We
@@ -275,11 +257,6 @@ NSInteger kNeverProgressed = -10000;
 
 @implementation RCTNavigator
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 - (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
@@ -308,7 +285,6 @@ NSInteger kNeverProgressed = -10000;
     [self addSubview:_navigationController.view];
     [_navigationController.view addSubview:_dummyView];
   }
-
   return self;
 }
 
@@ -363,8 +339,8 @@ NSInteger kNeverProgressed = -10000;
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextToViewControllerKey];
     NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
-    CGFloat destination = indexOfFrom < indexOfTo ? 1.0f : -1.0f;
-    _dummyView.frame = CGRectMake(destination, 0.0f, 0.0f, 0.0f);
+    CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
+    _dummyView.frame = (CGRect){{destination}};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
     if (indexOfFrom != indexOfTo) {
@@ -375,7 +351,7 @@ NSInteger kNeverProgressed = -10000;
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
-    _dummyView.frame = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
+    _dummyView.frame = CGRectZero;
     _displayLink.paused = YES;
     // Reset the parallel position tracker
   }];
@@ -462,7 +438,7 @@ NSInteger kNeverProgressed = -10000;
 }
 
 /**
- * Must be overridden because UIKit destroys the views superview link when used
+ * Must be overridden because UIKit removes the view's superview when used
  * as a navigator - it's considered outside the view hierarchy.
  */
 - (UIView *)reactSuperview
@@ -471,26 +447,12 @@ NSInteger kNeverProgressed = -10000;
   return self.superview ? self.superview : self.reactNavSuperviewLink;
 }
 
-- (void)addControllerToClosestParent:(UIViewController *)controller
-{
-  if (!controller.parentViewController) {
-    id responder = [self.superview nextResponder];
-    while (responder && ![responder isKindOfClass:[UIViewController class]]) {
-      responder = [responder nextResponder];
-    }
-    if (responder) {
-      [responder addChildViewController:controller];
-      [controller didMoveToParentViewController:responder];
-    }
-  }
-}
-
 - (void)reactBridgeDidFinishTransaction
 {
-  // we can't hook up the VC hierarchy in 'init' because the subviews aren't hooked up yet,
-  // so we do it on demand here
+  // we can't hook up the VC hierarchy in 'init' because the subviews aren't
+  // hooked up yet, so we do it on demand here
   [self addControllerToClosestParent:_navigationController];
-  
+
   NSInteger viewControllerCount = _navigationController.viewControllers.count;
   // The "react count" is the count of views that are visible on the navigation
   // stack.  There may be more beyond this - that aren't visible, and may be
@@ -563,7 +525,6 @@ NSInteger kNeverProgressed = -10000;
   _previousRequestedTopOfStack = _requestedTopOfStack;
 }
 
-
 // TODO: This will likely fail when performing multiple pushes/pops. We must
 // free the lock only after the *last* push/pop.
 - (void)wrapperViewController:(RCTWrapperViewController *)wrapperViewController
@@ -574,7 +535,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController
     // while a push/pop is in progress.
     return;
   }
-  
+
   RCTAssert(
     (navigationController == nil || [_navigationController.viewControllers containsObject:wrapperViewController]),
     @"if navigation controller is not nil, it should container the wrapper view controller"

@@ -1,3 +1,4 @@
+'use strict';
 
 jest.dontMock('../')
     .dontMock('q')
@@ -7,7 +8,6 @@ var q = require('q');
 
 describe('HasteDependencyResolver', function() {
   var HasteDependencyResolver;
-  var DependencyGraph;
 
   beforeEach(function() {
     // For the polyfillDeps
@@ -15,7 +15,6 @@ describe('HasteDependencyResolver', function() {
       return b;
     });
     HasteDependencyResolver = require('../');
-    DependencyGraph = require('../DependencyGraph');
   });
 
   describe('getDependencies', function() {
@@ -25,7 +24,6 @@ describe('HasteDependencyResolver', function() {
 
       var depResolver = new HasteDependencyResolver({
         projectRoot: '/root',
-        dev: false,
       });
 
       // Is there a better way? How can I mock the prototype instead?
@@ -37,7 +35,7 @@ describe('HasteDependencyResolver', function() {
         return q();
       });
 
-      return depResolver.getDependencies('/root/index.js')
+      return depResolver.getDependencies('/root/index.js', { dev: false })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies).toEqual([
@@ -86,7 +84,6 @@ describe('HasteDependencyResolver', function() {
 
       var depResolver = new HasteDependencyResolver({
         projectRoot: '/root',
-        dev: true,
       });
 
       // Is there a better way? How can I mock the prototype instead?
@@ -98,7 +95,7 @@ describe('HasteDependencyResolver', function() {
         return q();
       });
 
-      return depResolver.getDependencies('/root/index.js')
+      return depResolver.getDependencies('/root/index.js', { dev: true })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies).toEqual([
@@ -148,7 +145,6 @@ describe('HasteDependencyResolver', function() {
       var depResolver = new HasteDependencyResolver({
         projectRoot: '/root',
         polyfillModuleNames: ['some module'],
-        dev: false,
       });
 
       // Is there a better way? How can I mock the prototype instead?
@@ -160,7 +156,7 @@ describe('HasteDependencyResolver', function() {
         return q();
       });
 
-      return depResolver.getDependencies('/root/index.js')
+      return depResolver.getDependencies('/root/index.js', { dev: false })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies).toEqual([
@@ -219,11 +215,10 @@ describe('HasteDependencyResolver', function() {
     it('should ', function() {
       var depResolver = new HasteDependencyResolver({
         projectRoot: '/root',
-        dev: false,
       });
 
       var depGraph = depResolver._depGraph;
-      var dependencies = ['x', 'y', 'z']
+      var dependencies = ['x', 'y', 'z'];
       var code = [
         'require("x")',
         'require("y")',
@@ -248,10 +243,10 @@ describe('HasteDependencyResolver', function() {
       }, code);
 
       expect(processedCode).toEqual([
-        "__d('test module',[\"changed\",\"y\"],function(global," +
-        " require, requireDynamic, requireLazy, module, exports) {" +
-        "  require('changed')",
-        "require('y')",
+        '__d(\'test module\',["changed","y"],function(global,' +
+        ' require, requireDynamic, requireLazy, module, exports) {' +
+        '  require(\'changed\')',
+        'require(\'y\')',
         'require("z")});',
       ].join('\n'));
     });

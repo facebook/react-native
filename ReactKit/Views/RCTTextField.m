@@ -14,15 +14,10 @@
   BOOL _jsRequestingFirstResponder;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-  RCT_NOT_DESIGNATED_INITIALIZER();
-}
-
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
-    
+
     _eventDispatcher = eventDispatcher;
     [self addTarget:self action:@selector(_textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(_textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
@@ -44,16 +39,16 @@
 
 - (void)removeReactSubview:(UIView *)subview
 {
-  // TODO: this is a bit broken - if the TextView inserts any of
-  // it's own views below or between React's, the indices won't match
+  // TODO: this is a bit broken - if the TextField inserts any of
+  // its own views below or between React's, the indices won't match
   [_reactSubviews removeObject:subview];
   [subview removeFromSuperview];
 }
 
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
-  // TODO: this is a bit broken - if the TextView inserts any of
-  // it's own views below or between React's, the indices won't match
+  // TODO: this is a bit broken - if the TextField inserts any of
+  // its own views below or between React's, the indices won't match
   [_reactSubviews insertObject:view atIndex:atIndex];
   [super insertSubview:view atIndex:atIndex];
 }
@@ -79,7 +74,7 @@
 
 - (void)setAutoCorrect:(BOOL)autoCorrect
 {
-  [super setAutocorrectionType:(autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo)];
+  self.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
 }
 
 - (BOOL)autoCorrect
@@ -122,7 +117,6 @@ RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
   return result;
 }
 
-// Prevent native from becoming first responder (TODO: why?)
 - (BOOL)canBecomeFirstResponder
 {
   return _jsRequestingFirstResponder;

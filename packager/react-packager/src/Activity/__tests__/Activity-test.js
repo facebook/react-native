@@ -1,3 +1,5 @@
+'use strict';
+
 jest.autoMockOff();
 
 describe('Activity', function() {
@@ -8,6 +10,7 @@ describe('Activity', function() {
   beforeEach(function() {
     console.log = jest.genMockFn();
     Activity = require('../');
+    jest.runOnlyPendingTimers();
   });
 
   afterEach(function() {
@@ -58,12 +61,15 @@ describe('Activity', function() {
 
       expect(function() {
         Activity.endEvent(eid);
-      }).toThrow('event(1) has already ended!');
+      }).toThrow('event(3) has already ended!');
+
+      jest.runOnlyPendingTimers();
     });
   });
 
   describe('signal', function() {
     it('writes a SIGNAL event out to the console', function() {
+
       var EVENT_NAME = 'EVENT_NAME';
       var DATA = {someData: 42};
 

@@ -1,13 +1,14 @@
 'use strict';
 
-var path = require('path');
-var version = require('../../package.json').version;
-var tmpdir = require('os').tmpDir();
-var pathUtils = require('../fb-path-utils');
+var _ = require('underscore');
+var crypto = require('crypto');
 var declareOpts = require('../lib/declareOpts');
 var fs = require('fs');
-var _ = require('underscore');
+var isAbsolutePath = require('absolute-path');
+var path = require('path');
 var q = require('q');
+var tmpdir = require('os').tmpDir();
+var version = require('../../../../package.json').version;
 
 var Promise = q.Promise;
 
@@ -48,7 +49,7 @@ function Cache(options) {
 }
 
 Cache.prototype.get = function(filepath, loaderCb) {
-  if (!pathUtils.isAbsolutePath(filepath)) {
+  if (!isAbsolutePath(filepath)) {
     throw new Error('Use absolute paths');
   }
 
@@ -62,7 +63,7 @@ Cache.prototype.get = function(filepath, loaderCb) {
 };
 
 Cache.prototype._set = function(filepath, loaderPromise) {
-  return this._data[filepath] = loaderPromise.then(function(data) {
+  this._data[filepath] = loaderPromise.then(function(data) {
     return [
       data,
       q.nfbind(fs.stat)(filepath)
@@ -74,10 +75,12 @@ Cache.prototype._set = function(filepath, loaderPromise) {
       mtime: stat.mtime.getTime(),
     };
   }.bind(this));
+
+  return this._data[filepath];
 };
 
 Cache.prototype.invalidate = function(filepath){
-  if(this._has(filepath)) {
+  if (this._has(filepath)) {
     delete this._data[filepath];
   }
 };
@@ -94,7 +97,7 @@ Cache.prototype._persistCache = function() {
   var data = this._data;
   var cacheFilepath = this._cacheFilePath;
 
-  return this._persisting = q.all(_.values(data))
+  this._persisting = q.all(_.values(data))
     .then(function(values) {
       var json = Object.create(null);
       Object.keys(data).forEach(function(key, i) {
@@ -106,15 +109,27 @@ Cache.prototype._persistCache = function() {
       this._persisting = null;
       return true;
     }.bind(this));
+
+  return this._persisting;
 };
 
-function loadCacheSync(cacheFilepath) {
+function loadCacheSync(cachePath) {
   var ret = Object.create(null);
-  if (!fs.existsSync(cacheFilepath)) {
+  if (!fs.existsSync(cachePath)) {
     return ret;
   }
 
-  var cacheOnDisk = JSON.parse(fs.readFileSync(cacheFilepath));
+  var cacheOnDisk;
+  try {
+    cacheOnDisk = JSON.parse(fs.readFileSync(cachePath));
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      console.warn('Unable to parse cache file. Will clear and continue.');
+      fs.unlinkSync(cachePath);
+      return ret;
+    }
+    throw e;
+  }
 
   // Filter outdated cache and convert to promises.
   Object.keys(cacheOnDisk).forEach(function(key) {
@@ -132,15 +147,15 @@ function loadCacheSync(cacheFilepath) {
 }
 
 function cacheFilePath(options) {
+  var hash = crypto.createHash('md5');
+  hash.update(version);
+
   var roots = options.projectRoots.join(',').split(path.sep).join('-');
+  hash.update(roots);
+
   var cacheVersion = options.cacheVersion || '0';
-  return path.join(
-    tmpdir,
-    [
-      'react-packager-cache',
-      version,
-      cacheVersion,
-      roots,
-    ].join('-')
-  );
+  hash.update(cacheVersion);
+
+  var name = 'react-packager-cache-' + hash.digest('hex');
+  return path.join(tmpdir, name);
 }

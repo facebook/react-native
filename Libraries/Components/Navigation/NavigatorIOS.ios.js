@@ -8,7 +8,7 @@
 var EventEmitter = require('EventEmitter');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var { RKUIManager } = require('NativeModules');
+var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
@@ -19,13 +19,72 @@ var invariant = require('invariant');
 var logError = require('logError');
 var merge = require('merge');
 
+var TRANSITIONER_REF = 'transitionerRef';
+
+var PropTypes = React.PropTypes;
+
+var __uid = 0;
+function getuid() {
+  return __uid++;
+}
+
+var RCTNavigator = createReactIOSNativeComponentClass({
+  validAttributes: merge(ReactIOSViewAttributes.UIView, {
+    requestedTopOfStack: true
+  }),
+  uiViewClassName: 'RCTNavigator',
+});
+
+var RCTNavigatorItem = createReactIOSNativeComponentClass({
+  validAttributes: {
+    // TODO: Remove or fix the attributes that are not fully functional.
+    //  NavigatorIOS does not use them all, because some are problematic
+    title: true,
+    barTintColor: true,
+    rightButtonTitle: true,
+    onNavRightButtonTap: true,
+    tintColor: true,
+    backButtonTitle: true,
+    titleTextColor: true,
+    style: true,
+  },
+  uiViewClassName: 'RCTNavItem',
+});
+
+var NavigatorTransitionerIOS = React.createClass({
+  requestSchedulingNavigation: function(cb) {
+    RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
+      this.getNodeHandle(),
+      logError,
+      cb
+    );
+  },
+
+  render: function() {
+    return (
+      <RCTNavigator {...this.props}/>
+    );
+  },
+});
+
+
+/**
+ * Think of `<NavigatorIOS>` as simply a component that renders an
+ * `RCTNavigator`, and moves the `RCTNavigator`'s `requestedTopOfStack` pointer
+ * forward and backward. The `RCTNavigator` interprets changes in
+ * `requestedTopOfStack` to be pushes and pops of children that are rendered.
+ * `<NavigatorIOS>` always ensures that whenever the `requestedTopOfStack`
+ * pointer is moved, that we've also rendered enough children so that the
+ * `RCTNavigator` can carry out the push/pop with those children.
+ * `<NavigatorIOS>` also removes children that will no longer be needed
+ * (after the pop of a child has been fully completed/animated out).
+ */
+
 /**
  * NavigatorIOS wraps UIKit navigation and allows you to add back-swipe
  * functionality across your app.
  *
- * See UIExplorerApp and NavigatorIOSExample for a full example
- *
- * ======================= NavigatorIOS Routes ================================
+ * #### Routes
  * A route is an object used to describe each page in the navigator. The first
  * route is provided to NavigatorIOS as `initialRoute`:
  *
@@ -37,7 +96,8 @@ var merge = require('merge');
  *         component: MyView,
  *         title: 'My View Title',
  *         passProps: { myProp: 'foo' },
- *       }}/>
+ *       }}
+ *     />
  *   );
  * },
  * ```
@@ -48,7 +108,8 @@ var merge = require('merge');
  *
  * See the initialRoute propType for a complete definition of a route.
  *
- * ====================== NavigatorIOS Navigator ==============================
+ * #### Navigator
+ *
  * A `navigator` is an object of navigation functions that a view can call. It
  * is passed as a prop to any component rendered by NavigatorIOS.
  *
@@ -65,6 +126,7 @@ var merge = require('merge');
  * ```
  *
  * A navigation object contains the following functions:
+ *
  *  - `push(route)` - Navigate forward to a new route
  *  - `pop()` - Go back one page
  *  - `popN(n)` - Go back N pages at once. When N=1, behavior matches `pop()`
@@ -86,72 +148,13 @@ var merge = require('merge');
  *   },
  *   render: () => (
  *     <NavigatorIOS
- *       ref='nav',
- *       initialRoute={...}/>
+ *       ref="nav"
+ *       initialRoute={...}
+ *     />
  *   ),
  * });
  * ```
  *
- */
-var TRANSITIONER_REF = 'transitionerRef';
-
-var PropTypes = React.PropTypes;
-
-var __uid = 0;
-function getuid() {
-  return __uid++;
-}
-
-var RKNavigator = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
-    requestedTopOfStack: true
-  }),
-  uiViewClassName: 'RCTNavigator',
-});
-
-var RKNavigatorItem = createReactIOSNativeComponentClass({
-  validAttributes: {
-    // TODO: Remove or fix the attributes that are not fully functional.
-    //  NavigatorIOS does not use them all, because some are problematic
-    title: true,
-    barTintColor: true,
-    rightButtonTitle: true,
-    onNavRightButtonTap: true,
-    tintColor: true,
-    backButtonTitle: true,
-    titleTextColor: true,
-    style: true,
-  },
-  uiViewClassName: 'RCTNavItem',
-});
-
-var NavigatorTransitionerIOS = React.createClass({
-  requestSchedulingNavigation: function(cb) {
-    RKUIManager.requestSchedulingJavaScriptNavigation(
-      this.getNodeHandle(),
-      logError,
-      cb
-    );
-  },
-
-  render: function() {
-    return (
-      <RKNavigator {...this.props}/>
-    );
-  },
-});
-
-
-/**
- * Think of `<NavigatorIOS>` as simply a component that renders an
- * `RKNavigator`, and moves the `RKNavigator`'s `requestedTopOfStack` pointer
- * forward and backward. The `RKNavigator` interprets changes in
- * `requestedTopOfStack` to be pushes and pops of children that are rendered.
- * `<NavigatorIOS>` always ensures that whenever the `requestedTopOfStack`
- * pointer is moved, that we've also rendered enough children so that the
- * `RKNavigator` can carry out the push/pop with those children.
- * `<NavigatorIOS>` also removes children that will no longer be needed
- * (after the pop of a child has been fully completed/animated out).
  */
 var NavigatorIOS = React.createClass({
 
@@ -199,7 +202,7 @@ var NavigatorIOS = React.createClass({
       /**
        * Styles for the navigation item containing the component
        */
-      wrapperStyle: View.stylePropType,
+      wrapperStyle: View.propTypes.style,
 
     }).isRequired,
 
@@ -207,7 +210,7 @@ var NavigatorIOS = React.createClass({
      * The default wrapper style for components in the navigator.
      * A common use case is to set the backgroundColor for every page
      */
-    itemWrapperStyle: View.stylePropType,
+    itemWrapperStyle: View.propTypes.style,
 
     /**
      * The color used for buttons in the navigation bar
@@ -493,7 +496,7 @@ var NavigatorIOS = React.createClass({
 
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
-        <RKNavigatorItem
+        <RCTNavigatorItem
           title={route.title}
           style={[
             styles.stackItem,
@@ -509,7 +512,7 @@ var NavigatorIOS = React.createClass({
             route={route}
             {...route.passProps}
           />
-        </RKNavigatorItem>
+        </RCTNavigatorItem>
       </StaticContainer>
     );
   },

@@ -11,7 +11,6 @@ var {
   Image,
   LayoutAnimation,
   ListView,
-  ListViewDataSource,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -72,7 +71,7 @@ var ListViewPagingExample = React.createClass({
       return dataBlob[rowID];
     };
 
-    var dataSource = new ListViewDataSource({
+    var dataSource = new ListView.DataSource({
       getRowData: getRowData,
       getSectionHeaderData: getSectionData,
       rowHasChanged: (row1, row2) => row1 !== row2,
@@ -100,11 +99,11 @@ var ListViewPagingExample = React.createClass({
     };
   },
 
-  renderRow: function(rowData, sectionID, rowID) {
+  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement {
     return (<Thumb text={rowData}/>);
   },
 
-  renderSectionHeader: function(sectionData, sectionID) {
+  renderSectionHeader: function(sectionData: string, sectionID: string) {
     return (
       <View style={styles.section}>
         <Text style={styles.text}>

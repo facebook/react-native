@@ -35,9 +35,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*eslint no-bitwise:0,quotes:0,global-strict:0*/
+
 var charToIntMap = {};
 var intToCharMap = {};
-  
+
 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
   .split('')
   .forEach(function (ch, index) {
@@ -55,7 +57,7 @@ base64.encode = function base64_encode(aNumber) {
   }
   throw new TypeError("Must be between 0 and 63: " + aNumber);
 };
-  
+
 /**
  * Decode a single base 64 digit to an integer.
  */
@@ -65,7 +67,7 @@ base64.decode = function base64_decode(aChar) {
   }
   throw new TypeError("Not a valid base 64 digit: " + aChar);
 };
-  
+
 
 
 // A single base 64 digit can contain 6 bits of data. For the base 64 variable
@@ -165,4 +167,3 @@ exports.decode = function base64VLQ_decode(aStr, aOutParam) {
   aOutParam.value = fromVLQSigned(result);
   aOutParam.rest = aStr.slice(i);
 };
-

@@ -6,6 +6,7 @@ jest
   .dontMock('q')
   .dontMock('os')
   .dontMock('underscore')
+  .setMock('uglify-js')
   .dontMock('../');
 
 var q = require('q');
@@ -39,6 +40,11 @@ describe('Packager', function() {
     var modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
       {id: 'bar', path: '/root/bar.js', dependencies: []},
+      { id: 'image!img',
+        path: '/root/img/img.png',
+        isAsset: true,
+        dependencies: [],
+      }
     ];
 
     getDependencies.mockImpl(function() {
@@ -49,7 +55,7 @@ describe('Packager', function() {
     });
 
     require('../../JSTransformer').prototype.loadFileAndTransform
-      .mockImpl(function(tsets, path) {
+      .mockImpl(function(path) {
         return q({
           code: 'transformed ' + path,
           sourceCode: 'source ' + path,
@@ -72,6 +78,15 @@ describe('Packager', function() {
           'lol transformed /root/bar.js lol',
           'source /root/bar.js',
           '/root/bar.js'
+        ]);
+        expect(p.addModule.mock.calls[2]).toEqual([
+          'lol module.exports = ' +
+            JSON.stringify({ uri: 'img', isStatic: true}) +
+            '; lol',
+          'module.exports = ' +
+            JSON.stringify({ uri: 'img', isStatic: true}) +
+            ';',
+          '/root/img/img.png'
         ]);
 
         expect(p.finalize.mock.calls[0]).toEqual([

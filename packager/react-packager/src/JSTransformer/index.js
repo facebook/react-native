@@ -7,6 +7,7 @@ var Cache = require('./Cache');
 var _ = require('underscore');
 var workerFarm = require('worker-farm');
 var declareOpts = require('../lib/declareOpts');
+var util = require('util');
 
 var readFile = q.nfbind(fs.readFile);
 
@@ -33,13 +34,9 @@ var validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
   transformModulePath: {
     type:'string',
-    required: true,
+    required: false,
   },
   nonPersistent: {
     type: 'boolean',
@@ -62,7 +59,7 @@ function Transformer(options) {
     this._failedToStart = q.Promise.reject(new Error('No transfrom module'));
   } else {
     this._workers = workerFarm(
-      {autoStart: true},
+      {autoStart: true, maxConcurrentCallsPerWorker: 1},
       options.transformModulePath
     );
   }
@@ -75,15 +72,9 @@ Transformer.prototype.kill = function() {
 
 Transformer.prototype.invalidateFile = function(filePath) {
   this._cache.invalidate(filePath);
-  //TODO: We can read the file and put it into the cache right here
-  //      This would simplify some caching logic as we can be sure that the cache is up to date
-}
+};
 
-Transformer.prototype.loadFileAndTransform = function(
-  transformSets,
-  filePath,
-  options
-) {
+Transformer.prototype.loadFileAndTransform = function(filePath) {
   if (this._failedToStart) {
     return this._failedToStart;
   }
@@ -93,15 +84,14 @@ Transformer.prototype.loadFileAndTransform = function(
     return readFile(filePath)
       .then(function(buffer) {
         var sourceCode = buffer.toString();
-        var opts = _.extend({}, options, {filename: filePath});
+
         return q.nfbind(workers)({
-          transformSets: transformSets,
           sourceCode: sourceCode,
-          options: opts,
+          filename: filePath,
         }).then(
           function(res) {
             if (res.error) {
-              throw formatEsprimaError(res.error, filePath, sourceCode);
+              throw formatError(res.error, filePath, sourceCode);
             }
 
             return {
@@ -116,13 +106,28 @@ Transformer.prototype.loadFileAndTransform = function(
 };
 
 function TransformError() {}
-TransformError.__proto__ = SyntaxError.prototype;
+util.inherits(TransformError, SyntaxError);
+
+function formatError(err, filename, source) {
+  if (err.lineNumber && err.column) {
+    return formatEsprimaError(err, filename, source);
+  } else {
+    return formatGenericError(err, filename, source);
+  }
+}
+
+function formatGenericError(err, filename) {
+  var msg = 'TransformError: ' + filename + ': ' + err.message;
+  var error = new TransformError();
+  var stack = err.stack.split('\n').slice(0, -1);
+  stack.push(msg);
+  error.stack = stack.join('\n');
+  error.message = msg;
+  error.type = 'TransformError';
+  return error;
+}
 
 function formatEsprimaError(err, filename, source) {
-  if (!(err.lineNumber && err.column)) {
-    return err;
-  }
-
   var stack = err.stack.split('\n');
   stack.shift();
 

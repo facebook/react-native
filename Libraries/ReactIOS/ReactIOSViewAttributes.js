@@ -17,10 +17,10 @@ ReactIOSViewAttributes.UIView = {
   testID: true,
 };
 
-ReactIOSViewAttributes.RKView = merge(
+ReactIOSViewAttributes.RCTView = merge(
   ReactIOSViewAttributes.UIView, {
 
-  // This is a special performance property exposed by RKView and useful for
+  // This is a special performance property exposed by RCTView and useful for
   // scrolling content when there are many subviews, most of which are offscreen.
   // For this property to be effective, it must be applied to a view that contains
   // many subviews that extend outside its bound. The subviews must also have

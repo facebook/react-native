@@ -1,3 +1,11 @@
+---
+id: style
+title: Style
+layout: docs
+category: Guides
+permalink: docs/style.html
+next: nativemodulesios
+---
 
 ## Declaring Styles
 

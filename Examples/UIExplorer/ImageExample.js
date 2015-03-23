@@ -1,7 +1,5 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
- *
- * @providesModule ImageExample
  */
 'use strict';
 
@@ -11,7 +9,6 @@ var {
   StyleSheet,
   Text,
   View,
-  ix,
 } = React;
 
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
@@ -36,15 +33,15 @@ exports.examples = [
   },
   {
     title: 'Plain Static Image',
-    description: 'Static assets must be referenced with the `ix` wrapper and ' +
-      'located in the app bundle.',
+    description: 'Static assets should be required by prefixing with `image!` ' +
+      'and are located in the app bundle.',
     render: function() {
       return (
         <View style={styles.horizontal}>
-          <Image source={ix('uie_thumb_normal')} style={styles.icon} />
-          <Image source={ix('uie_thumb_selected')} style={styles.icon} />
-          <Image source={ix('uie_comment_normal')} style={styles.icon} />
-          <Image source={ix('uie_comment_highlighted')} style={styles.icon} />
+          <Image source={require('image!uie_thumb_normal')} style={styles.icon} />
+          <Image source={require('image!uie_thumb_selected')} style={styles.icon} />
+          <Image source={require('image!uie_comment_normal')} style={styles.icon} />
+          <Image source={require('image!uie_comment_highlighted')} style={styles.icon} />
         </View>
       );
     },
@@ -186,19 +183,19 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image
-            source={ix('uie_thumb_normal')}
+            source={require('image!uie_thumb_normal')}
             style={[styles.icon, {tintColor: 'blue' }]}
           />
           <Image
-            source={ix('uie_thumb_normal')}
+            source={require('image!uie_thumb_normal')}
             style={[styles.icon, styles.leftMargin, {tintColor: 'green' }]}
           />
           <Image
-            source={ix('uie_thumb_normal')}
+            source={require('image!uie_thumb_normal')}
             style={[styles.icon, styles.leftMargin, {tintColor: 'red' }]}
           />
           <Image
-            source={ix('uie_thumb_normal')}
+            source={require('image!uie_thumb_normal')}
             style={[styles.icon, styles.leftMargin, {tintColor: 'black' }]}
           />
         </View>

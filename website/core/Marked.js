@@ -900,7 +900,7 @@ Parser.prototype.tok = function() {
     }
     case 'html': {
       return !this.token.pre && !this.options.pedantic
-        ? this.inline.output(this.token.text)
+        ? React.DOM.span({dangerouslySetInnerHTML: {__html: this.token.text}})
         : this.token.text;
     }
     case 'paragraph': {
@@ -1085,7 +1085,9 @@ marked.parse = marked;
 
 var Marked = React.createClass({
   render: function() {
-    return React.DOM.div(null, marked(this.props.children, this.props));
+    return this.props.children ?
+      React.DOM.div(null, marked(this.props.children, this.props)) :
+      null;
   }
 });
 

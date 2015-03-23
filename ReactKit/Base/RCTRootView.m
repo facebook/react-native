@@ -8,19 +8,20 @@
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTRedBox.h"
+#import "RCTSourceCode.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTWebViewExecutor.h"
 #import "UIView+ReactKit.h"
 
-NSString *const RCTRootViewReloadNotification = @"RCTRootViewReloadNotification";
+NSString *const RCTReloadNotification = @"RCTReloadNotification";
 
 @implementation RCTRootView
 {
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
-  id <RCTJavaScriptExecutor> _executor;
+  id<RCTJavaScriptExecutor> _executor;
 }
 
 static Class _globalExecutorClass;
@@ -41,7 +42,10 @@ static Class _globalExecutorClass;
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          _globalExecutorClass = [RCTWebViewExecutor class];
+                                                          _globalExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+                                                          if (!_globalExecutorClass) {
+                                                            RCTLogWarn(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
+                                                          }
                                                           [self reloadAll];
                                                         }];
 
@@ -77,7 +81,7 @@ static Class _globalExecutorClass;
   // Add reload observer
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(reload)
-                                               name:RCTRootViewReloadNotification
+                                               name:RCTReloadNotification
                                              object:nil];
 }
 
@@ -95,6 +99,10 @@ static Class _globalExecutorClass;
 
   [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
                     args:@[self.reactTag]];
+
+  // TODO: eventually we'll want to be able to share the bridge between
+  // multiple rootviews, in which case we'll need to move this elsewhere
+  [_bridge invalidate];
 }
 
 - (void)bundleFinishedLoading:(NSError *)error
@@ -108,7 +116,7 @@ static Class _globalExecutorClass;
     }
   } else {
 
-    [_bridge registerRootView:self];
+    [_bridge.uiManager registerRootView:self];
 
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
@@ -131,12 +139,13 @@ static Class _globalExecutorClass;
 
   // Clean up
   [self removeGestureRecognizer:_touchHandler];
+  [_touchHandler invalidate];
   [_executor invalidate];
   [_bridge invalidate];
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
-  _bridge = [[RCTBridge alloc] initWithJavaScriptExecutor:_executor moduleProvider:nil];
+  _bridge = [[RCTBridge alloc] initWithExecutor:_executor moduleProvider:_moduleProvider];
   _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
   [self addGestureRecognizer:_touchHandler];
 
@@ -195,6 +204,10 @@ static Class _globalExecutorClass;
     }
 
     // Success!
+    RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
+    sourceCodeModule.scriptURL = _scriptURL;
+    sourceCodeModule.scriptText = rawText;
+
     [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *error) {
       dispatch_async(dispatch_get_main_queue(), ^{
         [self bundleFinishedLoading:error];
@@ -228,7 +241,17 @@ static Class _globalExecutorClass;
 
 + (void)reloadAll
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewReloadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
+}
+
+- (void)startOrResetInteractionTiming
+{
+  [_touchHandler startOrResetInteractionTiming];
+}
+
+- (NSDictionary *)endAndResetInteractionTiming
+{
+  return [_touchHandler endAndResetInteractionTiming];
 }
 
 @end
