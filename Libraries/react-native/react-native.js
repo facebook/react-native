@@ -5,9 +5,14 @@
  */
 'use strict';
 
-var ReactNative = {
-  ...require('React'),
-
+// Export React, plus some native additions.
+//
+// The use of Object.create/assign is to work around a Flow bug (#6560135).
+// Once that is fixed, change this back to
+//
+//   var ReactNative = {...require('React'), /* additions */}
+//
+var ReactNative = Object.assign(Object.create(require('React')), {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   DatePickerIOS: require('DatePickerIOS'),
@@ -54,7 +59,7 @@ var ReactNative = {
     cloneWithProps: require('cloneWithProps'),
     update: require('update'),
   },
-};
+});
 
 if (__DEV__) {
   ReactNative.addons.Perf = require('ReactDefaultPerf');
