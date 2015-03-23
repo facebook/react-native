@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -19,7 +20,7 @@ exports.description = 'Example of using the ad support API.';
 exports.examples = [
   {
     title: 'Ad Support IOS',
-    render: function() {
+    render: function(): ReactElement {
       return <AdSupportIOSExample />;
     },
   }
