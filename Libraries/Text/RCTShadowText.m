@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTShadowText.h"
 
@@ -17,7 +24,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   CGSize computedSize = [[shadowText attributedString] boundingRectWithSize:(CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX}
                                                                     options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
                                                                     context:nil].size;
-  
+
   css_dim_t result;
   result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
   result.dimensions[CSS_HEIGHT] = RCTCeilPixelValue(computedSize.height);
