@@ -2,6 +2,7 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule AppStateIOSExample
+ * @flow
  */
 'use strict';
 
@@ -60,10 +61,10 @@ exports.examples = [
   {
     title: 'Subscribed AppStateIOS:',
     description: 'This changes according to the current state, so you can only ever see it rendered as "active"',
-    render() { return <AppStateSubscription showCurrentOnly={true} />; }
+    render(): ReactElement { return <AppStateSubscription showCurrentOnly={true} />; }
   },
   {
     title: 'Previous states:',
-    render() { return <AppStateSubscription showCurrentOnly={false} />; }
+    render(): ReactElement { return <AppStateSubscription showCurrentOnly={false} />; }
   },
 ];

@@ -1,5 +1,6 @@
 /**
 * Copyright 2004-present Facebook. All Rights Reserved.
+* @flow
 */
 'use strict';
 
@@ -28,6 +29,8 @@ var ListViewSimpleExample = React.createClass({
     };
   },
 
+  _pressData: ({}: {[key: number]: boolean}),
+
   componentWillMount: function() {
     this._pressData = {};
   },
@@ -46,7 +49,7 @@ var ListViewSimpleExample = React.createClass({
     );
   },
 
-  _renderRow: function(rowData, sectionID, rowID) {
+  _renderRow: function(rowData: string, sectionID: number, rowID: number) {
     var rowHash = Math.abs(hashCode(rowData));
     var imgSource = {
       uri: THUMB_URLS[rowHash % THUMB_URLS.length],
@@ -66,7 +69,7 @@ var ListViewSimpleExample = React.createClass({
     );
   },
 
-  _genRows: function(pressData) {
+  _genRows: function(pressData: {[key: number]: boolean}): Array<string> {
     var dataBlob = [];
     for (var ii = 0; ii < 100; ii++) {
       var pressedText = pressData[ii] ? ' (pressed)' : '';
@@ -75,7 +78,7 @@ var ListViewSimpleExample = React.createClass({
     return dataBlob;
   },
 
-  _pressRow: function(rowID) {
+  _pressRow: function(rowID: number) {
     this._pressData[rowID] = !this._pressData[rowID];
     this.setState({dataSource: this.state.dataSource.cloneWithRows(
       this._genRows(this._pressData)

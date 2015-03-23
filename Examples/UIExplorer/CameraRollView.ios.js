@@ -2,6 +2,7 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule CameraRollView
+ * @flow
  */
 'use strict';
 
@@ -53,7 +54,7 @@ var propTypes = {
 var CameraRollView = React.createClass({
   propTypes: propTypes,
 
-  getDefaultProps: function() {
+  getDefaultProps: function(): Object {
     return {
       groupTypes: 'SavedPhotos',
       batchSize: 5,
@@ -75,9 +76,9 @@ var CameraRollView = React.createClass({
     var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
 
     return {
-      assets: [],
+      assets: ([]: Array<Image>),
       groupTypes: this.props.groupTypes,
-      lastCursor: null,
+      lastCursor: (null : ?string),
       noMore: false,
       loadingMore: false,
       dataSource: ds,
@@ -99,21 +100,21 @@ var CameraRollView = React.createClass({
     this.fetch();
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: {groupTypes?: string}) {
     if (this.props.groupTypes !== nextProps.groupTypes) {
       this.fetch(true);
     }
   },
 
-  _fetch: function(clear) {
+  _fetch: function(clear?: boolean) {
     if (clear) {
       this.setState(this.getInitialState(), this.fetch);
       return;
     }
 
-    var fetchParams = {
+    var fetchParams: Object = {
       first: this.props.batchSize,
-      groupTypes: this.props.groupTypes,
+      groupTypes: this.props.groupTypes
     };
     if (this.state.lastCursor) {
       fetchParams.after = this.state.lastCursor;
@@ -126,7 +127,7 @@ var CameraRollView = React.createClass({
    * Fetches more images from the camera roll. If clear is set to true, it will
    * set the component to its initial state and re-fetch the images.
    */
-  fetch: function(clear) {
+  fetch: function(clear?: boolean) {
     if (!this.state.loadingMore) {
       this.setState({loadingMore: true}, () => { this._fetch(clear); });
     }
@@ -144,7 +145,7 @@ var CameraRollView = React.createClass({
     );
   },
 
-  _rowHasChanged: function(r1, r2) {
+  _rowHasChanged: function(r1: Array<Image>, r2: Array<Image>): boolean {
     if (r1.length !== r2.length) {
       return true;
     }
@@ -166,7 +167,7 @@ var CameraRollView = React.createClass({
   },
 
   // rowData is an array of images
-  _renderRow: function(rowData, sectionID, rowID)  {
+  _renderRow: function(rowData: Array<Image>, sectionID: string, rowID: string)  {
     var images = rowData.map((image) => {
       if (image === null) {
         return null;
@@ -181,9 +182,9 @@ var CameraRollView = React.createClass({
     );
   },
 
-  _appendAssets: function(data) {
+  _appendAssets: function(data: Object) {
     var assets = data.edges;
-    var newState = { loadingMore: false };
+    var newState: Object = { loadingMore: false };
 
     if (!data.page_info.has_next_page) {
       newState.noMore = true;
