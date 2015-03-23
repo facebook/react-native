@@ -1,5 +1,12 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -118,22 +125,22 @@ exports.description = 'Native boolean input';
 exports.examples = [
   {
     title: 'Switches can be set to true or false',
-    render() { return <BasicSwitchExample />; }
+    render(): ReactElement { return <BasicSwitchExample />; }
   },
   {
     title: 'Switches can be disabled',
-    render() { return <DisabledSwitchExample />; }
+    render(): ReactElement { return <DisabledSwitchExample />; }
   },
   {
     title: 'Custom colors can be provided',
-    render() { return <ColorSwitchExample />; }
+    render(): ReactElement { return <ColorSwitchExample />; }
   },
   {
     title: 'Change events can be detected',
-    render() { return <EventSwitchExample />; }
+    render(): ReactElement { return <EventSwitchExample />; }
   },
   {
     title: 'Switches are controlled components',
-    render() { return <SwitchIOS />; }
+    render(): ReactElement { return <SwitchIOS />; }
   }
 ];

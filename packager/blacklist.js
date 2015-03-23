@@ -1,5 +1,10 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
 
@@ -8,7 +13,6 @@
 var sharedBlacklist = [
   __dirname,
   'website',
-  'node_modules/parse/node_modules/xmlhttprequest/lib/XMLHttpRequest.js',
   'node_modules/react-tools/src/utils/ImmutableObject.js',
   'node_modules/react-tools/src/core/ReactInstanceHandles.js',
   'node_modules/react-tools/src/event/EventPropagators.js'

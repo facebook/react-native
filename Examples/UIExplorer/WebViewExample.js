@@ -1,5 +1,12 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -34,6 +41,8 @@ var WebViewExample = React.createClass({
       loading: true,
     };
   },
+
+  inputText: '',
 
   handleTextInputChange: function(event) {
     this.inputText = event.nativeEvent.text;
@@ -259,6 +268,6 @@ exports.description = 'Base component to display web content';
 exports.examples = [
   {
     title: 'WebView',
-    render() { return <WebViewExample />; }
+    render(): ReactElement { return <WebViewExample />; }
   }
 ];

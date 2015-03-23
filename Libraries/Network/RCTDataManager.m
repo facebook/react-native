@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTDataManager.h"
 
@@ -18,16 +25,16 @@
       responseSender:(RCTResponseSenderBlock)responseSender
 {
   RCT_EXPORT(queryData);
-    
+
   if ([queryType isEqualToString:@"http"]) {
-    
+
     // Parse query
     NSDictionary *queryDict = query;
     if ([query isKindOfClass:[NSString class]]) {
       // TODO: it would be more efficient just to send a dictionary
       queryDict = RCTJSONParse(query, NULL);
     }
-    
+
     // Build request
     NSURL *url = [NSURL URLWithString:queryDict[@"url"]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -39,7 +46,7 @@
 
     // Build data task
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
-      
+
       // Build response
       NSDictionary *responseJSON;
       if (connectionError == nil) {
@@ -56,16 +63,16 @@
       } else {
         responseJSON = @{@"status": @0, @"responseText": [connectionError localizedDescription]};
       }
-      
+
       // Send response (won't be sent on same thread as caller)
       responseSender(@[RCTJSONStringify(responseJSON, NULL)]);
-      
+
     }];
-    
+
     [task resume];
 
   } else {
-    
+
     RCTLogError(@"unsupported query type %@", queryType);
   }
 }
