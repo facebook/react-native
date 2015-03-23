@@ -45,7 +45,20 @@ var ReactNative = {
   TimerMixin: require('TimerMixin'),
   VibrationIOS: require('VibrationIOS'),
 
-  invariant: require('invariant'),
+  addons: {
+    batchedUpdates: require('ReactUpdates').batchedUpdates,
+    LinkedStateMixin: require('LinkedStateMixin'),
+    Perf: undefined,
+    PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
+    TestUtils: undefined,
+    cloneWithProps: require('cloneWithProps'),
+    update: require('update'),
+  },
 };
+
+if (__DEV__) {
+  ReactNative.addons.Perf = require('ReactDefaultPerf');
+  ReactNative.addons.TestUtils = require('ReactTestUtils');
+}
 
 module.exports = ReactNative;
