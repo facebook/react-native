@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var React = require('react-native/addons');
+var React = require('react-native');
 var {
   ListView,
   PixelRatio,

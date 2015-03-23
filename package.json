@@ -1,5 +1,5 @@
 {
-  "name": "react-native-github",
+  "name": "react-native",
   "version": "0.1.0",
   "description": "Build native apps with React!",
   "repository": {
@@ -20,6 +20,7 @@
       "source-map"
     ]
   },
+  "main": "Libraries/react-native/react-native.js",
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
