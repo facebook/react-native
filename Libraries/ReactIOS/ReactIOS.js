@@ -83,15 +83,6 @@ var ReactIOS = {
   _augmentElement: augmentElement,
   render: render,
   unmountComponentAtNode: ReactIOSMount.unmountComponentAtNode,
-  /**
-   * Used by the debugger.
-   */
-  __internals: {
-    Component: ReactComponent,
-    CurrentOwner: ReactCurrentOwner,
-    InstanceHandles: ReactInstanceHandles,
-    Mount: ReactIOSMount,
-  },
 
  // Hook for JSX spread, don't use this for anything else.
   __spread: Object.assign,
@@ -116,5 +107,20 @@ var ReactIOS = {
     ReactElement.isValidElement
   )
 };
+
+// Inject the runtime into a devtools global hook regardless of browser.
+// Allows for debugging when the hook is injected on the page.
+/* globals __REACT_DEVTOOLS_GLOBAL_HOOK__ */
+if (
+  typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined' &&
+  typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.inject === 'function') {
+  __REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
+    CurrentOwner: ReactCurrentOwner,
+    InstanceHandles: ReactInstanceHandles,
+    Mount: ReactIOSMount,
+    Reconciler: require('ReactReconciler'),
+    TextComponent: require('ReactIOSTextComponent'),
+  });
+}
 
 module.exports = ReactIOS;
