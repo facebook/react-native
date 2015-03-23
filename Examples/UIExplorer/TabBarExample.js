@@ -46,7 +46,7 @@ var TabBarExample = React.createClass({
         selectedTab={this.state.selectedTab}>
         <TabBarItemIOS
           name="blueTab"
-          icon={require('image!favorites')}
+          icon={_ix_DEPRECATED('favorites')}
           accessibilityLabel="Blue Tab"
           selected={this.state.selectedTab === 'blueTab'}
           onPress={() => {
@@ -59,7 +59,7 @@ var TabBarExample = React.createClass({
         <TabBarItemIOS
           accessibilityLabel="Red Tab"
           name="redTab"
-          icon={require('image!history')}
+          icon={_ix_DEPRECATED('history')}
           badgeValue={this.state.notifCount ? String(this.state.notifCount) : null}
           selected={this.state.selectedTab === 'redTab'}
           onPress={() => {
@@ -72,7 +72,7 @@ var TabBarExample = React.createClass({
         </TabBarItemIOS>
         <TabBarItemIOS
           name="greenTab"
-          icon={require('image!more')}
+          icon={_ix_DEPRECATED('more')}
           accessibilityLabel="Green Tab"
           selected={this.state.selectedTab === 'greenTab'}
           onPress={() => {
@@ -99,5 +99,15 @@ var styles = StyleSheet.create({
     margin: 50,
   },
 });
+
+// This is needed because the actual image may not exist as a file and
+// is used by the native code to load a system image.
+// TODO(nicklockwood): How can this fit our require system?
+function _ix_DEPRECATED(imageUri) {
+  return {
+    uri: imageUri,
+    isStatic: true,
+  };
+}
 
 module.exports = TabBarExample;
