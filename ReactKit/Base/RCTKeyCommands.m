@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTKeyCommands.h"
 
@@ -36,7 +43,7 @@
 @implementation RCTKeyCommands
 
 + (void)initialize
-{  
+{
   //swizzle UIApplication
   RCTSwapInstanceMethods([UIApplication class], @selector(keyCommands), @selector(RCT_keyCommands));
   RCTSwapInstanceMethods([UIApplication class], @selector(sendAction:to:from:forEvent:), @selector(RCT_sendAction:to:from:forEvent:));
@@ -51,7 +58,7 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
   dispatch_once(&onceToken, ^{
     sharedInstance = [[self alloc] init];
   });
-  
+
   return sharedInstance;
 }
 
@@ -68,7 +75,7 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
   // NOTE: We should just be able to do commandBindings[key] here, but curiously, the
   // lookup seems to return nil sometimes, even if the key is found in the dictionary.
   // To fix this, we use a linear search, since there won't be many keys anyway
-  
+
   [_commandBindings enumerateKeysAndObjectsUsingBlock:^(UIKeyCommand *k, void (^block)(UIKeyCommand *), BOOL *stop) {
     if ([key.input isEqualToString:k.input] && key.modifierFlags == k.modifierFlags) {
       block(key);
@@ -81,7 +88,7 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
                              action:(void (^)(UIKeyCommand *))block
 {
   RCTAssertMainThread();
-  
+
   UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:input
                                               modifierFlags:flags
                                                      action:@selector(RCT_handleKeyCommand:)];
@@ -91,7 +98,7 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
 - (void)unregisterKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   RCTAssertMainThread();
-  
+
   for (UIKeyCommand *key in [_commandBindings allKeys]) {
     if ([key.input isEqualToString:input] && key.modifierFlags == flags) {
       [_commandBindings removeObjectForKey:key];
@@ -104,7 +111,7 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
                          modifierFlags:(UIKeyModifierFlags)flags
 {
   RCTAssertMainThread();
-  
+
   for (UIKeyCommand *key in [_commandBindings allKeys]) {
     if ([key.input isEqualToString:input] && key.modifierFlags == flags) {
       return YES;

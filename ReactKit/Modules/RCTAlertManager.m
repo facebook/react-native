@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTAlertManager.h"
 
@@ -56,15 +63,15 @@
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    
+
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                         message:message
                                                        delegate:self
                                               cancelButtonTitle:nil
                                               otherButtonTitles:nil];
-    
+
     NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
-    
+
     NSInteger index = 0;
     for (NSDictionary *button in buttons) {
       if (button.count != 1) {
@@ -79,7 +86,7 @@
       [buttonKeys addObject:buttonKey];
       index ++;
     }
-    
+
     [_alerts addObject:alertView];
     [_alertCallbacks addObject:callback ?: ^(id unused) {}];
     [_alertButtonKeys addObject:buttonKeys];
@@ -94,11 +101,11 @@
 {
   NSUInteger index = [_alerts indexOfObject:alertView];
   RCTAssert(index != NSNotFound, @"Dismissed alert was not recognised");
-  
+
   RCTResponseSenderBlock callback = _alertCallbacks[index];
   NSArray *buttonKeys = _alertButtonKeys[index];
   callback(@[buttonKeys[buttonIndex]]);
-  
+
   [_alerts removeObjectAtIndex:index];
   [_alertCallbacks removeObjectAtIndex:index];
   [_alertButtonKeys removeObjectAtIndex:index];
