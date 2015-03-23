@@ -296,33 +296,48 @@ DependecyGraph.prototype._findAndProcessPackage = function(files, root) {
   }
 
   if (packagePath != null) {
-    return readFile(packagePath, 'utf8')
-      .then(function(content) {
-        var packageJson;
-        try {
-          packageJson = JSON.parse(content);
-        } catch (e) {
-          debug('WARNING: malformed package.json: ', packagePath);
-          return q();
-        }
-
-        if (packageJson.name == null) {
-          debug(
-            'WARNING: package.json `%s` is missing a name field',
-            packagePath
-          );
-          return q();
-        }
-
-        packageJson._root = root;
-        self._packageByRoot[root] = packageJson;
-        self._packagesById[packageJson.name] = packageJson;
-
-        return packageJson;
-      });
+    return this._processPackage(packagePath);
   } else {
     return q();
   }
+};
+
+DependecyGraph.prototype._processPackage = function(packagePath) {
+  var packageRoot = path.dirname(packagePath);
+  var self = this;
+  return readFile(packagePath, 'utf8')
+    .then(function(content) {
+      var packageJson;
+      try {
+        packageJson = JSON.parse(content);
+      } catch (e) {
+        debug('WARNING: malformed package.json: ', packagePath);
+        return q();
+      }
+
+      if (packageJson.name == null) {
+        debug(
+          'WARNING: package.json `%s` is missing a name field',
+          packagePath
+        );
+        return q();
+      }
+
+      packageJson._root = packageRoot;
+      self._addPackageToIndices(packageJson);
+
+      return packageJson;
+    });
+};
+
+DependecyGraph.prototype._addPackageToIndices = function(packageJson) {
+  this._packageByRoot[packageJson._root] = packageJson;
+  this._packagesById[packageJson.name] = packageJson;
+};
+
+DependecyGraph.prototype._removePackageFromIndices = function(packageJson) {
+  delete this._packageByRoot[packageJson._root];
+  delete this._packagesById[packageJson.name];
 };
 
 /**
@@ -436,16 +451,27 @@ DependecyGraph.prototype._processFileChange = function(eventType, filePath, root
 
   this._debugUpdateEvents.push({event: eventType, path: filePath});
 
+  var isPackage = path.basename(filePath) === 'package.json';
   if (eventType === 'delete') {
-    var module = this._graph[absPath];
-    if (module == null) {
-      return;
-    }
+    if (isPackage) {
+      var packageJson = this._packageByRoot[path.dirname(absPath)];
+      if (packageJson) {
+        this._removePackageFromIndices(packageJson);
+      }
+    } else {
+      var module = this._graph[absPath];
+      if (module == null) {
+        return;
+      }
 
-    this._deleteModule(module);
+      this._deleteModule(module);
+    }
   } else if (!(stat && stat.isDirectory())) {
     var self = this;
     this._loading = this._loading.then(function() {
+      if (isPackage) {
+        return self._processPackage(absPath);
+      }
       return self._processModule(absPath);
     });
   }

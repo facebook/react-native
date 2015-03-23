@@ -56,7 +56,7 @@ function createWatcher(root) {
   }
 
   return detectingWatcherClass.then(function(Watcher) {
-    var watcher = new Watcher(root, {glob: '**/*.js'});
+    var watcher = new Watcher(root, {glob: ['**/*.js', '**/package.json']});
 
     return new Promise(function(resolve, reject) {
       var rejectTimeout = setTimeout(function() {
