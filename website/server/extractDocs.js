@@ -7,7 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-var docs = require('react-docgen');
+var docgen = require('react-docgen');
+var docgenHelpers = require('./docgenHelpers');
 var fs = require('fs');
 var path = require('path');
 var slugify = require('../core/slugify');
@@ -21,7 +22,7 @@ function getNameFromPath(filepath) {
   return filepath;
 }
 
-function componentsToMarkdown(type, json, filepath, i) {
+function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
 
   var docFilePath = '../docs/' + componentName + '.md';
@@ -29,6 +30,9 @@ function componentsToMarkdown(type, json, filepath, i) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
   json.type = type;
+  if (styles) {
+    json.styles = styles;
+  }
 
   var res = [
     '---',
@@ -84,20 +88,34 @@ var apis = [
   '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
-var all = components.concat(apis);
+var styles = [
+  '../Libraries/StyleSheet/LayoutPropTypes.js',
+  '../Libraries/Components/View/ViewStylePropTypes.js',
+  '../Libraries/Text/TextStylePropTypes.js',
+  '../Libraries/Image/ImageStylePropTypes.js',
+];
+
+var all = components.concat(apis).concat(styles.slice(0, 1));
+var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
+  docs[path.basename(filepath).replace(path.extname(filepath), '')] =
+    docgen.parse(
+      fs.readFileSync(filepath),
+      docgenHelpers.findExportedObject,
+      [docgen.handlers.propTypeHandler]
+    );
+  return docs;
+}, {});
 
 module.exports = function() {
   var i = 0;
   return [].concat(
     components.map(function(filepath) {
-      var json = docs.parse(
+      var json = docgen.parse(
         fs.readFileSync(filepath),
-        function(node, recast) {
-          return docs.resolver.findExportedReactCreateClassCall(node, recast) ||
-            docs.resolver.findAllReactCreateClassCalls(node, recast)[0];
-        }
+        docgenHelpers.findExportedOrFirst,
+        docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
       );
-      return componentsToMarkdown('component', json, filepath, i++);
+      return componentsToMarkdown('component', json, filepath, i++, styleDocs);
     }),
     apis.map(function(filepath) {
       try {
@@ -107,6 +125,14 @@ module.exports = function() {
         var json = {};
       }
       return componentsToMarkdown('api', json, filepath, i++);
+    }),
+    styles.slice(0, 1).map(function(filepath) {
+      var json = docgen.parse(
+        fs.readFileSync(filepath),
+        docgenHelpers.findExportedObject,
+        [docgen.handlers.propTypeHandler]
+      );
+      return componentsToMarkdown('style', json, filepath, i++);
     })
   );
 };
