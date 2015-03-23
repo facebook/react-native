@@ -1,5 +1,12 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -120,16 +127,16 @@ exports.examples = [
   {
     title: 'NetInfo.isConnected',
     description: 'Asyncronously load and observe connectivity',
-    render() { return <IsConnected />; }
+    render(): ReactElement { return <IsConnected />; }
   },
   {
     title: 'NetInfo.reachabilityIOS',
     description: 'Asyncronously load and observe iOS reachability',
-    render() { return <ReachabilityCurrent />; }
+    render(): ReactElement { return <ReachabilityCurrent />; }
   },
   {
     title: 'NetInfo.reachabilityIOS',
     description: 'Observed updates to iOS reachability',
-    render() { return <ReachabilitySubscription />; }
+    render(): ReactElement { return <ReachabilitySubscription />; }
   },
 ];
