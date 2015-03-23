@@ -19,6 +19,9 @@ function getNameFromPath(filepath) {
   while (ext = path.extname(filepath)) {
     filepath = path.basename(filepath, ext);
   }
+  if (filepath === 'LayoutPropTypes') {
+    return 'Flexbox';
+  }
   return filepath;
 }
 
@@ -39,7 +42,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'id: ' + slugify(componentName),
     'title: ' + componentName,
     'layout: autodocs',
-    'category: ' + type + 's',
+    'category: ' + (type === 'style' ? 'Polyfills' : type + 's'),
     'permalink: docs/' + slugify(componentName) + '.html',
     'next: ' + (all[i + 1] ?
       slugify(getNameFromPath(all[i + 1])) :

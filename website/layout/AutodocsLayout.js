@@ -100,6 +100,7 @@ var ComponentDoc = React.createClass({
             link =
               <a href={slugify(name) + '.html#style'}>{name}#style...</a>;
           } else {
+            name = 'Flexbox';
             link =
               <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
           }
