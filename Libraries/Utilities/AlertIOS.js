@@ -44,7 +44,7 @@ class AlertIOS {
   static alert(
     title: ?string,
     message: ?string,
-    buttons: ?Array<{
+    buttons?: Array<{
       text: ?string;
       onPress: ?Function;
     }>

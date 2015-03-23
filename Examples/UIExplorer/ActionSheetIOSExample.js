@@ -1,6 +1,7 @@
 /**
-*  * Copyright 2004-present Facebook. All Rights Reserved.
-*   */
+ * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
+ */
 'use strict';
 
 var React = require('react-native');
@@ -103,10 +104,10 @@ exports.description = 'Interface to show iOS\' action sheets';
 exports.examples = [
   {
     title: 'Show Action Sheet',
-    render() { return <ActionSheetExample />; }
+    render(): ReactElement { return <ActionSheetExample />; }
   },
   {
     title: 'Show Share Action Sheet',
-    render() { return <ShareActionSheetExample />; }
+    render(): ReactElement { return <ShareActionSheetExample />; }
   }
 ];

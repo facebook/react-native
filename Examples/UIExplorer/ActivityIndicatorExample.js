@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -128,7 +129,7 @@ exports.examples = [
   },
   {
     title: 'Start/stop',
-    render: function() {
+    render: function(): ReactElement {
       return <ToggleAnimatingActivityIndicator />;
     }
   },
