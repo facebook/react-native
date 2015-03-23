@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -150,7 +151,7 @@ var NavigatorIOSExample = React.createClass({
     });
   },
 
-  _renderRow: function(title, onPress) {
+  _renderRow: function(title: string, onPress: Function) {
     return (
       <View>
         <TouchableHighlight onPress={onPress}>

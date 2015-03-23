@@ -2,6 +2,7 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule UIExplorerBlock
+ * @flow
  */
 'use strict';
 
@@ -19,7 +20,7 @@ var UIExplorerBlock = React.createClass({
   },
 
   getInitialState: function() {
-    return {description: null};
+    return {description: (null: ?string)};
   },
 
   render: function() {

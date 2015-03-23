@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -199,7 +200,7 @@ exports.examples = [
   },
 }, {
   title: 'Toggling Attributes',
-  render: function() {
+  render: function(): ReactElement {
     return <AttributeToggler />;
   },
 }, {

@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -105,7 +106,7 @@ exports.description = 'Render lists of selectable options with UIPickerView.';
 exports.examples = [
 {
   title: '<PickerIOS>',
-  render: function() {
+  render: function(): ReactElement {
     return <PickerExample />;
   },
 }];

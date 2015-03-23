@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -164,7 +165,7 @@ exports.examples = [
   },
   {
     title: 'Event handling',
-    render: () => <TextEventsExample />,
+    render: function(): ReactElement { return <TextEventsExample /> },
   },
   {
     title: 'Colored input text',
