@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -34,6 +35,8 @@ var WebViewExample = React.createClass({
       loading: true,
     };
   },
+
+  inputText: '',
 
   handleTextInputChange: function(event) {
     this.inputText = event.nativeEvent.text;
@@ -259,6 +262,6 @@ exports.description = 'Base component to display web content';
 exports.examples = [
   {
     title: 'WebView',
-    render() { return <WebViewExample />; }
+    render(): ReactElement { return <WebViewExample />; }
   }
 ];

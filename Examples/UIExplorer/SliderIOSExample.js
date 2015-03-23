@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -50,6 +51,6 @@ exports.description = 'Slider input for numeric values';
 exports.examples = [
   {
     title: 'SliderIOS',
-    render() { return <SliderExample />; }
+    render(): ReactElement { return <SliderExample />; }
   }
 ];

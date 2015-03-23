@@ -2,6 +2,7 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule UIExplorerApp
+ * @flow
  */
 'use strict';
 

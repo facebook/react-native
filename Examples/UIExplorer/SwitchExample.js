@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -118,22 +119,22 @@ exports.description = 'Native boolean input';
 exports.examples = [
   {
     title: 'Switches can be set to true or false',
-    render() { return <BasicSwitchExample />; }
+    render(): ReactElement { return <BasicSwitchExample />; }
   },
   {
     title: 'Switches can be disabled',
-    render() { return <DisabledSwitchExample />; }
+    render(): ReactElement { return <DisabledSwitchExample />; }
   },
   {
     title: 'Custom colors can be provided',
-    render() { return <ColorSwitchExample />; }
+    render(): ReactElement { return <ColorSwitchExample />; }
   },
   {
     title: 'Change events can be detected',
-    render() { return <EventSwitchExample />; }
+    render(): ReactElement { return <EventSwitchExample />; }
   },
   {
     title: 'Switches are controlled components',
-    render() { return <SwitchIOS />; }
+    render(): ReactElement { return <SwitchIOS />; }
   }
 ];

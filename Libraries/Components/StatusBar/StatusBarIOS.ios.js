@@ -21,7 +21,7 @@ var StatusBarIOS = {
     slide: RCTStatusBarManager.Animation.slide,
   },
 
-  setStyle(style: number, animated: boolean) {
+  setStyle(style: number, animated?: boolean) {
     animated = animated || false;
     RCTStatusBarManager.setStyle(style, animated);
   },

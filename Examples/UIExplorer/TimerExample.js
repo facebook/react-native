@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -30,6 +31,12 @@ var Button = React.createClass({
 
 var TimerTester = React.createClass({
   mixins: [TimerMixin],
+
+  _ii: 0,
+  _iters: 0,
+  _start: 0,
+  _timerFn: (null : ?(() => any)),
+  _handle: (null : any),
 
   render: function() {
     var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
@@ -71,7 +78,7 @@ var TimerTester = React.createClass({
         'Elapsed time: ' + e + ' ms\n' + (e / this._ii) + ' ms / iter';
       console.log(msg);
       AlertIOS.alert(msg);
-      this._start = null;
+      this._start = 0;
       this.forceUpdate(() => { this._ii = 0; });
       return;
     }
@@ -153,7 +160,7 @@ exports.examples = [
     title: 'this.setInterval(fn, t)',
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
-    render: function() {
+    render: function(): ReactElement {
       var IntervalExample = React.createClass({
         getInitialState: function() {
           return {

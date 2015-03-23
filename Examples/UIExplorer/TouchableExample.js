@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -53,14 +54,14 @@ exports.examples = [
   },
 }, {
   title: '<Text onPress={fn}> with highlight',
-  render: function() {
+  render: function(): ReactElement {
     return <TextOnPressBox />;
   },
 }, {
   title: 'Touchable feedback events',
   description: '<Touchable*> components accept onPress, onPressIn, ' +
     'onPressOut, and onLongPress as props.',
-  render: function() {
+  render: function(): ReactElement {
     return <TouchableFeedbackEvents />;
   },
 }];

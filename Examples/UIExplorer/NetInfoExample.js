@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -120,16 +121,16 @@ exports.examples = [
   {
     title: 'NetInfo.isConnected',
     description: 'Asyncronously load and observe connectivity',
-    render() { return <IsConnected />; }
+    render(): ReactElement { return <IsConnected />; }
   },
   {
     title: 'NetInfo.reachabilityIOS',
     description: 'Asyncronously load and observe iOS reachability',
-    render() { return <ReachabilityCurrent />; }
+    render(): ReactElement { return <ReachabilityCurrent />; }
   },
   {
     title: 'NetInfo.reachabilityIOS',
     description: 'Observed updates to iOS reachability',
-    render() { return <ReachabilitySubscription />; }
+    render(): ReactElement { return <ReachabilitySubscription />; }
   },
 ];
