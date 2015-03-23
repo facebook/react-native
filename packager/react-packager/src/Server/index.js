@@ -67,7 +67,7 @@ function Server(options) {
   this._debouncedFileChangeHandler = _.debounce(function(filePath) {
     self._rebuildPackages(filePath);
     self._informChangeWatchers();
-  }, 50, true);
+  }, 50);
 }
 
 Server.prototype._onFileChange = function(type, filepath, root) {
