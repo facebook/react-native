@@ -4,7 +4,6 @@
  * https://github.com/chjj/marked
  *
  * @providesModule Marked
- * @jsx React.DOM
  */
 
 var React = require('React');

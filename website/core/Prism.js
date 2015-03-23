@@ -4,7 +4,6 @@
  * @author Lea Verou http://lea.verou.me
  *
  * @providesModule Prism
- * @jsx React.DOM
  */
 
 var React = require('React');
