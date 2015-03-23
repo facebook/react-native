@@ -50,6 +50,10 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   TimerMixin: require('TimerMixin'),
   VibrationIOS: require('VibrationIOS'),
 
+  // Plugins
+  DeviceEventEmitter: require('RCTDeviceEventEmitter'),
+  NativeModules: require('NativeModules'),
+
   addons: {
     batchedUpdates: require('ReactUpdates').batchedUpdates,
     LinkedStateMixin: require('LinkedStateMixin'),
