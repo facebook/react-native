@@ -14,7 +14,9 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 static css_dim_t RCTMeasure(void *context, float width)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
-  CGSize computedSize = [[shadowText attributedString] boundingRectWithSize:(CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX} options:NSStringDrawingUsesLineFragmentOrigin context:nil].size;
+  CGSize computedSize = [[shadowText attributedString] boundingRectWithSize:(CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX}
+                                                                    options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
+                                                                    context:nil].size;
   
   css_dim_t result;
   result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
