@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -118,7 +119,7 @@ exports.description = 'Select dates and times using the native UIDatePicker.';
 exports.examples = [
 {
   title: '<DatePickerIOS>',
-  render: function() {
+  render: function(): ReactElement {
     return <DatePickerExample />;
   },
 }];

@@ -72,6 +72,8 @@ console.log('\n' +
 ' ===============================================================\n'
 );
 
+console.log('Looking for JS files in\n  ', options.projectRoots.join('\n   '));
+
 process.on('uncaughtException', function(e) {
   console.error(e);
   console.error(e.stack);

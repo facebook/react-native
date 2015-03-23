@@ -1,5 +1,6 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ * @flow
  */
 'use strict';
 
@@ -98,6 +99,6 @@ exports.description = 'Asynchronous local disk storage.';
 exports.examples = [
   {
     title: 'Basics - getItem, setItem, removeItem',
-    render() { return <BasicStorageExample />; }
+    render(): ReactElement { return <BasicStorageExample />; }
   },
 ];
