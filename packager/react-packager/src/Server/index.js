@@ -92,8 +92,10 @@ Server.prototype._rebuildPackages = function() {
   Object.keys(packages).forEach(function(key) {
     var options = getOptionsFromUrl(key);
     // Wait for a previous build (if exists) to finish.
-    packages[key] = (packages[key] || q()).then(function() {
-      return buildPackage(options).then(function(p) {
+    packages[key] = (packages[key] || q()).finally(function() {
+      // With finally promise callback we can't change the state of the promise
+      // so we need to reassign the promise.
+      packages[key] = buildPackage(options).then(function(p) {
         // Make a throwaway call to getSource to cache the source string.
         p.getSource({
           inlineSourceMap: options.dev,
@@ -102,6 +104,7 @@ Server.prototype._rebuildPackages = function() {
         return p;
       });
     });
+    return packages[key];
   });
 };
 
