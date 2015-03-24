@@ -18,11 +18,11 @@
 		580C37631AB0F62C0015E709 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C37551AB0F56E0015E709 /* libRCTImage.a */; };
 		580C37641AB0F6350015E709 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C375A1AB0F5970015E709 /* libRCTNetwork.a */; };
 		580C37651AB0F63E0015E709 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C375F1AB0F5D10015E709 /* libRCTText.a */; };
-		580C37921AB1090B0015E709 /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C378F1AB104B00015E709 /* libRCTTest.a */; };
+		58B80D5F1ABA4147004008FB /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C378F1AB104B00015E709 /* libRCTTest.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		004D28A41AAF61C70097A701 /* PBXContainerItemProxy */ = {
+		58005BCB1ABA44F10062E044 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
@@ -117,8 +117,8 @@
 				580C37621AB0F6260015E709 /* libRCTGeolocation.a in Frameworks */,
 				580C37631AB0F62C0015E709 /* libRCTImage.a in Frameworks */,
 				580C37641AB0F6350015E709 /* libRCTNetwork.a in Frameworks */,
+				58B80D5F1ABA4147004008FB /* libRCTTest.a in Frameworks */,
 				580C37651AB0F63E0015E709 /* libRCTText.a in Frameworks */,
-				580C37921AB1090B0015E709 /* libRCTTest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,7 +258,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				004D28A51AAF61C70097A701 /* PBXTargetDependency */,
+				58005BCC1ABA44F10062E044 /* PBXTargetDependency */,
 			);
 			name = IntegrationTestsTests;
 			productName = IntegrationTestsTests;
@@ -438,10 +438,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		004D28A51AAF61C70097A701 /* PBXTargetDependency */ = {
+		58005BCC1ABA44F10062E044 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 13B07F861A680F5B00A75B9A /* IntegrationTests */;
-			targetProxy = 004D28A41AAF61C70097A701 /* PBXContainerItemProxy */;
+			targetProxy = 58005BCB1ABA44F10062E044 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -468,6 +468,7 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					"FB_REFERENCE_IMAGE_DIR=\"\\\"$(SOURCE_ROOT)/$(PROJECT_NAME)Tests/ReferenceImages\\\"\"",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = IntegrationTestsTests/Info.plist;

@@ -62,11 +62,12 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   NativeModules: require('NativeModules'),
 
   addons: {
-    batchedUpdates: require('ReactUpdates').batchedUpdates,
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,
     PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
+    TestModule: require('NativeModules').TestModule,
     TestUtils: undefined,
+    batchedUpdates: require('ReactUpdates').batchedUpdates,
     cloneWithProps: require('cloneWithProps'),
     update: require('update'),
   },

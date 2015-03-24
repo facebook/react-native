@@ -24,34 +24,57 @@
 
 - (void)setUp
 {
-  _runner = [[RCTTestRunner alloc] initWithApp:@"IntegrationTests/IntegrationTestsApp"];
+#ifdef __LP64__
+  RCTAssert(!__LP64__, @"Tests should be run on 32-bit device simulators (e.g. iPhone 5)");
+#endif
+  NSString *version = [[UIDevice currentDevice] systemVersion];
+  RCTAssert([version isEqualToString:@"8.1"], @"Tests should be run on iOS 8.1, found %@", version);
+  _runner = initRunnerForApp(@"IntegrationTests/IntegrationTestsApp");
+
+  // If tests have changes, set recordMode = YES below and run the affected tests on an iPhone5, iOS 8.1 simulator.
+  _runner.recordMode = NO;
 }
+
+#pragma mark Logic Tests
 
 - (void)testTheTester
 {
-  [_runner runTest:@"IntegrationTestHarnessTest"];
+  [_runner runTest:_cmd module:@"IntegrationTestHarnessTest"];
 }
 
 - (void)testTheTester_waitOneFrame
 {
-  [_runner runTest:@"IntegrationTestHarnessTest" initialProps:@{@"waitOneFrame": @YES} expectErrorBlock:nil];
+  [_runner runTest:_cmd module:@"IntegrationTestHarnessTest" initialProps:@{@"waitOneFrame": @YES} expectErrorBlock:nil];
 }
 
 - (void)testTheTester_ExpectError
 {
-  [_runner runTest:@"IntegrationTestHarnessTest"
+  [_runner runTest:_cmd
+            module:@"IntegrationTestHarnessTest"
       initialProps:@{@"shouldThrow": @YES}
   expectErrorRegex:[NSRegularExpression regularExpressionWithPattern:@"because shouldThrow" options:0 error:nil]];
 }
 
 - (void)testTimers
 {
-  [_runner runTest:@"TimersTest"];
+  [_runner runTest:_cmd module:@"TimersTest"];
 }
 
 - (void)testAsyncStorage
 {
-  [_runner runTest:@"AsyncStorageTest"];
+  [_runner runTest:_cmd module:@"AsyncStorageTest"];
+}
+
+#pragma mark Snapshot Tests
+
+- (void)testSimpleSnapshot
+{
+  [_runner runTest:_cmd module:@"SimpleSnapshotTest"];
+}
+
+- (void)testZZZ_NotInRecordMode
+{
+  RCTAssert(_runner.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");
 }
 
 @end
