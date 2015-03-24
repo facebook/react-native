@@ -93,11 +93,6 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 {
   RCT_EXPORT();
 
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    [self requestPermissions];
-  });
-
   [UIApplication sharedApplication].applicationIconBadgeNumber = number;
 }
 
