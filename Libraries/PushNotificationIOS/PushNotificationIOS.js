@@ -7,22 +7,34 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule PushNotificationIOS
+ * @flow
  */
 'use strict';
 
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-
-var RCTPushNotificationManager = NativeModules.PushNotificationManager;
-if (RCTPushNotificationManager) {
-  var _initialNotification = RCTPushNotificationManager.initialNotification;
-}
+var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
+var invariant = require('invariant');
 
 var _notifHandlers = {};
+var _initialNotification = RCTPushNotificationManager &&
+  RCTPushNotificationManager.initialNotification;
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 
 class PushNotificationIOS {
+  _data: Object;
+  _alert: string | Object;
+  _sound: string;
+  _badgeCount: number;
+
+  static setApplicationIconBadgeNumber(number) {
+    RCTPushNotificationManager.setApplicationIconBadgeNumber(number);
+  }
+
+  static getApplicationIconBadgeNumber(callback) {
+    RCTPushNotificationManager.getApplicationIconBadgeNumber(callback);
+  }
 
   static addEventListener(type, handler) {
     _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
@@ -31,6 +43,18 @@ class PushNotificationIOS {
         handler(new PushNotificationIOS(notifData));
       }
     );
+  }
+
+  static requestPermissions() {
+    RCTPushNotificationManager.requestPermissions();
+  }
+
+  static checkPermissions(callback) {
+    invariant(
+      typeof callback === 'function',
+      'Must provide a valid callback'
+    );
+    RCTPushNotificationManager.checkPermissions(callback);
   }
 
   static removeEventListener(type, handler) {
@@ -68,24 +92,24 @@ class PushNotificationIOS {
     });
   }
 
-  getMessage() {
+  getMessage(): ?string | ?Object {
     // alias because "alert" is an ambiguous name
     return this._alert;
   }
 
-  getSound() {
+  getSound(): ?string {
     return this._sound;
   }
 
-  getAlert() {
+  getAlert(): ?string | ?Object {
     return this._alert;
   }
 
-  getBadgeCount() {
+  getBadgeCount(): ?number {
     return this._badgeCount;
   }
 
-  getData() {
+  getData(): ?Object {
     return this._data;
   }
 }

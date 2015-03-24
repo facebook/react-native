@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule groupByEveryN
+ * @flow
  */
 
 /**
@@ -26,7 +27,7 @@
  */
 'use strict';
 
-function groupByEveryN(array, n) {
+function groupByEveryN<T>(array: Array<T>, n: number): Array<Array<?T>> {
   var result = [];
   var temp = [];
 

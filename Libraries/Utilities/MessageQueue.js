@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule MessageQueue
+ * @flow
  */
 'use strict';
 var ErrorUtils = require('ErrorUtils');
@@ -17,6 +18,18 @@ var warning = require('warning');
 var JSTimersExecution = require('JSTimersExecution');
 
 var INTERNAL_ERROR = 'Error in MessageQueue implementation';
+
+type ModulesConfig = {
+  [key:string]: {
+    moduleID: number;
+    methods: {[key:string]: {
+      methodID: number;
+    }};
+  }
+}
+
+type NameToID = {[key:string]: number}
+type IDToName = {[key:number]: string}
 
 /**
  * So as not to confuse static build system.
@@ -45,7 +58,11 @@ var jsCall = function(module, methodName, params) {
  * efficient numeric IDs.
  * @class MessageQueue
  */
-var MessageQueue = function(remoteModulesConfig, localModulesConfig, customRequire) {
+var MessageQueue = function(
+  remoteModulesConfig: ModulesConfig,
+  localModulesConfig: ModulesConfig,
+  customRequire: (id: string) => any
+) {
   this._requireFunc = customRequire || requireFunc;
   this._initBookeeping();
   this._initNamingMap(remoteModulesConfig, localModulesConfig);
@@ -128,7 +145,10 @@ var MessageQueueMixin = {
    * @param {object} remoteModulesConfig Configuration of modules and their
    * methods.
    */
-  _initNamingMap: function(remoteModulesConfig, localModulesConfig) {
+  _initNamingMap: function(
+    remoteModulesConfig: ModulesConfig,
+    localModulesConfig: ModulesConfig
+  ) {
     this._remoteModuleNameToModuleID = {};
     this._remoteModuleIDToModuleName = {};         // Reverse
 
@@ -142,11 +162,11 @@ var MessageQueueMixin = {
     this._localModuleNameToMethodIDToName = {};   // Reverse
 
     function fillMappings(
-      modulesConfig,
-      moduleNameToModuleID,
-      moduleIDToModuleName,
-      moduleNameToMethodNameToID,
-      moduleNameToMethodIDToName
+      modulesConfig: ModulesConfig,
+      moduleNameToModuleID: NameToID,
+      moduleIDToModuleName: IDToName,
+      moduleNameToMethodNameToID: {[key:string]: NameToID},
+      moduleNameToMethodIDToName: {[key:string]: IDToName}
     ) {
       for (var moduleName in modulesConfig) {
         var moduleConfig = modulesConfig[moduleName];

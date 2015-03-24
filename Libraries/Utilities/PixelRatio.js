@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule PixelRatio
+ * @flow
  */
 'use strict';
 
@@ -52,7 +53,7 @@ class PixelRatio {
    *   - PixelRatio.get() === 3
    *     - iPhone 6 plus
    */
-  static get() {
+  static get(): number {
     return Dimensions.get('window').scale;
   }
 }

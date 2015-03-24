@@ -7,14 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TextStylePropTypes
+ * @flow
  */
 'use strict';
 
 var ReactPropTypes = require('ReactPropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var TextStylePropTypes = {
-  ...ViewStylePropTypes,
+// TODO: use spread instead of Object.assign/create after #6560135 is fixed
+var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   fontFamily: ReactPropTypes.string,
   fontSize: ReactPropTypes.number,
   fontWeight: ReactPropTypes.oneOf(['normal' /*default*/, 'bold']),
@@ -28,7 +29,7 @@ var TextStylePropTypes = {
   writingDirection: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
-};
+});
 
 // Text doesn't support padding correctly (#4841912)
 var unsupportedProps = Object.keys({
@@ -41,8 +42,8 @@ var unsupportedProps = Object.keys({
   paddingHorizontal: null,
 });
 
-for (var key in unsupportedProps) {
-  delete TextStylePropTypes[key];
+for (var ii = 0; ii < unsupportedProps.length; ii++) {
+  delete TextStylePropTypes[unsupportedProps[ii]];
 }
 
 module.exports = TextStylePropTypes;

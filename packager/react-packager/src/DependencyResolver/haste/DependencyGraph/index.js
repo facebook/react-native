@@ -184,6 +184,12 @@ DependecyGraph.prototype.resolveDependency = function(
     var main = packageJson.main || 'index';
     modulePath = withExtJs(path.join(packageJson._root, main));
     dep = this._graph[modulePath];
+
+    // Some packages use just a dir and rely on an index.js inside that dir.
+    if (dep == null) {
+      dep = this._graph[path.join(packageJson._root, main, 'index.js')];
+    }
+
     if (dep == null) {
       throw new Error(
         'Cannot find package main file for package: ' + packageJson._root
