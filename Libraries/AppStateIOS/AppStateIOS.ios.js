@@ -71,18 +71,13 @@ var _appStateHandlers = {};
  * the app is only visible to the user when in the `active` state, and the null
  * state will happen only momentarily.
  */
-
 var AppStateIOS = {
 
   /**
-   * Add a handler to AppState changes by listening to the `change` event type
-   * and providing the handler
+   * Add a handler to AppState changes and returns a subscription
    */
-  addEventListener: function(
-    type: string,
-    handler: Function
-  ) {
-    _appStateHandlers[handler] = RCTDeviceEventEmitter.addListener(
+  addListener(handler: Function) {
+    return RCTDeviceEventEmitter.addListener(
       DEVICE_APPSTATE_EVENT,
       (appStateData) => {
         handler(appStateData.app_state);
@@ -90,22 +85,7 @@ var AppStateIOS = {
     );
   },
 
-  /**
-   * Remove a handler by passing the `change` event type and the handler
-   */
-  removeEventListener: function(
-    type: string,
-    handler: Function
-  ) {
-    if (!_appStateHandlers[handler]) {
-      return;
-    }
-    _appStateHandlers[handler].remove();
-    _appStateHandlers[handler] = null;
-  },
-
   currentState: (null : ?String),
-
 };
 
 RCTDeviceEventEmitter.addListener(

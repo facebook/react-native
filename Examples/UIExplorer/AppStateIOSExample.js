@@ -24,6 +24,7 @@ var {
 } = React;
 
 var AppStateSubscription = React.createClass({
+  _appStateListener: null,
   getInitialState() {
     return {
       appState: AppStateIOS.currentState,
@@ -31,10 +32,15 @@ var AppStateSubscription = React.createClass({
     };
   },
   componentDidMount: function() {
-    AppStateIOS.addEventListener('change', this._handleAppStateChange);
+    this._appStateListener = AppStateIOS.addListener(
+      this._handleAppStateChange
+    );
   },
   componentWillUnmount: function() {
-    AppStateIOS.removeEventListener('change', this._handleAppStateChange);
+    if (this._appStateListener) {
+      this._appStateListener.remove();
+      this._appStateListener = null;
+    }
   },
   _handleAppStateChange: function(appState) {
     var previousAppStates = this.state.previousAppStates.slice();
