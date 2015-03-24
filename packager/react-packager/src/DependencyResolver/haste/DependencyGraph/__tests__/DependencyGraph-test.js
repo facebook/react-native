@@ -58,8 +58,8 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            {id: 'index', path: '/root/index.js', dependencies: ['a']},
-            {id: 'a', path: '/root/a.js', dependencies: []},
+            {id: 'index', altId: '/root/index.js', path: '/root/index.js', dependencies: ['a']},
+            {id: 'a', altId: '/root/a.js', path: '/root/a.js', dependencies: []},
           ]);
       });
     });
@@ -88,7 +88,7 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            {id: 'index', path: '/root/index.js', dependencies: ['image!a']},
+            {id: 'index', altId: '/root/index.js', path: '/root/index.js', dependencies: ['image!a']},
             {  id: 'image!a',
                path: '/root/imgs/a.png',
                dependencies: [],
@@ -124,8 +124,8 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            {id: 'index', path: '/root/index.js', dependencies: ['a']},
-            {id: 'a', path: '/root/a.js', dependencies: ['index']},
+            {id: 'index', altId: '/root/index.js', path: '/root/index.js', dependencies: ['a']},
+            {id: 'a', altId: '/root/a.js', path: '/root/a.js', dependencies: ['index']},
           ]);
       });
     });
@@ -157,7 +157,7 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            {id: 'index', path: '/root/index.js', dependencies: ['aPackage']},
+            {id: 'index', altId: '/root/index.js', path: '/root/index.js', dependencies: ['aPackage']},
             { id: 'aPackage/main',
               path: '/root/aPackage/main.js',
               dependencies: []
@@ -189,6 +189,41 @@ describe('DependencyGraph', function() {
           .toEqual([
             {id: '/root/index.js', path: '/root/index.js', dependencies: ['aPackage']},
             { id: 'aPackage/index',
+              path: '/root/aPackage/index.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
+    pit('should have altId for a package with providesModule', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': 'require("aPackage")',
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+            }),
+            'index.js': [
+              '/**',
+              ' * @providesModule EpicModule',
+              ' */',
+            ].join('\n'),
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: '/root/index.js', path: '/root/index.js', dependencies: ['aPackage']},
+            { id: 'EpicModule',
+              altId: 'aPackage/index',
               path: '/root/aPackage/index.js',
               dependencies: []
             },
@@ -229,6 +264,36 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should resolve require to index if it is a dir', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'package.json': JSON.stringify({
+            name: 'test',
+          }),
+          'index.js': 'require("./lib/")',
+          lib: {
+            'index.js': 'lol',
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: 'test/index', path: '/root/index.js', dependencies: ['./lib/']},
+            { id: 'test/lib/index',
+              path: '/root/lib/index.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
     pit('should ignore malformed packages', function() {
       var root = '/root';
       fs.__setMockFilesystem({
@@ -253,7 +318,7 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            {id: 'index', path: '/root/index.js', dependencies: ['aPackage']},
+            {id: 'index', altId: '/root/index.js', path: '/root/index.js', dependencies: ['aPackage']},
           ]);
       });
     });
@@ -297,10 +362,12 @@ describe('DependencyGraph', function() {
         expect(dgraph.getOrderedDependencies('/root/somedir/somefile.js'))
           .toEqual([
             { id: 'index',
+              altId: '/root/somedir/somefile.js',
               path: '/root/somedir/somefile.js',
               dependencies: ['c']
             },
             { id: 'c',
+              altId: '/root/c.js',
               path: '/root/c.js',
               dependencies: []
             },
@@ -340,11 +407,12 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            { id: 'index',
+            { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage']
             },
             { id: 'aPackage',
+              altId: '/root/b.js',
               path: '/root/b.js',
               dependencies: []
             },
@@ -372,7 +440,7 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            { id: 'index',
+            { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['lolomg']
             }
@@ -410,7 +478,7 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            { id: 'index',
+            { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage/subdir/lolynot']
             },
@@ -453,7 +521,7 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            { id: 'index',
+            { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage/subdir/lolynot']
             },
@@ -496,7 +564,7 @@ describe('DependencyGraph', function() {
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
           .toEqual([
-            { id: 'index',
+            { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage']
             },
@@ -570,7 +638,7 @@ describe('DependencyGraph', function() {
         return dgraph.load().then(function() {
           expect(dgraph.getOrderedDependencies('/root/index.js'))
             .toEqual([
-            { id: 'index',
+              { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage']
             },
@@ -621,7 +689,7 @@ describe('DependencyGraph', function() {
         return dgraph.load().then(function() {
           expect(dgraph.getOrderedDependencies('/root/index.js'))
             .toEqual([
-            { id: 'index',
+              { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage']
             },
@@ -671,7 +739,7 @@ describe('DependencyGraph', function() {
         return dgraph.load().then(function() {
           expect(dgraph.getOrderedDependencies('/root/index.js'))
             .toEqual([
-            { id: 'index',
+              { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage', 'foo']
             },
@@ -730,7 +798,7 @@ describe('DependencyGraph', function() {
         return dgraph.load().then(function() {
           expect(dgraph.getOrderedDependencies('/root/index.js'))
             .toEqual([
-            { id: 'index',
+              { id: 'index', altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['aPackage', 'foo']
             },
@@ -739,10 +807,12 @@ describe('DependencyGraph', function() {
               dependencies: ['bar']
             },
             { id: 'bar',
+              altId: '/root/bar.js',
               path: '/root/bar.js',
               dependencies: ['foo']
             },
             { id: 'foo',
+              altId: '/root/foo.js',
               path: '/root/foo.js',
               dependencies: ['aPackage']
             },
@@ -803,7 +873,7 @@ describe('DependencyGraph', function() {
         return dgraph.load().then(function() {
           expect(dgraph.getOrderedDependencies('/root/index.js'))
             .toEqual([
-              { id: 'index',
+              { id: 'index', altId: '/root/index.js',
                 path: '/root/index.js',
                 dependencies: ['aPackage', 'foo']
               },
@@ -812,6 +882,7 @@ describe('DependencyGraph', function() {
                 dependencies: ['bar']
               },
               { id: 'foo',
+                altId: '/root/foo.js',
                 path: '/root/foo.js',
                 dependencies: ['aPackage']
               },
@@ -857,7 +928,7 @@ describe('DependencyGraph', function() {
         return dgraph.load().then(function() {
           expect(dgraph.getOrderedDependencies('/root/index.js'))
             .toEqual([
-              { id: 'index',
+              { id: 'index', altId: '/root/index.js',
                 path: '/root/index.js',
                 dependencies: ['aPackage', 'foo']
               },
@@ -866,6 +937,7 @@ describe('DependencyGraph', function() {
                 dependencies: []
               },
               { id: 'foo',
+                altId: '/root/foo.js',
                 path: '/root/foo.js',
                 dependencies: ['aPackage']
               },
