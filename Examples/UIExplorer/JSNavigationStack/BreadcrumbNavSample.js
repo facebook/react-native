@@ -71,101 +71,98 @@ var SampleNavigationBarRouteMapper = {
   }
 };
 
-var SampleRouteMapper = {
+var _delay = 400; // Just to test for race conditions with native nav.
 
-  delay: 400, // Just to test for race conditions with native nav.
+var renderScene = function(route, navigationOperations) {
+  var content = route.content;
+  return (
+    <ScrollView>
+      <View style={styles.scene}>
+        <TouchableBounce
+          onPress={_pushRouteLater(navigationOperations.push)}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>request push soon</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={_pushRouteLater(navigationOperations.replace)}>
+          <View style={styles.button}>
+            <Text>{content}</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={_pushRouteLater(navigationOperations.replace)}>
+          <View style={styles.button}>
+            <Text>{content}</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={_pushRouteLater(navigationOperations.replace)}>
+          <View style={styles.button}>
+            <Text>{content}</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={_pushRouteLater(navigationOperations.replace)}>
+          <View style={styles.button}>
+            <Text>{content}</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={_pushRouteLater(navigationOperations.replace)}>
+          <View style={styles.button}>
+            <Text>{content}</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={_popRouteLater(navigationOperations.pop)}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>request pop soon</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={
+            _immediatelySetTwoItemsLater(
+              navigationOperations.immediatelyResetRouteStack
+            )
+          }>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>Immediate set two routes</Text>
+          </View>
+        </TouchableBounce>
+        <TouchableBounce
+          onPress={_popToTopLater(navigationOperations.popToTop)}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>pop to top soon</Text>
+          </View>
+        </TouchableBounce>
+      </View>
+    </ScrollView>
+  );
+};
 
-  navigationItemForRoute: function(route, navigationOperations) {
-    var content = route.content;
-    return (
-      <ScrollView>
-        <View style={styles.scene}>
-          <TouchableBounce
-            onPress={this._pushRouteLater(navigationOperations.push)}>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>request push soon</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={this._pushRouteLater(navigationOperations.replace)}>
-            <View style={styles.button}>
-              <Text>{content}</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={this._pushRouteLater(navigationOperations.replace)}>
-            <View style={styles.button}>
-              <Text>{content}</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={this._pushRouteLater(navigationOperations.replace)}>
-            <View style={styles.button}>
-              <Text>{content}</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={this._pushRouteLater(navigationOperations.replace)}>
-            <View style={styles.button}>
-              <Text>{content}</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={this._pushRouteLater(navigationOperations.replace)}>
-            <View style={styles.button}>
-              <Text>{content}</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={this._popRouteLater(navigationOperations.pop)}>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>request pop soon</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={
-              this._immediatelySetTwoItemsLater(
-                navigationOperations.immediatelyResetRouteStack
-              )
-            }>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>Immediate set two routes</Text>
-            </View>
-          </TouchableBounce>
-          <TouchableBounce
-            onPress={this._popToTopLater(navigationOperations.popToTop)}>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>pop to top soon</Text>
-            </View>
-          </TouchableBounce>
-        </View>
-      </ScrollView>
-    );
-  },
+var _popToTopLater = function(popToTop) {
+  return () => setTimeout(popToTop, _delay);
+};
 
-  _popToTopLater: function(popToTop) {
-    return () => setTimeout(popToTop, SampleRouteMapper.delay);
-  },
+var _pushRouteLater = function(push) {
+  return () => setTimeout(
+    () => push(_getRandomRoute()),
+    _delay
+  );
+};
 
-  _pushRouteLater: function(push) {
-    return () => setTimeout(
-      () => push(_getRandomRoute()),
-      SampleRouteMapper.delay
-    );
-  },
+var _immediatelySetTwoItemsLater = function(immediatelyResetRouteStack) {
+  return () => setTimeout(
+    () => immediatelyResetRouteStack([
+      _getRandomRoute(),
+      _getRandomRoute(),
+    ])
+  );
+};
 
-  _immediatelySetTwoItemsLater: function(immediatelyResetRouteStack) {
-    return () => setTimeout(
-      () => immediatelyResetRouteStack([
-        _getRandomRoute(),
-        _getRandomRoute(),
-      ])
-    );
-  },
-
-  _popRouteLater: function(pop) {
-    return () => setTimeout(pop, SampleRouteMapper.delay);
-  },
+var _popRouteLater = function(pop) {
+  return () => setTimeout(pop, _delay);
 };
 
 var BreadcrumbNavSample = React.createClass({
@@ -194,7 +191,7 @@ var BreadcrumbNavSample = React.createClass({
             debugOverlay={false}
             style={[styles.appContainer]}
             initialRoute={initialRoute}
-            routeMapper={SampleRouteMapper}
+            renderScene={renderScene}
             navigationBar={
               <BreadcrumbNavigationBar
                 navigationBarRouteMapper={SampleNavigationBarRouteMapper}
@@ -212,7 +209,7 @@ var BreadcrumbNavSample = React.createClass({
             debugOverlay={false}
             style={[styles.appContainer]}
             initialRoute={initialRoute}
-            routeMapper={SampleRouteMapper}
+            renderScene={renderScene}
             navigationBar={
               <BreadcrumbNavigationBar
                 navigationBarRouteMapper={SampleNavigationBarRouteMapper}

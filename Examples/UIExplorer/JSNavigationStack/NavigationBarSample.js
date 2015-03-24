@@ -65,18 +65,6 @@ function newRandomRoute() {
   };
 }
 
-var RouteMapper = {
-
-  navigationItemForRoute: function(route, navigationOperations) {
-    return (
-      <View style={styles.scene}>
-        <Text>{route.content}</Text>
-      </View>
-    );
-  },
-
-};
-
 var NavigationBarSample = React.createClass({
 
   render: function() {
@@ -86,7 +74,11 @@ var NavigationBarSample = React.createClass({
           debugOverlay={false}
           style={styles.appContainer}
           initialRoute={newRandomRoute()}
-          routeMapper={RouteMapper}
+          renderScene={(route, navigationOperations) => (
+            <View style={styles.scene}>
+              <Text>{route.content}</Text>
+            </View>
+          )}
           navigationBar={
             <NavigationBar
               navigationBarRouteMapper={NavigationBarRouteMapper}
