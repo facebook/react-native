@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule LayoutAnimation
+ * @flow
  */
 'use strict';
 
@@ -42,6 +43,15 @@ var animChecker = createStrictShapeTypeChecker({
   ),
 });
 
+type Anim = {
+  duration?: number;
+  delay?: number;
+  springDamping?: number;
+  initialVelocity?: number;
+  type?: $Enum<typeof Types>;
+  property?: $Enum<typeof Properties>;
+}
+
 var configChecker = createStrictShapeTypeChecker({
   duration: PropTypes.number.isRequired,
   create: animChecker,
@@ -49,46 +59,56 @@ var configChecker = createStrictShapeTypeChecker({
   delete: animChecker,
 });
 
-var LayoutAnimation = {
-  configureNext(config, onAnimationDidEnd, onError) {
-    configChecker({config}, 'config', 'LayoutAnimation.configureNext');
-    RCTUIManager.configureNextLayoutAnimation(config, onAnimationDidEnd, onError);
-  },
-  create(duration, type, creationProp) {
-    return {
-      duration,
-      create: {
-        type,
-        property: creationProp,
-      },
-      update: {
-        type,
-      },
-    };
-  },
-  Types: Types,
-  Properties: Properties,
-  configChecker: configChecker,
-};
+type Config = {
+  duration: number;
+  create?: Anim;
+  update?: Anim;
+  delete?: Anim;
+}
 
-LayoutAnimation.Presets = {
-  easeInEaseOut: LayoutAnimation.create(
-    0.3, Types.easeInEaseOut, Properties.opacity
-  ),
-  linear: LayoutAnimation.create(
-    0.5, Types.linear, Properties.opacity
-  ),
-  spring: {
-    duration: 0.7,
+function configureNext(config: Config, onAnimationDidEnd?: Function, onError?: Function) {
+  configChecker({config}, 'config', 'LayoutAnimation.configureNext');
+  RCTUIManager.configureNextLayoutAnimation(config, onAnimationDidEnd, onError);
+}
+
+function create(duration: number, type, creationProp): Config {
+  return {
+    duration,
     create: {
-      type: Types.linear,
-      property: Properties.opacity,
+      type,
+      property: creationProp,
     },
     update: {
-      type: Types.spring,
-      springDamping: 0.4,
+      type,
     },
-  },
+  };
+}
+
+var LayoutAnimation = {
+  configureNext,
+  create,
+  Types,
+  Properties,
+  configChecker: configChecker,
+  Presets: {
+    easeInEaseOut: create(
+      0.3, Types.easeInEaseOut, Properties.opacity
+    ),
+    linear: create(
+      0.5, Types.linear, Properties.opacity
+    ),
+    spring: {
+      duration: 0.7,
+      create: {
+        type: Types.linear,
+        property: Properties.opacity,
+      },
+      update: {
+        type: Types.spring,
+        springDamping: 0.4,
+      },
+    },
+  }
 };
 
 module.exports = LayoutAnimation;

@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AppRegistry
+ * @flow
  */
 'use strict';
 
@@ -21,6 +22,12 @@ if (__DEV__) {
 
 var runnables = {};
 
+type AppConfig = {
+  appKey: string;
+  component: ReactClass<any, any, any>;
+  run?: Function;
+};
+
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
  * root components should register themselves with
@@ -33,17 +40,18 @@ var runnables = {};
  * `require`d.
  */
 var AppRegistry = {
-  registerConfig: function(config) {
+  registerConfig: function(config: Array<AppConfig>) {
     for (var i = 0; i < config.length; ++i) {
-      if (config[i].run) {
-        AppRegistry.registerRunnable(config[i].appKey, config[i].run);
+      var appConfig = config[i];
+      if (appConfig.run) {
+        AppRegistry.registerRunnable(appConfig.appKey, appConfig.run);
       } else {
-        AppRegistry.registerComponent(config[i].appKey, config[i].component);
+        AppRegistry.registerComponent(appConfig.appKey, appConfig.component);
       }
     }
   },
 
-  registerComponent: function(appKey, getComponentFunc) {
+  registerComponent: function(appKey: string, getComponentFunc: Function): string {
     runnables[appKey] = {
       run: (appParameters) =>
         renderApplication(getComponentFunc(), appParameters.initialProps, appParameters.rootTag)
@@ -51,12 +59,12 @@ var AppRegistry = {
     return appKey;
   },
 
-  registerRunnable: function(appKey, func) {
+  registerRunnable: function(appKey: string, func: Function): string {
     runnables[appKey] = {run: func};
     return appKey;
   },
 
-  runApplication: function(appKey, appParameters) {
+  runApplication: function(appKey: string, appParameters: any): void {
     console.log(
       'Running application "' + appKey + '" with appParams: ' +
       JSON.stringify(appParameters) + '. ' +
