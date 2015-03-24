@@ -53,7 +53,7 @@ var initStyle = function(index, presentedIndex) {
 
 var BreadcrumbNavigationBar = React.createClass({
   propTypes: {
-    navigationOperations: PropTypes.shape({
+    navigator: PropTypes.shape({
       push: PropTypes.func,
       pop: PropTypes.func,
       replace: PropTypes.func,
@@ -129,7 +129,7 @@ var BreadcrumbNavigationBar = React.createClass({
   _renderOrReturnBreadcrumb: function(route, index) {
     var uid = this.props.navState.idStack[index];
     var navBarRouteMapper = this.props.navigationBarRouteMapper;
-    var navOps = this.props.navigationOperations;
+    var navOps = this.props.navigator;
     var alreadyRendered = this.refs['crumbContainer' + uid];
     if (alreadyRendered) {
       // Don't bother re-calculating the children
@@ -176,7 +176,7 @@ var BreadcrumbNavigationBar = React.createClass({
     var navBarRouteMapper = this.props.navigationBarRouteMapper;
     var titleContent = navBarRouteMapper.titleContentForRoute(
       navState.routeStack[index],
-      this.props.navigationOperations
+      this.props.navigator
     );
     var firstStyles = initStyle(index, navStatePresentedIndex(this.props.navState));
     return (
@@ -208,7 +208,7 @@ var BreadcrumbNavigationBar = React.createClass({
     }
     var rightContent = navBarRouteMapper.rightContentForRoute(
       navState.routeStack[index],
-      this.props.navigationOperations
+      this.props.navigator
     );
     if (!rightContent) {
       return null;

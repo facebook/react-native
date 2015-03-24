@@ -839,7 +839,7 @@ var JSNavigationStack = React.createClass({
     }
     return React.cloneElement(this.props.navigationBar, {
       ref: NAVIGATION_BAR_REF,
-      navigationOperations: this.memoizedNavigationOperations,
+      navigator: this.memoizedNavigationOperations,
       navState: this.state,
     });
   },

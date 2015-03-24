@@ -27,14 +27,14 @@ var ROUTE_STACK = [
   _getRandomRoute(),
   _getRandomRoute(),
 ];
-var renderScene = function(route, navigationOperations) {
+var renderScene = function(route, navigator) {
   return (
     <ScrollView style={styles.scene}>
       <View style={styles.scroll}>
       <Text>{route.randNumber}</Text>
       <TouchableBounce
         onPress={() => {
-          navigationOperations.jumpBack();
+          navigator.jumpBack();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>jumpBack</Text>
@@ -42,7 +42,7 @@ var renderScene = function(route, navigationOperations) {
       </TouchableBounce>
       <TouchableBounce
         onPress={() => {
-          navigationOperations.jumpForward();
+          navigator.jumpForward();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>jumpForward</Text>
@@ -50,7 +50,7 @@ var renderScene = function(route, navigationOperations) {
       </TouchableBounce>
       <TouchableBounce
         onPress={() => {
-          navigationOperations.jumpTo(INIT_ROUTE);
+          navigator.jumpTo(INIT_ROUTE);
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>jumpTo initial route</Text>
@@ -58,7 +58,7 @@ var renderScene = function(route, navigationOperations) {
       </TouchableBounce>
       <TouchableBounce
         onPress={() => {
-          navigationOperations.push(_getRandomRoute());
+          navigator.push(_getRandomRoute());
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: push</Text>
@@ -66,7 +66,7 @@ var renderScene = function(route, navigationOperations) {
       </TouchableBounce>
       <TouchableBounce
         onPress={() => {
-          navigationOperations.replace(_getRandomRoute());
+          navigator.replace(_getRandomRoute());
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: replace</Text>
@@ -74,7 +74,7 @@ var renderScene = function(route, navigationOperations) {
       </TouchableBounce>
       <TouchableBounce
         onPress={() => {
-          navigationOperations.pop();
+          navigator.pop();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: pop</Text>
@@ -82,7 +82,7 @@ var renderScene = function(route, navigationOperations) {
       </TouchableBounce>
       <TouchableBounce
         onPress={() =>  {
-          navigationOperations.immediatelyResetRouteStack([
+          navigator.immediatelyResetRouteStack([
             _getRandomRoute(),
             _getRandomRoute(),
           ]);
@@ -93,7 +93,7 @@ var renderScene = function(route, navigationOperations) {
       </TouchableBounce>
       <TouchableBounce
         onPress={() => {
-          navigationOperations.popToTop();
+          navigator.popToTop();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: pop to top</Text>
@@ -110,7 +110,7 @@ class JumpingNavBar extends React.Component {
       <View style={styles.navBar}>
         {this.props.routeStack.map((route, index) => (
           <TouchableBounce onPress={() => {
-            this.props.navigationOperations.jumpTo(route);
+            this.props.navigator.jumpTo(route);
           }}>
             <View style={styles.navButton}>
               <Text
