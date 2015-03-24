@@ -196,7 +196,7 @@
     if (!module) {
       msg = 'Requiring unknown module "' + id + '"';
       if (__DEV__) {
-        msg += '. It may not be loaded yet. Did you forget to run arc build?';
+        msg += '. If you are sure the module is there, try restarting the packager.';
       }
       throw new ModuleError(msg);
     }
