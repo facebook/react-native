@@ -7,17 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AdSupportIOS
+ * @flow
  */
 'use strict';
 
 var AdSupport = require('NativeModules').AdSupport;
 
 module.exports = {
-  getAdvertisingId: function(onSuccess, onFailure) {
+  getAdvertisingId: function(onSuccess: Function, onFailure: Function) {
     AdSupport.getAdvertisingId(onSuccess, onFailure);
   },
 
-  getAdvertisingTrackingEnabled: function(onSuccess, onFailure) {
+  getAdvertisingTrackingEnabled: function(onSuccess: Function, onFailure: Function) {
     AdSupport.getAdvertisingTrackingEnabled(onSuccess, onFailure);
   },
 };
