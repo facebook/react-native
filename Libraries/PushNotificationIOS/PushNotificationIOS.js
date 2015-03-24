@@ -13,13 +13,12 @@
 
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-
-var RCTPushNotificationManager = NativeModules.PushNotificationManager;
-if (RCTPushNotificationManager) {
-  var _initialNotification = RCTPushNotificationManager.initialNotification;
-}
+var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
+var invariant = require('invariant');
 
 var _notifHandlers = {};
+var _initialNotification = RCTPushNotificationManager &&
+  RCTPushNotificationManager.initialNotification;
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 
@@ -29,6 +28,14 @@ class PushNotificationIOS {
   _sound: string;
   _badgeCount: number;
 
+  static setApplicationIconBadgeNumber(number) {
+    RCTPushNotificationManager.setApplicationIconBadgeNumber(number);
+  }
+
+  static getApplicationIconBadgeNumber(callback) {
+    RCTPushNotificationManager.getApplicationIconBadgeNumber(callback);
+  }
+
   static addEventListener(type, handler) {
     _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
       DEVICE_NOTIF_EVENT,
@@ -36,6 +43,18 @@ class PushNotificationIOS {
         handler(new PushNotificationIOS(notifData));
       }
     );
+  }
+
+  static requestPermissions() {
+    RCTPushNotificationManager.requestPermissions();
+  }
+
+  static checkPermissions(callback) {
+    invariant(
+      typeof callback === 'function',
+      'Must provide a valid callback'
+    );
+    RCTPushNotificationManager.checkPermissions(callback);
   }
 
   static removeEventListener(type, handler) {

@@ -7,13 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <FBReactKit/RCTBridgeModule.h>
+#import <UIKit/UIKit.h>
 
-extern NSString *const RKRemoteNotificationReceived;
-extern NSString *const RKOpenURLNotification;
+#import "../../ReactKit/Base/RCTBridgeModule.h"
 
 @interface RCTPushNotificationManager : NSObject <RCTBridgeModule>
 
 - (instancetype)initWithInitialNotification:(NSDictionary *)initialNotification NS_DESIGNATED_INITIALIZER;
+
++ (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
++ (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification;
++ (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
 
 @end
