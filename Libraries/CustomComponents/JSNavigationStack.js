@@ -76,9 +76,8 @@ var JSNavigationStack = React.createClass({
 
   propTypes: {
     animationConfigRouteMapper: PropTypes.func,
-    routeMapper: PropTypes.shape({
-      navigationItemForRoute: PropTypes.func,
-    }),
+    // Returns the rendered scene to display when invoked with (route, navigator)
+    renderScene: PropTypes.func.isRequired,
     initialRoute: PropTypes.object,
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
     // Will emit the target route on mounting and before each nav transition,
@@ -797,8 +796,7 @@ var JSNavigationStack = React.createClass({
       this.state.updatingRangeLength !== 0 &&
       i >= this.state.updatingRangeStart &&
       i <= this.state.updatingRangeStart + this.state.updatingRangeLength;
-    var routeMapper = this.props.routeMapper;
-    var child = routeMapper.navigationItemForRoute(
+    var child = this.props.renderScene(
       route,
       this.memoizedNavigationOperations,
       this._onItemRef.bind(null, this.state.idStack[i])

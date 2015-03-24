@@ -49,7 +49,7 @@ var TabBarExample = React.createClass({
     description: 'JS-implemented navigation',
   },
 
-  renderSceneForRoute: function(route, nav) {
+  renderScene: function(route, nav) {
     switch (route.id) {
       case 'menu':
         return (
@@ -72,9 +72,7 @@ var TabBarExample = React.createClass({
       <JSNavigationStack
         style={styles.container}
         initialRoute={{ id: 'menu', }}
-        routeMapper={{
-          navigationItemForRoute: this.renderSceneForRoute,
-        }}
+        renderScene={this.renderScene}
         animationConfigRouteMapper={(route) => JSNavigationStack.AnimationConfigs.FloatFromBottom}
       />
     );

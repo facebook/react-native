@@ -42,7 +42,7 @@ var HorizontalNavigationBarRouteMapper = {
   titleContentForRoute: function(route, navigationOperations) {
     return (
       <TouchableBounce
-        onPress={() => navigationOperations.push(_getRandomRoute())}>
+        onPress={() => () => { navigationOperations.push(_getRandomRoute()); }}>
         <View>
           <Text style={styles.titleText}>{route.title}</Text>
         </View>
@@ -67,86 +67,62 @@ var HorizontalNavigationBarRouteMapper = {
   }
 };
 
-var ThirdDeepRouteMapper = {
-  navigationItemForRoute: function(route, navigationOperations) {
-    return (
-      <View style={styles.navigationItem}>
-        <ScrollView>
-          <View style={styles.thirdDeepScrollContent}>
-            <TouchableBounce
-              onPress={this._pushRoute(navigationOperations.push)}>
-              <View style={styles.button}>
-                <Text style={styles.buttonText}>request push soon</Text>
-              </View>
-            </TouchableBounce>
-          </View>
-        </ScrollView>
-      </View>
-    );
-  },
-
-  _pushRoute: function(push) {
-    return () => push(_getRandomRoute());
-  },
-};
-
-var SecondDeepRouteMapper = {
-  navigationItemForRoute: function(route, navigationOperations) {
-    return (
-      <View style={styles.navigationItem}>
+var ThirdDeepRouteMapper = (route, navigationOperations) => (
+  <View style={styles.navigationItem}>
+    <ScrollView>
+      <View style={styles.thirdDeepScrollContent}>
         <TouchableBounce
-          onPress={this._pushRoute(navigationOperations.push)}>
+          onPress={() => { navigationOperations.push(_getRandomRoute()); }}>
           <View style={styles.button}>
-            <Text style={styles.buttonText}>Push Horizontal</Text>
+            <Text style={styles.buttonText}>request push soon</Text>
           </View>
         </TouchableBounce>
-        <JSNavigationStack
-          style={styles.thirdDeepNavigator}
-          initialRoute={{title: '3x Nested Horizontal'}}
-          routeMapper={ThirdDeepRouteMapper}
-          navigationBar={
-            <BreadcrumbNavigationBar
-              navigationBarRouteMapper={HorizontalNavigationBarRouteMapper}
-            />
-          }
-        />
       </View>
-    );
-  },
+    </ScrollView>
+  </View>
+);
 
-  _pushRoute: function(push) {
-    return () => push(_getRandomRoute());
-  },
-};
-
-var FirstDeepRouteMapper = {
-  navigationItemForRoute: function(route, navigationOperations) {
-    return (
-      <View style={styles.navigationItem}>
-        <TouchableBounce
-          onPress={this._pushRoute(navigationOperations.push)}>
-          <View style={styles.button}>
-            <Text style={styles.buttonText}>Push Outer Vertical Stack</Text>
-          </View>
-        </TouchableBounce>
-        <JSNavigationStack
-          style={styles.secondDeepNavigator}
-          initialRoute={{title: '2x Nested Horizontal Nav'}}
-          routeMapper={SecondDeepRouteMapper}
-          navigationBar={
-            <BreadcrumbNavigationBar
-              navigationBarRouteMapper={HorizontalNavigationBarRouteMapper}
-            />
-          }
-        />
+var SecondDeepRouteMapper = (route, navigationOperations) => (
+  <View style={styles.navigationItem}>
+    <TouchableBounce
+      onPress={() => { navigationOperations.push(_getRandomRoute()); }}>
+      <View style={styles.button}>
+        <Text style={styles.buttonText}>Push Horizontal</Text>
       </View>
-    );
-  },
+    </TouchableBounce>
+    <JSNavigationStack
+      style={styles.thirdDeepNavigator}
+      initialRoute={{title: '3x Nested Horizontal'}}
+      renderScene={ThirdDeepRouteMapper}
+      navigationBar={
+        <BreadcrumbNavigationBar
+          navigationBarRouteMapper={HorizontalNavigationBarRouteMapper}
+        />
+      }
+    />
+  </View>
+);
 
-  _pushRoute: function(push) {
-    return () => push(_getRandomRoute());
-  },
-};
+var FirstDeepRouteMapper = (route, navigationOperations) => (
+  <View style={styles.navigationItem}>
+    <TouchableBounce
+      onPress={() => { navigationOperations.push(_getRandomRoute()); }}>
+      <View style={styles.button}>
+        <Text style={styles.buttonText}>Push Outer Vertical Stack</Text>
+      </View>
+    </TouchableBounce>
+    <JSNavigationStack
+      style={styles.secondDeepNavigator}
+      initialRoute={{title: '2x Nested Horizontal Nav'}}
+      renderScene={SecondDeepRouteMapper}
+      navigationBar={
+        <BreadcrumbNavigationBar
+          navigationBarRouteMapper={HorizontalNavigationBarRouteMapper}
+        />
+      }
+    />
+  </View>
+);
 
 /**
  * The outer component.
@@ -160,7 +136,7 @@ var NestedBreadcrumbNavSample = React.createClass({
         style={[styles.appContainer]}
         animationConfigRouteMapper={() => JSNavigationStack.AnimationConfigs.FloatFromBottom}
         initialRoute={initialRoute}
-        routeMapper={FirstDeepRouteMapper}
+        renderScene={FirstDeepRouteMapper}
       />
     );
   }
