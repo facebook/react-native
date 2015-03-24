@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule PushNotificationIOS
+ * @flow
  */
 'use strict';
 
@@ -23,6 +24,10 @@ var _notifHandlers = {};
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 
 class PushNotificationIOS {
+  _data: Object;
+  _alert: string | Object;
+  _sound: string;
+  _badgeCount: number;
 
   static addEventListener(type, handler) {
     _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
@@ -68,24 +73,24 @@ class PushNotificationIOS {
     });
   }
 
-  getMessage() {
+  getMessage(): ?string | ?Object {
     // alias because "alert" is an ambiguous name
     return this._alert;
   }
 
-  getSound() {
+  getSound(): ?string {
     return this._sound;
   }
 
-  getAlert() {
+  getAlert(): ?string | ?Object {
     return this._alert;
   }
 
-  getBadgeCount() {
+  getBadgeCount(): ?number {
     return this._badgeCount;
   }
 
-  getData() {
+  getData(): ?Object {
     return this._data;
   }
 }

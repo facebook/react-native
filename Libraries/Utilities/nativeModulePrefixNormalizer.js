@@ -7,11 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule nativeModulePrefixNormalizer
+ * @flow
  */
 'use strict';
 
 // Dirty hack to support old (RK) and new (RCT) native module name conventions
-function nativeModulePrefixNormalizer(modules) {
+function nativeModulePrefixNormalizer(
+  modules: {[key: string]: any}
+): void {
   Object.keys(modules).forEach((moduleName) => {
     var strippedName = moduleName.replace(/^(RCT|RK)/, '');
     if (modules['RCT' + strippedName] && modules['RK' + strippedName]) {

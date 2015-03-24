@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule mergeFast
+ * @flow
  */
 'use strict';
 
@@ -19,7 +20,7 @@
  * @return {object} Merging of two objects, including prototype
  * inherited properties.
  */
-var mergeFast = function(one, two) {
+var mergeFast = function(one: Object, two: Object): Object {
   var ret = {};
   for (var keyOne in one) {
     ret[keyOne] = one[keyOne];

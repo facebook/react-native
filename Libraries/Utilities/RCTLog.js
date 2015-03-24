@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule RCTLog
+ * @flow
  */
  /* globals nativeLoggingHook */
 'use strict';
@@ -31,7 +32,7 @@ class RCTLog {
       logFn,
       'Level "' + level + '" not one of ' + Object.keys(levelsMap)
     );
-    if (typeof nativeLoggingHook === 'undefined') {
+    if (typeof global.nativeLoggingHook === 'undefined') {
       // We already printed in xcode, so only log here if using a js debugger
       console[logFn].apply(console, args);
     }
