@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -188,7 +190,7 @@ exports.description = 'Base component to display maps';
 exports.examples = [
   {
     title: 'Map',
-    render() { return <MapViewExample />; }
+    render(): ReactElement { return <MapViewExample />; }
   },
   {
     title: 'Map shows user location',
