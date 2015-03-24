@@ -21,6 +21,7 @@ var {
   TouchableHighlight,
   View,
 } = React;
+var JSNavigationStackExample = require('./JSNavigationStack/JSNavigationStackExample');
 
 var createExamplePage = require('./createExamplePage');
 
@@ -32,6 +33,7 @@ var COMPONENTS = [
   require('./ListViewSimpleExample'),
   require('./MapViewExample'),
   require('./NavigatorIOSExample'),
+  JSNavigationStackExample,
   require('./PickerExample'),
   require('./ScrollViewExample'),
   require('./SliderIOSExample'),
@@ -143,6 +145,12 @@ class UIExplorerList extends React.Component {
   }
 
   _onPressRow(example) {
+    if (example === JSNavigationStackExample) {
+      this.props.onExternalExampleRequested(
+        JSNavigationStackExample
+      );
+      return;
+    }
     var Component = example.examples ?
       createExamplePage(null, example) :
       example;
