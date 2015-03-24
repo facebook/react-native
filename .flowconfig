@@ -21,6 +21,7 @@
 
 [libs]
 Libraries/react-native/react-native-interface.js
+Examples/UIExplorer/ImageMocks.js
 
 [options]
 module.system=haste
