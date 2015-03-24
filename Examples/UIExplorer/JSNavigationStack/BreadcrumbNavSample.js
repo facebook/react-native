@@ -32,7 +32,7 @@ var _getRandomRoute = function() {
 
 
 var SampleNavigationBarRouteMapper = {
-  rightContentForRoute: function(route, navigationOperations) {
+  rightContentForRoute: function(route, navigator) {
     if (route.rightButtonTitle) {
       return (
         <Text style={[styles.titleText, styles.filterText]}>
@@ -43,28 +43,28 @@ var SampleNavigationBarRouteMapper = {
       return null;
     }
   },
-  titleContentForRoute: function(route, navigationOperations) {
+  titleContentForRoute: function(route, navigator) {
     return (
       <TouchableBounce
-        onPress={() => navigationOperations.push(_getRandomRoute())}>
+        onPress={() => navigator.push(_getRandomRoute())}>
         <View>
           <Text style={styles.titleText}>{route.title}</Text>
         </View>
       </TouchableBounce>
     );
   },
-  iconForRoute: function(route, navigationOperations) {
+  iconForRoute: function(route, navigator) {
     var onPress =
-      navigationOperations.popToRoute.bind(navigationOperations, route);
+      navigator.popToRoute.bind(navigator, route);
     return (
       <TouchableBounce onPress={onPress}>
         <View style={styles.crumbIconPlaceholder} />
       </TouchableBounce>
     );
   },
-  separatorForRoute: function(route, navigationOperations) {
+  separatorForRoute: function(route, navigator) {
     return (
-      <TouchableBounce onPress={navigationOperations.pop}>
+      <TouchableBounce onPress={navigator.pop}>
         <View style={styles.crumbSeparatorPlaceholder} />
       </TouchableBounce>
     );
@@ -73,49 +73,49 @@ var SampleNavigationBarRouteMapper = {
 
 var _delay = 400; // Just to test for race conditions with native nav.
 
-var renderScene = function(route, navigationOperations) {
+var renderScene = function(route, navigator) {
   var content = route.content;
   return (
     <ScrollView>
       <View style={styles.scene}>
         <TouchableBounce
-          onPress={_pushRouteLater(navigationOperations.push)}>
+          onPress={_pushRouteLater(navigator.push)}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>request push soon</Text>
           </View>
         </TouchableBounce>
         <TouchableBounce
-          onPress={_pushRouteLater(navigationOperations.replace)}>
+          onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
         </TouchableBounce>
         <TouchableBounce
-          onPress={_pushRouteLater(navigationOperations.replace)}>
+          onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
         </TouchableBounce>
         <TouchableBounce
-          onPress={_pushRouteLater(navigationOperations.replace)}>
+          onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
         </TouchableBounce>
         <TouchableBounce
-          onPress={_pushRouteLater(navigationOperations.replace)}>
+          onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
         </TouchableBounce>
         <TouchableBounce
-          onPress={_pushRouteLater(navigationOperations.replace)}>
+          onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
         </TouchableBounce>
         <TouchableBounce
-          onPress={_popRouteLater(navigationOperations.pop)}>
+          onPress={_popRouteLater(navigator.pop)}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>request pop soon</Text>
           </View>
@@ -123,7 +123,7 @@ var renderScene = function(route, navigationOperations) {
         <TouchableBounce
           onPress={
             _immediatelySetTwoItemsLater(
-              navigationOperations.immediatelyResetRouteStack
+              navigator.immediatelyResetRouteStack
             )
           }>
           <View style={styles.button}>
@@ -131,7 +131,7 @@ var renderScene = function(route, navigationOperations) {
           </View>
         </TouchableBounce>
         <TouchableBounce
-          onPress={_popToTopLater(navigationOperations.popToTop)}>
+          onPress={_popToTopLater(navigator.popToTop)}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>pop to top soon</Text>
           </View>

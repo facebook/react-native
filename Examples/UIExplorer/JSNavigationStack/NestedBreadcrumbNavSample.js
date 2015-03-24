@@ -28,7 +28,7 @@ var _getRandomRoute = function() {
 
 
 var HorizontalNavigationBarRouteMapper = {
-  rightContentForRoute: function(route, navigationOperations) {
+  rightContentForRoute: function(route, navigator) {
     if (route.rightButtonTitle) {
       return (
         <Text style={[styles.titleText, styles.filterText]}>
@@ -39,40 +39,40 @@ var HorizontalNavigationBarRouteMapper = {
       return null;
     }
   },
-  titleContentForRoute: function(route, navigationOperations) {
+  titleContentForRoute: function(route, navigator) {
     return (
       <TouchableBounce
-        onPress={() => () => { navigationOperations.push(_getRandomRoute()); }}>
+        onPress={() => () => { navigator.push(_getRandomRoute()); }}>
         <View>
           <Text style={styles.titleText}>{route.title}</Text>
         </View>
       </TouchableBounce>
     );
   },
-  iconForRoute: function(route, navigationOperations) {
+  iconForRoute: function(route, navigator) {
     var onPress =
-      navigationOperations.popToRoute.bind(navigationOperations, route);
+      navigator.popToRoute.bind(navigator, route);
     return (
       <TouchableBounce onPress={onPress}>
         <View style={styles.crumbIconPlaceholder} />
       </TouchableBounce>
     );
   },
-  separatorForRoute: function(route, navigationOperations) {
+  separatorForRoute: function(route, navigator) {
     return (
-      <TouchableBounce onPress={navigationOperations.pop}>
+      <TouchableBounce onPress={navigator.pop}>
         <View style={styles.crumbSeparatorPlaceholder} />
       </TouchableBounce>
     );
   }
 };
 
-var ThirdDeepRouteMapper = (route, navigationOperations) => (
+var ThirdDeepRouteMapper = (route, navigator) => (
   <View style={styles.navigationItem}>
     <ScrollView>
       <View style={styles.thirdDeepScrollContent}>
         <TouchableBounce
-          onPress={() => { navigationOperations.push(_getRandomRoute()); }}>
+          onPress={() => { navigator.push(_getRandomRoute()); }}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>request push soon</Text>
           </View>
@@ -82,10 +82,10 @@ var ThirdDeepRouteMapper = (route, navigationOperations) => (
   </View>
 );
 
-var SecondDeepRouteMapper = (route, navigationOperations) => (
+var SecondDeepRouteMapper = (route, navigator) => (
   <View style={styles.navigationItem}>
     <TouchableBounce
-      onPress={() => { navigationOperations.push(_getRandomRoute()); }}>
+      onPress={() => { navigator.push(_getRandomRoute()); }}>
       <View style={styles.button}>
         <Text style={styles.buttonText}>Push Horizontal</Text>
       </View>
@@ -103,10 +103,10 @@ var SecondDeepRouteMapper = (route, navigationOperations) => (
   </View>
 );
 
-var FirstDeepRouteMapper = (route, navigationOperations) => (
+var FirstDeepRouteMapper = (route, navigator) => (
   <View style={styles.navigationItem}>
     <TouchableBounce
-      onPress={() => { navigationOperations.push(_getRandomRoute()); }}>
+      onPress={() => { navigator.push(_getRandomRoute()); }}>
       <View style={styles.button}>
         <Text style={styles.buttonText}>Push Outer Vertical Stack</Text>
       </View>

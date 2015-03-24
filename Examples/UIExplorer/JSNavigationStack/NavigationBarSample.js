@@ -18,14 +18,14 @@ var cssVar = require('cssVar');
 
 var NavigationBarRouteMapper = {
 
-  LeftButton: function(route, navigationOperations, index, navState) {
+  LeftButton: function(route, navigator, index, navState) {
     if (index === 0) {
       return null;
     }
 
     var previousRoute = navState.routeStack[index - 1];
     return (
-      <TouchableOpacity onPress={() => navigationOperations.pop()}>
+      <TouchableOpacity onPress={() => navigator.pop()}>
         <View>
           <Text style={[styles.navBarText, styles.navBarButtonText]}>
             {previousRoute.title}
@@ -35,10 +35,10 @@ var NavigationBarRouteMapper = {
     );
   },
 
-  RightButton: function(route, navigationOperations, index, navState) {
+  RightButton: function(route, navigator, index, navState) {
     return (
       <TouchableOpacity
-        onPress={() => navigationOperations.push(newRandomRoute())}>
+        onPress={() => navigator.push(newRandomRoute())}>
         <View>
           <Text style={[styles.navBarText, styles.navBarButtonText]}>
             Next
@@ -48,7 +48,7 @@ var NavigationBarRouteMapper = {
     );
   },
 
-  Title: function(route, navigationOperations, index, navState) {
+  Title: function(route, navigator, index, navState) {
     return (
       <Text style={[styles.navBarText, styles.navBarTitleText]}>
         {route.title} [{index}]
@@ -74,7 +74,7 @@ var NavigationBarSample = React.createClass({
           debugOverlay={false}
           style={styles.appContainer}
           initialRoute={newRandomRoute()}
-          renderScene={(route, navigationOperations) => (
+          renderScene={(route, navigator) => (
             <View style={styles.scene}>
               <Text>{route.content}</Text>
             </View>

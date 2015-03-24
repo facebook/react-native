@@ -125,7 +125,7 @@ var NavigationBar = React.createClass({
 
     var content = navBarRouteMapper[componentName](
       navState.routeStack[index],
-      this.props.navigationOperations,
+      this.props.navigator,
       index,
       this.props.navState
     );
