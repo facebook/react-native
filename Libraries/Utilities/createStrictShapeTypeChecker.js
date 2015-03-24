@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule createStrictShapeTypeChecker
+ * @flow
  */
 'use strict';
 
@@ -15,8 +16,10 @@ var ReactPropTypeLocationNames = require('ReactPropTypeLocationNames');
 var invariant = require('invariant');
 var merge = require('merge');
 
-function createStrictShapeTypeChecker(shapeTypes) {
-  function checkType(isRequired, props, propName, componentName, location) {
+function createStrictShapeTypeChecker(
+  shapeTypes: {[key: string]: ReactPropsCheckType}
+): ReactPropsChainableTypeChecker {
+  function checkType(isRequired, props, propName, componentName, location?) {
     if (!props[propName]) {
       if (isRequired) {
         invariant(
@@ -29,7 +32,8 @@ function createStrictShapeTypeChecker(shapeTypes) {
     }
     var propValue = props[propName];
     var propType = typeof propValue;
-    var locationName = ReactPropTypeLocationNames[location];
+    var locationName =
+      location && ReactPropTypeLocationNames[location] || '(unknown)';
     if (propType !== 'object') {
       invariant(
         false,
@@ -57,11 +61,17 @@ function createStrictShapeTypeChecker(shapeTypes) {
           error.message +
             `\nBad object: ` + JSON.stringify(props[propName], null, '  ')
         );
-        return error;
       }
     }
   }
-  var chainedCheckType = checkType.bind(null, false);
+  function chainedCheckType(
+    props: {[key: string]: any},
+    propName: string,
+    componentName: string,
+    location?: string
+  ): ?Error {
+    return checkType(false, props, propName, componentName, location);
+  }
   chainedCheckType.isRequired = checkType.bind(null, true);
   return chainedCheckType;
 }

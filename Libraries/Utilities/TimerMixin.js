@@ -7,8 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TimerMixin
+ * @flow
  */
 'use strict';
+
+var setImmediate = require('setImmediate');
+var clearImmediate = require('clearImmediate');
 
 /**
  * Using bare setTimeout, setInterval, setImmediate and
@@ -35,7 +39,10 @@
  */
 
  var setter = function(setter, clearer, array) {
-   return function(callback, delta) {
+   return function(
+     callback: () => void,
+     delta: number
+   ): number {
      var id = setter(() => {
        clearer.call(this, id);
        callback.apply(this, arguments);
@@ -51,7 +58,7 @@
  };
 
  var clearer = function(clearer, array) {
-   return function(id) {
+   return function(id: number) {
      if (this[array]) {
        var index = this[array].indexOf(id);
        if (index !== -1) {
@@ -75,8 +82,8 @@
  var _setImmediate = setter(setImmediate, _clearImmediate, _immediates);
 
  var _rafs = 'TimerMixin_rafs';
- var _cancelAnimationFrame = clearer(cancelAnimationFrame, _rafs);
- var _requestAnimationFrame = setter(requestAnimationFrame, _cancelAnimationFrame, _rafs);
+ var _cancelAnimationFrame = clearer(window.cancelAnimationFrame, _rafs);
+ var _requestAnimationFrame = setter(window.requestAnimationFrame, _cancelAnimationFrame, _rafs);
 
 var TimerMixin = {
   componentWillUnmount: function() {

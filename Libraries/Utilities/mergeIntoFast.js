@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule mergeIntoFast
+ * @flow
  */
 'use strict';
 
@@ -17,7 +18,7 @@
  * @param {object} one Object to assign to.
  * @param {object} two Object to assign from.
  */
-var mergeIntoFast = function(one, two) {
+var mergeIntoFast = function(one: Object, two: Object): void {
   for (var keyTwo in two) {
     one[keyTwo] = two[keyTwo];
   }

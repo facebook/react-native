@@ -7,8 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule insetsDiffer
+ * @flow
  */
 'use strict';
+
+type Inset = {
+  top: ?number;
+  left: ?number;
+  right: ?number;
+  bottom: ?number;
+}
 
 var dummyInsets = {
 	top: undefined,
@@ -17,7 +25,10 @@ var dummyInsets = {
 	bottom: undefined,
 };
 
-var insetsDiffer = function(one, two) {
+var insetsDiffer = function(
+  one: ?Inset,
+  two: ?Inset
+): bool {
   one = one || dummyInsets;
   two = two || dummyInsets;
   return one !== two && (

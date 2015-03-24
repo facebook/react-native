@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Dimensions
+ * @flow
  */
 'use strict';
 
@@ -22,7 +23,7 @@ class Dimensions {
    *
    * @param {object} dims Simple string-keyed object of dimensions to set
    */
-  static set(dims) {
+  static set(dims: {[key:string]: any}): bool {
     Object.assign(dimensions, dims);
     return true;
   }
@@ -40,7 +41,7 @@ class Dimensions {
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.
    */
-  static get(dim) {
+  static get(dim: string): Object {
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
   }

@@ -7,7 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule deepFreezeAndThrowOnMutationInDev
+ * @flow
  */
+
+'use strict';
 
 /**
  * If your application is accepting different values for the same field over
@@ -26,7 +29,7 @@
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
  */
-function deepFreezeAndThrowOnMutationInDev(object) {
+function deepFreezeAndThrowOnMutationInDev(object: Object) {
   if (__DEV__) {
     if (typeof object !== 'object' ||
         object === null ||
