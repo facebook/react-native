@@ -186,6 +186,7 @@ describe('processRequest', function() {
           expect(packageFunc.mock.calls.length).toBe(1);
           triggerFileChange('all','path/file.js', options.projectRoots[0]);
           jest.runAllTimers();
+          jest.runAllTimers();
         })
         .then(function() {
           expect(packageFunc.mock.calls.length).toBe(2);
