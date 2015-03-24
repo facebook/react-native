@@ -10,9 +10,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-#import "../Layout/Layout.h"
-#import "../Views/RCTAnimationType.h"
-#import "../Views/RCTPointerEvents.h"
+#import "Layout.h"
+#import "RCTAnimationType.h"
+#import "RCTPointerEvents.h"
 
 /**
  * This class provides a collection of conversion functions for mapping
