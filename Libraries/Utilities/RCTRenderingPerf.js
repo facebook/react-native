@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule RCTRenderingPerf
+ * @flow
  */
 'use strict';
 
@@ -14,6 +15,11 @@ var ReactDefaultPerf = require('ReactDefaultPerf');
 var ReactPerf = require('ReactPerf');
 
 var invariant = require('invariant');
+
+type perfModule = {
+  start: () => void;
+  stop: () => void;
+}
 
 var perfModules = [];
 var enabled = false;
@@ -58,7 +64,7 @@ var RCTRenderingPerf = {
     perfModules.forEach((module) => module.stop());
   },
 
-  register: function(module) {
+  register: function(module: perfModule) {
     invariant(
       typeof module.start === 'function',
       'Perf module should have start() function'

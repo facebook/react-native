@@ -7,12 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule pointsDiffer
+ * @flow
  */
 'use strict';
 
+type Point = {
+  x: ?number;
+  y: ?number;
+}
+
 var dummyPoint = {x: undefined, y: undefined};
 
-var pointsDiffer = function(one, two) {
+var pointsDiffer = function(one: ?Point, two: ?Point): bool {
   one = one || dummyPoint;
   two = two || dummyPoint;
   return one !== two && (

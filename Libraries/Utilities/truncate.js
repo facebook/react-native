@@ -7,10 +7,17 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule truncate
+ * @flow
  */
 'use strict';
 
 var merge = require('merge');
+
+type truncateOptions = {
+  breakOnWords: boolean;
+  minDelta: number;
+  elipsis: string;
+}
 
 var defaultOptions = {
   breakOnWords: true,
@@ -19,7 +26,11 @@ var defaultOptions = {
 };
 
 // maxChars (including elipsis)
-var truncate = function(str, maxChars, options) {
+var truncate = function(
+  str: ?string,
+  maxChars: number,
+  options: truncateOptions
+): ?string {
   options = merge(defaultOptions, options);
   if (str && str.length &&
       str.length - options.minDelta + options.elipsis.length >= maxChars) {
