@@ -16,7 +16,7 @@ var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
-var TimerMixin = require('TimerMixin');
+var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var clamp = require('clamp');
