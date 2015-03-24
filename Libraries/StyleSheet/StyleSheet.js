@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule StyleSheet
+ * @flow
  */
 'use strict';
 
@@ -58,7 +59,7 @@ var StyleSheetValidation = require('StyleSheetValidation');
  * subsequent uses are going to refer an id (not implemented yet).
  */
 class StyleSheet {
-  static create(obj) {
+  static create(obj: {[key: string]: any}): {[key: string]: number} {
     var result = {};
     for (var key in obj) {
       StyleSheetValidation.validateStyle(key, obj);

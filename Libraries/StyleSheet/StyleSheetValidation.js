@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule StyleSheetValidation
+ * @flow
  */
 'use strict';
 
@@ -60,7 +61,7 @@ class StyleSheetValidation {
   }
 }
 
-var styleError = function(message1, style, caller, message2) {
+var styleError = function(message1, style, caller?, message2?) {
   invariant(
     false,
     message1 + '\n' + (caller || '<<unknown>>') + ': ' +
