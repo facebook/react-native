@@ -31,10 +31,13 @@ var AppStateSubscription = React.createClass({
     };
   },
   componentDidMount: function() {
-    AppStateIOS.addEventListener('change', this._handleAppStateChange);
+    this._appStateListener = AppStateIOS.addListener(
+      this._handleAppStateChange
+    );
   },
   componentWillUnmount: function() {
-    AppStateIOS.removeEventListener('change', this._handleAppStateChange);
+    this._appStateListener.remove();
+    this._appStateListener = null;
   },
   _handleAppStateChange: function(appState) {
     var previousAppStates = this.state.previousAppStates.slice();
