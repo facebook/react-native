@@ -21,7 +21,7 @@ var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
-var TimerMixin = require('TimerMixin');
+var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');

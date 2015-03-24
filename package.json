@@ -30,9 +30,10 @@
   "dependencies": {
     "connect": "2.8.3",
     "jstransform": "10.0.1",
+    "react-timer-mixin": "^0.13.1",
+    "react-tools": "0.13.0-rc2",
     "source-map": "0.1.31",
-    "stacktrace-parser": "0.1.1",
-    "react-tools": "0.13.0-rc2"
+    "stacktrace-parser": "0.1.1"
   },
   "devDependencies": {
     "ws": "0.4.31",

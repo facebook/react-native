@@ -16,7 +16,7 @@ var RCTUIManager = require('NativeModules').UIManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
-var TimerMixin = require('TimerMixin');
+var TimerMixin = require('react-timer-mixin');
 
 var logError = require('logError');
 var merge = require('merge');
