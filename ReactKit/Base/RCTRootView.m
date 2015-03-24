@@ -106,11 +106,31 @@ static Class _globalExecutorClass;
 
   [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
                     args:@[self.reactTag]];
+  [self invalidate];
+}
+
+#pragma mark - RCTInvalidating
+
+- (BOOL)isValid
+{
+  return [_bridge isValid];
+}
+
+- (void)invalidate
+{
+  // Clear view
+  [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+
+  [self removeGestureRecognizer:_touchHandler];
+  [_touchHandler invalidate];
+  [_executor invalidate];
 
   // TODO: eventually we'll want to be able to share the bridge between
   // multiple rootviews, in which case we'll need to move this elsewhere
   [_bridge invalidate];
 }
+
+#pragma mark Bundle loading
 
 - (void)bundleFinishedLoading:(NSError *)error
 {
@@ -137,18 +157,11 @@ static Class _globalExecutorClass;
 
 - (void)loadBundle
 {
-  // Clear view
-  [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+  [self invalidate];
 
   if (!_scriptURL) {
     return;
   }
-
-  // Clean up
-  [self removeGestureRecognizer:_touchHandler];
-  [_touchHandler invalidate];
-  [_executor invalidate];
-  [_bridge invalidate];
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
@@ -209,6 +222,9 @@ static Class _globalExecutorClass;
       [self bundleFinishedLoading:error];
       return;
     }
+    if (!_bridge.isValid) {
+      return; // Bridge was invalidated in the meanwhile
+    }
 
     // Success!
     RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
@@ -217,7 +233,9 @@ static Class _globalExecutorClass;
 
     [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *error) {
       dispatch_async(dispatch_get_main_queue(), ^{
-        [self bundleFinishedLoading:error];
+        if (_bridge.isValid) {
+          [self bundleFinishedLoading:error];
+        }
       });
     }];
 
