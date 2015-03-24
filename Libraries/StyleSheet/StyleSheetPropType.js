@@ -7,15 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule StyleSheetPropType
+ * @flow
  */
 'use strict';
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var flattenStyle = require('flattenStyle');
 
-function StyleSheetPropType(shape) {
+function StyleSheetPropType(
+  shape: {[key: string]: ReactPropsCheckType}
+): ReactPropsCheckType {
   var shapePropType = createStrictShapeTypeChecker(shape);
-  return function(props, propName, componentName, location) {
+  return function(props, propName, componentName, location?) {
     var newProps = props;
     if (props[propName]) {
       // Just make a dummy prop object with only the flattened style
