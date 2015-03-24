@@ -54,7 +54,6 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   PanResponder: require('PanResponder'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
-  TimerMixin: require('TimerMixin'),
   VibrationIOS: require('VibrationIOS'),
 
   // Plugins
