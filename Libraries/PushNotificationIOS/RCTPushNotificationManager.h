@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "../../ReactKit/Base/RCTBridgeModule.h"
+#import "RCTBridgeModule.h"
 
 @interface RCTPushNotificationManager : NSObject <RCTBridgeModule>
 
