@@ -216,6 +216,13 @@ DependecyGraph.prototype.resolveDependency = function(
     modulePath = withExtJs(path.join(dir, depModuleId));
 
     dep = this._graph[modulePath];
+
+    if (dep == null) {
+      modulePath = path.join(dir, depModuleId, 'index.js');
+    }
+
+    dep = this._graph[modulePath];
+
     if (dep == null) {
       debug(
         'WARNING: Cannot find required module `%s` from module `%s`.' +
@@ -366,6 +373,10 @@ DependecyGraph.prototype._processModule = function(modulePath) {
       if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
         moduleData.id =
           moduleDocBlock.providesModule || moduleDocBlock.provides;
+
+        // Incase someone wants to require this module via
+        // packageName/path/to/module
+        moduleData.altId = self._lookupName(modulePath);
       } else {
         moduleData.id = self._lookupName(modulePath);
       }
@@ -401,6 +412,10 @@ DependecyGraph.prototype._deleteModule = function(module) {
   if (this._moduleById[module.id] === module) {
     delete this._moduleById[module.id];
   }
+
+  if (module.altId && this._moduleById[module.altId] === module) {
+    delete this._moduleById[module.altId];
+  }
 };
 
 /**
@@ -424,6 +439,12 @@ DependecyGraph.prototype._updateGraphWithModule = function(module) {
   }
 
   this._moduleById[module.id] = module;
+
+  // Some module maybe refrenced by both @providesModule and
+  // require(package/moduleName).
+  if (module.altId != null && this._moduleById[module.altId] == null) {
+    this._moduleById[module.altId] = module;
+  }
 };
 
 /**
