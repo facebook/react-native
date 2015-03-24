@@ -87,26 +87,4 @@ static NSString *RCTCurrentAppBackgroundState()
   callback(@[@{@"app_state": _lastKnownState}]);
 }
 
-/**
- * Update the application icon badge number on the home screen
- */
-- (void)setApplicationIconBadgeNumber:(NSInteger)number
-{
-  RCT_EXPORT();
-
-  [UIApplication sharedApplication].applicationIconBadgeNumber = number;
-}
-
-/**
- * Get the current application icon badge number on the home screen
- */
-- (void)getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback
-{
-  RCT_EXPORT();
-
-  callback(@[
-    @([UIApplication sharedApplication].applicationIconBadgeNumber)
-  ]);
-}
-
 @end
