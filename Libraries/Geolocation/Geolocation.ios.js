@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Geolocation
+ * @flow
  */
 'use strict';
 
@@ -33,7 +34,10 @@ var updatesEnabled = false;
  */
 var Geolocation = {
 
-  getCurrentPosition: function(geo_success, geo_error, geo_options) {
+  getCurrentPosition: function(
+    geo_success: Function,
+    geo_error?: Function,
+    geo_options?: Object) {
     invariant(
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.'
@@ -45,7 +49,7 @@ var Geolocation = {
     );
   },
 
-  watchPosition: function(success, error, options) {
+  watchPosition: function(success: Function, error?: Function, options?: Object): number {
     if (!updatesEnabled) {
       RCTLocationObserver.startObserving(options || {});
       updatesEnabled = true;
@@ -64,15 +68,17 @@ var Geolocation = {
     return watchID;
   },
 
-  clearWatch: function(watchID) {
+  clearWatch: function(watchID: number) {
     var sub = subscriptions[watchID];
     if (!sub) {
       // Silently exit when the watchID is invalid or already cleared
       // This is consistent with timers
       return;
     }
+
     sub[0].remove();
-    sub[1] && sub[1].remove();
+    // array element refinements not yet enabled in Flow
+    var sub1 = sub[1]; sub1 && sub1.remove();
     subscriptions[watchID] = undefined;
     var noWatchers = true;
     for (var ii = 0; ii < subscriptions.length; ii++) {
@@ -90,9 +96,12 @@ var Geolocation = {
       RCTLocationObserver.stopObserving();
       updatesEnabled = false;
       for (var ii = 0; ii < subscriptions.length; ii++) {
-        if (subscriptions[ii]) {
+        var sub = subscriptions[ii];
+        if (sub) {
           warning('Called stopObserving with existing subscriptions.');
-          subscriptions[ii].remove();
+          sub[0].remove();
+          // array element refinements not yet enabled in Flow
+          var sub1 = sub[1]; sub1 && sub1.remove();
         }
       }
       subscriptions = [];
