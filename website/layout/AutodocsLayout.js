@@ -219,7 +219,9 @@ var APIDoc = React.createClass({
   renderMethods: function(methods) {
     return (
       <div className="props">
-        {methods.map(this.renderMethod)}
+        {methods.filter((method) => {
+          return method.name[0] !== '_';
+        }).map(this.renderMethod)}
       </div>
     );
   },
