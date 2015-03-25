@@ -253,7 +253,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 @implementation RCTScrollView
 {
   RCTEventDispatcher *_eventDispatcher;
-  BOOL _contentSizeManuallySet;
   RCTCustomScrollView *_scrollView;
   UIView *_contentView;
   NSTimeInterval _lastScrollDispatchTime;
@@ -273,6 +272,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
     _scrollView.delaysContentTouches = NO;
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
+    _contentSize = CGSizeZero;
 
     _throttleScrollCallbackMS = 0;
     _lastScrollDispatchTime = CACurrentMediaTime();
@@ -317,16 +317,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   RCTAssert(_scrollView.contentSize.width <= self.frame.size.width,
            @"sticky headers are not supported with horizontal scrolled views");
   _scrollView.stickyHeaderIndices = headerIndices;
-}
-
-/**
- * Once you set the `contentSize`, it's assumed to be managed by you forever
- * and we'll never automatically compute the size for you.
- */
-- (void)setContentSize:(CGSize)contentSize
-{
-  _contentSize = contentSize;
-  _contentSizeManuallySet = YES;
 }
 
 - (void)dealloc
@@ -556,29 +546,40 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   return newOffset;
 }
 
-- (void)reactBridgeDidFinishTransaction
+/**
+ * Once you set the `contentSize`, to a nonzero value, it is assumed to be
+ * managed by you, and we'll never automatically compute the size for you,
+ * unless you manually reset it back to {0, 0}
+ */
+- (CGSize)contentSize
 {
-  if (_contentSizeManuallySet) {
-    _scrollView.contentSize = _contentSize;
+  if (!CGSizeEqualToSize(_contentSize, CGSizeZero)) {
+    return _contentSize;
   } else if (!_contentView) {
-    _scrollView.contentSize = CGSizeZero;
+    return CGSizeZero;
   } else {
     CGSize singleSubviewSize = _contentView.frame.size;
     CGPoint singleSubviewPosition = _contentView.frame.origin;
-    CGSize fittedSize = {
+    return (CGSize){
       singleSubviewSize.width + singleSubviewPosition.x,
       singleSubviewSize.height + singleSubviewPosition.y
     };
-    if (!CGSizeEqualToSize(_scrollView.contentSize, fittedSize)) {
-      // When contentSize is set manually, ScrollView internals will reset contentOffset to 0,0. Since
-      // we potentially set contentSize whenever anything in the ScrollView updates, we workaround this
-      // issue by manually adjusting contentOffset whenever this happens
-      CGPoint newOffset = [self calculateOffsetForContentSize:fittedSize];
-      _scrollView.contentSize = fittedSize;
-      _scrollView.contentOffset = newOffset;
-    }
-    [_scrollView dockClosestSectionHeader];
   }
+}
+
+- (void)reactBridgeDidFinishTransaction
+{
+  CGSize contentSize = self.contentSize;
+  if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
+    // When contentSize is set manually, ScrollView internals will reset
+    // contentOffset to  {0, 0}. Since we potentially set contentSize whenever
+    // anything in the ScrollView updates, we workaround this issue by manually
+    // adjusting contentOffset whenever this happens
+    CGPoint newOffset = [self calculateOffsetForContentSize:contentSize];
+    _scrollView.contentSize = contentSize;
+    _scrollView.contentOffset = newOffset;
+  }
+  [_scrollView dockClosestSectionHeader];
 }
 
 // Note: setting several properties of UIScrollView has the effect of
