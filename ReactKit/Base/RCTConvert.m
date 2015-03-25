@@ -62,7 +62,7 @@ RCT_CONVERTER(NSString *, NSString, description)
   else if ([path length])
   {
     NSURL *URL = [NSURL URLWithString:path relativeToURL:[[NSBundle mainBundle] resourceURL]];
-    if ([URL isFileURL] &&![[NSFileManager defaultManager] fileExistsAtPath:[URL absoluteString]]) {
+    if ([URL isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[URL path]]) {
       RCTLogWarn(@"The file '%@' does not exist", URL);
       return nil;
     }
