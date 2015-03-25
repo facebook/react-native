@@ -50,9 +50,9 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 + (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
-#ifdef __IPHONE_8_0
-  [application registerForRemoteNotifications];
-#endif
+  if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
+    [application registerForRemoteNotifications];
+  }
 }
 
 + (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
@@ -112,13 +112,22 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 {
   RCT_EXPORT();
 
-#ifdef __IPHONE_8_0
-    UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
-    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
-#else
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+
+  // if we are targeting iOS 7, *and* the new UIUserNotificationSettings
+  // class is not available, then register using the old mechanism
+  if (![UIUserNotificationSettings class]) {
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+     UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert];
+    return;
+  }
+
 #endif
+
+  UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+  UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+  [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+
 }
 
 + (void)checkPermissions:(RCTResponseSenderBlock)callback
@@ -126,17 +135,11 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
   RCT_EXPORT();
 
   NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
-#ifdef __IPHONE_8_0
+
   UIUserNotificationType types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
   permissions[@"alert"] = @((BOOL)(types & UIUserNotificationTypeAlert));
   permissions[@"badge"] = @((BOOL)(types & UIUserNotificationTypeBadge));
   permissions[@"sound"] = @((BOOL)(types & UIUserNotificationTypeSound));
-#else
-  UIRemoteNotificationType types = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-  permissions[@"alert"] = @((BOOL)(types & UIRemoteNotificationTypeAlert));
-  permissions[@"badge"] = @((BOOL)(types & UIRemoteNotificationTypeBadge));
-  permissions[@"sound"] = @((BOOL)(types & UIRemoteNotificationTypeSound));
-#endif
 
   callback(@[permissions]);
 }

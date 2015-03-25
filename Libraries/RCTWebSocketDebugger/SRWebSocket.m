@@ -17,6 +17,8 @@
 
 #import "SRWebSocket.h"
 
+#import <Availability.h>
+
 #if TARGET_OS_IPHONE
 #define HAS_ICU
 #endif
@@ -110,14 +112,19 @@ static NSString *newSHA1String(const char *bytes, size_t length) {
     assert(length >= 0);
     assert(length <= UINT32_MAX);
     CC_SHA1(bytes, (CC_LONG)length, md);
-    
+
     NSData *data = [NSData dataWithBytes:md length:CC_SHA1_DIGEST_LENGTH];
-    
-    if ([data respondsToSelector:@selector(base64EncodedStringWithOptions:)]) {
-        return [data base64EncodedStringWithOptions:0];
+
+#if (__IPHONE_OS_VERSION_MIN_REQUIRED && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0) \
+    || (__MAC_OS_X_VERSION_MIN_REQUIRED && __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9)
+
+    if (![NSData instancesRespondToSelector:@selector(base64EncodedStringWithOptions:)]) {
+        return [data base64Encoding];
     }
 
-    return [data base64Encoding];
+#endif
+
+    return [data base64EncodedStringWithOptions:0];
 }
 
 @implementation NSData (SRWebSocket)
@@ -212,19 +219,19 @@ typedef void (^data_callback)(SRWebSocket *webSocket,  NSData *data);
 
 @implementation SRWebSocket {
     NSInteger _webSocketVersion;
-    
+
     NSOperationQueue *_delegateOperationQueue;
     dispatch_queue_t _delegateDispatchQueue;
-    
+
     dispatch_queue_t _workQueue;
     NSMutableArray *_consumers;
 
     NSInputStream *_inputStream;
     NSOutputStream *_outputStream;
-   
+
     NSMutableData *_readBuffer;
     NSUInteger _readBufferOffset;
- 
+
     NSMutableData *_outputBuffer;
     NSUInteger _outputBufferOffset;
 
@@ -233,18 +240,18 @@ typedef void (^data_callback)(SRWebSocket *webSocket,  NSData *data);
     size_t _readOpCount;
     uint32_t _currentStringScanPosition;
     NSMutableData *_currentFrameData;
-    
+
     NSString *_closeReason;
-    
+
     NSString *_secKey;
-    
+
     BOOL _pinnedCertFound;
-    
+
     uint8_t _currentReadMaskKey[4];
     size_t _currentReadMaskOffset;
 
     BOOL _consumerStopped;
-    
+
     BOOL _closeWhenFinishedWriting;
     BOOL _failed;
 
@@ -252,18 +259,18 @@ typedef void (^data_callback)(SRWebSocket *webSocket,  NSData *data);
     NSURLRequest *_urlRequest;
 
     CFHTTPMessageRef _receivedHTTPHeaders;
-    
+
     BOOL _sentClose;
     BOOL _didFail;
     int _closeCode;
-    
+
     BOOL _isPumping;
-    
+
     NSMutableSet *_scheduledRunloops;
-    
+
     // We use this to retain ourselves.
     __strong SRWebSocket *_selfRetain;
-    
+
     NSArray *_requestedProtocols;
     SRIOConsumerPool *_consumerPool;
 }
@@ -287,12 +294,12 @@ static __strong NSData *CRLFCRLF;
         assert(request.URL);
         _url = request.URL;
         _urlRequest = request;
-        
+
         _requestedProtocols = [protocols copy];
-        
+
         [self _SR_commonInit];
     }
-    
+
     return self;
 }
 
@@ -314,39 +321,38 @@ static __strong NSData *CRLFCRLF;
 
 - (void)_SR_commonInit;
 {
-    
     NSString *scheme = _url.scheme.lowercaseString;
     assert([scheme isEqualToString:@"ws"] || [scheme isEqualToString:@"http"] || [scheme isEqualToString:@"wss"] || [scheme isEqualToString:@"https"]);
-    
+
     if ([scheme isEqualToString:@"wss"] || [scheme isEqualToString:@"https"]) {
         _secure = YES;
     }
-    
+
     _readyState = SR_CONNECTING;
     _consumerStopped = YES;
     _webSocketVersion = 13;
-    
+
     _workQueue = dispatch_queue_create(NULL, DISPATCH_QUEUE_SERIAL);
-    
+
     // Going to set a specific on the queue so we can validate we're on the work queue
     dispatch_queue_set_specific(_workQueue, (__bridge void *)self, maybe_bridge(_workQueue), NULL);
-    
+
     _delegateDispatchQueue = dispatch_get_main_queue();
     sr_dispatch_retain(_delegateDispatchQueue);
-    
+
     _readBuffer = [[NSMutableData alloc] init];
     _outputBuffer = [[NSMutableData alloc] init];
-    
+
     _currentFrameData = [[NSMutableData alloc] init];
 
     _consumers = [[NSMutableArray alloc] init];
-    
+
     _consumerPool = [[SRIOConsumerPool alloc] init];
-    
+
     _scheduledRunloops = [[NSMutableSet alloc] init];
-    
+
     [self _initializeStreams];
-    
+
     // default handlers
 }
 
@@ -362,15 +368,15 @@ static __strong NSData *CRLFCRLF;
 
     [_inputStream close];
     [_outputStream close];
-    
+
     sr_dispatch_release(_workQueue);
     _workQueue = NULL;
-    
+
     if (_receivedHTTPHeaders) {
         CFRelease(_receivedHTTPHeaders);
         _receivedHTTPHeaders = NULL;
     }
-    
+
     if (_delegateDispatchQueue) {
         sr_dispatch_release(_delegateDispatchQueue);
         _delegateDispatchQueue = NULL;
@@ -499,17 +505,24 @@ static __strong NSData *CRLFCRLF;
 {
     SRFastLog(@"Connected");
     CFHTTPMessageRef request = CFHTTPMessageCreateRequest(NULL, CFSTR("GET"), (__bridge CFURLRef)_url, kCFHTTPVersion1_1);
-    
+
     // Set host first so it defaults
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Host"), (__bridge CFStringRef)(_url.port ? [NSString stringWithFormat:@"%@:%@", _url.host, _url.port] : _url.host));
-        
+
     NSMutableData *keyBytes = [[NSMutableData alloc] initWithLength:16];
     SecRandomCopyBytes(kSecRandomDefault, keyBytes.length, keyBytes.mutableBytes);
 
-    if ([keyBytes respondsToSelector:@selector(base64EncodedStringWithOptions:)]) {
-        _secKey = [keyBytes base64EncodedStringWithOptions:0];
-    } else {
+#if (__IPHONE_OS_VERSION_MIN_REQUIRED && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0) \
+    || (__MAC_OS_X_VERSION_MIN_REQUIRED && __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9)
+
+    if (![NSData instancesRespondToSelector:@selector(base64EncodedStringWithOptions:)]) {
         _secKey = [keyBytes base64Encoding];
+    } else
+
+#endif
+
+    {
+      _secKey = [keyBytes base64EncodedStringWithOptions:0];
     }
 
     assert([_secKey length] == 24);

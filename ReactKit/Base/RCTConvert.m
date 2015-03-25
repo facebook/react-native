@@ -13,25 +13,39 @@
 
 #import "RCTLog.h"
 
-CGFloat const RCTDefaultFontSize = 14;
-NSString *const RCTDefaultFontName = @"HelveticaNeue";
-NSString *const RCTDefaultFontWeight = @"normal";
-NSString *const RCTBoldFontWeight = @"bold";
-
 @implementation RCTConvert
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
-RCT_CONVERTER(double, double, doubleValue)
-RCT_CONVERTER(float, float, floatValue)
-RCT_CONVERTER(int, int, intValue)
+RCT_NUMBER_CONVERTER(double, doubleValue)
+RCT_NUMBER_CONVERTER(float, floatValue)
+RCT_NUMBER_CONVERTER(int, intValue)
 
-RCT_CONVERTER(NSInteger, NSInteger, integerValue)
-RCT_CONVERTER_CUSTOM(NSUInteger, NSUInteger, [json unsignedIntegerValue])
+RCT_NUMBER_CONVERTER(int64_t, longLongValue);
+RCT_NUMBER_CONVERTER(uint64_t, unsignedLongLongValue);
+
+RCT_NUMBER_CONVERTER(NSInteger, integerValue)
+RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
 
 RCT_CONVERTER_CUSTOM(NSArray *, NSArray, [NSArray arrayWithArray:json])
 RCT_CONVERTER_CUSTOM(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
 RCT_CONVERTER(NSString *, NSString, description)
-RCT_CONVERTER_CUSTOM(NSNumber *, NSNumber, @([json doubleValue]))
+
++ (NSNumber *)NSNumber:(id)json
+{
+  if ([json isKindOfClass:[NSNumber class]]) {
+    return json;
+  } else if ([json isKindOfClass:[NSString class]]) {
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    NSNumber *number = [formatter numberFromString:json];
+    if (!number) {
+      RCTLogError(@"JSON String '%@' could not be interpreted as a number", json);
+    }
+    return number;
+  } else if (json && json != [NSNull null]) {
+    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a number", json, [json class]);
+  }
+  return nil;
+}
 
 + (NSURL *)NSURL:(id)json
 {
@@ -47,7 +61,12 @@ RCT_CONVERTER_CUSTOM(NSNumber *, NSNumber, @([json doubleValue]))
   }
   else if ([path length])
   {
-    return [NSURL URLWithString:path relativeToURL:[[NSBundle mainBundle] resourceURL]];
+    NSURL *URL = [NSURL URLWithString:path relativeToURL:[[NSBundle mainBundle] resourceURL]];
+    if ([URL isFileURL] &&![[NSFileManager defaultManager] fileExistsAtPath:[URL absoluteString]]) {
+      RCTLogWarn(@"The file '%@' does not exist", URL);
+      return nil;
+    }
+    return URL;
   }
   return nil;
 }
@@ -58,11 +77,11 @@ RCT_CONVERTER_CUSTOM(NSNumber *, NSNumber, @([json doubleValue]))
 }
 
 // JS Standard for time is milliseconds
-RCT_CONVERTER_CUSTOM(NSDate *, NSDate, [NSDate dateWithTimeIntervalSince1970:[json doubleValue] / 1000.0])
-RCT_CONVERTER_CUSTOM(NSTimeInterval, NSTimeInterval, [json doubleValue] / 1000.0)
+RCT_CONVERTER_CUSTOM(NSDate *, NSDate, [NSDate dateWithTimeIntervalSince1970:[self double:json] / 1000.0])
+RCT_CONVERTER_CUSTOM(NSTimeInterval, NSTimeInterval, [self double:json] / 1000.0)
 
 // JS standard for time zones is minutes.
-RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[json doubleValue] * 60.0])
+RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[self double:json] * 60.0])
 
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
@@ -90,11 +109,12 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"default": @(UIKeyboardTypeDefault),
 }), UIKeyboardTypeDefault, integerValue)
 
-RCT_CONVERTER(CGFloat, CGFloat, doubleValue)
-RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
-RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"w", @"h"]))
-RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"w", @"h"]))
-RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
+// TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
+RCT_CONVERTER_CUSTOM(CGFloat, CGFloat, [self double:json])
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), nil)
+RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
+RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]), nil)
 
 RCT_ENUM_CONVERTER(CGLineJoin, (@{
   @"miter": @(kCGLineJoinMiter),
@@ -113,9 +133,9 @@ RCT_CGSTRUCT_CONVERTER(CATransform3D, (@[
   @"m21", @"m22", @"m23", @"m24",
   @"m31", @"m32", @"m33", @"m34",
   @"m41", @"m42", @"m43", @"m44"
-]))
+]), nil)
 
-RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]))
+RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]), nil)
 
 + (UIColor *)UIColor:(id)json
 {
@@ -328,19 +348,19 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty
     } else {
 
       // Color array
-      color = [UIColor colorWithRed:[json[0] doubleValue]
-                              green:[json[1] doubleValue]
-                               blue:[json[2] doubleValue]
-                              alpha:[json count] > 3 ? [json[3] doubleValue] : 1];
+      color = [UIColor colorWithRed:[self double:json[0]]
+                              green:[self double:json[1]]
+                               blue:[self double:json[2]]
+                              alpha:[json count] > 3 ? [self double:json[3]] : 1];
     }
 
   } else if ([json isKindOfClass:[NSDictionary class]]) {
 
     // Color dictionary
-    color = [UIColor colorWithRed:[json[@"r"] doubleValue]
-                            green:[json[@"g"] doubleValue]
-                             blue:[json[@"b"] doubleValue]
-                            alpha:[json[@"a"] ?: @1 doubleValue]];
+    color = [UIColor colorWithRed:[self double:json[@"r"]]
+                            green:[self double:json[@"g"]]
+                             blue:[self double:json[@"b"]]
+                            alpha:[self double:json[@"a"] ?: @1]];
 
   } else if (json && ![json isKindOfClass:[NSNull class]]) {
 
@@ -415,6 +435,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family size:(id)size weight:(id)weight
 {
+  CGFloat const RCTDefaultFontSize = 14;
+  NSString *const RCTDefaultFontName = @"HelveticaNeue";
+  NSString *const RCTDefaultFontWeight = @"normal";
+  NSString *const RCTBoldFontWeight = @"bold";
+
   // Create descriptor
   UIFontDescriptor *fontDescriptor = font.fontDescriptor ?: [UIFontDescriptor fontDescriptorWithName:RCTDefaultFontName size:RCTDefaultFontSize];
 
@@ -427,7 +452,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty
   // Get font family
   NSString *familyName = [self NSString:family];
   if (familyName) {
-      if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
+    if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
       font = [UIFont fontWithName:familyName size:fontDescriptor.pointSize];
       if (font) {
         // It's actually a font name, not a font family name,
@@ -437,11 +462,14 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty
       } else {
         // Not a valid font or family
         RCTLogError(@"Unrecognized font family '%@'", familyName);
+        familyName = [UIFont fontWithDescriptor:fontDescriptor size:0].familyName;
       }
     } else {
       // Set font family
       fontDescriptor = [fontDescriptor fontDescriptorWithFamily:familyName];
     }
+  } else {
+    familyName = [UIFont fontWithDescriptor:fontDescriptor size:0].familyName;
   }
 
   // Get font weight
@@ -451,29 +479,43 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty
     static NSSet *values;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      values = [NSSet setWithObjects:@"bold", @"normal", nil];
+      values = [NSSet setWithObjects:RCTDefaultFontWeight, RCTBoldFontWeight, nil];
     });
 
     if (fontWeight && ![values containsObject:fontWeight]) {
       RCTLogError(@"Unrecognized font weight '%@', must be one of %@", fontWeight, values);
+      fontWeight = RCTDefaultFontWeight;
     }
 
-    UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;
+    // this is hacky. we are appending the string -Medium because most fonts we currently use
+    // just need to have -Medium appended to get the bold we want. we're going to revamp this
+    // to make it easier to know which options are available in JS. t4996115
     if ([fontWeight isEqualToString:RCTBoldFontWeight]) {
-      symbolicTraits |= UIFontDescriptorTraitBold;
-    } else {
-      symbolicTraits &= ~UIFontDescriptorTraitBold;
+      font = nil;
+      for (NSString *fontName in [UIFont fontNamesForFamilyName:familyName]) {
+        if ([fontName hasSuffix:@"-Medium"]) {
+          font = [UIFont fontWithName:fontName size:fontDescriptor.pointSize];
+          break;
+        }
+        if ([fontName hasSuffix:@"-Bold"]) {
+          font = [UIFont fontWithName:fontName size:fontDescriptor.pointSize];
+          // But keep searching in case there's a medium option
+        }
+      }
+      if (font) {
+        fontDescriptor = font.fontDescriptor;
+      }
     }
-    fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
   }
 
   // TODO: font style
 
   // Create font
-  return [UIFont fontWithDescriptor:fontDescriptor size:fontDescriptor.pointSize];
+  return [UIFont fontWithDescriptor:fontDescriptor size:0];
 }
 
 RCT_ARRAY_CONVERTER(NSString)
+RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(NSNumber)
 RCT_ARRAY_CONVERTER(UIColor)
 
@@ -728,6 +770,9 @@ static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json,
         },
         @"extAlignment": ^(id val) {
           return [RCTConvert NSTextAlignment:val];
+        },
+        @"ritingDirection": ^(id val) {
+          return [RCTConvert NSWritingDirection:val];
         },
         @"Cap": ^(id val) {
           return [RCTConvert CGLineCap:val];

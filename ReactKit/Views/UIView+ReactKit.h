@@ -16,6 +16,12 @@
 @interface UIView (ReactKit) <RCTViewNodeProtocol>
 
 /**
+ * Used by the UIIManager to set the view frame.
+ * May be overriden to disable animation, etc.
+ */
+- (void)reactSetFrame:(CGRect)frame;
+
+/**
  * This method finds and returns the containing view controller for the view.
  */
 - (UIViewController *)backingViewController;
@@ -27,5 +33,21 @@
  * attached to the view hierarchy).
  */
 - (void)addControllerToClosestParent:(UIViewController *)controller;
+
+/**
+ * Responder overrides - to be deprecated.
+ */
+- (void)reactWillMakeFirstResponder;
+- (void)reactDidMakeFirstResponder;
+- (BOOL)reactRespondsToTouch:(UITouch *)touch;
+
+@end
+
+@interface UIView (ReactKitBorders)
+
+/**
+ * Borders stuff - pay no attention to this, it's going away (#6548297)
+ */
+- (void)reactSetBorders;
 
 @end

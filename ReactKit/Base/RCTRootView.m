@@ -29,6 +29,7 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
   id<RCTJavaScriptExecutor> _executor;
+  BOOL _registered;
 }
 
 static Class _globalExecutorClass;
@@ -36,7 +37,7 @@ static Class _globalExecutorClass;
 + (void)initialize
 {
 
-#if DEBUG
+#if TARGET_IPHONE_SIMULATOR
 
   // Register Cmd-R as a global refresh key
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
@@ -144,6 +145,7 @@ static Class _globalExecutorClass;
   } else {
 
     [_bridge.uiManager registerRootView:self];
+    _registered = YES;
 
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
@@ -162,6 +164,14 @@ static Class _globalExecutorClass;
   if (!_scriptURL) {
     return;
   }
+
+  // Clean up
+  [self removeGestureRecognizer:_touchHandler];
+  [_touchHandler invalidate];
+  [_executor invalidate];
+  [_bridge invalidate];
+
+  _registered = NO;
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
@@ -231,10 +241,10 @@ static Class _globalExecutorClass;
     sourceCodeModule.scriptURL = _scriptURL;
     sourceCodeModule.scriptText = rawText;
 
-    [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *error) {
+    [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *_error) {
       dispatch_async(dispatch_get_main_queue(), ^{
         if (_bridge.isValid) {
-          [self bundleFinishedLoading:error];
+          [self bundleFinishedLoading:_error];
         }
       });
     }];
@@ -254,9 +264,12 @@ static Class _globalExecutorClass;
   [self loadBundle];
 }
 
-- (BOOL)isReactRootView
+- (void)layoutSubviews
 {
-  return YES;
+  [super layoutSubviews];
+  if (_registered) {
+    [_bridge.uiManager setFrame:self.frame forRootView:self];
+  }
 }
 
 - (void)reload

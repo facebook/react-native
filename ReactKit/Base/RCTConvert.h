@@ -26,6 +26,9 @@
 + (float)float:(id)json;
 + (int)int:(id)json;
 
++ (int64_t)int64_t:(id)json;
++ (uint64_t)uint64_t:(id)json;
+
 + (NSInteger)NSInteger:(id)json;
 + (NSUInteger)NSUInteger:(id)json;
 
@@ -70,6 +73,7 @@
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json size:(id)json weight:(id)json;
 
 + (NSArray *)NSStringArray:(id)json;
++ (NSArray *)NSURLArray:(id)json;
 + (NSArray *)NSNumberArray:(id)json;
 + (NSArray *)UIColorArray:(id)json;
 + (NSArray *)CGColorArray:(id)json;
@@ -143,6 +147,14 @@ id RCTConvertValue(id target, NSString *keypath, id json);
 RCT_CONVERTER_CUSTOM(type, name, [json getter])
 
 /**
+ * This macro is similar to RCT_CONVERTER, but specifically geared towards
+ * numeric types. It will handle string input correctly, and provides more
+ * detailed error reporting if a wrong value is passed in.
+ */
+#define RCT_NUMBER_CONVERTER(type, getter) \
+RCT_CONVERTER_CUSTOM(type, type, [[self NSNumber:json] getter])
+
+/**
  * This macro is used for creating converters for enum types.
  */
 #define RCT_ENUM_CONVERTER(type, values, default, getter) \
@@ -177,7 +189,7 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
  * This macro is used for creating converter functions for structs that consist
  * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
  */
-#define RCT_CGSTRUCT_CONVERTER(type, values)             \
+#define RCT_CGSTRUCT_CONVERTER(type, values, _aliases)   \
 + (type)type:(id)json                                    \
 {                                                        \
   @try {                                                 \
@@ -194,12 +206,23 @@ RCT_CONVERTER_CUSTOM(type, name, [json getter])
         RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
       } else {                                           \
         for (NSUInteger i = 0; i < count; i++) {         \
-          ((CGFloat *)&result)[i] = [json[i] doubleValue]; \
+          ((CGFloat *)&result)[i] = [self CGFloat:json[i]]; \
         }                                                \
       }                                                  \
     } else if ([json isKindOfClass:[NSDictionary class]]) { \
+      NSDictionary *aliases = _aliases;                  \
+      if (aliases.count) {                               \
+        json = [json mutableCopy];                       \
+        for (NSString *alias in aliases) {               \
+          NSString *key = aliases[alias];                \
+          NSNumber *number = json[key];                  \
+          if (number) {                                  \
+            ((NSMutableDictionary *)json)[key] = number; \
+          }                                              \
+        }                                                \
+      }                                                  \
       for (NSUInteger i = 0; i < count; i++) {           \
-        ((CGFloat *)&result)[i] = [json[fields[i]] doubleValue]; \
+        ((CGFloat *)&result)[i] = [self CGFloat:json[fields[i]]]; \
       }                                                  \
     } else if (json && json != [NSNull null]) {          \
       RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
