@@ -10,14 +10,18 @@
  */
 'use strict';
 
+var React = require('React');
+
 // Export React, plus some native additions.
 //
 // The use of Object.create/assign is to work around a Flow bug (#6560135).
 // Once that is fixed, change this back to
 //
-//   var ReactNative = {...require('React'), /* additions */}
+//   var ReactNative = {...React, /* additions */}
 //
-var ReactNative = Object.assign(Object.create(require('React')), {
+var ReactNative = Object.assign(Object.create(React), {
+  React,
+
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   DatePickerIOS: require('DatePickerIOS'),
@@ -29,6 +33,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   ReactNavigator: require('ReactNavigator'),
   ScrollView: require('ScrollView'),
   SliderIOS: require('SliderIOS'),
+  StaticContainer: require('StaticContainer.react'),
   SwitchIOS: require('SwitchIOS'),
   TabBarIOS: require('TabBarIOS'),
   Text: require('Text'),
@@ -60,11 +65,18 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   // Plugins
   DeviceEventEmitter: require('RCTDeviceEventEmitter'),
   NativeModules: require('NativeModules'),
+  ReactIOSViewAttributes: require('ReactIOSViewAttributes'),
+  createReactIOSNativeComponentClass: require('createReactIOSNativeComponentClass'),
+
+  // Prop Types
+  EdgeInsetsPropType: require('EdgeInsetsPropType'),
+  PointPropType: require('PointPropType'),
 
   addons: {
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,
     PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
+    StaticRenderer: require('StaticRenderer'),
     TestModule: require('NativeModules').TestModule,
     TestUtils: undefined,
     batchedUpdates: require('ReactUpdates').batchedUpdates,
