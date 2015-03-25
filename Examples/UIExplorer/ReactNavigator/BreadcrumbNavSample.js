@@ -6,7 +6,7 @@
 'use strict';
 
 var BreadcrumbNavigationBar = require('BreadcrumbNavigationBar');
-var JSNavigationStack = require('JSNavigationStack');
+var ReactNavigator = require('ReactNavigator');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var ScrollView = require('ScrollView');
@@ -15,8 +15,6 @@ var TabBarIOS = require('TabBarIOS');
 var Text = require('Text');
 var TouchableBounce = require('TouchableBounce');
 var View = require('View');
-
-
 
 var SAMPLE_TEXT = 'Top Pushes. Middle Replaces. Bottom Pops.';
 
@@ -187,7 +185,7 @@ var BreadcrumbNavSample = React.createClass({
           onPress={this.onTabSelect.bind(this, 0)}
           icon={require('image!madman_tabnav_list')}
           title="One">
-          <JSNavigationStack
+          <ReactNavigator
             debugOverlay={false}
             style={[styles.appContainer]}
             initialRoute={initialRoute}
@@ -204,8 +202,8 @@ var BreadcrumbNavSample = React.createClass({
           onPress={this.onTabSelect.bind(this, 1)}
           icon={require('image!madman_tabnav_create')}
           title="Two">
-          <JSNavigationStack
-            animationConfigRouteMapper={() => JSNavigationStack.AnimationConfigs.FloatFromBottom}
+          <ReactNavigator
+            configureScene={() => ReactNavigator.SceneConfigs.FloatFromBottom}
             debugOverlay={false}
             style={[styles.appContainer]}
             initialRoute={initialRoute}
