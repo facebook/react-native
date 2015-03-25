@@ -12,7 +12,7 @@
 .*/node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js
 .*/node_modules/react-tools/src/browser/.*
 .*/node_modules/react-tools/src/core/ReactInstanceHandles.js
-.*/node_modules/react-tools/src/event/.*
+.*/node_modules/react-tools/src/event/EventPropagators.js
 
 # Ignore jest
 .*/react-native/node_modules/jest-cli/.*
