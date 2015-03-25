@@ -254,7 +254,7 @@ var styles = StyleSheet.create({
     fontSize: 18,
     color: '#666666',
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '500',
     lineHeight: 32,
   },
   filterText: {

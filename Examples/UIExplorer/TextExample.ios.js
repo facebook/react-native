@@ -29,7 +29,7 @@ var Entity = React.createClass({
 
 var AttributeToggler = React.createClass({
   getInitialState: function() {
-    return {fontWeight: 'bold', fontSize: 15};
+    return {fontWeight: '500', fontSize: 15};
   },
   increaseSize: function() {
     this.setState({
@@ -129,9 +129,37 @@ exports.examples = [
   title: 'Font Weight',
   render: function() {
     return (
-      <Text style={{fontWeight: 'bold'}}>
-        Move fast and be bold
-      </Text>
+      <View>
+        <Text style={{fontWeight: '100'}}>
+          Move fast and be ultralight
+        </Text>
+        <Text style={{fontWeight: '200'}}>
+          Move fast and be light
+        </Text>
+        <Text style={{fontWeight: 'normal'}}>
+          Move fast and be normal
+        </Text>
+        <Text style={{fontWeight: 'bold'}}>
+          Move fast and be bold
+        </Text>
+        <Text style={{fontWeight: '900'}}>
+          Move fast and be ultrabold
+        </Text>
+      </View>
+    );
+  },
+},  {
+  title: 'Font Style',
+  render: function() {
+    return (
+      <View>
+        <Text style={{fontStyle: 'normal'}}>
+          Normal text
+        </Text>
+        <Text style={{fontStyle: 'italic'}}>
+          Italic text
+        </Text>
+      </View>
     );
   },
 }, {
@@ -279,7 +307,7 @@ var styles = StyleSheet.create({
     backgroundColor: 'rgba(100, 100, 100, 0.3)'
   },
   entity: {
-    fontWeight: 'bold',
+    fontWeight: '500',
     color: '#527fe4',
   },
 });

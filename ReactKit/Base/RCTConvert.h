@@ -12,6 +12,7 @@
 
 #import "Layout.h"
 #import "RCTAnimationType.h"
+#import "RCTLog.h"
 #import "RCTPointerEvents.h"
 
 /**
@@ -69,8 +70,13 @@
 
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
++ (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withFamily:(id)json size:(id)json weight:(id)json;
++ (UIFont *)UIFont:(UIFont *)font
+        withFamily:(id)family
+              size:(id)size
+            weight:(id)weight
+             style:(id)style;
 
 + (NSArray *)NSStringArray:(id)json;
 + (NSArray *)NSURLArray:(id)json;
