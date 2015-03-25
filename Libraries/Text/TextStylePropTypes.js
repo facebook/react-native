@@ -18,7 +18,10 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   fontFamily: ReactPropTypes.string,
   fontSize: ReactPropTypes.number,
-  fontWeight: ReactPropTypes.oneOf(['normal' /*default*/, 'bold']),
+  fontWeight: ReactPropTypes.oneOf(
+    ['normal' /*default*/, 'bold',
+     '100', '200', '300', '400', '500', '600', '700', '800', '900']
+  ),
   fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
   lineHeight: ReactPropTypes.number,
   color: ReactPropTypes.string,
