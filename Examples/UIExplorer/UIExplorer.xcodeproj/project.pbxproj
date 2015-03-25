@@ -23,6 +23,7 @@
 		147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
 		58005BF21ABA80A60062E044 /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58005BEE1ABA80530062E044 /* libRCTTest.a */; };
+		782E88161AC37EF700E0B6DA /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 782E880C1AC37EEA00E0B6DA /* libRCTAnimation.a */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
 /* End PBXBuildFile section */
 
@@ -104,6 +105,13 @@
 			remoteGlobalIDString = 580C376F1AB104AF0015E709;
 			remoteInfo = RCTTest;
 		};
+		782E880B1AC37EEA00E0B6DA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 782E88051AC37EEA00E0B6DA /* RCTAnimation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTAnimation;
+		};
 		D85B829B1AB6D5CE003F4FE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */;
@@ -135,6 +143,7 @@
 		14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = ../../Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj; sourceTree = "<group>"; };
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
+		782E88051AC37EEA00E0B6DA /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = ../../Libraries/Animation/RCTAnimation.xcodeproj; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -151,6 +160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00D2771C1AB8C55500DC1E48 /* libicucore.dylib in Frameworks */,
+				782E88161AC37EF700E0B6DA /* libRCTAnimation.a in Frameworks */,
 				00D2771A1AB8C3E100DC1E48 /* libRCTWebSocketDebugger.a in Frameworks */,
 				58005BF21ABA80A60062E044 /* libRCTTest.a in Frameworks */,
 				D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */,
@@ -197,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				13417FFA1AA91531003F314A /* ReactKit.xcodeproj */,
+				782E88051AC37EEA00E0B6DA /* RCTAnimation.xcodeproj */,
 				14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */,
 				14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */,
 				134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */,
@@ -293,6 +304,14 @@
 			isa = PBXGroup;
 			children = (
 				58005BEE1ABA80530062E044 /* libRCTTest.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		782E88061AC37EEA00E0B6DA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				782E880C1AC37EEA00E0B6DA /* libRCTAnimation.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -396,6 +415,10 @@
 				{
 					ProductGroup = 134454561AAFCAAE003F0779 /* Products */;
 					ProjectRef = 134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */;
+				},
+				{
+					ProductGroup = 782E88061AC37EEA00E0B6DA /* Products */;
+					ProjectRef = 782E88051AC37EEA00E0B6DA /* RCTAnimation.xcodeproj */;
 				},
 				{
 					ProductGroup = 134A8A211AACED6A00945AAE /* Products */;
@@ -511,6 +534,13 @@
 			fileType = archive.ar;
 			path = libRCTTest.a;
 			remoteRef = 58005BED1ABA80530062E044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		782E880C1AC37EEA00E0B6DA /* libRCTAnimation.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAnimation.a;
+			remoteRef = 782E880B1AC37EEA00E0B6DA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */ = {
