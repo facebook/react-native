@@ -39,22 +39,26 @@
     return;
   }
 
-  NSError *error = nil;
-  NSString *testName = NSStringFromSelector(_testSelector);
-  _snapshotCounter[testName] = @([_snapshotCounter[testName] integerValue] + 1);
-  BOOL success = [_snapshotController compareSnapshotOfView:_view
-                                                   selector:_testSelector
-                                                 identifier:[_snapshotCounter[testName] stringValue]
-                                                      error:&error];
-  RCTAssert(success, @"Snapshot comparison failed: %@", error);
-  callback(@[]);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSString *testName = NSStringFromSelector(_testSelector);
+    _snapshotCounter[testName] = @([_snapshotCounter[testName] integerValue] + 1);
+    NSError *error = nil;
+    BOOL success = [_snapshotController compareSnapshotOfView:_view
+                                                     selector:_testSelector
+                                                   identifier:[_snapshotCounter[testName] stringValue]
+                                                        error:&error];
+    RCTAssert(success, @"Snapshot comparison failed: %@", error);
+    callback(@[]);
+  });
 }
 
 - (void)markTestCompleted
 {
   RCT_EXPORT();
 
-  _done = YES;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    _done = YES;
+  });
 }
 
 @end
