@@ -1,7 +1,6 @@
 html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 300;
   color: #484848;
   line-height: 1.28;
 }
@@ -16,7 +15,7 @@ p {
 
 .subHeader {
   font-size: 21px;
-  font-weight: 200;
+  font-weight: 300;
   line-height: 30px;
   margin-bottom: 10px;
 }
