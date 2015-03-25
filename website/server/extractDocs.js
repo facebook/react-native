@@ -53,6 +53,39 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   return res;
 }
 
+var n;
+
+function renderComponent(filepath) {
+  var json = docgen.parse(
+    fs.readFileSync(filepath),
+    docgenHelpers.findExportedOrFirst,
+    docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
+  );
+  return componentsToMarkdown('component', json, filepath, n++, styleDocs);
+}
+
+function renderAPI(type) {
+  return function(filepath) {
+    var json;
+    try {
+      json = jsDocs(fs.readFileSync(filepath).toString());
+    } catch(e) {
+      console.error('Cannot parse file', filepath);
+      json = {};
+    }
+    return componentsToMarkdown(type, json, filepath, n++);
+  };
+}
+
+function renderStyle(filepath) {
+  var json = docgen.parse(
+    fs.readFileSync(filepath),
+    docgenHelpers.findExportedObject,
+    [docgen.handlers.propTypeHandler]
+  );
+  return componentsToMarkdown('style', json, filepath, n++);
+}
+
 var components = [
   '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
@@ -100,7 +133,15 @@ var styles = [
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
 
-var all = components.concat(apis).concat(styles.slice(0, 1));
+var polyfills = [
+  '../Libraries/Geolocation/GeoLocation.ios.js',
+];
+
+var all = components
+  .concat(apis)
+  .concat(styles.slice(0, 1))
+  .concat(polyfills);
+
 var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
@@ -112,32 +153,11 @@ var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
 }, {});
 
 module.exports = function() {
-  var i = 0;
+  n = 0;
   return [].concat(
-    components.map(function(filepath) {
-      var json = docgen.parse(
-        fs.readFileSync(filepath),
-        docgenHelpers.findExportedOrFirst,
-        docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
-      );
-      return componentsToMarkdown('component', json, filepath, i++, styleDocs);
-    }),
-    apis.map(function(filepath) {
-      try {
-        var json = jsDocs(fs.readFileSync(filepath).toString());
-      } catch(e) {
-        console.error('Cannot parse file', filepath);
-        var json = {};
-      }
-      return componentsToMarkdown('api', json, filepath, i++);
-    }),
-    styles.slice(0, 1).map(function(filepath) {
-      var json = docgen.parse(
-        fs.readFileSync(filepath),
-        docgenHelpers.findExportedObject,
-        [docgen.handlers.propTypeHandler]
-      );
-      return componentsToMarkdown('style', json, filepath, i++);
-    })
+    components.map(renderComponent),
+    apis.map(renderAPI('api')),
+    styles.slice(0, 1).map(renderStyle),
+    polyfills.map(renderAPI('Polyfill'))
   );
 };
