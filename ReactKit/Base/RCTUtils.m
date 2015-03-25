@@ -31,8 +31,14 @@ id RCTJSONParse(NSString *jsonString, NSError **error)
   }
   NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
   if (!jsonData) {
-    RCTLog(@"RCTJSONParse received the following string, which could not be losslessly converted to UTF8 data: '%@'", jsonString);
     jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    if (jsonData) {
+      RCTLogWarn(@"RCTJSONParse received the following string, which could not be losslessly converted to UTF8 data: '%@'", jsonString);
+    } else {
+      // If our backup conversion fails, log the issue so we can see what strings are causing this (t6452813)
+      RCTLogError(@"RCTJSONParse received the following string, which could not be converted to UTF8 data: '%@'", jsonString);
+      return nil;
+    }
   }
   return [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:error];
 }
