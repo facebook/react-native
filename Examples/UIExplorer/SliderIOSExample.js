@@ -53,6 +53,7 @@ var styles = StyleSheet.create({
 });
 
 exports.title = '<SliderIOS>';
+exports.displayName = 'SliderExample';
 exports.description = 'Slider input for numeric values';
 exports.examples = [
   {

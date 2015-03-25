@@ -10,15 +10,35 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
+
+#import "RCTAssert.h"
 #import "RCTRedBox.h"
+#import "RCTRootView.h"
 
 #define TIMEOUT_SECONDS 240
 
 @interface UIExplorerTests : XCTestCase
+{
+  RCTTestRunner *_runner;
+}
 
 @end
 
 @implementation UIExplorerTests
+
+- (void)setUp
+{
+#ifdef __LP64__
+  RCTAssert(!__LP64__, @"Snapshot tests should be run on 32-bit device simulators (e.g. iPhone 5)");
+#endif
+  NSString *version = [[UIDevice currentDevice] systemVersion];
+  RCTAssert([version isEqualToString:@"8.1"], @"Snapshot tests should be run on iOS 8.1, found %@", version);
+  _runner = initRunnerForApp(@"Examples/UIExplorer/UIExplorerApp");
+
+  // If tests have changes, set recordMode = YES below and run the affected tests on an iPhone5, iOS 8.1 simulator.
+  _runner.recordMode = NO;
+}
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {
@@ -33,9 +53,10 @@
   return NO;
 }
 
-- (void)testRootViewLoadsAndRenders {
+// Make sure this test runs first (underscores sort early) otherwise the other tests will tear out the rootView
+- (void)test__RootViewLoadsAndRenders {
   UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-
+  RCTAssert([vc.view isKindOfClass:[RCTRootView class]], @"This test must run first.");
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   BOOL foundElement = NO;
   NSString *redboxError = nil;
@@ -61,5 +82,39 @@
   XCTAssertTrue(foundElement, @"Cound't find element with '<View>' text in %d seconds", TIMEOUT_SECONDS);
 }
 
+- (void)testViewExampleSnapshot
+{
+  [_runner runTest:_cmd module:@"ViewExample"];
+}
+
+- (void)testLayoutExampleSnapshot
+{
+  [_runner runTest:_cmd module:@"LayoutExample"];
+}
+
+- (void)testTextExampleSnapshot
+{
+  [_runner runTest:_cmd module:@"TextExample"];
+}
+
+- (void)testSwitchExampleSnapshot
+{
+  [_runner runTest:_cmd module:@"SwitchExample"];
+}
+
+- (void)testSliderExampleSnapshot
+{
+  [_runner runTest:_cmd module:@"SliderExample"];
+}
+
+- (void)testTabBarExampleSnapshot
+{
+  [_runner runTest:_cmd module:@"TabBarExample"];
+}
+
+- (void)testZZZ_NotInRecordMode
+{
+  RCTAssert(_runner.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");
+}
 
 @end

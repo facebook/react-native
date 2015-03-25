@@ -59,6 +59,7 @@ var AttributeToggler = React.createClass({
 
 exports.title = '<Text>';
 exports.description = 'Base component for rendering styled text.';
+exports.displayName = 'TextExample';
 exports.examples = [
 {
   title: 'Wrap',
