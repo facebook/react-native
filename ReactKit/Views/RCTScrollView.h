@@ -22,19 +22,25 @@
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 /**
- * If the `contentSize` is not provided, then the `contentSize` will
- * automatically be determined by the size of the `RKScrollView` subview.
- *
  * The `RCTScrollView` may have at most one single subview. This will ensure
  * that the scroll view's `contentSize` will be efficiently set to the size of
  * the single subview's frame. That frame size will be determined somewhat
  * efficiently since it will have already been computed by the off-main-thread
  * layout system.
  */
-@property (nonatomic, readonly) UIScrollView *scrollView;
 @property (nonatomic, readonly) UIView *contentView;
 
+/**
+ * If the `contentSize` is not specified (or is specified as {0, 0}, then the
+ * `contentSize` will automatically be determined by the size of the subview.
+ */
 @property (nonatomic, assign) CGSize contentSize;
+
+/**
+ * The underlying scrollView (TODO: can we remove this?)
+ */
+@property (nonatomic, readonly) UIScrollView *scrollView;
+
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) NSUInteger throttleScrollCallbackMS;
