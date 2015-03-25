@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule JSNavigationStack
+ * @providesModule ReactNavigator
  */
 
 "use strict"
@@ -10,7 +10,7 @@ var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var Backstack = require('Backstack');
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
-var JSNavigationStackAnimationConfigs = require('JSNavigationStackAnimationConfigs');
+var ReactNavigatorSceneConfigs = require('ReactNavigatorSceneConfigs');
 var PanResponder = require('PanResponder');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
@@ -72,10 +72,10 @@ var styles = StyleSheet.create({
   }
 });
 
-var JSNavigationStack = React.createClass({
+var ReactNavigator = React.createClass({
 
   propTypes: {
-    animationConfigRouteMapper: PropTypes.func,
+    configureScene: PropTypes.func,
     // Returns the rendered scene to display when invoked with (route, navigator)
     renderScene: PropTypes.func.isRequired,
     initialRoute: PropTypes.object,
@@ -90,7 +90,7 @@ var JSNavigationStack = React.createClass({
     onItemRef: PropTypes.func,
     // Define the component to use for the nav bar, which will get navState and navigator props
     navigationBar: PropTypes.node,
-    // The navigator object from a parent JSNavigationStack
+    // The navigator object from a parent ReactNavigator
     navigator: PropTypes.object,
 
     /**
@@ -102,14 +102,14 @@ var JSNavigationStack = React.createClass({
   },
 
   statics: {
-    AnimationConfigs: JSNavigationStackAnimationConfigs,
+    SceneConfigs: ReactNavigatorSceneConfigs,
   },
 
   mixins: [TimerMixin, InteractionMixin, Subscribable.Mixin],
 
   getDefaultProps: function() {
     return {
-      animationConfigRouteMapper: () => JSNavigationStackAnimationConfigs.PushFromRight,
+      configureScene: () => ReactNavigatorSceneConfigs.PushFromRight,
       sceneStyle: styles.defaultSceneStyle,
     };
   },
@@ -128,12 +128,12 @@ var JSNavigationStack = React.createClass({
     } else {
       invariant(
         routeStack.length >= 1,
-        'JSNavigationStack requires props.initialRoute or props.initialRouteStack.'
+        'ReactNavigator requires props.initialRoute or props.initialRouteStack.'
       );
     }
     return {
-      animationConfigStack: routeStack.map(
-        (route) => this.props.animationConfigRouteMapper(route)
+      sceneConfigStack: routeStack.map(
+        (route) => this.props.configureScene(route)
       ),
       idStack: routeStack.map(() => getuid()),
       routeStack,
@@ -203,7 +203,7 @@ var JSNavigationStack = React.createClass({
     this.springSystem = new rebound.SpringSystem();
     this.spring = this.springSystem.createSpring();
     this.spring.setRestSpeedThreshold(0.05);
-    var animationConfig = this.state.animationConfigStack[this.state.presentedIndex];
+    var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     animationConfig && this._configureSpring(animationConfig);
     this.spring.addListener(this);
     this.onSpringUpdate();
@@ -246,8 +246,8 @@ var JSNavigationStack = React.createClass({
     this.setState({
       idStack: nextRouteStack.map(getuid),
       routeStack: nextRouteStack,
-      animationConfigStack: nextRouteStack.map(
-        this.props.animationConfigRouteMapper
+      sceneConfigStack: nextRouteStack.map(
+        this.props.configureScene
       ),
       updatingRangeStart: 0,
       updatingRangeLength: nextRouteStack.length,
@@ -273,7 +273,7 @@ var JSNavigationStack = React.createClass({
         AnimationsDebugModule.startRecordingFps();
       }
       this._transitionToToIndexWithVelocity(
-        this.state.animationConfigStack[this.state.fromIndex].defaultTransitionVelocity
+        this.state.sceneConfigStack[this.state.fromIndex].defaultTransitionVelocity
       );
     }
   },
@@ -322,7 +322,7 @@ var JSNavigationStack = React.createClass({
   _transitionToToIndexWithVelocity: function(v) {
     this._configureSpring(
       // For visual consistency, the from index is always used to configure the spring
-      this.state.animationConfigStack[this.state.fromIndex]
+      this.state.sceneConfigStack[this.state.fromIndex]
     );
     this.state.isAnimating = true;
     this.spring.setVelocity(v);
@@ -332,7 +332,7 @@ var JSNavigationStack = React.createClass({
 
   _transitionToFromIndexWithVelocity: function(v) {
     this._configureSpring(
-      this.state.animationConfigStack[this.state.fromIndex]
+      this.state.sceneConfigStack[this.state.fromIndex]
     );
     this.state.isAnimating = true;
     this.spring.setVelocity(v);
@@ -383,7 +383,7 @@ var JSNavigationStack = React.createClass({
 
   _handleMoveShouldSetPanResponder: function(e, gestureState) {
     var currentRoute = this.state.routeStack[this.state.presentedIndex];
-    var animationConfig = this.state.animationConfigStack[this.state.presentedIndex];
+    var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     if (!animationConfig.enableGestures) {
       return false;
     }
@@ -417,7 +417,7 @@ var JSNavigationStack = React.createClass({
       this.state.isResponderOnlyToBlockTouches = false;
       return;
     }
-    var animationConfig = this.state.animationConfigStack[this.state.presentedIndex];
+    var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     var velocity = animationConfig.isVertical ? gestureState.vy : gestureState.vx;
     // It's not the real location. There is no *real* location - that's the
     // point of the pan gesture.
@@ -451,7 +451,7 @@ var JSNavigationStack = React.createClass({
 
   _handlePanResponderMove: function(e, gestureState) {
     if (!this.state.isResponderOnlyToBlockTouches) {
-      var animationConfig = this.state.animationConfigStack[this.state.presentedIndex];
+      var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
       var distance = animationConfig.isVertical ? gestureState.dy : gestureState.dx;
       var gestureDetectMovement = animationConfig.gestureDetectMovement;
       var nextProgress = (distance - gestureDetectMovement) /
@@ -467,7 +467,7 @@ var JSNavigationStack = React.createClass({
     }
     // Use toIndex animation when we move forwards. Use fromIndex when we move back
     var animationIndex = this.state.presentedIndex < toIndex ? toIndex : fromIndex;
-    var animationConfig = this.state.animationConfigStack[animationIndex];
+    var animationConfig = this.state.sceneConfigStack[animationIndex];
     var styleToUse = {};
     var useFn = index < fromIndex || index < toIndex ?
       animationConfig.interpolators.out :
@@ -602,11 +602,11 @@ var JSNavigationStack = React.createClass({
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
     var activeIDStack = this.state.idStack.slice(0, activeLength);
-    var activeAnimationConfigStack = this.state.animationConfigStack.slice(0, activeLength);
+    var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
     var nextStack = activeStack.concat([route]);
     var nextIDStack = activeIDStack.concat([getuid()]);
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
-      this.props.animationConfigRouteMapper(route),
+      this.props.configureScene(route),
     ]);
     var requestTransitionAndResetUpdatingRange = () => {
       this._requestTransitionTo(nextStack.length - 1);
@@ -624,7 +624,7 @@ var JSNavigationStack = React.createClass({
     this.setState({
       idStack: nextIDStack,
       routeStack: nextStack,
-      animationConfigStack: nextAnimationConfigStack,
+      sceneConfigStack: nextAnimationConfigStack,
       jumpToIndex: nextStack.length - 1,
       updatingRangeStart: nextStack.length - 1,
       updatingRangeLength: 1,
@@ -687,15 +687,15 @@ var JSNavigationStack = React.createClass({
     // navigation actually happening
     var nextIDStack = this.state.idStack.slice();
     var nextRouteStack = this.state.routeStack.slice();
-    var nextAnimationModeStack = this.state.animationConfigStack.slice();
+    var nextAnimationModeStack = this.state.sceneConfigStack.slice();
     nextIDStack[index] = getuid();
     nextRouteStack[index] = route;
-    nextAnimationModeStack[index] = this.props.animationConfigRouteMapper(route);
+    nextAnimationModeStack[index] = this.props.configureScene(route);
 
     this.setState({
       idStack: nextIDStack,
       routeStack: nextRouteStack,
-      animationConfigStack: nextAnimationModeStack,
+      sceneConfigStack: nextAnimationModeStack,
       updatingRangeStart: index,
       updatingRangeLength: 1,
     }, () => {
@@ -784,7 +784,7 @@ var JSNavigationStack = React.createClass({
       this.setState({
         updatingRangeStart: updatingRangeStart,
         updatingRangeLength: updatingRangeLength,
-        animationConfigStack: this.state.animationConfigStack.slice(0, newStackLength),
+        sceneConfigStack: this.state.sceneConfigStack.slice(0, newStackLength),
         idStack: this.state.idStack.slice(0, newStackLength),
         routeStack: this.state.routeStack.slice(0, newStackLength),
       }, this._resetUpdatingRange);
@@ -857,4 +857,4 @@ var JSNavigationStack = React.createClass({
   },
 });
 
-module.exports = JSNavigationStack;
+module.exports = ReactNavigator;

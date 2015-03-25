@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var JSNavigationStack = require('JSNavigationStack');
+var ReactNavigator = require('ReactNavigator');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var ScrollView = require('ScrollView');
@@ -132,7 +132,7 @@ var JumpingNavSample = React.createClass({
 
   render: function() {
     return (
-      <JSNavigationStack
+      <ReactNavigator
         debugOverlay={false}
         style={[styles.appContainer]}
         initialRoute={INIT_ROUTE}
