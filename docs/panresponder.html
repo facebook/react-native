@@ -41,24 +41,7 @@ will move slightly, but we only want to count the single moving touch.</li><li>x
 responder.</li><li>dx/dy: Cumulative touch distance - not the same thing as sum of each touch
 distance. Accounts for touch moves that are clustered together in time,
 moving the same direction. Only valid when currently responder (otherwise,
-it only represents the drag distance below the threshold).</li><li>vx/vy: Velocity.</li></ul></div><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="#methods">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="initializegesturestate"></a><span class="propType">static </span>_initializeGestureState<span class="propType">(gestureState)</span> <a class="hash-link" href="#initializegesturestate">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="updategesturestateonmove"></a><span class="propType">static </span>_updateGestureStateOnMove<span class="propType">(gestureState, touchHistory)</span> <a class="hash-link" href="#updategesturestateonmove">#</a></h4><div><p>This is nuanced and is necessary. It is incorrect to continuously take all
-active <em>and</em> recently moved touches, find the centroid, and track how that
-result changes over time. Instead, we must take all recently moved
-touches, and calculate how the centroid has changed just for those
-recently moved touches, and append that change to an accumulator. This is
-to (at least) handle the case where the user is moving three fingers, and
-then one of the fingers stops but the other two continue.</p><p>This is very different than taking all of the recently moved touches and
-storing their centroid as <code>dx/dy</code>. For correctness, we must <em>accumulate
-changes</em> in the centroid of recently moved touches.</p><p>There is also some nuance with how we handle multiple moved touches in a
-single event. With the way <code>ReactIOSEventEmitter</code> dispatches touches as
-individual events, multiple touches generate two &#x27;move&#x27; events, each of
-them triggering <code>onResponderMove</code>. But with the way <code>PanResponder</code> works,
-all of the gesture inference is performed on the first dispatch, since it
-looks at all of the touches (even the ones for which there hasn&#x27;t been a
-native dispatch yet). Therefore, <code>PanResponder</code> does not call
-<code>onResponderMove</code> passed the first dispatch. This diverges from the
-typical responder callback pattern (without using <code>PanResponder</code>), but
-avoids more dispatches than necessary.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="create"></a><span class="propType">static </span>create<span class="propType">(config: object)</span> <a class="hash-link" href="#create">#</a></h4><div><p>@param {object} config Enhanced versions of all of the responder callbacks
+it only represents the drag distance below the threshold).</li><li>vx/vy: Velocity.</li></ul></div><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="#methods">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="create"></a><span class="propType">static </span>create<span class="propType">(config: object)</span> <a class="hash-link" href="#create">#</a></h4><div><p>@param {object} config Enhanced versions of all of the responder callbacks
 that accept not only the typical <code>ResponderSyntheticEvent</code>, but also the
 <code>PanResponder</code> gesture state.  Simply replace the word <code>Responder</code> with
 <code>PanResponder</code> in each of the typical <code>onResponder*</code> callbacks. For
