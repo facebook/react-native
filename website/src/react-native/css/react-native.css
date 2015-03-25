@@ -285,10 +285,13 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .nav-home img {
-  vertical-align: -7px;
-  margin-right: 7px;
-  width: 30px;
-  height: 30px;
+  vertical-align: -9px;
+  margin-right: 8px;
+  margin-left: 1px;
+  width: 34px;
+}
+.nav-main a.nav-home {
+  color: white;
 }
 
 .nav-main ul {

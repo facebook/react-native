@@ -39,7 +39,7 @@ var Site = React.createClass({
             <div className="nav-main">
               <div className="wrap">
                 <a className="nav-home" href="/react-native/">
-                  <img src="/react-native/img/logo.png" />
+                  <img src="/react-native/img/header_logo.png" />
                   React Native
                 </a>
                 <HeaderLinks section={this.props.section} />
