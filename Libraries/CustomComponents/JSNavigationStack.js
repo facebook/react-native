@@ -806,7 +806,10 @@ var JSNavigationStack = React.createClass({
       i === this.state.presentedIndex ? styles.presentNavItem : styles.futureNavItem;
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
-        <View ref={'scene_' + i} style={[initialSceneStyle, this.props.sceneStyle]}>
+        <View
+          key={this.state.idStack[i]}
+          ref={'scene_' + i}
+          style={[initialSceneStyle, this.props.sceneStyle]}>
           {child}
         </View>
       </StaticContainer>
