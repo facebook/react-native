@@ -76,7 +76,7 @@ var styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   descriptionText: {
     fontSize: 14,

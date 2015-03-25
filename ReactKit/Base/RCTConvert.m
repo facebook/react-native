@@ -11,8 +11,6 @@
 
 #import <objc/message.h>
 
-#import "RCTLog.h"
-
 @implementation RCTConvert
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
@@ -135,7 +133,9 @@ RCT_CGSTRUCT_CONVERTER(CATransform3D, (@[
   @"m41", @"m42", @"m43", @"m44"
 ]), nil)
 
-RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty"]), nil)
+RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
+  @"a", @"b", @"c", @"d", @"tx", @"ty"
+]), nil)
 
 + (UIColor *)UIColor:(id)json
 {
@@ -364,7 +364,8 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty
 
   } else if (json && ![json isKindOfClass:[NSNull class]]) {
 
-    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, \
+                received %@: %@", [json class], json);
   }
 
   // Default color
@@ -418,100 +419,163 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[@"a", @"b", @"c", @"d", @"tx", @"ty
   return [self UIImage:json].CGImage;
 }
 
+#ifndef __IPHONE_8_2
+
+// These constants are defined in iPhone SDK 8.2
+// They'll work fine in earlier iOS versions, but the app cannot be built with
+// an SDK version < 8.2 unless we redefine them here. This will be removed
+// in a future version of ReactKit, once 8.2 is more widely adopted.
+
+static const CGFloat UIFontWeightUltraLight = -0.8;
+static const CGFloat UIFontWeightThin = -0.6;
+static const CGFloat UIFontWeightLight = -0.4;
+static const CGFloat UIFontWeightRegular = 0;
+static const CGFloat UIFontWeightMedium = 0.23;
+static const CGFloat UIFontWeightSemibold = 0.3;
+static const CGFloat UIFontWeightBold = 0.4;
+static const CGFloat UIFontWeightHeavy = 0.56;
+static const CGFloat UIFontWeightBlack = 0.62;
+
+#endif
+
+typedef CGFloat RCTFontWeight;
+RCT_ENUM_CONVERTER(RCTFontWeight, (@{
+  @"normal": @(UIFontWeightRegular),
+  @"bold": @(UIFontWeightBold),
+  @"100": @(UIFontWeightUltraLight),
+  @"200": @(UIFontWeightThin),
+  @"300": @(UIFontWeightLight),
+  @"400": @(UIFontWeightRegular),
+  @"500": @(UIFontWeightMedium),
+  @"600": @(UIFontWeightSemibold),
+  @"700": @(UIFontWeightBold),
+  @"800": @(UIFontWeightHeavy),
+  @"900": @(UIFontWeightBlack),
+}), UIFontWeightRegular, doubleValue)
+
+typedef BOOL RCTFontStyle;
+RCT_ENUM_CONVERTER(RCTFontStyle, (@{
+  @"normal": @NO,
+  @"italic": @YES,
+  @"oblique": @YES,
+}), NO, boolValue)
+
+static RCTFontWeight RCTWeightOfFont(UIFont *font)
+{
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  return [traits[UIFontWeightTrait] doubleValue];
+}
+
+static BOOL RCTFontIsItalic(UIFont *font)
+{
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
+  return (symbolicTraits & UIFontDescriptorTraitItalic) != 0;
+}
+
+static BOOL RCTFontIsCondensed(UIFont *font)
+{
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
+  return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
+}
+
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
-  return [self UIFont:font withFamily:nil size:json weight:nil];
+  return [self UIFont:font withFamily:nil size:json weight:nil style:nil];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:json];
+  return [self UIFont:font withFamily:nil size:nil weight:json style:nil];
+}
+
++ (UIFont *)UIFont:(UIFont *)font withStyle:(id)json
+{
+  return [self UIFont:font withFamily:nil size:nil weight:nil style:json];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
 {
-  return [self UIFont:font withFamily:json size:nil weight:nil];
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil];
 }
 
-+ (UIFont *)UIFont:(UIFont *)font withFamily:(id)family size:(id)size weight:(id)weight
++ (UIFont *)UIFont:(UIFont *)font
+        withFamily:(id)family
+              size:(id)size
+            weight:(id)weight
+             style:(id)style
 {
-  CGFloat const RCTDefaultFontSize = 14;
-  NSString *const RCTDefaultFontName = @"HelveticaNeue";
-  NSString *const RCTDefaultFontWeight = @"normal";
-  NSString *const RCTBoldFontWeight = @"bold";
+  // Defaults
+  NSString *const RCTDefaultFontFamily = @"Helvetica Neue";
+  const RCTFontWeight RCTDefaultFontWeight = UIFontWeightRegular;
+  const CGFloat RCTDefaultFontSize = 14;
 
-  // Create descriptor
-  UIFontDescriptor *fontDescriptor = font.fontDescriptor ?: [UIFontDescriptor fontDescriptorWithName:RCTDefaultFontName size:RCTDefaultFontSize];
-
-  // Get font size
-  CGFloat fontSize = [self CGFloat:size];
-  if (fontSize && !isnan(fontSize)) {
-    fontDescriptor = [fontDescriptor fontDescriptorWithSize:fontSize];
-  }
-
-  // Get font family
-  NSString *familyName = [self NSString:family];
-  if (familyName) {
-    if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
-      font = [UIFont fontWithName:familyName size:fontDescriptor.pointSize];
-      if (font) {
-        // It's actually a font name, not a font family name,
-        // but we'll do what was meant, not what was said.
-        familyName = font.familyName;
-        fontDescriptor = font.fontDescriptor;
-      } else {
-        // Not a valid font or family
-        RCTLogError(@"Unrecognized font family '%@'", familyName);
-        familyName = [UIFont fontWithDescriptor:fontDescriptor size:0].familyName;
-      }
-    } else {
-      // Set font family
-      fontDescriptor = [fontDescriptor fontDescriptorWithFamily:familyName];
-    }
-  } else {
-    familyName = [UIFont fontWithDescriptor:fontDescriptor size:0].familyName;
+  // Get existing properties
+  BOOL isItalic = NO;
+  BOOL isCondensed = NO;
+  RCTFontWeight fontWeight = RCTDefaultFontWeight;
+  if (font) {
+    family = font.familyName;
+    fontWeight = RCTWeightOfFont(font);
+    isItalic = RCTFontIsItalic(font);
+    isCondensed = RCTFontIsCondensed(font);
   }
 
   // Get font weight
-  NSString *fontWeight = [self NSString:weight];
-  if (fontWeight) {
+  if (weight) {
+    fontWeight = [self RCTFontWeight:weight];
+  }
 
-    static NSSet *values;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      values = [NSSet setWithObjects:RCTDefaultFontWeight, RCTBoldFontWeight, nil];
-    });
+  // Get font style
+  if (style) {
+    isItalic = [self RCTFontStyle:style];
+  }
 
-    if (fontWeight && ![values containsObject:fontWeight]) {
-      RCTLogError(@"Unrecognized font weight '%@', must be one of %@", fontWeight, values);
-      fontWeight = RCTDefaultFontWeight;
+  // Get font size
+  CGFloat fontSize = [self CGFloat:size] ?: RCTDefaultFontSize;
+
+  // Get font family
+  NSString *familyName = [self NSString:family] ?: RCTDefaultFontFamily;
+  if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
+    font = [UIFont fontWithName:familyName size:fontSize];
+    if (font) {
+      // It's actually a font name, not a font family name,
+      // but we'll do what was meant, not what was said.
+      familyName = font.familyName;
+      NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+      fontWeight = [traits[UIFontWeightTrait] doubleValue];
+    } else {
+      // Not a valid font or family
+      RCTLogError(@"Unrecognized font family '%@'", familyName);
+      familyName = RCTDefaultFontFamily;
     }
+  }
 
-    // this is hacky. we are appending the string -Medium because most fonts we currently use
-    // just need to have -Medium appended to get the bold we want. we're going to revamp this
-    // to make it easier to know which options are available in JS. t4996115
-    if ([fontWeight isEqualToString:RCTBoldFontWeight]) {
-      font = nil;
-      for (NSString *fontName in [UIFont fontNamesForFamilyName:familyName]) {
-        if ([fontName hasSuffix:@"-Medium"]) {
-          font = [UIFont fontWithName:fontName size:fontDescriptor.pointSize];
-          break;
-        }
-        if ([fontName hasSuffix:@"-Bold"]) {
-          font = [UIFont fontWithName:fontName size:fontDescriptor.pointSize];
-          // But keep searching in case there's a medium option
-        }
-      }
-      if (font) {
-        fontDescriptor = font.fontDescriptor;
+  // Get closest match
+  UIFont *bestMatch = font;
+  CGFloat closestWeight = font ? RCTWeightOfFont(font) : INFINITY;
+  for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
+    UIFont *match = [UIFont fontWithName:name size:fontSize];
+    if (isItalic == RCTFontIsItalic(match) &&
+        isCondensed == RCTFontIsCondensed(match)) {
+      CGFloat testWeight = RCTWeightOfFont(match);
+      if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
+        bestMatch = match;
+        closestWeight = testWeight;
       }
     }
   }
 
-  // TODO: font style
+  // Safety net
+  if (!bestMatch) {
+    RCTLogError(@"Could not find font with family: '%@', size: %@, \
+                weight: %@, style: %@", family, size, weight, style);
+    bestMatch = [UIFont fontWithName:[[UIFont fontNamesForFamilyName:familyName] firstObject]
+                                size:fontSize];
+  }
 
-  // Create font
-  return [UIFont fontWithDescriptor:fontDescriptor size:0];
+  return bestMatch;
 }
 
 RCT_ARRAY_CONVERTER(NSString)

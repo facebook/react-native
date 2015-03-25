@@ -187,7 +187,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
   },
   textBlock: {
-    fontWeight: 'bold',
+    fontWeight: '500',
     color: 'blue',
   },
 });

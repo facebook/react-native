@@ -214,7 +214,7 @@ var styles = StyleSheet.create({
   },
   rowText: {
     fontSize: 17,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });
 

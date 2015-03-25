@@ -42,7 +42,7 @@ var styles = StyleSheet.create({
   },
   text: {
     fontSize: 19,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });
 

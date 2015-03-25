@@ -62,7 +62,7 @@ var styles = StyleSheet.create({
   movieTitle: {
     flex: 1,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
     marginBottom: 2,
   },
   movieYear: {

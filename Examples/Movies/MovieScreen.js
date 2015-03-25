@@ -109,7 +109,7 @@ var styles = StyleSheet.create({
   movieTitle: {
     flex: 1,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   rating: {
     marginTop: 10,
@@ -119,7 +119,7 @@ var styles = StyleSheet.create({
   },
   ratingValue: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   mpaaWrapper: {
     alignSelf: 'flex-start',
@@ -131,7 +131,7 @@ var styles = StyleSheet.create({
   mpaaText: {
     fontFamily: 'Palatino',
     fontSize: 13,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   mainSection: {
     flexDirection: 'row',
@@ -148,7 +148,7 @@ var styles = StyleSheet.create({
     marginVertical: 10,
   },
   castTitle: {
-    fontWeight: 'bold',
+    fontWeight: '500',
     marginBottom: 3,
   },
   castActor: {
