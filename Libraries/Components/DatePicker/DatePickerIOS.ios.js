@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule DatePickerIOS
+ * @flow
  *
  * This is a controlled component version of RCTDatePickerIOS
  */
@@ -25,6 +26,12 @@ var createReactIOSNativeComponentClass =
 var merge = require('merge');
 
 var DATEPICKER = 'datepicker';
+
+type DefaultProps = {
+  mode: 'date' | 'time' | 'datetime';
+};
+
+type Event = Object;
 
 /**
  * Use `DatePickerIOS` to render a date/time picker (selector) on iOS.  This is
@@ -85,13 +92,13 @@ var DatePickerIOS = React.createClass({
     timeZoneOffsetInMinutes: PropTypes.number,
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function(): DefaultProps {
     return {
       mode: 'datetime',
     };
   },
 
-  _onChange: function(event) {
+  _onChange: function(event: Event) {
     var nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange && this.props.onDateChange(
       new Date(nativeTimeStamp)

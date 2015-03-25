@@ -7,12 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ensureComponentIsNative
+ * @flow
  */
 'use strict';
 
 var invariant = require('invariant');
 
-var ensureComponentIsNative = function(component) {
+var ensureComponentIsNative = function(component: any) {
   invariant(
     component && typeof component.setNativeProps === 'function',
     'Touchable child must either be native or forward setNativeProps to a ' +

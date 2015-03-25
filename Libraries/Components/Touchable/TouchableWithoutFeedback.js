@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableWithoutFeedback
+ * @flow
  */
 'use strict';
 
@@ -23,6 +24,7 @@ var onlyChild = require('onlyChild');
  */
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
+type Event = Object;
 
 /**
  * Do not use unless you have a very good reason. All the elements that
@@ -51,7 +53,7 @@ var TouchableWithoutFeedback = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandlePress: function(e) {
+  touchableHandlePress: function(e: Event) {
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -67,18 +69,19 @@ var TouchableWithoutFeedback = React.createClass({
     this.props.onLongPress && this.props.onLongPress();
   },
 
-  touchableGetPressRectOffset: function() {
+  touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {
     return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
   },
 
-  touchableGetHighlightDelayMS: function() {
+  touchableGetHighlightDelayMS: function(): number {
     return 0;
   },
 
-  render: function() {
+  render: function(): ReactElement {
     // Note(vjeux): use cloneWithProps once React has been upgraded
     var child = onlyChild(this.props.children);
-    return React.cloneElement(child, {
+    // Note(avik): remove dynamic typecast once Flow has been upgraded
+    return (React: any).cloneElement(child, {
       accessible: true,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,

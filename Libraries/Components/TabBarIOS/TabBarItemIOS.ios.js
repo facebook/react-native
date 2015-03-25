@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TabBarItemIOS
+ * @flow
  */
 'use strict';
 
@@ -43,7 +44,7 @@ var TabBarItemIOS = React.createClass({
     }
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: { selected: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
