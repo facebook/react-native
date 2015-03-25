@@ -45,105 +45,107 @@ For this tutorial let’s build a simple version of the Movies app that fetches 
 
 The code below is a slightly modified version of the SampleApp that fetches the data we’ll need to build our application. The data fetching code isn’t really relevant to learning React Native so don’t worry too much about that but the rest of the app is very well documented.
 
-    /**
-     * Sample React Native App
-     * https://github.com/facebook/react-native
-     */
-    'use strict';
+```javascript
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ */
+'use strict';
 
-    var React = require('react-native');
-    var {
-      AppRegistry,
-      StyleSheet,
-      Text,
-      View,
-    } = React;
+var React = require('react-native');
+var {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View,
+} = React;
 
-    // The fetch module is used to make an HTTP request to rotten tomatoes's API
-    var fetch = require('fetch');
+// The fetch module is used to make an HTTP request to rotten tomatoes's API
+var fetch = require('fetch');
 
-    // This builds REQUEST_URL which is the URL we request data with
-    var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
-    var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
-    var PAGE_SIZE = 25;
-    var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
-    var REQUEST_URL = API_URL + PARAMS;
+// This builds REQUEST_URL which is the URL we request data with
+var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
+var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
+var PAGE_SIZE = 25;
+var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
+var REQUEST_URL = API_URL + PARAMS;
 
-    var SampleApp = React.createClass({
-      // We initialize our state to {movies: null} so that we can check
-      // this.state.movies === null to determine whether the movies data has been
-      // loaded or not. Once they have we can do this.setState({movies: data}).
-      getInitialState: function() {
-        return {
-          movies: null,
-        };
-      },
+var SampleApp = React.createClass({
+  // We initialize our state to {movies: null} so that we can check
+  // this.state.movies === null to determine whether the movies data has been
+  // loaded or not. Once they have we can do this.setState({movies: data}).
+  getInitialState: function() {
+    return {
+      movies: null,
+    };
+  },
 
-      // componentDidMount is called after the React compnent has loaded, this
-      // calls this.fetchData to kick off the request for movies data
-      componentDidMount: function() {
-        this.fetchData();
-      },
+  // componentDidMount is called after the React compnent has loaded, this
+  // calls this.fetchData to kick off the request for movies data
+  componentDidMount: function() {
+    this.fetchData();
+  },
 
-      // Here we're actually making the request and then handling the response by
-      // doing this.setState({movies: moviesData}). this.setState causes the
-      // component to re-render. In the render function below, the movies data will
-      // then be available via this.state.movies.
-      fetchData: function() {
-        fetch(REQUEST_URL)
-          .then((response) => response.json())
-          .then((responseData) => {
-            this.setState({
-              movies: responseData.movies,
-            });
-          })
-          .done();
-      },
+  // Here we're actually making the request and then handling the response by
+  // doing this.setState({movies: moviesData}). this.setState causes the
+  // component to re-render. In the render function below, the movies data will
+  // then be available via this.state.movies.
+  fetchData: function() {
+    fetch(REQUEST_URL)
+      .then((response) => response.json())
+      .then((responseData) => {
+        this.setState({
+          movies: responseData.movies,
+        });
+      })
+      .done();
+  },
 
-      // This is pretty simple. If we don't have any movies data then render the
-      // loading view. Otherwise, render the movies (placeholder for now).
-      render: function() {
-        if (!this.state.movies) {
-          return this.renderLoading();
-        }
+  // This is pretty simple. If we don't have any movies data then render the
+  // loading view. Otherwise, render the movies (placeholder for now).
+  render: function() {
+    if (!this.state.movies) {
+      return this.renderLoading();
+    }
 
-        return (
-          <View style={styles.container}>
-            <Text>
-              Movies loaded
-            </Text>
-          </View>
-        );
-      },
+    return (
+      <View style={styles.container}>
+        <Text>
+          Movies loaded
+        </Text>
+      </View>
+    );
+  },
 
-      // This is what the loading view looks like, simply some centered Text that
-      // says "Loading movies...".
-      renderLoading: function() {
-        return (
-          <View style={styles.container}>
-            <Text>
-              Loading movies...
-            </Text>
-          </View>
-        );
-      },
-    });
+  // This is what the loading view looks like, simply some centered Text that
+  // says "Loading movies...".
+  renderLoading: function() {
+    return (
+      <View style={styles.container}>
+        <Text>
+          Loading movies...
+        </Text>
+      </View>
+    );
+  },
+});
 
-    // This is what styles our views. Setting flex to 1 makes a component take up
-    // the entire size of its parent. justifyContent and alignItems center the
-    // contents vertically and horizontally.
-    var styles = StyleSheet.create({
-      container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-      },
-    });
+// This is what styles our views. Setting flex to 1 makes a component take up
+// the entire size of its parent. justifyContent and alignItems center the
+// contents vertically and horizontally.
+var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+});
 
-    // This line simply tells the ObjC engine that when you supply the entry point
-    // "SampleApp", render the component SampleApp (the component in this file)
-    AppRegistry.registerComponent('SampleApp', () => SampleApp);
+// This line simply tells the ObjC engine that when you supply the entry point
+// "SampleApp", render the component SampleApp (the component in this file)
+AppRegistry.registerComponent('SampleApp', () => SampleApp);
+```
 
 After changing the entire contents of this file to the snippet above you should be able to simply cmd+R in the simulator to see the change. It should render “Loading movies..." until it gets the data back from Rotten Tomatoes at which point it should render “Movies loaded”. 
 
