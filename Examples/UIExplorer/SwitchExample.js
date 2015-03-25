@@ -121,6 +121,7 @@ var EventSwitchExample = React.createClass({
 });
 
 exports.title = '<SwitchIOS>';
+exports.displayName = 'SwitchExample';
 exports.description = 'Native boolean input';
 exports.examples = [
   {
