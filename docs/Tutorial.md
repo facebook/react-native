@@ -33,63 +33,193 @@ After installing these dependencies there are two simple commands to get a React
 
 You can now open this new project (`AwesomeProject/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with cmd+R. Doing so will start a node server which enables live code reloading by packaging and serving the latest JS bundle to the simulator at runtime. From here out you can see your changes by pressing cmd+R in the simulator rather than recompiling in Xcode.
 
-For this tutorial let’s build a simple version of the Movies app that fetches 25 movies in theater and displays them in a ListView.
+For this tutorial let’s build a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
 
 
 ### Hello World
 
-`react-native init` will copy `Examples/SampleProject` to whatever you named your project, in this case AwesomeProject. This is a simple hello world app. You can edit `index.ios.js` to make changes to the app and then press cmd+r in the simulator to see your changes.
+`react-native init` will copy `Examples/SampleProject` to whatever you named your project, in this case AwesomeProject. This is a simple hello world app. You can edit `index.ios.js` to make changes to the app and then press cmd+R in the simulator to see your changes.
 
 
-### Fetching Data
+### Mocking data
 
-The code below is a slightly modified version of the SampleApp that fetches the data we’ll need to build our application. The data fetching code isn’t really relevant to learning React Native so don’t worry too much about that but the rest of the app is very well documented.
+Before we write the code to fetch actual Rotten Tomatoes data, let's mock some data so we can get started with rendering some views right away. At Facebook we typically declare constants at the top of JS files just below the requires but feel free to add the following constant wherever you like:
 
 ```javascript
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
-'use strict';
+var MOCKED_MOVIES_DATA = [
+  {title: 'Title', year: '2015', posters: {thumbnail: 'http://resizing.flixster.com/yDGJbDZ4tOk8Wsfl2Ljt1JYgHpk=/53x81/dkpu1ddg7pbsk.cloudfront.net/movie/11/18/90/11189059_ori.jpg'}},
+];
+```
 
-var React = require('react-native');
+
+### Render a movie
+
+We're going to render the title, year, and thumbnail for the movie. Since we want to render an image, which is an Image component in React Native, add Image to the list of React requires above.
+
+```javascript
 var {
   AppRegistry,
+  Image,
   StyleSheet,
   Text,
   View,
 } = React;
+```
 
-// The fetch module is used to make an HTTP request to rotten tomatoes's API
+Now change the render function so that we're rendering the stuff mentioned above rather than hello world.
+
+```javascript
+  render: function() {
+    var movie = MOCKED_MOVIES_DATA[0];
+    return (
+      <View style={styles.container}>
+        <Text>{movie.title}</Text>
+        <Text>{movie.year}</Text>
+        <Image source={{uri: movie.posters.thumbnail}} />
+      </View>
+    );
+  }
+```
+
+Press cmd+R and you should see "Title" sitting above "2015". Notice that the Image doesn't render anything. This is because we haven't specified the width and height of the image we want to render. You do that via styles. While we're changing the styles let's also clean up the styles we're no longer using.
+
+```javascript
+var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  thumbnail: {
+    width: 53,
+    height: 81,
+  },
+});
+```
+
+And lastly we need to apply this still to the Image component:
+
+```javascript
+        <Image
+          source={{uri: movie.posters.thumbnail}}
+          style={styles.thumbnail}
+        />
+```
+
+Press cmd+R and the image should now render.
+
+
+### Add some styling
+
+Great, we've rendered our data, now let's make it look better. I'd like to put the text to the right of the image and make the title larger and centered within that area:
+
+```
++---------------------------------+
+|+-------++----------------------+|
+||       ||        Title         ||
+|| Image ||                      ||
+||       ||        Year          ||
+|+-------++----------------------+|
++---------------------------------+
+```
+
+Since we've got some components layed out horizontally and some components layed out vertically, we'll need to add another container around the Texts.
+
+```javascript
+      return (
+        <View style={styles.container}>
+          <Image
+            source={{uri: movie.posters.thumbnail}}
+            style={styles.thumbnail}
+          />
+          <View style={styles.rightContainer}>
+            <Text style={styles.title}>{movie.title}</Text>
+            <Text style={styles.year}>{movie.year}</Text>
+          </View>
+        </View>
+      );
+```
+
+Not too much has changed, we added a container around the Texts and then moved them after the Image (because they're to the right of the Image). Let's see what the style changes look like:
+
+```javascript
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+```
+
+We simply added `flexDirection: 'row'` which means that children are layed out horizontally instead of vertically.
+
+```javascript
+  rightContainer: {
+    flex: 1,
+  },
+```
+
+This means that the rightContainer takes up the remaining space in the parent container that isn't taken up by the Image. If this doesn't make sense, add a backgroundColor to rightContainer and then try removing the `flex: 1`. You'll see how the container is only the size of its children instead of taking up the remaining space of its parent.
+
+```javascript
+  title: {
+    fontSize: 20,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  year: {
+    textAlign: 'center',
+  },
+```
+
+This is pretty straightforward if you've ever seen CSS before. Make the title larger, add some space below it, and center all of the text within their parent container (rightContainer).
+
+Go ahead and press cmd+R and you'll see the updated view.
+
+### Fetching real data
+
+Fetching data from Rotten Tomatoes's API isn't really relevant to learning React Native so feel free to breeze through this section.
+
+Require the fetch module which is used to make an HTTP request to rotten tomatoes's API.
+
+```javascript
 var fetch = require('fetch');
+```
 
-// This builds REQUEST_URL which is the URL we request data with
+Add the following constants to the top of the file (typically below the requires) to create the REQUEST_URL used to request data with.
+
+```javascript
 var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
 var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
 var PAGE_SIZE = 25;
 var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
 var REQUEST_URL = API_URL + PARAMS;
+```
 
-var SampleApp = React.createClass({
-  // We initialize our state to {movies: null} so that we can check
-  // this.state.movies === null to determine whether the movies data has been
-  // loaded or not. Once they have we can do this.setState({movies: data}).
+Add some initial state to our application so that we can check this.state.movies === null to determine whether the movies data has been loaded or not. We can set this data when the response comes back with this.setState({movies: moviesData}). Add this code just above the render function inside our React class.
+
+```javascript
   getInitialState: function() {
     return {
-      movies: null,
+      movies: null
     };
   },
+```
 
-  // componentDidMount is called after the React compnent has loaded, this
-  // calls this.fetchData to kick off the request for movies data
+We want to send off the request after the component has finished loading. componentDidMount is a function on React components that React will call exactly once just after the component has been loaded.
+
+```javascript
   componentDidMount: function() {
     this.fetchData();
   },
+```
 
-  // Here we're actually making the request and then handling the response by
-  // doing this.setState({movies: moviesData}). this.setState causes the
-  // component to re-render. In the render function below, the movies data will
-  // then be available via this.state.movies.
+Implement our fetchData function to actually make the request and handle the response. All you need to do is call this.setState({movies: data}) because the way React works is that setState actually triggers a re-render and then the render function will notice that
+this.state.movies is no longer null.
+
+```javascript
   fetchData: function() {
     fetch(REQUEST_URL)
       .then((response) => response.json())
@@ -100,26 +230,21 @@ var SampleApp = React.createClass({
       })
       .done();
   },
+```
 
-  // This is pretty simple. If we don't have any movies data then render the
-  // loading view. Otherwise, render the movies (placeholder for now).
+Now modify the render function to render a loading view if we don't have any movies data, and to render the first movie otherwise.
+
+```javascript
   render: function() {
     if (!this.state.movies) {
-      return this.renderLoading();
+      return this.renderLoadingView();
     }
 
-    return (
-      <View style={styles.container}>
-        <Text>
-          Movies loaded
-        </Text>
-      </View>
-    );
+    var movie = this.state.movies[0];
+    return this.renderMovie(movie);
   },
 
-  // This is what the loading view looks like, simply some centered Text that
-  // says "Loading movies...".
-  renderLoading: function() {
+  renderLoadingView: function() {
     return (
       <View style={styles.container}>
         <Text>
@@ -128,27 +253,25 @@ var SampleApp = React.createClass({
       </View>
     );
   },
-});
 
-// This is what styles our views. Setting flex to 1 makes a component take up
-// the entire size of its parent. justifyContent and alignItems center the
-// contents vertically and horizontally.
-var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+  renderMovie: function(movie) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={{uri: movie.posters.thumbnail}}
+          style={styles.thumbnail}
+        />
+        <View style={styles.rightContainer}>
+          <Text style={styles.title}>{movie.title}</Text>
+          <Text style={styles.year}>{movie.year}</Text>
+        </View>
+      </View>
+    );
   },
-});
-
-// This line simply tells the ObjC engine that when you supply the entry point
-// "SampleApp", render the component SampleApp (the component in this file)
-AppRegistry.registerComponent('SampleApp', () => SampleApp);
 ```
 
-After changing the entire contents of this file to the snippet above you should be able to simply cmd+R in the simulator to see the change. It should render “Loading movies..." until it gets the data back from Rotten Tomatoes at which point it should render “Movies loaded”.
+Now press cmd+R and you should see "Loading movies..." until the response comes back, then it will render the first movie it fetched from Rotten Tomatoes.
 
 ## ListView
 
-Let’s now modify this application to render some of this data in a ListView.
+Let’s now modify this application to render all of this data in a ListView, rather than just the first movie.
