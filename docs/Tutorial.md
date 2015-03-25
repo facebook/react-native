@@ -2,7 +2,7 @@
 id: tutorial
 title: Tutorial
 layout: docs
-category: Tutorial
+category: Quick Start
 permalink: docs/tutorial.html
 next: videos
 ---
@@ -147,7 +147,7 @@ var styles = StyleSheet.create({
 AppRegistry.registerComponent('SampleApp', () => SampleApp);
 ```
 
-After changing the entire contents of this file to the snippet above you should be able to simply cmd+R in the simulator to see the change. It should render “Loading movies..." until it gets the data back from Rotten Tomatoes at which point it should render “Movies loaded”. 
+After changing the entire contents of this file to the snippet above you should be able to simply cmd+R in the simulator to see the change. It should render “Loading movies..." until it gets the data back from Rotten Tomatoes at which point it should render “Movies loaded”.
 
 ## ListView
 
