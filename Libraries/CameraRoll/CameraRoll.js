@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule CameraRoll
+ * @flow
  */
 'use strict';
 
@@ -28,7 +29,8 @@ var GROUP_TYPES_OPTIONS = [
   'SavedPhotos', // default
 ];
 
-deepFreezeAndThrowOnMutationInDev(GROUP_TYPES_OPTIONS);
+// Flow treats Object and Array as disjoint types, currently.
+deepFreezeAndThrowOnMutationInDev((GROUP_TYPES_OPTIONS: any));
 
 /**
  * Shape of the param arg for the `getPhotos` function.

@@ -5,14 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule RCTJSTimers
- * @flow
  */
-'use strict';
 
-var JSTimersExecution = require('JSTimersExecution');
+#import <UIKit/UIKit.h>
 
-var RCTJSTimers = JSTimersExecution;
+@interface RCTDevelopmentViewController : UIViewController
 
-module.exports = RCTJSTimers;
+@end

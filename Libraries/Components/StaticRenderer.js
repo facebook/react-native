@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @provides StaticRenderer
+ * @flow
  */
 'use strict';
 
@@ -18,11 +19,11 @@ var StaticRenderer = React.createClass({
     render: React.PropTypes.func.isRequired,
   },
 
-  shouldComponentUpdate: function(nextProps) {
+  shouldComponentUpdate: function(nextProps: { shouldUpdate: boolean }): boolean {
     return nextProps.shouldUpdate;
   },
 
-  render: function() {
+  render: function(): ReactElement {
     return this.props.render();
   },
 });

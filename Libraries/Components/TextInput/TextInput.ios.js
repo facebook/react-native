@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TextInput
+ * @flow
  */
 'use strict';
 
@@ -62,6 +63,12 @@ var onlyMultiline = {
 var notMultiline = {
   onSubmitEditing: true,
 };
+
+type DefaultProps = {
+  bufferDelay: number;
+};
+
+type Event = Object;
 
 /**
  * A foundational component for inputting text into the app via a
@@ -206,12 +213,12 @@ var TextInput = React.createClass({
     validAttributes: RCTTextFieldAttributes,
   },
 
-  isFocused: function() {
+  isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
       this.refs.input.getNativeNode();
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function(): DefaultProps {
     return {
       bufferDelay: 100,
     };
@@ -228,6 +235,8 @@ var TextInput = React.createClass({
     onFocusRequested: React.PropTypes.func,
     focusEmitter: React.PropTypes.instanceOf(EventEmitter),
   },
+
+  _focusSubscription: (undefined: ?Function),
 
   componentDidMount: function() {
     if (!this.context.focusEmitter) {
@@ -255,7 +264,9 @@ var TextInput = React.createClass({
     this._focusSubscription && this._focusSubscription.remove();
   },
 
-  componentWillReceiveProps: function(newProps) {
+  _bufferTimeout: (undefined: ?number),
+
+  componentWillReceiveProps: function(newProps: {value: any}) {
     if (newProps.value !== this.props.value) {
       if (!this.isFocused()) {
         // Set the value immediately if the input is not focused since that
@@ -385,17 +396,17 @@ var TextInput = React.createClass({
     );
   },
 
-  _onFocus: function(event) {
+  _onFocus: function(event: Event) {
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
   },
 
-  _onPress: function(event) {
+  _onPress: function(event: Event) {
     this.focus();
   },
 
-  _onChange: function(event) {
+  _onChange: function(event: Event) {
     if (this.props.controlled && event.nativeEvent.text !== this.props.value) {
       this.refs.input.setNativeProps({text: this.props.value});
     }
@@ -403,14 +414,14 @@ var TextInput = React.createClass({
     this.props.onChangeText && this.props.onChangeText(event.nativeEvent.text);
   },
 
-  _onBlur: function(event) {
+  _onBlur: function(event: Event) {
     this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
   },
 
-  _onSelectionChange: function(event) {
+  _onSelectionChange: function(event: Event) {
     if (this.props.selectionState) {
       var selection = event.nativeEvent.selection;
       this.props.selectionState.update(selection.start, selection.end);
@@ -418,7 +429,7 @@ var TextInput = React.createClass({
     this.props.onSelectionChange && this.props.onSelectionChange(event);
   },
 
-  _onTextInput: function(event) {
+  _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
     var counter = event.nativeEvent.eventCounter;
     if (counter > this.state.mostRecentEventCounter) {

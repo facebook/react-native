@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule SliderIOS
+ * @flow
  */
 'use strict';
 
@@ -20,6 +21,8 @@ var View = require('View');
 var createReactIOSNativeComponentClass =
   require('createReactIOSNativeComponentClass');
 var merge = require('merge');
+
+type Event = Object;
 
 var SliderIOS = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -52,7 +55,7 @@ var SliderIOS = React.createClass({
     onSlidingComplete: PropTypes.func,
   },
 
-  _onValueChange: function(event) {
+  _onValueChange: function(event: Event) {
     this.props.onChange && this.props.onChange(event);
     if (event.nativeEvent.continuous) {
       this.props.onValueChange &&

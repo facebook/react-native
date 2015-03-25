@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ScrollView
+ * @flow
  */
 'use strict';
 
@@ -178,15 +179,15 @@ var ScrollView = React.createClass({
     return this.scrollResponderMixinGetInitialState();
   },
 
-  setNativeProps: function(props) {
+  setNativeProps: function(props: Object) {
     this.refs[SCROLLVIEW].setNativeProps(props);
   },
 
-  getInnerViewNode: function() {
+  getInnerViewNode: function(): any {
     return this.refs[INNERVIEW].getNodeHandle();
   },
 
-  scrollTo: function(destY, destX) {
+  scrollTo: function(destY?: number, destX?: number) {
     RCTUIManager.scrollTo(
       this.getNodeHandle(),
       destX || 0,
@@ -202,7 +203,7 @@ var ScrollView = React.createClass({
     if (__DEV__ && this.props.style) {
       var style = flattenStyle(this.props.style);
       var childLayoutProps = ['alignItems', 'justifyContent']
-        .filter((prop) => style[prop] !== undefined);
+        .filter((prop) => style && style[prop] !== undefined);
       invariant(
         childLayoutProps.length === 0,
         'ScrollView child layout (' + JSON.stringify(childLayoutProps) +
@@ -250,7 +251,7 @@ var ScrollView = React.createClass({
       keyboardDismissMode: this.props.keyboardDismissMode ?
         keyboardDismissModeConstants[this.props.keyboardDismissMode] :
         undefined,
-      style: [styles.base, this.props.style],
+      style: ([styles.base, this.props.style]: ?Array<any>),
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchEnd: this.scrollResponderHandleTouchEnd,
@@ -279,6 +280,10 @@ var ScrollView = React.createClass({
         ScrollViewClass = AndroidScrollView;
       }
     }
+    invariant(
+      ScrollViewClass !== undefined,
+      'ScrollViewClass must not be undefined'
+    );
 
     return (
       <ScrollViewClass {...props} ref={SCROLLVIEW}>

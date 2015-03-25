@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebView
+ * @flow
  */
 'use strict';
 
@@ -24,6 +25,8 @@ var merge = require('merge');
 var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
 
+var invariant = require('invariant');
+
 var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
@@ -40,6 +43,14 @@ var NavigationType = {
   formresubmit: RCTWebViewManager.NavigationType.FormResubmitted,
   other: RCTWebViewManager.NavigationType.Other,
 };
+
+type ErrorEvent = {
+  domain: any;
+  code: any;
+  description: any;
+}
+
+type Event = Object;
 
 var WebView = React.createClass({
   statics: {
@@ -61,7 +72,7 @@ var WebView = React.createClass({
   getInitialState: function() {
     return {
       viewState: WebViewState.IDLE,
-      lastErrorEvent: null,
+      lastErrorEvent: (null: ?ErrorEvent),
       startInLoadingState: true,
     };
   },
@@ -79,6 +90,10 @@ var WebView = React.createClass({
       otherView = this.props.renderLoading();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
+      invariant(
+        errorEvent != null,
+        'lastErrorEvent expected to be non-null'
+      );
       otherView = this.props.renderError(
         errorEvent.domain,
         errorEvent.code,
@@ -132,21 +147,21 @@ var WebView = React.createClass({
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  updateNavigationState: function(event) {
+  updateNavigationState: function(event: Event) {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
   },
 
-  getWebWiewHandle: function() {
+  getWebWiewHandle: function(): any {
     return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
   },
 
-  onLoadingStart: function(event) {
+  onLoadingStart: function(event: Event) {
     this.updateNavigationState(event);
   },
 
-  onLoadingError: function(event) {
+  onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
     console.error("encountered an error loading page", event.nativeEvent);
 
@@ -156,7 +171,7 @@ var WebView = React.createClass({
     });
   },
 
-  onLoadingFinish: function(event) {
+  onLoadingFinish: function(event: Event) {
     this.setState({
       viewState: WebViewState.IDLE,
     });
