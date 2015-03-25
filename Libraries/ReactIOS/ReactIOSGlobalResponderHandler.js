@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactIOSGlobalResponderHandler
+ * @flow
  */
 'use strict';
 
@@ -14,7 +15,7 @@ var RCTUIManager = require('NativeModules').UIManager;
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 
 var ReactIOSGlobalResponderHandler = {
-  onChange: function(from, to) {
+  onChange: function(from: string, to: string) {
     if (to !== null) {
       RCTUIManager.setJSResponder(
         ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(to)
