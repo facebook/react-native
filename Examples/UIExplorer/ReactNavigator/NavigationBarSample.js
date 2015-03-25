@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var JSNavigationStack = require('JSNavigationStack');
+var ReactNavigator = require('ReactNavigator');
 var NavigationBar = require('NavigationBar');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
@@ -70,7 +70,7 @@ var NavigationBarSample = React.createClass({
   render: function() {
     return (
       <View style={styles.appContainer}>
-        <JSNavigationStack
+        <ReactNavigator
           debugOverlay={false}
           style={styles.appContainer}
           initialRoute={newRandomRoute()}
