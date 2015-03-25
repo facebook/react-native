@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule MapView
+ * @flow
  */
 'use strict';
 
@@ -20,6 +21,8 @@ var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentC
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
+
+type Event = Object;
 
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -119,7 +122,7 @@ var MapView = React.createClass({
     onRegionChangeComplete: React.PropTypes.func,
   },
 
-  _onChange: function(event) {
+  _onChange: function(event: Event) {
     if (event.nativeEvent.continuous) {
       this.props.onRegionChange &&
         this.props.onRegionChange(event.nativeEvent.region);

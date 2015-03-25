@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NavigatorIOS
+ * @flow
  */
 'use strict';
 
@@ -59,7 +60,7 @@ var RCTNavigatorItem = createReactIOSNativeComponentClass({
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
-      this.getNodeHandle(),
+      (this: any).getNodeHandle(),
       logError,
       cb
     );
@@ -72,6 +73,29 @@ var NavigatorTransitionerIOS = React.createClass({
   },
 });
 
+type Route = {
+  component: Function;
+  title: string;
+  passProps: Object;
+  backButtonTitle: string;
+  rightButtonTitle: string;
+  onRightButtonPress: Function;
+  wrapperStyle: any;
+};
+
+type State = {
+  idStack: Array<number>;
+  routeStack: Array<Route>;
+  requestedTopOfStack: number;
+  observedTopOfStack: number;
+  progress: number;
+  fromIndex: number;
+  toIndex: number;
+  makingNavigatorRequest: boolean;
+  updatingAllIndicesAtOrBeyond: number;
+}
+
+type Event = Object;
 
 /**
  * Think of `<NavigatorIOS>` as simply a component that renders an
@@ -224,6 +248,8 @@ var NavigatorIOS = React.createClass({
 
   },
 
+  navigator: (undefined: ?Object),
+
   componentWillMount: function() {
     // Precompute a pack of callbacks that's frequently generated and passed to
     // instances.
@@ -240,7 +266,7 @@ var NavigatorIOS = React.createClass({
     };
   },
 
-  getInitialState: function() {
+  getInitialState: function(): State {
     return {
       idStack: [getuid()],
       routeStack: [this.props.initialRoute],
@@ -266,7 +292,9 @@ var NavigatorIOS = React.createClass({
     };
   },
 
-  _handleFocusRequest: function(item) {
+  _toFocusOnNavigationComplete: (undefined: any),
+
+  _handleFocusRequest: function(item: any) {
     if (this.state.makingNavigatorRequest) {
       this._toFocusOnNavigationComplete = item;
     } else {
@@ -274,14 +302,22 @@ var NavigatorIOS = React.createClass({
     }
   },
 
-  _getFocusEmitter: function() {
-    if (!this._focusEmitter) {
-      this._focusEmitter = new EventEmitter();
+  _focusEmitter: (undefined: ?EventEmitter),
+
+  _getFocusEmitter: function(): EventEmitter {
+    // Flow not yet tracking assignments to instance fields.
+    var focusEmitter = this._focusEmitter;
+    if (!focusEmitter) {
+      focusEmitter = new EventEmitter();
+      this._focusEmitter = focusEmitter;
     }
-    return this._focusEmitter;
+    return focusEmitter;
   },
 
-  getChildContext: function() {
+  getChildContext: function(): {
+    onFocusRequested: Function;
+    focusEmitter: EventEmitter;
+  } {
     return {
       onFocusRequested: this._handleFocusRequest,
       focusEmitter: this._getFocusEmitter(),
@@ -293,13 +329,13 @@ var NavigatorIOS = React.createClass({
     focusEmitter: React.PropTypes.instanceOf(EventEmitter),
   },
 
-  _tryLockNavigator: function(cb) {
+  _tryLockNavigator: function(cb: () => void) {
     this.refs[TRANSITIONER_REF].requestSchedulingNavigation(
       (acquiredLock) => acquiredLock && cb()
     );
   },
 
-  _handleNavigatorStackChanged: function(e) {
+  _handleNavigatorStackChanged: function(e: Event) {
     var newObservedTopOfStack = e.nativeEvent.stackLength - 1;
     invariant(
       newObservedTopOfStack <= this.state.requestedTopOfStack,
@@ -352,7 +388,7 @@ var NavigatorIOS = React.createClass({
     });
   },
 
-  push: function(route) {
+  push: function(route: Route) {
     invariant(!!route, 'Must supply route to push');
     // Make sure all previous requests are caught up first. Otherwise reject.
     if (this.state.requestedTopOfStack === this.state.observedTopOfStack) {
@@ -372,7 +408,7 @@ var NavigatorIOS = React.createClass({
     }
   },
 
-  popN: function(n) {
+  popN: function(n: number) {
     if (n === 0) {
       return;
     }
@@ -406,7 +442,7 @@ var NavigatorIOS = React.createClass({
    * `index` specifies the route in the stack that should be replaced.
    * If it's negative, it counts from the back.
    */
-  replaceAtIndex: function(route, index) {
+  replaceAtIndex: function(route: Route, index: number) {
     invariant(!!route, 'Must supply route to replace');
     if (index < 0) {
       index += this.state.routeStack.length;
@@ -434,14 +470,14 @@ var NavigatorIOS = React.createClass({
   /**
    * Replaces the top of the navigation stack.
    */
-  replace: function(route) {
+  replace: function(route: Route) {
     this.replaceAtIndex(route, -1);
   },
 
   /**
    * Replace the current route's parent.
    */
-  replacePrevious: function(route) {
+  replacePrevious: function(route: Route) {
     this.replaceAtIndex(route, -2);
   },
 
@@ -449,7 +485,7 @@ var NavigatorIOS = React.createClass({
     this.popToRoute(this.state.routeStack[0]);
   },
 
-  popToRoute: function(route) {
+  popToRoute: function(route: Route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
       indexOfRoute !== -1,
@@ -459,7 +495,7 @@ var NavigatorIOS = React.createClass({
     this.popN(numToPop);
   },
 
-  replacePreviousAndPop: function(route) {
+  replacePreviousAndPop: function(route: Route) {
     // Make sure all previous requests are caught up first. Otherwise reject.
     if (this.state.requestedTopOfStack !== this.state.observedTopOfStack) {
       return;
@@ -476,7 +512,7 @@ var NavigatorIOS = React.createClass({
     });
   },
 
-  resetTo: function(route) {
+  resetTo: function(route: Route) {
     invariant(!!route, 'Must supply route to push');
     // Make sure all previous requests are caught up first. Otherwise reject.
     if (this.state.requestedTopOfStack !== this.state.observedTopOfStack) {
@@ -486,7 +522,7 @@ var NavigatorIOS = React.createClass({
     this.popToRoute(route);
   },
 
-  handleNavigationComplete: function(e) {
+  handleNavigationComplete: function(e: Event) {
     if (this._toFocusOnNavigationComplete) {
       this._getFocusEmitter().emit('focus', this._toFocusOnNavigationComplete);
       this._toFocusOnNavigationComplete = null;
@@ -494,7 +530,7 @@ var NavigatorIOS = React.createClass({
     this._handleNavigatorStackChanged(e);
   },
 
-  _routeToStackItem: function(route, i) {
+  _routeToStackItem: function(route: Route, i: number) {
     var Component = route.component;
     var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
       this.state.updatingAllIndicesAtOrBeyond >= i;

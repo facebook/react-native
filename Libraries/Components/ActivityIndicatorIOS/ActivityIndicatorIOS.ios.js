@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ActivityIndicatorIOS
+ * @flow
  */
 'use strict';
 
@@ -28,6 +29,12 @@ var SpinnerSize = keyMirror({
 });
 
 var GRAY = '#999999';
+
+type DefaultProps = {
+  animating: boolean;
+  size: 'small' | 'large';
+  color: string;
+};
 
 var ActivityIndicatorIOS = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -51,7 +58,7 @@ var ActivityIndicatorIOS = React.createClass({
     ]),
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function(): DefaultProps {
     return {
       animating: true,
       size: SpinnerSize.small,

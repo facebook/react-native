@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Subscribable
+ * @flow
  */
 'use strict';
 
@@ -73,8 +74,13 @@ var logError = require('logError');
 
 var SUBSCRIBABLE_INTERNAL_EVENT = 'subscriptionEvent';
 
+type Data = Object;
+type EventMapping = (_: Data) => Data;
 
 class Subscribable {
+  _eventMapping: EventMapping;
+  _lastData: Data;
+
   /**
    * Creates a new Subscribable object
    *
@@ -88,7 +94,7 @@ class Subscribable {
    *   The resolved data will be transformed with the eventMapping before it
    *   gets emitted.
    */
-  constructor(eventEmitter, eventName, eventMapping, getInitData) {
+  constructor(eventEmitter: EventEmitter, eventName: string, eventMapping?: EventMapping, getInitData?: Function) {
 
     this._internalEmitter = new EventEmitter();
     this._eventMapping = eventMapping || (data => data);
@@ -106,7 +112,7 @@ class Subscribable {
   /**
    * Returns the last data emitted from the Subscribable, or undefined
    */
-  get() {
+  get(): Data {
     return this._lastData;
   }
 
@@ -138,7 +144,7 @@ class Subscribable {
    *   }
    *   Call `remove` to terminate the subscription before unmounting
    */
-  subscribe(lifespan, callback, context) {
+    subscribe(lifespan: { addUnmountCallback: Function }, callback: Function, context: Object) {
     invariant(
       typeof lifespan.addUnmountCallback === 'function',
       'Must provide a valid lifespan, which provides a way to add a ' +
@@ -169,7 +175,7 @@ class Subscribable {
    * Callback for the initial data resolution. Currently behaves the same as
    * `_handleEmit`, but we may eventually want to keep track of the difference
    */
-  _handleInitData(dataInput) {
+  _handleInitData(dataInput: Data) {
     var emitData = this._eventMapping(dataInput);
     this._lastData = emitData;
     this._internalEmitter.emit(SUBSCRIBABLE_INTERNAL_EVENT, emitData);
@@ -179,7 +185,7 @@ class Subscribable {
    * Handle new data emissions. Pass the data through our eventMapping
    * transformation, store it for later `get()`ing, and emit it for subscribers
    */
-  _handleEmit(dataInput) {
+  _handleEmit(dataInput: Data) {
     var emitData = this._eventMapping(dataInput);
     this._lastData = emitData;
     this._internalEmitter.emit(SUBSCRIBABLE_INTERNAL_EVENT, emitData);
@@ -280,12 +286,13 @@ Subscribable.Mixin = {
     if (!this._localSubscribables) {
       return;
     }
-    var emitterSubscribables;
     Object.keys(this._localSubscribables).forEach((eventEmitter) => {
-      emitterSubscribables = this._localSubscribables[eventEmitter];
-      Object.keys(emitterSubscribables).forEach((eventName) => {
-        emitterSubscribables[eventName].cleanup();
-      });
+      var emitterSubscribables = this._localSubscribables[eventEmitter];
+      if (emitterSubscribables) {
+        Object.keys(emitterSubscribables).forEach((eventName) => {
+          emitterSubscribables[eventName].cleanup();
+        });
+      }
     });
     this._localSubscribables = null;
   },

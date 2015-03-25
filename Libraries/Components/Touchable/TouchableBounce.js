@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableBounce
+ * @flow
  */
 'use strict';
 
@@ -19,6 +20,10 @@ var Touchable = require('Touchable');
 var merge = require('merge');
 var copyProperties = require('copyProperties');
 var onlyChild = require('onlyChild');
+
+type State = {
+    animationID: ?number;
+};
 
 /**
  * When the scroll view is disabled, this defines how far your touch may move
@@ -47,11 +52,17 @@ var TouchableBounce = React.createClass({
     onPressAnimationComplete: React.PropTypes.func,
   },
 
-  getInitialState: function() {
+  getInitialState: function(): State {
     return merge(this.touchableGetInitialState(), {animationID: null});
   },
 
-  bounceTo: function(value, velocity, bounciness, fromValue, callback) {
+  bounceTo: function(
+    value: number,
+    velocity: number,
+    bounciness: number,
+    fromValue?: ?Function | number,
+    callback?: ?Function
+  ) {
     if (POPAnimation) {
       this.state.animationID && this.removeAnimation(this.state.animationID);
       var anim = {
@@ -60,6 +71,7 @@ var TouchableBounce = React.createClass({
         toValue: [value, value],
         velocity: [velocity, velocity],
         springBounciness: bounciness,
+        fromValue: (undefined: ?any),
       };
       if (fromValue) {
         anim.fromValue = [fromValue, fromValue];
@@ -90,8 +102,9 @@ var TouchableBounce = React.createClass({
   },
 
   touchableHandlePress: function() {
-    if (this.props.onPressWithCompletion) {
-      this.props.onPressWithCompletion(
+    var onPressWithCompletion = this.props.onPressWithCompletion;
+    if (onPressWithCompletion) {
+      onPressWithCompletion(
         this.bounceTo.bind(this, 1, 10, 10, 0.93, this.props.onPressAnimationComplete)
       );
       return;
@@ -101,11 +114,11 @@ var TouchableBounce = React.createClass({
     this.props.onPress && this.props.onPress();
   },
 
-  touchableGetPressRectOffset: function() {
+  touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {
     return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
   },
 
-  touchableGetHighlightDelayMS: function() {
+  touchableGetHighlightDelayMS: function(): number {
     return 0;
   },
 

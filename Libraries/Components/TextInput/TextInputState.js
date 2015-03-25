@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TextInputState
+ * @flow
  *
  * This class is responsible for coordinating the "focused"
  * state for TextInputs. All calls relating to the keyboard
@@ -20,13 +21,13 @@ var TextInputState = {
    /**
    * Internal state
    */
-  _currentlyFocusedID: null,
+  _currentlyFocusedID: (null: ?string),
 
   /**
    * Returns the ID of the currently focused text field, if one exists
    * If no text field is focused it returns null
    */
-  currentlyFocusedField: function() {
+  currentlyFocusedField: function(): ?string {
     return this._currentlyFocusedID;
   },
 
@@ -35,7 +36,7 @@ var TextInputState = {
    * Focuses the specified text field
    * noop if the text field was already focused
    */
-  focusTextInput: function(textFieldID) {
+  focusTextInput: function(textFieldID: string) {
     if (this._currentlyFocusedID != textFieldID && textFieldID != null) {
       this._currentlyFocusedID = textFieldID;
       RCTUIManager.focus(textFieldID);
@@ -47,7 +48,7 @@ var TextInputState = {
    * Unfocuses the specified text field
    * noop if it wasn't focused
    */
-  blurTextInput: function(textFieldID) {
+  blurTextInput: function(textFieldID: string) {
     if (this._currentlyFocusedID == textFieldID && textFieldID != null) {
       this._currentlyFocusedID = null;
       RCTUIManager.blur(textFieldID);

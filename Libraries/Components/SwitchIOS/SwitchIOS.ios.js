@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule SwitchIOS
+ * @flow
  *
  * This is a controlled component version of RCTSwitch.
  */
@@ -22,6 +23,13 @@ var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentC
 var merge = require('merge');
 
 var SWITCH = 'switch';
+
+type DefaultProps = {
+  value: boolean;
+  disabled: boolean;
+};
+
+type Event = Object;
 
 /**
  * Use `SwitchIOS` to render a boolean input on iOS.  This is
@@ -67,14 +75,14 @@ var SwitchIOS = React.createClass({
     tintColor: PropTypes.string,
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function(): DefaultProps {
     return {
       value: false,
       disabled: false,
     };
   },
 
-  _onChange: function(event) {
+  _onChange: function(event: Event) {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
 

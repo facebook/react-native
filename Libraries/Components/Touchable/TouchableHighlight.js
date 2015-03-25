@@ -10,6 +10,8 @@
  */
 'use strict';
 
+// Note (avik): add @flow when Flow supports spread properties in propTypes
+
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
