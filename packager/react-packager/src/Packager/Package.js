@@ -68,10 +68,9 @@ Package.prototype._getSource = function() {
 Package.prototype._getInlineSourceMap = function() {
   if (this._inlineSourceMap == null) {
     var sourceMap = this.getSourceMap({excludeSource: true});
-    this._inlineSourceMap = '\nRAW_SOURCE_MAP = ' +
-      JSON.stringify(sourceMap) + ';';
+    var encoded = new Buffer(JSON.stringify(sourceMap)).toString('base64');
+    this._inlineSourceMap = 'data:application/json;base64,' + encoded;
   }
-
   return this._inlineSourceMap;
 };
 
@@ -85,12 +84,13 @@ Package.prototype.getSource = function(options) {
   }
 
   var source = this._getSource();
+  source += '\n\/\/@ sourceMappingURL=';
 
   if (options.inlineSourceMap) {
     source += this._getInlineSourceMap();
+  } else {
+    source += this._sourceMapUrl;
   }
-
-  source += '\n\/\/@ sourceMappingURL=' + this._sourceMapUrl;
 
   return source;
 };
