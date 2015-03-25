@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule View
- * @flow
  */
 'use strict';
 
@@ -40,18 +39,8 @@ var stylePropType = StyleSheetPropType(ViewStylePropTypes);
  * </View>
  * ```
  *
- * By default, `View`s have a primary flex direction of 'column', so children
- * will stack up vertically by default.  `View`s also expand to fill the parent
- * in the direction of the parent's flex direction by default, so in the case of
- * a default parent (flexDirection: 'column'), the children will fill the width,
- * but not the height.
- *
- * Many library components can be treated like plain `Views` in many cases, for
- * example passing them children, setting style, etc.
- *
  * `View`s are designed to be used with `StyleSheet`s for clarity and
- * performance, although inline styles are also supported.  It is common for
- * `StyleSheet`s to be combined dynamically.  See `StyleSheet.js` for more info.
+ * performance, although inline styles are also supported.
  */
 var View = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -67,9 +56,17 @@ var View = React.createClass({
 
   propTypes: {
     /**
-     * When true, indicates that the view is an accessibility element
+     * When true, indicates that the view is an accessibility element. By default,
+     * all the touchable elements are accessible.
      */
     accessible: PropTypes.bool,
+
+    /**
+     * Overrides the text that's read by the screen reader when the user interacts
+     * with the element. By default, the label is constructed by traversing all the
+     * children and accumulating all the Text nodes separated by space.
+     */
+    accessibilityLabel: PropTypes.string,
 
     /**
      * Used to locate this view in end-to-end tests.
@@ -78,16 +75,16 @@ var View = React.createClass({
 
     /**
      * For most touch interactions, you'll simply want to wrap your component in
-     * `TouchableHighlight.js`.  Check out `Touchable.js` and
-     * `ScrollResponder.js` for more discussion.
+     * `TouchableHighlight` or `TouchableOpacity`. Check out `Touchable.js`,
+     * `ScrollResponder.js` and `ResponderEventPlugin.js` for more discussion.
      */
+    onMoveShouldSetResponder: PropTypes.func,
     onResponderGrant: PropTypes.func,
-    onResponderReject: PropTypes.func,
     onResponderMove: PropTypes.func,
+    onResponderReject: PropTypes.func,
     onResponderRelease: PropTypes.func,
     onResponderTerminate: PropTypes.func,
     onResponderTerminationRequest: PropTypes.func,
-    onMoveShouldSetResponder: PropTypes.func,
     onStartShouldSetResponder: PropTypes.func,
     onStartShouldSetResponderCapture: PropTypes.func,
 
@@ -95,12 +92,25 @@ var View = React.createClass({
      * In the absence of `auto` property, `none` is much like `CSS`'s `none`
      * value. `box-none` is as if you had applied the `CSS` class:
      *
-     *   .cantTouchThis * {
-     *     pointer-events: auto;
-     *   }
-     *   .cantTouchThis {
-     *     pointer-events: none;
-     *   }
+     * ```
+     * .box-none {
+     *   pointer-events: none;
+     * }
+     * .box-none * {
+     *   pointer-events: all;
+     * }
+     * ```
+     *
+     * `box-only` is the equivalent of
+     *
+     * ```
+     * .box-only {
+     *   pointer-events: all;
+     * }
+     * .box-only * {
+     *   pointer-events: none;
+     * }
+     * ```
      *
      * But since `pointerEvents` does not affect layout/appearance, and we are
      * already deviating from the spec by adding additional modes, we opt to not
@@ -114,11 +124,6 @@ var View = React.createClass({
       'box-only',
       'auto',
     ]),
-
-    /**
-     * Used to style and layout the `View`.  See `StyleSheet.js` and
-     * `ViewStylePropTypes.js` for more info.
-     */
     style: stylePropType,
 
     /**
