@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ActionSheetIOS
+ * @flow
  */
 'use strict';
 
@@ -15,7 +16,7 @@ var RCTActionSheetManager = require('NativeModules').ActionSheetManager;
 var invariant = require('invariant');
 
 var ActionSheetIOS = {
-  showActionSheetWithOptions(options, callback) {
+  showActionSheetWithOptions(options: Object, callback: Function) {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must a valid object'
@@ -31,7 +32,11 @@ var ActionSheetIOS = {
     );
   },
 
-  showShareActionSheetWithOptions(options, failureCallback, successCallback) {
+  showShareActionSheetWithOptions(
+    options: Object,
+    failureCallback: Function,
+    successCallback: Function
+  ) {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must a valid object'

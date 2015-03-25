@@ -220,7 +220,7 @@ describe('HasteDependencyResolver', function() {
   });
 
   describe('wrapModule', function() {
-    it('should ', function() {
+    it('should resolve modules', function() {
       var depResolver = new HasteDependencyResolver({
         projectRoot: '/root',
       });

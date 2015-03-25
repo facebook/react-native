@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Text
- * @typechecks static-only
+ * @flow
  */
 'use strict';
 
@@ -102,7 +102,7 @@ var Text = React.createClass({
     });
   },
 
-  onStartShouldSetResponder: function() {
+  onStartShouldSetResponder: function(): bool {
     var shouldSetFromProps = this.props.onStartShouldSetResponder &&
       this.props.onStartShouldSetResponder();
     return shouldSetFromProps || !!this.props.onPress;
@@ -111,7 +111,7 @@ var Text = React.createClass({
   /*
    * Returns true to allow responder termination
    */
-  handleResponderTerminationRequest: function() {
+  handleResponderTerminationRequest: function(): bool {
     // Allow touchable or props.onResponderTerminationRequest to deny
     // the request
     var allowTermination = this.touchableHandleResponderTerminationRequest();
@@ -121,25 +121,25 @@ var Text = React.createClass({
     return allowTermination;
   },
 
-  handleResponderGrant: function(e, dispatchID) {
+  handleResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
     this.touchableHandleResponderGrant(e, dispatchID);
     this.props.onResponderGrant &&
       this.props.onResponderGrant.apply(this, arguments);
   },
 
-  handleResponderMove: function(e) {
+  handleResponderMove: function(e: SyntheticEvent) {
     this.touchableHandleResponderMove(e);
     this.props.onResponderMove &&
       this.props.onResponderMove.apply(this, arguments);
   },
 
-  handleResponderRelease: function(e) {
+  handleResponderRelease: function(e: SyntheticEvent) {
     this.touchableHandleResponderRelease(e);
     this.props.onResponderRelease &&
       this.props.onResponderRelease.apply(this, arguments);
   },
 
-  handleResponderTerminate: function(e) {
+  handleResponderTerminate: function(e: SyntheticEvent) {
     this.touchableHandleResponderTerminate(e);
     this.props.onResponderTerminate &&
       this.props.onResponderTerminate.apply(this, arguments);
@@ -167,7 +167,7 @@ var Text = React.createClass({
     this.props.onPress && this.props.onPress();
   },
 
-  touchableGetPressRectOffset: function() {
+  touchableGetPressRectOffset: function(): RectOffset {
     return PRESS_RECT_OFFSET;
   },
 
@@ -192,6 +192,13 @@ var Text = React.createClass({
     return <RCTText {...props} />;
   },
 });
+
+type RectOffset = {
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
+}
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 

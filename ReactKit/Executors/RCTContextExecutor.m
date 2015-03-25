@@ -129,7 +129,8 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   return [self initWithJavaScriptThread:javaScriptThread globalContextRef:NULL];
 }
 
-- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread globalContextRef:(JSGlobalContextRef)context
+- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
+                        globalContextRef:(JSGlobalContextRef)context
 {
   if ((self = [super init])) {
     _javaScriptThread = javaScriptThread;

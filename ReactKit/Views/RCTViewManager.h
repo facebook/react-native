@@ -73,7 +73,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-+ (NSDictionary *)customBubblingEventTypes;
+- (NSDictionary *)customBubblingEventTypes;
 
 /**
  * Returns a dictionary of config data passed to JS that defines eligible events
@@ -89,7 +89,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customDirectEventTypes] when overriding it.
  */
-+ (NSDictionary *)customDirectEventTypes;
+- (NSDictionary *)customDirectEventTypes;
 
 /**
  * Called to notify manager that layout has finished, in case any calculated

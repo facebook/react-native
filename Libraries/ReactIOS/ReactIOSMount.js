@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactIOSMount
+ * @flow
  */
 'use strict';
 
@@ -83,7 +84,10 @@ var ReactIOSMount = {
    * @param {ReactComponent} instance Instance to render.
    * @param {containerTag} containerView Handle to native view tag
    */
-  renderComponent: function(descriptor, containerTag) {
+  renderComponent: function(
+    descriptor: ReactComponent,
+    containerTag: number
+  ) {
     var instance = instantiateReactComponent(descriptor);
 
     if (!ReactIOSTagHandles.reactTagIsNativeTopRootID(containerTag)) {
@@ -152,7 +156,9 @@ var ReactIOSMount = {
    * asynchronously, it's easier to just have this method be the one that calls
    * for removal of the view.
    */
-  unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
+  unmountComponentAtNodeAndRemoveContainer: function(
+    containerTag: number
+  ) {
     ReactIOSMount.unmountComponentAtNode(containerTag);
     // call back into native to remove all of the subviews from this container
     RCTUIManager.removeRootView(containerTag);
@@ -163,7 +169,7 @@ var ReactIOSMount = {
    * that has been rendered and unmounting it. There should just be one child
    * component at this time.
    */
-  unmountComponentAtNode: function(containerTag) {
+  unmountComponentAtNode: function(containerTag: number): bool {
     var containerID = ReactIOSTagHandles.tagToRootNodeID[containerTag];
 
     invariant(
@@ -185,20 +191,25 @@ var ReactIOSMount = {
    * Unmounts a component and sends messages back to iOS to remove its subviews.
    *
    * @param {ReactComponent} instance React component instance.
-   * @param {int} containerID ID of container we're removing from.
+   * @param {string} containerID ID of container we're removing from.
    * @final
    * @internal
    * @see {ReactIOSMount.unmountComponentAtNode}
    */
-  unmountComponentFromNode: function(instance, containerID) {
+  unmountComponentFromNode: function(
+    instance: ReactComponent,
+    containerID: string
+  ) {
     // call back into native to remove all of the subviews from this container
-    instance.unmountComponent();
+    // TODO: ReactComponent.prototype.unmountComponent is missing from Flow's
+    // react lib.
+    (instance: any).unmountComponent();
     var containerTag =
       ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID);
     RCTUIManager.removeSubviewsFromContainerWithID(containerTag);
   },
 
-  getNode: function(id) {
+  getNode: function<T>(id: T): T {
     return id;
   }
 };

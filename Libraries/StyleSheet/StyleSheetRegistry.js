@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule StyleSheetRegistry
+ * @flow
  */
 'use strict';
 
@@ -15,7 +16,7 @@ var uniqueID = 1;
 var emptyStyle = {};
 
 class StyleSheetRegistry {
-  static registerStyle(style) {
+  static registerStyle(style: Object): number {
     var id = ++uniqueID;
     if (__DEV__) {
       Object.freeze(style);
@@ -24,7 +25,7 @@ class StyleSheetRegistry {
     return id;
   }
 
-  static getStyleByID(id) {
+  static getStyleByID(id: number): Object {
     if (!id) {
       // Used in the style={[condition && id]} pattern,
       // we want it to be a no-op when the value is false or null

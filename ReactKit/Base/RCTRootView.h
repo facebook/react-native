@@ -11,7 +11,7 @@
 
 #import "RCTBridge.h"
 
-@interface RCTRootView : UIView
+@interface RCTRootView : UIView<RCTInvalidating>
 
 /**
  * The URL of the bundled application script (required).

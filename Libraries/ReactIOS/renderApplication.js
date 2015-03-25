@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule renderApplication
+ * @flow
  */
 'use strict';
 
@@ -14,7 +15,11 @@ var React = require('React');
 
 var invariant = require('invariant');
 
-function renderApplication(RootComponent, initialProps, rootTag) {
+function renderApplication<D, P, S>(
+  RootComponent: ReactClass<D, P, S>,
+  initialProps: P,
+  rootTag: any
+) {
   invariant(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag

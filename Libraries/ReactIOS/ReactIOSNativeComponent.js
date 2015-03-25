@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactIOSNativeComponent
+ * @flow
  */
 'use strict';
 
@@ -28,13 +29,20 @@ var registrationNames = ReactIOSEventEmitter.registrationNames;
 var putListener = ReactIOSEventEmitter.putListener;
 var deleteAllListeners = ReactIOSEventEmitter.deleteAllListeners;
 
+type ReactIOSNativeComponentViewConfig = {
+  validAttributes: Object;
+  uiViewClassName: string;
+}
+
 /**
  * @constructor ReactIOSNativeComponent
  * @extends ReactComponent
  * @extends ReactMultiChild
  * @param {!object} UIKit View Configuration.
  */
-var ReactIOSNativeComponent = function(viewConfig) {
+var ReactIOSNativeComponent = function(
+  viewConfig: ReactIOSNativeComponentViewConfig
+) {
   this.viewConfig = viewConfig;
 };
 

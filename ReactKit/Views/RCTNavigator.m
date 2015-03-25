@@ -487,16 +487,14 @@ NSInteger kNeverProgressed = -10000;
   // We can actually recover from this situation, but it would be nice to know
   // when this error happens. This simply means that JS hasn't caught up to a
   // back navigation before progressing. It's likely a bug in the JS code that
-  // catches up/schedules navigations. Eventually, let's recover from this
-  // error state, but in the mean time, let's get notified about any JS bugs.
+  // catches up/schedules navigations.
+  if (!(jsGettingAhead ||
+        jsCatchingUp ||
+        jsMakingNoProgressButNeedsToCatchUp ||
+        jsMakingNoProgressAndDoesntNeedTo)) {
+    RCTLogError(@"JS has only made partial progress to catch up to UIKit");
+  }
   RCTAssert(
-    jsGettingAhead ||
-    jsCatchingUp ||
-    jsMakingNoProgressButNeedsToCatchUp ||
-    jsMakingNoProgressAndDoesntNeedTo,
-    @"JS has only made partial progress to catch up to UIKit"
-  );
-  NSAssert(
     currentReactCount <= _currentViews.count,
     @"Cannot adjust current top of stack beyond available views"
   );
@@ -504,7 +502,7 @@ NSInteger kNeverProgressed = -10000;
   // Views before the previous react count must not have changed. Views greater than previousReactCount
   // up to currentReactCount may have changed.
   for (NSInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
-    NSAssert(_currentViews[i] == _previousViews[i], @"current view should equal previous view");
+    RCTAssert(_currentViews[i] == _previousViews[i], @"current view should equal previous view");
   }
   RCTAssert(currentReactCount >= 1, @"should be at least one current view");
   if (jsGettingAhead) {
@@ -545,7 +543,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController
 
   RCTAssert(
     (navigationController == nil || [_navigationController.viewControllers containsObject:wrapperViewController]),
-    @"if navigation controller is not nil, it should container the wrapper view controller"
+    @"if navigation controller is not nil, it should contain the wrapper view controller"
   );
   RCTAssert(_navigationController.navigationLock == RCTNavigationLockJavaScript ||
            _numberOfViewControllerMovesToIgnore == 0,

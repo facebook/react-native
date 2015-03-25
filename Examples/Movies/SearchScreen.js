@@ -18,9 +18,9 @@ var {
   StyleSheet,
   Text,
   TextInput,
-  TimerMixin,
   View,
 } = React;
+var TimerMixin = require('react-timer-mixin');
 
 var MovieCell = require('./MovieCell');
 var MovieScreen = require('./MovieScreen');

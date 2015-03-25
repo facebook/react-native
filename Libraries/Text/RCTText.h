@@ -15,6 +15,4 @@
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 @property (nonatomic, assign) NSUInteger numberOfLines;
 
-- (NSNumber *)reactTagAtPoint:(CGPoint)point;
-
 @end

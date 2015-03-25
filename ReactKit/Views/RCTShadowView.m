@@ -17,8 +17,6 @@
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
 
-#define MAX_TREE_DEPTH 30
-
 const NSString *const RCTBackgroundColorProp = @"backgroundColor";
 
 typedef enum {
@@ -213,17 +211,18 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
 }
 
-+ (CGRect)measureLayout:(RCTShadowView *)shadowView relativeTo:(RCTShadowView *)ancestor
+- (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
   CGFloat totalOffsetTop = 0.0;
   CGFloat totalOffsetLeft = 0.0;
-  CGSize size = shadowView.frame.size;
-  NSInteger depth = 0;
-  while (depth < MAX_TREE_DEPTH && shadowView && shadowView != ancestor) {
+  CGSize size = self.frame.size;
+  NSInteger depth = 30; // max depth to search
+  RCTShadowView *shadowView = self;
+  while (depth && shadowView && shadowView != ancestor) {
     totalOffsetTop += shadowView.frame.origin.y;
     totalOffsetLeft += shadowView.frame.origin.x;
     shadowView = shadowView->_superview;
-    depth++;
+    depth--;
   }
   if (ancestor != shadowView) {
     return CGRectNull;
@@ -257,6 +256,11 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     [self fillCSSNode:_cssNode];
   }
   return self;
+}
+
+- (BOOL)isReactRootView
+{
+  return RCTIsReactRootView(self.reactTag);
 }
 
 - (void)dealloc
@@ -514,7 +518,7 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   [self dirtyPropagation];
 }
 
-- (void)updateShadowViewLayout
+- (void)updateLayout
 {
   if (_recomputePadding) {
     RCTProcessMetaProps(_paddingMetaProps, _cssNode->style.padding);

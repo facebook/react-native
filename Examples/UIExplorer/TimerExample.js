@@ -15,10 +15,10 @@ var {
   AlertIOS,
   StyleSheet,
   Text,
-  TimerMixin,
   TouchableHighlight,
   View,
 } = React;
+var TimerMixin = require('react-timer-mixin');
 
 var Button = React.createClass({
   render: function() {

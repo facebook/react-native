@@ -32,6 +32,8 @@ function ModuleDescriptor(fields) {
 
   this.isAsset = fields.isAsset || false;
 
+  this.altId = fields.altId;
+
   this._fields = fields;
 }
 

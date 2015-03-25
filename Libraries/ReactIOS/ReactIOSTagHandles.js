@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactIOSTagHandles
+ * @flow
  */
 'use strict';
 
@@ -31,7 +32,7 @@ var ReactIOSTagHandles = {
   tagsStartAt: INITIAL_TAG_COUNT,
   tagCount: INITIAL_TAG_COUNT,
 
-  allocateTag: function() {
+  allocateTag: function(): number {
     // Skip over root IDs as those are reserved for native
     while (this.reactTagIsNativeTopRootID(ReactIOSTagHandles.tagCount)) {
       ReactIOSTagHandles.tagCount++;
@@ -50,13 +51,18 @@ var ReactIOSTagHandles = {
    * `unmountComponent` isn't the correct time because that doesn't imply that
    * the native node has been natively unmounted.
    */
-  associateRootNodeIDWithMountedNodeHandle: function(rootNodeID, tag) {
+  associateRootNodeIDWithMountedNodeHandle: function(
+    rootNodeID: ?string,
+    tag: ?number
+  ) {
     warning(rootNodeID && tag, 'Root node or tag is null when associating');
-    ReactIOSTagHandles.tagToRootNodeID[tag] = rootNodeID;
-    ReactIOSTagHandles.rootNodeIDToTag[rootNodeID] = tag;
+    if (rootNodeID && tag) {
+      ReactIOSTagHandles.tagToRootNodeID[tag] = rootNodeID;
+      ReactIOSTagHandles.rootNodeIDToTag[rootNodeID] = tag;
+    }
   },
 
-  allocateRootNodeIDForTag: function(tag) {
+  allocateRootNodeIDForTag: function(tag: number): string {
     invariant(
       this.reactTagIsNativeTopRootID(tag),
       'Expect a native root tag, instead got ', tag
@@ -64,7 +70,7 @@ var ReactIOSTagHandles = {
     return '.r[' + tag + ']{TOP_LEVEL}';
   },
 
-  reactTagIsNativeTopRootID: function(reactTag) {
+  reactTagIsNativeTopRootID: function(reactTag: number): bool {
     // We reserve all tags that are 1 mod 10 for native root views
     return reactTag % 10 === 1;
   },
@@ -81,13 +87,15 @@ var ReactIOSTagHandles = {
    * @return {number} Tag ID of native view for most recent mounting of
    * `rootNodeID`.
    */
-  mostRecentMountedNodeHandleForRootNodeID: function(rootNodeID) {
+  mostRecentMountedNodeHandleForRootNodeID: function(
+    rootNodeID: string
+  ): number {
     return ReactIOSTagHandles.rootNodeIDToTag[rootNodeID];
   },
 
-  tagToRootNodeID: [],
+  tagToRootNodeID: ([] : Array<string>),
 
-  rootNodeIDToTag: {}
+  rootNodeIDToTag: ({} : {[key: string]: number})
 };
 
 module.exports = ReactIOSTagHandles;

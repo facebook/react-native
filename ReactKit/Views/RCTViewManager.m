@@ -44,12 +44,12 @@
   return [[RCTShadowView alloc] init];
 }
 
-+ (NSDictionary *)customBubblingEventTypes
+- (NSDictionary *)customBubblingEventTypes
 {
   return nil;
 }
 
-+ (NSDictionary *)customDirectEventTypes
+- (NSDictionary *)customDirectEventTypes
 {
   return nil;
 }
@@ -101,7 +101,7 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView)
     return;
   }
 
-  switch ([RCTConvert NSInteger:json]) {
+  switch ([RCTConvert RCTPointerEvents:json]) {
     case RCTPointerEventsUnspecified:
       // Pointer events "unspecified" acts as if a stylesheet had not specified,
       // which is different than "auto" in CSS (which cannot and will not be
@@ -114,6 +114,12 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView)
       break;
     default:
       RCTLogError(@"UIView base class does not support pointerEvent value: %@", json);
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, RCTView)
+{
+  if ([view respondsToSelector:@selector(setRemoveClippedSubviews:)]) {
+    view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
 
@@ -148,5 +154,16 @@ RCT_CUSTOM_SHADOW_PROPERTY(position, RCTShadowView)
 {
   view.positionType = json ? [RCTConvert css_position_type_t:json] : defaultView.positionType;
 }
+
+// Border properties - to be deprecated
+
+RCT_REMAP_VIEW_PROPERTY(borderTopWidth, reactBorderTop.width);
+RCT_REMAP_VIEW_PROPERTY(borderRightWidth, reactBorderRight.width);
+RCT_REMAP_VIEW_PROPERTY(borderBottomWidth, reactBorderBottom.width);
+RCT_REMAP_VIEW_PROPERTY(borderLeftWidth, reactBorderLeft.width);
+RCT_REMAP_VIEW_PROPERTY(borderTopColor, reactBorderTop.color);
+RCT_REMAP_VIEW_PROPERTY(borderRightColor, reactBorderRight.color);
+RCT_REMAP_VIEW_PROPERTY(borderBottomColor, reactBorderBottom.color);
+RCT_REMAP_VIEW_PROPERTY(borderLeftColor, reactBorderLeft.color);
 
 @end

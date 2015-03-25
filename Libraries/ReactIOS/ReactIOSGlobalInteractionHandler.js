@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactIOSGlobalInteractionHandler
+ * @flow
  */
 'use strict';
 
@@ -17,7 +18,7 @@ var InteractionManager = require('InteractionManager');
 var interactionHandle = null;
 
 var ReactIOSGlobalInteractionHandler = {
-  onChange: function(numberActiveTouches) {
+  onChange: function(numberActiveTouches: number) {
     if (numberActiveTouches === 0) {
       if (interactionHandle) {
         InteractionManager.clearInteractionHandle(interactionHandle);
