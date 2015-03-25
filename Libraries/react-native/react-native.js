@@ -62,6 +62,10 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   NativeModules: require('NativeModules'),
   requireNativeComponent: require('requireNativeComponent'),
 
+  // Prop Types
+  EdgeInsetsPropType: require('EdgeInsetsPropType'),
+  PointPropType: require('PointPropType'),
+
   addons: {
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,
