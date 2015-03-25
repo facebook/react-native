@@ -356,7 +356,7 @@ Lexer.prototype.token = function(src, top) {
         type: this.options.sanitize
           ? 'paragraph'
           : 'html',
-        pre: cap[1] === 'pre' || cap[1] === 'script',
+        pre: cap[1] === 'pre',
         text: cap[0]
       });
       continue;
