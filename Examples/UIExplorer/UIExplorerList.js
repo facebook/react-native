@@ -12,6 +12,7 @@
 
 var React = require('react-native');
 var {
+  AppRegistry,
   ListView,
   PixelRatio,
   ScrollView,
@@ -22,6 +23,8 @@ var {
   View,
 } = React;
 var ReactNavigatorExample = require('./ReactNavigator/ReactNavigatorExample');
+
+var { TestModule } = React.addons;
 
 var createExamplePage = require('./createExamplePage');
 
@@ -67,6 +70,33 @@ var APIS = [
 var ds = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2,
   sectionHeaderHasChanged: (h1, h2) => h1 !== h2,
+});
+
+function makeRenderable(example: any): ReactClass<any, any, any> {
+  return example.examples ?
+    createExamplePage(null, example) :
+    example;
+}
+
+// Register suitable examples for snapshot tests
+COMPONENTS.concat(APIS).forEach((Example) => {
+  if (Example.displayName) {
+    var Snapshotter = React.createClass({
+      componentDidMount: function() {
+        // View is still blank after first RAF :\
+        global.requestAnimationFrame(() =>
+          global.requestAnimationFrame(() => TestModule.verifySnapshot(
+            TestModule.markTestCompleted
+          )
+        ));
+      },
+      render: function() {
+        var Renderable = makeRenderable(Example);
+        return <Renderable />;
+      },
+    });
+    AppRegistry.registerComponent(Example.displayName, () => Snapshotter);
+  }
 });
 
 class UIExplorerList extends React.Component {
@@ -152,9 +182,7 @@ class UIExplorerList extends React.Component {
       );
       return;
     }
-    var Component = example.examples ?
-      createExamplePage(null, example) :
-      example;
+    var Component = makeRenderable(example);
     this.props.navigator.push({
       title: Component.title,
       component: Component,
