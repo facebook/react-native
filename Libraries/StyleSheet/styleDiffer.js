@@ -7,16 +7,17 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule styleDiffer
+ * @flow
  */
 'use strict';
 
 var deepDiffer = require('deepDiffer');
 
-function styleDiffer(a, b) {
+function styleDiffer(a: any, b: any): bool {
   return !styleEqual(a, b);
 }
 
-function styleEqual(a, b) {
+function styleEqual(a: any, b: any): bool {
   if (!a) {
     return !b;
   }

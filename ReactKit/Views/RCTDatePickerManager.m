@@ -44,6 +44,8 @@ RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone)
 - (NSDictionary *)constantsToExport
 {
   UIDatePicker *dp = [[UIDatePicker alloc] init];
+  [dp layoutIfNeeded];
+
   return @{
     @"ComponentHeight": @(CGRectGetHeight(dp.frame)),
     @"ComponentWidth": @(CGRectGetWidth(dp.frame)),

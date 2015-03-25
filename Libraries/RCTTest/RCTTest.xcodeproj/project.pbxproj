@@ -10,6 +10,9 @@
 		585135371AB3C56F00882537 /* RCTTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135341AB3C56F00882537 /* RCTTestModule.m */; };
 		585135381AB3C57000882537 /* RCTTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135361AB3C56F00882537 /* RCTTestRunner.m */; };
 		585135391AB3C59A00882537 /* RCTTestRunner.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
+		58E64FED1AB964CD007446E2 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
+		58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
+		58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +34,14 @@
 		585135341AB3C56F00882537 /* RCTTestModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTestModule.m; sourceTree = "<group>"; };
 		585135351AB3C56F00882537 /* RCTTestRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTestRunner.h; sourceTree = "<group>"; };
 		585135361AB3C56F00882537 /* RCTTestRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTestRunner.m; sourceTree = "<group>"; };
+		58E64FE41AB964CD007446E2 /* FBSnapshotTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBSnapshotTestCase.h; sourceTree = "<group>"; };
+		58E64FE51AB964CD007446E2 /* FBSnapshotTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBSnapshotTestCase.m; sourceTree = "<group>"; };
+		58E64FE61AB964CD007446E2 /* FBSnapshotTestController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBSnapshotTestController.h; sourceTree = "<group>"; };
+		58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBSnapshotTestController.m; sourceTree = "<group>"; };
+		58E64FE81AB964CD007446E2 /* UIImage+Compare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Compare.h"; sourceTree = "<group>"; };
+		58E64FE91AB964CD007446E2 /* UIImage+Compare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Compare.m"; sourceTree = "<group>"; };
+		58E64FEA1AB964CD007446E2 /* UIImage+Diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Diff.h"; sourceTree = "<group>"; };
+		58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Diff.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +62,7 @@
 				585135341AB3C56F00882537 /* RCTTestModule.m */,
 				585135351AB3C56F00882537 /* RCTTestRunner.h */,
 				585135361AB3C56F00882537 /* RCTTestRunner.m */,
+				58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */,
 				580C37701AB104AF0015E709 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,6 +73,21 @@
 				580C376F1AB104AF0015E709 /* libRCTTest.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */ = {
+			isa = PBXGroup;
+			children = (
+				58E64FE41AB964CD007446E2 /* FBSnapshotTestCase.h */,
+				58E64FE51AB964CD007446E2 /* FBSnapshotTestCase.m */,
+				58E64FE61AB964CD007446E2 /* FBSnapshotTestController.h */,
+				58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */,
+				58E64FE81AB964CD007446E2 /* UIImage+Compare.h */,
+				58E64FE91AB964CD007446E2 /* UIImage+Compare.m */,
+				58E64FEA1AB964CD007446E2 /* UIImage+Diff.h */,
+				58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */,
+			);
+			path = FBSnapshotTestCase;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,7 +146,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */,
 				585135371AB3C56F00882537 /* RCTTestModule.m in Sources */,
+				58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */,
+				58E64FED1AB964CD007446E2 /* FBSnapshotTestController.m in Sources */,
 				585135381AB3C57000882537 /* RCTTestRunner.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

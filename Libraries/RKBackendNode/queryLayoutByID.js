@@ -7,11 +7,24 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule queryLayoutByID
+ * @flow
  */
 'use strict';
 
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var RCTUIManager = require('NativeModules').UIManager;
+
+type OnSuccessCallback = (
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+  pageX: number,
+  pageY: number
+) => void
+
+// I don't know what type error is...
+type OnErrorCallback = (error: any) => void
 
 /**
  * Queries the layout of a view. The layout does not reflect the element as
@@ -32,7 +45,11 @@ var RCTUIManager = require('NativeModules').UIManager;
  * @param {function} onError `func(error)`
  * @param {function} onSuccess `func(left, top, width, height, pageX, pageY)`
  */
-var queryLayoutByID = function(rootNodeID, onError, onSuccess) {
+var queryLayoutByID = function(
+  rootNodeID: string,
+  onError: OnErrorCallback,
+  onSuccess: OnSuccessCallback
+): void {
   // Native bridge doesn't *yet* surface errors.
   RCTUIManager.measure(
     ReactIOSTagHandles.rootNodeIDToTag[rootNodeID],

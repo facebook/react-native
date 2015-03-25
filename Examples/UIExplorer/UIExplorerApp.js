@@ -13,23 +13,42 @@
 
 var React = require('react-native');
 var UIExplorerList = require('./UIExplorerList');
-
 var {
   AppRegistry,
   NavigatorIOS,
   StyleSheet,
 } = React;
 
-
 var UIExplorerApp = React.createClass({
 
+  getInitialState: function() {
+    return {
+      openExternalExample: (null: ?React.Component),
+    };
+  },
+
   render: function() {
+    if (this.state.openExternalExample) {
+      var Example = this.state.openExternalExample;
+      return (
+        <Example
+          onExampleExit={() => {
+            this.setState({ openExternalExample: null, });
+          }}
+        />
+      );
+    }
     return (
       <NavigatorIOS
         style={styles.container}
         initialRoute={{
           title: 'UIExplorer',
           component: UIExplorerList,
+          passProps: {
+            onExternalExampleRequested: (example) => {
+              this.setState({ openExternalExample: example, });
+            },
+          }
         }}
         itemWrapperStyle={styles.itemWrapper}
         tintColor='#008888'

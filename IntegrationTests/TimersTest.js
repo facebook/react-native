@@ -13,9 +13,9 @@ var React = require('react-native');
 var {
   StyleSheet,
   Text,
-  TimerMixin,
   View,
 } = React;
+var TimerMixin = require('react-timer-mixin');
 
 var TimersTest = React.createClass({
   mixins: [TimerMixin],

@@ -29,6 +29,7 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
   id<RCTJavaScriptExecutor> _executor;
+  BOOL _registered;
 }
 
 static Class _globalExecutorClass;
@@ -36,7 +37,7 @@ static Class _globalExecutorClass;
 + (void)initialize
 {
 
-#if DEBUG
+#if TARGET_IPHONE_SIMULATOR
 
   // Register Cmd-R as a global refresh key
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
@@ -106,11 +107,31 @@ static Class _globalExecutorClass;
 
   [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
                     args:@[self.reactTag]];
+  [self invalidate];
+}
+
+#pragma mark - RCTInvalidating
+
+- (BOOL)isValid
+{
+  return [_bridge isValid];
+}
+
+- (void)invalidate
+{
+  // Clear view
+  [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+
+  [self removeGestureRecognizer:_touchHandler];
+  [_touchHandler invalidate];
+  [_executor invalidate];
 
   // TODO: eventually we'll want to be able to share the bridge between
   // multiple rootviews, in which case we'll need to move this elsewhere
   [_bridge invalidate];
 }
+
+#pragma mark Bundle loading
 
 - (void)bundleFinishedLoading:(NSError *)error
 {
@@ -124,6 +145,7 @@ static Class _globalExecutorClass;
   } else {
 
     [_bridge.uiManager registerRootView:self];
+    _registered = YES;
 
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
@@ -137,8 +159,7 @@ static Class _globalExecutorClass;
 
 - (void)loadBundle
 {
-  // Clear view
-  [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+  [self invalidate];
 
   if (!_scriptURL) {
     return;
@@ -149,6 +170,8 @@ static Class _globalExecutorClass;
   [_touchHandler invalidate];
   [_executor invalidate];
   [_bridge invalidate];
+
+  _registered = NO;
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
@@ -209,15 +232,20 @@ static Class _globalExecutorClass;
       [self bundleFinishedLoading:error];
       return;
     }
+    if (!_bridge.isValid) {
+      return; // Bridge was invalidated in the meanwhile
+    }
 
     // Success!
     RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
     sourceCodeModule.scriptURL = _scriptURL;
     sourceCodeModule.scriptText = rawText;
 
-    [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *error) {
+    [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *_error) {
       dispatch_async(dispatch_get_main_queue(), ^{
-        [self bundleFinishedLoading:error];
+        if (_bridge.isValid) {
+          [self bundleFinishedLoading:_error];
+        }
       });
     }];
 
@@ -236,9 +264,12 @@ static Class _globalExecutorClass;
   [self loadBundle];
 }
 
-- (BOOL)isReactRootView
+- (void)layoutSubviews
 {
-  return YES;
+  [super layoutSubviews];
+  if (_registered) {
+    [_bridge.uiManager setFrame:self.frame forRootView:self];
+  }
 }
 
 - (void)reload

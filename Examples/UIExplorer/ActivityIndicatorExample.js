@@ -14,9 +14,9 @@ var React = require('react-native');
 var {
   ActivityIndicatorIOS,
   StyleSheet,
-  TimerMixin,
   View,
 } = React;
+var TimerMixin = require('react-timer-mixin');
 
 var ToggleAnimatingActivityIndicator = React.createClass({
   mixins: [TimerMixin],

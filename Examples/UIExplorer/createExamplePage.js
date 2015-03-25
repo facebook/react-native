@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule createExamplePage
+ * @flow
  */
 'use strict';
 
@@ -16,7 +17,19 @@ var UIExplorerPage = require('./UIExplorerPage');
 
 var invariant = require('invariant');
 
-var createExamplePage = function(title, exampleModule) {
+class Example extends React.Component {
+  title: string;
+  description: string;
+}
+
+type ExampleModule = {
+  title: string;
+  description: string;
+  examples: Array<Example>;
+};
+
+var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
+  : ReactClass<any, any, any> {
   invariant(!!exampleModule.examples, 'The module must have examples');
 
   var ExamplePage = React.createClass({
@@ -31,15 +44,17 @@ var createExamplePage = function(title, exampleModule) {
       var originalRenderComponent = React.renderComponent;
       var originalRender = React.render;
       var renderedComponent;
-      React.render = React.renderComponent = function(element, container) {
+      // TODO remove typecasts when Flow bug #6560135 is fixed
+      // and workaround is removed from react-native.js
+      (React: Object).render = (React: Object).renderComponent = function(element, container) {
         renderedComponent = element;
       };
       var result = example.render(null);
       if (result) {
         renderedComponent = result;
       }
-      React.renderComponent = originalRenderComponent;
-      React.render = originalRender;
+      (React: Object).renderComponent = originalRenderComponent;
+      (React: Object).render = originalRender;
       return (
         <UIExplorerBlock
           key={i}
