@@ -50,11 +50,6 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, assign, getter=isNewView) BOOL newView;
 
 /**
- * Is this the shadowView for an RCTRootView
- */
-@property (nonatomic, assign, getter=isReactRootView) BOOL reactRootView;
-
-/**
  * Position and dimensions.
  * Defaults to { 0, 0, NAN, NAN }.
  */
@@ -149,7 +144,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 /**
  * Triggers a recalculation of the shadow view's layout.
  */
-- (void)updateShadowViewLayout;
+- (void)updateLayout;
 
 /**
  * Computes the recursive offset, meaning the sum of all descendant offsets -
@@ -157,10 +152,8 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
  * sum of `top`/`left`s, as this function uses the *actual* positions of
  * children, not the style specified positions - it computes this based on the
  * resulting layout. It does not yet compensate for native scroll view insets or
- * transforms or anchor points. Returns an array containing the `x, y, width,
- * height` of the shadow view relative to the ancestor, or `nil` if the `view`
- * is not a descendent of `ancestor`.
+ * transforms or anchor points.
  */
-+ (CGRect)measureLayout:(RCTShadowView *)view relativeTo:(RCTShadowView *)ancestor;
+- (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor;
 
 @end

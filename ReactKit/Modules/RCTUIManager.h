@@ -14,8 +14,6 @@
 #import "RCTInvalidating.h"
 #import "RCTViewManager.h"
 
-@class RCTRootView;
-
 @protocol RCTScrollableProtocol;
 
 /**
@@ -33,10 +31,15 @@
 
 /**
  * Register a root view with the RCTUIManager. Theoretically, a single manager
- * can support multiple root views, however this feature is not currently exposed
- * and may eventually be removed.
+ * can support multiple root views, however this feature is not currently exposed.
  */
-- (void)registerRootView:(RCTRootView *)rootView;
+- (void)registerRootView:(UIView *)rootView;
+
+/**
+ * Update the frame of a root view. This might be in response to a screen rotation
+ * or some other layout event outsde of the React-managed view hierarchy.
+ */
+- (void)setFrame:(CGRect)frame forRootView:(UIView *)rootView;
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute

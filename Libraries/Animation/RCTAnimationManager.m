@@ -9,7 +9,6 @@
 
 #import "RCTAnimationManager.h"
 
-#import <Accelerate/Accelerate.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTSparseArray.h"
@@ -54,10 +53,10 @@
 
   return ^(CGFloat t) {
     const CGFloat *delta = deltaData.bytes;
-    const CGFloat *fromArray = fromData.bytes;
+    const CGFloat *_fromArray = fromData.bytes;
 
     CGFloat value[count];
-    CG_APPEND(vDSP_vma,,D)(delta, 1, &t, 0, fromArray, 1, value, 1, count);
+    CG_APPEND(vDSP_vma,,D)(delta, 1, &t, 0, _fromArray, 1, value, 1, count);
     return [NSValue valueWithBytes:value objCType:typeName];
   };
 }
@@ -84,10 +83,10 @@
       } else if ([obj respondsToSelector:@selector(count)]) {
         switch ([obj count]) {
           case 2:
-            if ([obj respondsToSelector:@selector(objectForKey:)] && [obj objectForKey:@"w"]) {
-              toValue = [NSValue valueWithCGSize:[RCTConvert CGSize:obj]];
-            } else {
+            if ([obj respondsToSelector:@selector(objectForKeyedSubscript:)] && obj[@"x"]) {
               toValue = [NSValue valueWithCGPoint:[RCTConvert CGPoint:obj]];
+            } else {
+              toValue = [NSValue valueWithCGSize:[RCTConvert CGSize:obj]];
             }
             break;
           case 4:

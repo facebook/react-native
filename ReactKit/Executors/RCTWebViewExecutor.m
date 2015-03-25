@@ -184,7 +184,8 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
 {
-  RCTAssert(!_objectsToInject[objectName], @"already injected object named %@", _objectsToInject[objectName]);
+  RCTAssert(!_objectsToInject[objectName],
+            @"already injected object named %@", _objectsToInject[objectName]);
   _objectsToInject[objectName] = script;
   onComplete(nil);
 }

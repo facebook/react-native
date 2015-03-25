@@ -129,13 +129,15 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     // Find closest React-managed touchable view
     UIView *targetView = touch.view;
     while (targetView) {
-      if (targetView.reactTag && targetView.userInteractionEnabled) { // TODO: implement respondsToTouch: mechanism
+      if (targetView.reactTag && targetView.userInteractionEnabled &&
+          [targetView reactRespondsToTouch:touch]) {
         break;
       }
       targetView = targetView.superview;
     }
 
-    if (!targetView.reactTag || !targetView.userInteractionEnabled) {
+    NSNumber *reactTag = [targetView reactTagAtPoint:[touch locationInView:targetView]];
+    if (!reactTag || !targetView.userInteractionEnabled) {
       return;
     }
 
@@ -155,7 +157,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
     // Create touch
     NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
-    reactTouch[@"target"] = [targetView reactTagAtPoint:[touch locationInView:targetView]];
+    reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
     reactTouch[@"touches"] = [NSNull null];        // We hijack this touchObj to serve both as an event
     reactTouch[@"changedTouches"] = [NSNull null]; // and as a Touch object, so making this JIT friendly.
@@ -248,15 +250,15 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
   if (_recordingInteractionTiming) {
     [_bridgeInteractionTiming addObject:@{
-                                          @"timeSeconds": @(touch.originatingTime),
-                                          @"operation": @"taskOriginated",
-                                          @"taskID": @(touch.id),
-                                          }];
+      @"timeSeconds": @(touch.originatingTime),
+      @"operation": @"taskOriginated",
+      @"taskID": @(touch.id),
+    }];
     [_bridgeInteractionTiming addObject:@{
-                                          @"timeSeconds": @(enqueueTime),
-                                          @"operation": @"taskEnqueuedPending",
-                                          @"taskID": @(touch.id),
-                                          }];
+      @"timeSeconds": @(enqueueTime),
+      @"operation": @"taskEnqueuedPending",
+      @"taskID": @(touch.id),
+    }];
   }
 }
 
@@ -273,18 +275,18 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   if (_recordingInteractionTiming) {
     for (RCTTouchEvent *touch in _pendingTouches) {
       [_bridgeInteractionTiming addObject:@{
-                                            @"timeSeconds": @(sender.timestamp),
-                                            @"operation": @"frameAlignedDispatch",
-                                            @"taskID": @(touch.id),
-                                            }];
+        @"timeSeconds": @(sender.timestamp),
+        @"operation": @"frameAlignedDispatch",
+        @"taskID": @(touch.id),
+      }];
     }
 
     if (pendingCount > 0 || sender.timestamp - _mostRecentEnqueueJS < 0.1) {
       [_bridgeInteractionTiming addObject:@{
-                                            @"timeSeconds": @(sender.timestamp),
-                                            @"operation": @"mainThreadDisplayLink",
-                                            @"taskID": @([RCTTouchEvent newID]),
-                                            }];
+        @"timeSeconds": @(sender.timestamp),
+        @"operation": @"mainThreadDisplayLink",
+        @"taskID": @([RCTTouchEvent newID]),
+      }];
     }
   }
 

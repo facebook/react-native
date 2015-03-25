@@ -22,7 +22,7 @@
 - (id<RCTViewNodeProtocol>)reactSuperview;
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 
-// View is an RCTRootView
+// View/ShadowView is a root view
 - (BOOL)isReactRootView;
 
 @optional
