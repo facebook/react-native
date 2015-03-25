@@ -217,12 +217,18 @@ var APIDoc = React.createClass({
 
 
   renderMethods: function(methods) {
+    if (!methods.length) {
+      return null;
+    }
     return (
-      <div className="props">
-        {methods.filter((method) => {
-          return method.name[0] !== '_';
-        }).map(this.renderMethod)}
-      </div>
+      <span>
+        <H level={3}>Methods</H>
+        <div className="props">
+          {methods.filter((method) => {
+            return method.name[0] !== '_';
+          }).map(this.renderMethod)}
+        </div>
+      </span>
     );
   },
 
@@ -236,7 +242,6 @@ var APIDoc = React.createClass({
         <Marked>
           {this.removeCommentsFromDocblock(content.docblock)}
         </Marked>
-        <H level={3}>Methods</H>
         {this.renderMethods(content.methods)}
       </div>
     );
