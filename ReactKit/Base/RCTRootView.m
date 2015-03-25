@@ -52,7 +52,7 @@ static Class _globalExecutorClass;
                                                         action:^(UIKeyCommand *command) {
                                                           _globalExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
                                                           if (!_globalExecutorClass) {
-                                                            RCTLogWarn(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
+                                                            RCTLogError(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
                                                           }
                                                           [self reloadAll];
                                                         }];
