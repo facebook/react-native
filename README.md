@@ -5,7 +5,7 @@ React Native enables you to build world-class application experiences on native 
 
 ## Native iOS Components
 
-With React Native, you can use the standard platform components such as UITabBar and UINavigationController on iOS.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as TabBarIOS and NavigatorIOS.
+With React Native, you can use the standard platform components such as `UITabBar` and `UINavigationController` on iOS.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as _TabBarIOS_ and _NavigatorIOS_.
 
 ```javascript
 var React = require('react-native');
@@ -161,7 +161,7 @@ var Message = React.createClass({
 });
 ```
 
-Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a `- (UIView *)view` method, and exporting properties with the `RCT_EXPORT_VIEW_PROPERTY` macro.  Then a simple JavaScript file connects the dots.
+Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a `-view` method, and exporting properties with the `RCT_EXPORT_VIEW_PROPERTY` macro.  Then a simple JavaScript file connects the dots.
 
 ```objc
 // Objective-C
