@@ -13,7 +13,7 @@ var React = require('React');
 
 var HeaderLinks = React.createClass({
   linksInternal: [
-    {section: 'docs', href: '/react-native/docs/getting-started.html#content', text: 'Docs'},
+    {section: 'docs', href: '/react-native/docs/getting-started.html', text: 'Docs'},
     {section: 'support', href: '/react-native/support.html', text: 'Support'},
   ],
   linksExternal: [
