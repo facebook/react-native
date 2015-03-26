@@ -8,7 +8,7 @@ Some of the core team will be working directly on GitHub. These changes will be 
 
 ### `master` is unsafe
 
-We will do our best to keep `master` in good shape, with tests passing at all times. But in order to move fast, we will make API changes that your application might not be compatible with. We will do our best to communicate these changes and always version appropriately so you can lock into a specific version if need be.
+We will do our best to keep `master` in good shape, with tests passing at all times. But in order to move fast, we will make API changes that your application might not be compatible with. We will do our best to communicate these changes and version appropriately so you can lock into a specific version if need be.
 
 ### Pull Requests
 
@@ -52,7 +52,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 ### Code
 
 * Use semicolons;
-* Commas last,
+* Add trailing commas,
 * 2 spaces for indentation (no tabs)
 * Prefer `'` over `"`
 * `'use strict';`
@@ -62,8 +62,8 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 ### Documentation
 
-* Do not wrap lines at 80 characters
+* Do not wrap lines at 80 characters - configure your editor to soft-wrap when editing documentation.
 
 ## License
 
-By contributing to React, you agree that your contributions will be licensed under its BSD license.
+By contributing to React Native, you agree that your contributions will be licensed under its BSD license.
