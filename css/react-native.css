@@ -249,15 +249,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   text-decoration: none;
 }
 
-.nav-main .nav-site-wrapper {
-  display: inline;
-}
-
-.nav-main .nav-site-internal {
-  margin: 0 0 0 20px;
-}
-
-.nav-main .nav-site-external {
+.nav-main .nav-site {
   float: right;
   margin: 0;
 }
@@ -267,20 +259,21 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .nav-main .nav-site a {
-  box-sizing: content-box;
-  padding: 0 10px;
+  padding: 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   line-height: 50px;
   display: inline-block;
   height: 50px;
-  color: #ddd;
+  color: #aaa;
 }
 
 .nav-main .nav-site a:hover {
-  color: #fff;
+  color: #fafafa;
 }
 
 .nav-main .nav-site a.active {
-  color: #fff;
+  color: #fafafa;
   border-bottom: 3px solid #05A5D1;
   background: #333;
 }
@@ -301,8 +294,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .nav-main ul {
-  display: inline-block;
-  vertical-align: top;
+  display: inline;
 }
 
 .nav-main li {
