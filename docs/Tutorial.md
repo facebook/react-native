@@ -89,7 +89,8 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
+    paddingTop: 20,
   },
   thumbnail: {
     width: 53,
@@ -153,7 +154,8 @@ Not too much has changed, we added a container around the Texts and then moved t
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
+    paddingTop: 20,
   },
 ```
 
@@ -214,7 +216,7 @@ Add some initial state to our application so that we can check `this.state.movie
   },
 ```
 
-We want to send off the request after the component has finished loading. componentDidMount is a function on React components that React will call exactly once just after the component has been loaded.
+We want to send off the request after the component has finished loading. `componentDidMount` is a function of React components that React will call exactly once, just after the component has been loaded.
 
 ```javascript
   componentDidMount: function() {
@@ -222,7 +224,7 @@ We want to send off the request after the component has finished loading. compon
   },
 ```
 
-Implement our fetchData function to actually make the request and handle the response. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that setState actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
+Now add `fetchData` function used above to our main component. This method will be respondible for handling data fetching. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that `setState` actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
 
 ```javascript
   fetchData: function() {
@@ -283,11 +285,11 @@ Now press cmd+R and you should see "Loading movies..." until the response comes 
 
 ## ListView
 
-Let’s now modify this application to render all of this data in a ListView, rather than just the first movie.
+Let's now modify this application to render all of this data in a `ListView` component, rather than just rendering the first movie.
 
-Why is a ListView better than just rendering all of these elements or putting them in a ScrollView? Despite React being fast, rendering a possibly infinite list of elements could be slow. ListView schedules rendering of views so that you only display the ones on screen and those already rendered but off screen are removed from the native view hierarchy.
+Why is a `ListView` better than just rendering all of these elements or putting them in a `ScrollView`? Despite React being fast, rendering a possibly infinite list of elements could be slow. `ListView` schedules rendering of views so that you only display the ones on screen and those already rendered but off screen are removed from the native view hierarchy.
 
-First thing's first, add the ListView require to the top of the file.
+First thing's first: add the `ListView` require to the top of the file.
 
 ```javascript
 var {
@@ -317,9 +319,9 @@ Now modify the render funtion so that once we have our data it renders a ListVie
   },
 ```
 
-What is this dataSource thing and why do we use it? This way we can very cheaply know which rows have changed between updates.
+The `DataSource` is an interfacte that `ListView` is using to determine which rows have changed over the course of updates.
 
-You'll notice we added dataSource from this.state. The next step is to add an empty dataSource to getInitialState. Also, now that we're storing the data in dataSource, we should change this.state.movies to be this.state.loaded (boolean) so we aren't storing the data twice.
+You'll notice we used `dataSource` from `this.state`. The next step is to add an empty `dataSource` to the object returned by `getInitialState`. Also, now that we're storing the data in `dataSource`, we should not longer use `this.state.movies` to avoid storing data twice. We can use boolean property of the state (`this.state.loaded`) to tell whether data fetching has finished.
 
 ```javascript
   getInitialState: function() {
@@ -332,7 +334,7 @@ You'll notice we added dataSource from this.state. The next step is to add an em
   },
 ```
 
-And here's the modified this.setState in the response handler in fetchData:
+And here is the modified `fetchData` method that updates the state accordingly:
 
 ```javascript
   fetchData: function() {
@@ -354,7 +356,7 @@ And here's the final result:
   <img src="/react-native/img/TutorialFinal.png" />
 </div>
 
-There's still some work to be done to make it a fully functional app such as adding navigation, search, infinite scroll loading, etc. Check the [Movies Example](https://github.com/facebook/react-native/tree/master/Examples/Movies) to see it all working.
+There's still some work to be done to make it a fully functional app such as: adding navigation, search, infinite scroll loading, etc. Check the [Movies Example](https://github.com/facebook/react-native/tree/master/Examples/Movies) to see it all working.
 
 
 ### Final source code
@@ -453,7 +455,8 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
+    paddingTop: 20,
   },
   rightContainer: {
     flex: 1,
