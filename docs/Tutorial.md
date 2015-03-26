@@ -11,7 +11,7 @@ next: videos
 
 This is a tutorial that aims to get you up to speed with writing iOS apps using React Native. If you want to learn what React Native is and why Facebook built it, check out this blog post: **[INSERT BLOG POST URL]**.
 
-We assume you have experience writing websites with React. If not, you can learn about React [here](http://facebook.github.io/react/).
+We assume you have experience writing websites with React. If not, you can learn about it on the [React website](http://facebook.github.io/react/).
 
 
 ## Setup
