@@ -43,7 +43,7 @@ For this tutorial we'll be building a simple version of the Movies app that fetc
 
 ### Mocking data
 
-Before we write the code to fetch actual Rotten Tomatoes data let's mock some data so we can get our hands dirty with React Native. At Facebook we typically declare constants at the top of JS files, just below the requires, but feel free to add the following constant wherever you like:
+Before we write the code to fetch actual Rotten Tomatoes data let's mock some data so we can get our hands dirty with React Native. At Facebook we typically declare constants at the top of JS files, just below the requires, but feel free to add the following constant wherever you like. In `index.ios.js`:
 
 ```javascript
 var MOCKED_MOVIES_DATA = [
@@ -53,7 +53,7 @@ var MOCKED_MOVIES_DATA = [
 
 
 ### Render a movie
-
+gr
 We're going to render the title, year, and thumbnail for the movie. Since thumbnail is an Image component in React Native, add Image to the list of React requires below.
 
 ```javascript
@@ -157,9 +157,11 @@ Not too much has changed, we added a container around the Texts and then moved t
   },
 ```
 
-For layout we use FlexBox which has [great documentation](https://css-tricks.com/snippets/css/a-guide-to-flexbox/).
+We use FlexBox for layout - see [this great guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) to learn more about it.
 
-We simply added `flexDirection: 'row'` which means that children are layed out horizontally instead of vertically.
+In the above code snippet, we simply added `flexDirection: 'row'` that will make children of our main container to be layed out horizontally instead of vertically.
+
+Now add another style to the JS `style` object:
 
 ```javascript
   rightContainer: {
@@ -167,7 +169,7 @@ We simply added `flexDirection: 'row'` which means that children are layed out h
   },
 ```
 
-This means that the rightContainer takes up the remaining space in the parent container that isn't taken up by the Image. If this doesn't make sense, add a backgroundColor to rightContainer and then try removing the `flex: 1`. You'll see that this causes the container's size to be the minimum size that fits its children.
+This means that the `rightContainer` takes up the remaining space in the parent container that isn't taken up by the Image. If this doesn't make sense, add a `backgroundColor` to `rightContainer` and then try removing the `flex: 1`. You'll see that this causes the container's size to be the minimum size that fits its children.
 
 Styling the text is pretty straightforward:
 
@@ -202,7 +204,7 @@ var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
 var REQUEST_URL = API_URL + PARAMS;
 ```
 
-Add some initial state to our application so that we can check this.state.movies === null to determine whether the movies data has been loaded or not. We can set this data when the response comes back with this.setState({movies: moviesData}). Add this code just above the render function inside our React class.
+Add some initial state to our application so that we can check `this.state.movies === null` to determine whether the movies data has been loaded or not. We can set this data when the response comes back with `this.setState({movies: moviesData})`. Add this code just above the render function inside our React class.
 
 ```javascript
   getInitialState: function() {
@@ -220,7 +222,7 @@ We want to send off the request after the component has finished loading. compon
   },
 ```
 
-Implement our fetchData function to actually make the request and handle the response. All you need to do is call this.setState({movies: data}) after resolving the promise chain because the way React works is that setState actually triggers a re-render and then the render function will notice that this.state.movies is no longer null.  Note that we call done() at the end of the promise chain - always make sure to call done() or any errors thrown will get swallowed.
+Implement our fetchData function to actually make the request and handle the response. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that setState actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
 
 ```javascript
   fetchData: function() {
