@@ -281,11 +281,11 @@ function getBoolOptionFromQuery(query, opt, defaultVal) {
 }
 
 function handleError(res, error) {
-  res.writeHead(500, {
+  res.writeHead(error.status || 500, {
     'Content-Type': 'application/json; charset=UTF-8',
   });
 
-  if (error.type === 'TransformError') {
+  if (error.type === 'TransformError' || error.type === 'NotFoundError') {
     res.end(JSON.stringify(error));
   } else {
     console.error(error.stack || error);

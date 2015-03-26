@@ -86,7 +86,11 @@ DependecyGraph.prototype.load = function() {
 DependecyGraph.prototype.getOrderedDependencies = function(entryPath) {
   var absolutePath = this._getAbsolutePath(entryPath);
   if (absolutePath == null) {
-    throw new Error('Cannot find entry file in any of the roots: ' + entryPath);
+    throw new NotFoundError(
+      'Cannot find entry file %s in any of the roots: %j',
+      entryPath,
+      this._roots
+    );
   }
 
   var module = this._graph[absolutePath];
@@ -663,5 +667,16 @@ function buildAssetMap(roots, exts) {
 
   return search();
 }
+
+function NotFoundError() {
+  Error.call(this);
+  Error.captureStackTrace(this, this.constructor);
+  var msg = util.format.apply(util, arguments);
+  this.message = msg;
+  this.type = this.name = 'NotFoundError';
+  this.status = 404;
+}
+
+NotFoundError.__proto__ = Error.prototype;
 
 module.exports = DependecyGraph;
