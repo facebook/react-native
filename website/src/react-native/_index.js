@@ -39,7 +39,8 @@ var index = React.createClass({
           <Prism>
 {`var React = require('react-native');
 var { TabBarIOS, NavigatorIOS } = React;
-module.exports = React.createClass({
+
+var App = React.createClass({
   render: function() {
     return (
       <TabBarIOS>
@@ -65,7 +66,8 @@ module.exports = React.createClass({
           <Prism>
 {`var React = require('react-native');
 var { ScrollView, TouchableHighlight, Text } = React;
-module.exports = React.createClass({
+
+var TouchDemo = React.createClass({
   render: function() {
     return (
       <ScrollView>
@@ -85,7 +87,8 @@ module.exports = React.createClass({
           <Prism>
 {`var React = require('react-native');
 var { Image, StyleSheet, Text, View } = React;
-module.exports = React.createClass({
+
+var ReactNative = React.createClass({
   render: function() {
     return (
       <View style={styles.row}>
@@ -121,7 +124,8 @@ var styles = StyleSheet.create({
           <Prism>
 {`var React = require('react-native');
 var { Text } = React;
-module.exports = React.createClass({
+
+var GeoInfo = React.createClass({
   getInitialState: function() {
     return { position: 'unknown' };
   },
