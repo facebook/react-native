@@ -16,34 +16,34 @@ We assume you have experience writing websites with React. If not, you can learn
 
 ## Setup
 
-React Native has a few requirements which you can find on the [github page](https://github.com/facebook/react-native#requirements) (specifically OSX, Xcode, Homebrew, node, npm, watchman, and (optionally) flow)
+React Native requires OSX, Xcode, Homebrew, node, npm, and [watchman](https://facebook.github.io/watchman/docs/install.html). [Flow](https://github.com/facebook/flow) is optional.
 
 After installing these dependencies there are two simple commands to get a React Native project all set up for development.
 
 1. `npm install -g react-native-cli`
 
-    `react-native-cli` is a command line interface that does the rest of the set up. It’s also an npm module so you can get it very easily. This will install `react-native-cli` so you can run it as a command in your terminal. You only need to do this once ever.
+    react-native-cli is a command line interface that does the rest of the set up. It’s installable via npm. This will install `react-native`as a command in your terminal. You only ever need to do this once.
 
 2. `react-native init AwesomeProject`
 
-    This command fetches the React Native source code, installs all of the other npm modules that it depends on, and creates a new Xcode project in `AwesomeProject/AwesomeProject.xcodeproj`.
+    This command fetches the React Native source code and dependencies and then creates a new Xcode project in `AwesomeProject/AwesomeProject.xcodeproj`.
 
 
 ## Development
 
-You can now open this new project (`AwesomeProject/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with cmd+R. Doing so will start a node server which enables live code reloading by packaging and serving the latest JS bundle to the simulator at runtime. From here out you can see your changes by pressing cmd+R in the simulator rather than recompiling in Xcode.
+You can now open this new project (`AwesomeProject/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with cmd+R. Doing so will also start a node server which enables live code reloading. With this you can see your changes by pressing cmd+R in the simulator rather than recompiling in Xcode.
 
-For this tutorial let’s build a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
+For this tutorial we'll be building a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
 
 
 ### Hello World
 
-`react-native init` will copy `Examples/SampleProject` to whatever you named your project, in this case AwesomeProject. This is a simple hello world app. You can edit `index.ios.js` to make changes to the app and then press cmd+R in the simulator to see your changes.
+`react-native init` will copy `Examples/SampleProject` to whatever you named your project, in this case AwesomeProject. This is a simple hello world app. You can edit `index.ios.js` to make changes to the app and then press cmd+R in the simulator to see the changes.
 
 
 ### Mocking data
 
-Before we write the code to fetch actual Rotten Tomatoes data, let's mock some data so we can get started with rendering some views right away. At Facebook we typically declare constants at the top of JS files just below the requires but feel free to add the following constant wherever you like:
+Before we write the code to fetch actual Rotten Tomatoes data let's mock some data so we can get our hands dirty with React Native. At Facebook we typically declare constants at the top of JS files, just below the requires, but feel free to add the following constant wherever you like:
 
 ```javascript
 var MOCKED_MOVIES_DATA = [
@@ -54,7 +54,7 @@ var MOCKED_MOVIES_DATA = [
 
 ### Render a movie
 
-We're going to render the title, year, and thumbnail for the movie. Since we want to render an image, which is an Image component in React Native, add Image to the list of React requires above.
+We're going to render the title, year, and thumbnail for the movie. Since thumbnail is an Image component in React Native, add Image to the list of React requires below.
 
 ```javascript
 var {
@@ -66,7 +66,7 @@ var {
 } = React;
 ```
 
-Now change the render function so that we're rendering the stuff mentioned above rather than hello world.
+Now change the render function so that we're rendering the data mentioned above rather than hello world.
 
 ```javascript
   render: function() {
@@ -81,7 +81,7 @@ Now change the render function so that we're rendering the stuff mentioned above
   }
 ```
 
-Press cmd+R and you should see "Title" sitting above "2015". Notice that the Image doesn't render anything. This is because we haven't specified the width and height of the image we want to render. You do that via styles. While we're changing the styles let's also clean up the styles we're no longer using.
+Press cmd+R and you should see "Title" above "2015". Notice that the Image doesn't render anything. This is because we haven't specified the width and height of the image we want to render. This is done via styles. While we're changing the styles let's also clean up the styles we're no longer using.
 
 ```javascript
 var styles = StyleSheet.create({
@@ -116,7 +116,7 @@ Press cmd+R and the image should now render.
 
 ### Add some styling
 
-Great, we've rendered our data, now let's make it look better. I'd like to put the text to the right of the image and make the title larger and centered within that area:
+Great, we've rendered our data. Now let's make it look better. I'd like to put the text to the right of the image and make the title larger and centered within that area:
 
 ```
 +---------------------------------+
@@ -128,7 +128,7 @@ Great, we've rendered our data, now let's make it look better. I'd like to put t
 +---------------------------------+
 ```
 
-Since we've got some components layed out horizontally and some components layed out vertically, we'll need to add another container around the Texts.
+We'll need to add another container in order to vertically lay out components within horizontally layed out components.
 
 ```javascript
       return (
@@ -157,6 +157,8 @@ Not too much has changed, we added a container around the Texts and then moved t
   },
 ```
 
+For layout we use FlexBox which has [great documentation](https://css-tricks.com/snippets/css/a-guide-to-flexbox/).
+
 We simply added `flexDirection: 'row'` which means that children are layed out horizontally instead of vertically.
 
 ```javascript
@@ -165,7 +167,9 @@ We simply added `flexDirection: 'row'` which means that children are layed out h
   },
 ```
 
-This means that the rightContainer takes up the remaining space in the parent container that isn't taken up by the Image. If this doesn't make sense, add a backgroundColor to rightContainer and then try removing the `flex: 1`. You'll see how the container is only the size of its children instead of taking up the remaining space of its parent.
+This means that the rightContainer takes up the remaining space in the parent container that isn't taken up by the Image. If this doesn't make sense, add a backgroundColor to rightContainer and then try removing the `flex: 1`. You'll see that this causes the container's size to be the minimum size that fits its children.
+
+Styling the text is pretty straightforward:
 
 ```javascript
   title: {
@@ -177,8 +181,6 @@ This means that the rightContainer takes up the remaining space in the parent co
     textAlign: 'center',
   },
 ```
-
-This is pretty straightforward if you've ever seen CSS before. Make the title larger, add some space below it, and center all of the text within their parent container (rightContainer).
 
 Go ahead and press cmd+R and you'll see the updated view.
 
