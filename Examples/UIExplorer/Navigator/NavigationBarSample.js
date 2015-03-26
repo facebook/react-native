@@ -1,17 +1,22 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * @providesModule NavigationBarSample
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
 
-var Navigator = require('Navigator');
-var NavigationBar = require('NavigationBar');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TouchableOpacity = require('TouchableOpacity');
-var View = require('View');
+
+var React = require('react-native');
+var {
+  Navigator,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} = React;
 
 var cssVar = require('cssVar');
 
@@ -25,26 +30,26 @@ var NavigationBarRouteMapper = {
 
     var previousRoute = navState.routeStack[index - 1];
     return (
-      <TouchableOpacity onPress={() => navigator.pop()}>
+      <TouchableHighlight onPress={() => navigator.pop()}>
         <View>
           <Text style={[styles.navBarText, styles.navBarButtonText]}>
             {previousRoute.title}
           </Text>
         </View>
-      </TouchableOpacity>
+      </TouchableHighlight>
     );
   },
 
   RightButton: function(route, navigator, index, navState) {
     return (
-      <TouchableOpacity
+      <TouchableHighlight
         onPress={() => navigator.push(newRandomRoute())}>
         <View>
           <Text style={[styles.navBarText, styles.navBarButtonText]}>
             Next
           </Text>
         </View>
-      </TouchableOpacity>
+      </TouchableHighlight>
     );
   },
 
@@ -80,7 +85,7 @@ var NavigationBarSample = React.createClass({
             </View>
           )}
           navigationBar={
-            <NavigationBar
+            <Navigator.NavigationBar
               navigationBarRouteMapper={NavigationBarRouteMapper}
             />
           }

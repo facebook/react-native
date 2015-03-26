@@ -10,14 +10,14 @@
  */
 'use strict';
 
-var React = require('React');
-var TabBarIOS = require('TabBarIOS');
-var TabBarItemIOS = require('TabBarItemIOS');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
-
-
+var React = require('react-native');
+var {
+  StyleSheet,
+  TabBarIOS,
+  Text,
+  View,
+} = React;
+var TabBarItemIOS = TabBarIOS.Item;
 var TabBarExample = React.createClass({
 
   statics: {

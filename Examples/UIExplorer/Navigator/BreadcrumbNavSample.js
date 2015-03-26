@@ -1,20 +1,23 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * @providesModule BreadcrumbNavSample
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
 
-var BreadcrumbNavigationBar = require('BreadcrumbNavigationBar');
-var Navigator = require('Navigator');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var ScrollView = require('ScrollView');
-var TabBarItemIOS = require('TabBarItemIOS');
-var TabBarIOS = require('TabBarIOS');
-var Text = require('Text');
-var TouchableBounce = require('TouchableBounce');
-var View = require('View');
+var React = require('react-native');
+var {
+  Navigator,
+  ScrollView,
+  StyleSheet,
+  TabBarIOS,
+  Text,
+  View,
+  TouchableHighlight,
+} = React;
 
 var SAMPLE_TEXT = 'Top Pushes. Middle Replaces. Bottom Pops.';
 
@@ -43,28 +46,28 @@ var SampleNavigationBarRouteMapper = {
   },
   titleContentForRoute: function(route, navigator) {
     return (
-      <TouchableBounce
+      <TouchableHighlight
         onPress={() => navigator.push(_getRandomRoute())}>
         <View>
           <Text style={styles.titleText}>{route.title}</Text>
         </View>
-      </TouchableBounce>
+      </TouchableHighlight>
     );
   },
   iconForRoute: function(route, navigator) {
     var onPress =
       navigator.popToRoute.bind(navigator, route);
     return (
-      <TouchableBounce onPress={onPress}>
+      <TouchableHighlight onPress={onPress}>
         <View style={styles.crumbIconPlaceholder} />
-      </TouchableBounce>
+      </TouchableHighlight>
     );
   },
   separatorForRoute: function(route, navigator) {
     return (
-      <TouchableBounce onPress={navigator.pop}>
+      <TouchableHighlight onPress={navigator.pop}>
         <View style={styles.crumbSeparatorPlaceholder} />
-      </TouchableBounce>
+      </TouchableHighlight>
     );
   }
 };
@@ -76,49 +79,49 @@ var renderScene = function(route, navigator) {
   return (
     <ScrollView>
       <View style={styles.scene}>
-        <TouchableBounce
+        <TouchableHighlight
           onPress={_pushRouteLater(navigator.push)}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>request push soon</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={_pushRouteLater(navigator.replace)}>
           <View style={styles.button}>
             <Text>{content}</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={_popRouteLater(navigator.pop)}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>request pop soon</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={
             _immediatelySetTwoItemsLater(
               navigator.immediatelyResetRouteStack
@@ -127,13 +130,13 @@ var renderScene = function(route, navigator) {
           <View style={styles.button}>
             <Text style={styles.buttonText}>Immediate set two routes</Text>
           </View>
-        </TouchableBounce>
-        <TouchableBounce
+        </TouchableHighlight>
+        <TouchableHighlight
           onPress={_popToTopLater(navigator.popToTop)}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>pop to top soon</Text>
           </View>
-        </TouchableBounce>
+        </TouchableHighlight>
       </View>
     </ScrollView>
   );
@@ -180,10 +183,10 @@ var BreadcrumbNavSample = React.createClass({
     };
     return (
       <TabBarIOS>
-        <TabBarItemIOS
+        <TabBarIOS.Item
           selected={this.state.selectedTab === 0}
           onPress={this.onTabSelect.bind(this, 0)}
-          icon={require('image!madman_tabnav_list')}
+          icon={require('image!tabnav_list')}
           title="One">
           <Navigator
             debugOverlay={false}
@@ -191,16 +194,16 @@ var BreadcrumbNavSample = React.createClass({
             initialRoute={initialRoute}
             renderScene={renderScene}
             navigationBar={
-              <BreadcrumbNavigationBar
+              <Navigator.BreadcrumbNavigationBar
                 navigationBarRouteMapper={SampleNavigationBarRouteMapper}
               />
             }
           />
-        </TabBarItemIOS>
-        <TabBarItemIOS
+        </TabBarIOS.Item>
+        <TabBarIOS.Item
           selected={this.state.selectedTab === 1}
           onPress={this.onTabSelect.bind(this, 1)}
-          icon={require('image!madman_tabnav_create')}
+          icon={require('image!tabnav_notification')}
           title="Two">
           <Navigator
             configureScene={() => Navigator.SceneConfigs.FloatFromBottom}
@@ -209,12 +212,12 @@ var BreadcrumbNavSample = React.createClass({
             initialRoute={initialRoute}
             renderScene={renderScene}
             navigationBar={
-              <BreadcrumbNavigationBar
+              <Navigator.BreadcrumbNavigationBar
                 navigationBarRouteMapper={SampleNavigationBarRouteMapper}
               />
             }
           />
-        </TabBarItemIOS>
+        </TabBarIOS.Item>
       </TabBarIOS>
     );
   },
