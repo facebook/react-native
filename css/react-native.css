@@ -324,7 +324,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .buttons-unit {
-  margin-top: 60px;
+  margin-top: 40px;
   text-align: center;
 }
 
@@ -576,7 +576,7 @@ section.black content {
   font-size: 24px;
 }
 
-.documentationContent h2 {
+h2 {
   margin-top: 30px;
 }
 
