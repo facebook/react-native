@@ -31,11 +31,8 @@ Congratulations! You've just successfully run and modified your first React Nati
 
 ## Running the Examples
 
-
 - `git clone git@github.com:facebook/react-native.git`
 - `cd react-native && npm install`
 - `cd Examples`
 
 Now open any example and hit run in Xcode.
-
-
