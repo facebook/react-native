@@ -182,12 +182,6 @@ Go ahead and press cmd+R and you'll see the updated view.
 
 Fetching data from Rotten Tomatoes's API isn't really relevant to learning React Native so feel free to breeze through this section.
 
-Require the fetch module which is used to make an HTTP request to rotten tomatoes's API.
-
-```javascript
-var fetch = require('fetch');
-```
-
 Add the following constants to the top of the file (typically below the requires) to create the REQUEST_URL used to request data with.
 
 ```javascript
@@ -203,7 +197,7 @@ Add some initial state to our application so that we can check this.state.movies
 ```javascript
   getInitialState: function() {
     return {
-      movies: null
+      movies: null,
     };
   },
 ```
@@ -275,3 +269,186 @@ Now press cmd+R and you should see "Loading movies..." until the response comes 
 ## ListView
 
 Let’s now modify this application to render all of this data in a ListView, rather than just the first movie.
+
+First thing's first, add the ListView require to the top of the file.
+
+```javascript
+var {
+  AppRegistry,
+  Image,
+  ListView,
+  StyleSheet,
+  Text,
+  View,
+} = React;
+```
+
+Now modify the render funtion so that once we have our data it renders a ListView of movies instead of a single movie.
+
+```javascript
+  render: function() {
+    if (!this.state.loaded) {
+      return this.renderLoadingView();
+    }
+
+    return (
+      <ListView
+        dataSource={this.state.dataSource}
+        renderRow={this.renderMovie}
+      />
+    );
+  },
+```
+
+You'll notice we added a dataSource that comes from this.state. We'll now store the data there and then change this.state.movies === null to this.state.loaded === true to check if data has been loaded. Here's what getInitialState looks like:
+
+```javascript
+  getInitialState: function() {
+    return {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+      }),
+      loaded: false,
+    };
+  },
+```
+
+And here's the modified this.setState in the response handler in fetchData:
+
+```javascript
+  fetchData: function() {
+    fetch(REQUEST_URL)
+      .then((response) => response.json())
+      .then((responseData) => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
+          loaded: true,
+        });
+      })
+      .done();
+  },
+```
+
+Screenshot:
+
+![screenshot](https://github.com/facebook/react-native/raw/master/docs/images/TutorialFinal.png)
+
+
+### Final source code
+
+```javascript
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ */
+'use strict';
+
+var React = require('react-native');
+var {
+  AppRegistry,
+  Image,
+  ListView,
+  StyleSheet,
+  Text,
+  View,
+} = React;
+
+var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
+var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
+var PAGE_SIZE = 25;
+var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
+var REQUEST_URL = API_URL + PARAMS;
+
+var SampleApp = React.createClass({
+  getInitialState: function() {
+    return {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+      }),
+      loaded: false,
+    };
+  },
+
+  componentDidMount: function() {
+    this.fetchData();
+  },
+
+  fetchData: function() {
+    fetch(REQUEST_URL)
+      .then((response) => response.json())
+      .then((responseData) => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
+          loaded: true,
+        });
+      })
+      .done();
+  },
+
+  render: function() {
+    if (!this.state.loaded) {
+      return this.renderLoadingView();
+    }
+
+    return (
+      <ListView
+        dataSource={this.state.dataSource}
+        renderRow={this.renderMovie}
+      />
+    );
+  },
+
+  renderLoadingView: function() {
+    return (
+      <View style={styles.container}>
+        <Text>
+          Loading movies...
+        </Text>
+      </View>
+    );
+  },
+
+  renderMovie: function(movie) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={{uri: movie.posters.thumbnail}}
+          style={styles.thumbnail}
+        />
+        <View style={styles.rightContainer}>
+          <Text style={styles.title}>{movie.title}</Text>
+          <Text style={styles.year}>{movie.year}</Text>
+        </View>
+      </View>
+    );
+  },
+});
+
+var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  rightContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 20,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  year: {
+    textAlign: 'center',
+  },
+  thumbnail: {
+    width: 53,
+    height: 81,
+  },
+});
+
+AppRegistry.registerComponent('SampleApp', () => SampleApp);
+```
+
