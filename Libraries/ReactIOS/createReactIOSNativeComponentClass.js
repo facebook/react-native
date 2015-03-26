@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule createReactIOSNativeComponentClass
+ * @flow
  */
 
 "use strict";
@@ -14,11 +15,19 @@
 var ReactElement = require('ReactElement');
 var ReactIOSNativeComponent = require('ReactIOSNativeComponent');
 
+// See also ReactIOSNativeComponent
+type ReactIOSNativeComponentViewConfig = {
+  validAttributes: Object;
+  uiViewClassName: string;
+}
+
 /**
  * @param {string} config iOS View configuration.
  * @private
  */
-var createReactIOSNativeComponentClass = function(viewConfig) {
+var createReactIOSNativeComponentClass = function(
+  viewConfig: ReactIOSNativeComponentViewConfig
+): Function { // returning Function is lossy :/
   var Constructor = function(element) {
     this._currentElement = element;
 

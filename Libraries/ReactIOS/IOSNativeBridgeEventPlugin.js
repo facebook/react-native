@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule IOSNativeBridgeEventPlugin
+ * @flow
  */
 
 "use strict";
@@ -51,10 +52,11 @@ var IOSNativeBridgeEventPlugin = {
    * @see {EventPluginHub.extractEvents}
    */
   extractEvents: function(
-      topLevelType,
-      topLevelTarget,
-      topLevelTargetID,
-      nativeEvent) {
+    topLevelType: string,
+    topLevelTarget: EventTarget,
+    topLevelTargetID: string,
+    nativeEvent: Event
+  ): ?Object {
     var bubbleDispatchConfig = customBubblingEventTypes[topLevelType];
     var directDispatchConfig = customDirectEventTypes[topLevelType];
     var event = SyntheticEvent.getPooled(

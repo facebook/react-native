@@ -7,10 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NativeMethodsMixin
+ * @flow
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
 var NativeModules = require('NativeModules');
 var RCTPOPAnimationManager = NativeModules.POPAnimationManager;
 var RCTUIManager = NativeModules.UIManager;
@@ -20,7 +20,26 @@ var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var mergeFast = require('mergeFast');
 
-var animationIDInvariant = function(funcName, anim) {
+type MeasureOnSuccessCallback = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  pageX: number,
+  pageY: number
+) => void
+
+type MeasureLayoutOnSuccessCallback = (
+  left: number,
+  top: number,
+  width: number,
+  height: number
+) => void
+
+var animationIDInvariant = function(
+  funcName: string,
+  anim: number
+) {
   invariant(
     anim,
     funcName + ' must be called with a valid animation ID returned from' +
@@ -29,21 +48,25 @@ var animationIDInvariant = function(funcName, anim) {
 };
 
 var NativeMethodsMixin = {
-  addAnimation: function(anim, callback) {
+  addAnimation: function(anim: number, callback?: (finished: bool) => void) {
     animationIDInvariant('addAnimation', anim);
     RCTPOPAnimationManager.addAnimation(this.getNodeHandle(), anim, callback);
   },
 
-  removeAnimation: function(anim) {
+  removeAnimation: function(anim: number) {
     animationIDInvariant('removeAnimation', anim);
     RCTPOPAnimationManager.removeAnimation(this.getNodeHandle(), anim);
   },
 
-  measure: function(callback) {
+  measure: function(callback: MeasureOnSuccessCallback) {
     RCTUIManager.measure(this.getNodeHandle(), callback);
   },
 
-  measureLayout: function(relativeToNativeNode, onSuccess, onFail) {
+  measureLayout: function(
+    relativeToNativeNode: number,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail: () => void /* currently unused */
+  ) {
     RCTUIManager.measureLayout(
       this.getNodeHandle(),
       relativeToNativeNode,
@@ -57,7 +80,7 @@ var NativeMethodsMixin = {
    * in future diff process, this means that if you do not include them in the
    * next render, they will remain active.
    */
-  setNativeProps: function(nativeProps) {
+  setNativeProps: function(nativeProps: Object) {
     // nativeProps contains a style attribute that's going to be flattened
     // and all the attributes expanded in place. In order to make this
     // process do as few allocations and copies as possible, we return
@@ -111,15 +134,19 @@ function throwOnStylesProp(component, props) {
   }
 }
 if (__DEV__) {
+  // hide this from Flow since we can't define these properties outside of
+  // __DEV__ without actually implementing them (setting them to undefined
+  // isn't allowed by ReactClass)
+  var NativeMethodsMixin_DEV = (NativeMethodsMixin: any);
   invariant(
-    !NativeMethodsMixin.componentWillMount &&
-    !NativeMethodsMixin.componentWillReceiveProps,
+    !NativeMethodsMixin_DEV.componentWillMount &&
+    !NativeMethodsMixin_DEV.componentWillReceiveProps,
     'Do not override existing functions.'
   );
-  NativeMethodsMixin.componentWillMount = function () {
+  NativeMethodsMixin_DEV.componentWillMount = function () {
     throwOnStylesProp(this, this.props);
   };
-  NativeMethodsMixin.componentWillReceiveProps = function (newProps) {
+  NativeMethodsMixin_DEV.componentWillReceiveProps = function (newProps) {
     throwOnStylesProp(this, newProps);
   };
 }
