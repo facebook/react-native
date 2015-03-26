@@ -1,209 +1,175 @@
 # React Native [![Build Status](https://magnum.travis-ci.com/facebook/react-native.svg?token=L5Egb3B4dyQzH5wDijCB&branch=master)](https://magnum.travis-ci.com/facebook/react-native)
 
-Our first React Native implementation is `React`, targeting iOS.  We are also
-working on an Android implementation which we will release later.  `React`
-apps are built using the [React JS](https://github.com/facebook/react) framework, and render directly to
-native UIKit elements using a fully asynchronous architecture.  There is no
-browser and no HTML. We have picked what we think is the best set of features
-from these and other technologies to build what we hope to become the best
-product development framework available, with an emphasis on iteration speed,
-developer delight, continuity of technology, and absolutely beautiful and fast
-products with no compromises in quality or capability.
+React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and
+[React](http://facebook.github.io/react). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.
 
-## Requirements
+## Native iOS Components
 
-1. OS X - This repo only contains the iOS implementation right now, and Xcode only runs on Mac.
-2. New to Xcode?  [Download it](https://developer.apple.com/xcode/downloads/) from the Mac App Store.
-3. [Homebrew](http://brew.sh/) is the recommended way to install node, watchman, and flow.
-4. New to node or npm? `brew install node`
-5. We recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.  `brew install watchman`
-6. If you want to use [flow](http://www.flowtype.org), `brew install flow`
+With React Native, you can use the standard platform components such as UITabBar and UINavigationController on iOS.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as TabBarIOS and NavigatorIOS.
 
-## Quick start
-
-Get up and running with our Movies sample app:
-
-1. Once you have the repo cloned and met all the requirements above, start the
-packager that will transform your JS code on-the-fly:
-
-  ```
-  npm install
-  npm start
-  ```
-2. Open the `Examples/Movies/Movies.xcodeproj` project in Xcode.
-3. Make sure the target is set to `Movies` and that you have an iOS simulator
-selected to run the app.
-4. Build and run the project with the Xcode run button.
-
-You should now see the Movies app running on your iOS simulator.
-Congratulations!  You've just successfully run your first React Native app.
-
-Now try editing a JavaScript file and viewing your changes. Let's change the
-movie search placeholder text:
-
-1. Open the `Examples/Movies/SearchScreen.js` file in your favorite JavaScript
-editor.
-2. Look for the current search placeholder text and change it to "Search for an
-awesome movie...".
-3. Hit cmd+R ([twice](http://openradar.appspot.com/19613391)) in your iOS simulator to reload the app and see your change.
-If you don't immediately see your changes, try restarting your app within Xcode.
-
-Feel free to browse the Movies sample files and customize various properties to
-get familiar with the codebase and React Native.
-
-Also check out the UI Component Explorer for more sample code:
-`Examples/UIExplorer/UIExplorer.xcodeproj`.  **Make sure to close the Movies
-project first - Xcode will break if you have two projects open that reference
-the same library.**
-
-## Troubleshooting
-
-+ Xcode will break if you have two examples open at the same time.
-+ If `npm start` fails with log spew like:
-  ```
-  2015-02-02 10:56 node[24294] (FSEvents.framework) FSEventStreamStart: register_with_server: ERROR: f2d_register_rpc() => (null) (-21)
-  ```
-then you've hit the node file watching bug - `brew install watchman` should fix the issue.
-+ Jest testing does not yet work on node versions after 0.10.x.
-+ You can verify the packager is working by loading the [bundle](http://localhost:8081/Examples/Movies/MoviesApp.includeRequire.runModule.bundle) in your browser and
-inspecting the contents.
-
-Please report any other issues you encounter so we can fix them ASAP.
-
-## Basics
-
-`<View>` is a container that behaves similar to a `<div>` element on web, but
-renders to a `UIView`.  `<Text>`, `<Image>`, and `<ScrollView>` are other basic
-components and there are several more.  You can compose these elements into
-component trees just like normal react or HTML elements, and they can be styled
-with the `style` property, which supports a subset of flexbox layout.  Check out
-the UIExplorer examples for more [sample code](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/ScrollViewExample.js).
-
-Native events come in as you would expect via `onChange`, `onScroll`, `onTouch`
-and other props. `TouchableHighlight` makes it really easy to build nice buttons
-via `onPress`, which plays nicely with scroll views and other interactions via
-the responder system.
-
-# FAQ
-
-##### Q. How does debugging work?  Can I set breakpoints in my JS?
-A. We are going to add the ability to use the Chrome developer tools soon.  We
-are very passionate about building the best possible developer experience.
-
-##### Q. When is this coming to Android/Windows/OS X/etc?
-A. We're working on Android, and we are excited to release it as soon as we can.
-We are looking forward to the community helping us target other platforms as
-well :)
-
-##### Q. How do I create my own app?
-A. Copy the entire `Examples/TicTacToe` folder, rename stuff in Xcode, and
-replace the `TicTacToeApp.js` with your own. Then, in `AppDelegate.m`, update
-`moduleName` to match your call to
-`AppRegistry.registerComponent(<moduleName>, <componentName>)` at the bottom of your
-JS file, and update `jsCodeLocation` to match your JS file name and location.
-
-##### Q. Can I submit my own React Native app to the App Store?
-A. Not yet, but you will be able to soon.  If you build something you want to
-submit to the App Store, come talk to us ASAP.
-
-##### Q. How do I deploy to my device?
-A. You can change `localhost` in `AppDelegate.m` to your laptop's IP address and
-grab the bundle over the same Wi-Fi network.  You can also download the bundle
-that the React packager generates, save it to the file `main.jsbundle`, and add it
-as a static resource in your Xcode project. Then set the `jsCodeLocation` in
-`AppDelegate.m` to point to that file and deploy to your device like you would
-any other app.
-
-##### Q. Do you have to ship a JS runtime with your apps?
-A. No, we just use the JavaScriptCore public API that is part of iOS 7 and
-later.
-
-##### Q. How do I add more native capabilities?
-A. React Native is designed to be extensible - come talk to us, we would love to
-work with you.
-
-##### Q. Can I reuse existing iOS code?
-A. Yes, React Native is designed to be extensible and allow integration of all
-sorts of native components, such as `UINavigationController` (available as
-`<NavigatorIOS>`), `MKMapView` (not available yet), or your own custom
-component.  Check out `RCTUIActivityIndicatorViewManager.m` for a simple
-example.
-
-# In Depth
-
-React renders these component trees as normal, but instead of applying the
-result to the DOM, it sends a batch of create, update, and delete commands for
-native views.  Everything in the React tree ultimately composes down to core
-components that are mapped to their native counterpart.  The diff is first
-applied to the shadow tree where layout is calculated in a background thread,
-then the minimal changeset is applied to the native views on the main thread.
-
-There are two key elements to making these apps feel great.  The first is the
-100% asynchronous communication between the native engine and JS application
-code.  This means that slow JS operations never block the main thread, so the
-app can always be responsive to scrolling, image loading, and the like.  Second
-is the powerful bridging API that let's us wrap any native components and APIs
-we want, allowing us to use the native navigation system, tab bar, maps, blurs,
-or any other existing native components standard on the platform, from another
-open source project, or custom built.  These deep hooks also allow us to do very
-high fidelity touch processing, capable of driving continuous gesture feedback
-and animations at 60 fps.
-
-Beyond performance, there are some exciting new concepts that make the
-development experience a delight:
-
-+ React JS - React is a unique and powerful way to structure apps that makes
-them easier to reason about, and thus develop more quickly with fewer bugs.
-React Native takes the same core React engine with JSX and ES6 and plugs
-straight into the native view layer.  Some React components and most JS
-libraries can easily be reused.
-+ Instant reload - See the effect of your changes right away without compiling.
-the React packager efficiently transforms, bundles, caches, and serves your
-source code seamlessly.
-+ `StyleSheet` - A simplifying evolution of CSS.  `padding`, `margin`,
-`position: 'absolute'`, `left`, `right`...the list of support attributes goes on,
-but no more selectors or complex precedence rules - `StyleSheet`s [are just JS](https://speakerdeck.com/vjeux/react-css-in-js),
-and can be merged, shared, and manipulated just like any other JS object.
-+ Flexbox layout - Views stack up based on the flex direction of their parent,
-and can be configured to wrap tightly around their children, expand to fill
-their parent container, or something more custom.  The layout algorithm runs
-asynchronously as well, so scrolling and other animations can stay buttery
-smooth, even while computing complex layout.
-+ Responder events - Get that perfect touch interaction, even with extremely
-complex, hierarchical trees of components.
-+ Component Library - `TouchableHighlight`, `ListView`, `TextInput`, and more
-provide a powerful library of pre-built, high quality components you can easily
-drop into your apps.  Check out `Examples/UIExplorer/UIExplorer.xcodeproj` to
-see example usage.
-
-React Native is not in any way the first step to building a write-once, run-
-anywhere solution.  One goal is simply to unify the developer experience, so
-that a developer does not need to become a deep expert in every different
-platform they want to deploy to - the future vision is for the development
-tools, concepts, frameworks, programming language, and many of the APIs to be as
-similar as possible across the web, iOS, Android, and maybe more, without
-compromising app quality on any platform.
-
-## Testing
-
-Run example app tests with:
-
-```
-npm test
+```javascript
+var React = require('react-native');
+var { TabBarIOS, NavigatorIOS } = React;
+var App = React.createClass({
+  render: function() {
+    return (
+      <TabBarIOS>
+        <TabBarIOS.Item title="React Native" selected={true}>
+          <NavigatorIOS initialRoute={{ title: 'React Native' }} />
+        </TabBarIOS.Item>
+      </TabBarIOS>
+    );
+  },
+});
 ```
 
-Note: Jest testing does not yet work on node versions after 0.10.x.
+## Asynchronous Execution
 
-## Static Analysis
+All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.
 
-Lint the example apps with:
 
+## Touch Handling
+
+iOS has a very powerful system called the Responder Chain to negotiate touches in complex view hierarchies which does not have a universal analog on the web. React Native implements a similar responder system and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configuration.
+
+```javascript
+var React = require('react-native');
+var { ScrollView, TouchableHighlight, Text } = React;
+var TouchDemo = React.createClass({
+  render: function() {
+    return (
+      <ScrollView>
+        <TouchableHighlight onPress={() => console.log('pressed')}>
+          <Text>Proper Touch Handling</Text>
+        </TouchableHighlight>
+      </ScrollView>
+    );
+  },
+});
 ```
-npm run lint
+
+
+## Flexbox and Styling
+Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web syles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
+
+```javascript
+var React = require('react-native');
+var { Image, StyleSheet, Text, View } = React;
+var ReactNative = React.createClass({
+  render: function() {
+    return (
+      <View style={styles.row}>
+        <Image
+          source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+          style={styles.image}
+        />
+        <View style={styles.text}>
+          <Text style={styles.title}>
+            React Native
+          </Text>
+          <Text style={styles.subtitle}>
+            Build high quality mobile apps using React
+          </Text>
+        </View>
+      </View>
+    );
+  },
+});
+var styles = StyleSheet.create({
+  row: { flexDirection: 'row', margin: 40 },
+  image: { width: 40, height: 40, marginRight: 10 },
+  text: { flex: 1, justifyContent: 'center'},
+  title: { fontSize: 11, fontWeight: 'bold' },
+  subtitle: { fontSize: 10 },
+});
 ```
 
-If you have [flow](http://flowtype.org) (version 0.1.6+) installed, you can do type analysis by running:
+## Polyfills
 
+React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, window.requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
+
+```javascript
+var React = require('react-native');
+var { Text } = React;
+var GeoInfo = React.createClass({
+  getInitialState: function() {
+    return { position: 'unknown' };
+  },
+  componentDidMount: function() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => this.setState({position}),
+      (error) => console.error(error)
+    );
+  },
+  render: function() {
+    return (
+      <Text>
+        Position: {JSON.stringify(this.state.position)}
+      </Text>
+    );
+  },
+});
 ```
-flow
+
+## Extensibility
+
+It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily expended with custom native views and modules - that means you can reuse anything you{"'"}ve already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the RCTBridgeModule protocol, and add RCT_EXPORT to the function you want to make available in JavaScript.
+
+```javascript
+// Objective-C
+#import "RCTBridgeModule.h"
+@interface MyCustomModule : NSObject <RCTBridgeModule>
+@end
+@implementation MyCustomModule
+- (void)processString:(NSString *)input callback:(RCTResponseSenderBlock)callback
+{
+  RCT_EXPORT(); // available as NativeModules.MyCustomModule.processString
+  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"];]]);
+}
+@end
 ```
+
+```javascript
+// JavaScript
+var React = require('react-native');
+var { NativeModules, Text } = React;
+var Message = React.createClass({
+  render: function() {
+    getInitialState() {
+      return { text: 'Goodbye World.' };
+    },
+    componentDidMount() {
+      NativeModules.MyCustomModule.processString(this.state.text, (text) => {
+        this.setState({text});
+      });
+    },
+    return (
+      <Text>{this.state.text}</Text>
+    );
+  },
+});
+```
+
+Custom iOS views can be exposed by subclassing RCTViewManager, implementing a -(UIView *)view method, and exporting properties with the RCT_EXPORT_VIEW_PROPERTY macro.  Then a simple JavaScript file connects the dots.
+
+```javascript
+// Objective-C
+#import "RCTViewManager.h"
+@interface MyCustomViewManager : RCTViewManager
+@end
+@implementation MyCustomViewManager
+- (UIView *)view
+{
+  return [[MyCustomView alloc] init];
+}
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+@end`}
+          </Prism>
+          <Prism>
+{`// JavaScript
+module.exports = createReactIOSNativeComponentClass({
+  validAttributes: { myCustomProperty: true },
+  uiViewClassName: 'MyCustomView',
+});`}
+```
+
