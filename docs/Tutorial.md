@@ -384,7 +384,7 @@ var PAGE_SIZE = 25;
 var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
 var REQUEST_URL = API_URL + PARAMS;
 
-var SampleApp = React.createClass({
+var AwesomeProject = React.createClass({
   getInitialState: function() {
     return {
       dataSource: new ListView.DataSource({
@@ -475,5 +475,5 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('SampleApp', () => SampleApp);
+AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 ```
