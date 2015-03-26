@@ -13,11 +13,15 @@
 
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var TabBarItemIOS = require('TabBarItemIOS');
 var StyleSheet = require('StyleSheet');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 
 var TabBarIOS = React.createClass({
+  statics: {
+    Item: TabBarItemIOS,
+  },
   render: function() {
     return (
       <RCTTabBar style={[styles.tabGroup, this.props.style]}>

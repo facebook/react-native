@@ -1,14 +1,21 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
 
-var React = require('React');
-var Navigator = require('Navigator');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var ScrollView = require('ScrollView');
-var TouchableHighlight = require('TouchableHighlight');
+var React = require('react-native');
+var {
+  Navigator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+} = React;
 var BreadcrumbNavSample = require('./BreadcrumbNavSample');
 var NavigationBarSample = require('./NavigationBarSample');
 var JumpingNavSample = require('./JumpingNavSample');

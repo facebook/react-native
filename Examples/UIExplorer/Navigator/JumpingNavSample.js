@@ -1,17 +1,22 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * @providesModule JumpingNavSample
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
 
-var Navigator = require('Navigator');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var ScrollView = require('ScrollView');
-var Text = require('Text');
-var TouchableBounce = require('TouchableBounce');
-var View = require('View');
+var React = require('react-native');
+var {
+  Navigator,
+  StyleSheet,
+  ScrollView,
+  Text,
+  TouchableHighlight,
+  View,
+} = React;
 
 var _getRandomRoute = function() {
   return {
@@ -32,55 +37,55 @@ var renderScene = function(route, navigator) {
     <ScrollView style={styles.scene}>
       <View style={styles.scroll}>
       <Text>{route.randNumber}</Text>
-      <TouchableBounce
+      <TouchableHighlight
         onPress={() => {
           navigator.jumpBack();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>jumpBack</Text>
         </View>
-      </TouchableBounce>
-      <TouchableBounce
+      </TouchableHighlight>
+      <TouchableHighlight
         onPress={() => {
           navigator.jumpForward();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>jumpForward</Text>
         </View>
-      </TouchableBounce>
-      <TouchableBounce
+      </TouchableHighlight>
+      <TouchableHighlight
         onPress={() => {
           navigator.jumpTo(INIT_ROUTE);
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>jumpTo initial route</Text>
         </View>
-      </TouchableBounce>
-      <TouchableBounce
+      </TouchableHighlight>
+      <TouchableHighlight
         onPress={() => {
           navigator.push(_getRandomRoute());
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: push</Text>
         </View>
-      </TouchableBounce>
-      <TouchableBounce
+      </TouchableHighlight>
+      <TouchableHighlight
         onPress={() => {
           navigator.replace(_getRandomRoute());
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: replace</Text>
         </View>
-      </TouchableBounce>
-      <TouchableBounce
+      </TouchableHighlight>
+      <TouchableHighlight
         onPress={() => {
           navigator.pop();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: pop</Text>
         </View>
-      </TouchableBounce>
-      <TouchableBounce
+      </TouchableHighlight>
+      <TouchableHighlight
         onPress={() =>  {
           navigator.immediatelyResetRouteStack([
             _getRandomRoute(),
@@ -90,15 +95,15 @@ var renderScene = function(route, navigator) {
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: Immediate set two routes</Text>
         </View>
-      </TouchableBounce>
-      <TouchableBounce
+      </TouchableHighlight>
+      <TouchableHighlight
         onPress={() => {
           navigator.popToTop();
         }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>destructive: pop to top</Text>
         </View>
-      </TouchableBounce>
+      </TouchableHighlight>
     </View>
     </ScrollView>
   );
@@ -109,7 +114,7 @@ class JumpingNavBar extends React.Component {
     return (
       <View style={styles.navBar}>
         {this.props.routeStack.map((route, index) => (
-          <TouchableBounce onPress={() => {
+          <TouchableHighlight onPress={() => {
             this.props.navigator.jumpTo(route);
           }}>
             <View style={styles.navButton}>
@@ -121,7 +126,7 @@ class JumpingNavBar extends React.Component {
                   {index}
                 </Text>
             </View>
-          </TouchableBounce>
+          </TouchableHighlight>
         ))}
       </View>
     );

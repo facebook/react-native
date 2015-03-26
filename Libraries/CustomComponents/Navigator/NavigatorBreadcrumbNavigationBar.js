@@ -1,19 +1,18 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule BreadcrumbNavigationBar
+ * @providesModule NavigatorBreadcrumbNavigationBar
  */
 'use strict';
 
-var BreadcrumbNavigationBarStyles = require('BreadcrumbNavigationBarStyles');
-var PixelRatio = require('PixelRatio');
+var NavigatorBreadcrumbNavigationBarStyles = require('NavigatorBreadcrumbNavigationBarStyles');
+var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
 var React = require('React');
-var NavigationBarStyles = require('NavigationBarStyles');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var Interpolators = BreadcrumbNavigationBarStyles.Interpolators;
+var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
 var PropTypes = React.PropTypes;
 
 /**
@@ -46,12 +45,12 @@ var navStatePresentedIndex = function(navState) {
  * @return {object} Style config for initial rendering of index.
  */
 var initStyle = function(index, presentedIndex) {
-  return index === presentedIndex ? BreadcrumbNavigationBarStyles.Center[index] :
-    index < presentedIndex ? BreadcrumbNavigationBarStyles.Left[index] :
-    BreadcrumbNavigationBarStyles.Right[index];
+  return index === presentedIndex ? NavigatorBreadcrumbNavigationBarStyles.Center[index] :
+    index < presentedIndex ? NavigatorBreadcrumbNavigationBarStyles.Left[index] :
+    NavigatorBreadcrumbNavigationBarStyles.Right[index];
 };
 
-var BreadcrumbNavigationBar = React.createClass({
+var NavigatorBreadcrumbNavigationBar = React.createClass({
   propTypes: {
     navigator: PropTypes.shape({
       push: PropTypes.func,
@@ -66,6 +65,10 @@ var BreadcrumbNavigationBar = React.createClass({
       iconForRoute: PropTypes.func,
     }),
     navigationBarStyles: PropTypes.number,
+  },
+
+  statics: {
+    Styles: NavigatorBreadcrumbNavigationBarStyles,
   },
 
   _updateIndexProgress: function(progress, index, fromIndex, toIndex) {
@@ -231,11 +234,11 @@ var styles = StyleSheet.create({
   breadCrumbContainer: {
     overflow: 'hidden',
     position: 'absolute',
-    height: NavigationBarStyles.General.TotalNavHeight,
+    height: NavigatorNavigationBarStyles.General.TotalNavHeight,
     top: 0,
     left: 0,
-    width: NavigationBarStyles.General.ScreenWidth,
+    width: NavigatorNavigationBarStyles.General.ScreenWidth,
   },
 });
 
-module.exports = BreadcrumbNavigationBar;
+module.exports = NavigatorBreadcrumbNavigationBar;

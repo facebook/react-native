@@ -1,15 +1,36 @@
 /**
- * @providesModule NavigationBar
- * @typechecks
+ * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ *
+ * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * all intellectual property and other proprietary rights, in and to the React
+ * Native CustomComponents software (the “Software”).  Subject to your
+ * compliance with these terms, you are hereby granted a non-exclusive,
+ * worldwide, royalty-free copyright license to (1) use and copy the Software;
+ * and (2) reproduce and distribute the Software as part of your own software
+ * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * you in this license agreement.
+ *
+ * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED.
+ * IN NO EVENT SHALL FACEBOOK OR ITS AFFILIATES, OFFICERS, DIRECTORS OR
+ * EMPLOYEES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THE SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @providesModule NavigatorNavigationBar
  */
 'use strict';
 
 var React = require('React');
-var NavigationBarStyles = require('NavigationBarStyles');
+var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
-var Text = require('Text');
 
 var COMPONENT_NAMES = ['Title', 'LeftButton', 'RightButton'];
 
@@ -24,7 +45,11 @@ var navStatePresentedIndex = function(navState) {
   }
 };
 
-var NavigationBar = React.createClass({
+var NavigatorNavigationBar = React.createClass({
+
+  statics: {
+    Styles: NavigatorNavigationBarStyles,
+  },
 
   _getReusableProps: function(
     /*string*/componentName,
@@ -32,7 +57,7 @@ var NavigationBar = React.createClass({
   ) /*object*/ {
     if (!this._reusableProps) {
       this._reusableProps = {};
-    };
+    }
     var propStack = this._reusableProps[componentName];
     if (!propStack) {
       propStack = this._reusableProps[componentName] = [];
@@ -56,14 +81,14 @@ var NavigationBar = React.createClass({
     var interpolate;
     if (oldDistToCenter > 0 && newDistToCenter === 0 ||
         newDistToCenter > 0 && oldDistToCenter === 0) {
-      interpolate = NavigationBarStyles.Interpolators.RightToCenter;
+      interpolate = NavigatorNavigationBarStyles.Interpolators.RightToCenter;
     } else if (oldDistToCenter < 0 && newDistToCenter === 0 ||
                newDistToCenter < 0 && oldDistToCenter === 0) {
-      interpolate = NavigationBarStyles.Interpolators.CenterToLeft;
+      interpolate = NavigatorNavigationBarStyles.Interpolators.CenterToLeft;
     } else if (oldDistToCenter === newDistToCenter) {
-      interpolate = NavigationBarStyles.Interpolators.RightToCenter;
+      interpolate = NavigatorNavigationBarStyles.Interpolators.RightToCenter;
     } else {
-      interpolate = NavigationBarStyles.Interpolators.RightToLeft;
+      interpolate = NavigatorNavigationBarStyles.Interpolators.RightToLeft;
     }
 
     COMPONENT_NAMES.forEach(function (componentName) {
@@ -134,7 +159,7 @@ var NavigationBar = React.createClass({
     }
 
     var initialStage = index === navStatePresentedIndex(this.props.navState) ?
-      NavigationBarStyles.Stages.Center : NavigationBarStyles.Stages.Left;
+      NavigatorNavigationBarStyles.Stages.Center : NavigatorNavigationBarStyles.Stages.Left;
     return (
       <StaticContainer
         ref={containerRef}
@@ -153,12 +178,12 @@ var NavigationBar = React.createClass({
 var styles = StyleSheet.create({
   navBarContainer: {
     position: 'absolute',
-    height: NavigationBarStyles.General.TotalNavHeight,
+    height: NavigatorNavigationBarStyles.General.TotalNavHeight,
     top: 0,
     left: 0,
-    width: NavigationBarStyles.General.ScreenWidth,
+    width: NavigatorNavigationBarStyles.General.ScreenWidth,
     backgroundColor: 'transparent',
   },
 });
 
-module.exports = NavigationBar;
+module.exports = NavigatorNavigationBar;
