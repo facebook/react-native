@@ -115,7 +115,7 @@ var GeoInfo = React.createClass({
 
 ## Extensibility
 
-It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily expended with custom native views and modules - that means you can reuse anything you{"'"}ve already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the RCTBridgeModule protocol, and add RCT_EXPORT to the function you want to make available in JavaScript.
+It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily expended with custom native views and modules - that means you can reuse anything you've already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the RCTBridgeModule protocol, and add RCT_EXPORT to the function you want to make available in JavaScript.
 
 ```javascript
 // Objective-C
