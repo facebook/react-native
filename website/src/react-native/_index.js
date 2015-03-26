@@ -19,7 +19,7 @@ var index = React.createClass({
           <div className="wrap">
             <div className="text"><strong>React Native</strong></div>
             <div className="minitext">
-              Build native apps using React
+              A framework for building native apps using React
             </div>
           </div>
         </div>
