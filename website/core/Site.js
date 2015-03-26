@@ -19,13 +19,13 @@ var Site = React.createClass({
         <head>
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-          <title>React Native | Build Native Apps Using React</title>
+          <title>React Native | A framework for building native apps using React</title>
           <meta name="viewport" content="width=device-width" />
-          <meta property="og:title" content="React Native | Build Native Apps Using React" />
+          <meta property="og:title" content="React Native | A framework for building native apps using React" />
           <meta property="og:type" content="website" />
           <meta property="og:url" content="http://facebook.github.io/react-native/index.html" />
           <meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2" />
-          <meta property="og:description" content="Build Native Apps Using React" />
+          <meta property="og:description" content="A framework for building native apps using React" />
 
           <link rel="shortcut icon" href="/react-native/img/favicon.png?2" />
           <link rel="stylesheet" href="/react-native/css/react-native.css" />
