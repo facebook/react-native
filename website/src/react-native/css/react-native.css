@@ -134,6 +134,7 @@ html * {
   padding: 5px 10px;
   margin-left: 20px;
   background-color: rgba(5, 165, 209, 0.05);
+  overflow: auto;
 }
 
 .prism + .prism {
