@@ -53,7 +53,7 @@ var MOCKED_MOVIES_DATA = [
 
 
 ### Render a movie
-gr
+
 We're going to render the title, year, and thumbnail for the movie. Since thumbnail is an Image component in React Native, add Image to the list of React requires below.
 
 ```javascript
