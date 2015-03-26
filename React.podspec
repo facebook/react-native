@@ -18,15 +18,14 @@ Pod::Spec.new do |s|
   s.author       = "Facebook"
   s.platform     = :ios, "7.0"
   s.source       = { :git => "https://github.com/facebook/react-native.git", :tag => "v#{s.version}" }
-  s.source_files  = "React/**/*.{c,h,m}"
-  s.resources = "Resources/*.png"
+  s.source_files = "React/**/*.{c,h,m}"
+  s.resources    = "Resources/*.png"
   s.preserve_paths = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
   s.exclude_files = "**/__tests__/*", "IntegrationTests/*"
-  s.frameworks = "JavaScriptCore"
+  s.frameworks   = "JavaScriptCore"
   s.requires_arc = true
   s.prepare_command = 'npm install'
-  s.libraries = 'libicucore'
-  s.xcconfig = { 'OTHER_LDFLAGS' => '-lObjC' }
+  s.libraries    = 'icucore'
 
   s.subspec 'RCTActionSheet' do |ss|
     ss.source_files = "Libraries/ActionSheetIOS/*.{h,m}"
