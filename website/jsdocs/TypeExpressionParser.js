@@ -8,7 +8,7 @@
  */
 
 /*global exports:true*/
-"use strict";
+'use strict';
 
 var Syntax = require('esprima-fb').Syntax;
 
@@ -25,7 +25,7 @@ function reverseObject(/*object*/ object) /*object*/ {
   var reversed = {};
   for (var key in object) {
     if (object.hasOwnProperty(key)) {
-      reversed[object[key]] = key
+      reversed[object[key]] = key;
     }
   }
   return reversed;
@@ -452,16 +452,16 @@ exports.popTypeVariables = popTypeVariables;
 function fromFlowAnnotation(/*object*/ annotation, state) /*?object*/ {
   var ast;
   switch (annotation.type) {
-    case "NumberTypeAnnotation":
-      return createAst(SYMBOLS.SIMPLE, "number", 0);
-    case "StringTypeAnnotation":
-      return createAst(SYMBOLS.SIMPLE, "string", 0);
-    case "BooleanTypeAnnotation":
-      return createAst(SYMBOLS.SIMPLE, "boolean", 0);
-    case "AnyTypeAnnotation": // fallthrough
-    case "VoidTypeAnnotation":
+    case 'NumberTypeAnnotation':
+      return createAst(SYMBOLS.SIMPLE, 'number', 0);
+    case 'StringTypeAnnotation':
+      return createAst(SYMBOLS.SIMPLE, 'string', 0);
+    case 'BooleanTypeAnnotation':
+      return createAst(SYMBOLS.SIMPLE, 'boolean', 0);
+    case 'AnyTypeAnnotation': // fallthrough
+    case 'VoidTypeAnnotation':
       return null;
-    case "NullableTypeAnnotation":
+    case 'NullableTypeAnnotation':
       ast = fromFlowAnnotation(annotation.typeAnnotation, state);
       if (ast) {
         ast.nullable = true;
@@ -486,10 +486,10 @@ function fromFlowAnnotation(/*object*/ annotation, state) /*?object*/ {
       // to render a simple function instead of a detailed one
       if ((params.length || returnType)
            && params.length === annotation.params.length) {
-        return createAst(SYMBOLS.FUNCTION, [params, returnType], 0)
+        return createAst(SYMBOLS.FUNCTION, [params, returnType], 0);
       }
       return createAst(SYMBOLS.SIMPLE, 'function', 0);
-    case "GenericTypeAnnotation":
+    case 'GenericTypeAnnotation':
       var alias = getTypeAlias(annotation.id, state);
       if (alias) {
         return fromFlowAnnotation(alias, state);
@@ -497,7 +497,7 @@ function fromFlowAnnotation(/*object*/ annotation, state) /*?object*/ {
 
       // Qualified type identifiers are not handled by runtime typechecker,
       // so simply omit the annotation for now.
-      if (annotation.id.type === "QualifiedTypeIdentifier") {
+      if (annotation.id.type === 'QualifiedTypeIdentifier') {
         return null;
       }
 
@@ -521,12 +521,12 @@ function fromFlowAnnotation(/*object*/ annotation, state) /*?object*/ {
       );
 
       switch (name) {
-        case "mixed": // fallthrough
-        case "$Enum":
+        case 'mixed': // fallthrough
+        case '$Enum':
           // Not supported
           return null;
-        case "array": // fallthrough
-        case "promise":
+        case 'array': // fallthrough
+        case 'promise':
           if (annotation.typeParameters) {
             var parametricAst = fromFlowAnnotation(
               annotation.typeParameters.params[0],

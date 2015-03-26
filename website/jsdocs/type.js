@@ -8,7 +8,7 @@
  */
 
 /*global exports:true*/
-"use strict";
+'use strict';
 
 var util = require('util');
 

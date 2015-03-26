@@ -9,7 +9,7 @@
 
 /*global exports:true*/
 /*jslint node:true*/
-"use strict";
+'use strict';
 
 var Syntax = require('esprima-fb').Syntax;
 
