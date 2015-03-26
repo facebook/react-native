@@ -29,7 +29,7 @@ var support = React.createClass({
             </p>
 
             <H2>Stack Overflow</H2>
-            <p>Many members of the community use Stack Overflow to ask questions. Read through the <a href="http://stackoverflow.com/questions/tagged/reactnative">existing questions</a> tagged with <strong>reactnative</strong> or <a href="http://stackoverflow.com/questions/ask">ask your own</a>!</p>
+            <p>Many members of the community use Stack Overflow to ask questions. Read through the <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with <strong>react-native</strong> or <a href="http://stackoverflow.com/questions/ask">ask your own</a>!</p>
 
             <H2>IRC</H2>
             <p>Many developers and users idle on Freenode.net&#39;s IRC network in <strong><a href="irc://chat.freenode.net/reactnative">#reactnative on freenode</a></strong>.</p>
