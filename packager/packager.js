@@ -36,6 +36,9 @@ var options = parseCommandLine([{
 }, {
   command: 'root',
   description: 'add another root(s) to be used by the packager in this project',
+}, {
+  command: 'assetRoots',
+  description: 'specify the root directories of app assets'
 }]);
 
 if (options.projectRoots) {
@@ -61,7 +64,11 @@ if (options.root) {
   }
 }
 
-if (!options.assetRoots) {
+if (options.assetRoots) {
+  if (!Array.isArray(options.assetRoots)) {
+    options.assetRoots = options.assetRoots.split(',');
+  }
+} else {
   options.assetRoots = [path.resolve(__dirname, '..')];
 }
 
