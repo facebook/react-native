@@ -437,9 +437,6 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
         completion(YES);
       }
 
-      // TODO: deprecate this
-      [view reactSetBorders];
-
       // Animate view creation
       BOOL shouldAnimateCreation = isNew && ![parentsAreNew[ii] boolValue];
       RCTAnimation *createAnimation = _layoutAnimation.createAnimation;

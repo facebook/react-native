@@ -81,9 +81,6 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor);
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_REMAP_VIEW_PROPERTY(borderColor, layer.borderColor, CGColor);
-RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius, CGFloat)
-RCT_REMAP_VIEW_PROPERTY(borderWidth, layer.borderWidth, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
 RCT_CUSTOM_VIEW_PROPERTY(overflow, css_overflow, RCTView)
 {
@@ -122,6 +119,42 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
+RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius, CGFloat)
+RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
+{
+  if ([view respondsToSelector:@selector(setBorderColor:)]) {
+    view.borderColor = json ? [RCTConvert CGColor:json] : defaultView.borderColor;
+  } else {
+    view.layer.borderColor = json ? [RCTConvert CGColor:json] : defaultView.layer.borderColor;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
+{
+  if ([view respondsToSelector:@selector(setBorderWidth:)]) {
+    view.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.borderWidth;
+  } else {
+    view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
+  }
+}
+
+#define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
+RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, CGFloat, RCTView)         \
+{                                                                       \
+  if ([view respondsToSelector:@selector(setBorder##SIDE##Width:)]) {   \
+    view.border##SIDE##Width = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Width; \
+  }                                                                     \
+}                                                                       \
+RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Color, UIColor, RCTView)         \
+{                                                                       \
+  if ([view respondsToSelector:@selector(setBorder##SIDE##Color:)]) {   \
+    view.border##SIDE##Color = json ? [RCTConvert CGColor:json] : defaultView.border##SIDE##Color; \
+  }                                                                     \
+}
+
+RCT_VIEW_BORDER_PROPERTY(Top)
+RCT_VIEW_BORDER_PROPERTY(Right)
+RCT_VIEW_BORDER_PROPERTY(Bottom)
+RCT_VIEW_BORDER_PROPERTY(Left)
 
 #pragma mark - ShadowView properties
 
@@ -168,16 +201,5 @@ RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, UIColor, RCTShadowView)
   view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
   view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
 }
-
-// Border properties - to be deprecated
-
-RCT_REMAP_VIEW_PROPERTY(borderTopWidth, reactBorderTop.width, CGFloat);
-RCT_REMAP_VIEW_PROPERTY(borderRightWidth, reactBorderRight.width, CGFloat);
-RCT_REMAP_VIEW_PROPERTY(borderBottomWidth, reactBorderBottom.width, CGFloat);
-RCT_REMAP_VIEW_PROPERTY(borderLeftWidth, reactBorderLeft.width, CGFloat);
-RCT_REMAP_VIEW_PROPERTY(borderTopColor, reactBorderTop.color, UIColor);
-RCT_REMAP_VIEW_PROPERTY(borderRightColor, reactBorderRight.color, UIColor);
-RCT_REMAP_VIEW_PROPERTY(borderBottomColor, reactBorderBottom.color, UIColor);
-RCT_REMAP_VIEW_PROPERTY(borderLeftColor, reactBorderLeft.color, UIColor);
 
 @end
