@@ -34,7 +34,7 @@ static inline NSString *_RCTLogPreamble(const char *file, int lineNumber, const 
   return [NSString stringWithFormat:@"[RCTLog][tid:%@][%@:%d]>", threadName, fileName, lineNumber];
 }
 
-// TODO (#5906496): // kinda ugly that this is tied to RCTBridge
+// TODO (#5906496): Does this need to be tied to RCTBridge?
 NSString *RCTLogObjects(NSArray *objects, NSString *level)
 {
   NSString *str = objects[0];

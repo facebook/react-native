@@ -1356,10 +1356,6 @@ static void RCTMeasureLayout(RCTShadowView *view,
   }];
 }
 
-// TODO: remove horrible hack - this is only here so that
-// [rootView endAndResetInteractionTiming] below doesn't raise warnings
-- (NSDictionary *)endAndResetInteractionTiming { return nil; }
-
 - (void)endAndResetInteractionTiming:(RCTResponseSenderBlock)onSuccess
                        onError:(RCTResponseSenderBlock)onError
 {
