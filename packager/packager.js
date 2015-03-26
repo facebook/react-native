@@ -10,6 +10,8 @@
 
 var fs = require('fs');
 var path = require('path');
+var exec = require('child_process').exec;
+var http = require('http');
 
 if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   console.log(
@@ -21,11 +23,9 @@ if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   process.exit();
 }
 
-var exec = require('child_process').exec;
+var connect = require('connect');
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
-var connect = require('connect');
-var http = require('http');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
 var webSocketProxy = require('./webSocketProxy.js');
