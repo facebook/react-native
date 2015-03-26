@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
+#import "RCTDevMenu.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -26,6 +27,7 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
 
 @implementation RCTRootView
 {
+  RCTDevMenu *_devMenu;
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
   id<RCTJavaScriptExecutor> _executor;
@@ -84,6 +86,9 @@ static Class _globalExecutorClass;
   // Numbering of these tags goes from 1, 11, 21, 31, etc
   static NSInteger rootViewTag = 1;
   self.reactTag = @(rootViewTag);
+#ifdef DEBUG
+  self.enableDevMenu = YES;
+#endif
   rootViewTag += 10;
 
   // Add reload observer
@@ -91,6 +96,21 @@ static Class _globalExecutorClass;
                                            selector:@selector(reload)
                                                name:RCTReloadNotification
                                              object:nil];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+  if (motion == UIEventSubtypeMotionShake && self.enableDevMenu) {
+    if (!_devMenu) {
+      _devMenu = [[RCTDevMenu alloc] initWithRootView:self];
+    }
+    [_devMenu show];
+  }
 }
 
 + (NSArray *)JSMethods
