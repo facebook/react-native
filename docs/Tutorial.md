@@ -426,6 +426,7 @@ var AwesomeProject = React.createClass({
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this.renderMovie}
+        style={styles.listView}
       />
     );
   },
