@@ -612,7 +612,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   // Wait for queued methods to finish
   dispatch_sync(self.shadowQueue, ^{
     // Make sure all dispatchers have been executed before continuing
-    // TODO: is this still needed?
   });
 
   // Invalidate modules
