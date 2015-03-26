@@ -70,7 +70,7 @@ function init(name) {
     version: '0.0.1',
     private: true,
     scripts: {
-      start: "react-native start"
+      start: "node_modules/react-native/packager/packager.sh"
     }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
