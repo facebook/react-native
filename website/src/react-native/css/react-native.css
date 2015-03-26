@@ -455,6 +455,14 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   margin-left: 0;
 }
 
+.tutorial-mock {
+  text-align: center;
+}
+.tutorial-mock img {
+  border: 1px solid #ccc;
+  box-shadow: 5px 5px 5px #888888;
+}
+
 #examples h3, .home-presentation h3 {
   color: #2d2d2d;
   font-size: 24px;

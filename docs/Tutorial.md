@@ -109,9 +109,9 @@ And lastly we need to apply this still to the Image component:
 
 Press cmd+R and the image should now render.
 
-Screenshot:
-
-<img src="https://github.com/facebook/react-native/raw/master/docs/images/TutorialMock.png" alt="screenshot" width="320px" />
+<div class="tutorial-mock">
+  <img src="/react-native/img/TutorialMock.png" />
+</div>
 
 
 ### Add some styling
@@ -182,9 +182,9 @@ This is pretty straightforward if you've ever seen CSS before. Make the title la
 
 Go ahead and press cmd+R and you'll see the updated view.
 
-Screenshot:
-
-<img src="https://github.com/facebook/react-native/raw/master/docs/images/TutorialStyledMock.png" alt="screenshot" width="320px" />
+<div class="tutorial-mock">
+  <img src="/react-native/img/TutorialStyledMock.png" />
+</div>
 
 ### Fetching real data
 
@@ -274,9 +274,9 @@ Now modify the render function to render a loading view if we don't have any mov
 
 Now press cmd+R and you should see "Loading movies..." until the response comes back, then it will render the first movie it fetched from Rotten Tomatoes.
 
-Screenshot:
-
-<img src="https://github.com/facebook/react-native/raw/master/docs/images/TutorialSingleFetched.png" alt="screenshot" width="320px" />
+<div class="tutorial-mock">
+  <img src="/react-native/img/TutorialSingleFetched.png" />
+</div>
 
 ## ListView
 
@@ -345,9 +345,13 @@ And here's the modified this.setState in the response handler in fetchData:
   },
 ```
 
-Screenshot:
+And here's the final result:
 
-<img src="https://github.com/facebook/react-native/raw/master/docs/images/TutorialFinal.png" alt="screenshot" width="320px" />
+<div class="tutorial-mock">
+  <img src="/react-native/img/TutorialFinal.png" />
+</div>
+
+There's still some work to be done to make it a fully functional app such as adding navigation, search, infinite scroll loading, etc. Check the [Movies Example](https://github.com/facebook/react-native/tree/master/Examples/Movies) to see it all working.
 
 
 ### Final source code
