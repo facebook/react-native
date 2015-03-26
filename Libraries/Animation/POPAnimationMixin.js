@@ -11,13 +11,17 @@
  */
 'use strict';
 
-var POPAnimation = require('POPAnimation');
+var POPAnimationOrNull = require('POPAnimation');
 
-if (!POPAnimation) {
+if (!POPAnimationOrNull) {
   // POP animation isn't available in the OSS fork - this is a temporary
   // workaround to enable its availability to be determined at runtime.
   module.exports = (null : ?{});
 } else {
+
+// At this point, POPAnimationOrNull is guaranteed to be
+// non-null. Bring it local to preserve type refinement.
+var POPAnimation = POPAnimationOrNull;
 
 var invariant = require('invariant');
 var warning = require('warning');
