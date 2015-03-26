@@ -114,11 +114,6 @@ as a static resource in your Xcode project. Then set the `jsCodeLocation` in
 `AppDelegate.m` to point to that file and deploy to your device like you would
 any other app.
 
-##### Q. What's up with this private repo?  Why aren't you just open sourcing it now?
-A. We want input from the React community before we open the floodgates so we
-can incorporate your feedback, and we also have a bunch more features we want to
-add to make a more complete offering before we open source.
-
 ##### Q. Do you have to ship a JS runtime with your apps?
 A. No, we just use the JavaScriptCore public API that is part of iOS 7 and
 later.
