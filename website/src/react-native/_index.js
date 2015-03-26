@@ -32,7 +32,9 @@ var index = React.createClass({
           </section>
 
           <h2>Native iOS Components</h2>
-          <p>With React Native, you can use the platform components such as iOS UITabBar and UINavigationController.</p>
+          <p>
+            With React Native, you can use the standard platform components such as UITabBar and UINavigationController on iOS.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as TabBarIOS and NavigatorIOS.
+          </p>
           <Prism>
 {`var React = require('react-native');
 var { TabBarIOS, NavigatorIOS } = React;
@@ -49,13 +51,16 @@ module.exports = React.createClass({
 });`}
           </Prism>
 
-          <h2>Async</h2>
-
-          <p>Decoding images off of the main thread... Asynchronous bridge, Chrome Dev Tools...</p>
-
+          <h2>Asynchronous</h2>
+          <p>
+            All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug JS while running the app in the full app environment, in the sim or on a real device.
+          </p>
+          <img src="/react-native/img/chrome_breakpoint.png" width="800"/>
           <h2>Touch Handling</h2>
-          <p>iOS has a very powerful system called Responder to handle touches which the web lacks. React Native implements iOS responder system and provides high level components such as TouchableHighlight that work well right off the bat.</p>
 
+          <p>
+            iOS has a very powerful system called the Responder Chain to negotiate touches in complex view hierarchies which does not have a universal analog on the web. React Native implements a similar responder system and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configutation.
+          </p>
           <Prism>
 {`var React = require('react-native');
 var { ScrollView, TouchableHighlight, Text } = React;
@@ -63,7 +68,7 @@ module.exports = React.createClass({
   render: function() {
     return (
       <ScrollView>
-        <TouchableHighlight underlayColor="#cccccc">
+        <TouchableHighlight onPress={() => console.log('pressed')}>
           <Text>Proper Touch Handling</Text>
         </TouchableHighlight>
       </ScrollView>
@@ -72,9 +77,10 @@ module.exports = React.createClass({
 });`}
           </Prism>
 
-          <h2>Flexbox</h2>
-          <p>Laying out views should be easy</p>
-
+          <h2>Flexbox and Styling</h2>
+          <p>
+            Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it easy to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web syles, such as fontWeight, and the StyleSheet abstraction makes it easy to declare all your styles and layout right along with the components that use them and used inline.
+          </p>
           <Prism>
 {`var React = require('react-native');
 var { Image, StyleSheet, Text, View } = React;
@@ -87,8 +93,12 @@ module.exports = React.createClass({
           style={styles.image}
         />
         <View style={styles.text}>
-          <Text style={styles.title}>React Native</Text>
-          <Text style={styles.subtitle}>Build high quality mobile apps using React</Text>
+          <Text style={styles.title}>
+            React Native
+          </Text>
+          <Text style={styles.subtitle}>
+            Build high quality mobile apps using React
+          </Text>
         </View>
       </View>
     );
@@ -104,8 +114,33 @@ var styles = StyleSheet.create({
           </Prism>
 
           <h2>Polyfills</h2>
-          <p>React Native attempts to innovate on the view layer, for the rest, it polyfills web standards. You can use npm to install JavaScript dependencies, XMLHttpRequest, requestAnimationFrame, navigator.geolocation...</p>
-
+          <p>
+            React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
+          </p>
+          <Prism>
+{`var React = require('react-native');
+var { Text } = React;
+module.exports = React.createClass({
+  getInitialState: function() {
+    return {
+      position: 'unknown',
+    };
+  },
+  componentDidMount: function() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => this.setState({position}),
+      (error) => console.error(error)
+    );
+  },
+  render: function() {
+    return (
+      <Text>
+        Position: {JSON.stringify(this.state.position)}
+      </Text>
+    );
+  },
+});`}
+          </Prism>
         </section>
       </Site>
     );
