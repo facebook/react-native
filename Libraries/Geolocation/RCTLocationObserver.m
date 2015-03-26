@@ -209,7 +209,7 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
       }
     }
 
-    if (![CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
       if (errorBlock) {
         errorBlock(@[
           RCTPositionError(RCTPositionErrorDenied, nil)
