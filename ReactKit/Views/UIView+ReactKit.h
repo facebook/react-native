@@ -42,12 +42,3 @@
 - (BOOL)reactRespondsToTouch:(UITouch *)touch;
 
 @end
-
-@interface UIView (ReactKitBorders)
-
-/**
- * Borders stuff - pay no attention to this, it's going away (#6548297)
- */
-- (void)reactSetBorders;
-
-@end

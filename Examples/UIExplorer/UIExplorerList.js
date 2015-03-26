@@ -55,6 +55,7 @@ var APIS = [
   require('./AlertIOSExample'),
   require('./AppStateIOSExample'),
   require('./AsyncStorageExample'),
+  require('./BorderExample'),
   require('./CameraRollExample.ios'),
   require('./GeolocationExample'),
   require('./LayoutExample'),
