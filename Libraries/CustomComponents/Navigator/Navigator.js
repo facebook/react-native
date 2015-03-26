@@ -95,20 +95,20 @@ var styles = StyleSheet.create({
 });
 
 /**
- * Use `ReactNavigator` to transition between different scenes in your app. To
+ * Use `Navigator` to transition between different scenes in your app. To
  * accomplish this, provide route objects to the navigator to identify each
  * scene, and also a `renderScene` function that the navigator can use to
  * render the scene for a given route.
  *
  * To change the animation or gesture properties of the scene, provide a
  * `configureScene` prop to get the config object for a given route. See
- * `ReactNavigator.SceneConfigs` for default animations and more info on
+ * `Navigator.SceneConfigs` for default animations and more info on
  * scene config options.
  *
  * ### Basic Usage
  *
  * ```
- *   <ReactNavigator
+ *   <Navigator
  *     initialRoute={{name: 'My First Scene', index: 0}}
  *     renderScene={(route, navigator) =>
  *       <MySceneComponent
@@ -132,7 +132,7 @@ var styles = StyleSheet.create({
  *
  * ### Navigation Methods
  *
- * `ReactNavigator` can be told to navigate in two ways. If you have a ref to
+ * `Navigator` can be told to navigate in two ways. If you have a ref to
  * the element, you can invoke several methods on it to trigger navigation:
  *
  *  - `jumpBack()` - Jump backward without unmounting the current scene
@@ -174,7 +174,7 @@ var Navigator = React.createClass({
      * configuration object
      *
      * ```
-     * (route) => ReactNavigator.SceneConfigs.FloatFromRight
+     * (route) => Navigator.SceneConfigs.FloatFromRight
      * ```
      */
     configureScene: PropTypes.func,
@@ -230,7 +230,7 @@ var Navigator = React.createClass({
     navigationBar: PropTypes.node,
 
     /**
-     * Optionally provide the navigator object from a parent ReactNavigator
+     * Optionally provide the navigator object from a parent Navigator
      */
     navigator: PropTypes.object,
 
@@ -316,7 +316,7 @@ var Navigator = React.createClass({
       parentNavigator: this.props.navigator,
       // We want to bubble focused routes to the top navigation stack. If we
       // are a child navigator, this allows us to call props.navigator.on*Focus
-      // of the topmost ReactNavigator
+      // of the topmost Navigator
       onWillFocus: this.props.onWillFocus,
       onDidFocus: this.props.onDidFocus,
     };
