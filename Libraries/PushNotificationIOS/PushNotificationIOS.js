@@ -22,21 +22,44 @@ var _initialNotification = RCTPushNotificationManager &&
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 
+/**
+ * Handle push notifications for your app, including permission handling and
+ * icon badge number.
+ *
+ * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringPushNotifications/ConfiguringPushNotifications.html)
+ * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
+ */
 class PushNotificationIOS {
   _data: Object;
   _alert: string | Object;
   _sound: string;
   _badgeCount: number;
 
-  static setApplicationIconBadgeNumber(number) {
+  /**
+   * Sets the badge number for the app icon on the home screen
+   */
+  static setApplicationIconBadgeNumber(number: number) {
     RCTPushNotificationManager.setApplicationIconBadgeNumber(number);
   }
 
-  static getApplicationIconBadgeNumber(callback) {
+  /**
+   * Gets the current badge number for the app icon on the home screen
+   */
+  static getApplicationIconBadgeNumber(callback: Function) {
     RCTPushNotificationManager.getApplicationIconBadgeNumber(callback);
   }
 
-  static addEventListener(type, handler) {
+  /**
+   * Attaches a listener to remote notifications while the app is running in the
+   * foreground or the background.
+   *
+   * The handler will get be invoked with an instance of `PushNotificationIOS`
+   */
+  static addEventListener(type: string, handler: Function) {
+    invariant(
+      type === 'notification',
+      'PushNotificationIOS only supports `notification` events'
+    );
     _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
       DEVICE_NOTIF_EVENT,
       (notifData) => {
@@ -45,11 +68,23 @@ class PushNotificationIOS {
     );
   }
 
+  /**
+   * Requests all notification permissions from iOS, prompting the user's
+   * dialog box.
+   */
   static requestPermissions() {
     RCTPushNotificationManager.requestPermissions();
   }
 
-  static checkPermissions(callback) {
+  /**
+   * See what push permissions are currently enabled. `callback` will be
+   * invoked with a `permissions` object:
+   *
+   *  - `alert` :boolean
+   *  - `badge` :boolean
+   *  - `sound` :boolean
+   */
+  static checkPermissions(callback: Function) {
     invariant(
       typeof callback === 'function',
       'Must provide a valid callback'
@@ -57,7 +92,15 @@ class PushNotificationIOS {
     RCTPushNotificationManager.checkPermissions(callback);
   }
 
-  static removeEventListener(type, handler) {
+  /**
+   * Removes the event listener. Do this in `componentWillUnmount` to prevent
+   * memory leaks
+   */
+  static removeEventListener(type: string, handler: Function) {
+    invariant(
+      type === 'notification',
+      'PushNotificationIOS only supports `notification` events'
+    );
     if (!_notifHandlers[handler]) {
       return;
     }
@@ -66,6 +109,13 @@ class PushNotificationIOS {
   }
 
 
+  /**
+   * An initial notification will be available if the app was cold-launched
+   * from a notification.
+   *
+   * The first caller of `popInitialNotification` will get the initial
+   * notification object, or `null`. Subsequent invocations will return null.
+   */
   static popInitialNotification() {
     var initialNotification = _initialNotification &&
       new PushNotificationIOS(_initialNotification);
@@ -73,6 +123,11 @@ class PushNotificationIOS {
     return initialNotification;
   }
 
+  /**
+   * You will never need to instansiate `PushNotificationIOS` yourself.
+   * Listening to the `notification` event and invoking
+   * `popInitialNotification` is sufficient
+   */
   constructor(nativeNotif) {
     this._data = {};
 
@@ -92,23 +147,38 @@ class PushNotificationIOS {
     });
   }
 
+  /**
+   * An alias for `getAlert` to get the notification's main message string
+   */
   getMessage(): ?string | ?Object {
     // alias because "alert" is an ambiguous name
     return this._alert;
   }
 
+  /**
+   * Gets the sound string from the `aps` object
+   */
   getSound(): ?string {
     return this._sound;
   }
 
+  /**
+   * Gets the notification's main message from the `aps` object
+   */
   getAlert(): ?string | ?Object {
     return this._alert;
   }
 
+  /**
+   * Gets the badge count number from the `aps` object
+   */
   getBadgeCount(): ?number {
     return this._badgeCount;
   }
 
+  /**
+   * Gets the data object on the notif
+   */
   getData(): ?Object {
     return this._data;
   }
