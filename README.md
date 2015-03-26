@@ -1,13 +1,3 @@
-**Warning: This is currently a private repo to accompany the ReactJS conference
-talk, and is not accessible outside the official conference attendees - please
-do not share this code.**
-
-This is also a very early alpha release.  There are certainly bugs and missing
-features. Some things may even be well-documented in JS, but missing from the
-native implementation.  We are committed to improving and expanding the
-capabilities of this project as fast as we can, and look forward to working with
-the community.
-
 # React Native [![Build Status](https://magnum.travis-ci.com/facebook/react-native.svg?token=L5Egb3B4dyQzH5wDijCB&branch=master)](https://magnum.travis-ci.com/facebook/react-native)
 
 Our first React Native implementation is `React`, targeting iOS.  We are also
