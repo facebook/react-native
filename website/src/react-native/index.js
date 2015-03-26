@@ -25,12 +25,21 @@ var index = React.createClass({
         </div>
 
         <section className="content wrap">
+          <div style={{margin: '40px auto', width: 800}}>
+
+          <p>
+            React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and
+            {' '}<a href="http://facebook.github.io/react/" >React</a>{'. '}
+            The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere.
+            Facebook uses React Native in multiple production apps and will continue investing in React Native.
+          </p>
+          </div>
 
           <div className="buttons-unit">
             <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
           </div>
 
-          <div style={{margin: '60px auto', width: 800}}>
+          <div style={{margin: '40px auto', width: 800}}>
 
           <h2>Native iOS Components</h2>
           <p>
