@@ -17,6 +17,15 @@
 
 #define TIMEOUT_SECONDS 240
 
+@interface RCTRootView (Testing)
+
+- (instancetype)_initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                    launchOptions:(NSDictionary *)launchOptions
+                   moduleProvider:(RCTBridgeModuleProviderBlock)moduleProvider;
+
+@end
+
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_snapshotController;
@@ -63,16 +72,20 @@
     [(RCTRootView *)vc.view invalidate]; // Make sure the normal app view doesn't interfere
   }
   vc.view = [[UIView alloc] init];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithFrame:CGRectMake(0, 0, 320, 2000)]; // Constant size for testing on multiple devices
-  RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:rootView];
+
+  RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
   testModule.testSelector = test;
+
+  RCTRootView *rootView = [[RCTRootView alloc] _initWithBundleURL:[NSURL URLWithString:_script]
+                                                      moduleName:moduleName
+                                                   launchOptions:nil
+                                                   moduleProvider:^{
+                                                     return @[testModule];
+                                                   }];
+  [testModule setValue:rootView forKey:@"_view"];
+  rootView.frame = CGRectMake(0, 0, 320, 2000);
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
-  rootView.moduleProvider = ^(void){
-    return @[testModule];
-  };
-  rootView.moduleName = moduleName;
   rootView.initialProperties = initialProps;
-  rootView.scriptURL = [NSURL URLWithString:_script];
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];

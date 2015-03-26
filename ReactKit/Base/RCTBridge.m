@@ -497,76 +497,88 @@ static NSDictionary *RCTLocalModulesConfig()
   RCTSparseArray *_modulesByID;
   NSDictionary *_modulesByName;
   id<RCTJavaScriptExecutor> _javaScriptExecutor;
+  RCTBridgeModuleProviderBlock _moduleProvider;
 }
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
-- (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)executor
-                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+- (instancetype)initWithBundlePath:(NSString *)bundlepath
+                    moduleProvider:(RCTBridgeModuleProviderBlock)block
+                     launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
-    _javaScriptExecutor = executor;
-    _latestJSExecutor = _javaScriptExecutor;
     _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
     _shadowQueue = dispatch_queue_create("com.facebook.ReactKit.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+    _moduleProvider = block;
+    _launchOptions = launchOptions;
+  }
+  return self;
+}
 
-    // Register passed-in module instances
-    NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
-    for (id<RCTBridgeModule> module in block ? block() : nil) {
-      preregisteredModules[RCTModuleNameForClass([module class])] = module;
-    }
+- (void)setJavaScriptExecutor:(id<RCTJavaScriptExecutor>)executor
+{
+  _javaScriptExecutor = executor;
+  _latestJSExecutor = _javaScriptExecutor;
+  [self setUp];
+}
 
-    // Instantiate modules
-    _modulesByID = [[RCTSparseArray alloc] init];
-    NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
-    [RCTBridgeModuleClassesByModuleID() enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
-      NSString *moduleName = RCTModuleNamesByID[moduleID];
-      // Check if module instance has already been registered for this name
-      if ((_modulesByID[moduleID] = modulesByName[moduleName])) {
-        // Preregistered instances takes precedence, no questions asked
-        if (!preregisteredModules[moduleName]) {
-          // It's OK to have a name collision as long as the second instance is nil
-          RCTAssert([[moduleClass alloc] init] == nil,
-                    @"Attempted to register RCTBridgeModule class %@ for the name '%@', \
-                    but name was already registered by class %@", moduleClass,
-                    moduleName, [modulesByName[moduleName] class]);
-        }
-      } else {
-        // Module name hasn't been used before, so go ahead and instantiate
-        id<RCTBridgeModule> module = [[moduleClass alloc] init];
-        if (module) {
-          _modulesByID[moduleID] = modulesByName[moduleName] = module;
-        }
+- (void)setUp
+{
+  // Register passed-in module instances
+  NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
+  for (id<RCTBridgeModule> module in _moduleProvider ? _moduleProvider() : nil) {
+    preregisteredModules[RCTModuleNameForClass([module class])] = module;
+  }
+
+  // Instantiate modules
+  _modulesByID = [[RCTSparseArray alloc] init];
+  NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
+  [RCTBridgeModuleClassesByModuleID() enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
+    NSString *moduleName = RCTModuleNamesByID[moduleID];
+    // Check if module instance has already been registered for this name
+    if ((_modulesByID[moduleID] = modulesByName[moduleName])) {
+      // Preregistered instances takes precedence, no questions asked
+      if (!preregisteredModules[moduleName]) {
+        // It's OK to have a name collision as long as the second instance is nil
+        RCTAssert([[moduleClass alloc] init] == nil,
+                  @"Attempted to register RCTBridgeModule class %@ for the name '%@', \
+                  but name was already registered by class %@", moduleClass,
+                  moduleName, [modulesByName[moduleName] class]);
       }
-    }];
-
-    // Store modules
-    _modulesByName = [modulesByName copy];
-
-    // Set bridge
-    for (id<RCTBridgeModule> module in _modulesByName.allValues) {
-      if ([module respondsToSelector:@selector(setBridge:)]) {
-        module.bridge = self;
+    } else {
+      // Module name hasn't been used before, so go ahead and instantiate
+      id<RCTBridgeModule> module = [[moduleClass alloc] init];
+      if (module) {
+        _modulesByID[moduleID] = modulesByName[moduleName] = module;
       }
     }
+  }];
 
-    // Inject module data into JS context
-    NSString *configJSON = RCTJSONStringify(@{
-      @"remoteModuleConfig": RCTRemoteModulesConfig(_modulesByName),
-      @"localModulesConfig": RCTLocalModulesConfig()
-    }, NULL);
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    [_javaScriptExecutor injectJSONText:configJSON asGlobalObjectNamed:@"__fbBatchedBridgeConfig" callback:^(id err) {
-      dispatch_semaphore_signal(semaphore);
-    }];
+  // Store modules
+  _modulesByName = [modulesByName copy];
 
-    if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) != 0) {
-      RCTLogError(@"JavaScriptExecutor took too long to inject JSON object");
+  // Set bridge
+  for (id<RCTBridgeModule> module in _modulesByName.allValues) {
+    if ([module respondsToSelector:@selector(setBridge:)]) {
+      module.bridge = self;
     }
   }
 
-  return self;
+  // Inject module data into JS context
+  NSString *configJSON = RCTJSONStringify(@{
+                                            @"remoteModuleConfig": RCTRemoteModulesConfig(_modulesByName),
+                                            @"localModulesConfig": RCTLocalModulesConfig()
+                                            }, NULL);
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  [_javaScriptExecutor injectJSONText:configJSON asGlobalObjectNamed:@"__fbBatchedBridgeConfig" callback:^(id err) {
+    dispatch_semaphore_signal(semaphore);
+  }];
+
+  if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) != 0) {
+    RCTLogError(@"JavaScriptExecutor took too long to inject JSON object");
+  }
 }
+
 
 - (NSDictionary *)modules
 {

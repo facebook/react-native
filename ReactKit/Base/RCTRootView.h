@@ -13,12 +13,16 @@
 
 @interface RCTRootView : UIView<RCTInvalidating>
 
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                    launchOptions:(NSDictionary *)launchOptions /* NS_DESIGNATED_INITIALIZER */;
+
 /**
  * The URL of the bundled application script (required).
  * Setting this will clear the view contents, and trigger
  * an asynchronous load/download and execution of the script.
  */
-@property (nonatomic, strong) NSURL *scriptURL;
+@property (nonatomic, strong, readonly) NSURL *scriptURL;
 
 /**
  * The name of the JavaScript module to execute within the
@@ -26,14 +30,14 @@
  * any immediate effect, but it must be done prior to loading
  * the script.
  */
-@property (nonatomic, copy) NSString *moduleName;
+@property (nonatomic, copy, readonly) NSString *moduleName;
 
 /**
  * A block that returns an array of pre-allocated modules.  These
  * modules will take precedence over any automatically registered
  * modules of the same name.
  */
-@property (nonatomic, copy) RCTBridgeModuleProviderBlock moduleProvider;
+@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
 /**
  * The default properties to apply to the view when the script bundle
