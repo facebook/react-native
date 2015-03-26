@@ -36,7 +36,8 @@
     "uglify-js": "~2.4.16",
     "underscore": "1.7.0",
     "worker-farm": "1.1.0",
-    "yargs": "1.3.2"
+    "yargs": "1.3.2",
+    "ws": "0.4.31"
   },
   "devDependencies": {
     "jest-cli": "0.2.1",
