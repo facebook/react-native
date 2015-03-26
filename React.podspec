@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.author       = "Facebook"
   s.platform     = :ios, "7.0"
   s.source       = { :git => "https://github.com/facebook/react-native.git", :tag => "v#{s.version}" }
-  s.source_files  = "ReactKit/**/*.{c,h,m}"
+  s.source_files  = "React/**/*.{c,h,m}"
   s.resources = "Resources/*.png"
   s.preserve_paths = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
   s.exclude_files = "**/__tests__/*", "IntegrationTests/*"

@@ -11,7 +11,7 @@
 
 #import "RCTShadowText.h"
 #import "RCTUtils.h"
-#import "UIView+ReactKit.h"
+#import "UIView+React.h"
 
 @implementation RCTText
 {
