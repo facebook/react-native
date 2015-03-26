@@ -9,8 +9,6 @@ before_script:
   - npm test
   - (npm start > packager.log 2>&1 &) && echo $! > packager.pid
 
-script: ./runXcodeTests.sh 8.1
-
 after_script:
   - pkill -9 -F packager.pid
   - cat packager.log
