@@ -13,7 +13,6 @@
 #import "RCTEventDispatcher.h"
 
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
-NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 @implementation RCTPushNotificationManager
 {
@@ -34,10 +33,6 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRemoteNotificationReceived:)
                                                  name:RCTRemoteNotificationReceived
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleOpenURLNotification:)
-                                                 name:RCTOpenURLNotification
                                                object:nil];
   }
   return self;
@@ -62,27 +57,9 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
                                                     userInfo:notification];
 }
 
-+ (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation
-{
-  NSDictionary *payload = @{@"url": [url absoluteString]};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
-                                                      object:self
-                                                    userInfo:payload];
-  return YES;
-}
-
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
-                                              body:[notification userInfo]];
-}
-
-- (void)handleOpenURLNotification:(NSNotification *)notification
-{
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"openURL"
                                               body:[notification userInfo]];
 }
 

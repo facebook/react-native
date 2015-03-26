@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "Build native apps with React!",
   "repository": {
     "type": "git",
@@ -21,11 +21,24 @@
     ]
   },
   "main": "Libraries/react-native/react-native.js",
+  "files": [
+    "ReactKit",
+    "Examples/SampleApp",
+    "Libraries",
+    "packager",
+    "cli.js",
+    "init.sh",
+    "LICENSE",
+    "PATENTS"
+  ],
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
     "start": "./packager/packager.sh",
     "postinstall": "cd packager && npm install"
+  },
+  "bin": {
+    "react-native-start": "packager/packager.sh"
   },
   "dependencies": {
     "connect": "2.8.3",
@@ -37,7 +50,6 @@
     "stacktrace-parser": "0.1.1"
   },
   "devDependencies": {
-    "ws": "0.4.31",
     "jest-cli": "0.2.1",
     "eslint": "0.9.2"
   }
