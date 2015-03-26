@@ -14,6 +14,17 @@
 #import "RCTEventDispatcher.h"
 #import "UIView+ReactKit.h"
 
+@implementation RCTConvert(UIDatePicker)
+
+RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
+  @"time": @(UIDatePickerModeTime),
+  @"date": @(UIDatePickerModeDate),
+  @"datetime": @(UIDatePickerModeDateAndTime),
+  //@"countdown": @(UIDatePickerModeCountDownTimer) // not supported yet
+}), UIDatePickerModeTime, integerValue)
+
+@end
+
 @implementation RCTDatePickerManager
 
 - (UIView *)view
@@ -25,12 +36,12 @@
   return picker;
 }
 
-RCT_EXPORT_VIEW_PROPERTY(date)
-RCT_EXPORT_VIEW_PROPERTY(minimumDate)
-RCT_EXPORT_VIEW_PROPERTY(maximumDate)
-RCT_EXPORT_VIEW_PROPERTY(minuteInterval)
-RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode)
-RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone)
+RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
+RCT_EXPORT_VIEW_PROPERTY(minimumDate, NSDate)
+RCT_EXPORT_VIEW_PROPERTY(maximumDate, NSDate)
+RCT_EXPORT_VIEW_PROPERTY(minuteInterval, NSInteger)
+RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
+RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
 - (void)onChange:(UIDatePicker *)sender
 {

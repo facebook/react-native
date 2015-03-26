@@ -18,19 +18,15 @@ const CLLocationDegrees RCTMapDefaultSpan = 0.005;
 const NSTimeInterval RCTMapRegionChangeObserveInterval = 0.1;
 const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
-@interface RCTMap()
-
-@property (nonatomic, strong) UIView *legalLabel;
-@property (nonatomic, strong) CLLocationManager *locationManager;
-
-@end
-
 @implementation RCTMap
+{
+  UIView *_legalLabel;
+  CLLocationManager *_locationManager;
+}
 
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
+  if ((self = [super init])) {
     // Find Apple link label
     for (UIView *subview in self.subviews) {
       if ([NSStringFromClass(subview.class) isEqualToString:@"MKAttributionLabel"]) {
@@ -45,7 +41,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
 - (void)dealloc
 {
-  [self.regionChangeObserveTimer invalidate];
+  [_regionChangeObserveTimer invalidate];
 }
 
 - (void)layoutSubviews
@@ -94,36 +90,23 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   }
 }
 
-- (void)setJSONRegion:(NSDictionary *)region
+- (void)setRegion:(MKCoordinateRegion)region
 {
-  if (region) {
-    MKCoordinateRegion coordinateRegion = self.region;
-    coordinateRegion.center.latitude = [RCTConvert double:region[@"latitude"]];
-    coordinateRegion.center.longitude = [RCTConvert double:region[@"longitude"]];
-
-    if ([region[@"latitudeDelta"] isKindOfClass:[NSNumber class]]) {
-      coordinateRegion.span.latitudeDelta = [region[@"latitudeDelta"] doubleValue];
-    }
-    if ([region[@"longitudeDelta"] isKindOfClass:[NSNumber class]]) {
-      coordinateRegion.span.longitudeDelta = [region[@"longitudeDelta"] doubleValue];
-    }
-
-    [self setRegion:coordinateRegion animated:YES];
-  }
-}
-
-- (NSDictionary *)JSONRegion
-{
-  MKCoordinateRegion region = self.region;
+  // If location is invalid, abort
   if (!CLLocationCoordinate2DIsValid(region.center)) {
-    return nil;
+    return;
   }
-  return @{
-    @"latitude": @(FLUSH_NAN(region.center.latitude)),
-    @"longitude": @(FLUSH_NAN(region.center.longitude)),
-    @"latitudeDelta": @(FLUSH_NAN(region.span.latitudeDelta)),
-    @"longitudeDelta": @(FLUSH_NAN(region.span.longitudeDelta)),
-  };
+
+  // If new span values are nil, use old values instead
+  if (!region.span.latitudeDelta) {
+    region.span.latitudeDelta = self.region.span.latitudeDelta;
+  }
+  if (!region.span.longitudeDelta) {
+    region.span.longitudeDelta = self.region.span.longitudeDelta;
+  }
+
+  // Animate to new position
+  [super setRegion:region animated:YES];
 }
 
 @end

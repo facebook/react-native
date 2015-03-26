@@ -19,12 +19,11 @@
   return [[RCTNavItem alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(title)
-RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle);
-RCT_EXPORT_VIEW_PROPERTY(backButtonTitle);
-RCT_EXPORT_VIEW_PROPERTY(tintColor);
-RCT_EXPORT_VIEW_PROPERTY(barTintColor);
-RCT_EXPORT_VIEW_PROPERTY(titleTextColor);
+RCT_EXPORT_VIEW_PROPERTY(title, NSString)
+RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString);
+RCT_EXPORT_VIEW_PROPERTY(backButtonTitle, NSString);
+RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
+RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor);
+RCT_EXPORT_VIEW_PROPERTY(titleTextColor, UIColor);
 
 @end
-

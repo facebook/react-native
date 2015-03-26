@@ -19,11 +19,11 @@
   return [[RCTTabBarItem alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(selected);
-RCT_EXPORT_VIEW_PROPERTY(icon);
-RCT_REMAP_VIEW_PROPERTY(selectedIcon, barItem.selectedImage);
-RCT_REMAP_VIEW_PROPERTY(badgeValue, barItem.badgeValue);
-RCT_CUSTOM_VIEW_PROPERTY(title, RCTTabBarItem)
+RCT_EXPORT_VIEW_PROPERTY(selected, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(icon, NSString);
+RCT_REMAP_VIEW_PROPERTY(selectedIcon, barItem.selectedImage, NSString);
+RCT_REMAP_VIEW_PROPERTY(badgeValue, barItem.badgeValue, NSString);
+RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
 {
   view.barItem.title = json ? [RCTConvert NSString:json] : defaultView.barItem.title;
   view.barItem.imageInsets = [view.barItem.title length] ? UIEdgeInsetsZero : (UIEdgeInsets){6, 0, -6, 0};

@@ -17,14 +17,15 @@
 const NSInteger UNINITIALIZED_INDEX = -1;
 
 @interface RCTPicker() <UIPickerViewDataSource, UIPickerViewDelegate>
+
+@end
+
+@implementation RCTPicker
 {
   RCTEventDispatcher *_eventDispatcher;
   NSArray *_items;
   NSInteger _selectedIndex;
 }
-@end
-
-@implementation RCTPicker
 
 - (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
@@ -64,14 +65,14 @@ const NSInteger UNINITIALIZED_INDEX = -1;
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-  return [_items count];
+  return _items.count;
 }
 
 #pragma mark - UIPickerViewDelegate methods
 
 - (NSDictionary *)itemForRow:(NSInteger)row
 {
-  return (NSDictionary*)[_items objectAtIndex:row];
+  return _items[row];
 }
 
 - (id)valueForRow:(NSInteger)row

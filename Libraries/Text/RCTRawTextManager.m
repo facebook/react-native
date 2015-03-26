@@ -23,5 +23,7 @@
   return [[RCTShadowRawText alloc] init];
 }
 
+RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
+
 @end
 

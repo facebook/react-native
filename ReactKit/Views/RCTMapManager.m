@@ -14,6 +14,40 @@
 #import "RCTMap.h"
 #import "UIView+ReactKit.h"
 
+@implementation RCTConvert(CoreLocation)
+
++ (CLLocationCoordinate2D)CLLocationCoordinate2D:(id)json
+{
+  json = [self NSDictionary:json];
+  return (CLLocationCoordinate2D){
+    [self double:json[@"latitude"]],
+    [self double:json[@"longitude"]]
+  };
+}
+
+@end
+
+@implementation RCTConvert(MapKit)
+
++ (MKCoordinateSpan)MKCoordinateSpan:(id)json
+{
+  json = [self NSDictionary:json];
+  return (MKCoordinateSpan){
+    [self double:json[@"latitudeDelta"]],
+    [self double:json[@"longitudeDelta"]]
+  };
+}
+
++ (MKCoordinateRegion)MKCoordinateRegion:(id)json
+{
+  return (MKCoordinateRegion){
+    [self CLLocationCoordinate2D:json],
+    [self MKCoordinateSpan:json]
+  };
+}
+
+@end
+
 @interface RCTMapManager() <MKMapViewDelegate>
 
 @end
@@ -27,15 +61,15 @@
   return map;
 }
 
-RCT_EXPORT_VIEW_PROPERTY(showsUserLocation);
-RCT_EXPORT_VIEW_PROPERTY(zoomEnabled);
-RCT_EXPORT_VIEW_PROPERTY(rotateEnabled);
-RCT_EXPORT_VIEW_PROPERTY(pitchEnabled);
-RCT_EXPORT_VIEW_PROPERTY(scrollEnabled);
-RCT_EXPORT_VIEW_PROPERTY(maxDelta);
-RCT_EXPORT_VIEW_PROPERTY(minDelta);
-RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets);
-RCT_REMAP_VIEW_PROPERTY(region, JSONRegion)
+RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(zoomEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(rotateEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
 
 #pragma mark MKMapViewDelegate
 
@@ -112,15 +146,24 @@ RCT_REMAP_VIEW_PROPERTY(region, JSONRegion)
 
 - (void)_emitRegionChangeEvent:(RCTMap *)mapView continuous:(BOOL)continuous
 {
-  NSDictionary *region = mapView.JSONRegion;
-  if (region) {
-    NSDictionary *event = @{
-      @"target": [mapView reactTag],
-      @"continuous": @(continuous),
-      @"region": mapView.JSONRegion,
-    };
-    [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  MKCoordinateRegion region = mapView.region;
+  if (!CLLocationCoordinate2DIsValid(region.center)) {
+    return;
   }
+
+#define FLUSH_NAN(value) (isnan(value) ? 0 : value)
+
+  NSDictionary *event = @{
+    @"target": [mapView reactTag],
+    @"continuous": @(continuous),
+    @"region": @{
+      @"latitude": @(FLUSH_NAN(region.center.latitude)),
+      @"longitude": @(FLUSH_NAN(region.center.longitude)),
+      @"latitudeDelta": @(FLUSH_NAN(region.span.latitudeDelta)),
+      @"longitudeDelta": @(FLUSH_NAN(region.span.longitudeDelta)),
+    }
+  };
+  [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
 }
 
 @end

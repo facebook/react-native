@@ -683,10 +683,8 @@ static void RCTSetViewProps(NSDictionary *props, UIView *view,
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
 
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forView:withDefaultView:", key]);
-
-    // For regular views we don't attempt to set properties
-    // unless the view property has been explicitly exported.
     RCTCallPropertySetter(setter, obj, view, defaultView, manager);
+
   }];
 }
 
@@ -696,20 +694,8 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
 
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forShadowView:withDefaultView:", key]);
+    RCTCallPropertySetter(setter, obj, shadowView, defaultView, manager);
 
-    // For shadow views we call any custom setter methods by default,
-    // but if none is specified, we attempt to set property anyway.
-    if (!RCTCallPropertySetter(setter, obj, shadowView, defaultView, manager)) {
-
-      if (obj == [NSNull null]) {
-        // Copy property from default view to current
-        // Note: not just doing `[defaultView valueForKey:key]`, the
-        // key may not exist, in which case we'd get an exception.
-        RCTCopyProperty(shadowView, defaultView, key);
-      } else {
-        RCTSetProperty(shadowView, key, obj);
-      }
-    }
   }];
 
   // Update layout

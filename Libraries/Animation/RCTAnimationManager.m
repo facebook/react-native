@@ -83,7 +83,7 @@
       } else if ([obj respondsToSelector:@selector(count)]) {
         switch ([obj count]) {
           case 2:
-            if ([obj respondsToSelector:@selector(objectForKeyedSubscript:)] && obj[@"x"]) {
+            if (![obj respondsToSelector:@selector(objectForKeyedSubscript:)] || obj[@"x"]) {
               toValue = [NSValue valueWithCGPoint:[RCTConvert CGPoint:obj]];
             } else {
               toValue = [NSValue valueWithCGSize:[RCTConvert CGSize:obj]];
@@ -192,9 +192,9 @@
     UIView *view = viewRegistry[reactTag];
     for (NSString *animationKey in view.layer.animationKeys) {
       if ([animationKey hasPrefix:@"RCT"]) {
-        NSRange periodLocation = [animationKey rangeOfString:@"." options:0 range:NSMakeRange(3, animationKey.length - 3)];
+        NSRange periodLocation = [animationKey rangeOfString:@"." options:0 range:(NSRange){3, animationKey.length - 3}];
         if (periodLocation.location != NSNotFound) {
-          NSInteger integerTag = [[animationKey substringWithRange:NSMakeRange(3, periodLocation.location)] integerValue];
+          NSInteger integerTag = [[animationKey substringWithRange:(NSRange){3, periodLocation.location}] integerValue];
           if (animationTag.integerValue == integerTag) {
             [view.layer removeAnimationForKey:animationKey];
           }

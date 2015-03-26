@@ -21,10 +21,10 @@
   return [[RCTWebView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
-RCT_REMAP_VIEW_PROPERTY(url, URL);
-RCT_EXPORT_VIEW_PROPERTY(contentInset);
-RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets);
-RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler);
+RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL);
+RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
+RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, UIEdgeInsets);
+RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
 
 - (NSDictionary *)constantsToExport
 {

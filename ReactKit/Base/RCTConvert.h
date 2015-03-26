@@ -48,7 +48,12 @@
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
++ (UITextFieldViewMode)UITextFieldViewMode:(id)json;
++ (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
+
++ (UIViewContentMode)UIViewContentMode:(id)json;
++ (UIBarStyle)UIBarStyle:(id)json;
 
 + (CGFloat)CGFloat:(id)json;
 + (CGPoint)CGPoint:(id)json;
@@ -72,13 +77,11 @@
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font
-        withFamily:(id)family
-              size:(id)size
-            weight:(id)weight
-             style:(id)style;
++ (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
+              size:(id)size weight:(id)weight style:(id)style;
 
 + (NSArray *)NSStringArray:(id)json;
++ (NSArray *)NSDictionaryArray:(id)json;
 + (NSArray *)NSURLArray:(id)json;
 + (NSArray *)NSNumberArray:(id)json;
 + (NSArray *)UIColorArray:(id)json;
@@ -106,20 +109,14 @@ extern "C" {
  * applying an appropriate conversion method. If the property does not
  * exist, or the type cannot be inferred, the function will return NO.
  */
-BOOL RCTSetProperty(id target, NSString *keypath, id json);
+BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
 
 /**
  * This function attempts to copy a property from the source object to the
  * destination object using KVC. If the property does not exist, or cannot
  * be set, it will do nothing and return NO.
  */
-BOOL RCTCopyProperty(id target, id source, NSString *keypath);
-
-/**
- * This function attempts to convert a JSON value to an object that can be used
- * in KVC with the specific target and key path.
- */
-id RCTConvertValue(id target, NSString *keypath, id json);
+BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 
 #ifdef __cplusplus
 }

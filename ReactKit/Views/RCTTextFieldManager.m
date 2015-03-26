@@ -22,32 +22,28 @@
   return [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(caretHidden)
-RCT_EXPORT_VIEW_PROPERTY(autoCorrect)
-RCT_EXPORT_VIEW_PROPERTY(enabled)
-RCT_EXPORT_VIEW_PROPERTY(placeholder)
-RCT_EXPORT_VIEW_PROPERTY(text)
-RCT_EXPORT_VIEW_PROPERTY(clearButtonMode)
-RCT_EXPORT_VIEW_PROPERTY(keyboardType)
-RCT_REMAP_VIEW_PROPERTY(color, textColor)
-RCT_CUSTOM_VIEW_PROPERTY(autoCapitalize, RCTTextField)
-{
-  view.autocapitalizationType = json ? [RCTConvert UITextAutocapitalizationType:json]
-                                     : defaultView.autocapitalizationType;
-}
-RCT_CUSTOM_VIEW_PROPERTY(fontSize, RCTTextField)
+RCT_EXPORT_VIEW_PROPERTY(caretHidden, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
+RCT_EXPORT_VIEW_PROPERTY(text, NSString)
+RCT_EXPORT_VIEW_PROPERTY(clearButtonMode, UITextFieldViewMode)
+RCT_EXPORT_VIEW_PROPERTY(keyboardType, UIKeyboardType)
+RCT_REMAP_VIEW_PROPERTY(color, textColor, UIColor)
+RCT_REMAP_VIEW_PROPERTY(autoCapitalize, autocapitalizationType, UITextAutocapitalizationType)
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontWeight, RCTTextField)
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withWeight:json]; // defaults to normal
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontStyle, RCTTextField)
+RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withStyle:json]; // defaults to normal
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontFamily, RCTTextField)
+RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }

@@ -68,10 +68,10 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
  */
-@property (nonatomic, assign) CGFloat borderTop;
-@property (nonatomic, assign) CGFloat borderLeft;
-@property (nonatomic, assign) CGFloat borderBottom;
-@property (nonatomic, assign) CGFloat borderRight;
+@property (nonatomic, assign) CGFloat borderTopWidth;
+@property (nonatomic, assign) CGFloat borderLeftWidth;
+@property (nonatomic, assign) CGFloat borderBottomWidth;
+@property (nonatomic, assign) CGFloat borderRightWidth;
 
 - (void)setBorderWidth:(CGFloat)value;
 

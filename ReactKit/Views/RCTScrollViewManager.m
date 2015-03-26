@@ -22,29 +22,29 @@
   return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(alwaysBounceHorizontal)
-RCT_EXPORT_VIEW_PROPERTY(alwaysBounceVertical)
-RCT_EXPORT_VIEW_PROPERTY(bounces)
-RCT_EXPORT_VIEW_PROPERTY(bouncesZoom)
-RCT_EXPORT_VIEW_PROPERTY(canCancelContentTouches)
-RCT_EXPORT_VIEW_PROPERTY(centerContent)
-RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets)
-RCT_EXPORT_VIEW_PROPERTY(decelerationRate)
-RCT_EXPORT_VIEW_PROPERTY(directionalLockEnabled)
-RCT_EXPORT_VIEW_PROPERTY(keyboardDismissMode)
-RCT_EXPORT_VIEW_PROPERTY(maximumZoomScale)
-RCT_EXPORT_VIEW_PROPERTY(minimumZoomScale)
-RCT_EXPORT_VIEW_PROPERTY(pagingEnabled)
-RCT_EXPORT_VIEW_PROPERTY(scrollEnabled)
-RCT_EXPORT_VIEW_PROPERTY(scrollsToTop)
-RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator)
-RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator)
-RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices);
-RCT_EXPORT_VIEW_PROPERTY(throttleScrollCallbackMS);
-RCT_EXPORT_VIEW_PROPERTY(zoomScale);
-RCT_EXPORT_VIEW_PROPERTY(contentInset);
-RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets);
-RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset);
+RCT_EXPORT_VIEW_PROPERTY(alwaysBounceHorizontal, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(alwaysBounceVertical, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(bounces, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(bouncesZoom, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(canCancelContentTouches, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(centerContent, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(decelerationRate, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(directionalLockEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode)
+RCT_EXPORT_VIEW_PROPERTY(maximumZoomScale, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(minimumZoomScale, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(pagingEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(scrollsToTop, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSNumberArray);
+RCT_EXPORT_VIEW_PROPERTY(throttleScrollCallbackMS, double);
+RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat);
+RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
+RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets);
+RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint);
 
 - (NSDictionary *)constantsToExport
 {
