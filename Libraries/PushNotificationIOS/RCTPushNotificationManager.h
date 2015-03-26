@@ -17,6 +17,5 @@
 
 + (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 + (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification;
-+ (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
 
 @end

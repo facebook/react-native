@@ -37,8 +37,9 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
  * array of pre-initialized module instances if they require additional init
  * parameters or configuration.
  */
-- (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)executor
-                  moduleProvider:(RCTBridgeModuleProviderBlock)block NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBundlePath:(NSString *)bundlepath
+                    moduleProvider:(RCTBridgeModuleProviderBlock)block
+                     launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 /**
  * This method is used to call functions in the JavaScript application context.
@@ -79,6 +80,9 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
  * TODO (#5906496): should log function be exposed here, or could it be a module?
  */
 + (void)log:(NSArray *)objects level:(NSString *)level;
+
+@property (nonatomic, copy, readonly) NSDictionary *launchOptions;
+
 
 /**
  * Method to check that a valid executor exists with which to log

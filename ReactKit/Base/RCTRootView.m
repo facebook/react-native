@@ -25,6 +25,16 @@
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 
+/**
+ * HACK(t6568049) This should be removed soon, hiding to prevent people from
+ * relying on it
+ */
+@interface RCTBridge (RCTRootView)
+
+- (void)setJavaScriptExecutor:(id<RCTJavaScriptExecutor>)executor;
+
+@end
+
 @implementation RCTRootView
 {
   RCTDevMenu *_devMenu;
@@ -32,6 +42,7 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
   RCTTouchHandler *_touchHandler;
   id<RCTJavaScriptExecutor> _executor;
   BOOL _registered;
+  NSDictionary *_launchOptions;
 }
 
 static Class _globalExecutorClass;
@@ -63,19 +74,35 @@ static Class _globalExecutorClass;
 
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                    launchOptions:(NSDictionary *)launchOptions
 {
-  if ((self = [super initWithCoder:aDecoder])) {
+  if ((self = [super init])) {
+    RCTAssert(bundleURL, @"A bundleURL is required to create an RCTRootView");
+    RCTAssert(moduleName, @"A bundleURL is required to create an RCTRootView");
+    _moduleName = moduleName;
+    _launchOptions = launchOptions;
     [self setUp];
+    [self setScriptURL:bundleURL];
   }
   return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
+  /**
+   * HACK(t6568049) Private constructor for testing purposes
+   */
+- (instancetype)_initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                    launchOptions:(NSDictionary *)launchOptions
+                    moduleProvider:(RCTBridgeModuleProviderBlock)moduleProvider
 {
-  if ((self = [super initWithFrame:frame])) {
-    self.backgroundColor = [UIColor whiteColor];
+  if ((self = [super init])) {
+    _moduleProvider = moduleProvider;
+    _moduleName = moduleName;
+    _launchOptions = launchOptions;
     [self setUp];
+    [self setScriptURL:bundleURL];
   }
   return self;
 }
@@ -89,6 +116,7 @@ static Class _globalExecutorClass;
 #ifdef DEBUG
   self.enableDevMenu = YES;
 #endif
+  self.backgroundColor = [UIColor whiteColor];
   rootViewTag += 10;
 
   // Add reload observer
@@ -195,7 +223,16 @@ static Class _globalExecutorClass;
 
   // Choose local executor if specified, followed by global, followed by default
   _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
-  _bridge = [[RCTBridge alloc] initWithExecutor:_executor moduleProvider:_moduleProvider];
+
+  /**
+   * HACK(t6568049) Most of the properties passed into the bridge are not used
+   * right now but it'll be changed soon so it's here for convenience.
+   */
+  _bridge = [[RCTBridge alloc] initWithBundlePath:_scriptURL.absoluteString
+                                   moduleProvider:_moduleProvider
+                                    launchOptions:_launchOptions];
+  [_bridge setJavaScriptExecutor:_executor];
+
   _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
   [self addGestureRecognizer:_touchHandler];
 

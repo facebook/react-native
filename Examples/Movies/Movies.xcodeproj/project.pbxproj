@@ -13,6 +13,7 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		140D9B661AC36C42004F25EE /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14312D241AC3654D00CDC950 /* libRCTLinking.a */; };
 		58C5726B1AA6239E00CDF9C8 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5725B1AA6236500CDF9C8 /* libRCTText.a */; };
 		58C5726C1AA623A200CDF9C8 /* libReactKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C572681AA6236600CDF9C8 /* libReactKit.a */; };
 /* End PBXBuildFile section */
@@ -31,6 +32,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 58B5115D1A9E6B3D00147676;
 			remoteInfo = RCTImage;
+		};
+		14312D231AC3654D00CDC950 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTLinking;
 		};
 		58C5725A1AA6236500CDF9C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -58,6 +66,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Movies/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Movies/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Movies/main.m; sourceTree = "<group>"; };
+		14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		587650F61A9EB120008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = SOURCE_ROOT; };
 		587650F91A9EB120008B8F17 /* ReactKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactKit.xcodeproj; path = ../../ReactKit/ReactKit.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -67,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				140D9B661AC36C42004F25EE /* libRCTLinking.a in Frameworks */,
 				1341801E1AA91750003F314A /* libRCTNetwork.a in Frameworks */,
 				13442C061AA90EA00037E5B0 /* libRCTImage.a in Frameworks */,
 				58C5726B1AA6239E00CDF9C8 /* libRCTText.a in Frameworks */,
@@ -106,9 +116,18 @@
 			name = Movies;
 			sourceTree = "<group>";
 		};
+		14312D1F1AC3654D00CDC950 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				14312D241AC3654D00CDC950 /* libRCTLinking.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		58C571FC1AA6124500CDF9C8 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */,
 				134180151AA91740003F314A /* RCTNetwork.xcodeproj */,
 				13442C001AA90E7D0037E5B0 /* RCTImage.xcodeproj */,
 				587650F61A9EB120008B8F17 /* RCTText.xcodeproj */,
@@ -196,6 +215,10 @@
 					ProjectRef = 13442C001AA90E7D0037E5B0 /* RCTImage.xcodeproj */;
 				},
 				{
+					ProductGroup = 14312D1F1AC3654D00CDC950 /* Products */;
+					ProjectRef = 14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */;
+				},
+				{
 					ProductGroup = 134180161AA91740003F314A /* Products */;
 					ProjectRef = 134180151AA91740003F314A /* RCTNetwork.xcodeproj */;
 				},
@@ -228,6 +251,13 @@
 			fileType = archive.ar;
 			path = libRCTImage.a;
 			remoteRef = 13442C041AA90E7D0037E5B0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		14312D241AC3654D00CDC950 /* libRCTLinking.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTLinking.a;
+			remoteRef = 14312D231AC3654D00CDC950 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		58C5725B1AA6236500CDF9C8 /* libRCTText.a */ = {
@@ -294,12 +324,10 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Movies/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/nicklockwood/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/Network/build/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Movies;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Libraries/**";
 			};
 			name = Debug;
 		};
@@ -314,12 +342,10 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Movies/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/nicklockwood/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/Network/build/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Movies;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Libraries/**";
 			};
 			name = Release;
 		};
