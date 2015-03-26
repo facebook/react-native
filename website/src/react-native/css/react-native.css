@@ -235,7 +235,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   color: #fafafa;
   position: fixed;
   top: 0;
-  height: 50px;
+  min-height: 50px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   width: 100%;
   z-index: 100;
