@@ -52,15 +52,15 @@ module.exports = React.createClass({
 });`}
           </Prism>
 
-          <h2>Asynchronous</h2>
+          <h2>Asynchronous Execution</h2>
           <p>
-            All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug JS while running the app in the full app environment, in the sim or on a real device.
+            All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.
           </p>
           <img src="/react-native/img/chrome_breakpoint.png" width="800" height="606" />
-          <h2>Touch Handling</h2>
 
+          <h2>Touch Handling</h2>
           <p>
-            iOS has a very powerful system called the Responder Chain to negotiate touches in complex view hierarchies which does not have a universal analog on the web. React Native implements a similar responder system and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configutation.
+            iOS has a very powerful system called the Responder Chain to negotiate touches in complex view hierarchies which does not have a universal analog on the web. React Native implements a similar responder system and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configuration.
           </p>
           <Prism>
 {`var React = require('react-native');
@@ -80,7 +80,7 @@ module.exports = React.createClass({
 
           <h2>Flexbox and Styling</h2>
           <p>
-            Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it easy to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web syles, such as fontWeight, and the StyleSheet abstraction makes it easy to declare all your styles and layout right along with the components that use them and used inline.
+            Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web syles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
           </p>
           <Prism>
 {`var React = require('react-native');
@@ -116,16 +116,14 @@ var styles = StyleSheet.create({
 
           <h2>Polyfills</h2>
           <p>
-            React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
+            React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, window.requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
           </p>
           <Prism>
 {`var React = require('react-native');
 var { Text } = React;
 module.exports = React.createClass({
   getInitialState: function() {
-    return {
-      position: 'unknown',
-    };
+    return { position: 'unknown' };
   },
   componentDidMount: function() {
     navigator.geolocation.getCurrentPosition(
@@ -143,6 +141,78 @@ module.exports = React.createClass({
 });`}
           </Prism>
 
+          <h2>Extensibility</h2>
+          <p>
+            It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily expended with custom native views and modules - that means you can reuse anything you{"'"}ve already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the RCTBridgeModule protocol, and add RCT_EXPORT to the function you want to make available in JavaScript.
+          </p>
+          <Prism>
+{`// Objective-C
+
+#import "RCTBridgeModule.h"
+
+@interface MyCustomModule : NSObject <RCTBridgeModule>
+@end
+
+@implementation MyCustomModule
+
+- (void)processString:(NSString *)input callback:(RCTResponseSenderBlock)callback
+{
+  RCT_EXPORT(); // available as NativeModules.MyCustomModule.processString
+  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"];]]);
+}
+@end`}
+          </Prism>
+          <Prism>
+{`// JavaScript
+
+var React = require('react-native');
+var { NativeModules, Text } = React;
+
+var Message = React.createClass({
+  render: function() {
+    getInitialState() {
+      return { text: 'Goodbye World.' };
+    },
+    componentDidMount() {
+      NativeModules.MyCustomModule.processString(this.state.text, (text) => {
+        this.setState({text});
+      });
+    },
+    return (
+      <Text>{this.state.text}</Text>
+    );
+  },
+});`}
+          </Prism>
+          <p>
+            Custom iOS views can be exposed by subclassing RCTViewManager, implementing a -(UIView *)view method, and exporting properties with the RCT_EXPORT_VIEW_PROPERTY macro.  Then a simple JavaScript file connects the dots.
+          </p>
+          <Prism>
+{`// Objective-C
+
+#import "RCTViewManager.h"
+
+@interface MyCustomViewManager : RCTViewManager
+@end
+
+@implementation MyCustomViewManager
+
+- (UIView *)view
+{
+  return [[MyCustomView alloc] init];
+}
+
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+@end`}
+          </Prism>
+          <Prism>
+{`// JavaScript
+
+module.exports = createReactIOSNativeComponentClass({
+  validAttributes: { myCustomProperty: true },
+  uiViewClassName: 'MyCustomView',
+});`}
+          </Prism>
           </div>
           <section className="home-bottom-section">
             <div className="buttons-unit">
