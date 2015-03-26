@@ -16,7 +16,7 @@
 #import "RCTShadowText.h"
 #import "RCTSparseArray.h"
 #import "RCTText.h"
-#import "UIView+ReactKit.h"
+#import "UIView+React.h"
 
 @implementation RCTTextManager
 

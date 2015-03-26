@@ -1,0 +1,145 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+#import "RCTTabBar.h"
+
+#import "RCTEventDispatcher.h"
+#import "RCTLog.h"
+#import "RCTTabBarItem.h"
+#import "RCTUtils.h"
+#import "RCTView.h"
+#import "RCTViewControllerProtocol.h"
+#import "RCTWrapperViewController.h"
+#import "UIView+React.h"
+
+@interface RKCustomTabBarController : UITabBarController <RCTViewControllerProtocol>
+
+@end
+
+@implementation RKCustomTabBarController
+
+@synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
+@synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
+
+- (void)viewWillLayoutSubviews
+{
+  [super viewWillLayoutSubviews];
+  _currentTopLayoutGuide = self.topLayoutGuide;
+  _currentBottomLayoutGuide = self.bottomLayoutGuide;
+}
+
+@end
+
+@interface RCTTabBar() <UITabBarControllerDelegate>
+
+@end
+
+@implementation RCTTabBar
+{
+  BOOL _tabsChanged;
+  RCTEventDispatcher *_eventDispatcher;
+  UITabBarController *_tabController;
+  NSMutableArray *_tabViews;
+}
+
+- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+{
+  if ((self = [super initWithFrame:CGRectZero])) {
+    _eventDispatcher = eventDispatcher;
+    _tabViews = [[NSMutableArray alloc] init];
+    _tabController = [[RKCustomTabBarController alloc] init];
+    _tabController.delegate = self;
+    [self addSubview:_tabController.view];
+  }
+  return self;
+}
+
+- (UIViewController *)backingViewController
+{
+  return _tabController;
+}
+
+- (void)dealloc
+{
+  _tabController.delegate = nil;
+}
+
+- (NSArray *)reactSubviews
+{
+  return _tabViews;
+}
+
+- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+{
+  if (![view isKindOfClass:[RCTTabBarItem class]]) {
+    RCTLogError(@"subview should be of type RCTTabBarItem");
+    return;
+  }
+  [_tabViews insertObject:view atIndex:atIndex];
+  _tabsChanged = YES;
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  if (_tabViews.count == 0) {
+    RCTLogError(@"should have at least one view to remove a subview");
+    return;
+  }
+  [_tabViews removeObject:subview];
+  _tabsChanged = YES;
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  _tabController.view.frame = self.bounds;
+}
+
+- (void)reactBridgeDidFinishTransaction
+{
+  // we can't hook up the VC hierarchy in 'init' because the subviews aren't
+  // hooked up yet, so we do it on demand here whenever a transaction has finished
+  [self addControllerToClosestParent:_tabController];
+
+  if (_tabsChanged) {
+
+    NSMutableArray *viewControllers = [NSMutableArray array];
+    for (RCTTabBarItem *tab in [self reactSubviews]) {
+      UIViewController *controller = tab.backingViewController;
+      if (!controller) {
+        controller = [[RCTWrapperViewController alloc] initWithContentView:tab
+                                                           eventDispatcher:_eventDispatcher];
+      }
+      [viewControllers addObject:controller];
+    }
+
+    _tabController.viewControllers = viewControllers;
+    _tabsChanged = NO;
+  }
+
+  [[self reactSubviews] enumerateObjectsUsingBlock:^(RCTTabBarItem *tab, NSUInteger index, BOOL *stop) {
+    UIViewController *controller = _tabController.viewControllers[index];
+    controller.tabBarItem = tab.barItem;
+    if (tab.selected) {
+      _tabController.selectedViewController = controller;
+    }
+  }];
+}
+
+#pragma mark - UITabBarControllerDelegate
+
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
+{
+  NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
+  RCTTabBarItem *tab = [self reactSubviews][index];
+  [_eventDispatcher sendInputEventWithName:@"topTap" body:@{@"target": tab.reactTag}];
+  return NO;
+}
+
+@end

@@ -22,7 +22,7 @@
   },
   "main": "Libraries/react-native/react-native.js",
   "files": [
-    "ReactKit",
+    "React",
     "Examples/SampleApp",
     "Libraries",
     "packager",

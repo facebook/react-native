@@ -205,12 +205,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/nicklockwood/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/ReactKit/build/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTNetwork;
 				SKIP_INSTALL = YES;
@@ -223,12 +220,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/nicklockwood/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/ReactKit/build/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTNetwork;
 				SKIP_INSTALL = YES;
