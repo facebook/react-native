@@ -10,6 +10,7 @@ With React Native, you can use the standard platform components such as UITabBar
 ```javascript
 var React = require('react-native');
 var { TabBarIOS, NavigatorIOS } = React;
+
 var App = React.createClass({
   render: function() {
     return (
@@ -37,6 +38,7 @@ iOS has a very powerful system called the Responder Chain to negotiate touches i
 ```javascript
 var React = require('react-native');
 var { ScrollView, TouchableHighlight, Text } = React;
+
 var TouchDemo = React.createClass({
   render: function() {
     return (
@@ -57,6 +59,7 @@ Laying out views should be easy, which is why we brought the flexbox layout mode
 ```javascript
 var React = require('react-native');
 var { Image, StyleSheet, Text, View } = React;
+
 var ReactNative = React.createClass({
   render: function() {
     return (
@@ -93,6 +96,7 @@ React Native is focused on changing the way view code is written.  For the rest,
 ```javascript
 var React = require('react-native');
 var { Text } = React;
+
 var GeoInfo = React.createClass({
   getInitialState: function() {
     return { position: 'unknown' };
@@ -119,9 +123,12 @@ It is certainly possible to create a great app using React Native without writin
 
 ```objc
 // Objective-C
+
 #import "RCTBridgeModule.h"
+
 @interface MyCustomModule : NSObject <RCTBridgeModule>
 @end
+
 @implementation MyCustomModule
 - (void)processString:(NSString *)input callback:(RCTResponseSenderBlock)callback
 {
@@ -133,8 +140,10 @@ It is certainly possible to create a great app using React Native without writin
 
 ```javascript
 // JavaScript
+
 var React = require('react-native');
 var { NativeModules, Text } = React;
+
 var Message = React.createClass({
   render: function() {
     getInitialState() {
@@ -156,20 +165,26 @@ Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a 
 
 ```objc
 // Objective-C
+
 #import "RCTViewManager.h"
+
 @interface MyCustomViewManager : RCTViewManager
 @end
+
 @implementation MyCustomViewManager
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];
 }
+
 RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+
 @end`}
 ```
 
 ```javascript
 // JavaScript
+
 module.exports = createReactIOSNativeComponentClass({
   validAttributes: { myCustomProperty: true },
   uiViewClassName: 'MyCustomView',
