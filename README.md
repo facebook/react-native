@@ -154,7 +154,7 @@ var Message = React.createClass({
 
 Custom iOS views can be exposed by subclassing RCTViewManager, implementing a -(UIView *)view method, and exporting properties with the RCT_EXPORT_VIEW_PROPERTY macro.  Then a simple JavaScript file connects the dots.
 
-```javascript
+```objc
 // Objective-C
 #import "RCTViewManager.h"
 @interface MyCustomViewManager : RCTViewManager
@@ -166,12 +166,12 @@ Custom iOS views can be exposed by subclassing RCTViewManager, implementing a -(
 }
 RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
 @end`}
-          </Prism>
-          <Prism>
-{`// JavaScript
+```
+
+```javascript
 module.exports = createReactIOSNativeComponentClass({
   validAttributes: { myCustomProperty: true },
   uiViewClassName: 'MyCustomView',
-});`}
+});
 ```
 
