@@ -8,7 +8,7 @@
  */
 
 /*jslint node: true */
-"use strict";
+'use strict';
 
 var esprima = require('esprima-fb');
 var Syntax = esprima.Syntax;
@@ -278,6 +278,6 @@ function findExportDefinition(ast) {
   }
 
   return null;
-};
+}
 
 module.exports = findExportDefinition;

@@ -9,7 +9,7 @@
 
 /*global exports:true*/
 /*jslint node:true*/
-"use strict";
+'use strict';
 
 var util = require('util');
 
@@ -278,7 +278,7 @@ function renderParams(/*?object*/ params) /*string*/ {
     var returnParam = '\"returns\":' + '\'' + params.returns + '\'';
     formattedParams.push(returnParam);
   }
-  return "{" + formattedParams.join(',') + "}";
+  return '{' + formattedParams.join(',') + '}';
 }
 
 function getModuleName(state) {

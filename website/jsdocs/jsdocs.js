@@ -8,7 +8,7 @@
  */
 
 /*jslint node: true */
-"use strict";
+'use strict';
 
 var esprima = require('esprima-fb');
 var fs = require('fs');
@@ -17,7 +17,7 @@ var Syntax = esprima.Syntax;
 var findExportDefinition = require('./findExportDefinition');
 var genericTransform = require('./generic-function-visitor');
 var genericVisitor = genericTransform.visitorList[0];
-var traverseFlat = require('./traverseFlat')
+var traverseFlat = require('./traverseFlat');
 var parseTypehint = require('./TypeExpressionParser').parse;
 
 // Don't save object properties source code that is longer than this
@@ -76,7 +76,7 @@ function stripStaticUpstreamWarning(docblock) {
     return docblock;
   }
   // Esprima strips out the starting and ending tokens, so add them back
-  docblock = "/*" + docblock + "*/\n";
+  docblock = '/*' + docblock + '*/\n';
   return docblock;
 }
 
@@ -104,13 +104,13 @@ function getFileDocBlock(commentsForFile) {
   var docblock;
   commentsForFile.some(function(comment, i) {
     if (comment.loc.start.line === 1) {
-      var lines = comment.value.split("\n");
+      var lines = comment.value.split('\n');
       var filteredLines = lines.filter(function(line) {
         var hasCopyright = !!line.match(/^\s*\*\s+Copyright/);
         var hasProvides = !!line.match(/^\s*\*\s+@provides/);
         return !hasCopyright && !hasProvides;
       });
-      docblock = filteredLines.join("\n");
+      docblock = filteredLines.join('\n');
       return true;
     }
   });
@@ -149,7 +149,7 @@ function getDocBlock(node, commentsForFile, linesForFile) {
           var lineComment = commentsForFile[ii];
           if (lineComment.loc.end.line === line) {
             docblock = '//' + lineComment.value +
-              (docblock ? "\n" + docblock : "");
+              (docblock ? '\n' + docblock : '');
             line--;
           } else {
             break;
@@ -463,7 +463,7 @@ function getRequireData(node) {
  * @return {?object} data
  */
 function parseSource(source) {
-  var lines = source.split("\n");
+  var lines = source.split('\n');
   var ast = esprima.parse(source, {
     loc: true,
     comment: true,
