@@ -1,6 +1,6 @@
 {
   "name": "react-native-cli",
-  "version": "0.0.0",
+  "version": "0.1.3",
   "description": "The ReactNative cli tools",
   "main": "index.js",
   "bin": {
