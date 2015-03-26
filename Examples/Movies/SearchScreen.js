@@ -12,9 +12,8 @@
 
 var React = require('react-native');
 var {
-  ListView,
-  ScrollView,
   ActivityIndicatorIOS,
+  ListView,
   StyleSheet,
   Text,
   TextInput,

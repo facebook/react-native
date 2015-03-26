@@ -15,7 +15,6 @@ var {
   AppRegistry,
   ListView,
   PixelRatio,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
