@@ -1130,6 +1130,12 @@ static void RCTMeasureLayout(RCTShadowView *view,
         @"captured": @"onNavigationCompleteCapture"
       }
     },
+    @"topNavLeftButtonTap": @{
+      @"phasedRegistrationNames": @{
+        @"bubbled": @"onNavLeftButtonTap",
+        @"captured": @"onNavLefttButtonTapCapture"
+      }
+    },
     @"topNavRightButtonTap": @{
       @"phasedRegistrationNames": @{
         @"bubbled": @"onNavRightButtonTap",
