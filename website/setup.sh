@@ -8,7 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 
 cd ../../
-git clone git@github.com:facebook/react-native.git react-native-gh-pages
+git clone git://github.com/facebook/react-native.git react-native-gh-pages
 cd react-native-gh-pages
 git checkout origin/gh-pages
 git checkout -b gh-pages
