@@ -109,7 +109,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
     // run the run loop
     while (kCFRunLoopRunStopped != CFRunLoopRunInMode(kCFRunLoopDefaultMode, [[NSDate distantFuture] timeIntervalSinceReferenceDate], NO)) {
-      RCTAssert(NO, @"not reached assertion"); // runloop spun.    that's bad.
+      RCTAssert(NO, @"not reached assertion"); // runloop spun. that's bad.
     }
   }
 }

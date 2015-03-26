@@ -153,7 +153,6 @@ static css_dim_t RCTMeasure(void *context, float width)
     }
   }];
 
-  // TODO: umm, these can't be null, so we're mapping left to natural - is that right?
   self.textAlign = _textAlign ?: NSTextAlignmentNatural;
   self.writingDirection = _writingDirection ?: NSWritingDirectionNatural;
 

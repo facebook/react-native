@@ -12,8 +12,6 @@
 #import "RCTCache.h"
 #import "RCTUtils.h"
 
-// TODO: something a bit more sophisticated
-
 typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *error);
 
 @implementation RCTImageDownloader
