@@ -93,9 +93,24 @@
         }
       };
     } else {
-      share.completionHandler = ^(NSString *activityType, BOOL completed) {
-        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-      };
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+
+      if (![UIActivityViewController instancesRespondToSelector:@selector(completionWithItemsHandler)]) {
+        // Legacy iOS 7 implementation
+        share.completionHandler = ^(NSString *activityType, BOOL completed) {
+          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+        };
+      } else
+
+#endif
+
+      {
+        // iOS 8 version
+        share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+        };
+      }
     }
     [ctrl presentViewController:share animated:YES completion:nil];
   });

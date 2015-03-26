@@ -23,9 +23,9 @@
   return [[RCTStaticImage alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(capInsets)
-RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
-RCT_CUSTOM_VIEW_PROPERTY(src, RCTStaticImage)
+RCT_EXPORT_VIEW_PROPERTY(capInsets, UIEdgeInsets)
+RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
+RCT_CUSTOM_VIEW_PROPERTY(src, NSURL, RCTStaticImage)
 {
   if (json) {
     if ([[[json description] pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
@@ -37,7 +37,7 @@ RCT_CUSTOM_VIEW_PROPERTY(src, RCTStaticImage)
     view.image = defaultView.image;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage)
+RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTStaticImage)
 {
   if (json) {
     view.renderingMode = UIImageRenderingModeAlwaysTemplate;
@@ -47,15 +47,14 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, RCTStaticImage)
     view.tintColor = defaultView.tintColor;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(imageTag, RCTStaticImage)
+RCT_CUSTOM_VIEW_PROPERTY(imageTag, NSString, RCTStaticImage)
 {
   if (json) {
     [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] callback:^(NSError *error, UIImage *image) {
       if (error) {
         RCTLogWarn(@"%@", error.localizedDescription);
-      } else {
-        view.image = image;
       }
+      view.image = image;
     }];
   } else {
     view.image = defaultView.image;

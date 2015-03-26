@@ -14,8 +14,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140D9B661AC36C42004F25EE /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14312D241AC3654D00CDC950 /* libRCTLinking.a */; };
+		14A2D4421AC3E43800CC738A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14A2D4411AC3E41A00CC738A /* libReact.a */; };
 		58C5726B1AA6239E00CDF9C8 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5725B1AA6236500CDF9C8 /* libRCTText.a */; };
-		58C5726C1AA623A200CDF9C8 /* libReactKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C572681AA6236600CDF9C8 /* libReactKit.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,19 +40,19 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTLinking;
 		};
+		14A2D4401AC3E41A00CC738A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14A2D43C1AC3E41A00CC738A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
+			remoteInfo = React;
+		};
 		58C5725A1AA6236500CDF9C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 587650F61A9EB120008B8F17 /* RCTText.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
-		};
-		58C572671AA6236600CDF9C8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 587650F91A9EB120008B8F17 /* ReactKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
-			remoteInfo = ReactKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -67,8 +67,8 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Movies/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Movies/main.m; sourceTree = "<group>"; };
 		14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
+		14A2D43C1AC3E41A00CC738A /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		587650F61A9EB120008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = SOURCE_ROOT; };
-		587650F91A9EB120008B8F17 /* ReactKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactKit.xcodeproj; path = ../../ReactKit/ReactKit.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,11 +76,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14A2D4421AC3E43800CC738A /* libReact.a in Frameworks */,
 				140D9B661AC36C42004F25EE /* libRCTLinking.a in Frameworks */,
 				1341801E1AA91750003F314A /* libRCTNetwork.a in Frameworks */,
 				13442C061AA90EA00037E5B0 /* libRCTImage.a in Frameworks */,
 				58C5726B1AA6239E00CDF9C8 /* libRCTText.a in Frameworks */,
-				58C5726C1AA623A200CDF9C8 /* libReactKit.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,14 +124,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		14A2D43D1AC3E41A00CC738A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				14A2D4411AC3E41A00CC738A /* libReact.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		58C571FC1AA6124500CDF9C8 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				14A2D43C1AC3E41A00CC738A /* React.xcodeproj */,
 				14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */,
 				134180151AA91740003F314A /* RCTNetwork.xcodeproj */,
 				13442C001AA90E7D0037E5B0 /* RCTImage.xcodeproj */,
 				587650F61A9EB120008B8F17 /* RCTText.xcodeproj */,
-				587650F91A9EB120008B8F17 /* ReactKit.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -140,14 +148,6 @@
 			isa = PBXGroup;
 			children = (
 				58C5725B1AA6236500CDF9C8 /* libRCTText.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		58C5725C1AA6236500CDF9C8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				58C572681AA6236600CDF9C8 /* libReactKit.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -227,8 +227,8 @@
 					ProjectRef = 587650F61A9EB120008B8F17 /* RCTText.xcodeproj */;
 				},
 				{
-					ProductGroup = 58C5725C1AA6236500CDF9C8 /* Products */;
-					ProjectRef = 587650F91A9EB120008B8F17 /* ReactKit.xcodeproj */;
+					ProductGroup = 14A2D43D1AC3E41A00CC738A /* Products */;
+					ProjectRef = 14A2D43C1AC3E41A00CC738A /* React.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -260,18 +260,18 @@
 			remoteRef = 14312D231AC3654D00CDC950 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		14A2D4411AC3E41A00CC738A /* libReact.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libReact.a;
+			remoteRef = 14A2D4401AC3E41A00CC738A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		58C5725B1AA6236500CDF9C8 /* libRCTText.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 58C5725A1AA6236500CDF9C8 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		58C572681AA6236600CDF9C8 /* libReactKit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libReactKit.a;
-			remoteRef = 58C572671AA6236600CDF9C8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -320,7 +320,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Movies/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -338,7 +338,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Movies/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -386,7 +386,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -426,7 +426,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

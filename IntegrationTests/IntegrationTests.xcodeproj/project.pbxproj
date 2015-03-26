@@ -12,7 +12,7 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		580C37601AB0F6180015E709 /* libReactKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C37461AB0F5320015E709 /* libReactKit.a */; };
+		1405E9C21AC3E65600F5BC37 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1405E9C11AC3E63C00F5BC37 /* libReact.a */; };
 		580C37611AB0F61E0015E709 /* libRCTAdSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C374B1AB0F54A0015E709 /* libRCTAdSupport.a */; };
 		580C37621AB0F6260015E709 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C37501AB0F55C0015E709 /* libRCTGeolocation.a */; };
 		580C37631AB0F62C0015E709 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580C37551AB0F56E0015E709 /* libRCTImage.a */; };
@@ -22,19 +22,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1405E9C01AC3E63C00F5BC37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1405E9BC1AC3E63C00F5BC37 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
+			remoteInfo = React;
+		};
 		58005BCB1ABA44F10062E044 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = IntegrationTests;
-		};
-		580C37451AB0F5320015E709 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 13417FFA1AA91531003F314A /* ReactKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
-			remoteInfo = ReactKit;
 		};
 		580C374A1AB0F54A0015E709 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -86,7 +86,6 @@
 		004D28A21AAF61C70097A701 /* IntegrationTestsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IntegrationTestsTests.m; sourceTree = "<group>"; };
 		13417FE31AA91428003F314A /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = ../Libraries/Image/RCTImage.xcodeproj; sourceTree = "<group>"; };
 		13417FEA1AA914B8003F314A /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
-		13417FFA1AA91531003F314A /* ReactKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactKit.xcodeproj; path = ../ReactKit/ReactKit.xcodeproj; sourceTree = "<group>"; };
 		134180261AA91779003F314A /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
 		134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAdSupport.xcodeproj; path = ../Libraries/AdSupport/RCTAdSupport.xcodeproj; sourceTree = "<group>"; };
 		134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = ../Libraries/GeoLocation/RCTGeolocation.xcodeproj; sourceTree = "<group>"; };
@@ -97,6 +96,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1405E9BC1AC3E63C00F5BC37 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../React/React.xcodeproj; sourceTree = "<group>"; };
 		580C37891AB104AF0015E709 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -112,7 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				580C37601AB0F6180015E709 /* libReactKit.a in Frameworks */,
+				1405E9C21AC3E65600F5BC37 /* libReact.a in Frameworks */,
 				580C37611AB0F61E0015E709 /* libRCTAdSupport.a in Frameworks */,
 				580C37621AB0F6260015E709 /* libRCTGeolocation.a in Frameworks */,
 				580C37631AB0F62C0015E709 /* libRCTImage.a in Frameworks */,
@@ -145,7 +145,7 @@
 		1316A21D1AA397F400C0188E /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				13417FFA1AA91531003F314A /* ReactKit.xcodeproj */,
+				1405E9BC1AC3E63C00F5BC37 /* React.xcodeproj */,
 				134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */,
 				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
 				13417FE31AA91428003F314A /* RCTImage.xcodeproj */,
@@ -169,10 +169,10 @@
 			name = IntegrationTests;
 			sourceTree = "<group>";
 		};
-		580C37421AB0F5320015E709 /* Products */ = {
+		1405E9BD1AC3E63C00F5BC37 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				580C37461AB0F5320015E709 /* libReactKit.a */,
+				1405E9C11AC3E63C00F5BC37 /* libReact.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -334,8 +334,8 @@
 					ProjectRef = 13417FEA1AA914B8003F314A /* RCTText.xcodeproj */;
 				},
 				{
-					ProductGroup = 580C37421AB0F5320015E709 /* Products */;
-					ProjectRef = 13417FFA1AA91531003F314A /* ReactKit.xcodeproj */;
+					ProductGroup = 1405E9BD1AC3E63C00F5BC37 /* Products */;
+					ProjectRef = 1405E9BC1AC3E63C00F5BC37 /* React.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -347,11 +347,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		580C37461AB0F5320015E709 /* libReactKit.a */ = {
+		1405E9C11AC3E63C00F5BC37 /* libReact.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libReactKit.a;
-			remoteRef = 580C37451AB0F5320015E709 /* PBXContainerItemProxy */;
+			path = libReact.a;
+			remoteRef = 1405E9C01AC3E63C00F5BC37 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		580C374B1AB0F54A0015E709 /* libRCTAdSupport.a */ = {
@@ -471,6 +471,11 @@
 					"FB_REFERENCE_IMAGE_DIR=\"\\\"$(SOURCE_ROOT)/$(PROJECT_NAME)Tests/ReferenceImages\\\"\"",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../React/**",
+				);
 				INFOPLIST_FILE = IntegrationTestsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -488,6 +493,11 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../React/**",
+				);
 				INFOPLIST_FILE = IntegrationTestsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -503,7 +513,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../React/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -520,7 +530,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../React/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -567,7 +577,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../ReactKit/**",
+					"$(SRCROOT)/../React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -607,7 +617,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../ReactKit/**",
+					"$(SRCROOT)/../React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

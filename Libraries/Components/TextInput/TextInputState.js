@@ -37,7 +37,7 @@ var TextInputState = {
    * noop if the text field was already focused
    */
   focusTextInput: function(textFieldID: string) {
-    if (this._currentlyFocusedID != textFieldID && textFieldID != null) {
+    if (this._currentlyFocusedID !== textFieldID && textFieldID !== null) {
       this._currentlyFocusedID = textFieldID;
       RCTUIManager.focus(textFieldID);
     }
@@ -49,7 +49,7 @@ var TextInputState = {
    * noop if it wasn't focused
    */
   blurTextInput: function(textFieldID: string) {
-    if (this._currentlyFocusedID == textFieldID && textFieldID != null) {
+    if (this._currentlyFocusedID === textFieldID && textFieldID !== null) {
       this._currentlyFocusedID = null;
       RCTUIManager.blur(textFieldID);
     }

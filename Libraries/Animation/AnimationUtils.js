@@ -6,6 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * The easing functions come from the the jQuery UI project.
+ * See http://api.jqueryui.com/easings/
+ * Copyright jQuery Foundation and other contributors, https://jquery.org/
+ * Copyright (c) 2008 George McGinley Smith
+ * Copyright (c) 2001 Robert Penner
+ *
  * @providesModule AnimationUtils
  * @flow
  */

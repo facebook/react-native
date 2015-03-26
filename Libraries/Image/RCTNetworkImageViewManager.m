@@ -25,8 +25,8 @@
   return view;
 }
 
-RCT_REMAP_VIEW_PROPERTY(defaultImageSrc, defaultImage)
-RCT_REMAP_VIEW_PROPERTY(src, imageURL)
-RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode)
+RCT_REMAP_VIEW_PROPERTY(defaultImageSrc, defaultImage, UIImage)
+RCT_REMAP_VIEW_PROPERTY(src, imageURL, NSURL)
+RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
 
 @end

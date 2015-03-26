@@ -12,7 +12,7 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		58C572501AA6229900CDF9C8 /* libReactKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C572471AA6224300CDF9C8 /* libReactKit.a */; };
+		144C5F691AC3E5E300B004E7 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 144C5F681AC3E5D800B004E7 /* libReact.a */; };
 		58C572511AA6229D00CDF9C8 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5724D1AA6224400CDF9C8 /* libRCTText.a */; };
 /* End PBXBuildFile section */
 
@@ -24,12 +24,12 @@
 			remoteGlobalIDString = 58B5115D1A9E6B3D00147676;
 			remoteInfo = RCTImage;
 		};
-		58C572461AA6224300CDF9C8 /* PBXContainerItemProxy */ = {
+		144C5F671AC3E5D800B004E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */;
+			containerPortal = 144C5F631AC3E5D800B004E7 /* React.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
-			remoteInfo = ReactKit;
+			remoteInfo = React;
 		};
 		58C5724C1AA6224400CDF9C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -49,8 +49,8 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TicTacToe/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = TicTacToe/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = TicTacToe/main.m; sourceTree = "<group>"; };
+		144C5F631AC3E5D800B004E7 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
-		587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactKit.xcodeproj; path = ../../ReactKit/ReactKit.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,8 +58,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				144C5F691AC3E5E300B004E7 /* libReact.a in Frameworks */,
 				1341803E1AA91802003F314A /* libRCTImage.a in Frameworks */,
-				58C572501AA6229900CDF9C8 /* libReactKit.a in Frameworks */,
 				58C572511AA6229D00CDF9C8 /* libRCTText.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,22 +88,22 @@
 			name = TicTacToe;
 			sourceTree = "<group>";
 		};
+		144C5F641AC3E5D800B004E7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				144C5F681AC3E5D800B004E7 /* libReact.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		58C572071AA6126D00CDF9C8 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				144C5F631AC3E5D800B004E7 /* React.xcodeproj */,
 				134180381AA917ED003F314A /* RCTImage.xcodeproj */,
 				587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */,
-				587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */,
 			);
 			name = Libraries;
-			sourceTree = "<group>";
-		};
-		58C572411AA6224300CDF9C8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				58C572471AA6224300CDF9C8 /* libReactKit.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		58C572481AA6224300CDF9C8 /* Products */ = {
@@ -181,8 +181,8 @@
 					ProjectRef = 587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */;
 				},
 				{
-					ProductGroup = 58C572411AA6224300CDF9C8 /* Products */;
-					ProjectRef = 587650E31A9EB0DF008B8F17 /* ReactKit.xcodeproj */;
+					ProductGroup = 144C5F641AC3E5D800B004E7 /* Products */;
+					ProjectRef = 144C5F631AC3E5D800B004E7 /* React.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -200,11 +200,11 @@
 			remoteRef = 1341803C1AA917ED003F314A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		58C572471AA6224300CDF9C8 /* libReactKit.a */ = {
+		144C5F681AC3E5D800B004E7 /* libReact.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libReactKit.a;
-			remoteRef = 58C572461AA6224300CDF9C8 /* PBXContainerItemProxy */;
+			path = libReact.a;
+			remoteRef = 144C5F671AC3E5D800B004E7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		58C5724D1AA6224400CDF9C8 /* libRCTText.a */ = {
@@ -257,6 +257,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../React/**",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/TicTacToe/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -269,6 +274,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../React/**",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/TicTacToe/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -314,7 +324,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -354,7 +364,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../ReactKit/**",
+					"$(SRCROOT)/../../React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
