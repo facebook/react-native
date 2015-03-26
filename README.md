@@ -10,8 +10,8 @@ the community.
 
 # React Native [![Build Status](https://magnum.travis-ci.com/facebook/react-native.svg?token=L5Egb3B4dyQzH5wDijCB&branch=master)](https://magnum.travis-ci.com/facebook/react-native)
 
-Our first React Native implementation is `ReactKit`, targeting iOS.  We are also
-working on an Android implementation which we will release later.  `ReactKit`
+Our first React Native implementation is `React`, targeting iOS.  We are also
+working on an Android implementation which we will release later.  `React`
 apps are built using the [React JS](https://github.com/facebook/react) framework, and render directly to
 native UIKit elements using a fully asynchronous architecture.  There is no
 browser and no HTML. We have picked what we think is the best set of features
