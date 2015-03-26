@@ -56,7 +56,7 @@ module.exports = React.createClass({
           <p>
             All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.
           </p>
-          <img src="/react-native/img/chrome_breakpoint.png" width="800" height="606" />
+          <img src="/react-native/img/chrome_breakpoint.png" width="800" height="443" />
 
           <h2>Touch Handling</h2>
           <p>
