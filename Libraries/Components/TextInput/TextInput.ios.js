@@ -137,8 +137,16 @@ var TextInput = React.createClass({
      * Determines which keyboard to open, e.g.`numeric`.
      */
     keyboardType: PropTypes.oneOf([
+      'ascii',
       'default',
+      'email',
+      'numbers-and-punctuation',
       'numeric',
+      'pin',
+      'phone-name',
+      'search',
+      'twitter',
+      'url',
     ]),
     /**
      * If true, the text input can be multiple lines. Default value is false.

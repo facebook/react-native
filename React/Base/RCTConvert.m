@@ -116,8 +116,16 @@ RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
 }), UIScrollViewKeyboardDismissModeNone, integerValue)
 
 RCT_ENUM_CONVERTER(UIKeyboardType, (@{
-  @"numeric": @(UIKeyboardTypeDecimalPad),
+  @"ascii": @(UIKeyboardTypeASCIICapable),
   @"default": @(UIKeyboardTypeDefault),
+  @"email": @(UIKeyboardTypeEmailAddress),
+  @"numbers-and-punctuation": @(UIKeyboardTypeNumbersAndPunctuation),
+  @"numeric": @(UIKeyboardTypeDecimalPad),
+  @"pin": @(UIKeyboardTypeNumberPad),
+  @"phone-name": @(UIKeyboardTypeNamePhonePad),
+  @"search": @(UIKeyboardTypeWebSearch),
+  @"twitter": @(UIKeyboardTypeTwitter),
+  @"url": @(UIKeyboardTypeURL),
 }), UIKeyboardTypeDefault, integerValue)
 
 RCT_ENUM_CONVERTER(UIViewContentMode, (@{
