@@ -98,7 +98,7 @@ var styles = StyleSheet.create({
 });
 ```
 
-And lastly we need to apply this still to the Image component:
+And lastly we need to apply this style to the Image component:
 
 ```javascript
         <Image
@@ -218,8 +218,7 @@ We want to send off the request after the component has finished loading. compon
   },
 ```
 
-Implement our fetchData function to actually make the request and handle the response. All you need to do is call this.setState({movies: data}) because the way React works is that setState actually triggers a re-render and then the render function will notice that
-this.state.movies is no longer null.
+Implement our fetchData function to actually make the request and handle the response. All you need to do is call this.setState({movies: data}) after resolving the promise chain because the way React works is that setState actually triggers a re-render and then the render function will notice that this.state.movies is no longer null.  Note that we call done() at the end of the promise chain - always make sure to call done() or any errors thrown will get swallowed.
 
 ```javascript
   fetchData: function() {
@@ -282,7 +281,7 @@ Now press cmd+R and you should see "Loading movies..." until the response comes 
 
 Let’s now modify this application to render all of this data in a ListView, rather than just the first movie.
 
-Why is a ListView better than just rendering all of these elements or putting them in a ScrollView? Despite React being fast, rendering a possibly infinite list of elements could be slow. ListView schedules rendering of views so that you only display the ones on screen and those already rendered but off screen are removed from the hierarchy.
+Why is a ListView better than just rendering all of these elements or putting them in a ScrollView? Despite React being fast, rendering a possibly infinite list of elements could be slow. ListView schedules rendering of views so that you only display the ones on screen and those already rendered but off screen are removed from the native view hierarchy.
 
 First thing's first, add the ListView require to the top of the file.
 
@@ -471,4 +470,3 @@ var styles = StyleSheet.create({
 
 AppRegistry.registerComponent('SampleApp', () => SampleApp);
 ```
-
