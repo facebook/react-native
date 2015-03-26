@@ -8,7 +8,7 @@ def cp(src, dest, app_name)
       .gsub("SampleApp", app_name)
       .gsub("Examples/#{app_name}/", "")
       .gsub("../../Libraries/", "node_modules/react-native/Libraries/")
-      .gsub("../../ReactKit/", "node_modules/react-native/ReactKit/")
+      .gsub("../../React/", "node_modules/react-native/React/")
     File.write(dest, content)
   end
 end
