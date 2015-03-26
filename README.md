@@ -169,6 +169,7 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
 ```
 
 ```javascript
+// JavaScript
 module.exports = createReactIOSNativeComponentClass({
   validAttributes: { myCustomProperty: true },
   uiViewClassName: 'MyCustomView',
