@@ -246,6 +246,9 @@ Server.prototype.processRequest = function(req, res, next) {
 function getOptionsFromUrl(reqUrl) {
   // `true` to parse the query param as an object.
   var urlObj = url.parse(reqUrl, true);
+  // node v0.11.14 bug see https://github.com/facebook/react-native/issues/218
+  urlObj.query = urlObj.query || {};
+
   var pathname = urlObj.pathname;
 
   // Backwards compatibility. Options used to be as added as '.' to the
