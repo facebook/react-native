@@ -194,7 +194,7 @@ var APIDoc = React.createClass({
         <Header level={4} className="propTitle" toSlug={method.name}>
           {method.modifiers.length && <span className="propType">
             {method.modifiers.join(' ') + ' '}
-          </span>}
+          </span> || ''}
           {method.name}
           <span className="propType">
             ({method.params
