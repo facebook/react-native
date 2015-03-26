@@ -89,8 +89,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
-    paddingTop: 20,
+    backgroundColor: '#F5FCFF',
   },
   thumbnail: {
     width: 53,
@@ -154,8 +153,7 @@ Not too much has changed, we added a container around the Texts and then moved t
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
-    paddingTop: 20,
+    backgroundColor: '#F5FCFF',
   },
 ```
 
@@ -314,6 +312,7 @@ Now modify the render funtion so that once we have our data it renders a ListVie
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this.renderMovie}
+        style={styles.listView}
       />
     );
   },
@@ -347,6 +346,14 @@ And here is the modified `fetchData` method that updates the state accordingly:
         });
       })
       .done();
+  },
+```
+
+Finally, we add styles for the `ListView` component to the `styles` JS object:
+```javascript
+  listView: {
+    paddingTop: 20,
+    backgroundColor: '#F5FCFF',
   },
 ```
 
@@ -455,8 +462,7 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
-    paddingTop: 20,
+    backgroundColor: '#F5FCFF',
   },
   rightContainer: {
     flex: 1,
@@ -472,6 +478,10 @@ var styles = StyleSheet.create({
   thumbnail: {
     width: 53,
     height: 81,
+  },
+  listView: {
+    paddingTop: 20,
+    backgroundColor: '#F5FCFF',
   },
 });
 
