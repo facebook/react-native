@@ -52,7 +52,7 @@ var TouchDemo = React.createClass({
 
 
 ## Flexbox and Styling
-Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web syles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
+Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web syles, such as `fontWeight`, and the `StyleSheet` abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
 
 ```javascript
 var React = require('react-native');
@@ -88,7 +88,7 @@ var styles = StyleSheet.create({
 
 ## Polyfills
 
-React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, window.requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
+React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as `XMLHttpRequest`, `window.requestAnimationFrame`, and `navigator.geolocation`.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
 
 ```javascript
 var React = require('react-native');
@@ -115,9 +115,9 @@ var GeoInfo = React.createClass({
 
 ## Extensibility
 
-It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily expended with custom native views and modules - that means you can reuse anything you've already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the RCTBridgeModule protocol, and add RCT_EXPORT to the function you want to make available in JavaScript.
+It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily expended with custom native views and modules - that means you can reuse anything you've already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the `RCTBridgeModule` protocol, and add `RCT_EXPORT` to the function you want to make available in JavaScript.
 
-```javascript
+```objc
 // Objective-C
 #import "RCTBridgeModule.h"
 @interface MyCustomModule : NSObject <RCTBridgeModule>
@@ -152,7 +152,7 @@ var Message = React.createClass({
 });
 ```
 
-Custom iOS views can be exposed by subclassing RCTViewManager, implementing a -(UIView *)view method, and exporting properties with the RCT_EXPORT_VIEW_PROPERTY macro.  Then a simple JavaScript file connects the dots.
+Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a `- (UIView *)view` method, and exporting properties with the `RCT_EXPORT_VIEW_PROPERTY` macro.  Then a simple JavaScript file connects the dots.
 
 ```objc
 // Objective-C
