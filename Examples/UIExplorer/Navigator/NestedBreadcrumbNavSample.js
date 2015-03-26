@@ -6,7 +6,7 @@
 'use strict';
 
 var BreadcrumbNavigationBar = require('BreadcrumbNavigationBar');
-var ReactNavigator = require('ReactNavigator');
+var Navigator = require('Navigator');
 var React = require('React');
 var ScrollView = require('ScrollView');
 var StyleSheet = require('StyleSheet');
@@ -90,7 +90,7 @@ var SecondDeepRouteMapper = (route, navigator) => (
         <Text style={styles.buttonText}>Push Horizontal</Text>
       </View>
     </TouchableBounce>
-    <ReactNavigator
+    <Navigator
       style={styles.thirdDeepNavigator}
       initialRoute={{title: '3x Nested Horizontal'}}
       renderScene={ThirdDeepRouteMapper}
@@ -111,7 +111,7 @@ var FirstDeepRouteMapper = (route, navigator) => (
         <Text style={styles.buttonText}>Push Outer Vertical Stack</Text>
       </View>
     </TouchableBounce>
-    <ReactNavigator
+    <Navigator
       style={styles.secondDeepNavigator}
       initialRoute={{title: '2x Nested Horizontal Nav'}}
       renderScene={SecondDeepRouteMapper}
@@ -132,9 +132,9 @@ var NestedBreadcrumbNavSample = React.createClass({
     var initialRoute = {title: 'Vertical'};
     // No navigation bar.
     return (
-      <ReactNavigator
+      <Navigator
         style={[styles.appContainer]}
-        configureScene={() => ReactNavigator.SceneConfigs.FloatFromBottom}
+        configureScene={() => Navigator.SceneConfigs.FloatFromBottom}
         initialRoute={initialRoute}
         renderScene={FirstDeepRouteMapper}
       />

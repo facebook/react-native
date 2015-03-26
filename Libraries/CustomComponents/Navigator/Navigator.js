@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule ReactNavigator
+ * @providesModule Navigator
  */
 
 "use strict"
@@ -10,7 +10,7 @@ var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var Backstack = require('Backstack');
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
-var ReactNavigatorSceneConfigs = require('ReactNavigatorSceneConfigs');
+var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
 var PanResponder = require('PanResponder');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
@@ -72,7 +72,7 @@ var styles = StyleSheet.create({
   }
 });
 
-var ReactNavigator = React.createClass({
+var Navigator = React.createClass({
 
   propTypes: {
     configureScene: PropTypes.func,
@@ -90,7 +90,7 @@ var ReactNavigator = React.createClass({
     onItemRef: PropTypes.func,
     // Define the component to use for the nav bar, which will get navState and navigator props
     navigationBar: PropTypes.node,
-    // The navigator object from a parent ReactNavigator
+    // The navigator object from a parent Navigator
     navigator: PropTypes.object,
 
     /**
@@ -102,14 +102,14 @@ var ReactNavigator = React.createClass({
   },
 
   statics: {
-    SceneConfigs: ReactNavigatorSceneConfigs,
+    SceneConfigs: NavigatorSceneConfigs,
   },
 
   mixins: [TimerMixin, InteractionMixin, Subscribable.Mixin],
 
   getDefaultProps: function() {
     return {
-      configureScene: () => ReactNavigatorSceneConfigs.PushFromRight,
+      configureScene: () => NavigatorSceneConfigs.PushFromRight,
       sceneStyle: styles.defaultSceneStyle,
     };
   },
@@ -128,7 +128,7 @@ var ReactNavigator = React.createClass({
     } else {
       invariant(
         routeStack.length >= 1,
-        'ReactNavigator requires props.initialRoute or props.initialRouteStack.'
+        'Navigator requires props.initialRoute or props.initialRouteStack.'
       );
     }
     return {
@@ -857,4 +857,4 @@ var ReactNavigator = React.createClass({
   },
 });
 
-module.exports = ReactNavigator;
+module.exports = Navigator;

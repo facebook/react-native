@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @providesModule ReactNavigatorSceneConfigs
+ * @providesModule NavigatorSceneConfigs
  */
 'use strict';
 
@@ -260,7 +260,7 @@ var BaseConfig = {
   interpolators: Interpolators.Horizontal,
 };
 
-var ReactNavigatorSceneConfigs = {
+var NavigatorSceneConfigs = {
   PushFromRight: merge(BaseConfig, {
     // We will want to customize this soon
   }),
@@ -276,4 +276,4 @@ var ReactNavigatorSceneConfigs = {
   }),
 };
 
-module.exports = ReactNavigatorSceneConfigs;
+module.exports = NavigatorSceneConfigs;

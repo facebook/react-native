@@ -22,7 +22,7 @@ var {
   TouchableHighlight,
   View,
 } = React;
-var ReactNavigatorExample = require('./ReactNavigator/ReactNavigatorExample');
+var NavigatorExample = require('./Navigator/NavigatorExample');
 
 var { TestModule } = React.addons;
 
@@ -36,7 +36,7 @@ var COMPONENTS = [
   require('./ListViewSimpleExample'),
   require('./MapViewExample'),
   require('./NavigatorIOSExample'),
-  ReactNavigatorExample,
+  NavigatorExample,
   require('./PickerExample'),
   require('./ScrollViewExample'),
   require('./SliderIOSExample'),
@@ -176,9 +176,9 @@ class UIExplorerList extends React.Component {
   }
 
   _onPressRow(example) {
-    if (example === ReactNavigatorExample) {
+    if (example === NavigatorExample) {
       this.props.onExternalExampleRequested(
-        ReactNavigatorExample
+        NavigatorExample
       );
       return;
     }

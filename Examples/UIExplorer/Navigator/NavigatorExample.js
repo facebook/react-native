@@ -4,7 +4,7 @@
 'use strict';
 
 var React = require('React');
-var ReactNavigator = require('ReactNavigator');
+var Navigator = require('Navigator');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var ScrollView = require('ScrollView');
@@ -35,7 +35,7 @@ class NavMenu extends React.Component {
         <TouchableHighlight style={styles.button} onPress={() => {
           this.props.onExampleExit();
         }}>
-          <Text style={styles.buttonText}>Exit ReactNavigator Example</Text>
+          <Text style={styles.buttonText}>Exit Navigator Example</Text>
         </TouchableHighlight>
       </ScrollView>
     );
@@ -45,7 +45,7 @@ class NavMenu extends React.Component {
 var TabBarExample = React.createClass({
 
   statics: {
-    title: '<ReactNavigator>',
+    title: '<Navigator>',
     description: 'JS-implemented navigation',
   },
 
@@ -69,11 +69,11 @@ var TabBarExample = React.createClass({
 
   render: function() {
     return (
-      <ReactNavigator
+      <Navigator
         style={styles.container}
         initialRoute={{ id: 'menu', }}
         renderScene={this.renderScene}
-        configureScene={(route) => ReactNavigator.SceneConfigs.FloatFromBottom}
+        configureScene={(route) => Navigator.SceneConfigs.FloatFromBottom}
       />
     );
   },
