@@ -49,6 +49,12 @@
 @property (nonatomic, strong) Class executorClass;
 
 /**
+ * If YES will watch for shake gestures and show development menu
+ * with options like "Reload", "Enable Debugging", etc.
+ */
+@property (nonatomic, assign) BOOL enableDevMenu;
+
+/**
  * Reload this root view, or all root views, respectively.
  */
 - (void)reload;

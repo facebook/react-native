@@ -9,7 +9,6 @@
 
 #import "AppDelegate.h"
 
-#import "RCTDevelopmentViewController.h"
 #import "RCTRootView.h"
 
 @implementation AppDelegate
@@ -42,7 +41,7 @@
   rootView.moduleName = @"UIExplorerApp";
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [[RCTDevelopmentViewController alloc] init];
+  UIViewController *rootViewController = [[UIViewController alloc] init];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];

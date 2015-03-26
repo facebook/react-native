@@ -9,6 +9,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RCTDevelopmentViewController : UIViewController
+@class RCTRootView;
+
+@interface RCTDevMenu : NSObject
+
+- (instancetype)initWithRootView:(RCTRootView *)rootView;
+- (void)show;
 
 @end
