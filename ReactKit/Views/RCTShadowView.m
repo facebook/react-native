@@ -411,12 +411,12 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
 // Border
 
 #define RCT_BORDER_PROPERTY(prop, metaProp)            \
-- (void)setBorder##prop:(CGFloat)value                 \
+- (void)setBorder##prop##Width:(CGFloat)value          \
 {                                                      \
   _cssNode->style.border[CSS_##metaProp] = value;      \
   [self dirtyLayout];                                  \
 }                                                      \
-- (CGFloat)border##prop                                \
+- (CGFloat)border##prop##Width                         \
 {                                                      \
   return _cssNode->style.border[META_PROP_##metaProp]; \
 }

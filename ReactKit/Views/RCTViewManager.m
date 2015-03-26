@@ -71,25 +71,25 @@
 
 #pragma mark - View properties
 
-RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel)
-RCT_EXPORT_VIEW_PROPERTY(hidden)
-RCT_EXPORT_VIEW_PROPERTY(backgroundColor)
-RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement)
-RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier)
-RCT_REMAP_VIEW_PROPERTY(opacity, alpha)
-RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor);
-RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset);
-RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity)
-RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius)
-RCT_REMAP_VIEW_PROPERTY(borderColor, layer.borderColor);
-RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius)
-RCT_REMAP_VIEW_PROPERTY(borderWidth, layer.borderWidth)
-RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, UIView)
+RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
+RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
+RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
+RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
+RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
+RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor);
+RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
+RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, CGFloat)
+RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
+RCT_REMAP_VIEW_PROPERTY(borderColor, layer.borderColor, CGColor);
+RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius, CGFloat)
+RCT_REMAP_VIEW_PROPERTY(borderWidth, layer.borderWidth, CGFloat)
+RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, css_overflow, RCTView)
 {
   view.clipsToBounds = json ? ![RCTConvert css_overflow:json] : defaultView.clipsToBounds;
 }
-RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
     view.pointerEvents = json ? [RCTConvert RCTPointerEvents:json] : defaultView.pointerEvents;
@@ -116,7 +116,7 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTView)
       RCTLogError(@"UIView base class does not support pointerEvent value: %@", json);
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
 {
   if ([view respondsToSelector:@selector(setRemoveClippedSubviews:)]) {
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
@@ -125,45 +125,59 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, RCTView)
 
 #pragma mark - ShadowView properties
 
-RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowView)
+RCT_EXPORT_SHADOW_PROPERTY(top, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(right, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(bottom, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
+
+RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat);
+
+RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(borderWidth, CGFloat);
+
+RCT_EXPORT_SHADOW_PROPERTY(marginTop, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(marginRight, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(marginBottom, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(marginLeft, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(marginVertical, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(margin, CGFloat);
+
+RCT_EXPORT_SHADOW_PROPERTY(paddingTop, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(paddingRight, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat);
+
+RCT_EXPORT_SHADOW_PROPERTY(flex, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(flexDirection, css_flex_direction_t)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, css_wrap_type_t)
+RCT_EXPORT_SHADOW_PROPERTY(justifyContent, css_justify_t)
+RCT_EXPORT_SHADOW_PROPERTY(alignItems, css_align_t)
+RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
+RCT_REMAP_SHADOW_PROPERTY(position, positionType, css_position_type_t)
+
+RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, UIColor, RCTShadowView)
 {
   view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
   view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(flexDirection, RCTShadowView)
-{
-  view.flexDirection = json? [RCTConvert css_flex_direction_t:json] : defaultView.flexDirection;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(flexWrap, RCTShadowView)
-{
-  view.flexWrap = json ? [RCTConvert css_wrap_type_t:json] : defaultView.flexWrap;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(justifyContent, RCTShadowView)
-{
-  view.justifyContent = json ? [RCTConvert css_justify_t:json] : defaultView.justifyContent;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(alignItems, RCTShadowView)
-{
-  view.alignItems = json ? [RCTConvert css_align_t:json] : defaultView.alignItems;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(alignSelf, RCTShadowView)
-{
-  view.alignSelf = json ? [RCTConvert css_align_t:json] : defaultView.alignSelf;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(position, RCTShadowView)
-{
-  view.positionType = json ? [RCTConvert css_position_type_t:json] : defaultView.positionType;
-}
 
 // Border properties - to be deprecated
 
-RCT_REMAP_VIEW_PROPERTY(borderTopWidth, reactBorderTop.width);
-RCT_REMAP_VIEW_PROPERTY(borderRightWidth, reactBorderRight.width);
-RCT_REMAP_VIEW_PROPERTY(borderBottomWidth, reactBorderBottom.width);
-RCT_REMAP_VIEW_PROPERTY(borderLeftWidth, reactBorderLeft.width);
-RCT_REMAP_VIEW_PROPERTY(borderTopColor, reactBorderTop.color);
-RCT_REMAP_VIEW_PROPERTY(borderRightColor, reactBorderRight.color);
-RCT_REMAP_VIEW_PROPERTY(borderBottomColor, reactBorderBottom.color);
-RCT_REMAP_VIEW_PROPERTY(borderLeftColor, reactBorderLeft.color);
+RCT_REMAP_VIEW_PROPERTY(borderTopWidth, reactBorderTop.width, CGFloat);
+RCT_REMAP_VIEW_PROPERTY(borderRightWidth, reactBorderRight.width, CGFloat);
+RCT_REMAP_VIEW_PROPERTY(borderBottomWidth, reactBorderBottom.width, CGFloat);
+RCT_REMAP_VIEW_PROPERTY(borderLeftWidth, reactBorderLeft.width, CGFloat);
+RCT_REMAP_VIEW_PROPERTY(borderTopColor, reactBorderTop.color, UIColor);
+RCT_REMAP_VIEW_PROPERTY(borderRightColor, reactBorderRight.color, UIColor);
+RCT_REMAP_VIEW_PROPERTY(borderBottomColor, reactBorderBottom.color, UIColor);
+RCT_REMAP_VIEW_PROPERTY(borderLeftColor, reactBorderLeft.color, UIColor);
 
 @end

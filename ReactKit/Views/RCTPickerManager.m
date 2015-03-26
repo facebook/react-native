@@ -20,8 +20,8 @@
   return [[RCTPicker alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(items)
-RCT_EXPORT_VIEW_PROPERTY(selectedIndex)
+RCT_EXPORT_VIEW_PROPERTY(items, NSDictionaryArray)
+RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 
 - (NSDictionary *)constantsToExport
 {

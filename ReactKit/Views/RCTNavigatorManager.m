@@ -22,7 +22,7 @@
   return [[RCTNavigator alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack)
+RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)
 
 - (NSDictionary *)customDirectEventTypes
 {

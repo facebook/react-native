@@ -102,10 +102,44 @@ RCT_ENUM_CONVERTER(UITextAutocapitalizationType, (@{
   @"characters": @(UITextAutocapitalizationTypeAllCharacters)
 }), UITextAutocapitalizationTypeSentences, integerValue)
 
+RCT_ENUM_CONVERTER(UITextFieldViewMode, (@{
+  @"never": @(UITextFieldViewModeNever),
+  @"while-editing": @(UITextFieldViewModeWhileEditing),
+  @"unless-editing": @(UITextFieldViewModeUnlessEditing),
+  @"always": @(UITextFieldViewModeAlways),
+}), UITextFieldViewModeNever, integerValue)
+
+RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
+  @"none": @(UIScrollViewKeyboardDismissModeNone),
+  @"on-drag": @(UIScrollViewKeyboardDismissModeOnDrag),
+  @"interactive": @(UIScrollViewKeyboardDismissModeInteractive),
+}), UIScrollViewKeyboardDismissModeNone, integerValue)
+
 RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
   @"default": @(UIKeyboardTypeDefault),
 }), UIKeyboardTypeDefault, integerValue)
+
+RCT_ENUM_CONVERTER(UIViewContentMode, (@{
+  @"scale-to-fill": @(UIViewContentModeScaleToFill),
+  @"scale-aspect-fit": @(UIViewContentModeScaleAspectFit),
+  @"scale-aspect-fill": @(UIViewContentModeScaleAspectFill),
+  @"redraw": @(UIViewContentModeRedraw),
+  @"center": @(UIViewContentModeCenter),
+  @"top": @(UIViewContentModeTop),
+  @"bottom": @(UIViewContentModeBottom),
+  @"left": @(UIViewContentModeLeft),
+  @"right": @(UIViewContentModeRight),
+  @"top-left": @(UIViewContentModeTopLeft),
+  @"top-right": @(UIViewContentModeTopRight),
+  @"bottom-left": @(UIViewContentModeBottomLeft),
+  @"bottom-right": @(UIViewContentModeBottomRight),
+}), UIViewContentModeScaleToFill, integerValue)
+
+RCT_ENUM_CONVERTER(UIBarStyle, (@{
+  @"default": @(UIBarStyleDefault),
+  @"black": @(UIBarStyleBlack),
+}), UIBarStyleDefault, integerValue)
 
 // TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
 RCT_CONVERTER_CUSTOM(CGFloat, CGFloat, [self double:json])
@@ -500,11 +534,8 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return [self UIFont:font withFamily:json size:nil weight:nil style:nil];
 }
 
-+ (UIFont *)UIFont:(UIFont *)font
-        withFamily:(id)family
-              size:(id)size
-            weight:(id)weight
-             style:(id)style
++ (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
+              size:(id)size weight:(id)weight style:(id)style
 {
   // Defaults
   NSString *const RCTDefaultFontFamily = @"Helvetica Neue";
@@ -579,6 +610,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 }
 
 RCT_ARRAY_CONVERTER(NSString)
+RCT_ARRAY_CONVERTER(NSDictionary)
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(NSNumber)
 RCT_ARRAY_CONVERTER(UIColor)
@@ -648,229 +680,10 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
 
 @end
 
-static NSString *RCTGuessTypeEncoding(id target, NSString *key, id value, NSString *encoding)
-{
-  /**
-   * NOTE: the property names below may seem weird, but it's
-   * because they are tested as case-sensitive suffixes, so
-   * "ffset" will match any of the following
-   *
-   * - offset
-   * - contentOffset
-   */
-
-  // TODO (#5906496): handle more cases
-  if ([key hasSuffix:@"olor"]) {
-    if ([target isKindOfClass:[CALayer class]]) {
-      return @(@encode(CGColorRef));
-    } else {
-      return @"@\"UIColor\"";
-    }
-  } else if ([key hasSuffix:@"Inset"] || [key hasSuffix:@"Insets"]) {
-    return @(@encode(UIEdgeInsets));
-  } else if ([key hasSuffix:@"rame"] || [key hasSuffix:@"ounds"]) {
-    return @(@encode(CGRect));
-  } else if ([key hasSuffix:@"ffset"] || [key hasSuffix:@"osition"]) {
-    return @(@encode(CGPoint));
-  } else if ([key hasSuffix:@"ize"]) {
-    return @(@encode(CGSize));
-  }
-  return nil;
-}
-
-static id RCTConvertValueWithEncoding(id value, NSString *encoding)
-{
-  static NSDictionary *converters = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-
-    id (^numberConvert)(id) = ^(id val){
-      return [RCTConvert NSNumber:val];
-    };
-
-    id (^boolConvert)(id) = ^(id val){
-      return @([RCTConvert BOOL:val]);
-    };
-
-    // TODO (#5906496): add the rest of RCTConvert here
-    converters =
-    @{
-      @(@encode(char)): boolConvert,
-      @(@encode(int)): numberConvert,
-      @(@encode(short)): numberConvert,
-      @(@encode(long)): numberConvert,
-      @(@encode(long long)): numberConvert,
-      @(@encode(unsigned char)): numberConvert,
-      @(@encode(unsigned int)): numberConvert,
-      @(@encode(unsigned short)): numberConvert,
-      @(@encode(unsigned long)): numberConvert,
-      @(@encode(unsigned long long)): numberConvert,
-      @(@encode(float)): numberConvert,
-      @(@encode(double)): numberConvert,
-      @(@encode(bool)): boolConvert,
-      @(@encode(UIEdgeInsets)): ^(id val) {
-        return [NSValue valueWithUIEdgeInsets:[RCTConvert UIEdgeInsets:val]];
-      },
-      @(@encode(CGPoint)): ^(id val) {
-        return [NSValue valueWithCGPoint:[RCTConvert CGPoint:val]];
-      },
-      @(@encode(CGSize)): ^(id val) {
-        return [NSValue valueWithCGSize:[RCTConvert CGSize:val]];
-      },
-      @(@encode(CGRect)): ^(id val) {
-        return [NSValue valueWithCGRect:[RCTConvert CGRect:val]];
-      },
-      @(@encode(CGColorRef)): ^(id val) {
-        return (id)[RCTConvert CGColor:val];
-      },
-      @(@encode(CGAffineTransform)): ^(id val) {
-        return [NSValue valueWithCGAffineTransform:[RCTConvert CGAffineTransform:val]];
-      },
-      @(@encode(CATransform3D)): ^(id val) {
-        return [NSValue valueWithCATransform3D:[RCTConvert CATransform3D:val]];
-      },
-      @"@\"NSString\"": ^(id val) {
-        return [RCTConvert NSString:val];
-      },
-      @"@\"NSURL\"": ^(id val) {
-        return [RCTConvert NSURL:val];
-      },
-      @"@\"UIColor\"": ^(id val) {
-        return [RCTConvert UIColor:val];
-      },
-      @"@\"UIImage\"": ^(id val) {
-        return [RCTConvert UIImage:val];
-      },
-      @"@\"NSDate\"": ^(id val) {
-        return [RCTConvert NSDate:val];
-      },
-      @"@\"NSTimeZone\"": ^(id val) {
-        return [RCTConvert NSTimeZone:val];
-      },
-    };
-  });
-
-  // Handle null values
-  if (value == [NSNull null] && ![encoding isEqualToString:@"@\"NSNull\""]) {
-    return nil;
-  }
-
-  // Convert value
-  id (^converter)(id) = converters[encoding];
-  return converter ? converter(value) : value;
-}
-
-static NSString *RCTPropertyEncoding(id target, NSString *key, id value)
-{
-  // Check target class for property definition
-  NSString *encoding = nil;
-  objc_property_t property = class_getProperty([target class], [key UTF8String]);
-  if (property) {
-
-    // Get type info
-    char *typeEncoding = property_copyAttributeValue(property, "T");
-    encoding = @(typeEncoding);
-    free(typeEncoding);
-
-  } else {
-
-    // Check if setter exists
-    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                       [[key substringToIndex:1] uppercaseString],
-                                       [key substringFromIndex:1]]);
-
-    if (![target respondsToSelector:setter]) {
-      return nil;
-    }
-
-    // Get type of first method argument
-    Method method = class_getInstanceMethod([target class], setter);
-    char *typeEncoding = method_copyArgumentType(method, 2);
-    if (typeEncoding) {
-      encoding = @(typeEncoding);
-      free(typeEncoding);
-    }
-
-    if (encoding.length == 0 || [encoding isEqualToString:@(@encode(id))]) {
-      // Not enough info about the type encoding to be useful, so
-      // try to guess the type from the value and property name
-      encoding = RCTGuessTypeEncoding(target, key, value, encoding);
-    }
-
-  }
-
-  // id encoding means unknown, as opposed to nil which means no setter exists.
-  return encoding ?: @(@encode(id));
-}
-
-static id RCTConvertValueWithExplicitEncoding(id target, NSString *key, id json, NSString *encoding)
-{
-  // Special case for numeric encodings, which may be enums
-  if ([json isKindOfClass:[NSString class]] &&
-      ([encoding isEqualToString:@(@encode(id))] ||
-       [@"iIsSlLqQ" rangeOfString:[encoding substringToIndex:1]].length)) {
-
-    /**
-     * NOTE: the property names below may seem weird, but it's
-     * because they are tested as case-sensitive suffixes, so
-     * "apitalizationType" will match any of the following
-     *
-     * - capitalizationType
-     * - autocapitalizationType
-     * - autoCapitalizationType
-     * - titleCapitalizationType
-     * - etc.
-     */
-    static NSDictionary *converters = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      converters =
-      @{
-        @"apitalizationType": ^(id val) {
-          return [RCTConvert UITextAutocapitalizationType:val];
-        },
-        @"eyboardType": ^(id val) {
-          return [RCTConvert UIKeyboardType:val];
-        },
-        @"extAlignment": ^(id val) {
-          return [RCTConvert NSTextAlignment:val];
-        },
-        @"ritingDirection": ^(id val) {
-          return [RCTConvert NSWritingDirection:val];
-        },
-        @"Cap": ^(id val) {
-          return [RCTConvert CGLineCap:val];
-        },
-        @"Join": ^(id val) {
-          return [RCTConvert CGLineJoin:val];
-        },
-        @"ointerEvents": ^(id val) {
-          return [RCTConvert RCTPointerEvents:val];
-        },
-      };
-    });
-    for (NSString *subkey in converters) {
-      if ([key hasSuffix:subkey]) {
-        NSInteger (^converter)(NSString *) = converters[subkey];
-        json = @(converter(json));
-        break;
-      }
-    }
-  }
-
-  return RCTConvertValueWithEncoding(json, encoding);
-}
-
-id RCTConvertValue(id target, NSString *key, id json)
-{
-  NSString *encoding = RCTPropertyEncoding(target, key, json);
-  return RCTConvertValueWithExplicitEncoding(target, key, json, encoding);
-}
-
-BOOL RCTSetProperty(id target, NSString *keypath, id value)
+BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json)
 {
   // Split keypath
-  NSArray *parts = [keypath componentsSeparatedByString:@"."];
+  NSArray *parts = [keyPath componentsSeparatedByString:@"."];
   NSString *key = [parts lastObject];
   for (NSUInteger i = 0; i < parts.count - 1; i++) {
     target = [target valueForKey:parts[i]];
@@ -879,48 +692,41 @@ BOOL RCTSetProperty(id target, NSString *keypath, id value)
     }
   }
 
-  // Get encoding
-  NSString *encoding = RCTPropertyEncoding(target, key, value);
-  if (!encoding) {
+  // Get property setter
+  SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
+                                     [[key substringToIndex:1] uppercaseString],
+                                     [key substringFromIndex:1]]);
+
+  // Fail early
+  if (![target respondsToSelector:setter]) {
     return NO;
   }
 
-  // Convert value
-  value = RCTConvertValueWithExplicitEncoding(target, keypath, value, encoding);
-
-  // Another nasty special case
-  if ([target isKindOfClass:[UITextField class]]) {
-    static NSDictionary *specialCases = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      specialCases = @{
-        @"autocapitalizationType": ^(UITextField *f, NSInteger v){ f.autocapitalizationType = v; },
-        @"autocorrectionType": ^(UITextField *f, NSInteger v){ f.autocorrectionType = v; },
-        @"spellCheckingType": ^(UITextField *f, NSInteger v){ f.spellCheckingType = v; },
-        @"keyboardType": ^(UITextField *f, NSInteger v){ f.keyboardType = v; },
-        @"keyboardAppearance": ^(UITextField *f, NSInteger v){ f.keyboardAppearance = v; },
-        @"returnKeyType": ^(UITextField *f, NSInteger v){ f.returnKeyType = v; },
-        @"enablesReturnKeyAutomatically": ^(UITextField *f, NSInteger v){ f.enablesReturnKeyAutomatically = !!v; },
-        @"secureTextEntry": ^(UITextField *f, NSInteger v){ f.secureTextEntry = !!v; }};
-    });
-
-    void (^block)(UITextField *f, NSInteger v) = specialCases[key];
-    if (block) {
-      block(target, [value integerValue]);
-      return YES;
-    }
-  }
+  // Get converted value
+  NSMethodSignature *signature = [RCTConvert methodSignatureForSelector:type];
+  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+  [invocation setArgument:&type atIndex:1];
+  [invocation setArgument:&json atIndex:2];
+  [invocation invokeWithTarget:[RCTConvert class]];
+  NSUInteger length = [signature methodReturnLength];
+  void *value = malloc(length);
+  [invocation getReturnValue:value];
 
   // Set converted value
-  [target setValue:value forKey:key];
+  signature = [target methodSignatureForSelector:setter];
+  invocation = [NSInvocation invocationWithMethodSignature:signature];
+  [invocation setArgument:&setter atIndex:1];
+  [invocation setArgument:value atIndex:2];
+  [invocation invokeWithTarget:target];
+  free(value);
 
   return YES;
 }
 
-BOOL RCTCopyProperty(id target, id source, NSString *keypath)
+BOOL RCTCopyProperty(id target, id source, NSString *keyPath)
 {
   // Split keypath
-  NSArray *parts = [keypath componentsSeparatedByString:@"."];
+  NSArray *parts = [keyPath componentsSeparatedByString:@"."];
   NSString *key = [parts lastObject];
   for (NSUInteger i = 0; i < parts.count - 1; i++) {
     source = [source valueForKey:parts[i]];
@@ -930,19 +736,35 @@ BOOL RCTCopyProperty(id target, id source, NSString *keypath)
     }
   }
 
-  // Check class for property definition
-  if (!class_getProperty([source class], [key UTF8String])) {
-    // Check if setter exists
-    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                       [[key substringToIndex:1] uppercaseString],
-                                       [key substringFromIndex:1]]);
+  // Get property getter
+  SEL getter = NSSelectorFromString(key);
 
-    if (![source respondsToSelector:setter]
-        || ![target respondsToSelector:setter]) {
-      return NO;
-    }
+  // Get property setter
+  SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
+                                     [[key substringToIndex:1] uppercaseString],
+                                     [key substringFromIndex:1]]);
+
+  // Fail early
+  if (![source respondsToSelector:getter] || ![target respondsToSelector:setter]) {
+    return NO;
   }
 
-  [target setValue:[source valueForKey:key] forKey:key];
+  // Get converted value
+  NSMethodSignature *signature = [source methodSignatureForSelector:getter];
+  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+  [invocation setArgument:&getter atIndex:1];
+  [invocation invokeWithTarget:source];
+  NSUInteger length = [signature methodReturnLength];
+  void *value = malloc(length);
+  [invocation getReturnValue:value];
+
+  // Set converted value
+  signature = [target methodSignatureForSelector:setter];
+  invocation = [NSInvocation invocationWithMethodSignature:signature];
+  [invocation setArgument:&setter atIndex:1];
+  [invocation setArgument:value atIndex:2];
+  [invocation invokeWithTarget:target];
+  free(value);
+
   return YES;
 }

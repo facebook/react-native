@@ -11,7 +11,6 @@
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
-
 #import "RCTShadowRawText.h"
 #import "RCTUtils.h"
 
@@ -154,7 +153,7 @@ static css_dim_t RCTMeasure(void *context, float width)
     }
   }];
 
-  // TODO: umm, these can'e be null, so we're mapping left to natural - is that right?
+  // TODO: umm, these can't be null, so we're mapping left to natural - is that right?
   self.textAlign = _textAlign ?: NSTextAlignmentNatural;
   self.writingDirection = _writingDirection ?: NSWritingDirectionNatural;
 

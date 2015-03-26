@@ -32,8 +32,8 @@
 
 #pragma mark - View properties
 
-RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor)
-RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText)
+RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
+RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, NSInteger, RCTText)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
   view.numberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.numberOfLines;
@@ -45,16 +45,24 @@ RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, RCTText)
 
 #pragma mark - Shadow properties
 
-RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, RCTShadowText)
-{
-  view.textBackgroundColor = json ? [RCTConvert UIColor:json] : defaultView.textBackgroundColor;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, RCTShadowText)
+RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
+RCT_EXPORT_SHADOW_PROPERTY(color, UIColor)
+RCT_EXPORT_SHADOW_PROPERTY(fontFamily, NSString)
+RCT_EXPORT_SHADOW_PROPERTY(fontSize, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(fontWeight, NSString)
+RCT_EXPORT_SHADOW_PROPERTY(fontStyle, NSString)
+RCT_EXPORT_SHADOW_PROPERTY(isHighlighted, BOOL)
+RCT_EXPORT_SHADOW_PROPERTY(lineHeight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxNumberOfLines, NSInteger)
+RCT_EXPORT_SHADOW_PROPERTY(shadowOffset, CGSize)
+RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
+RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textBackgroundColor, UIColor)
+RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, UIColor, RCTShadowText)
 {
   view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
   view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
 }
-RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, RCTShadowText)
+RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
   view.maxNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maxNumberOfLines;
@@ -62,10 +70,6 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, RCTShadowText)
     truncationMode = NSLineBreakByTruncatingTail;
   }
   view.truncationMode = truncationMode;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(textAlign, RCTShadowText)
-{
-  view.textAlign = json ? [RCTConvert NSTextAlignment:json] : defaultView.textAlign;
 }
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowText *)shadowView

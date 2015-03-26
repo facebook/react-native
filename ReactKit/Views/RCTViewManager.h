@@ -106,20 +106,28 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry;
 
 /**
- * This handles the simple case, where JS and native property names match
- * And the type can be automatically inferred.
+ * This handles the simple case, where JS and native property names match.
  */
-#define RCT_EXPORT_VIEW_PROPERTY(name) \
-RCT_REMAP_VIEW_PROPERTY(name, name)
+#define RCT_EXPORT_VIEW_PROPERTY(name, type) RCT_REMAP_VIEW_PROPERTY(name, name, type)
+
+#define RCT_EXPORT_SHADOW_PROPERTY(name, type) RCT_REMAP_SHADOW_PROPERTY(name, name, type)
 
 /**
  * This macro maps a named property on the module to an arbitrary key path
- * within the view.
+ * within the view or shadowView.
  */
-#define RCT_REMAP_VIEW_PROPERTY(name, keypath)                                 \
+#define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)                           \
 - (void)set_##name:(id)json forView:(id)view withDefaultView:(id)defaultView { \
-  if ((json && !RCTSetProperty(view, @#keypath, json)) ||                      \
-      (!json && !RCTCopyProperty(view, defaultView, @#keypath))) {             \
+  if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
+      (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
+    RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
+  } \
+}
+
+#define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                         \
+- (void)set_##name:(id)json forShadowView:(id)view withDefaultView:(id)defaultView { \
+  if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
+      (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
     RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
   } \
 }
@@ -129,10 +137,10 @@ RCT_REMAP_VIEW_PROPERTY(name, name)
  * view properties. The macro should be followed by a method body, which can
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
-#define RCT_CUSTOM_VIEW_PROPERTY(name, viewClass) \
+#define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
 - (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
-#define RCT_CUSTOM_SHADOW_PROPERTY(name, viewClass) \
+#define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
 - (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 /**

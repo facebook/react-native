@@ -19,13 +19,9 @@ extern const CGFloat RCTMapZoomBoundBuffer;
 @interface RCTMap: MKMapView
 
 @property (nonatomic, assign) BOOL followUserLocation;
-@property (nonatomic, copy) NSDictionary *JSONRegion;
 @property (nonatomic, assign) CGFloat minDelta;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
 
 @end
-
-#define FLUSH_NAN(value) \
-  (isnan(value) ? 0 : value)

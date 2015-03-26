@@ -45,6 +45,8 @@
   [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(value);
+RCT_EXPORT_VIEW_PROPERTY(value, float);
+RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
+RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
 
 @end

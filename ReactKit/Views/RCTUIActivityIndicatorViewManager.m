@@ -11,6 +11,17 @@
 
 #import "RCTConvert.h"
 
+@implementation RCTConvert (UIActivityIndicatorView)
+
+RCT_ENUM_CONVERTER(UIActivityIndicatorViewStyle, (@{
+  @"white-large": @(UIActivityIndicatorViewStyleWhiteLarge),
+  @"large-white": @(UIActivityIndicatorViewStyleWhiteLarge),
+  @"white": @(UIActivityIndicatorViewStyleWhite),
+  @"gray": @(UIActivityIndicatorViewStyleGray),
+}), UIActivityIndicatorViewStyleWhiteLarge, integerValue)
+
+@end
+
 @implementation RCTUIActivityIndicatorViewManager
 
 - (UIView *)view
@@ -18,9 +29,9 @@
   return [[UIActivityIndicatorView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(activityIndicatorViewStyle)
-RCT_EXPORT_VIEW_PROPERTY(color)
-RCT_CUSTOM_VIEW_PROPERTY(animating, UIActivityIndicatorView)
+RCT_EXPORT_VIEW_PROPERTY(activityIndicatorViewStyle, UIActivityIndicatorViewStyle)
+RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
+RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, UIActivityIndicatorView)
 {
   BOOL animating = json ? [json boolValue] : [defaultView isAnimating];
   if (animating != [view isAnimating]) {
