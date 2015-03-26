@@ -37,6 +37,9 @@
     "start": "./packager/packager.sh",
     "postinstall": "cd packager && npm install"
   },
+  "bin": {
+    "react-native-start": "packager/packager.sh"
+  },
   "dependencies": {
     "connect": "2.8.3",
     "jstransform": "10.0.1",
