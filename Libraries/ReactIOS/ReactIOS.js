@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactIOS
+ * @flow
  */
-
 "use strict";
 
 var ReactChildren = require('ReactChildren');
@@ -51,7 +51,7 @@ var resolveDefaultProps = function(element) {
 };
 
 // Experimental optimized element creation
-var augmentElement = function(element) {
+var augmentElement = function(element: ReactElement) {
   if (__DEV__) {
     invariant(
       false,
@@ -67,7 +67,7 @@ var augmentElement = function(element) {
   return element;
 };
 
-var render = function(component, mountInto) {
+var render = function(component: ReactComponent, mountInto: number) {
   ReactIOSMount.renderComponent(component, mountInto);
 };
 

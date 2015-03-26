@@ -107,7 +107,7 @@ var styles = StyleSheet.create({
   },
   navBarTitleText: {
     color: cssVar('fbui-bluegray-60'),
-    fontWeight: 'bold',
+    fontWeight: '500',
     marginVertical: 9,
   },
   navBarButtonText: {

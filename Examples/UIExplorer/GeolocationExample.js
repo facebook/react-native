@@ -74,6 +74,6 @@ var GeolocationExample = React.createClass({
 
 var styles = StyleSheet.create({
   title: {
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });

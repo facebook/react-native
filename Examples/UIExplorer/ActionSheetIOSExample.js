@@ -101,7 +101,7 @@ var ShareActionSheetExample = React.createClass({
 var style = StyleSheet.create({
   button: {
     marginBottom: 10,
-    fontWeight: 'bold',
+    fontWeight: '500',
   }
 });
 

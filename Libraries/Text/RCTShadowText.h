@@ -21,6 +21,7 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, copy) NSString *fontFamily;
 @property (nonatomic, assign) CGFloat fontSize;
 @property (nonatomic, copy) NSString *fontWeight;
+@property (nonatomic, copy) NSString *fontStyle;
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSInteger maxNumberOfLines;

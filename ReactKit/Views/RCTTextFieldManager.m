@@ -41,7 +41,11 @@ RCT_CUSTOM_VIEW_PROPERTY(fontSize, RCTTextField)
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontWeight, RCTTextField)
 {
-  view.font = [RCTConvert UIFont:view.font withWeight:json]; // TODO: default value
+  view.font = [RCTConvert UIFont:view.font withWeight:json]; // defaults to normal
+}
+RCT_CUSTOM_VIEW_PROPERTY(fontStyle, RCTTextField)
+{
+  view.font = [RCTConvert UIFont:view.font withStyle:json]; // defaults to normal
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, RCTTextField)
 {

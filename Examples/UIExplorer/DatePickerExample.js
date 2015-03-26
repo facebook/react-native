@@ -149,14 +149,14 @@ var styles = StyleSheet.create({
     paddingVertical: 2,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   headingContainer: {
     padding: 4,
     backgroundColor: '#f6f7f8',
   },
   heading: {
-    fontWeight: 'bold',
+    fontWeight: '500',
     fontSize: 14,
   },
 });

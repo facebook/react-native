@@ -239,7 +239,7 @@ var styles = StyleSheet.create({
   },
   errorTextTitle: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: '500',
     marginBottom: 10,
   },
   errorText: {

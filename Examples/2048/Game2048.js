@@ -233,7 +233,7 @@ var styles = StyleSheet.create({
   tryAgainText: {
     color: '#ffffff',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   cell: {
     width: CELL_SIZE,
@@ -259,7 +259,7 @@ var styles = StyleSheet.create({
     fontSize: 24,
     color: '#776666',
     fontFamily: 'Verdana',
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   tile2: {
     backgroundColor: '#eeeeee',

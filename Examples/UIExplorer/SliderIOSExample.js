@@ -47,7 +47,7 @@ var styles = StyleSheet.create({
   text: {
     fontSize: 14,
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '500',
     margin: 10,
   },
 });

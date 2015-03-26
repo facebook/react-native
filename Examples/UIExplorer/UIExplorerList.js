@@ -204,7 +204,7 @@ var styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   sectionHeaderTitle: {
-    fontWeight: 'bold',
+    fontWeight: '500',
     fontSize: 11,
   },
   row: {
@@ -220,7 +220,7 @@ var styles = StyleSheet.create({
   },
   rowTitleText: {
     fontSize: 17,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   rowDetailText: {
     fontSize: 15,
