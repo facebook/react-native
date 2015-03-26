@@ -6,7 +6,7 @@ set -e
 
 if [ -z "$1" ]
   then
-    echo "You must supply an OS version as the first arg, e.g. 8.1 or 8.2"
+    echo "You must supply an OS version as the first arg, e.g. 8.1"
     exit 255
 fi
 
