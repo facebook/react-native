@@ -25,7 +25,7 @@ var index = React.createClass({
         </div>
 
         <section className="content wrap">
-          <div style={{margin: '40px auto', width: 800}}>
+          <div style={{margin: '40px auto', maxWidth: 800}}>
 
           <p>
             React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and
@@ -39,7 +39,7 @@ var index = React.createClass({
             <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
           </div>
 
-          <div style={{margin: '40px auto', width: 800}}>
+          <div style={{margin: '40px auto', maxWidth: 800}}>
 
           <h2>Native iOS Components</h2>
           <p>

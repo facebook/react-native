@@ -82,6 +82,11 @@ h4 small {
   font-size: 14px;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 ul, ol {
   margin: 0 0 10px 25px;
   padding: 0;
