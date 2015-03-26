@@ -25,11 +25,12 @@ var index = React.createClass({
         </div>
 
         <section className="content wrap">
-          <section className="home-bottom-section">
-            <div className="buttons-unit">
-              <a href="docs/getting-started.html#content" className="button">Learn more about React Native</a>
-            </div>
-          </section>
+
+          <div className="buttons-unit">
+            <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
+          </div>
+
+          <div style={{margin: '60px auto', width: 800}}>
 
           <h2>Native iOS Components</h2>
           <p>
@@ -55,7 +56,7 @@ module.exports = React.createClass({
           <p>
             All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug JS while running the app in the full app environment, in the sim or on a real device.
           </p>
-          <img src="/react-native/img/chrome_breakpoint.png" width="800"/>
+          <img src="/react-native/img/chrome_breakpoint.png" width="800" height="606" />
           <h2>Touch Handling</h2>
 
           <p>
@@ -141,6 +142,13 @@ module.exports = React.createClass({
   },
 });`}
           </Prism>
+
+          </div>
+          <section className="home-bottom-section">
+            <div className="buttons-unit">
+              <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
+            </div>
+          </section>
         </section>
       </Site>
     );
