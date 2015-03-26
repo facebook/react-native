@@ -6,7 +6,7 @@
 'use strict';
 
 var BreadcrumbNavigationBar = require('BreadcrumbNavigationBar');
-var ReactNavigator = require('ReactNavigator');
+var Navigator = require('Navigator');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var ScrollView = require('ScrollView');
@@ -185,7 +185,7 @@ var BreadcrumbNavSample = React.createClass({
           onPress={this.onTabSelect.bind(this, 0)}
           icon={require('image!madman_tabnav_list')}
           title="One">
-          <ReactNavigator
+          <Navigator
             debugOverlay={false}
             style={[styles.appContainer]}
             initialRoute={initialRoute}
@@ -202,8 +202,8 @@ var BreadcrumbNavSample = React.createClass({
           onPress={this.onTabSelect.bind(this, 1)}
           icon={require('image!madman_tabnav_create')}
           title="Two">
-          <ReactNavigator
-            configureScene={() => ReactNavigator.SceneConfigs.FloatFromBottom}
+          <Navigator
+            configureScene={() => Navigator.SceneConfigs.FloatFromBottom}
             debugOverlay={false}
             style={[styles.appContainer]}
             initialRoute={initialRoute}
