@@ -245,6 +245,16 @@ var NavigatorIOS = React.createClass({
      * The color used for buttons in the navigation bar
      */
     tintColor: PropTypes.string,
+    
+    /**
+     * The backgroundColor of the navigation bar
+     */
+    barTintColor: PropTypes.string,
+    
+    /**
+     * The text color of the navigation bar title
+     */
+    titleTextColor: PropTypes.string,
 
   },
 
@@ -547,7 +557,9 @@ var NavigatorIOS = React.createClass({
           backButtonTitle={route.backButtonTitle}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
-          tintColor={this.props.tintColor}>
+          tintColor={this.props.tintColor}
+          barTintColor={this.props.barTintColor}
+          titleTextColor={this.props.titleTextColor}>
           <Component
             navigator={this.navigator}
             route={route}
