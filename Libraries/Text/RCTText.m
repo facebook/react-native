@@ -72,20 +72,26 @@
   [self setNeedsDisplay];
 }
 
+- (CGRect)textFrame
+{
+  return UIEdgeInsetsInsetRect(self.bounds, _contentInset);
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
 
   // The header comment for `size` says that a height of 0.0 should be enough,
   // but it isn't.
-  _textContainer.size = CGSizeMake(self.bounds.size.width, CGFLOAT_MAX);
+  _textContainer.size = CGSizeMake([self textFrame].size.width, CGFLOAT_MAX);
 }
 
 - (void)drawRect:(CGRect)rect
 {
+  CGPoint origin = [self textFrame].origin;
   NSRange glyphRange = [_layoutManager glyphRangeForTextContainer:_textContainer];
-  [_layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:CGPointZero];
-  [_layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:CGPointZero];
+  [_layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:origin];
+  [_layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:origin];
 }
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point

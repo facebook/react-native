@@ -71,7 +71,7 @@
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
   CGRect rect = [super textRectForBounds:bounds];
-  return UIEdgeInsetsInsetRect(rect, _paddingEdgeInsets);
+  return UIEdgeInsetsInsetRect(rect, _contentInset);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds

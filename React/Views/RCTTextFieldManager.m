@@ -53,7 +53,7 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    ((RCTTextField *)viewRegistry[reactTag]).paddingEdgeInsets = padding;
+    ((RCTTextField *)viewRegistry[reactTag]).contentInset = padding;
   };
 }
 
