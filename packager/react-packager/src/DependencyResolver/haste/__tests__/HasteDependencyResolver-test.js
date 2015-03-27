@@ -226,11 +226,13 @@ describe('HasteDependencyResolver', function() {
       });
 
       var depGraph = depResolver._depGraph;
-      var dependencies = ['x', 'y', 'z'];
+      var dependencies = ['x', 'y', 'z', 'a', 'b'];
       var code = [
         'require("x")',
-        'require( "y")',
+        'require("y")',
         'require( "z" )',
+        'require( "a")',
+        'require("b" )',
       ].join('\n');
 
       depGraph.resolveDependency.mockImpl(function(fromModule, toModuleName) {
@@ -255,7 +257,9 @@ describe('HasteDependencyResolver', function() {
         ' require, requireDynamic, requireLazy, module, exports) {' +
         '  require(\'changed\')',
         'require(\'y\')',
-        'require("z")});',
+        'require("z")',
+        'require("a")',
+        'require("b")});',
       ].join('\n'));
     });
   });
