@@ -131,15 +131,6 @@ function getDocBlock(node, commentsForFile, linesForFile) {
   }
   var docblock;
   var prevLine = node.loc.start.line - 1;
-  var startText = linesForFile[prevLine].trim();
-
-  // Get to actual start of function declaration (for multi-line declarations)
-  if (startText.indexOf(')') >= 0 && startText.indexOf('(') === -1) {
-      while (startText.indexOf('(') === -1) {
-          prevLine--;
-          startText = linesForFile[prevLine].trim();
-      }
-  }
 
   // skip blank lines
   while (linesForFile[prevLine - 1].trim() === '') {
@@ -394,6 +385,10 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
             commentsForFile, linesForFile);
         methodData.name = bodyItem.key.name;
         methodData.source = source.substring.apply(source, bodyItem.range);
+        // Override docblock from getFunctionData as Function node does not
+        // have correct source range to get docblock
+        methodData.docblock =
+          getDocBlock(bodyItem, commentsForFile, linesForFile);
         if (bodyItem.static) {
           methodData.modifiers.push('static');
         }
