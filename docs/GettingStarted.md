@@ -12,13 +12,13 @@ next: tutorial
 1. OS X - This repo only contains the iOS implementation right now, and Xcode only runs on Mac.
 2. New to Xcode?  [Download it](https://developer.apple.com/xcode/downloads/) from the Mac App Store.
 3. [Homebrew](http://brew.sh/) is the recommended way to install node, watchman, and flow.
-4. `brew install node`. New to [node](https://nodejs.org/) or [npm](https://docs.npmjs.com/)?
+4. `brew install node`. New to [node](https://nodejs.org/) or [npm](https://docs.npmjs.com/)? If you have node installed via alternative means, check out this [guide](https://gist.github.com/DanHerbert/9520689) on how to get things back on track.
 5. `brew install watchman`. We recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
 6. `brew install flow`. If you want to use [flow](http://www.flowtype.org).
 
 ## Quick start
 
-- `sudo npm install -g react-native-cli`
+- `npm install -g react-native-cli`. 
 - `react-native init AwesomeProject`
 
 In the newly created folder `AwesomeProject/`
