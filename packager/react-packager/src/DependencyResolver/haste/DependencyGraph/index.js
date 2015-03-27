@@ -86,7 +86,11 @@ DependecyGraph.prototype.load = function() {
 DependecyGraph.prototype.getOrderedDependencies = function(entryPath) {
   var absolutePath = this._getAbsolutePath(entryPath);
   if (absolutePath == null) {
-    throw new Error('Cannot find entry file in any of the roots: ' + entryPath);
+    throw new NotFoundError(
+      'Cannot find entry file %s in any of the roots: %j',
+      entryPath,
+      this._roots
+    );
   }
 
   var module = this._graph[absolutePath];
@@ -478,13 +482,23 @@ DependecyGraph.prototype._lookupPackage = function(modulePath) {
 /**
  * Process a filewatcher change event.
  */
-DependecyGraph.prototype._processFileChange = function(eventType, filePath, root, stat) {
+DependecyGraph.prototype._processFileChange = function(
+  eventType,
+  filePath,
+  root,
+  stat
+) {
   var absPath = path.join(root, filePath);
   if (this._ignoreFilePath(absPath)) {
     return;
   }
 
   this._debugUpdateEvents.push({event: eventType, path: filePath});
+
+  if (this._assetExts.indexOf(extname(filePath)) > -1) {
+    this._processAssetChange(eventType, absPath);
+    return;
+  }
 
   var isPackage = path.basename(filePath) === 'package.json';
   if (eventType === 'delete') {
@@ -520,7 +534,8 @@ DependecyGraph.prototype.getDebugInfo = function() {
 };
 
 /**
- * Searches all roots for the file and returns the first one that has file of the same path.
+ * Searches all roots for the file and returns the first one that has file of
+ * the same path.
  */
 DependecyGraph.prototype._getAbsolutePath = function(filePath) {
   if (isAbsolutePath(filePath)) {
@@ -543,12 +558,43 @@ DependecyGraph.prototype._buildAssetMap = function() {
     return q();
   }
 
-  var self = this;
-  return buildAssetMap(this._assetRoots, this._assetExts)
-    .then(function(map) {
-      self._assetMap = map;
-      return map;
+  this._assetMap = Object.create(null);
+  return buildAssetMap(
+    this._assetRoots,
+    this._processAsset.bind(this)
+  );
+};
+
+DependecyGraph.prototype._processAsset = function(file) {
+  var ext = extname(file);
+  if (this._assetExts.indexOf(ext) !== -1) {
+    var name = assetName(file, ext);
+    if (this._assetMap[name] != null) {
+      debug('Conflcting assets', name);
+    }
+
+    this._assetMap[name] = new ModuleDescriptor({
+      id: 'image!' + name,
+      path: path.resolve(file),
+      isAsset: true,
+      dependencies: [],
     });
+  }
+};
+
+DependecyGraph.prototype._processAssetChange = function(eventType, file) {
+  if (this._assetMap == null) {
+    return;
+  }
+
+  var name = assetName(file, extname(file));
+  if (eventType === 'change' || eventType === 'delete') {
+    delete this._assetMap[name];
+  }
+
+  if (eventType === 'change' || eventType === 'add') {
+    this._processAsset(file);
+  }
 };
 
 /**
@@ -623,15 +669,14 @@ function readAndStatDir(dir) {
  * Given a list of roots and list of extensions find all the files in
  * the directory with that extension and build a map of those assets.
  */
-function buildAssetMap(roots, exts) {
+function buildAssetMap(roots, processAsset) {
   var queue = roots.slice(0);
-  var map = Object.create(null);
 
   function search() {
     var root = queue.shift();
 
     if (root == null) {
-      return q(map);
+      return q();
     }
 
     return readAndStatDir(root).spread(function(files, stats) {
@@ -639,21 +684,7 @@ function buildAssetMap(roots, exts) {
         if (stats[i].isDirectory()) {
           queue.push(file);
         } else {
-          var ext = path.extname(file).replace(/^\./, '');
-          if (exts.indexOf(ext) !== -1) {
-            var assetName = path.basename(file, '.' + ext)
-                  .replace(/@[\d\.]+x/, '');
-            if (map[assetName] != null) {
-              debug('Conflcting assets', assetName);
-            }
-
-            map[assetName] = new ModuleDescriptor({
-              id: 'image!' + assetName,
-              path: path.resolve(file),
-              isAsset: true,
-              dependencies: [],
-            });
-          }
+          processAsset(file);
         }
       });
 
@@ -663,5 +694,25 @@ function buildAssetMap(roots, exts) {
 
   return search();
 }
+
+function assetName(file, ext) {
+  return path.basename(file, '.' + ext).replace(/@[\d\.]+x/, '');
+}
+
+function extname(name) {
+  return path.extname(name).replace(/^\./, '');
+}
+
+
+function NotFoundError() {
+  Error.call(this);
+  Error.captureStackTrace(this, this.constructor);
+  var msg = util.format.apply(util, arguments);
+  this.message = msg;
+  this.type = this.name = 'NotFoundError';
+  this.status = 404;
+}
+
+NotFoundError.__proto__ = Error.prototype;
 
 module.exports = DependecyGraph;

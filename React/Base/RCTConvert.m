@@ -453,22 +453,21 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   return [self UIImage:json].CGImage;
 }
 
-#ifndef __IPHONE_8_2
+#if !defined(__IPHONE_8_2) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_2
 
-// These constants are defined in iPhone SDK 8.2
-// They'll work fine in earlier iOS versions, but the app cannot be built with
-// an SDK version < 8.2 unless we redefine them here. This will be removed
-// in a future version of React, once 8.2 is more widely adopted.
+// These constants are defined in iPhone SDK 8.2, but the app cannot run on
+// iOS < 8.2 unless we redefine them here. If you target iOS 8.2 or above
+// as a base target, the standard constants will be used instead.
 
-static const CGFloat UIFontWeightUltraLight = -0.8;
-static const CGFloat UIFontWeightThin = -0.6;
-static const CGFloat UIFontWeightLight = -0.4;
-static const CGFloat UIFontWeightRegular = 0;
-static const CGFloat UIFontWeightMedium = 0.23;
-static const CGFloat UIFontWeightSemibold = 0.3;
-static const CGFloat UIFontWeightBold = 0.4;
-static const CGFloat UIFontWeightHeavy = 0.56;
-static const CGFloat UIFontWeightBlack = 0.62;
+#define UIFontWeightUltraLight -0.8
+#define UIFontWeightThin -0.6
+#define UIFontWeightLight -0.4
+#define UIFontWeightRegular 0
+#define UIFontWeightMedium 0.23
+#define UIFontWeightSemibold 0.3
+#define UIFontWeightBold 0.4
+#define UIFontWeightHeavy 0.56
+#define UIFontWeightBlack 0.62
 
 #endif
 

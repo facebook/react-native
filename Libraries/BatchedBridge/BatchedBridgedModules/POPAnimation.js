@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule POPAnimation
+ * @flow
  */
 'use strict';
 
@@ -14,7 +15,7 @@ var RCTPOPAnimationManager = require('NativeModules').POPAnimationManager;
 if (!RCTPOPAnimationManager) {
   // POP animation isn't available in the OSS fork - this is a temporary
   // workaround to enable its availability to be determined at runtime.
-  module.exports = null;
+  module.exports = (null: ?Object);
 } else {
 
 var ReactPropTypes = require('ReactPropTypes');
@@ -64,6 +65,20 @@ var Types = {
   spring: RCTTypes.spring,
 };
 
+type Attrs = {
+  type?: $Enum<typeof Types>;
+  property?: $Enum<typeof Properties>;
+  fromValue?: any;
+  toValue?: any;
+  duration?: any;
+  velocity?: any;
+  deceleration?: any;
+  springBounciness?: any;
+  dynamicsFriction?: any;
+  dynamicsMass?: any;
+  dynamicsTension?: any;
+}
+
 var POPAnimation = {
   Types: Types,
   Properties: Properties,
@@ -83,11 +98,11 @@ var POPAnimation = {
   }),
 
   lastUsedTag: 0,
-  allocateTagForAnimation: function() {
+  allocateTagForAnimation: function(): number {
     return ++this.lastUsedTag;
   },
 
-  createAnimation: function(typeName, attrs) {
+  createAnimation: function(typeName: number, attrs: Attrs): number {
     var tag = this.allocateTagForAnimation();
 
     if (__DEV__) {
@@ -107,35 +122,35 @@ var POPAnimation = {
     return tag;
   },
 
-  createSpringAnimation: function(attrs) {
+  createSpringAnimation: function(attrs: Attrs): number {
     return this.createAnimation(this.Types.spring, attrs);
   },
 
-  createDecayAnimation: function(attrs) {
+  createDecayAnimation: function(attrs: Attrs): number {
     return this.createAnimation(this.Types.decay, attrs);
   },
 
-  createLinearAnimation: function(attrs) {
+  createLinearAnimation: function(attrs: Attrs): number {
     return this.createAnimation(this.Types.linear, attrs);
   },
 
-  createEaseInAnimation: function(attrs) {
+  createEaseInAnimation: function(attrs: Attrs): number {
     return this.createAnimation(this.Types.easeIn, attrs);
   },
 
-  createEaseOutAnimation: function(attrs) {
+  createEaseOutAnimation: function(attrs: Attrs): number {
     return this.createAnimation(this.Types.easeOut, attrs);
   },
 
-  createEaseInEaseOutAnimation: function(attrs) {
+  createEaseInEaseOutAnimation: function(attrs: Attrs): number {
     return this.createAnimation(this.Types.easeInEaseOut, attrs);
   },
 
-  addAnimation: function(nodeHandle, anim, callback) {
+  addAnimation: function(nodeHandle: any, anim: number, callback: Function) {
     RCTPOPAnimationManager.addAnimation(nodeHandle, anim, callback);
   },
 
-  removeAnimation: function(nodeHandle, anim) {
+  removeAnimation: function(nodeHandle: any, anim: number) {
     RCTPOPAnimationManager.removeAnimation(nodeHandle, anim);
   },
 };

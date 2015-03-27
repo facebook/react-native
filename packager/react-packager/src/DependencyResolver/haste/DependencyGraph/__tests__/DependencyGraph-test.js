@@ -821,6 +821,55 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('updates module dependencies on asset add', function() {
+      var root = '/root';
+      var filesystem = fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("image!foo")'
+          ].join('\n'),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        assetRoots: [root],
+        assetExts: ['png'],
+        fileWatcher: fileWatcher
+      });
+
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['image!foo']
+            }
+          ]);
+
+        filesystem.root['foo.png'] = '';
+        triggerFileChange('add', 'foo.png', root);
+
+        return dgraph.load().then(function() {
+          expect(dgraph.getOrderedDependencies('/root/index.js'))
+            .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['image!foo']
+            },
+            { id: 'image!foo',
+              path: '/root/foo.png',
+              dependencies: [],
+              isAsset: true,
+            },
+          ]);
+        });
+      });
+    });
+
     pit('runs changes through ignore filter', function() {
       var root = '/root';
       var filesystem = fs.__setMockFilesystem({
