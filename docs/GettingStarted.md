@@ -18,7 +18,7 @@ next: tutorial
 
 ## Quick start
 
-- `npm install -g react-native-cli`
+- `sudo npm install -g react-native-cli`
 - `react-native init AwesomeProject`
 
 In the newly created folder `AwesomeProject/`
