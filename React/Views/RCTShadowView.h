@@ -9,7 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "Layout.h"
+#import "../Layout/Layout.h"
+
 #import "RCTViewNodeProtocol.h"
 
 @class RCTSparseArray;

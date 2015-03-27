@@ -75,6 +75,7 @@
     } else {
       _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() block:^(UIImage *image, NSError *error) {
         if (image) {
+          [self.layer removeAnimationForKey:@"contents"];
           self.layer.contentsScale = image.scale;
           self.layer.contents = (__bridge id)image.CGImage;
         }

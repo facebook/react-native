@@ -55,18 +55,49 @@ var validateOpts = declareOpts({
     type: 'array',
     required: false,
   },
+  assetExts: {
+    type: 'array',
+    default: ['png'],
+  },
 });
 
 function Server(options) {
   var opts = validateOpts(options);
+
   this._projectRoots = opts.projectRoots;
   this._packages = Object.create(null);
-  this._packager = new Packager(opts);
   this._changeWatchers = [];
+
+  var watchRootConfigs = opts.projectRoots.map(function(dir) {
+    return {
+      dir: dir,
+      globs: [
+        '**/*.js',
+        '**/package.json',
+      ]
+    };
+  });
+
+  if (opts.assetRoots != null) {
+    watchRootConfigs = watchRootConfigs.concat(
+      opts.assetRoots.map(function(dir) {
+        return {
+          dir: dir,
+          globs: opts.assetExts.map(function(ext) {
+            return '**/*.' + ext;
+          }),
+        };
+      })
+    );
+  }
 
   this._fileWatcher = options.nonPersistent
     ? FileWatcher.createDummyWatcher()
-    : new FileWatcher(options.projectRoots);
+    : new FileWatcher(watchRootConfigs);
+
+  var packagerOpts = Object.create(opts);
+  packagerOpts.fileWatcher = this._fileWatcher;
+  this._packager = new Packager(packagerOpts);
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);
@@ -246,6 +277,9 @@ Server.prototype.processRequest = function(req, res, next) {
 function getOptionsFromUrl(reqUrl) {
   // `true` to parse the query param as an object.
   var urlObj = url.parse(reqUrl, true);
+  // node v0.11.14 bug see https://github.com/facebook/react-native/issues/218
+  urlObj.query = urlObj.query || {};
+
   var pathname = urlObj.pathname;
 
   // Backwards compatibility. Options used to be as added as '.' to the
@@ -281,11 +315,11 @@ function getBoolOptionFromQuery(query, opt, defaultVal) {
 }
 
 function handleError(res, error) {
-  res.writeHead(500, {
+  res.writeHead(error.status || 500, {
     'Content-Type': 'application/json; charset=UTF-8',
   });
 
-  if (error.type === 'TransformError') {
+  if (error.type === 'TransformError' || error.type === 'NotFoundError') {
     res.end(JSON.stringify(error));
   } else {
     console.error(error.stack || error);
