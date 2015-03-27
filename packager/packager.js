@@ -154,8 +154,7 @@ function getDevToolsLauncher(options) {
 // can verify that packager is running on 8081 and not 
 // another program / service.
 function statusPageMiddleware (req, res, next) {
-  if (req.url == '/status')
-  {
+  if (req.url === '/status') {
     res.end('packager-status:running');
   }
   else
