@@ -173,7 +173,11 @@ class ListViewDataSource {
    *
    * Note: this returns a new object!
    */
-  cloneWithRowsAndSections(dataBlob: any, sectionIdentities: ?Array<string>, rowIdentities: ?Array<Array<string>>): ListViewDataSource {
+  cloneWithRowsAndSections(
+      dataBlob: any,
+      sectionIdentities: ?Array<string>,
+      rowIdentities: ?Array<Array<string>>
+  ): ListViewDataSource {
     invariant(
       typeof this._sectionHeaderHasChanged === 'function',
       'Must provide a sectionHeaderHasChanged function with section data.'
