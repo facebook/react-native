@@ -72,6 +72,15 @@ exports.examples = [
     );
   },
 }, {
+  title: 'Padding',
+  render: function() {
+    return (
+      <Text style={{padding: 10}}>
+        This text is indented by 10px padding on all sides.
+      </Text>
+    );
+  },
+}, {
   title: 'Font Family',
   render: function() {
     return (
