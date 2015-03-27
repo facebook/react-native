@@ -211,21 +211,27 @@ var ticksPerSecond = 60;
 var lastUsedTag = 0;
 
 module.exports = {
+  /**
+   * Returns a new unique animation tag.
+   */
   allocateTag: function(): number {
     return ++lastUsedTag;
   },
 
+  /**
+   * Returns the values of the easing function at discrete ticks (60 per second).
+   */
   evaluateEasingFunction: function(duration: number, easing: string | EasingFunction): Array<number> {
     if (typeof easing === 'string') {
       easing = defaults[easing] || defaults.easeOutQuad;
     }
 
     var tickCount = Math.round(duration * ticksPerSecond / 1000);
-    var sample = [];
+    var samples = [];
     for (var i = 0; i <= tickCount; i++) {
-      sample.push(easing(i / tickCount));
+      samples.push(easing.call(defaults, i / tickCount));
     }
 
-    return sample;
+    return samples;
   },
 };
