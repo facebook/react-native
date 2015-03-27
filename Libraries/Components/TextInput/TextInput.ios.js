@@ -47,6 +47,7 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   mostRecentEventCounter: true,
   placeholder: true,
   placeholderTextColor: true,
+  secureTextEntry: true,
   text: true,
 });
 
@@ -169,10 +170,14 @@ var TextInput = React.createClass({
      * The text color of the placeholder string
      */
     placeholderTextColor: PropTypes.string,
+     /**
+     * If true, hides the text being entered. Default value is false.
+     */
+    secureTextEntry: PropTypes.bool,
     /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
-     */
+    */
     selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
      * The default value for the text input
@@ -339,6 +344,7 @@ var TextInput = React.createClass({
           onSubmitEditing={this.props.onSubmitEditing}
           onSelectionChangeShouldSetResponder={() => true}
           placeholder={this.props.placeholder}
+          secureTextEntry={this.props.secureTextEntry}
           text={this.state.bufferedValue}
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
@@ -382,6 +388,7 @@ var TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
+          secureTextEntry={this.props.secureTextEntry}
           text={this.state.bufferedValue}
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
