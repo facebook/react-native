@@ -11,6 +11,8 @@
 
 #import "RCTBridge.h"
 
+@class RCTStandardExecutorSource;
+
 /**
  * This notification is sent when the first subviews are added to the root view
  * after the application has loaded. This is used to hide the `loadingView`, and
@@ -63,11 +65,11 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, copy) NSDictionary *initialProperties;
 
 /**
- * The class of the RCTJavaScriptExecutor to use with this view.
- * If not specified, it will default to using RCTContextExecutor.
- * Changes will take effect next time the bundle is reloaded.
+ * The source of the JavaScript executors that this RCTRootView uses. Set the
+ * executor type through the provider and reload the RCTRootView for a new
+ * executor.
  */
-@property (nonatomic, strong) Class executorClass;
+@property (nonatomic, strong, readonly) RCTStandardExecutorSource *executorSource;
 
 /**
  * The backing view controller of the root view.

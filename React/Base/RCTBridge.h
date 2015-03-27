@@ -17,6 +17,7 @@
 
 @class RCTBridge;
 @class RCTEventDispatcher;
+@protocol RCTJavaScriptExecutorSource;
 
 /**
  * This notification triggers a reload of all bridges currently running.
@@ -36,7 +37,7 @@ extern NSString *const RCTJavaScriptDidFailToLoadNotification;
 /**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
- * The bridge will call this block to instatiate the modules, and will
+ * The bridge will call this block to instantiate the modules, and will
  * be responsible for invalidating/releasing them when the bridge is destroyed.
  * For this reason, the block should always return new module instances, and
  * module instances should not be shared between bridges.
@@ -57,13 +58,18 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * The designated initializer. This creates a new bridge on top of the specified
  * executor. The bridge should then be used for all subsequent communication
  * with the JavaScript code running in the executor. Modules will be automatically
- * instantiated using the default contructor, but you can optionally pass in an
+ * instantiated using the default constructor, but you can optionally pass in an
  * array of pre-initialized module instances if they require additional init
  * parameters or configuration.
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
-                    launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+                    launchOptions:(NSDictionary *)launchOptions
+                   executorSource:(id<RCTJavaScriptExecutorSource>)executorSource NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                    launchOptions:(NSDictionary *)launchOptions;
 
 /**
  * This method is used to call functions in the JavaScript application context.
@@ -90,7 +96,10 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
  */
 @property (nonatomic, copy) NSURL *bundleURL;
 
-@property (nonatomic, strong) Class executorClass;
+/**
+ * The source of JavaScript executors used by this bridge.
+ */
+@property (nonatomic, strong, readonly) id<RCTJavaScriptExecutorSource> executorSource;
 
 /**
  * The event dispatcher is a wrapper around -enqueueJSCall:args: that provides a
