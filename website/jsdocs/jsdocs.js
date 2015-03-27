@@ -131,6 +131,16 @@ function getDocBlock(node, commentsForFile, linesForFile) {
   }
   var docblock;
   var prevLine = node.loc.start.line - 1;
+  var startText = linesForFile[prevLine].trim();
+
+  // Get to actual start of function declaration (for multi-line declarations)
+  if (startText.indexOf(')') >= 0 && startText.indexOf('(') === -1) {
+      while (startText.indexOf('(') === -1) {
+          prevLine--;
+          startText = linesForFile[prevLine].trim();
+      }
+  }
+
   // skip blank lines
   while (linesForFile[prevLine - 1].trim() === '') {
     prevLine--;
@@ -209,6 +219,7 @@ function getFunctionData(node, state, source, commentsForFile, linesForFile) {
   var params = [];
   var typechecks = commentsForFile.typechecks;
   var typehintsFromBlock = null;
+
   if (typechecks) {
     // esprima has trouble with some params so ignore them (e.g. $__0)
     if (!node.params.some(function(param) { return !param.name; })) {
