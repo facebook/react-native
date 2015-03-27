@@ -1,5 +1,5 @@
 {
-  "name": "react-native-cli",
+  "name": "react-native-packager",
   "version": "0.1.1",
   "description": "Build native apps with React!",
   "repository": {
@@ -23,22 +23,7 @@
     "lint": "node linter.js Examples/",
     "start": "./packager/packager.sh"
   },
-  "dependencies": {
-    "absolute-path": "0.0.0",
-    "debug": "~2.1.0",
-    "joi": "~5.1.0",
-    "module-deps": "3.5.6",
-    "optimist": "0.6.1",
-    "q": "1.0.1",
-    "sane": "1.0.1",
-    "source-map": "0.1.31",
-    "stacktrace-parser": "0.1.1",
-    "uglify-js": "~2.4.16",
-    "underscore": "1.7.0",
-    "worker-farm": "1.1.0",
-    "yargs": "1.3.2",
-    "ws": "0.4.31"
-  },
+  "dependencies": {},
   "devDependencies": {
     "jest-cli": "0.2.1",
     "eslint": "0.9.2"
