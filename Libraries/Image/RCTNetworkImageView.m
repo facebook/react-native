@@ -63,7 +63,6 @@
         if (data) {
           CAKeyframeAnimation *animation = RCTGIFImageWithData(data);
           self.layer.contentsScale = RCTScreenScale();
-          self.layer.contentsGravity = kCAGravityResizeAspect;
           self.layer.minificationFilter = kCAFilterLinear;
           self.layer.magnificationFilter = kCAFilterLinear;
           [self.layer addAnimation:animation forKey:@"contents"];
