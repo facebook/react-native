@@ -21,74 +21,8 @@ var _initialURL = RCTLinkingManager &&
 
 var DEVICE_NOTIF_EVENT = 'openURL';
 
-/**
- * `LinkingIOS` gives you an interface to interact with both incoming and
- * outgoing app links.
- *
- * ### Basic Usage
- *
- * #### Handling deep links
- *
- * If your app was launched from an external URL registered with your app, you can
- * access and handle it from any component you want with the following:
- *
- * ```
- * componentDidMount() {
- *   var url = LinkingIOS.popInitialURL();
- *   if (url) { ... }
- * }
- * ```
- *
- * If you also want to listen to incoming app links during your app's
- * execution you'll need to add the following lines to you `*AppDelegate.m`:
- *
- * ```
- * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
- *   return [RCTLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
- * }
- * ```
- *
- * And in your React component, you'll then be able to listen to the events from
- * `LinkingIOS` as follows
- *
- * ```
- * componentDidMount() {
- *   LinkingIOS.addEventListener('url', this._handleOpenURL);
- * },
- * componentWillUnmount() {
- *   LinkingIOS.removeEventListener('url', this._handleOpenURL);
- * },
- * _handleOpenURL(event) {
- *   console.log(event.url);
- * }
- * ```
- *
- * #### Triggering App links
- *
- * To trigger an app link (browser, email, or custom schemes) you can call:
- *
- * ```
- * LinkingIOS.openURL(url)
- * ```
- *
- * If you want to check if a URL can be opened by an installed app on the system you can call
- * 
- * ```
- * LinkingIOS.canOpenURL(url, (supported) => {
- *   if (!supported) {
- *     AlertIOS.alert('Can\'t handle url: ' + url);
- *   } else {
- *     LinkingIOS.openURL(url);
- *   }
- * });
- * ```
- */
 class LinkingIOS {
-  /**
-   * Add a handler to LinkingIOS changes by listening to the `url` event type
-   * and providing the handler
-   */
-  static addEventListener(type: string, handler: Function) {
+  static addEventListener(type, handler) {
     invariant(
       type === 'url',
       'LinkingIOS only supports `url` events'
@@ -101,10 +35,7 @@ class LinkingIOS {
     );
   }
 
-  /**
-   * Remove a handler by passing the `url` event type and the handler
-   */
-  static removeEventListener(type: string, handler: Function ) {
+  static removeEventListener(type, handler) {
     invariant(
       type === 'url',
       'LinkingIOS only supports `url` events'
@@ -116,12 +47,7 @@ class LinkingIOS {
     _notifHandlers[handler] = null;
   }
 
-  /**
-   * Try to open the given `url` with any of the installed apps.
-   * If multiple applications can open `url`, the one that opens
-   * is undefined.
-   */
-  static openURL(url: string) {
+  static openURL(url) {
     invariant(
       typeof url === 'string',
       'Invalid url: should be a string'
@@ -129,11 +55,7 @@ class LinkingIOS {
     RCTLinkingManager.openURL(url);
   }
 
-  /**
-   * Determine whether an installed app can handle a given `url`.
-   * The callback function will be called with `bool supported` as the only argument
-   */
-  static canOpenURL(url: string, callback: Function) {
+  static canOpenURL(url, callback) {
     invariant(
       typeof url === 'string',
       'Invalid url: should be a string'
@@ -145,11 +67,7 @@ class LinkingIOS {
     RCTLinkingManager.canOpenURL(url, callback);
   }
 
-  /**
-   * If the app launch was triggered by an app link, it will pop the link URL,
-   * otherwise it will return `null`
-   */
-  static popInitialURL(): ?string {
+  static popInitialURL() {
     var initialURL = _initialURL;
     _initialURL = null;
     return initialURL;

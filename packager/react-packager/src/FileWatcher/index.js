@@ -16,7 +16,7 @@ var exec = require('child_process').exec;
 
 var Promise = q.Promise;
 
-var detectingWatcherClass = new Promise(function(resolve, reject) {
+var detectingWatcherClass = new Promise(function(resolve) {
   exec('which watchman', function(err, out) {
     if (err || out.length === 0) {
       resolve(sane.NodeWatcher);
@@ -30,14 +30,23 @@ module.exports = FileWatcher;
 
 var MAX_WAIT_TIME = 3000;
 
-function FileWatcher(projectRoots) {
-  var self = this;
+// Singleton
+var fileWatcher = null;
+
+function FileWatcher(rootConfigs) {
+  if (fileWatcher) {
+    // This allows us to optimize watching in the future by merging roots etc.
+    throw new Error('FileWatcher can only be instantiated once');
+  }
+
+  fileWatcher = this;
+
   this._loading = q.all(
-    projectRoots.map(createWatcher)
+    rootConfigs.map(createWatcher)
   ).then(function(watchers) {
     watchers.forEach(function(watcher) {
       watcher.on('all', function(type, filepath, root) {
-        self.emit('all', type, filepath, root);
+        fileWatcher.emit('all', type, filepath, root);
       });
     });
     return watchers;
@@ -50,21 +59,14 @@ util.inherits(FileWatcher, EventEmitter);
 FileWatcher.prototype.end = function() {
   return this._loading.then(function(watchers) {
     watchers.forEach(function(watcher) {
-      delete watchersByRoot[watcher._root];
       return q.ninvoke(watcher, 'close');
     });
   });
 };
 
-var watchersByRoot = Object.create(null);
-
-function createWatcher(root) {
-  if (watchersByRoot[root] != null) {
-    return Promise.resolve(watchersByRoot[root]);
-  }
-
+function createWatcher(rootConfig) {
   return detectingWatcherClass.then(function(Watcher) {
-    var watcher = new Watcher(root, {glob: ['**/*.js', '**/package.json']});
+    var watcher = new Watcher(rootConfig.dir, rootConfig.globs);
 
     return new Promise(function(resolve, reject) {
       var rejectTimeout = setTimeout(function() {
@@ -77,8 +79,6 @@ function createWatcher(root) {
 
       watcher.once('ready', function() {
         clearTimeout(rejectTimeout);
-        watchersByRoot[root] = watcher;
-        watcher._root = root;
         resolve(watcher);
       });
     });

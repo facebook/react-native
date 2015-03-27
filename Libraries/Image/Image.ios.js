@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Image
+ * @flow
  */
 'use strict';
 
@@ -106,7 +107,9 @@ var Image = React.createClass({
 
   render: function() {
     var style = flattenStyle([styles.base, this.props.style]);
+    invariant(style, "style must be initialized");
     var source = this.props.source;
+    invariant(source, "source must be initialized");
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     invariant(
       !(isNetwork && source.isStatic),
