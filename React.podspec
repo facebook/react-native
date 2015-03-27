@@ -31,6 +31,14 @@ Pod::Spec.new do |s|
     ss.frameworks      = "JavaScriptCore"
   end
 
+  s.subspec 'All' do |ss|
+    ss.dependency        'React/Core'
+    ss.source_files    = "Libraries/**/*.{h,m}"
+    ss.preserve_paths  = "Libraries/**/*.js"
+    ss.exclude_files   = "Libraries/RCTTest"
+    ss.libraries       = "icucore"
+  end
+
   s.subspec 'RCTActionSheet' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/ActionSheetIOS/*.{h,m}"
