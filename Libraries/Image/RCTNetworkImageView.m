@@ -62,7 +62,7 @@
       _downloadToken = [_imageDownloader downloadDataForURL:imageURL block:^(NSData *data, NSError *error) {
         if (data) {
           CAKeyframeAnimation *animation = RCTGIFImageWithData(data);
-          self.layer.contentsScale = RCTScreenScale();
+          self.layer.contentsScale = 1.0;
           self.layer.minificationFilter = kCAFilterLinear;
           self.layer.magnificationFilter = kCAFilterLinear;
           [self.layer addAnimation:animation forKey:@"contents"];
