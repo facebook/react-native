@@ -51,14 +51,14 @@ var validateOpts = declareOpts({
     type: 'array',
     default: [],
   },
+  fileWatcher: {
+    type: 'object',
+    required: true,
+  },
 });
 
 function HasteDependencyResolver(options) {
   var opts = validateOpts(options);
-
-  this._fileWatcher = opts.nonPersistent
-    ? FileWatcher.createDummyWatcher()
-    : new FileWatcher(opts.projectRoots);
 
   this._depGraph = new DependencyGraph({
     roots: opts.projectRoots,
@@ -67,7 +67,7 @@ function HasteDependencyResolver(options) {
       return filepath.indexOf('__tests__') !== -1 ||
         (opts.blacklistRE && opts.blacklistRE.test(filepath));
     },
-    fileWatcher: this._fileWatcher,
+    fileWatcher: opts.fileWatcher,
   });
 
 
@@ -162,10 +162,6 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
       '_deps_': JSON.stringify(resolvedDepsArr),
     }[key];
   });
-};
-
-HasteDependencyResolver.prototype.end = function() {
-  return this._fileWatcher.end();
 };
 
 HasteDependencyResolver.prototype.getDebugInfo = function() {

@@ -56,6 +56,14 @@ var validateOpts = declareOpts({
     type: 'array',
     required: false,
   },
+  assetExts: {
+    type: 'array',
+    default: ['png'],
+  },
+  fileWatcher: {
+    type: 'object',
+    required: true,
+  },
 });
 
 function Packager(options) {
@@ -70,6 +78,7 @@ function Packager(options) {
     nonPersistent: opts.nonPersistent,
     moduleFormat: opts.moduleFormat,
     assetRoots: opts.assetRoots,
+    fileWatcher: opts.fileWatcher,
   });
 
   this._transformer = new Transformer({
@@ -83,10 +92,7 @@ function Packager(options) {
 }
 
 Packager.prototype.kill = function() {
-  return q.all([
-    this._transformer.kill(),
-    this._resolver.end(),
-  ]);
+  return this._transformer.kill();
 };
 
 Packager.prototype.package = function(main, runModule, sourceMapUrl, isDev) {
