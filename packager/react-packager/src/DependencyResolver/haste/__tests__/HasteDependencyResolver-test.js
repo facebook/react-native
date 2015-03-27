@@ -229,8 +229,8 @@ describe('HasteDependencyResolver', function() {
       var dependencies = ['x', 'y', 'z'];
       var code = [
         'require("x")',
-        'require("y")',
-        'require("z")',
+        'require( "y")',
+        'require( "z" )',
       ].join('\n');
 
       depGraph.resolveDependency.mockImpl(function(fromModule, toModuleName) {
