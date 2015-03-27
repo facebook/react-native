@@ -151,7 +151,7 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
       if (depId != null) {
         return 'require(\'' + depId + '\')';
       } else {
-        return codeMatch;
+        return codeMatch.replace(/\s+/g, '');
       }
     });
 
