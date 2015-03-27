@@ -10,7 +10,7 @@
 on run argv
   set theURL to item 1 of argv
 
-  tell application "Google Chrome"
+  tell application "Chrome"
     activate
 
     if (count every window) = 0 then
