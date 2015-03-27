@@ -222,7 +222,7 @@ We want to send off the request after the component has finished loading. `compo
   },
 ```
 
-Now add `fetchData` function used above to our main component. This method will be respondible for handling data fetching. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that `setState` actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
+Now add `fetchData` function used above to our main component. This method will be responsible for handling data fetching. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that `setState` actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
 
 ```javascript
   fetchData: function() {
