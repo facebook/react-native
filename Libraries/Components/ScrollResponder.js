@@ -12,7 +12,6 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
