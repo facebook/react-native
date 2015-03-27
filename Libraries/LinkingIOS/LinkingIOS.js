@@ -29,9 +29,7 @@ class LinkingIOS {
     );
     _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
       DEVICE_NOTIF_EVENT,
-      (notifData) => {
-        handler(new LinkingIOS(notifData));
-      }
+      handler
     );
   }
 
