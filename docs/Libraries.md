@@ -39,7 +39,7 @@ insed the Library you are importing to `Link Binary With Libraries`
 
 ### Step 3
 
-The first two steps will be enough for all libraries that we ship we Ract Native
+The first two steps will be enough for all libraries that we ship we React Native
 but PushNotificationIOS and LinkingIOS. Why is that?
 
 Most of the libraries we ship are not statically referenced anywhere in the
