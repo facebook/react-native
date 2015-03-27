@@ -27,9 +27,5 @@ In the newly created folder `AwesomeProject/`
 - Open `index.ios.js` in your text editor of choice and edit some lines
 - Hit cmd+R ([twice](http://openradar.appspot.com/19613391)) in your iOS simulator to reload the app and see your change!
 
-If Cmd-R is not responding, enable iOS simulator's "Connect hardware keyboard" from menu Hardware > Keyboard menu. 
-
-![keyboard menu](https://cloud.githubusercontent.com/assets/1388454/6863127/03837824-d409-11e4-9251-e05bd31d978f.png)
-
 Congratulations! You've just successfully run and modified your first React Native app.
 
