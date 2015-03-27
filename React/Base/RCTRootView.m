@@ -318,7 +318,9 @@ static Class _globalExecutorClass;
   }
 
   _scriptURL = scriptURL;
-  [self loadBundle];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self loadBundle];
+  });
 }
 
 - (void)layoutSubviews
