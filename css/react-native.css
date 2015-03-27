@@ -700,6 +700,10 @@ figure {
   width: 650px;
 }
 
+.inner-content a {
+  word-break: break-word;
+}
+
 .nosidebar .inner-content {
   float: none;
   margin: 0 auto;
