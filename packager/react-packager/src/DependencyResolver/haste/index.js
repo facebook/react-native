@@ -25,7 +25,7 @@ var DEFINE_MODULE_CODE = [
 ].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
-var REL_REQUIRE_STMT =  /\brequire\s*\(\s*[\'"]([^"\']+)["\']\s*\)/g;
+var REL_REQUIRE_STMT = /\brequire\s*\(\s*[\'"]([^"\']+)["\']\s*\)/g;
 
 var validateOpts = declareOpts({
   projectRoots: {
