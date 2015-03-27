@@ -44,7 +44,7 @@ if (cli) {
     }
   } else {
     console.error(
-      'Command `%s` unrecognized.' +
+      'Command `%s` unrecognized. ' +
       'Did you mean to run this inside a react-native project?',
       args[0]
     );
