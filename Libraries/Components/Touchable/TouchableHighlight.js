@@ -45,11 +45,13 @@ var DEFAULT_PROPS = {
  * ```
  * renderButton: function() {
  *   return (
- *     <TouchableHighlight onPress={this._onPressButton}>
- *       <Image
- *         style={styles.button}
- *         source={require('image!myButton')}
- *       />
+ *     <View>
+ *       <TouchableHighlight onPress={this._onPressButton}>
+ *         <Image
+ *           style={styles.button}
+ *           source={require('image!myButton')}
+ *         />
+ *       </TouchableHighlight>
  *     </View>
  *   );
  * },
