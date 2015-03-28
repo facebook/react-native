@@ -25,7 +25,7 @@ var DEFINE_MODULE_CODE = [
 ].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
-var REL_REQUIRE_STMT = /\brequire\s*\(\s*[\'"]([^"\']+)["\']\s*\)/g;
+var REL_REQUIRE_STMT = /\brequire\s*?\(\s*?([\'"])([^"\']+)\1\s*?\)/g;
 
 var validateOpts = declareOpts({
   projectRoots: {
@@ -146,7 +146,7 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
   }
 
   var relativizedCode =
-    code.replace(REL_REQUIRE_STMT, function(codeMatch, depName) {
+    code.replace(REL_REQUIRE_STMT, function(codeMatch, _, depName) {
       var depId = resolvedDeps[depName];
       if (depId != null) {
         return 'require(\'' + depId + '\')';
