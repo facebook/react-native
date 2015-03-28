@@ -39,7 +39,7 @@ var onlyChild = require('onlyChild');
  *         style={styles.button}
  *         source={require('image!myButton')}
  *       />
- *     </View>
+ *     </TouchableOpacity>
  *   );
  * },
  * ```
