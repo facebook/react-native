@@ -57,9 +57,11 @@
         } else {
           encoding = NSUTF8StringEncoding;
         }
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+        NSDictionary *headerDict = [httpResponse allHeaderFields];
         int responseCode = (int)[((NSHTTPURLResponse *)response) statusCode];
         NSString *returnData = [[NSString alloc] initWithData:data encoding:encoding];
-        responseJSON = @{@"status": @(responseCode), @"responseText": returnData};
+        responseJSON = @{@"status": @(responseCode), @"responseHeaders": headerDict, @"responseText": returnData};
       } else {
         responseJSON = @{@"status": @0, @"responseText": [connectionError localizedDescription]};
       }

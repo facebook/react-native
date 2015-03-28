@@ -53,13 +53,11 @@ class XMLHttpRequestBase {
   }
 
   getAllResponseHeaders(): ?string {
-    /* Stub */
-    return '';
+    return this.responseHeaders;
   }
 
   getResponseHeader(header: string): ?string {
-    /* Stub */
-    return '';
+    return this.responseHeaders[header];
   }
 
   setRequestHeader(header: string, value: any): void {
