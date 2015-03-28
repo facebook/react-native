@@ -69,7 +69,11 @@ if (options.assetRoots) {
     options.assetRoots = options.assetRoots.split(',');
   }
 } else {
-  options.assetRoots = [path.resolve(__dirname, '..')];
+  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+    options.assetRoots = [path.resolve(__dirname, '../../..')];
+  } else {
+    options.assetRoots = [path.resolve(__dirname, '..')];
+  }
 }
 
 console.log('\n' +
