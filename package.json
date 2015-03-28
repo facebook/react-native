@@ -1,7 +1,7 @@
 {
   "name": "react-native",
-  "version": "0.0.2",
-  "description": "Build native apps with React!",
+  "version": "0.3.0",
+  "description": "A framework for building native apps using React",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
@@ -29,7 +29,8 @@
     "cli.js",
     "init.sh",
     "LICENSE",
-    "PATENTS"
+    "PATENTS",
+    "README.md"
   ],
   "scripts": {
     "test": "jest",
