@@ -600,7 +600,9 @@ DependecyGraph.prototype._processAssetChange = function(eventType, file) {
 /**
  * Extract all required modules from a `code` string.
  */
-var requireRe = /\brequire\s*\(\s*[\'"]([^"\']+)["\']\s*\)/g;
+
+// TODO: export requireRe & import into DependencyResolver/index.js
+var requireRe = /\brequire\s*?\(\s*?([\'"])([^"\']+)\1\s*?\)/g;
 var blockCommentRe = /\/\*(.|\n)*?\*\//g;
 var lineCommentRe = /\/\/.+(\n|$)/g;
 function extractRequires(code) {
