@@ -59,7 +59,7 @@
         }
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         NSDictionary *headerDict = [httpResponse allHeaderFields];
-        int responseCode = (int)[((NSHTTPURLResponse *)response) statusCode];
+        int responseCode = (int)[httpResponse statusCode];
         NSString *returnData = [[NSString alloc] initWithData:data encoding:encoding];
         responseJSON = @{@"status": @(responseCode), @"responseHeaders": headerDict, @"responseText": returnData};
       } else {
