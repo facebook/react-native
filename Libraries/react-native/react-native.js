@@ -56,6 +56,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
   VibrationIOS: require('VibrationIOS'),
+  ViewPortDimensions: require('ViewPortDimensions'),
 
   // Plugins
   DeviceEventEmitter: require('RCTDeviceEventEmitter'),

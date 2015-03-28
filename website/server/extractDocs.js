@@ -125,6 +125,7 @@ var apis = [
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
+  '../Libraries/Utilities/ViewPortDimensions.js',
 ];
 
 var styles = [
