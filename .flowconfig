@@ -18,6 +18,9 @@
 # Ignore jest
 .*/react-native/node_modules/jest-cli/.*
 
+# Ignore Website
+.*/website/.*
+
 [include]
 
 [libs]
