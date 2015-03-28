@@ -611,7 +611,7 @@ function extractRequires(code) {
   code
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
-    .replace(requireRe, function(match, dep) {
+    .replace(requireRe, function(match, _, dep) {
       deps.push(dep);
     });
 
