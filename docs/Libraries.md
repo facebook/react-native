@@ -31,24 +31,37 @@ folder.
 Drag this file to your project on Xcode (usually under the `Libaries` group
 on Xcode);
 
+![](/react-native/img/AddToLibraries.png)
+
 ### Step 2
 
 Click on your main project file (the one that represents the `.xcodeproj`)
 select `Build Phases` and drag the static library from the `Products` folder
 insed the Library you are importing to `Link Binary With Libraries`
 
+![](/react-native/img/AddToBuildPhases.png)
+
 ### Step 3
 
-The first two steps will be enough for all libraries that we ship we React Native
-but PushNotificationIOS and LinkingIOS. Why is that?
+Not every library will need this step, what you need to consider is:
 
-Most of the libraries we ship are not statically referenced anywhere in the
-main code, they are `BridgeModules` that are loaded into the `bridge` instance
-at runtime, and then you'll just be able to access it via JavaScript.
+_Do I need to know the contents of the library at compile time?_
 
-In the case of the PushNotificationIOS for example, you have to call a method
-on the library every time a new push notifiation is received.
-For that we need to know the library's headers. To enable that go to you project
-file, select `Build Settings` and search for `Header Search Paths`. There
-you should include the path to you library, and if it has relevant files on
-subdirectories remember to check `recursive`.
+What that means is, are you using this library on the native site or just in
+JavaScript? If you are just using it in JavaScript, you are good to go!
+
+
+This step is not necessary for all libraries that we ship we React Native but
+`PushNotificationIOS` and `LinkingIOS`.
+
+In the case of the `PushNotificationIOS` for example, you have to call a method
+on the library from your `AppDelegate` every time a new push notifiation is
+received.
+
+For that we need to know the library's headers. To achieve that you have to go
+to your project's file, select `Build Settings` and search for `Header Search
+Paths`. There you should include the path to you library (if it has relevant
+files on subdirectories remember to make it `recursive`, like `React` on the
+example).
+
+![](/react-native/img/AddToSearchPaths.png)
