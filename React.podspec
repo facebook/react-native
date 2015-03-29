@@ -25,7 +25,6 @@ Pod::Spec.new do |s|
   s.frameworks   = "JavaScriptCore"
   s.requires_arc = true
   s.prepare_command = 'npm install'
-  s.libraries    = 'icucore'
 
   s.subspec 'RCTActionSheet' do |ss|
     ss.source_files = "Libraries/ActionSheetIOS/*.{h,m}"
@@ -64,6 +63,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTWebSocketDebugger' do |ss|
     ss.source_files = "Libraries/RCTWebSocketDebugger/*.{h,m}"
+    ss.libraries    = 'icucore'
   end
 
   s.subspec 'RCTText' do |ss|
