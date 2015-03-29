@@ -395,6 +395,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   NSTimeInterval now = CACurrentMediaTime();
   NSTimeInterval throttleScrollCallbackSeconds = _throttleScrollCallbackMS / 1000.0;
 
+
   /**
    * TODO: this logic looks wrong, and it may be because it is. Currently, if _throttleScrollCallbackMS
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
@@ -402,11 +403,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
    * warnings, and behave strangely (ListView works fine however), so don't fix it unless you fix that too!
    */
   if (_allowNextScrollNoMatterWhat ||
-      ( throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
+      (_throttleScrollCallbackMS != 0 && throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
 
-    // Calculate changed frames
-    NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
-    [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
+      // Calculate changed frames
+      NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
+      [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
 
       // Check if new or changed
       CGRect newFrame = subview.frame;
