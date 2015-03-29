@@ -612,6 +612,7 @@ function extractRequires(code) {
     .replace(lineCommentRe, '')
     .replace(importRe, function(match, dep) {
       deps.push(dep);
+      return match;
     })
     .replace(requireRe, function(match, dep) {
       deps.push(dep);
