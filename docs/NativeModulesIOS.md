@@ -4,7 +4,7 @@ title: Native Modules (iOS)
 layout: docs
 category: Guides
 permalink: docs/nativemodulesios.html
-next: linking-libraries
+next: libraries
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding wrapper yet. Maybe you want to reuse some existing Objective-C or C++ code without having to reimplement it in JavaScript. Or write some high performance, multi-threaded code such as image processing, network stack, database or rendering.
