@@ -16,8 +16,8 @@ With that in mind we exposed many of these features as independent static librar
 For most of the libs it will be as simples as dragging two files, sometimes a third
 step will be necessary, but no more than that.
 
-_All the libraries we ship with React Native live on the `Libraries` folder in
-the root of the repository. Some of them are pure JavaScript, and you just need
+_All the libraries we ship with React Native live in the `Libraries` folder in
+the root of the repository. Some of them are pure JavaScript and you just need
 to `require` it. Other libraries also rely on some native code, in that case
 you'll have to add these files to your app, otherwise the app will throw an
 error as soon as you try to use the library._
@@ -26,7 +26,7 @@ error as soon as you try to use the library._
 
 ### Step 1
 
-If the library has native code, there must be a `.xcodeproj` file inside it's
+If the library has native code, there must be an `.xcodeproj` file inside it's
 folder.
 Drag this file to your project on Xcode (usually under the `Libaries` group
 on Xcode);
@@ -47,20 +47,20 @@ Not every library will need this step, what you need to consider is:
 
 _Do I need to know the contents of the library at compile time?_
 
-What that means is, are you using this library on the native site or just in
+What that means is, are you using this library on the native side or just in
 JavaScript? If you are just using it in JavaScript, you are good to go!
 
 
-This step is not necessary for all libraries that we ship we React Native but
+This step is not necessary for all libraries that we ship with React Native but is necessary for
 `PushNotificationIOS` and `LinkingIOS`.
 
-In the case of the `PushNotificationIOS` for example, you have to call a method
-on the library from your `AppDelegate` every time a new push notifiation is
+In the case of `PushNotificationIOS` for example, you have to call a method
+on the library from your `AppDelegate` every time a new push notification is
 received.
 
 For that we need to know the library's headers. To achieve that you have to go
 to your project's file, select `Build Settings` and search for `Header Search
-Paths`. There you should include the path to you library (if it has relevant
+Paths`. There you should include the path to your library (if it has relevant
 files on subdirectories remember to make it `recursive`, like `React` on the
 example).
 
