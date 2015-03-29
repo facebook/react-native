@@ -23,6 +23,7 @@ DerivedData
 
 # OS X
 .DS_Store
+*.xcworkspace
 
 # Node
 node_modules
