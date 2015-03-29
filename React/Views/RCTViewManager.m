@@ -84,7 +84,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
 RCT_CUSTOM_VIEW_PROPERTY(rotation, CGFloat, RCTView)
 {
-  if(json) {
+  if (json) {
     CGFloat angle = [RCTConvert CGFloat:json];
     CGAffineTransform transform = CGAffineTransformRotate(view.transform, angle);
     view.transform = transform;
