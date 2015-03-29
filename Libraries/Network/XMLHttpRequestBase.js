@@ -53,7 +53,14 @@ class XMLHttpRequestBase {
   }
 
   getAllResponseHeaders(): ?string {
-    return this.responseHeaders;
+    if (this.responseHeaders) {
+      var headers = [];
+      for (var headerName in this.responseHeaders) {
+        headers.push(headerName + ': ' + this.responseHeaders[headerName]);
+      }
+      return headers.join('\n');
+    }
+    return '';
   }
 
   getResponseHeader(header: string): ?string {
