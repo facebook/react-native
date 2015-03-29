@@ -199,7 +199,7 @@ Add the following constants to the top of the file (typically below the requires
 ```javascript
 /**
  * For quota reasons we replaced the Rotten Tomatoes' API with a sample data of
- * their very own API that lives in React Native's Gihub repo.
+ * their very own API that lives in React Native's Github repo.
  */
 var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 ```
