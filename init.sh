@@ -1,46 +1,50 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env node
+'use strict';
 
-def cp(src, dest, app_name)
-  if File.directory?(src)
-    Dir.mkdir(dest) unless Dir.exists?(dest)
-  else
-    content = File.read(src)
-      .gsub("SampleApp", app_name)
-      .gsub("Examples/#{app_name}/", "")
-      .gsub("../../Libraries/", "node_modules/react-native/Libraries/")
-      .gsub("../../React/", "node_modules/react-native/React/")
-    File.write(dest, content)
-  end
-end
+var path = require('path');
+var fs = require('fs');
+var file = require('file');
 
-def main(dest, app_name)
-  source = File.expand_path("../Examples/SampleApp", __FILE__)
-  files = Dir.chdir(source) { Dir["**/*"] }
-    .reject { |file| file["project.xcworkspace"] || file["xcuserdata"] }
-    .each { |file|
-      new_file = file
-        .gsub("SampleApp", app_name)
-        .gsub(/^_/, ".")
-      cp File.join(source, file), File.join(dest, new_file), app_name
+if (process.argv.length === 0) {
+  console.log('Usage: ' + path.basename(__filename) + ' <ProjectNameInCamelCase>');
+  console.log('');
+  console.log('This script will bootstrap new React Native app in current folder');
+  process.exit(1);
+}
+
+var appName = process.argv[2];
+var dest = process.cwd();
+console.log('Setting up new React Native app in ' + dest);
+console.log('');
+
+main(dest, appName);
+
+function cp(src, dest, appName) {
+  if (fs.lstatSync(src).isDirectory()) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest);
     }
-end
+  }
+  else {
+    var content = fs.readFileSync(src, 'utf8')
+      .replace(new RegExp('SampleApp', 'g'), appName)
+      .replace(new RegExp('Examples/' + appName + '/', 'g'), '')
+      .replace(new RegExp('../../Libraries/', 'g'), 'node_modules/react-native/Libraries/')
+      .replace(new RegExp('../../React/', 'g'), 'node_modules/react-native/React/');
+    fs.writeFileSync(dest, content);
+  }
+}
 
-if ARGV.count == 0
-  puts "Usage: #{__FILE__} <ProjectNameInCamelCase>"
-  puts ""
-  puts "This script will bootstrap new React Native app in current folder"
-else
-  app_name = ARGV.first
-  dest = Dir.pwd
-  puts "Setting up new React Native app in #{dest}"
-  puts ""
+function main(dest, appName) {
+  var source = path.resolve(__dirname, 'Examples/SampleApp');
+  file.walk(source, function(error, _, dirs, files) {
+    if (error) { throw error; }
 
-  main(dest, app_name)
-
-  puts "Next steps:"
-  puts ""
-  puts "   Open #{File.join(dest, app_name)}.xcodeproj in Xcode"
-  puts "   Hit Run button"
-  puts ""
-end
-
+    dirs.concat(files).forEach(function(f) {
+      f = f.replace(source + '/', ''); // Strip off absolute path
+      if (f === 'project.xcworkspace' || f === 'xcuserdata') { return; }
+      var newFile = f.replace(new RegExp('SampleApp', 'g'), appName);
+      cp(path.resolve(source, f), path.resolve(dest, newFile), appName);
+    });
+  });
+}

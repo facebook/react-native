@@ -5,3 +5,40 @@
 'use strict';
 
 module.exports = require('./local-cli/cli.js');
+var spawn = require('child_process').spawn;
+var path = require('path');
+
+function printUsage() {
+  console.log([
+    'Usage: react-native <command>',
+    '',
+    'Commands:',
+    '  start: starts the webserver',
+  ].join('\n'));
+  process.exit(1);
+}
+
+function run() {
+  var args = process.argv.slice(2);
+  if (args.length === 0) {
+    printUsage();
+  }
+
+  switch (args[0]) {
+  case 'start':
+    spawn('sh', [
+      path.resolve(__dirname, 'packager', 'packager.sh'),
+      '--projectRoots',
+      process.cwd(),
+    ], {stdio: 'inherit'});
+    break;
+  default:
+    console.error('Command `%s` unrecognized', args[0]);
+    printUsage();
+  }
+  // Here goes any cli commands we need to
+}
+
+module.exports = {
+  run: run
+};

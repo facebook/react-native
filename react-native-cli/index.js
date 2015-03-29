@@ -85,17 +85,31 @@ function init(name) {
       start: 'node_modules/react-native/packager/packager.sh'
     }
   };
-  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
+  fs.writeFileSync(
+    path.join(root, 'package.json'),
+    JSON.stringify(packageJson, null, 2)
+  );
   process.chdir(root);
 
-  run('npm install --save react-native', function(e) {
+  var initCmd = path.resolve(__dirname, '..', 'init.sh') + ' ' + projectName;
+  run(initCmd, function(e) {
     if (e) {
-      console.error('`npm install --save react-native` failed');
+      console.error('initialization failed');
       process.exit(1);
     }
 
-    var cli = require(CLI_MODULE_PATH());
-    cli.init(root, projectName);
+    run('npm install --save react-native', function(e) {
+      if (e) {
+        console.error('`npm install --save react-native` failed');
+        process.exit(1);
+      }
+
+      console.log('Next steps:');
+      console.log('');
+      console.log('   Open ' + path.join(root, projectName) + '.xcodeproj in Xcode');
+      console.log('   Hit Run button');
+      console.log('');
+    });
   });
 }
 
