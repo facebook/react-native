@@ -586,15 +586,11 @@
   _register('module', 0);
   _register('exports', 0);
 
-  _register('define', define);
   _register('global', global);
   _register('require', require);
   _register('requireDynamic', require);
   _register('requireLazy', requireLazy);
 
-  define.amd = {};
-
-  global.define = define;
   global.require = require;
   global.requireDynamic = require;
   global.requireLazy = requireLazy;
