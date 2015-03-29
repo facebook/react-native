@@ -183,7 +183,7 @@ var defaults = {
     return (t * t * ((s + 1) * t + s) + 2) / 2;
   },
   easeInBounce: function(t) {
-    return 1 - this.easeOutBounce(1 - t);
+    return 1 - defaults.easeOutBounce(1 - t);
   },
   easeOutBounce: function(t) {
     if (t < (1 / 2.75)) {
@@ -201,9 +201,9 @@ var defaults = {
   },
   easeInOutBounce: function(t) {
     if (t < 0.5) {
-      return this.easeInBounce(t * 2) / 2;
+      return defaults.easeInBounce(t * 2) / 2;
     }
-    return this.easeOutBounce(t * 2 - 1) / 2 + 0.5;
+    return defaults.easeOutBounce(t * 2 - 1) / 2 + 0.5;
   },
 };
 
