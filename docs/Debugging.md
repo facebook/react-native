@@ -19,7 +19,7 @@ To debug the javascript code of your react app do the following:
 ### Optional
 Install the [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) extension for Google Chrome. This will allow you to navigate the view hierarchy if you select the ```React``` tab when the developer tools are open.
 
-## Live Reload.
+## Live Reload
 To activate Live Reload do the following:
 
 1. Run your application in the iOS simulator.
