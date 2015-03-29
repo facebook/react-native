@@ -197,11 +197,11 @@ Fetching data from Rotten Tomatoes's API isn't really relevant to learning React
 Add the following constants to the top of the file (typically below the requires) to create the REQUEST_URL used to request data with.
 
 ```javascript
-var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
-var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
-var PAGE_SIZE = 25;
-var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
-var REQUEST_URL = API_URL + PARAMS;
+/**
+ * For quota reasons we replaced the Rotten Tomatoes' API with a sample data of
+ * their very own API that lives in React Native's Gihub repo.
+ */
+var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 ```
 
 Add some initial state to our application so that we can check `this.state.movies === null` to determine whether the movies data has been loaded or not. We can set this data when the response comes back with `this.setState({movies: moviesData})`. Add this code just above the render function inside our React class.

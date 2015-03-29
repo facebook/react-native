@@ -32,7 +32,7 @@ var MovieScreen = require('./MovieScreen');
 var fetch = require('fetch');
 
 var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/';
-var API_KEYS = [/* '7waqfqbprs7pajbz28mqf6vz' - Limit Exceeded,*/ 'y4vwv8m33hed9ety83jmv52f'];
+var API_KEYS = ['7waqfqbprs7pajbz28mqf6vz', 'y4vwv8m33hed9ety83jmv52f'];
 
 // Results should be cached keyed by the query
 // with values of null meaning "being fetched"
