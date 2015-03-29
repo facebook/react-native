@@ -82,6 +82,13 @@ RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
+RCT_CUSTOM_VIEW_PROPERTY(rotation, CGFloat, RCTView)
+{
+    CGFloat angle = [RCTConvert CGFloat:json];
+    CGAffineTransform transform = CGAffineTransformRotate(view.transform, angle);
+    
+    view.transform = transform;
+}
 RCT_CUSTOM_VIEW_PROPERTY(overflow, css_overflow, RCTView)
 {
   view.clipsToBounds = json ? ![RCTConvert css_overflow:json] : defaultView.clipsToBounds;
