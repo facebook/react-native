@@ -402,7 +402,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
    * warnings, and behave strangely (ListView works fine however), so don't fix it unless you fix that too!
    */
   if (_allowNextScrollNoMatterWhat ||
-      (_throttleScrollCallbackMS != 0 && throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
+      ( throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
 
     // Calculate changed frames
     NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
