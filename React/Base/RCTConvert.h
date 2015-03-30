@@ -52,6 +52,7 @@
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
 + (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
++ (UIReturnKeyType)UIReturnKeyType:(id)json;
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
 + (UIBarStyle)UIBarStyle:(id)json;
