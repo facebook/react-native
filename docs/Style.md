@@ -95,7 +95,7 @@ var List = React.createClass({
 
 You can checkout latest support of CSS Properties in following Links.
 
-- [View Properties](https://github.com/facebook/react-native/blob/72d3d724a3a0c6bc46981efd0dad8f7f61121a47/Libraries/Components/View/ViewStylePropTypes.js)
-- [Image Properties](https://github.com/facebook/react-native/blob/72d3d724a3a0c6bc46981efd0dad8f7f61121a47/Libraries/Image/ImageStylePropTypes.js)
-- [Text Properties](https://github.com/facebook/react-native/blob/72d3d724a3a0c6bc46981efd0dad8f7f61121a47/Libraries/Text/TextStylePropTypes.js)
+- [View Properties](http://facebook.github.io/react-native/docs/view.html#style)
+- [Image Properties](http://facebook.github.io/react-native/docs/image.html#style)
+- [Text Properties](http://facebook.github.io/react-native/docs/text.html#style)
 - [Flex Properties](http://facebook.github.io/react-native/docs/flexbox.html#content)
