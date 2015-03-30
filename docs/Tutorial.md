@@ -197,11 +197,11 @@ Fetching data from Rotten Tomatoes's API isn't really relevant to learning React
 Add the following constants to the top of the file (typically below the requires) to create the REQUEST_URL used to request data with.
 
 ```javascript
-var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
-var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
-var PAGE_SIZE = 25;
-var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
-var REQUEST_URL = API_URL + PARAMS;
+/**
+ * For quota reasons we replaced the Rotten Tomatoes' API with a sample data of
+ * their very own API that lives in React Native's Gihub repo.
+ */
+var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 ```
 
 Add some initial state to our application so that we can check `this.state.movies === null` to determine whether the movies data has been loaded or not. We can set this data when the response comes back with `this.setState({movies: moviesData})`. Add this code just above the render function inside our React class.
@@ -222,7 +222,7 @@ We want to send off the request after the component has finished loading. `compo
   },
 ```
 
-Now add `fetchData` function used above to our main component. This method will be respondible for handling data fetching. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that `setState` actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
+Now add `fetchData` function used above to our main component. This method will be responsible for handling data fetching. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that `setState` actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
 
 ```javascript
   fetchData: function() {
@@ -300,7 +300,7 @@ var {
 } = React;
 ```
 
-Now modify the render funtion so that once we have our data it renders a ListView of movies instead of a single movie.
+Now modify the render function so that once we have our data it renders a ListView of movies instead of a single movie.
 
 ```javascript
   render: function() {
@@ -318,9 +318,9 @@ Now modify the render funtion so that once we have our data it renders a ListVie
   },
 ```
 
-The `DataSource` is an interfacte that `ListView` is using to determine which rows have changed over the course of updates.
+The `DataSource` is an interface that `ListView` is using to determine which rows have changed over the course of updates.
 
-You'll notice we used `dataSource` from `this.state`. The next step is to add an empty `dataSource` to the object returned by `getInitialState`. Also, now that we're storing the data in `dataSource`, we should not longer use `this.state.movies` to avoid storing data twice. We can use boolean property of the state (`this.state.loaded`) to tell whether data fetching has finished.
+You'll notice we used `dataSource` from `this.state`. The next step is to add an empty `dataSource` to the object returned by `getInitialState`. Also, now that we're storing the data in `dataSource`, we should no longer use `this.state.movies` to avoid storing data twice. We can use boolean property of the state (`this.state.loaded`) to tell whether data fetching has finished.
 
 ```javascript
   getInitialState: function() {

@@ -37,7 +37,8 @@ var Geolocation = {
   getCurrentPosition: function(
     geo_success: Function,
     geo_error?: Function,
-    geo_options?: Object) {
+    geo_options?: Object
+  ) {
     invariant(
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.'

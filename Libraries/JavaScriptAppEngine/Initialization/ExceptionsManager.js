@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ExceptionsManager
+ * @flow
  */
 'use strict';
 
@@ -18,7 +19,13 @@ var parseErrorStack = require('parseErrorStack');
 
 var sourceMapPromise;
 
-function handleException(e) {
+type Exception = {
+  sourceURL: string;
+  line: number;
+  message: string;
+}
+
+function handleException(e: Exception) {
   var stack = parseErrorStack(e);
   console.error(
     'Error: ' +

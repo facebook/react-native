@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name               = "React"
-  s.version            = "0.1.0"
+  s.version            = "0.3.1"
   s.summary            = "Build high quality mobile apps using React."
   s.description        = <<-DESC
                            React Native apps are built using the React JS
@@ -26,7 +26,6 @@ Pod::Spec.new do |s|
   s.preserve_paths     = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
-    ss.libraries       = 'icucore'
     ss.source_files    = "React/**/*.{c,h,m}"
     ss.exclude_files   = "**/__tests__/*", "IntegrationTests/*"
     ss.frameworks      = "JavaScriptCore"
@@ -75,6 +74,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'RCTWebSocketDebugger' do |ss|
+    ss.libraries       = 'icucore'
     ss.dependency        'React/Core'
     ss.source_files    = "Libraries/RCTWebSocketDebugger/*.{h,m}"
   end
