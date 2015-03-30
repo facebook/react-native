@@ -25,6 +25,7 @@ var DEFINE_MODULE_CODE = [
 ].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
+var REL_IMPORT_STMT = /(\bimport\s+(?:.+\s+from\s+)?['"])([^'"]+)(['"])/g;
 var REL_REQUIRE_STMT = /(\brequire\s*\(\s*['"])([^'"]+)(['"]\s*\))/g;
 
 var validateOpts = declareOpts({
@@ -146,14 +147,23 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
   }
 
   var relativizedCode =
-    code.replace(REL_REQUIRE_STMT, function(codeMatch, pre, depName, post) {
-      var depId = resolvedDeps[depName];
-      if (depId != null) {
-        return pre + depId + post;
-      } else {
-        return codeMatch;
-      }
-    });
+    code
+      .replace(REL_IMPORT_STMT, function(codeMatch, pre, depName, post) {
+        var depId = resolvedDeps[depName];
+        if (depId != null) {
+          return pre + depId + post;
+        } else {
+          return codeMatch;
+        }
+      })
+      .replace(REL_REQUIRE_STMT, function(codeMatch, pre, depName, post) {
+        var depId = resolvedDeps[depName];
+        if (depId != null) {
+          return pre + depId + post;
+        } else {
+          return codeMatch;
+        }
+      });
 
   return DEFINE_MODULE_CODE.replace(DEFINE_MODULE_REPLACE_RE, function(key) {
     return {
