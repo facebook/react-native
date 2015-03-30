@@ -179,7 +179,7 @@ Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a 
 
 RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
 
-@end`}
+@end
 ```
 
 ```javascript
