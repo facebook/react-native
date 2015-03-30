@@ -44,6 +44,7 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   fontStyle: true,
   fontWeight: true,
   keyboardType: true,
+  returnKeyType: true,
   mostRecentEventCounter: true,
   placeholder: true,
   placeholderTextColor: true,
@@ -139,6 +140,22 @@ var TextInput = React.createClass({
     keyboardType: PropTypes.oneOf([
       'default',
       'numeric',
+    ]),
+    /**
+     * Determines the returnKeyType of the TextInput
+    **/
+    returnKeyType: PropTypes.oneOf([
+      'default',
+      'go',
+      'google',
+      'join',
+      'next',
+      'route',
+      'search',
+      'send',
+      'yahoo',
+      'done',
+      'emergencyCall',
     ]),
     /**
      * If true, the text input can be multiple lines. Default value is false.
@@ -332,6 +349,7 @@ var TextInput = React.createClass({
           style={[styles.input, this.props.style]}
           enabled={this.props.editable}
           keyboardType={this.props.keyboardType}
+          returnKeyType={this.props.returnKeyType}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
