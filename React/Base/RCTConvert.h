@@ -124,9 +124,16 @@ BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 #endif
 
 /**
+ * This macro is used for creating simple converter functions that just call
+ * the specified getter method on the json value.
+ */
+#define RCT_CONVERTER(type, name, getter) \
+RCT_CUSTOM_CONVERTER(type, name, [json getter])
+
+/**
  * This macro is used for creating converter functions with arbitrary logic.
  */
-#define RCT_CONVERTER_CUSTOM(type, name, code) \
+#define RCT_CUSTOM_CONVERTER(type, name, code) \
 + (type)name:(id)json                          \
 {                                              \
   if (json == [NSNull null]) {                 \
@@ -144,19 +151,12 @@ BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 }
 
 /**
- * This macro is used for creating simple converter functions that just call
- * the specified getter method on the json value.
- */
-#define RCT_CONVERTER(type, name, getter) \
-RCT_CONVERTER_CUSTOM(type, name, [json getter])
-
-/**
  * This macro is similar to RCT_CONVERTER, but specifically geared towards
  * numeric types. It will handle string input correctly, and provides more
  * detailed error reporting if a wrong value is passed in.
  */
 #define RCT_NUMBER_CONVERTER(type, getter) \
-RCT_CONVERTER_CUSTOM(type, type, [[self NSNumber:json] getter])
+RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
 
 /**
  * This macro is used for creating converters for enum types.
@@ -187,57 +187,6 @@ RCT_CONVERTER_CUSTOM(type, type, [[self NSNumber:json] getter])
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
   }                                                       \
   return value ? [value getter] : default;                \
-}
-
-/**
- * This macro is used for creating converter functions for structs that consist
- * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
- */
-#define RCT_CGSTRUCT_CONVERTER(type, values, _aliases)   \
-+ (type)type:(id)json                                    \
-{                                                        \
-  @try {                                                 \
-    static NSArray *fields;                              \
-    static NSUInteger count;                             \
-    static dispatch_once_t onceToken;                    \
-    dispatch_once(&onceToken, ^{                         \
-      fields = values;                                   \
-      count = [fields count];                            \
-    });                                                  \
-    type result;                                         \
-    if ([json isKindOfClass:[NSArray class]]) {          \
-      if ([json count] != count) {                       \
-        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
-      } else {                                           \
-        for (NSUInteger i = 0; i < count; i++) {         \
-          ((CGFloat *)&result)[i] = [self CGFloat:json[i]]; \
-        }                                                \
-      }                                                  \
-    } else if ([json isKindOfClass:[NSDictionary class]]) { \
-      NSDictionary *aliases = _aliases;                  \
-      if (aliases.count) {                               \
-        json = [json mutableCopy];                       \
-        for (NSString *alias in aliases) {               \
-          NSString *key = aliases[alias];                \
-          NSNumber *number = json[key];                  \
-          if (number) {                                  \
-            ((NSMutableDictionary *)json)[key] = number; \
-          }                                              \
-        }                                                \
-      }                                                  \
-      for (NSUInteger i = 0; i < count; i++) {           \
-        ((CGFloat *)&result)[i] = [self CGFloat:json[fields[i]]]; \
-      }                                                  \
-    } else if (json && json != [NSNull null]) {          \
-      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
-    }                                                    \
-    return result;                                       \
-  }                                                      \
-  @catch (__unused NSException *e) {                     \
-    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
-    type result; \
-    return result; \
-  } \
 }
 
 /**
