@@ -43,7 +43,7 @@
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
-@property (nonatomic, assign) NSUInteger throttleScrollCallbackMS;
+@property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, copy) NSArray *stickyHeaderIndices;
 

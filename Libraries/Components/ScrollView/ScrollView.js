@@ -64,7 +64,7 @@ var ScrollView = React.createClass({
     showsHorizontalScrollIndicator: PropTypes.bool,
     showsVerticalScrollIndicator: PropTypes.bool,
     style: StyleSheetPropType(ViewStylePropTypes),
-    throttleScrollCallbackMS: PropTypes.number, // null
+    scrollEventThrottle: PropTypes.number, // null
 
     /**
      * When true, the scroll view bounces horizontally when it reaches the end
@@ -211,12 +211,12 @@ var ScrollView = React.createClass({
       );
     }
     if (__DEV__) {
-      if (this.props.onScroll && !this.props.throttleScrollCallbackMS) {
+      if (this.props.onScroll && !this.props.scrollEventThrottle) {
         var onScroll = this.props.onScroll;
         this.props.onScroll = function() {
           console.log(
             'You specified `onScroll` on a <ScrollView> but not ' +
-            '`throttleScrollCallbackMS`. You will only receive one event. ' +
+            '`scrollEventThrottle`. You will only receive one event. ' +
             'Using `16` you get all the events but be aware that it may ' +
             'cause frame drops, use a bigger number if you don\'t need as ' +
             'much precision.'
@@ -325,7 +325,7 @@ var validAttributes = {
   showsHorizontalScrollIndicator: true,
   showsVerticalScrollIndicator: true,
   stickyHeaderIndices: {diff: deepDiffer},
-  throttleScrollCallbackMS: true,
+  scrollEventThrottle: true,
   zoomScale: true,
 };
 
