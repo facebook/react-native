@@ -177,6 +177,8 @@ Note that the constants are exported only at initialization time, so if you chan
 The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
 
 ```objective-c
+#import "RCTBridge.h" 
+
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
