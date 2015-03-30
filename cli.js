@@ -87,14 +87,12 @@ function link(libraryPath) {
     var PBXReferenceProxyHash = getHash();
     var PBXFileReferenceHash = getHash();
 
-    // PBXBuildFile
     var PBXBuildFileHash = getHash();
     var PBXBuildFile = {
       isa: 'PBXBuildFile',
       fileRef: PBXReferenceProxyHash,
     };
 
-    // PBXContainerItemProxy
     var PBXContainerItemProxyHash = getHash();
     var PBXContainerItemProxy = {
       isa: 'PBXContainerItemProxy',
@@ -111,7 +109,6 @@ function link(libraryPath) {
       path: path.join(libraryPath, xcodeprojName),
       sourceTree: '<group>',
     };
-
 
     var PBXFrameworksBuildPhase = PBXBuildFileHash;
 
@@ -194,37 +191,55 @@ function link(libraryPath) {
       sourcePbxproj.objects[PBXGroupHash] = PBXGroup;
       sourcePbxproj.objects[PBXReferenceProxyHash] = PBXReferenceProxy;
 
-      var string = JSON.stringify(sourcePbxproj, null, 2);
-      string = string.replace(/":/g, '" =');
-      string = string.replace(/([^\[\{]),?\n/g, '$1;\n');
-      string = string.replace(/"$/gm, '";');
-      string = string.replace(/"([^"]*?)"/g, function (match, content) {
-        if (!content || /\W/.test(content)) {
-          return match;
-        }
-        return content;
-      });
-      string = string.replace(/\[([^\]]*)\];?/g, function (match, content) {
-        if (content && content[0] !== '\n') {
-          return match;
-        }
-
-        return '(\n' +
-          content.split('\n').map(function (line) {
-            if (line[line.length - 1] === ';' && !~line.indexOf(' = ')) {
-              return line.replace(';', ',');
-            }
-            return line;
-          }).join('\n') +
-        ');';
-      });
-      string = string.replace(/{}/g, '{\n}');
-      string = '// !$*UTF8*$!\n' + string + '\n';
-      fs.writeFileSync(sourcePbxprojPath, string);
+      var output = OldPlist.stringify(sourcePbxproj);
+      fs.writeFileSync(sourcePbxprojPath, output);
     });
   });
-
 }
+
+var OldPlist = {
+  stringify: function (object, level) {
+    var HEADER = '// !$*UTF8*$!\n';
+    var INDENT_SIZE = 2;
+
+    function indent(str, level) {
+      var _indent = '';
+      level *= INDENT_SIZE;
+      while (level--) {
+        _indent += ' ';
+      }
+      return _indent + str;
+    }
+
+    function _stringify(object, level) {
+      if (Array.isArray(object)) {
+        return '(\n' + _stringifyArray(object, level + 1) + '\n' + indent(')', level);
+      } else if (typeof object === 'object') {
+        return '{\n' + _stringifyObject(object, level + 1) + '\n' + indent('}', level);
+      } else {
+        return _stringifyString(''+object);
+      }
+    }
+
+    function _stringifyObject(object, level) {
+      return Object.keys(object).map(function (key) {
+        return indent(_stringifyString(key) + ' = ' + _stringify(object[key], level) + ';', level);
+      }).join('\n');
+    }
+
+    function _stringifyString(str) {
+      return !str || /\W/.test(str) ? '"' + str + '"' : str;
+    }
+
+    function _stringifyArray(array, level) {
+      return array.map(function (value) {
+        return indent(_stringify(value, level), level);
+      }).join(',\n');
+    }
+
+    return HEADER + _stringify(object, 0);
+  }
+};
 
 function readProject(pbxprojPath, callback) {
   var plutil = spawn('plutil', [
