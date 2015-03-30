@@ -17,12 +17,12 @@ typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *e
 @implementation RCTImageDownloader
 {
   RCTCache *_cache;
+  dispatch_queue_t _processingQueue;
   NSMutableDictionary *_pendingBlocks;
 }
 
 + (instancetype)sharedInstance
 {
-  RCTAssertMainThread();
   static RCTImageDownloader *sharedInstance;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -35,27 +35,32 @@ typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *e
 {
   if ((self = [super init])) {
     _cache = [[RCTCache alloc] initWithName:@"RCTImageDownloader"];
-    _pendingBlocks = [NSMutableDictionary dictionary];
+    _processingQueue = dispatch_queue_create("com.facebook.React.DownloadProcessingQueue", DISPATCH_QUEUE_SERIAL);
+    _pendingBlocks = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
 
-- (NSString *)cacheKeyForURL:(NSURL *)url
+static NSString *RCTCacheKeyForURL(NSURL *url)
 {
   return url.absoluteString;
 }
 
 - (id)_downloadDataForURL:(NSURL *)url block:(RCTCachedDataDownloadBlock)block
 {
-  NSString *cacheKey = [self cacheKeyForURL:url];
+  NSString *cacheKey = RCTCacheKeyForURL(url);
 
   __block BOOL cancelled = NO;
   __block NSURLSessionDataTask *task = nil;
+
   dispatch_block_t cancel = ^{
+
     cancelled = YES;
 
-    NSMutableArray *pendingBlocks = _pendingBlocks[cacheKey];
-    [pendingBlocks removeObject:block];
+    dispatch_async(_processingQueue, ^{
+      NSMutableArray *pendingBlocks = self->_pendingBlocks[cacheKey];
+      [pendingBlocks removeObject:block];
+    });
 
     if (task) {
       [task cancel];
@@ -63,56 +68,60 @@ typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *e
     }
   };
 
-  NSMutableArray *pendingBlocks = _pendingBlocks[cacheKey];
-  if (pendingBlocks) {
-    [pendingBlocks addObject:block];
-  } else {
-    _pendingBlocks[cacheKey] = [NSMutableArray arrayWithObject:block];
-
-    __weak RCTImageDownloader *weakSelf = self;
-    RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSData *data, NSError *error) {
-      RCTImageDownloader *strongSelf = weakSelf;
-      NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
-      [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
-
-      for (RCTCachedDataDownloadBlock block in blocks) {
-        block(cached, data, error);
-      }
-    };
-
-    if ([_cache hasDataForKey:cacheKey]) {
-      [_cache fetchDataForKey:cacheKey completionHandler:^(NSData *data) {
-        if (!cancelled) runBlocks(YES, data, nil);
-      }];
+  dispatch_async(_processingQueue, ^{
+    NSMutableArray *pendingBlocks = _pendingBlocks[cacheKey];
+    if (pendingBlocks) {
+      [pendingBlocks addObject:block];
     } else {
-      task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (!cancelled) runBlocks(NO, data, error);
-      }];
+      _pendingBlocks[cacheKey] = [NSMutableArray arrayWithObject:block];
 
-      [task resume];
+      __weak RCTImageDownloader *weakSelf = self;
+      RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSData *data, NSError *error) {
+
+        RCTImageDownloader *strongSelf = weakSelf;
+        NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
+        [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
+        for (RCTCachedDataDownloadBlock block in blocks) {
+          block(cached, data, error);
+        }
+      };
+
+      if ([_cache hasDataForKey:cacheKey]) {
+        [_cache fetchDataForKey:cacheKey completionHandler:^(NSData *data) {
+          if (!cancelled) {
+            runBlocks(YES, data, nil);
+          }
+        }];
+      } else {
+        task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+          if (!cancelled) {
+            runBlocks(NO, data, error);
+          }
+        }];
+
+        [task resume];
+      }
     }
-  }
+  });
 
   return [cancel copy];
 }
 
 - (id)downloadDataForURL:(NSURL *)url block:(RCTDataDownloadBlock)block
 {
-  NSString *cacheKey = [self cacheKeyForURL:url];
+  NSString *cacheKey = RCTCacheKeyForURL(url);
   __weak RCTImageDownloader *weakSelf = self;
   return [self _downloadDataForURL:url block:^(BOOL cached, NSData *data, NSError *error) {
     if (!cached) {
       RCTImageDownloader *strongSelf = weakSelf;
       [strongSelf->_cache setData:data forKey:cacheKey];
     }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      block(data, error);
-    });
+    block(data, error);
   }];
 }
 
-- (id)downloadImageForURL:(NSURL *)url size:(CGSize)size scale:(CGFloat)scale block:(RCTImageDownloadBlock)block
+- (id)downloadImageForURL:(NSURL *)url size:(CGSize)size
+                    scale:(CGFloat)scale block:(RCTImageDownloadBlock)block
 {
   return [self downloadDataForURL:url block:^(NSData *data, NSError *error) {
 
@@ -142,20 +151,14 @@ typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *e
       image = UIGraphicsGetImageFromCurrentImageContext();
       UIGraphicsEndImageContext();
     }
-
-    // TODO: should we cache the decompressed image?
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      block(image, nil);
-    });
+    block(image, nil);
   }];
 }
 
 - (void)cancelDownload:(id)downloadToken
 {
   if (downloadToken) {
-    dispatch_block_t block = (id)downloadToken;
-    block();
+    ((dispatch_block_t)downloadToken)();
   }
 }
 
