@@ -41,6 +41,7 @@
     "react-native-start": "packager/packager.sh"
   },
   "dependencies": {
+    "bluebird": "2.9.21",
     "connect": "2.8.3",
     "jstransform": "10.0.1",
     "react-timer-mixin": "^0.13.1",
