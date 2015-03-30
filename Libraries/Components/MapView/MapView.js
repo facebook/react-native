@@ -175,6 +175,7 @@ var RCTMap = createReactIOSNativeComponentClass({
       region: {diff: deepDiffer},
       maxDelta: true,
       minDelta: true,
+      pins: true,
       legalLabelInsets: {diff: insetsDiffer},
     }
   ),

@@ -91,7 +91,6 @@ RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
 - (void)mapView:(RCTMap *)mapView regionWillChangeAnimated:(BOOL)animated
 {
   //Supported types: http://facebook.github.io/react-native/docs/nativemodulesios.html#argument-types
-  NSLog(@"It's me2: %@", _pins);
   [self _regionChanged:mapView];
 
   mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval

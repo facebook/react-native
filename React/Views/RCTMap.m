@@ -21,6 +21,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 @implementation RCTMap
 {
   UIView *_legalLabel;
+  NSArray *_pins;
   CLLocationManager *_locationManager;
 }
 
@@ -37,6 +38,14 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
     }
   }
   return self;
+}
+
+- (void)setPins:(NSArray *)pins
+{
+  if (_pins != pins) {
+    _pins = [pins copy];
+    [self setNeedsLayout];
+  }
 }
 
 - (void)dealloc
