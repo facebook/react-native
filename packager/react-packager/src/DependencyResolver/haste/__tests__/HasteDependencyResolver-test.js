@@ -230,7 +230,7 @@ describe('HasteDependencyResolver', function() {
       var code = [
         'require("x")',
         'require("y")',
-        'require("z")',
+        'require(\'z\')',
       ].join('\n');
 
       depGraph.resolveDependency.mockImpl(function(fromModule, toModuleName) {
@@ -239,7 +239,7 @@ describe('HasteDependencyResolver', function() {
             id: 'changed'
           };
         } else if (toModuleName === 'y') {
-          return { id: 'y' };
+          return { id: 'Y' };
         }
         return null;
       });
@@ -253,9 +253,9 @@ describe('HasteDependencyResolver', function() {
       expect(processedCode).toEqual([
         '__d(\'test module\',["changed","y"],function(global,' +
         ' require, requireDynamic, requireLazy, module, exports) {' +
-        '  require(\'changed\')',
-        'require(\'y\')',
-        'require("z")});',
+        '  require("changed")',
+        'require("Y")',
+        'require(\'z\')});',
       ].join('\n'));
     });
   });
