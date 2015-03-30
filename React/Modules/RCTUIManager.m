@@ -80,10 +80,18 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   if ((self = [super init])) {
     _property = [RCTConvert NSString:config[@"property"]];
 
-    // TODO: this should be provided in ms, not seconds
-    // (this will require changing all call sites to ms as well)
-    _duration = [RCTConvert NSTimeInterval:config[@"duration"]] * 1000.0 ?: duration;
-    _delay = [RCTConvert NSTimeInterval:config[@"delay"]]  * 1000.0;
+    _duration = [RCTConvert NSTimeInterval:config[@"duration"]] ?: duration;
+    if (_duration > 0.0 && _duration < 0.01) {
+      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
+      _duration = _duration * 1000.0;
+    }
+
+    _delay = [RCTConvert NSTimeInterval:config[@"delay"]];
+    if (_delay > 0.0 && _delay < 0.01) {
+      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
+      _delay = _delay * 1000.0;
+    }
+
     _animationType = [RCTConvert RCTAnimationType:config[@"type"]];
     if (_animationType == RCTAnimationTypeSpring) {
       _springDamping = [RCTConvert CGFloat:config[@"springDamping"]];
@@ -142,9 +150,11 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
 
   if ((self = [super init])) {
 
-    // TODO: this should be provided in ms, not seconds
-    // (this will require changing all call sites to ms as well)
-    NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]] * 1000.0;
+    NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]];
+    if (duration > 0.0 && duration < 0.01) {
+      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
+      duration = duration * 1000.0;
+    }
 
     _createAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"create"]];
     _updateAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"update"]];
