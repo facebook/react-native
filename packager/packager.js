@@ -164,13 +164,12 @@ function getDevToolsLauncher(options) {
       var debuggerPath = path.join(__dirname, 'debugger.html');
       res.writeHead(200, {'Content-Type': 'text/html'});
       fs.createReadStream(debuggerPath).pipe(res);
-    } else if (req.url === '/launch-chrome-devtools') {
+    } else if (req.url === '/launch-browser-devtools') {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
-      var script = 'launchChromeDevTools.applescript';
-      console.log('Launching Dev Tools...');
-      exec(path.join(__dirname, script) + ' ' + debuggerURL, function(err, stdout, stderr) {
+      console.log('Launching Dev Tools in default browser...');
+      exec('open' + ' ' + debuggerURL, function(err, stdout, stderr) {
         if (err) {
-          console.log('Failed to run ' + script, err);
+          console.log('Failed to open ' + debuggerURL, err);
         }
         console.log(stdout);
         console.warn(stderr);

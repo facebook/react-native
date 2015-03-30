@@ -48,7 +48,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
     _injectedObjects = [[NSMutableDictionary alloc] init];
     [_socket setDelegateDispatchQueue:_jsQueue];
 
-    NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:URL];
+    NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-browser-devtools" relativeToURL:url];
     [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
     if (![self connectToProxy]) {
@@ -66,7 +66,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
       retries--;
     }
     if (!runtimeIsReady) {
-      RCTLogError(@"Runtime is not ready. Do you have Chrome open?");
+      RCTLogError(@"Runtime is not ready. Do you have your browser open?");
       [self invalidate];
       return nil;
     }
