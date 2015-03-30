@@ -404,9 +404,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   if (_allowNextScrollNoMatterWhat ||
       (_throttleScrollCallbackMS != 0 && throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
 
-    // Calculate changed frames
-    NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
-    [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
+      // Calculate changed frames
+      NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
+      [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
 
       // Check if new or changed
       CGRect newFrame = subview.frame;
