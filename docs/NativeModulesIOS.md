@@ -177,12 +177,21 @@ Note that the constants are exported only at initialization time, so if you chan
 The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
 
 ```objective-c
+#import "RCTBridge.h" 
+#import "RCTEventDispatcher.h"
+
+@implementation CalendarManager
+
+@synthesize bridge = _bridge; 
+
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
   [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
                                                body:@{@"name": eventName}];
 }
+
+@end
 ```
 
 JavaScript code can subscribe to these events:
