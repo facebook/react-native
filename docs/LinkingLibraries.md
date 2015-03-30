@@ -1,5 +1,5 @@
 ---
-id: libraries
+id: linking-libraries
 title: Linking Libraries
 layout: docs
 category: Guides
