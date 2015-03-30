@@ -145,15 +145,15 @@ var React = require('react-native');
 var { NativeModules, Text } = React;
 
 var Message = React.createClass({
+  getInitialState() {
+    return { text: 'Goodbye World.' };
+  },
+  componentDidMount() {
+    NativeModules.MyCustomModule.processString(this.state.text, (text) => {
+      this.setState({text});
+    });
+  },
   render: function() {
-    getInitialState() {
-      return { text: 'Goodbye World.' };
-    },
-    componentDidMount() {
-      NativeModules.MyCustomModule.processString(this.state.text, (text) => {
-        this.setState({text});
-      });
-    },
     return (
       <Text>{this.state.text}</Text>
     );
