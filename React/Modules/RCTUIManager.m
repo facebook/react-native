@@ -1048,6 +1048,20 @@ static void RCTMeasureLayout(RCTShadowView *view,
   }];
 }
 
+- (void)scrollToOffsetWithoutAnimationWithView:(NSNumber *)reactTag scrollToOffsetX:(NSNumber *)offsetX offsetY:(NSNumber *)offsetY
+{
+  RCT_EXPORT(scrollWithoutAnimationTo);
+
+  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
+    UIView *view = viewRegistry[reactTag];
+    if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+      [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:NO];
+    } else {
+      RCTLogError(@"tried to scrollToOffsetWithoutAnimation: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+    }
+  }];
+}
+
 - (void)zoomToRectWithView:(NSNumber *)reactTag rect:(NSDictionary *)rectDict
 {
   RCT_EXPORT(zoomToRect);
