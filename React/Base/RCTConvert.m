@@ -24,8 +24,8 @@ RCT_NUMBER_CONVERTER(uint64_t, unsignedLongLongValue);
 RCT_NUMBER_CONVERTER(NSInteger, integerValue)
 RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
 
-RCT_CONVERTER_CUSTOM(NSArray *, NSArray, [NSArray arrayWithArray:json])
-RCT_CONVERTER_CUSTOM(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
+RCT_CUSTOM_CONVERTER(NSArray *, NSArray, [NSArray arrayWithArray:json])
+RCT_CUSTOM_CONVERTER(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
 RCT_CONVERTER(NSString *, NSString, description)
 
 + (NSNumber *)NSNumber:(id)json
@@ -33,7 +33,12 @@ RCT_CONVERTER(NSString *, NSString, description)
   if ([json isKindOfClass:[NSNumber class]]) {
     return json;
   } else if ([json isKindOfClass:[NSString class]]) {
-    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    static NSNumberFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      formatter = [[NSNumberFormatter alloc] init];
+      formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    });
     NSNumber *number = [formatter numberFromString:json];
     if (!number) {
       RCTLogError(@"JSON String '%@' could not be interpreted as a number", json);
@@ -74,12 +79,35 @@ RCT_CONVERTER(NSString *, NSString, description)
   return [NSURLRequest requestWithURL:[self NSURL:json]];
 }
 
++ (NSDate *)NSDate:(id)json
+{
+  if ([json isKindOfClass:[NSNumber class]]) {
+    return [NSDate dateWithTimeIntervalSince1970:[self NSTimeInterval:json]];
+  } else if ([json isKindOfClass:[NSString class]]) {
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      formatter = [[NSDateFormatter alloc] init];
+      formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
+      formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+      formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    });
+    NSDate *date = [formatter dateFromString:json];
+    if (!date) {
+      RCTLogError(@"JSON String '%@' could not be interpreted as a date. Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
+    }
+    return date;
+  } else if (json && json != [NSNull null]) {
+    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a date", json, [json class]);
+  }
+  return nil;
+}
+
 // JS Standard for time is milliseconds
-RCT_CONVERTER_CUSTOM(NSDate *, NSDate, [NSDate dateWithTimeIntervalSince1970:[self double:json] / 1000.0])
-RCT_CONVERTER_CUSTOM(NSTimeInterval, NSTimeInterval, [self double:json] / 1000.0)
+RCT_CUSTOM_CONVERTER(NSTimeInterval, NSTimeInterval, [self double:json] / 1000.0)
 
 // JS standard for time zones is minutes.
-RCT_CONVERTER_CUSTOM(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[self double:json] * 60.0])
+RCT_CUSTOM_CONVERTER(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[self double:json] * 60.0])
 
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
@@ -142,7 +170,58 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
 }), UIBarStyleDefault, integerValue)
 
 // TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
-RCT_CONVERTER_CUSTOM(CGFloat, CGFloat, [self double:json])
+/**
+ * This macro is used for creating converter functions for structs that consist
+ * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
+ */
+#define RCT_CGSTRUCT_CONVERTER(type, values, _aliases)   \
++ (type)type:(id)json                                    \
+{                                                        \
+  @try {                                                 \
+    static NSArray *fields;                              \
+    static NSUInteger count;                             \
+    static dispatch_once_t onceToken;                    \
+    dispatch_once(&onceToken, ^{                         \
+      fields = values;                                   \
+      count = [fields count];                            \
+    });                                                  \
+    type result;                                         \
+    if ([json isKindOfClass:[NSArray class]]) {          \
+      if ([json count] != count) {                       \
+        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
+      } else {                                           \
+        for (NSUInteger i = 0; i < count; i++) {         \
+          ((CGFloat *)&result)[i] = [self CGFloat:json[i]]; \
+        }                                                \
+      }                                                  \
+    } else if ([json isKindOfClass:[NSDictionary class]]) { \
+      NSDictionary *aliases = _aliases;                  \
+      if (aliases.count) {                               \
+        json = [json mutableCopy];                       \
+        for (NSString *alias in aliases) {               \
+          NSString *key = aliases[alias];                \
+          NSNumber *number = json[key];                  \
+          if (number) {                                  \
+            ((NSMutableDictionary *)json)[key] = number; \
+          }                                              \
+        }                                                \
+      }                                                  \
+      for (NSUInteger i = 0; i < count; i++) {           \
+        ((CGFloat *)&result)[i] = [self CGFloat:json[fields[i]]]; \
+      }                                                  \
+    } else if (json && json != [NSNull null]) {          \
+      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
+    }                                                    \
+    return result;                                       \
+  }                                                      \
+  @catch (__unused NSException *e) {                     \
+    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
+    type result; \
+    return result; \
+  } \
+}
+
+RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
 RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), nil)
 RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
 RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
@@ -701,25 +780,32 @@ BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json)
     return NO;
   }
 
-  // Get converted value
-  NSMethodSignature *signature = [RCTConvert methodSignatureForSelector:type];
-  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-  [invocation setArgument:&type atIndex:1];
-  [invocation setArgument:&json atIndex:2];
-  [invocation invokeWithTarget:[RCTConvert class]];
-  NSUInteger length = [signature methodReturnLength];
-  void *value = malloc(length);
-  [invocation getReturnValue:value];
+  @try {
+    // Get converted value
+    NSMethodSignature *signature = [RCTConvert methodSignatureForSelector:type];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    [invocation setArgument:&type atIndex:1];
+    [invocation setArgument:&json atIndex:2];
+    [invocation invokeWithTarget:[RCTConvert class]];
+    NSUInteger length = [signature methodReturnLength];
+    void *value = malloc(length);
+    [invocation getReturnValue:value];
 
-  // Set converted value
-  signature = [target methodSignatureForSelector:setter];
-  invocation = [NSInvocation invocationWithMethodSignature:signature];
-  [invocation setArgument:&setter atIndex:1];
-  [invocation setArgument:value atIndex:2];
-  [invocation invokeWithTarget:target];
-  free(value);
+    // Set converted value
+    signature = [target methodSignatureForSelector:setter];
+    invocation = [NSInvocation invocationWithMethodSignature:signature];
+    [invocation setArgument:&setter atIndex:1];
+    [invocation setArgument:value atIndex:2];
+    [invocation invokeWithTarget:target];
+    free(value);
 
-  return YES;
+    return YES;
+  }
+  @catch (NSException *exception) {
+    RCTLogError(@"Exception thrown while attempting to set property '%@' of \
+                '%@' with value '%@': %@", key, [target class], json, exception);
+    return NO;
+  }
 }
 
 BOOL RCTCopyProperty(id target, id source, NSString *keyPath)
@@ -748,7 +834,7 @@ BOOL RCTCopyProperty(id target, id source, NSString *keyPath)
     return NO;
   }
 
-  // Get converted value
+  // Get value
   NSMethodSignature *signature = [source methodSignatureForSelector:getter];
   NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
   [invocation setArgument:&getter atIndex:1];
@@ -757,7 +843,7 @@ BOOL RCTCopyProperty(id target, id source, NSString *keyPath)
   void *value = malloc(length);
   [invocation getReturnValue:value];
 
-  // Set converted value
+  // Set value
   signature = [target methodSignatureForSelector:setter];
   invocation = [NSInvocation invocationWithMethodSignature:signature];
   [invocation setArgument:&setter atIndex:1];
