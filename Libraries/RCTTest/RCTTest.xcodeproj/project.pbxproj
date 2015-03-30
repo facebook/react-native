@@ -65,7 +65,9 @@
 				58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */,
 				580C37701AB104AF0015E709 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		580C37701AB104AF0015E709 /* Products */ = {
 			isa = PBXGroup;

@@ -321,7 +321,9 @@
 				83CBBA2F1A601D0F00E9B192 /* React */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
