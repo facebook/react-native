@@ -11,10 +11,12 @@
  */
 'use strict';
 
+var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
+var Text = require('Text');
 var View = require('View');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
@@ -27,6 +29,7 @@ var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var invariant = require('invariant');
 
+var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
@@ -58,8 +61,8 @@ var WebView = React.createClass({
   },
 
   propTypes: {
-    renderError: PropTypes.func.isRequired, // view to show if there's an error
-    renderLoading: PropTypes.func.isRequired, // loading indicator to show
+    renderError: PropTypes.func, // view to show if there's an error
+    renderLoading: PropTypes.func, // loading indicator to show
     url: PropTypes.string.isRequired,
     automaticallyAdjustContentInsets: PropTypes.bool,
     shouldInjectAJAXHandler: PropTypes.bool,
@@ -77,6 +80,32 @@ var WebView = React.createClass({
     };
   },
 
+  getDefaultProps: function() {
+    return {
+      renderLoading: () => (
+        <View style={styles.loadingView}>
+          <ActivityIndicatorIOS />
+        </View>
+      ),
+      renderError: (errorDomain, errorCode, errorDesc) => (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTextTitle}>
+            Error loading page
+          </Text>
+          <Text style={styles.errorText}>
+            {'Domain: ' + errorDomain}
+          </Text>
+          <Text style={styles.errorText}>
+            {'Error Code: ' + errorCode}
+          </Text>
+          <Text style={styles.errorText}>
+            {'Description: ' + errorDesc}
+          </Text>
+        </View>
+      ),
+    };
+  },
+
   componentWillMount: function() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
@@ -86,7 +115,7 @@ var WebView = React.createClass({
   render: function() {
     var otherView = null;
 
-   if (this.state.viewState === WebViewState.LOADING) {
+    if (this.state.viewState === WebViewState.LOADING) {
       otherView = this.props.renderLoading();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
@@ -193,9 +222,31 @@ var styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: BGWASH,
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  errorTextTitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 10,
+  },
   hidden: {
     height: 0,
     flex: 0, // disable 'flex:1' when hiding a View
+  },
+  loadingView: {
+    backgroundColor: BGWASH,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
