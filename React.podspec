@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
   s.source_files = "React/**/*.{c,h,m}"
   s.resources    = "Resources/*.png"
   s.preserve_paths = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
+  s.header_mappings_dir = "."
   s.exclude_files = "**/__tests__/*", "IntegrationTests/*"
   s.frameworks   = "JavaScriptCore"
   s.requires_arc = true
