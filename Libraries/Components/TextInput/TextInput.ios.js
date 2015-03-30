@@ -134,11 +134,29 @@ var TextInput = React.createClass({
      */
     editable: PropTypes.bool,
     /**
-     * Determines which keyboard to open, e.g.`numeric`.
+     * Determines which keyboard to open, e.g.`decimal`.
+     *
+     * - `ascii` is short for `asciiCapable`
+     * - `number` is short for `numberPad`
+     * - `phone` is short for `phonePad`
+     * - `email` is short for `emailAddress`
+     * - `number` is short for `numberPad`
+     * - `numeric` is an alias for `decimal`
+     * - `web` is short for `webSearch`
      */
     keyboardType: PropTypes.oneOf([
       'default',
-      'numeric',
+      'asciiCapable', 'ascii',
+      'numbersAndPunctuation',
+      'url',
+      'numberPad', 'number',
+      'phonePad', 'phone',
+      'namePhonePad',
+      'emailAddress', 'email',
+      'decimal', 'numeric',
+      'twitter',
+      'webSearch', 'web',
+      'alphabet',
     ]),
     /**
      * If true, the text input can be multiple lines. Default value is false.
