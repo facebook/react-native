@@ -395,7 +395,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   NSTimeInterval now = CACurrentMediaTime();
   NSTimeInterval throttleScrollCallbackSeconds = _throttleScrollCallbackMS / 1000.0;
 
-
   /**
    * TODO: this logic looks wrong, and it may be because it is. Currently, if _throttleScrollCallbackMS
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
