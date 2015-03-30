@@ -72,7 +72,7 @@
 
 </span><h3><a class="anchor" name="fetching-real-data"></a>Fetching real data <a class="hash-link" href="#fetching-real-data">#</a></h3><p>Fetching data from Rotten Tomatoes&#x27;s API isn&#x27;t really relevant to learning React Native so feel free to breeze through this section.</p><p>Add the following constants to the top of the file (typically below the requires) to create the REQUEST_URL used to request data with.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">/**
  * For quota reasons we replaced the Rotten Tomatoes&#x27; API with a sample data of
- * their very own API that lives in React Native&#x27;s Gihub repo.
+ * their very own API that lives in React Native&#x27;s Github repo.
  */</span>
 <span class="token keyword">var</span> REQUEST_URL <span class="token operator">=</span> <span class="token string">&#x27;https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json&#x27;</span><span class="token punctuation">;</span></div><p>Add some initial state to our application so that we can check <code>this.state.movies === null</code> to determine whether the movies data has been loaded or not. We can set this data when the response comes back with <code>this.setState({movies: moviesData})</code>. Add this code just above the render function inside our React class.</p><div class="prism language-javascript">  getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
