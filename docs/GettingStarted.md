@@ -29,3 +29,4 @@ In the newly created folder `AwesomeProject/`
 
 Congratulations! You've just successfully run and modified your first React Native app.
 
+_If you run into any issues getting started, see the [troubleshooting page](/react-native/docs/troubleshooting.html)._
