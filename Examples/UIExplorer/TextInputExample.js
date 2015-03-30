@@ -160,6 +160,65 @@ exports.examples = [
     }
   },
   {
+    title: 'Keyboard type',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            keyboardType="default"
+            placeholder="default"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="ascii"
+            placeholder="ascii"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="email"
+            placeholder="email"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="numbers-and-punctuation"
+            placeholder="numbers-and-punctuation"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="numeric"
+            placeholder="numeric"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="pin"
+            placeholder="pin"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="phone-name"
+            placeholder="phone-name"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="search"
+            placeholder="search"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="twitter"
+            placeholder="twitter"
+            style={styles.default}
+          />
+          <TextInput
+            keyboardType="url"
+            placeholder="url"
+            style={styles.default}
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Auto-correct',
     render: function() {
       return (
