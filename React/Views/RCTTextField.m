@@ -31,7 +31,6 @@
     [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     _reactSubviews = [[NSMutableArray alloc] init];
-    self.returnKeyType = UIReturnKeyDone;
   }
   return self;
 }

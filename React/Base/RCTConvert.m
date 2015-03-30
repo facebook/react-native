@@ -120,6 +120,19 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"default": @(UIKeyboardTypeDefault),
 }), UIKeyboardTypeDefault, integerValue)
 
+RCT_ENUM_CONVERTER(UIReturnKeyType, (@{
+  @"default": @(UIReturnKeyDefault),
+  @"go": @(UIReturnKeyGo),
+  @"google": @(UIReturnKeyGoogle),
+  @"join": @(UIReturnKeyJoin),
+  @"next": @(UIReturnKeyNext),
+  @"route": @(UIReturnKeyRoute),
+  @"search": @(UIReturnKeySearch),
+  @"send": @(UIReturnKeySend),
+  @"yahoo": @(UIReturnKeyYahoo),
+  @"done": @(UIReturnKeyDone),
+}), UIReturnKeyDefault, integerValue)
+
 RCT_ENUM_CONVERTER(UIViewContentMode, (@{
   @"scale-to-fill": @(UIViewContentModeScaleToFill),
   @"scale-aspect-fit": @(UIViewContentModeScaleAspectFit),
