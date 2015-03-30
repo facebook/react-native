@@ -1,6 +1,7 @@
 #import "RCTVideoManager.h"
 #import "RCTVideo.h"
 #import "RCTBridge.h"
+@import MediaPlayer;
 
 @implementation RCTVideoManager
 
@@ -8,20 +9,18 @@
 
 - (UIView *)view
 {
-    return [[RCTVideo alloc] initWithEventDispatcher:_bridge.eventDispatcher];
+  return [[RCTVideo alloc] init];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(src, NSString, RCTVideo)
+RCT_EXPORT_VIEW_PROPERTY(src, NSString);
+RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSInteger);
+
+- (NSDictionary *)constantsToExport
 {
-    if (json) {
-        [view initFromSource:[RCTConvert NSString:json]];
-    }
+  return @{@"ScaleNone": @(MPMovieScalingModeNone),
+           @"ScaleToFill": @(MPMovieScalingModeFill),
+           @"ScaleAspectFit": @(MPMovieScalingModeAspectFit),
+           @"ScaleAspectFill": @(MPMovieScalingModeAspectFill)};
 }
-
-RCT_CUSTOM_VIEW_PROPERTY(resizeMode, NSInteger, RCTVideo)
-{
-    [view setResizeMode:[RCTConvert NSInteger:json]];
-}
-
 
 @end

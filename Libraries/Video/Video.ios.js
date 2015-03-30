@@ -29,7 +29,7 @@ var Video = React.createClass({
     var source = this.props.source;
 
     var resizeMode;
-    var contentModes = NativeModules.VideoContentModes;
+    var contentModes = NativeModules.VideoManager;
     if (style.resizeMode === VideoResizeMode.stretch) {
       resizeMode = contentModes.ScaleToFill;
     } else if (style.resizeMode === VideoResizeMode.contain) {
