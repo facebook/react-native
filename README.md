@@ -191,4 +191,12 @@ var MyCustomView = createReactIOSNativeComponentClass({
 });
 ```
 
+## Running the Examples
+
+- `git clone git@github.com:facebook/react-native.git`
+- `cd react-native && npm install`
+- `cd Examples`
+
+Now open any example and hit run in Xcode.
+
 Further documentation, tutorials, and more on the [React Native website](http://facebook.github.io/react-native/docs/getting-started.html).
