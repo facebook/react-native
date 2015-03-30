@@ -178,6 +178,11 @@ The native module can signal events to JavaScript without being invoked directly
 
 ```objective-c
 #import "RCTBridge.h" 
+#import "RCTEventDispatcher.h"
+
+@implementation CalendarManager
+
+@synthesize bridge = _bridge; 
 
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
@@ -185,6 +190,8 @@ The native module can signal events to JavaScript without being invoked directly
   [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
                                                body:@{@"name": eventName}];
 }
+
+@end
 ```
 
 JavaScript code can subscribe to these events:
