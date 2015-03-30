@@ -39,12 +39,14 @@ RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollsToTop, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSNumberArray);
-RCT_EXPORT_VIEW_PROPERTY(throttleScrollCallbackMS, double);
-RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat);
-RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
-RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets);
-RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint);
+RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSNumberArray)
+RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)
+RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets)
+RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
+
+RCT_DEPRECATED_VIEW_PROPERTY(throttleScrollCallbackMS, scrollEventThrottle)
 
 - (NSDictionary *)constantsToExport
 {
