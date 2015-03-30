@@ -34,7 +34,7 @@ type ReachabilityStateIOS = $Enum<{
  *
  * ### reachabilityIOS
  *
- * Asyncronously determine if the device is online and on a cellular network.
+ * Asynchronously determine if the device is online and on a cellular network.
  *
  * - `none` - device is offline
  * - `wifi` - device is online and connected via wifi, or is the iOS simulator
