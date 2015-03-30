@@ -600,8 +600,8 @@ DependecyGraph.prototype._processAssetChange = function(eventType, file) {
 /**
  * Extract all required modules from a `code` string.
  */
-var importRe = /\bimport\s+(?:.+\s+from\s+)?[\'"]([^"\']+)["\']/g;
-var requireRe = /\brequire\s*\(\s*[\'"]([^"\']+)["\']\s*\)/g;
+var importRe = /\bimport\s+(?:.+\s+from\s+)?['"]([^'"]+)['"]/g;
+var requireRe = /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
 var blockCommentRe = /\/\*(.|\n)*?\*\//g;
 var lineCommentRe = /\/\/.+(\n|$)/g;
 function extractRequires(code) {
