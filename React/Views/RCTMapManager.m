@@ -70,6 +70,7 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
+RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
 
 #pragma mark MKMapViewDelegate
 
@@ -89,6 +90,8 @@ RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
 
 - (void)mapView:(RCTMap *)mapView regionWillChangeAnimated:(BOOL)animated
 {
+  //Supported types: http://facebook.github.io/react-native/docs/nativemodulesios.html#argument-types
+  NSLog(@"It's me2: %@", _pins);
   [self _regionChanged:mapView];
 
   mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval
@@ -97,6 +100,8 @@ RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
                                                            userInfo:@{ @"mapView": mapView }
                                                             repeats:YES];
   [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
+
+  // TODO: Add pins here (http://www.appcoda.com/ios-programming-101-drop-a-pin-on-map-with-mapkit-api/)
 }
 
 - (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(BOOL)animated
