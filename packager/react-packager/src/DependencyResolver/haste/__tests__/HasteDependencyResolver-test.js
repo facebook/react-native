@@ -10,6 +10,7 @@
 
 jest.dontMock('../')
     .dontMock('q')
+    .dontMock('../DependencyGraph/regex')
     .setMock('../../ModuleDescriptor', function(data) {return data;});
 
 var q = require('q');

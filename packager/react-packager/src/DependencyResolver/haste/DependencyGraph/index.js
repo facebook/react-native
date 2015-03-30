@@ -12,6 +12,7 @@ var ModuleDescriptor = require('../../ModuleDescriptor');
 var q = require('q');
 var fs = require('fs');
 var docblock = require('./docblock');
+var REQUIRE_RE = require('./regex').REQUIRE_RE;
 var path = require('path');
 var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
@@ -601,8 +602,6 @@ DependecyGraph.prototype._processAssetChange = function(eventType, file) {
  * Extract all required modules from a `code` string.
  */
 
-// TODO: export requireRe & import into DependencyResolver/index.js
-var requireRe = /\brequire\s*?\(\s*?([\'"])([^"\']+)\1\s*?\)/g;
 var blockCommentRe = /\/\*(.|\n)*?\*\//g;
 var lineCommentRe = /\/\/.+(\n|$)/g;
 function extractRequires(code) {
@@ -611,7 +610,7 @@ function extractRequires(code) {
   code
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
-    .replace(requireRe, function(match, _, dep) {
+    .replace(REQUIRE_RE, function(match, _, dep) {
       deps.push(dep);
     });
 
