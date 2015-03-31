@@ -35,7 +35,7 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (instancetype)init
 {
-  return [self initWithURL:[NSURL URLWithString:@"http://localhost:8081/debugger-proxy"]];
+  return [self initWithURL:RCTServerURLWithPath(@"/debugger-proxy")];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL

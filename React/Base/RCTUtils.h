@@ -52,3 +52,6 @@ RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, N
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
+
+// Returns the path to the React Native packager
+NSURL* RCTServerURLWithPath(NSString *bundleUrl);

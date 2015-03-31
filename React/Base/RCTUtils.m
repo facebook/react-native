@@ -261,3 +261,15 @@ BOOL RCTRunningInTestEnvironment(void)
   });
   return _isTestEnvironment;
 }
+
+NSURL* RCTServerURLWithPath(NSString *bundleUrl)
+{
+  NSString *url = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactServer"];
+  
+  if (url == nil){
+    url = @"http://localhost:8081";
+  }
+  
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", url, bundleUrl]];
+}
+

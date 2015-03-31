@@ -102,7 +102,7 @@
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, nil) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[stackFrameJSON length]];
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-  request.URL = [NSURL URLWithString:@"http://localhost:8081/open-stack-frame"];
+  request.URL = RCTServerURLWithPath(@"/open-stack-frame");
   request.HTTPMethod = @"POST";
   request.HTTPBody = stackFrameJSON;
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
