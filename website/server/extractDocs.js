@@ -28,7 +28,10 @@ function getNameFromPath(filepath) {
 function getExample(componentName) {
   var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
   if (!fs.existsSync(path)) {
-    return;
+    path = '../Examples/UIExplorer/' + componentName + 'Example.ios.js';
+    if (!fs.existsSync(path)) {
+      return;
+    }
   }
   return {
     path: path.replace(/^\.\.\//, ''),
