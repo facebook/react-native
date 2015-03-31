@@ -48,7 +48,7 @@ $ mkdir ReactComponent
 $ touch index.ios.js
 ```
 
-Copy & paste following starter code for **index.ios.js**.
+Copy & paste following starter code for `index.ios.js` – it’s a barebones React Native app:
 
 ```
 'use strict';
@@ -68,9 +68,11 @@ var styles = React.StyleSheet.create({
 
 class SimpleApp extends React.Component {
   render() {
-    return <View style={styles.container}>
+    return (
+      <View style={styles.container}>
         <Text>This is a simple application.</Text>
-      </View>;
+      </View>
+    )
   }
 }
 
