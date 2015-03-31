@@ -156,6 +156,6 @@ Live reload works from the simulator, too! You’ve got a simple React component
 
 ## Conclusion
 
-So under the hood, when `RCTRootView` is initialized, it will try to download, parse and run the bundle file from React Native development server. All you need to do is to implement your own container view, add `RCTRootView` as its subclass. And then serve the bundle using React Native development server. Then, bravo!
+So under the hood, when `RCTRootView` is initialized, it will try to download, parse and run the bundle file from React Native development server. This means all you need to do is to implement your own container view or view controller for the `RCTRootView` – the `RCTRootView` ingests your bundled JS and renders your React components. Bravo!
 
-You can checkout full source code of sample application [here](https://github.com/tjwudi/EmbededReactNativeExample).
+You can checkout full source code of a sample application [here](https://github.com/tjwudi/EmbededReactNativeExample).
