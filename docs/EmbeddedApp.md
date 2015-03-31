@@ -146,6 +146,8 @@ Now compile and run your app. You shall now see your React Native app running in
 
 ![Example](/react-native/img/EmbeddedAppExample.png)
 
+Live reload works from the simulator, too! You’ve got a simple React component totally encapsulated behind an Objective-C `UIView` subclass.
+
 ## Conclusion
 
 So under the hood, when `RCTRootView` is initialized, it will try to download, parse and run the bundle file from React Native development server. All you need to do is to implement your own container view, add `RCTRootView` as its subclass. And then serve the bundle using React Native development server. Then, bravo!
