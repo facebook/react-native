@@ -146,29 +146,20 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
     }
   }
 
-  var relativizedCode =
-    code
-      .replace(REL_IMPORT_STMT, function(codeMatch, pre, depName, post) {
-        var depId = resolvedDeps[depName];
-        if (depId != null) {
-          return pre + depId + post;
-        } else {
-          return codeMatch;
-        }
-      })
-      .replace(REL_REQUIRE_STMT, function(codeMatch, pre, depName, post) {
-        var depId = resolvedDeps[depName];
-        if (depId != null) {
-          return pre + depId + post;
-        } else {
-          return codeMatch;
-        }
-      });
+  var relativizeCode = function(codeMatch, pre, depName, post) {
+    var depId = resolvedDeps[depName];
+    if (depId != null) {
+      return pre + depId + post;
+    } else {
+      return codeMatch;
+    }
+  };
 
   return DEFINE_MODULE_CODE.replace(DEFINE_MODULE_REPLACE_RE, function(key) {
     return {
       '_moduleName_': module.id,
-      '_code_': relativizedCode,
+      '_code_': code.replace(REL_IMPORT_STMT, relativizeCode)
+                    .replace(REL_REQUIRE_STMT, relativizeCode),
       '_deps_': JSON.stringify(resolvedDepsArr),
     }[key];
   });
