@@ -31,11 +31,11 @@ The installation process also requires [Node.js](http://nodejs.org).
 
 ## Create Your React Native App
 
-First, enter React Native's pod root directory and create **index.ios.js** inside a directory `ReactComponent`.
+First, create a directory `ReactComponent`, enter the directory and create **index.ios.js** inside .
 
 ```
-$ cd Pods/React
 $ mkdir ReactComponent
+$ cd ReactComponent
 $ touch index.ios.js
 ```
 
