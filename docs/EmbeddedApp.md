@@ -83,11 +83,11 @@ React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 
 ## Add Container View To Your App
 
-You should now add container view for React Native component. It can be any **UIView** in your app.
+You should now add container view for React Native component. It can be any `UIView` in your app.
 
 ![Container view example](/react-native/img/EmbeddedAppContainerViewExample.png)
 
-However, let's subclass **UIView** for the sake of clean code. Let's name it **ReactView**. Open up **Yourproject.xcworkspace** and create a new class **ReactView** (You can name it whatever you like :)).
+However, let's subclass `UIView` for the sake of clean code. Let's name it `ReactView`. Open up `Yourproject.xcworkspace` and create a new class `ReactView` (You can name it whatever you like :)).
 
 ```
 // ReactView.h
@@ -111,9 +111,9 @@ Here I disabled **AutoLayout** for simplicity. In real production world, you sho
 
 ## Add RCTRootView To Container View
 
-Ready for the most interesting part? Now we shall create the **RCTRootView**, where your React Native app lives in.
+Ready for the most interesting part? Now we shall create the `RCTRootView`, where your React Native app lives in.
 
-In **ReactView.m**, we need to first initiate **RCTRootView** with the URI of your **index.ios.bundle**. **index.ios.bundle** will be created by packager and served by React Native server, which will be discussed later on.
+In `ReactView.m`, we need to first initiate `RCTRootView` with the URI of your `index.ios.bundle`. `index.ios.bundle` will be created by packager and served by React Native server, which will be discussed later on.
 
 ```
 NSString *urlString = @"http://localhost:8081/index.ios.bundle";
@@ -123,7 +123,7 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                  launchOptions:nil];
 ```
 
-Then add it as a subview of the **ReactView**.
+Then add it as a subview of the `ReactView`.
 
 ```
 [self addSubview:rootView];
@@ -142,12 +142,12 @@ This command will start up a React Native development server within our CocoaPod
 
 ## Compile And Run
 
-Now compile and run your app. You shall now see your React Native app running inside of the **ReactView**.
+Now compile and run your app. You shall now see your React Native app running inside of the `ReactView`.
 
 ![Example](/react-native/img/EmbeddedAppExample.png)
 
 ## Conclusion
 
-So under the hood, when **RCTRootView** is initialized, it will try to download, parse and run the bundle file from React Native development server. All you need to do is to implement your own container view, add **RCTRootView** as its subclass. And then serve the bundle using React Native development server. Then, bravo!
+So under the hood, when `RCTRootView` is initialized, it will try to download, parse and run the bundle file from React Native development server. All you need to do is to implement your own container view, add `RCTRootView` as its subclass. And then serve the bundle using React Native development server. Then, bravo!
 
 You can checkout full source code of sample application [here](https://github.com/tjwudi/EmbededReactNativeExample).
