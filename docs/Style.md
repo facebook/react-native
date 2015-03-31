@@ -44,7 +44,7 @@ All the core components accept a style attribute.
 <View style={styles.background} />
 ```
 
-And also accepts an array of styles.
+They also accepts an array of styles.
 
 ```javascript
 <View style={[styles.base, styles.background]} />
