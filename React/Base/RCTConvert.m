@@ -144,9 +144,32 @@ RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
 }), UIScrollViewKeyboardDismissModeNone, integerValue)
 
 RCT_ENUM_CONVERTER(UIKeyboardType, (@{
-  @"numeric": @(UIKeyboardTypeDecimalPad),
   @"default": @(UIKeyboardTypeDefault),
+  @"ascii-capable": @(UIKeyboardTypeASCIICapable),
+  @"numbers-and-punctuation": @(UIKeyboardTypeNumbersAndPunctuation),
+  @"url": @(UIKeyboardTypeURL),
+  @"number-pad": @(UIKeyboardTypeNumberPad),
+  @"phone-pad": @(UIKeyboardTypePhonePad),
+  @"name-phone-pad": @(UIKeyboardTypeNamePhonePad),
+  @"email-address": @(UIKeyboardTypeEmailAddress),
+  @"decimal-pad": @(UIKeyboardTypeDecimalPad),
+  @"twitter": @(UIKeyboardTypeTwitter),
+  @"web-search": @(UIKeyboardTypeWebSearch),
 }), UIKeyboardTypeDefault, integerValue)
+
+RCT_ENUM_CONVERTER(UIReturnKeyType, (@{
+  @"default": @(UIReturnKeyDefault),
+  @"go": @(UIReturnKeyGo),
+  @"google": @(UIReturnKeyGoogle),
+  @"join": @(UIReturnKeyJoin),
+  @"next": @(UIReturnKeyNext),
+  @"route": @(UIReturnKeyRoute),
+  @"search": @(UIReturnKeySearch),
+  @"send": @(UIReturnKeySend),
+  @"yahoo": @(UIReturnKeyYahoo),
+  @"done": @(UIReturnKeyDone),
+  @"emergency-call": @(UIReturnKeyEmergencyCall),
+}), UIReturnKeyDefault, integerValue)
 
 RCT_ENUM_CONVERTER(UIViewContentMode, (@{
   @"scale-to-fill": @(UIViewContentModeScaleToFill),
