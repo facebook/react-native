@@ -31,7 +31,7 @@ function getExample(componentName) {
     return;
   }
   return {
-    path: path,
+    path: path.replace(/^\.\.\//, ''),
     content: fs.readFileSync(path).toString(),
   };
 }
