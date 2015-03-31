@@ -153,12 +153,10 @@ function getDevToolsLauncher(options) {
 // A status page so the React/project.pbxproj build script
 // can verify that packager is running on 8081 and not 
 // another program / service.
-function statusPageMiddleware (req, res, next) {
+function statusPageMiddleware(req, res, next) {
   if (req.url === '/status') {
     res.end('packager-status:running');
-  }
-  else
-  {
+  } else {
     next();   
   }
 }
