@@ -28,10 +28,10 @@ pod 'React/RCTText'
 
 Remember to install all subspecs you need. The `<Text>` element cannot be used without `pod 'React/RCTText'`.
 
-Then install pods via shell
+Then install your pods:
 
 ```
-$ pod install --verbose
+$ pod install
 ```
 
 ## Create Your React Native App
