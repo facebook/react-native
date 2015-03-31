@@ -25,6 +25,17 @@ function getNameFromPath(filepath) {
   return filepath;
 }
 
+function getExample(componentName) {
+  var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
+  if (!fs.existsSync(path)) {
+    return;
+  }
+  return {
+    path: path,
+    content: fs.readFileSync(path).toString(),
+  };
+}
+
 function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
 
@@ -38,6 +49,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   if (styles) {
     json.styles = styles;
   }
+  json.example = getExample(componentName);
 
   var res = [
     '---',

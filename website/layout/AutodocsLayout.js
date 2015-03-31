@@ -13,6 +13,7 @@ var DocsSidebar = require('DocsSidebar');
 var H = require('Header');
 var Header = require('Header');
 var Marked = require('Marked');
+var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
 var slugify = require('slugify');
@@ -285,6 +286,24 @@ var Autodocs = React.createClass({
     );
   },
 
+  renderExample: function(docs) {
+    if (!docs.example) {
+      return;
+    }
+
+    return (
+      <div>
+        <HeaderWithGithub
+          title="Examples"
+          path={docs.example.path}
+        />
+        <Prism>
+          {docs.example.content.replace(/^[\s\S]*\*\//, '').trim()}
+        </Prism>
+      </div>
+    );
+  },
+
   render: function() {
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
@@ -301,6 +320,7 @@ var Autodocs = React.createClass({
             <h1>{metadata.title}</h1>
             {content}
             {this.renderFullDescription(docs)}
+            {this.renderExample(docs)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}
