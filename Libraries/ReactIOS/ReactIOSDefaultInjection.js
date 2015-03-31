@@ -36,7 +36,8 @@ var ReactNativeComponent = require('ReactNativeComponent');
 var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
-var View = require('View');
+
+var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');
@@ -79,7 +80,12 @@ function inject() {
     ReactIOSComponentEnvironment
   );
 
-  ReactEmptyComponent.injection.injectEmptyComponent(View);
+  // Can't import View here because it depends on React to make its composite
+  var RCTView = createReactIOSNativeComponentClass({
+    validAttributes: {},
+    uiViewClassName: 'RCTView',
+  });
+  ReactEmptyComponent.injection.injectEmptyComponent(RCTView);
 
   EventPluginUtils.injection.injectMount(ReactIOSMount);
 

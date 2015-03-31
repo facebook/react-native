@@ -12,9 +12,7 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
-var ReactClass = require('ReactClass');
-var ReactElement = require('ReactElement');
-var ReactIOSComponentMixin = require('ReactIOSComponentMixin');
+var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
@@ -44,8 +42,8 @@ var stylePropType = StyleSheetPropType(ViewStylePropTypes);
  * `View`s are designed to be used with `StyleSheet`s for clarity and
  * performance, although inline styles are also supported.
  */
-var View = ReactClass.createClass({
-  mixins: [NativeMethodsMixin, ReactIOSComponentMixin],
+var View = React.createClass({
+  mixins: [NativeMethodsMixin],
 
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
@@ -140,7 +138,7 @@ var View = ReactClass.createClass({
   },
 
   render: function() {
-    return ReactElement.createElement(RCTView, this.props);
+    return <RCTView {...this.props} />;
   },
 });
 
