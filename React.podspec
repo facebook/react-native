@@ -33,8 +33,8 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'RCTAdSupport' do |ss|
-    ss.source_files = "Libraries/RCTAdSupport/*.{h,m}"
-    ss.preserve_paths = "Libraries/RCTAdSupport/*.js"
+    ss.source_files = "Libraries/AdSupport/*.{h,m}"
+    ss.preserve_paths = "Libraries/AdSupport/*.js"
   end
 
   s.subspec 'RCTAnimation' do |ss|
