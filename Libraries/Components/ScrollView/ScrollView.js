@@ -202,6 +202,14 @@ var ScrollView = React.createClass({
     );
   },
 
+  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
+    RCTUIManager.scrollWithoutAnimationTo(
+      this.getNodeHandle(),
+      destX || 0,
+      destY || 0
+    );
+  },
+
   render: function() {
     var contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
