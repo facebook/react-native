@@ -1051,11 +1051,25 @@ static void RCTMeasureLayout(RCTShadowView *view,
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     UIView *view = viewRegistry[reactTag];
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
-      [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue])];
+      [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:YES];
     } else {
       RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
     }
   }];
+}
+
+- (void)scrollWithoutAnimationToOffsetWithView:(NSNumber *)reactTag scrollToOffsetX:(NSNumber *)offsetX offsetY:(NSNumber *)offsetY
+{
+    RCT_EXPORT(scrollWithoutAnimationTo);
+
+    [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
+        UIView *view = viewRegistry[reactTag];
+        if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+            [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:NO];
+        } else {
+            RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+        }
+    }];
 }
 
 - (void)zoomToRectWithView:(NSNumber *)reactTag rect:(NSDictionary *)rectDict
