@@ -148,7 +148,7 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
 
   var relativizeCode = function(codeMatch, pre, depName, post) {
     var depId = resolvedDeps[depName];
-    if (depId != null) {
+    if (depId) {
       return pre + depId + post;
     } else {
       return codeMatch;
