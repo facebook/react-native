@@ -55,12 +55,17 @@ function init(root, projectName) {
 function link(libraryPath) {
   libraryPath = path.relative(process.cwd(), path.resolve(process.cwd(), libraryPath));
   var packagePath = path.resolve(libraryPath, 'package.json');
-  var pkg = require(packagePath);
-  var name = pkg['react-native'].xcodeproj;
-  var targetName = pkg['react-native'].target || name;
-  var hash = getHash();
-  var xcodeprojName = name + '.xcodeproj';
-  var staticLibraryPath = pkg['react-native'].staticLibrary || 'lib' + name + '.a';
+  var pkg;
+  try {
+    pkg = require(packagePath);
+  } catch(err) {
+    pkg = { 'react-native': {} };
+  }
+  var name = pkg['react-native'].xcodeproj || path.basename(libraryPath);
+  var targetName = pkg['react-native'].target || 'RCT' + targetName.replace(/^(?:RCT)?(.*?)(?:IOS)?$/, '$1');
+  console.log(targetName);return;
+  var xcodeprojName = targetName + '.xcodeproj';
+  var staticLibraryPath = pkg['react-native'].staticLibrary || 'lib' + targetName + '.a';
   var pbxprojPath = path.resolve(process.cwd(), libraryPath,
                                  xcodeprojName, 'project.pbxproj')
 
@@ -99,7 +104,7 @@ function link(libraryPath) {
       containerPortal: PBXFileReferenceHash,
       proxyType: 2,
       remoteGlobalIDString: target.productReference,
-      remoteInfo: name,
+      remoteInfo: targetName,
     };
 
     var PBXFileReference = {
@@ -143,7 +148,9 @@ function link(libraryPath) {
       process.cwd(),
       './package.json'
     ));
-    var sourceXcodeprojName = sourcePkg['react-native'].xcodeproj;
+    sourcePkg = sourcePkg['react-native'] || {}; 
+    var sourceXcodeprojName = sourcePkg.xcodeproj ||
+      path.basename(process.cwd());
     var sourcePbxprojPath = path.resolve(
       process.cwd(),
       sourceXcodeprojName + '.xcodeproj',
@@ -152,6 +159,7 @@ function link(libraryPath) {
 
     readProject(sourcePbxprojPath, function (err, sourcePbxproj) {
       if (err) throw err;
+
       var sourceRootID = sourcePbxproj.rootObject;
       var PBXProject = sourcePbxproj.objects[sourceRootID];
 
