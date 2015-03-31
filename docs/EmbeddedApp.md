@@ -41,10 +41,9 @@ There are two pieces you’ll need to set up:
 1. The root JavaScript file that will contain your actual React Native app and other components
 - Wrapper Objective-C code that will load up your script and create a `RCTRootView` to display and manage your React Native components
 
-First, enter React Native's pod root directory and create **index.ios.js** inside a directory `ReactComponent`.
+First, create a directory for your app’s React code and create a simple `index.ios.js` file:
 
 ```
-$ cd Pods/React
 $ mkdir ReactComponent
 $ touch index.ios.js
 ```
@@ -134,10 +133,10 @@ rootView.frame = self.bounds;
 In root directory, we need to start React Native development server.
 
 ```
-$ ./Pods/React/packager/packager.sh --root ./ReactComponents
+(JS_DIR=`pwd`/ReactComponent; cd Pods/React; npm run start -- --root $JS_DIR)
 ```
 
-`--root` indicates the root of your React Native apps. Here we just have one **index.ios.js**. React Native development server will use packager to create a **index.ios.bundle**. Which can be access via `http://localhost:8081/index.ios.bundle`.
+This command will start up a React Native development server within our CocoaPods dependency to build our bundled script. The `--root` option indicates the root of your React Native apps – this will be our `ReactComponents` directory containing the single `index.ios.js` file. This running server will package up the `index.ios.bundle` file accessible via `http://localhost:8081/index.ios.bundle`.
 
 ## Compile And Run
 
