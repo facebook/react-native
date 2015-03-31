@@ -95,6 +95,15 @@ NSError *errorWithMessage(NSString *message) {
         callback(nil, [UIImage imageWithData:data]);
       }
     }];
+  } else if ([imageTag hasPrefix:@"file"]) {
+    NSURL *url = [NSURL URLWithString:imageTag];
+    if (!url) {
+      NSString *errorMessage = [NSString stringWithFormat:@"Invalid URL: %@", imageTag];
+      callback(errorWithMessage(errorMessage), nil);
+      return;
+    }
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    callback(nil, [UIImage imageWithData:data]);
   } else {
     NSString *errorMessage = [NSString stringWithFormat:@"Unrecognized tag protocol: %@", imageTag];
     NSError *error = errorWithMessage(errorMessage);
