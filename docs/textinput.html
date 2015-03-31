@@ -25,7 +25,305 @@ this true, but you will probably see flickering, dropped keystrokes,
 and/or laggy typing, depending on how you process onChange events.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="editable"></a>editable <span class="propType">bool</span> <a class="hash-link" href="#editable">#</a></h4><div><p>If false, text is not editable. Default value is true.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="enablesreturnkeyautomatically"></a>enablesReturnKeyAutomatically <span class="propType">bool</span> <a class="hash-link" href="#enablesreturnkeyautomatically">#</a></h4><div><p>If true, the keyboard disables the return key when there is no text and
 automatically enables it when there is text. Default value is false.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="keyboardtype"></a>keyboardType <span class="propType">enum(&#x27;default&#x27;, &quot;ascii-capable&quot;, &#x27;numbers-and-punctuation&#x27;, &#x27;url&#x27;, &#x27;number-pad&#x27;, &#x27;phone-pad&#x27;, &#x27;name-phone-pad&#x27;, &#x27;email-address&#x27;, &#x27;decimal-pad&#x27;, &#x27;twitter&#x27;, &#x27;web-search&#x27;, &quot;numeric&quot;)</span> <a class="hash-link" href="#keyboardtype">#</a></h4><div><p>Determines which keyboard to open, e.g.<code>numeric</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="multiline"></a>multiline <span class="propType">bool</span> <a class="hash-link" href="#multiline">#</a></h4><div><p>If true, the text input can be multiple lines. Default value is false.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onblur"></a>onBlur <span class="propType">function</span> <a class="hash-link" href="#onblur">#</a></h4><div><p>Callback that is called when the text input is blurred</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onchange"></a>onChange <span class="propType">function</span> <a class="hash-link" href="#onchange">#</a></h4><div><p>(text: string) =&gt; void</p><p>Callback that is called when the text input&#x27;s text changes.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onchangetext"></a>onChangeText <span class="propType">function</span> <a class="hash-link" href="#onchangetext">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onendediting"></a>onEndEditing <span class="propType">function</span> <a class="hash-link" href="#onendediting">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onfocus"></a>onFocus <span class="propType">function</span> <a class="hash-link" href="#onfocus">#</a></h4><div><p>Callback that is called when the text input is focused</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onsubmitediting"></a>onSubmitEditing <span class="propType">function</span> <a class="hash-link" href="#onsubmitediting">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="password"></a>password <span class="propType">bool</span> <a class="hash-link" href="#password">#</a></h4><div><p>If true, the TextInput will be a password field. Default value is false.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="placeholder"></a>placeholder <span class="propType">string</span> <a class="hash-link" href="#placeholder">#</a></h4><div><p>The string that will be rendered before text input has been entered</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="placeholdertextcolor"></a>placeholderTextColor <span class="propType">string</span> <a class="hash-link" href="#placeholdertextcolor">#</a></h4><div><p>The text color of the placeholder string</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="returnkeytype"></a>returnKeyType <span class="propType">enum(&#x27;default&#x27;, &#x27;go&#x27;, &#x27;google&#x27;, &#x27;join&#x27;, &#x27;next&#x27;, &#x27;route&#x27;, &#x27;search&#x27;, &#x27;send&#x27;, &#x27;yahoo&#x27;, &#x27;done&#x27;, &#x27;emergency-call&#x27;)</span> <a class="hash-link" href="#returnkeytype">#</a></h4><div><p>Determines how the return key should look.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="securetextentry"></a>secureTextEntry <span class="propType">bool</span> <a class="hash-link" href="#securetextentry">#</a></h4><div><p>If true, the text input obscures the text entered so that sensitive text
 like passwords stay secure. Default value is false.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="selectionstate"></a>selectionState <span class="propType">DocumentSelectionState</span> <a class="hash-link" href="#selectionstate">#</a></h4><div><p>See DocumentSelectionState.js, some state that is responsible for
-maintaining selection information for a document</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="style"></a>style <span class="propType"><a href="text.html#style">Text#style</a></span> <a class="hash-link" href="#style">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="testid"></a>testID <span class="propType">string</span> <a class="hash-link" href="#testid">#</a></h4><div><p>Used to locate this view in end-to-end tests.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="value"></a>value <span class="propType">string</span> <a class="hash-link" href="#value">#</a></h4><div><p>The default value for the text input</p></div></div></div></div><div class="docs-prevnext"><a class="docs-next" href="touchablehighlight.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
+maintaining selection information for a document</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="style"></a>style <span class="propType"><a href="text.html#style">Text#style</a></span> <a class="hash-link" href="#style">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="testid"></a>testID <span class="propType">string</span> <a class="hash-link" href="#testid">#</a></h4><div><p>Used to locate this view in end-to-end tests.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="value"></a>value <span class="propType">string</span> <a class="hash-link" href="#value">#</a></h4><div><p>The default value for the text input</p></div></div></div></div><div><h3><a class="anchor" name="examples"></a><a class="edit-github" href="https://github.com/facebook/react-native/blob/master/../Examples/UIExplorer/TextInputExample.js">Edit on GitHub</a>Examples <a class="hash-link" href="#examples">#</a></h3><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> <span class="token punctuation">{</span>
+  Text<span class="token punctuation">,</span>
+  TextInput<span class="token punctuation">,</span>
+  View<span class="token punctuation">,</span>
+  StyleSheet<span class="token punctuation">,</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> WithLabel <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>labelContainer<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>label<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+          &lt;Text<span class="token operator">&gt;</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>label<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+        <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">}</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> TextEventsExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      curText<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;No Event&gt;&#x27;</span><span class="token punctuation">,</span>
+      prevText<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;No Event&gt;&#x27;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  updateText<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+      curText<span class="token punctuation">:</span> text<span class="token punctuation">,</span>
+      prevText<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>curText<span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View<span class="token operator">&gt;</span>
+        &lt;TextInput
+          autoCapitalize<span class="token operator">=</span><span class="token string">&quot;none&quot;</span>
+          placeholder<span class="token operator">=</span><span class="token string">&quot;Enter text to see events&quot;</span>
+          autoCorrect<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span>
+          onFocus<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateText<span class="token punctuation">(</span></span><span class="token string">&#x27;onFocus&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          onBlur<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateText<span class="token punctuation">(</span></span><span class="token string">&#x27;onBlur&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          onChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateText<span class="token punctuation">(</span></span>
+            <span class="token string">&#x27;onChange text: &#x27;</span> <span class="token operator">+</span> event<span class="token punctuation">.</span>nativeEvent<span class="token punctuation">.</span>text
+          <span class="token punctuation">)</span><span class="token punctuation">}</span>
+          onEndEditing<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateText<span class="token punctuation">(</span></span>
+            <span class="token string">&#x27;onEndEditing text: &#x27;</span> <span class="token operator">+</span> event<span class="token punctuation">.</span>nativeEvent<span class="token punctuation">.</span>text
+          <span class="token punctuation">)</span><span class="token punctuation">}</span>
+          onSubmitEditing<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateText<span class="token punctuation">(</span></span>
+            <span class="token string">&#x27;onSubmitEditing text: &#x27;</span> <span class="token operator">+</span> event<span class="token punctuation">.</span>nativeEvent<span class="token punctuation">.</span>text
+          <span class="token punctuation">)</span><span class="token punctuation">}</span>
+          style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+        <span class="token operator">/</span><span class="token operator">&gt;</span>
+        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>eventLabel<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>curText<span class="token punctuation">}</span><span class="token punctuation">{</span><span class="token string">&#x27;\n&#x27;</span><span class="token punctuation">}</span>
+          <span class="token punctuation">(</span>prev<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>prevText<span class="token punctuation">}</span><span class="token punctuation">)</span>
+        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  page<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    paddingBottom<span class="token punctuation">:</span> <span class="token number">300</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  default<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    height<span class="token punctuation">:</span> <span class="token number">26</span><span class="token punctuation">,</span>
+    borderWidth<span class="token punctuation">:</span> <span class="token number">0.5</span><span class="token punctuation">,</span>
+    borderColor<span class="token punctuation">:</span> <span class="token string">&#x27;#0f0f0f&#x27;</span><span class="token punctuation">,</span>
+    padding<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    fontSize<span class="token punctuation">:</span> <span class="token number">13</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  multiline<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    borderWidth<span class="token punctuation">:</span> <span class="token number">0.5</span><span class="token punctuation">,</span>
+    borderColor<span class="token punctuation">:</span> <span class="token string">&#x27;#0f0f0f&#x27;</span><span class="token punctuation">,</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    fontSize<span class="token punctuation">:</span> <span class="token number">13</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> <span class="token number">50</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  eventLabel<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    margin<span class="token punctuation">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+    fontSize<span class="token punctuation">:</span> <span class="token number">12</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  labelContainer<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    flexDirection<span class="token punctuation">:</span> <span class="token string">&#x27;row&#x27;</span><span class="token punctuation">,</span>
+    marginVertical<span class="token punctuation">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  label<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    width<span class="token punctuation">:</span> <span class="token number">80</span><span class="token punctuation">,</span>
+    justifyContent<span class="token punctuation">:</span> <span class="token string">&#x27;flex-end&#x27;</span><span class="token punctuation">,</span>
+    flexDirection<span class="token punctuation">:</span> <span class="token string">&#x27;row&#x27;</span><span class="token punctuation">,</span>
+    marginRight<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+    paddingTop<span class="token punctuation">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+exports<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">&#x27;&lt;TextInput&gt;&#x27;</span><span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>description <span class="token operator">=</span> <span class="token string">&#x27;Single-line text inputs.&#x27;</span><span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>examples <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Auto-focus&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> &lt;TextInput autoFocus<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Auto-capitalize&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;none&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              autoCapitalize<span class="token operator">=</span><span class="token string">&quot;none&quot;</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;sentences&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              autoCapitalize<span class="token operator">=</span><span class="token string">&quot;sentences&quot;</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;words&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              autoCapitalize<span class="token operator">=</span><span class="token string">&quot;words&quot;</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;characters&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              autoCapitalize<span class="token operator">=</span><span class="token string">&quot;characters&quot;</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Auto-correct&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;true&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput autoCorrect<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;false&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput autoCorrect<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Keyboard types&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> keyboardTypes <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token string">&#x27;default&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;ascii-capable&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;numbers-and-punctuation&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;url&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;number-pad&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;phone-pad&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;name-phone-pad&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;email-address&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;decimal-pad&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;twitter&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;web-search&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;numeric&#x27;</span><span class="token punctuation">,</span>
+      <span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">var</span> examples <span class="token operator">=</span> keyboardTypes<span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span><span class="token punctuation">(</span>type<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>
+          &lt;WithLabel key<span class="token operator">=</span><span class="token punctuation">{</span>type<span class="token punctuation">}</span> label<span class="token operator">=</span><span class="token punctuation">{</span>type<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              keyboardType<span class="token operator">=</span><span class="token punctuation">{</span>type<span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> &lt;View<span class="token operator">&gt;</span><span class="token punctuation">{</span>examples<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Return key types&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> returnKeyTypes <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token string">&#x27;default&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;go&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;google&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;join&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;next&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;route&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;search&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;send&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;yahoo&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;done&#x27;</span><span class="token punctuation">,</span>
+        <span class="token string">&#x27;emergency-call&#x27;</span><span class="token punctuation">,</span>
+      <span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">var</span> examples <span class="token operator">=</span> returnKeyTypes<span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span><span class="token punctuation">(</span>type<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>
+          &lt;WithLabel key<span class="token operator">=</span><span class="token punctuation">{</span>type<span class="token punctuation">}</span> label<span class="token operator">=</span><span class="token punctuation">{</span>type<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              returnKeyType<span class="token operator">=</span><span class="token punctuation">{</span>type<span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> &lt;View<span class="token operator">&gt;</span><span class="token punctuation">{</span>examples<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Enable return key automatically&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;true&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput enablesReturnKeyAutomatically<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Secure text entry&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;true&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput secureTextEntry<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span> value<span class="token operator">=</span><span class="token string">&quot;abc&quot;</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Event handling&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span> <span class="token keyword">return</span> &lt;TextEventsExample <span class="token operator">/</span><span class="token operator">&gt;</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Colored input text&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;TextInput
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">,</span> <span class="token punctuation">{</span>color<span class="token punctuation">:</span> <span class="token string">&#x27;blue&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            value<span class="token operator">=</span><span class="token string">&quot;Blue&quot;</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;TextInput
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">,</span> <span class="token punctuation">{</span>color<span class="token punctuation">:</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            value<span class="token operator">=</span><span class="token string">&quot;Green&quot;</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Clear button mode&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;never&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+              clearButtonMode<span class="token operator">=</span><span class="token string">&quot;never&quot;</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;while editing&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+              clearButtonMode<span class="token operator">=</span><span class="token string">&quot;while-editing&quot;</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;unless editing&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+              clearButtonMode<span class="token operator">=</span><span class="token string">&quot;unless-editing&quot;</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+          &lt;WithLabel label<span class="token operator">=</span><span class="token string">&quot;always&quot;</span><span class="token operator">&gt;</span>
+            &lt;TextInput
+              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+              clearButtonMode<span class="token operator">=</span><span class="token string">&quot;always&quot;</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>WithLabel<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">;</span></div></div><div class="docs-prevnext"><a class="docs-next" href="touchablehighlight.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
