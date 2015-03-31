@@ -1,5 +1,5 @@
 ---
-id: embeded-app
+id: embedded-app
 title: Use React Native in Existing iOS App
 layout: docs
 category: Guides
