@@ -83,7 +83,7 @@ React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 
 ## Add Container View To Your App
 
-You should now add container view for React Native component. It can be any `UIView` in your app.
+You should now add a container view for the React Native component. It can be any `UIView` in your app.
 
 ![Container view example](/react-native/img/EmbeddedAppContainerViewExample.png)
 
