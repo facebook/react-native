@@ -67,8 +67,12 @@ var augmentElement = function(element: ReactElement) {
   return element;
 };
 
-var render = function(component: ReactComponent, mountInto: number) {
-  ReactIOSMount.renderComponent(component, mountInto);
+var render = function(
+  element: ReactElement,
+  mountInto: number,
+  callback?: ?(() => void)
+): ?ReactComponent {
+  return ReactIOSMount.renderComponent(element, mountInto, callback);
 };
 
 var ReactIOS = {

@@ -16,13 +16,13 @@ var RCTUIManager = require('NativeModules').UIManager;
 var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactPerf = require('ReactPerf');
 var ReactReconciler = require('ReactReconciler');
+var ReactUpdateQueue = require('ReactUpdateQueue');
 var ReactUpdates = require('ReactUpdates');
 
 var emptyObject = require('emptyObject');
 var instantiateReactComponent = require('instantiateReactComponent');
 var invariant = require('invariant');
-
-var TOP_ROOT_NODE_IDS = {};
+var shouldUpdateReactComponent = require('shouldUpdateReactComponent');
 
 function instanceNumberToChildRootID(rootNodeID, instanceNumber) {
   return rootNodeID + '[' + instanceNumber + ']';
@@ -85,10 +85,26 @@ var ReactIOSMount = {
    * @param {containerTag} containerView Handle to native view tag
    */
   renderComponent: function(
-    descriptor: ReactComponent,
-    containerTag: number
-  ) {
-    var instance = instantiateReactComponent(descriptor);
+    nextElement: ReactElement,
+    containerTag: number,
+    callback?: ?(() => void)
+  ): ?ReactComponent {
+    var topRootNodeID = ReactIOSTagHandles.tagToRootNodeID[containerTag];
+    if (topRootNodeID) {
+      var prevComponent = ReactIOSMount._instancesByContainerID[topRootNodeID];
+      if (prevComponent) {
+        var prevElement = prevComponent._currentElement;
+        if (shouldUpdateReactComponent(prevElement, nextElement)) {
+          ReactUpdateQueue.enqueueElementInternal(prevComponent, nextElement);
+          if (callback) {
+            ReactUpdateQueue.enqueueCallbackInternal(prevComponent, callback);
+          }
+          return prevComponent;
+        } else {
+          ReactIOSMount.unmountComponentAtNode(containerTag);
+        }
+      }
+    }
 
     if (!ReactIOSTagHandles.reactTagIsNativeTopRootID(containerTag)) {
       console.error('You cannot render into anything but a top root');
@@ -100,13 +116,14 @@ var ReactIOSMount = {
       topRootNodeID,
       containerTag
     );
-    TOP_ROOT_NODE_IDS[topRootNodeID] = true;
+
+    var instance = instantiateReactComponent(nextElement);
+    ReactIOSMount._instancesByContainerID[topRootNodeID] = instance;
 
     var childRootNodeID = instanceNumberToChildRootID(
       topRootNodeID,
       ReactIOSMount.instanceCount++
     );
-    ReactIOSMount._instancesByContainerID[topRootNodeID] = instance;
 
     // The initial render is synchronous but any updates that happen during
     // rendering, in componentWillMount or componentDidMount, will be batched
@@ -118,6 +135,11 @@ var ReactIOSMount = {
       childRootNodeID,
       topRootNodeID
     );
+    var component = instance.getPublicInstance();
+    if (callback) {
+      callback.call(component);
+    }
+    return component;
   },
 
   /**
@@ -170,20 +192,18 @@ var ReactIOSMount = {
    * component at this time.
    */
   unmountComponentAtNode: function(containerTag: number): bool {
-    var containerID = ReactIOSTagHandles.tagToRootNodeID[containerTag];
+    if (!ReactIOSTagHandles.reactTagIsNativeTopRootID(containerTag)) {
+      console.error('You cannot render into anything but a top root');
+      return;
+    }
 
-    invariant(
-      TOP_ROOT_NODE_IDS[containerID],
-      'We only currently support removing components from the root node'
-    );
+    var containerID = ReactIOSTagHandles.tagToRootNodeID[containerTag];
     var instance = ReactIOSMount._instancesByContainerID[containerID];
     if (!instance) {
-      console.error('Tried to unmount a component that does not exist');
       return false;
     }
     ReactIOSMount.unmountComponentFromNode(instance, containerID);
     delete ReactIOSMount._instancesByContainerID[containerID];
-    delete TOP_ROOT_NODE_IDS[containerID];
     return true;
   },
 
@@ -200,10 +220,8 @@ var ReactIOSMount = {
     instance: ReactComponent,
     containerID: string
   ) {
-    // call back into native to remove all of the subviews from this container
-    // TODO: ReactComponent.prototype.unmountComponent is missing from Flow's
-    // react lib.
-    (instance: any).unmountComponent();
+    // Call back into native to remove all of the subviews from this container
+    ReactReconciler.unmountComponent(instance);
     var containerTag =
       ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID);
     RCTUIManager.removeSubviewsFromContainerWithID(containerTag);
