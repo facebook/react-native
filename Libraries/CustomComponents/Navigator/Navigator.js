@@ -948,7 +948,7 @@ var Navigator = React.createClass({
     var child = this.props.renderScene(
       route,
       this.navigatorActions,
-      this._onItemRef.bind(null, this.state.idStack[i])
+      this.state
     );
 
     var initialSceneStyle =
