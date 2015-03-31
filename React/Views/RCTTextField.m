@@ -125,11 +125,14 @@ RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
   BOOL result = [super becomeFirstResponder];
   _jsRequestingFirstResponder = NO;
 
-    // TODO: for the future highlighting
+    /*
+     * TODO: for the future highlighting
+     *
     self.borderTopColor = self.highlightedColor;
     self.borderBottomColor = self.highlightedColor;
     self.borderLeftColor = self.highlightedColor;
     self.borderRightColor = self.highlightedColor;
+     */
     
   return result;
 }
@@ -144,11 +147,14 @@ RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
                                        text:self.text];
   }
     
-    // TODO: for the future highlighting
+    /*
+     * TODO: for the future highlighting
+     *
     self.borderTopColor = self.borderColor;
     self.borderBottomColor = self.borderColor;
     self.borderLeftColor = self.borderColor;
     self.borderRightColor = self.borderColor;
+     */
 
   return result;
 }
