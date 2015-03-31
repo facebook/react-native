@@ -116,8 +116,14 @@ Ready for the most interesting part? Now we shall create the `RCTRootView`, wher
 In `ReactView.m`, we need to first initiate `RCTRootView` with the URI of your `index.ios.bundle`. `index.ios.bundle` will be created by packager and served by React Native server, which will be discussed later on.
 
 ```
-NSString *urlString = @"http://localhost:8081/index.ios.bundle";
-NSURL *jsCodeLocation = [NSURL URLWithString:urlString];
+NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle"];
+// For production use, this `NSURL` could instead point to a pre-bundled file on disk:
+//
+//   NSURL *jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+//
+// To generate that file, run the curl command and add the output to your main Xcode build target:
+//
+//   curl http://localhost:8081/index.ios.bundle -o main.jsbundle
 RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                     moduleName: @"SimpleApp"
                                                  launchOptions:nil];
