@@ -191,7 +191,17 @@ var ScrollView = React.createClass({
     RCTUIManager.scrollTo(
       this.getNodeHandle(),
       destX || 0,
-      destY || 0
+      destY || 0,
+      true
+    );
+  },
+
+  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
+    RCTUIManager.scrollTo(
+      this.getNodeHandle(),
+      destX || 0,
+      destY || 0,
+      false
     );
   },
 
