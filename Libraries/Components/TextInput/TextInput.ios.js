@@ -48,13 +48,13 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   placeholder: true,
   placeholderTextColor: true,
   text: true,
-  textAlignment: true    
+  textAlignment: true,    
 });
 
 var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   caretHidden: true,
   enabled: true,
-  clearButtonMode: true    
+  clearButtonMode: true,  
 });
 
 var onlyMultiline = {
