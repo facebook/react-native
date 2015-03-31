@@ -8,12 +8,12 @@ next: debugging
 ---
 
 Not every app uses all the native capabilities, and including the code to support
-all those features would impact in the binary size... But we still want to make
+all those features would impact the binary size... But we still want to make it
 easy to add these features whenever you need them.
 
 With that in mind we exposed many of these features as independent static libraries.
 
-For most of the libs it will be as simples as dragging two files, sometimes a third
+For most of the libs it will be as simple as dragging two files, sometimes a third
 step will be necessary, but no more than that.
 
 _All the libraries we ship with React Native live on the `Libraries` folder in
@@ -51,8 +51,8 @@ What that means is, are you using this library on the native site or just in
 JavaScript? If you are just using it in JavaScript, you are good to go!
 
 
-This step is not necessary for all libraries that we ship we React Native but
-`PushNotificationIOS` and `LinkingIOS`.
+This step is not necessary for libraries that we ship with React Native with the
+exception of `PushNotificationIOS` and `LinkingIOS`.
 
 In the case of the `PushNotificationIOS` for example, you have to call a method
 on the library from your `AppDelegate` every time a new push notifiation is
