@@ -24,6 +24,7 @@ var NodeHandle = require('NodeHandle');
 var ReactClass = require('ReactClass');
 var ReactComponentEnvironment = require('ReactComponentEnvironment');
 var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
+var ReactEmptyComponent = require('ReactEmptyComponent');
 var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactIOSComponentEnvironment = require('ReactIOSComponentEnvironment');
 var ReactIOSComponentMixin = require('ReactIOSComponentMixin');
@@ -35,6 +36,7 @@ var ReactNativeComponent = require('ReactNativeComponent');
 var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
+var View = require('View');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');
@@ -76,6 +78,8 @@ function inject() {
   ReactComponentEnvironment.injection.injectEnvironment(
     ReactIOSComponentEnvironment
   );
+
+  ReactEmptyComponent.injection.injectEmptyComponent(View);
 
   EventPluginUtils.injection.injectMount(ReactIOSMount);
 
