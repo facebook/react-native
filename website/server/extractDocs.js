@@ -100,7 +100,7 @@ var components = [
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Text/Text.js',
-  '../Libraries/Components/TextInput/TextInput.ios.js',
+  '../Libraries/Components/TextInput/TextInput.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
   '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',

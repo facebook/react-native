@@ -1,6 +1,6 @@
 ---
 id: embedded-app
-title: Use React Native in Existing iOS App
+title: Integration with Existing App
 layout: docs
 category: Guides
 permalink: docs/embeded-app.html
@@ -15,18 +15,18 @@ When you are ready to work with Cocoapods, add the following line to `Podfile`. 
 
 ```
 pod 'React'
-pod 'React/RCTText'  
+pod 'React/RCTText'
 # Add any subspecs you want to use in your project
 ```
 
 Remember to install all subspecs you need. The `<Text>` element cannot be used without `pod 'React/RCTText'`.
-  
+
 Then install pods via shell
 
 ```
 $ pod install --verbose
 ```
-  
+
 The installation process also requires [Node.js](http://nodejs.org).
 
 ## Create Your React Native App
@@ -38,7 +38,7 @@ $ cd Pods/React
 $ mkdir ReactComponent
 $ touch index.ios.js
 ```
-  
+
 Copy & paste following starter code for **index.ios.js**.
 
 ```
@@ -66,7 +66,7 @@ class SimpleApp extends React.Component {
 
 React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 ```
-  
+
 `SimpleApp` will be your **module name**, which will be used later on.
 
 ## Add Container View To Your App
@@ -75,7 +75,7 @@ You should now add container view for React Native component. It can be any **UI
 
 ![Container view example](/react-native/img/EmbeddedAppContainerViewExample.png)
 
-However, let's subclass **UIView** for the sake of clean code. Let's name it **ReactView**. Open up **Yourproject.xcworkspace** and create a new class **ReactView** (You can name it whatever you like :)).  
+However, let's subclass **UIView** for the sake of clean code. Let's name it **ReactView**. Open up **Yourproject.xcworkspace** and create a new class **ReactView** (You can name it whatever you like :)).
 
 ```
 // ReactView.h
@@ -86,7 +86,7 @@ However, let's subclass **UIView** for the sake of clean code. Let's name it **R
 ```
 
 Don't forget to add an outlet for it.
-  
+
 ```
 // ViewController.m
 
@@ -94,12 +94,12 @@ Don't forget to add an outlet for it.
 @property (weak, nonatomic) IBOutlet ReactView *reactView;
 @end
 ```
-  
+
 Here I disabled **AutoLayout** for simplicity. In real production world, you should turn on AutoLayout and setup constraints by yourself.
 
 ## Add RCTRootView To Container View
 
-Ready for the most interesting part? Now we shall create the **RCTRootView**, where your React Native app lives in. 
+Ready for the most interesting part? Now we shall create the **RCTRootView**, where your React Native app lives in.
 
 In **ReactView.m**, we need to first initiate **RCTRootView** with the URI of your **index.ios.bundle**. **index.ios.bundle** will be created by packager and served by React Native server, which will be discussed later on.
 
@@ -120,7 +120,7 @@ rootView.frame = self.bounds;
 
 ## Start Development Server
 
-In root directory, we need to start React Native development server. 
+In root directory, we need to start React Native development server.
 
 ```
 $ ./Pods/React/packager/packager.sh --root ./ReactComponents
