@@ -40,14 +40,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   return self;
 }
 
-- (void)setPins:(NSArray *)pins
-{
-  if (_pins != pins) {
-    _pins = [pins copy];
-    [self setNeedsLayout];
-  }
-}
-
 - (void)dealloc
 {
   [_regionChangeObserveTimer invalidate];
@@ -116,6 +108,14 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
   // Animate to new position
   [super setRegion:region animated:YES];
+}
+
+- (void)setPins:(NSArray *)pins
+{
+  if (_pins != pins) {
+    _pins = [pins copy];
+    [self setNeedsLayout];
+  }
 }
 
 @end
