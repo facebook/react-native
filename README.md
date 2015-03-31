@@ -145,15 +145,15 @@ var React = require('react-native');
 var { NativeModules, Text } = React;
 
 var Message = React.createClass({
+  getInitialState() {
+    return { text: 'Goodbye World.' };
+  },
+  componentDidMount() {
+    NativeModules.MyCustomModule.processString(this.state.text, (text) => {
+      this.setState({text});
+    });
+  },
   render: function() {
-    getInitialState() {
-      return { text: 'Goodbye World.' };
-    },
-    componentDidMount() {
-      NativeModules.MyCustomModule.processString(this.state.text, (text) => {
-        this.setState({text});
-      });
-    },
     return (
       <Text>{this.state.text}</Text>
     );
@@ -179,7 +179,7 @@ Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a 
 
 RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
 
-@end`}
+@end
 ```
 
 ```javascript
@@ -190,5 +190,13 @@ var MyCustomView = createReactIOSNativeComponentClass({
   uiViewClassName: 'MyCustomView',
 });
 ```
+
+## Running the Examples
+
+- `git clone git@github.com:facebook/react-native.git`
+- `cd react-native && npm install`
+- `cd Examples`
+
+Now open any example and hit run in Xcode.
 
 Further documentation, tutorials, and more on the [React Native website](http://facebook.github.io/react-native/docs/getting-started.html).

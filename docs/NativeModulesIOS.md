@@ -4,7 +4,7 @@ title: Native Modules (iOS)
 layout: docs
 category: Guides
 permalink: docs/nativemodulesios.html
-next: libraries
+next: linking-libraries
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding wrapper yet. Maybe you want to reuse some existing Objective-C or C++ code without having to reimplement it in JavaScript. Or write some high performance, multi-threaded code such as image processing, network stack, database or rendering.
@@ -97,7 +97,7 @@ CalendarManager.addEvent('Birthday Party', {
 
 > **NOTE**: About array and map
 >
-> React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's developer's responsibility to check array/map values types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for helper methods).
+> React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's the developer's responsibility to check array/map values types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for helper methods).
 
 # Callbacks
 
@@ -177,12 +177,21 @@ Note that the constants are exported only at initialization time, so if you chan
 The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
 
 ```objective-c
+#import "RCTBridge.h" 
+#import "RCTEventDispatcher.h"
+
+@implementation CalendarManager
+
+@synthesize bridge = _bridge; 
+
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
   [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
                                                body:@{@"name": eventName}];
 }
+
+@end
 ```
 
 JavaScript code can subscribe to these events:
