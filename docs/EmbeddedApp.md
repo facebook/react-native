@@ -52,8 +52,9 @@ $ touch index.ios.js
 Copy & paste following starter code for **index.ios.js**.
 
 ```
-var React = require('react-native');
+'use strict';
 
+var React = require('react-native');
 var {
   Text,
   View
