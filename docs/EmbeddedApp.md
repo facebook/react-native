@@ -7,11 +7,11 @@ permalink: docs/embeded-app.html
 next: activityindicatorios
 ---
 
-## Install React Native Using Cocoapods
+## Install React Native Using CocoaPods
 
-[Cocoapods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't install Cocoapods yet, checkout [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
+[CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't install CocoaPods yet, checkout [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
 
-When you are ready to work with Cocoapods, add the following line to `Podfile`. If you don't have one, then create it under the root directory of your project.
+When you are ready to work with CocoaPods, add the following line to `Podfile`. If you don't have one, then create it under the root directory of your project.
 
 ```
 pod 'React'
