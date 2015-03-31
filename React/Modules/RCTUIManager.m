@@ -507,7 +507,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 {
   RCT_EXPORT();
 
-  id<RCTViewNodeProtocol> container = _viewRegistry[containerID];
+  id<RCTViewNodeProtocol> container = _shadowViewRegistry[containerID];
   RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
 
   NSUInteger subviewsCount = [[container reactSubviews] count];
