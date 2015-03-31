@@ -31,7 +31,6 @@
     [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     _reactSubviews = [[NSMutableArray alloc] init];
-    self.returnKeyType = UIReturnKeyDone;
   }
   return self;
 }
@@ -71,7 +70,7 @@
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
   CGRect rect = [super textRectForBounds:bounds];
-  return UIEdgeInsetsInsetRect(rect, _paddingEdgeInsets);
+  return UIEdgeInsetsInsetRect(rect, _contentInset);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds

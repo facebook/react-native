@@ -325,8 +325,8 @@ var ListView = React.createClass({
         stickyHeaderIndices: sectionHeaderIndices,
       }
     );
-    if (!props.throttleScrollCallbackMS) {
-      props.throttleScrollCallbackMS = DEFAULT_SCROLL_CALLBACK_THROTTLE;
+    if (!props.scrollEventThrottle) {
+      props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
 
     return (

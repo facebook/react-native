@@ -92,13 +92,13 @@ var LayoutAnimation = {
   configChecker: configChecker,
   Presets: {
     easeInEaseOut: create(
-      0.3, Types.easeInEaseOut, Properties.opacity
+      300, Types.easeInEaseOut, Properties.opacity
     ),
     linear: create(
-      0.5, Types.linear, Properties.opacity
+      500, Types.linear, Properties.opacity
     ),
     spring: {
-      duration: 0.7,
+      duration: 700,
       create: {
         type: Types.linear,
         property: Properties.opacity,

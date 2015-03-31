@@ -19,7 +19,8 @@
 #import "RCTImageDownloader.h"
 #import "RCTLog.h"
 
-NSError *errorWithMessage(NSString *message) {
+NSError *errorWithMessage(NSString *message)
+{
   NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
   NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
   return error;

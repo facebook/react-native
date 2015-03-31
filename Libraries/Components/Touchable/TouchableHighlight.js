@@ -50,7 +50,7 @@ var DEFAULT_PROPS = {
  *         style={styles.button}
  *         source={require('image!myButton')}
  *       />
- *     </View>
+ *     </TouchableHighlight>
  *   );
  * },
  * ```

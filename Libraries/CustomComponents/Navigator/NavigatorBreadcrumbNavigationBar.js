@@ -46,15 +46,12 @@ var TITLE_PROPS = Interpolators.map(() => {return {style: {}};});
 var RIGHT_BUTTON_PROPS = Interpolators.map(() => {return {style: {}};});
 
 
-/**
- * TODO: Rename `observedTopOfStack` to `presentedIndex` in `NavigationStack`.
- */
 var navStatePresentedIndex = function(navState) {
   if (navState.presentedIndex !== undefined) {
     return navState.presentedIndex;
-  } else {
-    return navState.observedTopOfStack;
   }
+  // TODO: rename `observedTopOfStack` to `presentedIndex` in `NavigatorIOS`
+  return navState.observedTopOfStack;
 };
 
 
@@ -85,7 +82,12 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       titleContentForRoute: PropTypes.func,
       iconForRoute: PropTypes.func,
     }),
-    navigationBarStyles: PropTypes.number,
+    navState: React.PropTypes.shape({
+      routeStack: React.PropTypes.arrayOf(React.PropTypes.object),
+      idStack: React.PropTypes.arrayOf(React.PropTypes.number),
+      presentedIndex: React.PropTypes.number,
+    }),
+    navigationBarStyles: View.propTypes.style,
   },
 
   statics: {
