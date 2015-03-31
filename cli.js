@@ -62,8 +62,7 @@ function link(libraryPath) {
     pkg = { 'react-native': {} };
   }
   var name = pkg['react-native'].xcodeproj || path.basename(libraryPath);
-  var targetName = pkg['react-native'].target || 'RCT' + targetName.replace(/^(?:RCT)?(.*?)(?:IOS)?$/, '$1');
-  console.log(targetName);return;
+  var targetName = pkg['react-native'].target || 'RCT' + name.replace(/^(?:RCT)?(.*?)(?:IOS)?$/, '$1');
   var xcodeprojName = targetName + '.xcodeproj';
   var staticLibraryPath = pkg['react-native'].staticLibrary || 'lib' + targetName + '.a';
   var pbxprojPath = path.resolve(process.cwd(), libraryPath,
@@ -148,7 +147,7 @@ function link(libraryPath) {
       process.cwd(),
       './package.json'
     ));
-    sourcePkg = sourcePkg['react-native'] || {}; 
+    sourcePkg = sourcePkg['react-native'] || {};
     var sourceXcodeprojName = sourcePkg.xcodeproj ||
       path.basename(process.cwd());
     var sourcePbxprojPath = path.resolve(
@@ -167,15 +166,7 @@ function link(libraryPath) {
         ProjectReferece
       );
 
-      PBXProject.targets.forEach(function (targetHash) {
-        var target = sourcePbxproj.objects[targetHash];
-        target.buildPhases.forEach(function (buildPhaseHash) {
-          var buildPhase = sourcePbxproj.objects[buildPhaseHash];
-          if (buildPhase.isa === 'PBXFrameworksBuildPhase') {
-            buildPhase.files.push(PBXBuildFileHash);
-          }
-        })
-      });
+      addToFrameworksBuildPhase(sourcePbxproj, PBXBuildFileHash);
 
       var buildConfigurationList = sourcePbxproj.objects[PBXProject.buildConfigurationList];
       buildConfigurationList.buildConfigurations.forEach(function (buildConfigurationHash) {
@@ -185,19 +176,34 @@ function link(libraryPath) {
         );
       });
 
-      var mainGroup = sourcePbxproj.objects[PBXProject.mainGroup];
-      mainGroup.children.forEach(function (childHash) {
-        var child = sourcePbxproj.objects[childHash];
-        if (child.name === 'Libraries') {
-          child.children.push(PBXFileReferenceHash);
-        }
-      });
+      addToLibraries(sourcePbxproj, PBXFileReferenceHash);
 
       sourcePbxproj.objects[PBXBuildFileHash] = PBXBuildFile;
       sourcePbxproj.objects[PBXContainerItemProxyHash] = PBXContainerItemProxy;
       sourcePbxproj.objects[PBXFileReferenceHash] = PBXFileReference;
       sourcePbxproj.objects[PBXGroupHash] = PBXGroup;
       sourcePbxproj.objects[PBXReferenceProxyHash] = PBXReferenceProxy;
+
+      var libraries = pkg['react-native'].libraries;
+      if (libraries) {
+        libraries.forEach(function (library) {
+          var libraryHash = getHash();
+          var libraryPBXBuildFileHash = getHash();
+          sourcePbxproj.objects[libraryPBXBuildFileHash] = {
+            isa: 'PBXBuildFile',
+            fileRef: libraryHash,
+          };
+          sourcePbxproj.objects[libraryHash] = {
+            isa: 'PBXFileReference',
+            lastKnownFileType: 'compiled.mach-o.dylib',
+            name: library + '.dylib',
+            path: 'usr/lib/' + library + '.dylib',
+            sourceTree: 'SDKROOT',
+          };
+          addToLibraries(sourcePbxproj, libraryHash);
+          addToFrameworksBuildPhase(sourcePbxproj, libraryPBXBuildFileHash);
+        });
+      }
 
       var output = OldPlist.stringify(sourcePbxproj);
       fs.writeFileSync(sourcePbxprojPath, output);
@@ -248,6 +254,31 @@ var OldPlist = {
     return HEADER + _stringify(object, 0);
   }
 };
+
+function addToFrameworksBuildPhase(pbxproj, hash) {
+  var sourceRootID = pbxproj.rootObject;
+  var PBXProject = pbxproj.objects[sourceRootID];
+  PBXProject.targets.forEach(function (targetHash) {
+    var target = pbxproj.objects[targetHash];
+    target.buildPhases.forEach(function (buildPhaseHash) {
+      var buildPhase = pbxproj.objects[buildPhaseHash];
+      if (buildPhase.isa === 'PBXFrameworksBuildPhase') {
+        buildPhase.files.push(hash);
+      }
+    })
+  });
+}
+function addToLibraries(pbxproj, hash) {
+  var sourceRootID = pbxproj.rootObject;
+  var PBXProject = pbxproj.objects[sourceRootID];
+  var mainGroup = pbxproj.objects[PBXProject.mainGroup];
+  mainGroup.children.forEach(function (childHash) {
+    var child = pbxproj.objects[childHash];
+    if (child.name === 'Libraries') {
+      child.children.push(hash);
+    }
+  });
+}
 
 function readProject(pbxprojPath, callback) {
   var plutil = spawn('plutil', [

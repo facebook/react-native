@@ -1,0 +1,8 @@
+{
+  "react-native": {
+    "xcodeproj": "RCTWebSocketDebugger",
+    "libraries": [
+      "libicucore"
+    ]
+  }
+}
