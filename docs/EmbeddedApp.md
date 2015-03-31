@@ -7,14 +7,14 @@ permalink: docs/embeded-app.html
 next: activityindicatorios
 ---
 
-Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [Cocoapods](http://cocoapods.org/).
+Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [CocoaPods](http://cocoapods.org/).
 
 ## Requirements
 
-- [Cocoapods](http://cocoapods.org/) – `gem install cocoapods`
+- [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
 - [Node.js](http://nodejs.org) – `brew install node`
 
-## Install React Native Using Cocoapods
+## Install React Native Using CocoaPods
 
 [CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't install CocoaPods yet, checkout [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
 
