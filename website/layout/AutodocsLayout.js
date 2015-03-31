@@ -145,7 +145,11 @@ var ComponentDoc = React.createClass({
         <Marked>
           {content.description}
         </Marked>
-        <H level={3}>Props</H>
+
+        <HeaderWithGithub
+          title="Props"
+          path={content.filepath}
+        />
         {this.renderProps(content.props, content.composes)}
       </div>
     );
@@ -248,7 +252,39 @@ var APIDoc = React.createClass({
   }
 });
 
+var HeaderWithGithub = React.createClass({
+  render: function() {
+    return (
+      <H level={3} toSlug={this.props.title}>
+        <a
+          className="edit-github"
+          href={'https://github.com/facebook/react-native/blob/master/' + this.props.path}>
+          Edit on GitHub
+        </a>
+        {this.props.title}
+      </H>
+    );
+  }
+});
+
 var Autodocs = React.createClass({
+  renderFullDescription: function(docs) {
+    if (!docs.fullDescription) {
+      return;
+    }
+    return (
+      <div>
+        <HeaderWithGithub
+          title="Description"
+          path={'docs/' + docs.componentName + '.md'}
+        />
+        <Marked>
+          {docs.fullDescription}
+        </Marked>
+      </div>
+    );
+  },
+
   render: function() {
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
@@ -264,9 +300,7 @@ var Autodocs = React.createClass({
             <a id="content" />
             <h1>{metadata.title}</h1>
             {content}
-            <Marked>
-              {docs.fullDescription}
-            </Marked>
+            {this.renderFullDescription(docs)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}

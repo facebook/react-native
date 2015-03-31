@@ -33,6 +33,8 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
   json.type = type;
+  json.filepath = filepath.replace(/^\.\.\//, '');
+  json.componentName = componentName;
   if (styles) {
     json.styles = styles;
   }
