@@ -34,18 +34,30 @@ var View = require('View');
 
 var COMPONENT_NAMES = ['Title', 'LeftButton', 'RightButton'];
 
-/**
- * TODO (janzer): Rename `observedTopOfStack` to `presentedIndex` in `NavigationStack`.
- */
 var navStatePresentedIndex = function(navState) {
   if (navState.presentedIndex !== undefined) {
     return navState.presentedIndex;
-  } else {
-    return navState.observedTopOfStack;
   }
+  // TODO: rename `observedTopOfStack` to `presentedIndex` in `NavigatorIOS`
+  return navState.observedTopOfStack;
 };
 
 var NavigatorNavigationBar = React.createClass({
+
+  propTypes: {
+    navigator: React.PropTypes.object,
+    navigationBarRouteMapper: React.PropTypes.shape({
+      Title: React.PropTypes.func.isRequired,
+      LeftButton: React.PropTypes.func.isRequired,
+      RightButton: React.PropTypes.func.isRequired,
+    }),
+    navState: React.PropTypes.shape({
+      routeStack: React.PropTypes.arrayOf(React.PropTypes.object),
+      idStack: React.PropTypes.arrayOf(React.PropTypes.number),
+      presentedIndex: React.PropTypes.number,
+    }),
+    navigationBarStyles: View.propTypes.style,
+  },
 
   statics: {
     Styles: NavigatorNavigationBarStyles,

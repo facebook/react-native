@@ -985,7 +985,6 @@ var Navigator = React.createClass({
   },
 
   renderNavigationStackBar: function() {
-    var NavigationBarClass = this.props.NavigationBarClass;
     if (!this.props.navigationBar) {
       return null;
     }

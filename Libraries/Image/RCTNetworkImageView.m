@@ -61,23 +61,24 @@
     if ([imageURL.pathExtension caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
       _downloadToken = [_imageDownloader downloadDataForURL:imageURL block:^(NSData *data, NSError *error) {
         if (data) {
-          CAKeyframeAnimation *animation = RCTGIFImageWithData(data);
-          CGImageRef firstFrame = (__bridge CGImageRef)animation.values.firstObject;
-          self.layer.bounds = CGRectMake(0, 0, CGImageGetWidth(firstFrame), CGImageGetHeight(firstFrame));
-          self.layer.contentsScale = 1.0;
-          self.layer.contentsGravity = kCAGravityResizeAspect;
-          self.layer.minificationFilter = kCAFilterLinear;
-          self.layer.magnificationFilter = kCAFilterLinear;
-          [self.layer addAnimation:animation forKey:@"contents"];
+          dispatch_async(dispatch_get_main_queue(), ^{
+            CAKeyframeAnimation *animation = RCTGIFImageWithData(data);
+            self.layer.contentsScale = 1.0;
+            self.layer.minificationFilter = kCAFilterLinear;
+            self.layer.magnificationFilter = kCAFilterLinear;
+            [self.layer addAnimation:animation forKey:@"contents"];
+          });
         }
         // TODO: handle errors
       }];
     } else {
       _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() block:^(UIImage *image, NSError *error) {
         if (image) {
-          [self.layer removeAnimationForKey:@"contents"];
-          self.layer.contentsScale = image.scale;
-          self.layer.contents = (__bridge id)image.CGImage;
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [self.layer removeAnimationForKey:@"contents"];
+            self.layer.contentsScale = image.scale;
+            self.layer.contents = (__bridge id)image.CGImage;
+          });
         }
         // TODO: handle errors
       }];

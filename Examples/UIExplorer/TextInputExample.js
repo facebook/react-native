@@ -175,6 +175,89 @@ exports.examples = [
     }
   },
   {
+    title: 'Keyboard types',
+    render: function() {
+      var keyboardTypes = [
+        'default',
+        'ascii-capable',
+        'numbers-and-punctuation',
+        'url',
+        'number-pad',
+        'phone-pad',
+        'name-phone-pad',
+        'email-address',
+        'decimal-pad',
+        'twitter',
+        'web-search',
+        'numeric',
+      ];
+      var examples = keyboardTypes.map((type) => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput
+              keyboardType={type}
+              style={styles.default}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    }
+  },
+  {
+    title: 'Return key types',
+    render: function() {
+      var returnKeyTypes = [
+        'default',
+        'go',
+        'google',
+        'join',
+        'next',
+        'route',
+        'search',
+        'send',
+        'yahoo',
+        'done',
+        'emergency-call',
+      ];
+      var examples = returnKeyTypes.map((type) => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput
+              returnKeyType={type}
+              style={styles.default}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    }
+  },
+  {
+    title: 'Enable return key automatically',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="true">
+            <TextInput enablesReturnKeyAutomatically={true} style={styles.default} />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Secure text entry',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="true">
+            <TextInput secureTextEntry={true} style={styles.default} value="abc" />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
+  {
     title: 'Event handling',
     render: function(): ReactElement { return <TextEventsExample /> },
   },

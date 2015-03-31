@@ -713,6 +713,6 @@ function NotFoundError() {
   this.status = 404;
 }
 
-NotFoundError.__proto__ = Error.prototype;
+util.inherits(NotFoundError, Error);
 
 module.exports = DependecyGraph;
