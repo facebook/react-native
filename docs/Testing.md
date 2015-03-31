@@ -4,7 +4,7 @@ title: Testing
 layout: docs
 category: Guides
 permalink: docs/testing.html
-next: activityindicatorios
+next:  embeded-app
 ---
 
 ## Running Tests and Contributing
