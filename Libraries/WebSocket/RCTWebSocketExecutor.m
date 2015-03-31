@@ -35,7 +35,12 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (instancetype)init
 {
-  return [self initWithURL:[NSURL URLWithString:@"http://localhost:8081/debugger-proxy"]];
+  NSString *url = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactServer"];
+
+  if(url == nil)
+      url = @"http://localhost:8081";
+
+  return [self initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/debugger-proxy", url]]];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL

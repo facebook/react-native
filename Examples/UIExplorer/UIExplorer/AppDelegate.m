@@ -36,7 +36,13 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/UIExplorer/UIExplorerApp.includeRequire.runModule.bundle?dev=true"];
+  NSString *url = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactServer"];
+
+  if (url == nil){
+    url = @"http://localhost:8081";
+  }
+
+  jsCodeLocation = [NSURL URLWithString:[NSString stringWithFormat:@"%@/Examples/UIExplorer/UIExplorerApp.includeRequire.runModule.bundle?dev=true", url]];
 
   /**
    * OPTION 2
