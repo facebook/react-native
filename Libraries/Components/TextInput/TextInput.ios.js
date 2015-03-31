@@ -48,12 +48,13 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   placeholder: true,
   placeholderTextColor: true,
   text: true,
+  textAlignment: true    
 });
 
 var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   caretHidden: true,
   enabled: true,
-  clearButtonMode: true,
+  clearButtonMode: true    
 });
 
 var onlyMultiline = {
@@ -200,6 +201,15 @@ var TextInput = React.createClass({
       'unless-editing',
       'always',
     ]),
+    /**
+     * The alignment of text withing the text input control
+     */
+    textAlignment: PropTypes.oneOf([
+      'center',
+      'right',
+      'left',
+      'justified',
+    ]),
 
     style: Text.propTypes.style,
   },
@@ -343,6 +353,7 @@ var TextInput = React.createClass({
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}
+          textAlignment={this.props.textAlignment}
         />;
     } else {
       for (var propKey in notMultiline) {
@@ -386,6 +397,7 @@ var TextInput = React.createClass({
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}
+          textAlignment={this.props.textAlignment}
         />;
     }
 
