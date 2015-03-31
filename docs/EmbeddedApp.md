@@ -97,7 +97,7 @@ However, let's subclass `UIView` for the sake of clean code. Let's name it `Reac
 @end
 ```
 
-Don't forget to add an outlet for it.
+In a view controller that wants to manage this view, go ahead and add an outlet and wire it up:
 
 ```
 // ViewController.m
