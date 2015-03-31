@@ -36,6 +36,11 @@ $ pod install
 
 ## Create Your React Native App
 
+There are two pieces you’ll need to set up:
+
+1. The root JavaScript file that will contain your actual React Native app and other components
+- Wrapper Objective-C code that will load up your script and create a `RCTRootView` to display and manage your React Native components
+
 First, enter React Native's pod root directory and create **index.ios.js** inside a directory `ReactComponent`.
 
 ```
