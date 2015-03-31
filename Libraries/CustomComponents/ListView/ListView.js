@@ -61,7 +61,7 @@ var SCROLLVIEW_REF = 'listviewscroll';
  *
  * ```
  * getInitialState: function() {
- *   var ds = new ListViewDataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+ *   var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
  *   return {
  *     dataSource: ds.cloneWithRows(['row 1', 'row 2']),
  *   };
