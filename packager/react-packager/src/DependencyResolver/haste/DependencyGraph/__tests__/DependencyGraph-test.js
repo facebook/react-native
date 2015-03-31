@@ -10,7 +10,7 @@
 
 jest
   .dontMock('../index')
-  .dontMock('q')
+  .dontMock('bluebird')
   .dontMock('path')
   .dontMock('absolute-path')
   .dontMock('../docblock')
