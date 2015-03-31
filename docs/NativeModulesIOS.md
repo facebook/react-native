@@ -187,7 +187,7 @@ The native module can signal events to JavaScript without being invoked directly
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
-  [self.bridge.eventDispatcher sendDeviceEventWithName:@"EventReminder"
+  [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
                                                body:@{@"name": eventName}];
 }
 
