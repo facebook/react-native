@@ -31,7 +31,7 @@ folder.
 Drag this file to your project on Xcode (usually under the `Libaries` group
 on Xcode);
 
-![](/react-native/img/AddToLibraries.png)
+![](https://github.com/facebook/react-native/blob/master/website/src/react-native/img/AddToLibraries.png)
 
 ### Step 2
 
