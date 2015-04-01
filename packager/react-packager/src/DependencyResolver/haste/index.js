@@ -11,6 +11,7 @@
 var path = require('path');
 var FileWatcher = require('../../FileWatcher');
 var DependencyGraph = require('./DependencyGraph');
+var REQUIRE_RE = require('./DependencyGraph/regex').REQUIRE_RE;
 var ModuleDescriptor = require('../ModuleDescriptor');
 var declareOpts = require('../../lib/declareOpts');
 
@@ -25,7 +26,6 @@ var DEFINE_MODULE_CODE = [
 ].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;
-var REL_REQUIRE_STMT = /require\(['"]([\.\/0-9A-Z_$\-]*)['"]\)/gi;
 
 var validateOpts = declareOpts({
   projectRoots: {
@@ -146,12 +146,12 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
   }
 
   var relativizedCode =
-    code.replace(REL_REQUIRE_STMT, function(codeMatch, depName) {
+    code.replace(REQUIRE_RE, function(codeMatch, _, depName) {
       var depId = resolvedDeps[depName];
       if (depId != null) {
         return 'require(\'' + depId + '\')';
       } else {
-        return codeMatch;
+        return codeMatch.replace(/\s+/g, '');
       }
     });
 
