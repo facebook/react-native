@@ -150,7 +150,7 @@ This command will start up a React Native development server within our CocoaPod
 
 Now compile and run your app. You shall now see your React Native app running inside of the `ReactView`.
 
-![Example](/react-native/img/EmbeddedAppExample.png)
+![Example](https://github.com/facebook/react-native/blob/master/website/src/react-native/img/EmbeddedAppExample.png)
 
 Live reload works from the simulator, too! You’ve got a simple React component totally encapsulated behind an Objective-C `UIView` subclass.
 
