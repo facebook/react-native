@@ -15,7 +15,7 @@ jest
   .dontMock('crypto')
   .dontMock('../Cache');
 
-var q = require('q');
+var Promise = require('bluebird');
 
 describe('JSTransformer Cache', function() {
   var Cache;
@@ -32,7 +32,7 @@ describe('JSTransformer Cache', function() {
     it('calls loader callback for uncached file', function() {
       var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
-        return q();
+        return Promise.resolve();
       });
       cache.get('/rootDir/someFile', loaderCb);
       expect(loaderCb).toBeCalledWith('/rootDir/someFile');
@@ -48,7 +48,7 @@ describe('JSTransformer Cache', function() {
       });
       var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
-        return q('lol');
+        return Promise.resolve('lol');
       });
       return cache.get('/rootDir/someFile', loaderCb).then(function(value) {
         expect(value).toBe('lol');
@@ -65,7 +65,7 @@ describe('JSTransformer Cache', function() {
       });
       var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
-        return q('lol');
+        return Promise.resolve('lol');
       });
       return cache.get('/rootDir/someFile', loaderCb).then(function() {
         var shouldNotBeCalled = jest.genMockFn();
@@ -152,7 +152,7 @@ describe('JSTransformer Cache', function() {
 
       var cache = new Cache({projectRoots: ['/rootDir']});
       var loaderCb = jest.genMockFn().mockImpl(function() {
-        return q('new value');
+        return Promise.resolve('new value');
       });
 
       return cache.get('/rootDir/someFile', loaderCb).then(function(value) {
@@ -193,13 +193,13 @@ describe('JSTransformer Cache', function() {
 
       var cache = new Cache({projectRoots: ['/rootDir']});
       cache.get('/rootDir/bar', function() {
-        return q('bar value');
+        return Promise.resolve('bar value');
       });
       cache.get('/rootDir/foo', function() {
-        return q('foo value');
+        return Promise.resolve('foo value');
       });
       cache.get('/rootDir/baz', function() {
-        return q('baz value');
+        return Promise.resolve('baz value');
       });
 
       jest.runAllTicks();

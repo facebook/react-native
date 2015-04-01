@@ -11,10 +11,12 @@
  */
 'use strict';
 
+var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
+var Text = require('Text');
 var View = require('View');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
@@ -27,6 +29,7 @@ var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var invariant = require('invariant');
 
+var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
@@ -52,16 +55,38 @@ type ErrorEvent = {
 
 type Event = Object;
 
+var defaultRenderLoading = () => (
+  <View style={styles.loadingView}>
+    <ActivityIndicatorIOS />
+  </View>
+);
+var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
+  <View style={styles.errorContainer}>
+    <Text style={styles.errorTextTitle}>
+      Error loading page
+    </Text>
+    <Text style={styles.errorText}>
+      {'Domain: ' + errorDomain}
+    </Text>
+    <Text style={styles.errorText}>
+      {'Error Code: ' + errorCode}
+    </Text>
+    <Text style={styles.errorText}>
+      {'Description: ' + errorDesc}
+    </Text>
+  </View>
+);
+
 var WebView = React.createClass({
   statics: {
     NavigationType: NavigationType,
   },
 
   propTypes: {
-    renderError: PropTypes.func.isRequired, // view to show if there's an error
-    renderLoading: PropTypes.func.isRequired, // loading indicator to show
     url: PropTypes.string,
     html: PropTypes.string,
+    renderError: PropTypes.func, // view to show if there's an error
+    renderLoading: PropTypes.func, // loading indicator to show
     automaticallyAdjustContentInsets: PropTypes.bool,
     shouldInjectAJAXHandler: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -87,20 +112,23 @@ var WebView = React.createClass({
   render: function() {
     var otherView = null;
 
-   if (this.state.viewState === WebViewState.LOADING) {
-      otherView = this.props.renderLoading();
+    if (this.state.viewState === WebViewState.LOADING) {
+      otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
       invariant(
         errorEvent != null,
         'lastErrorEvent expected to be non-null'
       );
-      otherView = this.props.renderError(
+      otherView = (this.props.renderError || defaultRenderError)(
         errorEvent.domain,
         errorEvent.code,
-        errorEvent.description);
+        errorEvent.description
+      );
     } else if (this.state.viewState !== WebViewState.IDLE) {
-      console.error('RCTWebView invalid state encountered: ' + this.state.loading);
+      console.error(
+        'RCTWebView invalid state encountered: ' + this.state.loading
+      );
     }
 
     var webViewStyles = [styles.container, this.props.style];
@@ -196,9 +224,31 @@ var styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: BGWASH,
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  errorTextTitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 10,
+  },
   hidden: {
     height: 0,
     flex: 0, // disable 'flex:1' when hiding a View
+  },
+  loadingView: {
+    backgroundColor: BGWASH,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

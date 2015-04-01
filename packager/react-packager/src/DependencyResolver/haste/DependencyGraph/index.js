@@ -9,7 +9,7 @@
 'use strict';
 
 var ModuleDescriptor = require('../../ModuleDescriptor');
-var q = require('q');
+var Promise = require('bluebird');
 var fs = require('fs');
 var docblock = require('./docblock');
 var requirePattern = require('../requirePattern');
@@ -19,10 +19,10 @@ var debug = require('debug')('DependecyGraph');
 var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
 
-var readFile = q.nfbind(fs.readFile);
-var readDir = q.nfbind(fs.readdir);
-var lstat = q.nfbind(fs.lstat);
-var realpath = q.nfbind(fs.realpath);
+var readFile = Promise.promisify(fs.readFile);
+var readDir = Promise.promisify(fs.readdir);
+var lstat = Promise.promisify(fs.lstat);
+var realpath = Promise.promisify(fs.realpath);
 
 var validateOpts = declareOpts({
   roots: {
@@ -73,7 +73,7 @@ DependecyGraph.prototype.load = function() {
     return this._loading;
   }
 
-  this._loading = q.all([
+  this._loading = Promise.all([
     this._search(),
     this._buildAssetMap(),
   ]);
@@ -263,7 +263,7 @@ DependecyGraph.prototype._search = function() {
   var dir = this._queue.shift();
 
   if (dir == null) {
-    return q.Promise.resolve(this._graph);
+    return Promise.resolve(this._graph);
   }
 
   // Steps:
@@ -292,10 +292,10 @@ DependecyGraph.prototype._search = function() {
 
       var processing = self._findAndProcessPackage(files, dir)
         .then(function() {
-          return q.all(modulePaths.map(self._processModule.bind(self)));
+          return Promise.all(modulePaths.map(self._processModule.bind(self)));
         });
 
-      return q.all([
+      return Promise.all([
         processing,
         self._search()
       ]);
@@ -324,7 +324,7 @@ DependecyGraph.prototype._findAndProcessPackage = function(files, root) {
   if (packagePath != null) {
     return this._processPackage(packagePath);
   } else {
-    return q();
+    return Promise.resolve();
   }
 };
 
@@ -338,7 +338,7 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
         packageJson = JSON.parse(content);
       } catch (e) {
         debug('WARNING: malformed package.json: ', packagePath);
-        return q();
+        return Promise.resolve();
       }
 
       if (packageJson.name == null) {
@@ -346,7 +346,7 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
           'WARNING: package.json `%s` is missing a name field',
           packagePath
         );
-        return q();
+        return Promise.resolve();
       }
 
       packageJson._root = packageRoot;
@@ -556,7 +556,7 @@ DependecyGraph.prototype._getAbsolutePath = function(filePath) {
 
 DependecyGraph.prototype._buildAssetMap = function() {
   if (this._assetRoots == null || this._assetRoots.length === 0) {
-    return q();
+    return Promise.resolve();
   }
 
   this._assetMap = Object.create(null);
@@ -640,13 +640,13 @@ function withExtJs(file) {
 
 function handleBrokenLink(e) {
   debug('WARNING: error stating, possibly broken symlink', e.message);
-  return q();
+  return Promise.resolve();
 }
 
 function readAndStatDir(dir) {
   return readDir(dir)
     .then(function(files){
-      return q.all(files.map(function(filePath) {
+      return Promise.all(files.map(function(filePath) {
         return realpath(path.join(dir, filePath)).catch(handleBrokenLink);
       }));
     }).then(function(files) {
@@ -660,7 +660,7 @@ function readAndStatDir(dir) {
 
       return [
         files,
-        q.all(stats),
+        Promise.all(stats),
       ];
     });
 }
@@ -676,7 +676,7 @@ function buildAssetMap(roots, processAsset) {
     var root = queue.shift();
 
     if (root == null) {
-      return q();
+      return Promise.resolve();
     }
 
     return readAndStatDir(root).spread(function(files, stats) {
