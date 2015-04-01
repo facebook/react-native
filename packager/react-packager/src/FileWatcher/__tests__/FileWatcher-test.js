@@ -10,7 +10,6 @@
 
 jest
   .dontMock('../')
-  .dontMock('q')
   .setMock(
     'child_process',
     { exec: function(cmd, cb) { cb(null, '/usr/bin/watchman'); } }
