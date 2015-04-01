@@ -39,7 +39,7 @@ Click on your main project file (the one that represents the `.xcodeproj`)
 select `Build Phases` and drag the static library from the `Products` folder
 insed the Library you are importing to `Link Binary With Libraries`
 
-![](https://github.com/facebook/react-native/blob/master/website/src/react-native/img/AddToBuildPhases.png)
+![](/react-native/img/AddToBuildPhases.png)
 
 ### Step 3
 
