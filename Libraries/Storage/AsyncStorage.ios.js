@@ -123,7 +123,7 @@ var AsyncStorage = {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.clear(function(error) {
         //callback && callback(convertError(error));
-        if(errors && convertError(error)){
+        if(error && convertError(error)){
           reject(convertError(error));
         } else {
           resolve(null);
