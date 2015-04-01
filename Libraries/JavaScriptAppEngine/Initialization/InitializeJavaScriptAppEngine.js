@@ -60,6 +60,10 @@ function setupDocumentShim() {
   if (GLOBAL.document) {
     GLOBAL.document.createElement = null;
   }
+
+  // There is no DOM so MutationObserver doesn't make sense. It is used
+  // as feature detection in Bluebird Promise implementation
+  GLOBAL.MutationObserver = undefined;
 }
 
 function handleErrorWithRedBox(e) {

@@ -157,7 +157,7 @@ static dispatch_queue_t RCTFileQueue(void)
     return RCTMakeAndLogError(@"Entries must be arrays of the form [key: string, value: string], got: ", entry, nil);
   }
   if (![entry[1] isKindOfClass:[NSString class]]) {
-    return RCTMakeAndLogError(@"Values must be strings, got: ", entry[1], entry[0]);
+    return RCTMakeAndLogError(@"Values must be strings, got: ", entry[1], @{@"key": entry[0]});
   }
   NSString *key = entry[0];
   id errorOut = RCTErrorForKey(key);

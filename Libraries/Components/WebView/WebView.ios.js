@@ -60,7 +60,8 @@ var WebView = React.createClass({
   propTypes: {
     renderError: PropTypes.func.isRequired, // view to show if there's an error
     renderLoading: PropTypes.func.isRequired, // loading indicator to show
-    url: PropTypes.string.isRequired,
+    url: PropTypes.string,
+    html: PropTypes.string,
     automaticallyAdjustContentInsets: PropTypes.bool,
     shouldInjectAJAXHandler: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -115,6 +116,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        html={this.props.html}
         shouldInjectAJAXHandler={this.props.shouldInjectAJAXHandler}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
@@ -182,6 +184,7 @@ var WebView = React.createClass({
 var RCTWebView = createReactIOSNativeComponentClass({
   validAttributes: merge(ReactIOSViewAttributes.UIView, {
     url: true,
+    html: true,
     contentInset: {diff: insetsDiffer},
     automaticallyAdjustContentInsets: true,
     shouldInjectAJAXHandler: true
