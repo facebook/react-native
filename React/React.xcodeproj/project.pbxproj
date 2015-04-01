@@ -445,7 +445,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "nc -w 5 -z localhost 8081 > /dev/null 2>&1 || open $SRCROOT/../packager/launchPackager.command || echo \"Can't start packager automatically\"";
+			shellScript = "if nc -w 5 -z localhost 8081 ; then\n  if ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\n    echo \"Port 8081 already in use, packager is either not running or not running correctly\"\n    exit 2\n  fi\nelse\n  open $SRCROOT/../packager/launchPackager.command || echo \"Can't start packager automatically\"\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
