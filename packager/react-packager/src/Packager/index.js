@@ -11,8 +11,7 @@
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
-var q = require('q');
-var Promise = require('q').Promise;
+var Promise = require('bluebird');
 var Transformer = require('../JSTransformer');
 var DependencyResolver = require('../DependencyResolver');
 var _ = require('underscore');
@@ -140,7 +139,7 @@ Packager.prototype._transformModule = function(module) {
   var transform;
 
   if (module.isAsset) {
-    transform = q(generateAssetModule(module));
+    transform = Promise.resolve(generateAssetModule(module));
   } else {
     transform = this._transformer.loadFileAndTransform(
       path.resolve(module.path)

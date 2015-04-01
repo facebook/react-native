@@ -10,11 +10,9 @@
 
 var EventEmitter  = require('events').EventEmitter;
 var sane = require('sane');
-var q = require('q');
+var Promise = require('bluebird');
 var util = require('util');
 var exec = require('child_process').exec;
-
-var Promise = q.Promise;
 
 var detectingWatcherClass = new Promise(function(resolve) {
   exec('which watchman', function(err, out) {
@@ -41,7 +39,7 @@ function FileWatcher(rootConfigs) {
 
   fileWatcher = this;
 
-  this._loading = q.all(
+  this._loading = Promise.all(
     rootConfigs.map(createWatcher)
   ).then(function(watchers) {
     watchers.forEach(function(watcher) {
@@ -59,7 +57,7 @@ util.inherits(FileWatcher, EventEmitter);
 FileWatcher.prototype.end = function() {
   return this._loading.then(function(watchers) {
     watchers.forEach(function(watcher) {
-      return q.ninvoke(watcher, 'close');
+      return Promise.promisify(watcher.close, watcher)();
     });
   });
 };
@@ -88,7 +86,7 @@ function createWatcher(rootConfig) {
 FileWatcher.createDummyWatcher = function() {
   var ev = new EventEmitter();
   ev.end = function() {
-    return q();
+    return Promise.resolve();
   };
   return ev;
 };

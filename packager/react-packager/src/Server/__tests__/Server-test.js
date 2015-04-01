@@ -9,7 +9,6 @@
 'use strict';
 
 jest.setMock('worker-farm', function() { return function() {}; })
-    .dontMock('q')
     .dontMock('os')
     .dontMock('path')
     .dontMock('url')
@@ -21,7 +20,7 @@ jest.setMock('worker-farm', function() { return function() {}; })
     .setMock('uglify-js')
     .dontMock('../');
 
-var q = require('q');
+var Promise = require('bluebird');
 
 describe('processRequest', function() {
   var server;
@@ -36,18 +35,19 @@ describe('processRequest', function() {
   };
 
   var makeRequest = function(requestHandler, requrl) {
-    var deferred = q.defer();
-    requestHandler({
-        url: requrl
-      },{
-        end: function(res) {
-          deferred.resolve(res);
+    return new Promise(function(resolve) {
+      requestHandler(
+        { url: requrl },
+        {
+          end: function(res) {
+            resolve(res);
+          }
+        },
+        {
+          next: function() {}
         }
-      },{
-        next: function() {}
-      }
-    );
-    return deferred.promise;
+      );
+    });
   };
 
   var invalidatorFunc = jest.genMockFunction();
@@ -60,7 +60,7 @@ describe('processRequest', function() {
     FileWatcher = require('../../FileWatcher');
 
     Packager.prototype.package = jest.genMockFunction().mockImpl(function() {
-      return q({
+      return Promise.resolve({
         getSource: function() {
           return 'this is the source';
         },
@@ -156,7 +156,7 @@ describe('processRequest', function() {
       var packageFunc = jest.genMockFunction();
       packageFunc
         .mockReturnValueOnce(
-          q({
+          Promise.resolve({
             getSource: function() {
               return 'this is the first source';
             },
@@ -164,7 +164,7 @@ describe('processRequest', function() {
           })
         )
         .mockReturnValue(
-          q({
+          Promise.resolve({
             getSource: function() {
               return 'this is the rebuilt source';
             },
