@@ -2,12 +2,12 @@ React Native Packager
 --------------------
 
 React Native Packager is a project similar in scope to browserify or
-webpack, it provides a CommonJS-like module system, JavaScript
+webpack; it provides a CommonJS-like module system, JavaScript
 compilation (ES6, Flow, JSX), bundling, and asset loading.
 
 The main difference is the Packager's focus on compilation and
 bundling speed. We aim for a sub-second edit-reload
-cycles. Additionally, we don't want users -- with large code bases --
+cycle. Additionally, we don't want users -- with large code bases --
 to wait more than a few seconds after starting the packager.
 
 The main deviation from the node module system is the support for our
@@ -19,7 +19,7 @@ namely the node module format. We want to even go further, and let you
 choose your own packager and asset pipeline or even integrate into
 your existing infrastructure.
 
-React Native users need not to understand how the packager work,
+React Native users need not to understand how the packager works;
 however, this documentation might be useful for advanced users and
 people who want to fix bugs or add features to the packager (patches
 welcome!).
@@ -45,10 +45,10 @@ Does the following in order:
 ### /path/to/moduleName.map
 
 * if the package has been previously generated via the `.bundle`
-  endpoint then the source map will be generated from that package
+  endpoint, then the source map will be generated from that package
 * if the package has not been previously asked for, this will go
-  through the same steps outlined in the `.bundle` endpoint then
-  generate the source map.
+  through the same steps outlined in the `.bundle` endpoint, then
+  generate the source map
 
 Note that source map generation currently assumes that the code has
 been compiled with jstransform, which preserves line and column
@@ -66,15 +66,15 @@ Here are the current options the packager accepts:
 * `minify` boolean, defaults to false: whether to minify the bundle.
 * `runModule` boolean, defaults to true: whether to require your entry
   point module. So if you requested `moduleName`, this option will add
-  a `require('moduleName')` the end of your bundle.
+  a `require('moduleName')` to the end of your bundle.
 * `inlineSourceMap` boolean, defaults to false: whether to inline
   source maps.
 
 ### /debug
 
-This is a page used for debugging, it has links to two pages:
+This is a page used for debugging; it has links to two pages:
 
-* Cached Packages: which shows you the packages that's been already
+* Cached Packages: which shows you the packages that have already been
   generated and cached
 * Dependency Graph: is the in-memory graph of all the modules and
   their dependencies
@@ -103,8 +103,8 @@ middleware. Takes the following options:
   packager
 * `polyfillModuleName` array: Paths to polyfills you want to be
   included at the start of the bundle
-* `cacheVersion` string: used in creating the cache file
-* `resetCache` boolean, defaults to false: whether to use the cache on
+* `cacheVersion` string: Used in creating the cache file
+* `resetCache` boolean, defaults to false: Whether to use the cache on
   disk
 * `transformModulePath` string: Path to the module used as a
   JavaScript transformer
@@ -133,6 +133,6 @@ is informed by React Native needs.
 
 ### Why didn't you use webpack?
 
-We love webpack, however, when we tried on our codebase it was slower
-than our developers would like it to be. You find can more discussion about
-the subject [here](https://github.com/facebook/react-native/issues/5)
+We love webpack; however, when we tried it on our codebase, it was slower
+than our developers wanted it to be. You find can more discussion about
+the subject [here](https://github.com/facebook/react-native/issues/5).
