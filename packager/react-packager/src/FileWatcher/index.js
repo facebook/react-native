@@ -45,8 +45,8 @@ function FileWatcher(rootConfigs) {
     rootConfigs.map(createWatcher)
   ).then(function(watchers) {
     watchers.forEach(function(watcher) {
-      watcher.on('all', function(type, filepath, root) {
-        fileWatcher.emit('all', type, filepath, root);
+      watcher.on('all', function(type, filepath, root, stat) {
+        fileWatcher.emit('all', type, filepath, root, stat);
       });
     });
     return watchers;
