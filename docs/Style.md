@@ -91,3 +91,11 @@ var List = React.createClass({
 // ... in another file ...
 <List style={styles.list} elementStyle={styles.listElement} />
 ```
+## Supported Properties
+
+You can checkout latest support of CSS Properties in following Links.
+
+- [View Properties](http://facebook.github.io/react-native/docs/view.html#style)
+- [Image Properties](http://facebook.github.io/react-native/docs/image.html#style)
+- [Text Properties](http://facebook.github.io/react-native/docs/text.html#style)
+- [Flex Properties](http://facebook.github.io/react-native/docs/flexbox.html#content)
