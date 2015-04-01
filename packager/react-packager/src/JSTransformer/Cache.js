@@ -14,11 +14,12 @@ var declareOpts = require('../lib/declareOpts');
 var fs = require('fs');
 var isAbsolutePath = require('absolute-path');
 var path = require('path');
-var q = require('q');
+var Promise = require('bluebird');
 var tmpdir = require('os').tmpDir();
 var version = require('../../../../package.json').version;
 
-var Promise = q.Promise;
+var fsStat = Promise.promisify(fs.stat);
+var fsWriteFile = Promise.promisify(fs.writeFile)
 
 var validateOpts = declareOpts({
   resetCache: {
@@ -74,7 +75,7 @@ Cache.prototype._set = function(filepath, loaderPromise) {
   this._data[filepath] = loaderPromise.then(function(data) {
     return [
       data,
-      q.nfbind(fs.stat)(filepath)
+      fsStat(filepath)
     ];
   }).spread(function(data, stat) {
     this._persistEventually();
@@ -105,13 +106,13 @@ Cache.prototype._persistCache = function() {
   var data = this._data;
   var cacheFilepath = this._cacheFilePath;
 
-  this._persisting = q.all(_.values(data))
+  this._persisting = Promise.all(_.values(data))
     .then(function(values) {
       var json = Object.create(null);
       Object.keys(data).forEach(function(key, i) {
         json[key] = values[i];
       });
-      return q.nfbind(fs.writeFile)(cacheFilepath, JSON.stringify(json));
+      return fsWriteFile(cacheFilepath, JSON.stringify(json));
     })
     .then(function() {
       this._persisting = null;

@@ -8,7 +8,8 @@
  */
 'use strict';
 
-// Bug with Jest because we're going to the node_modules that is a sibling
-// of what jest thinks our root (the dir with the package.json) should be.
+jest.autoMockOff();
 
-module.exports = require.requireActual('q');
+module.exports = require.requireActual('bluebird');
+
+jest.autoMockOn();

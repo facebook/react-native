@@ -10,7 +10,6 @@
 
 jest
   .dontMock('../index')
-  .dontMock('q')
   .dontMock('path')
   .dontMock('absolute-path')
   .dontMock('../docblock')

@@ -9,10 +9,9 @@
 'use strict';
 
 jest.dontMock('../')
-    .dontMock('q')
     .setMock('../../ModuleDescriptor', function(data) {return data;});
 
-var q = require('q');
+var Promise = require('bluebird');
 
 describe('HasteDependencyResolver', function() {
   var HasteDependencyResolver;
@@ -40,7 +39,7 @@ describe('HasteDependencyResolver', function() {
         return deps;
       });
       depGraph.load.mockImpl(function() {
-        return q();
+        return Promise.resolve();
       });
 
       return depResolver.getDependencies('/root/index.js', { dev: false })
@@ -100,7 +99,7 @@ describe('HasteDependencyResolver', function() {
         return deps;
       });
       depGraph.load.mockImpl(function() {
-        return q();
+        return Promise.resolve();
       });
 
       return depResolver.getDependencies('/root/index.js', { dev: true })
@@ -161,7 +160,7 @@ describe('HasteDependencyResolver', function() {
         return deps;
       });
       depGraph.load.mockImpl(function() {
-        return q();
+        return Promise.resolve();
       });
 
       return depResolver.getDependencies('/root/index.js', { dev: false })

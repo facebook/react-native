@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var Promise = require('q').Promise;
+var Promise = require('bluebird');
 var ModuleDescriptor = require('../ModuleDescriptor');
 
 var mdeps = require('module-deps');

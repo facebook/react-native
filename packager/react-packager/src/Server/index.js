@@ -14,7 +14,7 @@ var declareOpts = require('../lib/declareOpts');
 var FileWatcher = require('../FileWatcher');
 var Packager = require('../Packager');
 var Activity = require('../Activity');
-var q = require('q');
+var Promise = require('bluebird');
 var _ = require('underscore');
 
 module.exports = Server;
@@ -123,7 +123,7 @@ Server.prototype._rebuildPackages = function() {
   Object.keys(packages).forEach(function(key) {
     var options = getOptionsFromUrl(key);
     // Wait for a previous build (if exists) to finish.
-    packages[key] = (packages[key] || q()).finally(function() {
+    packages[key] = (packages[key] || Promise.resolve()).finally(function() {
       // With finally promise callback we can't change the state of the promise
       // so we need to reassign the promise.
       packages[key] = buildPackage(options).then(function(p) {
@@ -154,7 +154,7 @@ Server.prototype._informChangeWatchers = function() {
 };
 
 Server.prototype.end = function() {
-  q.all([
+  Promise.all([
     this._fileWatcher.end(),
     this._packager.kill(),
   ]);
@@ -188,7 +188,7 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
     res.end(ret);
   } else if (parts[1] === 'packages') {
     ret += '<h1> Cached Packages </h1>';
-    q.all(Object.keys(this._packages).map(function(url) {
+    Promise.all(Object.keys(this._packages).map(function(url) {
       return this._packages[url].then(function(p) {
         ret += '<div><h2>' + url + '</h2>';
         ret += p.getDebugInfo();

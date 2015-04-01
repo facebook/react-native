@@ -9,14 +9,14 @@
 'use strict';
 
 var fs = require('fs');
-var q = require('q');
+var Promise = require('bluebird');
 var Cache = require('./Cache');
 var _ = require('underscore');
 var workerFarm = require('worker-farm');
 var declareOpts = require('../lib/declareOpts');
 var util = require('util');
 
-var readFile = q.nfbind(fs.readFile);
+var readFile = Promise.promisify(fs.readFile);
 
 module.exports = Transformer;
 Transformer.TransformError = TransformError;
@@ -63,7 +63,7 @@ function Transformer(options) {
     });
 
   if (options.transformModulePath == null) {
-    this._failedToStart = q.Promise.reject(new Error('No transfrom module'));
+    this._failedToStart = Promise.reject(new Error('No transfrom module'));
   } else {
     this._workers = workerFarm(
       {autoStart: true, maxConcurrentCallsPerWorker: 1},
@@ -92,7 +92,7 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
       .then(function(buffer) {
         var sourceCode = buffer.toString();
 
-        return q.nfbind(workers)({
+        return Promise.promisify(workers)({
           sourceCode: sourceCode,
           filename: filePath,
         }).then(
