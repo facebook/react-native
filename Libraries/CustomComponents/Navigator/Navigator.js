@@ -462,7 +462,7 @@ var Navigator = React.createClass({
       this._emitDidFocus(presentedIndex);
       this._removePoppedRoutes();
       if (AnimationsDebugModule) {
-        AnimationsDebugModule.stopRecordingFps();
+        AnimationsDebugModule.stopRecordingFps(Date.now());
       }
       this._hideOtherScenes(presentedIndex);
     }
