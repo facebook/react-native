@@ -298,7 +298,7 @@ var Autodocs = React.createClass({
           path={docs.example.path}
         />
         <Prism>
-          {docs.example.content.replace(/^[\s\S]*\*\//, '').trim()}
+          {docs.example.content.replace(/^[\s\S]*?\*\//, '').trim()}
         </Prism>
       </div>
     );
