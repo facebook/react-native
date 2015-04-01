@@ -459,7 +459,17 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     NSUInteger blue = -1;
     CGFloat alpha = 1.0;
     if ([colorString hasPrefix:@"#"]) {
-      sscanf([colorString UTF8String], "#%02tX%02tX%02tX", &red, &green, &blue);
+      if (colorString.length == 4) { // 3 digit hex
+        sscanf([colorString UTF8String], "#%01tX%01tX%01tX", &red, &green, &blue);
+        // expand to 6 digit hex
+        red = red | (red << 4);
+        green = green | (green << 4);
+        blue = blue | (blue << 4);
+      } else if (colorString.length == 7) { // normal 6 digit hex
+        sscanf([colorString UTF8String], "#%02tX%02tX%02tX", &red, &green, &blue);
+      } else {
+        RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long", colorString);
+      }
     } else if ([colorString hasPrefix:@"rgba("]) {
       double tmpAlpha;
       sscanf([colorString UTF8String], "rgba(%zd,%zd,%zd,%lf)", &red, &green, &blue, &tmpAlpha);
