@@ -64,4 +64,4 @@ Paths`. There you should include the path to you library (if it has relevant
 files on subdirectories remember to make it `recursive`, like `React` on the
 example).
 
-![](https://github.com/facebook/react-native/blob/master/website/src/react-native/img/AddToSearchPaths.png)
+![](/react-native/img/AddToSearchPaths.png)
