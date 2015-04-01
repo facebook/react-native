@@ -40,7 +40,7 @@ var UIExplorerPage = React.createClass({
       ContentWrapper = View;
     } else {
       ContentWrapper = ScrollView;
-      wrapperProps.keyboardShouldPeristTaps = true;
+      wrapperProps.keyboardShouldPersistTaps = true;
       wrapperProps.keyboardDismissMode = 'interactive';
     }
     var title = this.props.title ?

@@ -20,8 +20,11 @@ var SampleApp = React.createClass({
           Welcome to React Native!
         </Text>
         <Text style={styles.instructions}>
-          To get started, edit index.ios.js{'\n'}
-          Press Cmd+R to reload
+          To get started, edit index.ios.js
+        </Text>
+        <Text style={styles.instructions}>
+          Press Cmd+R to reload,{'\n'}
+          Cmd+Shift+Z for dev menu
         </Text>
       </View>
     );
@@ -43,6 +46,7 @@ var styles = StyleSheet.create({
   instructions: {
     textAlign: 'center',
     color: '#333333',
+    marginBottom: 5,
   },
 });
 
