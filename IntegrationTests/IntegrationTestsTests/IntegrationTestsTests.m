@@ -72,6 +72,11 @@
   [_runner runTest:_cmd module:@"SimpleSnapshotTest"];
 }
 
+- (void)testSegmentedControlIOS
+{
+  [_runner runTest:_cmd module:@"SegmentedControlIOSSnapshotTest"];
+}
+
 - (void)testZZZ_NotInRecordMode
 {
   RCTAssert(_runner.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");
