@@ -15,13 +15,21 @@
 static NSDictionary *RCTCurrentDimensions()
 {
     static NSDictionary *dimensions;
+    
+    CGSize frameSize = [UIScreen mainScreen].applicationFrame.size;
+    if ((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1)
+            && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        frameSize = CGSizeMake(frameSize.height, frameSize.width);
+    }
+    
     dimensions = @{
-        @"width": [NSNumber numberWithFloat:[UIScreen mainScreen].applicationFrame.size.width],
-        @"height": [NSNumber numberWithFloat:[UIScreen mainScreen].applicationFrame.size.height]
+        @"width": [NSNumber numberWithFloat:frameSize.width],
+        @"height": [NSNumber numberWithFloat:frameSize.height]
     };
     
     return dimensions;
 }
+
 
 @implementation RCTDimensionManager
 {
@@ -46,11 +54,6 @@ static NSDictionary *RCTCurrentDimensions()
     return self;
 }
 
-- (NSDictionary *)constantsToExport
-{
-    return @{ @"dimensions": _lastKnownDimensions};
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -63,5 +66,19 @@ static NSDictionary *RCTCurrentDimensions()
     _lastKnownDimensions = RCTCurrentDimensions();
     [_bridge.eventDispatcher sendDeviceEventWithName:@"dimensionsDidChange" body:_lastKnownDimensions];
 }
+
+#pragma mark - Public API
+/**
+ * Get the current dimensions of the viewport
+ */
+- (void)getCurrentDimensions:(RCTResponseSenderBlock)callback
+                       error:(__unused RCTResponseSenderBlock)error
+{
+    RCT_EXPORT();
+    _lastKnownDimensions = RCTCurrentDimensions();
+    
+    callback(@[_lastKnownDimensions]);
+}
+
 
 @end

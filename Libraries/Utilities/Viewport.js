@@ -13,7 +13,9 @@
 
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTDimension = NativeModules.DimensionManager;
+var RCTDimensionManager = NativeModules.DimensionManager;
+
+var logError = require('logError');
 
 var DEVICE_DIMENSIONS_EVENT = 'dimensionsDidChange';
 
@@ -31,7 +33,7 @@ var DEVICE_DIMENSIONS_EVENT = 'dimensionsDidChange';
  */
 var Viewport = {};
 
-if (RCTDimension) {
+if (RCTDimensionManager) {
   var _dimensionSubscriptions = {};
 
   Viewport.addEventListener = function(
@@ -55,8 +57,10 @@ if (RCTDimension) {
     _dimensionSubscriptions[handler] = null;
   };
 
-  Viewport.getDimensions = function(): Object {
-    return RCTDimension.dimensions;
+  Viewport.getDimensions = function(
+    handler: Function
+  ) {
+    RCTDimensionManager.getCurrentDimensions(handler, logError);
   }
 }
 
