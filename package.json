@@ -53,13 +53,13 @@
     "joi": "~5.1.0",
     "module-deps": "3.5.6",
     "optimist": "0.6.1",
-    "q": "1.0.1",
     "sane": "1.0.1",
     "uglify-js": "~2.4.16",
     "underscore": "1.7.0",
     "worker-farm": "1.1.0",
     "yargs": "1.3.2",
-    "ws": "0.4.31"
+    "ws": "0.4.31",
+    "bluebird": "^2.9.21"
   },
   "devDependencies": {
     "jest-cli": "0.2.1",
