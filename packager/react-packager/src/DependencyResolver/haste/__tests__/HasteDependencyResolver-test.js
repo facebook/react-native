@@ -10,6 +10,7 @@
 
 jest.dontMock('../')
     .dontMock('q')
+    .dontMock('../replacePatterns')
     .setMock('../../ModuleDescriptor', function(data) {return data;});
 
 var q = require('q');
@@ -226,7 +227,7 @@ describe('HasteDependencyResolver', function() {
       });
 
       var depGraph = depResolver._depGraph;
-      var dependencies = ['x', 'y', 'z'];
+      var dependencies = ['x', 'y', 'z', 'a', 'b'];
       var code = [
         "import 'x' ;",
         "import Default from 'x' ;",
@@ -356,7 +357,9 @@ describe('HasteDependencyResolver', function() {
         'import * as All from \'z\';',
         'require("x")',
         'require("y")',
-        'require(\'z\')',
+        'require( \'z\' )',
+        'require( "a")',
+        'require("b" )',
       ].join('\n');
 
       depGraph.resolveDependency.mockImpl(function(fromModule, toModuleName) {
@@ -507,7 +510,9 @@ describe('HasteDependencyResolver', function() {
         'import * as All from \'z\';',
         'require("changed")',
         'require("Y")',
-        'require(\'z\')});',
+        'require( \'z\' )',
+        'require( "a")',
+        'require("b" )});',
       ].join('\n'));
     });
   });

@@ -274,7 +274,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
 
-    _throttleScrollCallbackMS = 0;
+    _scrollEventThrottle = 0.0;
     _lastScrollDispatchTime = CACurrentMediaTime();
     _cachedChildFrames = [[NSMutableArray alloc] init];
 
@@ -393,16 +393,15 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   [self updateClippedSubviews];
 
   NSTimeInterval now = CACurrentMediaTime();
-  NSTimeInterval throttleScrollCallbackSeconds = _throttleScrollCallbackMS / 1000.0;
 
   /**
-   * TODO: this logic looks wrong, and it may be because it is. Currently, if _throttleScrollCallbackMS
+   * TODO: this logic looks wrong, and it may be because it is. Currently, if _scrollEventThrottle
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
    * while scrolling as expected. However, if you "fix" that bug, ScrollView will generate repeated
    * warnings, and behave strangely (ListView works fine however), so don't fix it unless you fix that too!
    */
   if (_allowNextScrollNoMatterWhat ||
-      (_throttleScrollCallbackMS != 0 && throttleScrollCallbackSeconds < (now - _lastScrollDispatchTime))) {
+      (_scrollEventThrottle > 0 && _scrollEventThrottle < (now - _lastScrollDispatchTime))) {
 
     // Calculate changed frames
     NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];

@@ -12,6 +12,7 @@ var ModuleDescriptor = require('../../ModuleDescriptor');
 var q = require('q');
 var fs = require('fs');
 var docblock = require('./docblock');
+var replacePatterns = require('../replacePatterns');
 var path = require('path');
 var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
@@ -600,8 +601,6 @@ DependecyGraph.prototype._processAssetChange = function(eventType, file) {
 /**
  * Extract all required modules from a `code` string.
  */
-var importRe = /\bimport\s+(?:.+\s+from\s+)?['"]([^'"]+)['"]/g;
-var requireRe = /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
 var blockCommentRe = /\/\*(.|\n)*?\*\//g;
 var lineCommentRe = /\/\/.+(\n|$)/g;
 function extractRequires(code) {
@@ -610,11 +609,11 @@ function extractRequires(code) {
   code
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
-    .replace(importRe, function(match, dep) {
+    .replace(replacePatterns.IMPORT_RE, function(match, pre, quot, dep, post) {
       deps.push(dep);
       return match;
     })
-    .replace(requireRe, function(match, dep) {
+    .replace(replacePatterns.REQUIRE_RE, function(match, pre, quot, dep, post) {
       deps.push(dep);
     });
 
@@ -718,6 +717,6 @@ function NotFoundError() {
   this.status = 404;
 }
 
-NotFoundError.__proto__ = Error.prototype;
+util.inherits(NotFoundError, Error);
 
 module.exports = DependecyGraph;

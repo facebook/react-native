@@ -124,4 +124,13 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
   };
 }
 
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
+{
+  NSNumber *reactTag = shadowView.reactTag;
+  UIEdgeInsets padding = shadowView.paddingAsInsets;
+  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    ((RCTText *)viewRegistry[reactTag]).contentInset = padding;
+  };
+}
+
 @end

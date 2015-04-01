@@ -80,10 +80,18 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   if ((self = [super init])) {
     _property = [RCTConvert NSString:config[@"property"]];
 
-    // TODO: this should be provided in ms, not seconds
-    // (this will require changing all call sites to ms as well)
-    _duration = [RCTConvert NSTimeInterval:config[@"duration"]] * 1000.0 ?: duration;
-    _delay = [RCTConvert NSTimeInterval:config[@"delay"]]  * 1000.0;
+    _duration = [RCTConvert NSTimeInterval:config[@"duration"]] ?: duration;
+    if (_duration > 0.0 && _duration < 0.01) {
+      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
+      _duration = _duration * 1000.0;
+    }
+
+    _delay = [RCTConvert NSTimeInterval:config[@"delay"]];
+    if (_delay > 0.0 && _delay < 0.01) {
+      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
+      _delay = _delay * 1000.0;
+    }
+
     _animationType = [RCTConvert RCTAnimationType:config[@"type"]];
     if (_animationType == RCTAnimationTypeSpring) {
       _springDamping = [RCTConvert CGFloat:config[@"springDamping"]];
@@ -142,9 +150,11 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
 
   if ((self = [super init])) {
 
-    // TODO: this should be provided in ms, not seconds
-    // (this will require changing all call sites to ms as well)
-    NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]] * 1000.0;
+    NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]];
+    if (duration > 0.0 && duration < 0.01) {
+      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
+      duration = duration * 1000.0;
+    }
 
     _createAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"create"]];
     _updateAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"update"]];
@@ -497,7 +507,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 {
   RCT_EXPORT();
 
-  id<RCTViewNodeProtocol> container = _viewRegistry[containerID];
+  id<RCTViewNodeProtocol> container = _shadowViewRegistry[containerID];
   RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
 
   NSUInteger subviewsCount = [[container reactSubviews] count];
@@ -1041,11 +1051,25 @@ static void RCTMeasureLayout(RCTShadowView *view,
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     UIView *view = viewRegistry[reactTag];
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
-      [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue])];
+      [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:YES];
     } else {
       RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
     }
   }];
+}
+
+- (void)scrollWithoutAnimationToOffsetWithView:(NSNumber *)reactTag scrollToOffsetX:(NSNumber *)offsetX offsetY:(NSNumber *)offsetY
+{
+    RCT_EXPORT(scrollWithoutAnimationTo);
+
+    [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
+        UIView *view = viewRegistry[reactTag];
+        if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+            [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:NO];
+        } else {
+            RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+        }
+    }];
 }
 
 - (void)zoomToRectWithView:(NSNumber *)reactTag rect:(NSDictionary *)rectDict
@@ -1290,6 +1314,32 @@ static void RCTMeasureLayout(RCTShadowView *view,
         @"unless-editing": @(UITextFieldViewModeUnlessEditing),
         @"always": @(UITextFieldViewModeAlways),
       },
+    },
+    @"UIKeyboardType": @{
+      @"default": @(UIKeyboardTypeDefault),
+      @"ascii-capable": @(UIKeyboardTypeASCIICapable),
+      @"numbers-and-punctuation": @(UIKeyboardTypeNumbersAndPunctuation),
+      @"url": @(UIKeyboardTypeURL),
+      @"number-pad": @(UIKeyboardTypeNumberPad),
+      @"phone-pad": @(UIKeyboardTypePhonePad),
+      @"name-phone-pad": @(UIKeyboardTypeNamePhonePad),
+      @"decimal-pad": @(UIKeyboardTypeDecimalPad),
+      @"email-address": @(UIKeyboardTypeEmailAddress),
+      @"twitter": @(UIKeyboardTypeTwitter),
+      @"web-search": @(UIKeyboardTypeWebSearch),
+    },
+    @"UIReturnKeyType": @{
+      @"default": @(UIReturnKeyDefault),
+      @"go": @(UIReturnKeyGo),
+      @"google": @(UIReturnKeyGoogle),
+      @"join": @(UIReturnKeyJoin),
+      @"next": @(UIReturnKeyNext),
+      @"route": @(UIReturnKeyRoute),
+      @"search": @(UIReturnKeySearch),
+      @"send": @(UIReturnKeySend),
+      @"yahoo": @(UIReturnKeyYahoo),
+      @"done": @(UIReturnKeyDone),
+      @"emergency-call": @(UIReturnKeyEmergencyCall),
     },
     @"UIView": @{
       @"ContentMode": @{

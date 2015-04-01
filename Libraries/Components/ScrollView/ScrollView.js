@@ -59,13 +59,20 @@ var ScrollView = React.createClass({
     contentOffset: PointPropType, // zeros
     onScroll: PropTypes.func,
     onScrollAnimationEnd: PropTypes.func,
-    scrollEnabled: PropTypes.bool, // tre
+    scrollEnabled: PropTypes.bool, // true
     scrollIndicatorInsets: EdgeInsetsPropType, // zeros
     showsHorizontalScrollIndicator: PropTypes.bool,
     showsVerticalScrollIndicator: PropTypes.bool,
     style: StyleSheetPropType(ViewStylePropTypes),
-    throttleScrollCallbackMS: PropTypes.number, // null
+    scrollEventThrottle: PropTypes.number, // null
 
+    /**
+     * When true, the scroll view bounces when it reaches the end of the
+     * content if the content is larger then the scroll view along the axis of
+     * the scroll direction. When false, it disables all bouncing even if
+     * the `alwaysBounce*` props are true. The default value is true.
+     */
+    bounces: PropTypes.bool,
     /**
      * When true, the scroll view bounces horizontally when it reaches the end
      * even if the content is smaller than the scroll view itself. The default
@@ -195,6 +202,14 @@ var ScrollView = React.createClass({
     );
   },
 
+  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
+    RCTUIManager.scrollWithoutAnimationTo(
+      this.getNodeHandle(),
+      destX || 0,
+      destY || 0
+    );
+  },
+
   render: function() {
     var contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
@@ -211,12 +226,12 @@ var ScrollView = React.createClass({
       );
     }
     if (__DEV__) {
-      if (this.props.onScroll && !this.props.throttleScrollCallbackMS) {
+      if (this.props.onScroll && !this.props.scrollEventThrottle) {
         var onScroll = this.props.onScroll;
         this.props.onScroll = function() {
           console.log(
             'You specified `onScroll` on a <ScrollView> but not ' +
-            '`throttleScrollCallbackMS`. You will only receive one event. ' +
+            '`scrollEventThrottle`. You will only receive one event. ' +
             'Using `16` you get all the events but be aware that it may ' +
             'cause frame drops, use a bigger number if you don\'t need as ' +
             'much precision.'
@@ -308,6 +323,7 @@ var validAttributes = {
   alwaysBounceHorizontal: true,
   alwaysBounceVertical: true,
   automaticallyAdjustContentInsets: true,
+  bounces: true,
   centerContent: true,
   contentInset: {diff: insetsDiffer},
   contentOffset: {diff: pointsDiffer},
@@ -325,7 +341,7 @@ var validAttributes = {
   showsHorizontalScrollIndicator: true,
   showsVerticalScrollIndicator: true,
   stickyHeaderIndices: {diff: deepDiffer},
-  throttleScrollCallbackMS: true,
+  scrollEventThrottle: true,
   zoomScale: true,
 };
 

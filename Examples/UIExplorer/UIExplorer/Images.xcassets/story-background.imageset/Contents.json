@@ -2,11 +2,6 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "story-background.png"
-    },
-    {
-      "idiom" : "universal",
       "scale" : "2x",
       "filename" : "story-background@2x.png"
     },

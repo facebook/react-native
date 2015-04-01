@@ -79,7 +79,7 @@ RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor);
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
-RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, CGFloat)
+RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
 RCT_CUSTOM_VIEW_PROPERTY(overflow, css_overflow, RCTView)

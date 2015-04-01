@@ -226,9 +226,9 @@ var styles = StyleSheet.create({
 var animations = {
   layout: {
     spring: {
-      duration: 0.75,
+      duration: 750,
       create: {
-        duration: 0.3,
+        duration: 300,
         type: LayoutAnimation.Types.easeInEaseOut,
         property: LayoutAnimation.Properties.opacity,
       },
@@ -238,13 +238,13 @@ var animations = {
       },
     },
     easeInEaseOut: {
-      duration: 0.3,
+      duration: 300,
       create: {
         type: LayoutAnimation.Types.easeInEaseOut,
         property: LayoutAnimation.Properties.scaleXY,
       },
       update: {
-        delay: 0.1,
+        delay: 100,
         type: LayoutAnimation.Types.easeInEaseOut,
       },
     },
