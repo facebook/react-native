@@ -74,7 +74,7 @@ class NotificationExample extends React.Component {
   _onNotification(notification) {
     AlertIOS.alert(
       'Notification Received',
-      `Alert message: ${notification.getMessage()}`,
+      'Alert message: ' + notification.getMessage(),
       [{
         text: 'Dismiss',
         onPress: null,
