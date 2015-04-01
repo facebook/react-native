@@ -85,7 +85,7 @@ React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 
 You should now add a container view for the React Native component. It can be any `UIView` in your app.
 
-![Container view example](/react-native/img/EmbeddedAppContainerViewExample.png)
+![Container view example](https://github.com/facebook/react-native/blob/master/website/src/react-native/img/EmbeddedAppContainerViewExample.png)
 
 However, let's subclass `UIView` for the sake of clean code. Let's name it `ReactView`. Open up `Yourproject.xcworkspace` and create a new class `ReactView` (You can name it whatever you like :)).
 
