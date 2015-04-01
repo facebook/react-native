@@ -547,7 +547,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   UIImage *image = nil;
   NSString *path = json;
-  if ([path isAbsolutePath]) {
+  if ([path hasPrefix:@"data:"]) {
+    NSURL *url = [NSURL URLWithString:path];
+    NSData *imageData = [NSData dataWithContentsOfURL:url];
+    image = [UIImage imageWithData:imageData];
+  } else if ([path isAbsolutePath]) {
     image = [UIImage imageWithContentsOfFile:path];
   } else {
     image = [UIImage imageNamed:path];
