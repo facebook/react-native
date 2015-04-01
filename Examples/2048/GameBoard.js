@@ -35,7 +35,6 @@ var rotateLeft = function (matrix) {
 var Tile = function (value?: number, row?: number, column?: number) {
   this.value = value || 0;
   this.row = row || -1;
-
   this.column = column || -1;
   this.oldRow = -1;
   this.oldColumn = -1;
