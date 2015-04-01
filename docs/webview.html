@@ -3,7 +3,6 @@
 <span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> StyleSheet <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;StyleSheet&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
-  ActivityIndicatorIOS<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   TextInput<span class="token punctuation">,</span>
@@ -80,8 +79,6 @@
           automaticallyAdjustContentInsets<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span>
           style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>webView<span class="token punctuation">}</span>
           url<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>url<span class="token punctuation">}</span>
-          renderError<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>renderError<span class="token punctuation">}</span>
-          renderLoading<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>renderLoading<span class="token punctuation">}</span>
           onNavigationStateChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>onNavigationStateChange<span class="token punctuation">}</span>
           startInLoadingState<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
@@ -112,33 +109,6 @@
       status<span class="token punctuation">:</span> navState<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
       loading<span class="token punctuation">:</span> navState<span class="token punctuation">.</span>loading<span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  renderError<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>errorDomain<span class="token punctuation">,</span> errorCode<span class="token punctuation">,</span> errorDesc<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>errorContainer<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>errorTextTitle<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          Error loading page
-        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>errorText<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          <span class="token punctuation">{</span><span class="token string">&#x27;Domain: &#x27;</span> <span class="token operator">+</span> errorDomain<span class="token punctuation">}</span>
-        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>errorText<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          <span class="token punctuation">{</span><span class="token string">&#x27;Error Code: &#x27;</span> <span class="token operator">+</span> errorCode<span class="token punctuation">}</span>
-        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>errorText<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          <span class="token punctuation">{</span><span class="token string">&#x27;Description: &#x27;</span> <span class="token operator">+</span> errorDesc<span class="token punctuation">}</span>
-        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  renderLoading<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>loadingView<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-        &lt;ActivityIndicatorIOS <span class="token operator">/</span><span class="token operator">&gt;</span>
-      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   onSubmitEditing<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -214,28 +184,6 @@
     borderColor<span class="token punctuation">:</span> <span class="token string">&#x27;transparent&#x27;</span><span class="token punctuation">,</span>
     borderRadius<span class="token punctuation">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
     alignSelf<span class="token punctuation">:</span> <span class="token string">&#x27;stretch&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  loadingView<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    backgroundColor<span class="token punctuation">:</span> BGWASH<span class="token punctuation">,</span>
-    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    justifyContent<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span>
-    alignItems<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  errorContainer<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    justifyContent<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span>
-    alignItems<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> BGWASH<span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  errorTextTitle<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    fontSize<span class="token punctuation">:</span> <span class="token number">15</span><span class="token punctuation">,</span>
-    fontWeight<span class="token punctuation">:</span> <span class="token string">&#x27;500&#x27;</span><span class="token punctuation">,</span>
-    marginBottom<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  errorText<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    fontSize<span class="token punctuation">:</span> <span class="token number">14</span><span class="token punctuation">,</span>
-    textAlign<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span>
-    marginBottom<span class="token punctuation">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   statusBar<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flexDirection<span class="token punctuation">:</span> <span class="token string">&#x27;row&#x27;</span><span class="token punctuation">,</span>
