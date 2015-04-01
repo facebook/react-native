@@ -22,6 +22,7 @@ Native module is just an Objectve-C class that implements `RCTBridgeModule` prot
 ```objective-c
 // CalendarManager.h
 #import "RCTBridgeModule.h"
+#import "RCTLog.h"
 
 @interface CalendarManager : NSObject <RCTBridgeModule>
 @end
