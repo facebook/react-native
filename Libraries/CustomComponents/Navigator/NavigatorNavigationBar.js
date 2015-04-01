@@ -46,7 +46,7 @@ var NavigatorNavigationBar = React.createClass({
 
   propTypes: {
     navigator: React.PropTypes.object,
-    navigationBarRouteMapper: React.PropTypes.shape({
+    routeMapper: React.PropTypes.shape({
       Title: React.PropTypes.func.isRequired,
       LeftButton: React.PropTypes.func.isRequired,
       RightButton: React.PropTypes.func.isRequired,
@@ -56,7 +56,7 @@ var NavigatorNavigationBar = React.createClass({
       idStack: React.PropTypes.arrayOf(React.PropTypes.number),
       presentedIndex: React.PropTypes.number,
     }),
-    navigationBarStyles: View.propTypes.style,
+    style: View.propTypes.style,
   },
 
   statics: {
@@ -133,7 +133,7 @@ var NavigatorNavigationBar = React.createClass({
     }, this);
 
     return (
-      <View style={[styles.navBarContainer, this.props.navigationBarStyles]}>
+      <View style={[styles.navBarContainer, this.props.style]}>
         {components}
       </View>
     );
@@ -145,7 +145,6 @@ var NavigatorNavigationBar = React.createClass({
     /*number*/index
   ) /*object*/ {
     var navState = this.props.navState;
-    var navBarRouteMapper = this.props.navigationBarRouteMapper;
     var uid = navState.idStack[index];
     var containerRef = componentName + 'Container' + uid;
     var alreadyRendered = this.refs[containerRef];
@@ -160,7 +159,7 @@ var NavigatorNavigationBar = React.createClass({
       );
     }
 
-    var content = navBarRouteMapper[componentName](
+    var content = this.props.routeMapper[componentName](
       navState.routeStack[index],
       this.props.navigator,
       index,
