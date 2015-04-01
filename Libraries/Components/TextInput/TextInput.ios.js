@@ -204,7 +204,7 @@ var TextInput = React.createClass({
     /**
      * The alignment of text withing the text input control
      */
-    textAlignment: PropTypes.oneOf([
+    textAlign: PropTypes.oneOf([
       'center',
       'right',
       'left',
@@ -353,7 +353,7 @@ var TextInput = React.createClass({
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}
-          textAlignment={this.props.textAlignment}
+          textAlignment={this.props.textAlign}
         />;
     } else {
       for (var propKey in notMultiline) {
@@ -397,7 +397,7 @@ var TextInput = React.createClass({
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}
-          textAlignment={this.props.textAlignment}
+          textAlignment={this.props.textAlign}
         />;
     }
 
