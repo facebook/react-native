@@ -27,12 +27,13 @@ var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncLocalStorage;
  * operates globally.
  *
  * This JS code is a simple facad over the native iOS implementation to provide
- * a clear JS API, real Error objects, and simple non-multi functions.
+ * a clear JS API, real Error objects, and simple non-multi functions. Each 
+ * method returns a `Promise` object.
  */
 var AsyncStorage = {
   /**
    * Fetches `key` and passes the result to `callback`, along with an `Error` if
-   * there is any.
+   * there is any. Returns a `Promise` object.
    */
   getItem: function(
     key: string,
@@ -54,7 +55,7 @@ var AsyncStorage = {
 
   /**
    * Sets `value` for `key` and calls `callback` on completion, along with an
-   * `Error` if there is any.
+   * `Error` if there is any. Returns a `Promise` object.
    */
   setItem: function(
     key: string,
@@ -72,7 +73,9 @@ var AsyncStorage = {
       });
     });
   },
-
+  /**
+   * Returns a `Promise` object.
+   */
   removeItem: function(
     key: string,
     callback: ?(error: ?Error) => void
@@ -90,7 +93,7 @@ var AsyncStorage = {
   },
 
   /**
-   * Merges existing value with input value, assuming they are stringified json.
+   * Merges existing value with input value, assuming they are stringified json. Returns a `Promise` object.
    *
    * Not supported by all native implementations.
    */
@@ -114,7 +117,7 @@ var AsyncStorage = {
   /**
    * Erases *all* AsyncStorage for all clients, libraries, etc.  You probably
    * don't want to call this - use removeItem or multiRemove to clear only your
-   * own keys instead.
+   * own keys instead. Returns a `Promise` object.
    */
   clear: function(callback: ?(error: ?Error) => void) {
     return new Promise((resolve, reject) => {
@@ -130,7 +133,7 @@ var AsyncStorage = {
   },
 
   /**
-   * Gets *all* keys known to the system, for all callers, libraries, etc.
+   * Gets *all* keys known to the system, for all callers, libraries, etc. Returns a `Promise` object.
    */
   getAllKeys: function(callback: (error: ?Error) => void) {
     return new Promise((resolve, reject) => {
@@ -157,7 +160,7 @@ var AsyncStorage = {
 
   /**
    * multiGet invokes callback with an array of key-value pair arrays that
-   * matches the input format of multiSet.
+   * matches the input format of multiSet. Returns a `Promise` object.
    *
    *   multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
    */
@@ -180,7 +183,7 @@ var AsyncStorage = {
 
   /**
    * multiSet and multiMerge take arrays of key-value array pairs that match
-   * the output of multiGet, e.g.
+   * the output of multiGet, e.g. Returns a `Promise` object.
    *
    *   multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
    */
@@ -202,7 +205,7 @@ var AsyncStorage = {
   },
 
   /**
-   * Delete all the keys in the `keys` array.
+   * Delete all the keys in the `keys` array. Returns a `Promise` object.
    */
   multiRemove: function(
     keys: Array<string>,
@@ -223,7 +226,7 @@ var AsyncStorage = {
 
   /**
    * Merges existing values with input values, assuming they are stringified
-   * json.
+   * json. Returns a `Promise` object.
    *
    * Not supported by all native implementations.
    */
