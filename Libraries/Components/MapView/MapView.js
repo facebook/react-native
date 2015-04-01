@@ -147,6 +147,9 @@ var MapView = React.createClass({
         legalLabelInsets={this.props.legalLabelInsets}
         onChange={this._onChange}
         onTouchStart={this.props.onTouchStart}
+        onTouchMove={this.props.onTouchMove}
+        onTouchEnd={this.props.onTouchEnd}
+        onTouchCancel={this.props.onTouchCancel}
       />
     );
   },
