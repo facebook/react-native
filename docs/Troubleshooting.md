@@ -20,7 +20,7 @@ If you are using a non-QWERTY/AZERTY keyboard layout you can use the `Hardware >
 
 Something is probably already running on port 8081. You can either kill it or try to change which port the packager is listening to.
 
-### Kill process on port 8081
+##### Kill process on port 8081
 `$ sudo lsof -n -i4TCP:8081 | grep LISTEN`
 
 then
@@ -29,7 +29,7 @@ then
 
 
 
-### Change the port in Xcode
+##### Change the port in Xcode
 Edit `AppDelegate.m` to use a different port.
 ```
   // OPTION 1
@@ -41,3 +41,12 @@ Edit `AppDelegate.m` to use a different port.
   // iOS device are on the same Wi-Fi network.
   jsCodeLocation = [NSURL URLWithString:@"http://localhost:9381/index.ios.bundle"];
   ```
+
+
+## Watchman took too long to load
+Permission settings prevent Wathcman to load. A recent update solves this, get a HEAD install of Watchman if you are experiening this error.
+
+```
+brew uninstall watchman
+brew install --HEAD watchman
+```
