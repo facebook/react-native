@@ -82,6 +82,8 @@ var SliderIOS = React.createClass({
       <RCTSlider
         style={[styles.slider, this.props.style]}
         value={this.props.value}
+        maximumValue={this.props.maximumValue}
+        minimumValue={this.props.minimumValue}
         onChange={this._onValueChange}
       />
     );
@@ -94,8 +96,15 @@ var styles = StyleSheet.create({
   },
 });
 
+var validAttributes = {
+  ...ReactIOSViewAttributes.UIView,
+  value: true,
+  minimumValue: true,
+  maximumValue: true,
+};
+
 var RCTSlider = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {value: true}),
+  validAttributes: validAttributes,
   uiViewClassName: 'RCTSlider',
 });
 
