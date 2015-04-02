@@ -168,6 +168,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (void)invalidate
 {
+  [_jsQueue cancelAllOperations];
   _socket.delegate = nil;
   [_socket closeWithCode:1000 reason:@"Invalidated"];
   _socket = nil;

@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <UIKit/UIKit.h>
+
 #import "RCTBridgeModule.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
@@ -24,10 +26,14 @@
  */
 typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
 
+extern NSString *const RCTReloadBridge;
+
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
+
+@property (nonatomic, assign, readonly, getter=isLoaded) BOOL loaded;
 
 /**
  * The designated initializer. This creates a new bridge on top of the specified
@@ -54,6 +60,8 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
  * probably not be used at any other time.
  */
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete;
+
+@property (nonatomic, strong) Class executorClass;
 
 /**
  * The event dispatcher is a wrapper around -enqueueJSCall:args: that provides a
@@ -88,5 +96,7 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
  * Method to check that a valid executor exists with which to log
  */
 + (BOOL)hasValidJSExecutor;
+
+- (void)reload;
 
 @end

@@ -17,15 +17,6 @@
 
 #define TIMEOUT_SECONDS 240
 
-@interface RCTRootView (Testing)
-
-- (instancetype)_initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                    launchOptions:(NSDictionary *)launchOptions
-                   moduleProvider:(RCTBridgeModuleProviderBlock)moduleProvider;
-
-@end
-
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_snapshotController;
@@ -75,17 +66,17 @@
 
   RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
   testModule.testSelector = test;
-
-  RCTRootView *rootView = [[RCTRootView alloc] _initWithBundleURL:[NSURL URLWithString:_script]
-                                                      moduleName:moduleName
-                                                   launchOptions:nil
-                                                   moduleProvider:^{
-                                                     return @[testModule];
-                                                   }];
-  [testModule setValue:rootView forKey:@"_view"];
-  rootView.frame = CGRectMake(0, 0, 320, 2000);
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundlePath:_script
+                                                moduleProvider:^(){
+                                                  return @[testModule];
+                                                }
+                                                 launchOptions:nil];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+                                                   moduleName:moduleName];
+  testModule.view = rootView;
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
   rootView.initialProperties = initialProps;
+  rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
@@ -94,8 +85,9 @@
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:date];
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
-  [rootView invalidate];
   [rootView removeFromSuperview];
+  [rootView.bridge invalidate];
+  [rootView invalidate];
   RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
   vc.view = nil;
   [[RCTRedBox sharedInstance] dismiss];

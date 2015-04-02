@@ -16,11 +16,16 @@
 #import <mach-o/dyld.h>
 #import <mach-o/getsect.h>
 
+#import "RCTContextExecutor.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTJavaScriptLoader.h"
+#import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTRootView.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
+#import "RCTWebViewExecutor.h"
 
 /**
  * Must be kept in sync with `MessageQueue.js`.
@@ -33,6 +38,8 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldResponseReturnValues,
   RCTBridgeFieldFlushDateMillis
 };
+
+NSString *const RCTReloadBridge = @"RCTReloadBridge";
 
 /**
  * This function returns the module name for a given class.
@@ -124,6 +131,8 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
   NSArray *_argumentBlocks;
   NSString *_methodName;
 }
+
+static Class _globalExecutorClass;
 
 - (instancetype)initWithMethodName:(NSString *)methodName
                       JSMethodName:(NSString *)JSMethodName
@@ -497,33 +506,41 @@ static NSDictionary *RCTLocalModulesConfig()
   RCTSparseArray *_modulesByID;
   NSDictionary *_modulesByName;
   id<RCTJavaScriptExecutor> _javaScriptExecutor;
+  Class _executorClass;
+  NSString *_bundlePath;
+  NSDictionary *_launchOptions;
   RCTBridgeModuleProviderBlock _moduleProvider;
+  BOOL _loaded;
 }
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
-- (instancetype)initWithBundlePath:(NSString *)bundlepath
+- (instancetype)initWithBundlePath:(NSString *)bundlePath
                     moduleProvider:(RCTBridgeModuleProviderBlock)block
                      launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
-    _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
-    _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+    _bundlePath = bundlePath;
     _moduleProvider = block;
     _launchOptions = launchOptions;
+    [self setUp];
+    [self bindKeys];
   }
+
   return self;
 }
-
-- (void)setJavaScriptExecutor:(id<RCTJavaScriptExecutor>)executor
-{
-  _javaScriptExecutor = executor;
-  _latestJSExecutor = _javaScriptExecutor;
-  [self setUp];
-}
-
 - (void)setUp
 {
+  Class executorClass = _executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class];
+  if ([NSStringFromClass(executorClass) isEqualToString:@"RCTWebViewExecutor"]) {
+    _javaScriptExecutor = [[RCTWebViewExecutor alloc] initWithWebView:[[UIWebView alloc] init]];
+  } else {
+    _javaScriptExecutor = [[executorClass alloc] init];
+  }
+  _latestJSExecutor = _javaScriptExecutor;
+  _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
+  _shadowQueue = dispatch_queue_create("com.facebook.ReactKit.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
   for (id<RCTBridgeModule> module in _moduleProvider ? _moduleProvider() : nil) {
@@ -574,11 +591,58 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     dispatch_semaphore_signal(semaphore);
   }];
 
-  if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) != 0) {
-    RCTLogError(@"JavaScriptExecutor took too long to inject JSON object");
+
+  if (_bundlePath != nil) { // Allow testing without a script
+    RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
+    [loader loadBundleAtURL:[NSURL URLWithString:_bundlePath]
+                 onComplete:^(NSError *error) {
+                   _loaded = YES;
+                   if (error != nil) {
+                     NSArray *stack = [[error userInfo] objectForKey:@"stack"];
+                     if (stack) {
+                       [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withStack:stack];
+                     } else {
+                       [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withDetails:[error localizedFailureReason]];
+                     }
+                   } else {
+                     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                                         object:self];
+                     [[NSNotificationCenter defaultCenter] addObserver:self
+                                                              selector:@selector(reload)
+                                                                  name:RCTReloadNotification
+                                                                object:nil];
+                     ;
+                   }
+                 }];
   }
 }
 
+- (void)bindKeys
+{
+#if TARGET_IPHONE_SIMULATOR
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          [self reload];
+                                                        }];
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"n"
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          _executorClass = Nil;
+                                                          [self reload];
+                                                        }];
+
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          _executorClass = NSClassFromString(@"RCTWebSocketExecutor");
+                                                          if (!_executorClass) {
+                                                            RCTLogError(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
+                                                          }
+                                                          [self reload];
+                                                        }];
+#endif
+}
 
 - (NSDictionary *)modules
 {
@@ -602,17 +666,19 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)invalidate
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  // Wait for queued methods to finish
+  dispatch_sync(self.shadowQueue, ^{
+    // Make sure all dispatchers have been executed before continuing
+  });
+
   // Release executor
   if (_latestJSExecutor == _javaScriptExecutor) {
     _latestJSExecutor = nil;
   }
   [_javaScriptExecutor invalidate];
   _javaScriptExecutor = nil;
-
-  // Wait for queued methods to finish
-  dispatch_sync(self.shadowQueue, ^{
-    // Make sure all dispatchers have been executed before continuing
-  });
 
   // Invalidate modules
   for (id target in _modulesByID.allObjects) {
@@ -624,6 +690,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   // Release modules (breaks retain cycle if module has strong bridge reference)
   _modulesByID = nil;
   _modulesByName = nil;
+  _loaded = NO;
 }
 
 /**
@@ -647,9 +714,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
   RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
 
+  if (self.loaded) {
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
                       arguments:@[moduleID, methodID, args ?: @[]]];
+  }
 }
 
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete
@@ -791,6 +860,19 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   });
 
   return YES;
+}
+
+- (void)reload
+{
+  if (_loaded) {
+    // If the bridge has not loaded yet, the context will be already invalid at
+    // the time the javascript gets executed.
+    // It will crash the javascript, and even the next `load` won't render.
+    [self invalidate];
+    [self setUp];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadViewsNotification
+                                                        object:self];
+  }
 }
 
 + (BOOL)hasValidJSExecutor
