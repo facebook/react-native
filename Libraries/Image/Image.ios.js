@@ -91,7 +91,7 @@ var Image = React.createClass({
      */
     testID: PropTypes.string,
     /**
-     * onLoadingStart - Event callback function to invoke when image load begins.
+     * Event callback function to invoke when image load begins.
      * Includes the following event arguments:
      *
      * - target: Image component instance,
@@ -99,7 +99,7 @@ var Image = React.createClass({
      */
     onLoadingStart: PropTypes.func,
     /**
-     * onLoadingFinish - Event callback function to invoke when image load completes.
+     * Event callback function to invoke when image load completes.
      * Includes the following event arguments:
      *
      * - target: Image component instance,
@@ -107,7 +107,7 @@ var Image = React.createClass({
      */
     onLoadingFinish: PropTypes.func,
     /**
-     * onLoadingError - Event callback function to invoke when image load fails.
+     * Event callback function to invoke when image load fails.
      * Includes the following event arguments:
      *
      * - target: Image component instance,
@@ -136,19 +136,19 @@ var Image = React.createClass({
 
   onLoadingStart: function(event: Event) {
     if (this.props.onLoadingStart) {
-      this.props.onLoadingStart(merge(event.nativeEvent, { target: this }));
+      this.props.onLoadingStart({...event.nativeEvent, target: this});
     }
   },
 
   onLoadingFinish: function(event: Event) {
     if (this.props.onLoadingFinish) {
-      this.props.onLoadingFinish(merge(event.nativeEvent, { target: this }));
+      this.props.onLoadingFinish({...event.nativeEvent, target: this});
     }
   },
 
   onLoadingError: function(event: Event) {
     if (this.props.onLoadingError) {
-      this.props.onLoadingError(merge(event.nativeEvent, { target: this }));
+      this.props.onLoadingError({...event.nativeEvent, target: this});
     }
   },
 
