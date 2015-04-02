@@ -1,32 +1,54 @@
 language: objective-c
 before_install:
   - brew update
-  - brew reinstall xctool
 install:
-  - brew install watchman
+  - brew reinstall xctool watchman
   - npm install
-before_script:
-  - npm test
-  - (npm start > packager.log 2>&1 &) && echo $! > packager.pid
 
-after_script:
-  - pkill -9 -F packager.pid
-  - cat packager.log
-  - rm packager.log
-  - rm packager.pid
-
-# Automatically publish the website
-after_success:
+script:
 - |
-  if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
-    echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" >~/.netrc
-    cd website
-    npm install
-    ./setup.sh
-    ./publish.sh
+  if [ "$TEST_TYPE" = objc ]
+  then
+
+    (npm start > packager.log 2>&1 &)
+    echo $! > packager.pid
+
+    xctool \
+      -project Examples/UIExplorer/UIExplorer.xcodeproj \
+      -scheme UIExplorer -sdk iphonesimulator8.1
+      test
+
+    pkill -9 -F packager.pid
+    cat packager.log
+    rm packager.log packager.pid
+
+  elif [ "$TEST_TYPE" = js ]
+  then
+
+    npm test
+
+  elif [ "$TEST_TYPE" = build_website ]
+  then
+
+    # Automatically publish the website
+    if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
+      echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" >~/.netrc
+      cd website
+      npm install
+      ./setup.sh
+      ./publish.sh
+    fi
+
+  else
+    echo "Unknown test type: $TEST_TYPE"
+    exit 1
   fi
 
 env:
+  matrix:
+    - TEST_TYPE=objc
+    - TEST_TYPE=js
+    - TEST_TYPE=build_website
   global:
     - secure: "HlmG8M2DmBUSBh6KH1yVIe/8gR4iibg4WfcHq1x/xYQxGbvleq7NOo04V6eFHnl9cvZCu+PKH0841WLnGR7c4BBf47GVu/o16nXzggPumHKy++lDzxFPlJ1faMDfjg/5vjbAxRUe7D3y98hQSeGHH4tedc8LvTaFLVu7iiGqvjU="
 
