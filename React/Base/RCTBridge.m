@@ -626,6 +626,15 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 - (void)bindKeys
 {
 #if TARGET_IPHONE_SIMULATOR
+  // Workaround around the first cmd+r not working: http://openradar.appspot.com/19613391
+  // You can register just the cmd key and do nothing. This will trigger the bug and cmd+r
+  // will work like a charm!
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@""
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          // Do nothing
+                                                        }];
+
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
