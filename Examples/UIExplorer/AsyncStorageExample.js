@@ -30,8 +30,8 @@ var COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
 var BasicStorageExample = React.createClass({
   componentDidMount() {
     AsyncStorage.getItem(STORAGE_KEY)
-      .then(value => {
-        if(value !== null){
+      .then((value) => {
+        if (value !== null){
           this.setState({selectedValue: value});
           this._appendMessage('Recovered selection from disk: ' + value);
         } else {
