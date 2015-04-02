@@ -12,7 +12,9 @@
 #import "RCTConvert.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
+#import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
+#import "UIView+React.h"
 
 @implementation RCTNetworkImageView
 {
@@ -21,18 +23,29 @@
   NSURL *_deferredImageURL;
   NSUInteger _deferSentinel;
   RCTImageDownloader *_imageDownloader;
+  RCTEventDispatcher *_eventDispatcher;
   id _downloadToken;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame imageDownloader:(RCTImageDownloader *)imageDownloader
+- (instancetype)initWithFrame:(CGRect)frame imageDownloader:(RCTImageDownloader *)imageDownloader eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   self = [super initWithFrame:frame];
   if (self) {
     _deferSentinel = 0;
     _imageDownloader = imageDownloader;
+    _eventDispatcher = eventDispatcher;
     self.userInteractionEnabled = NO;
   }
   return self;
+}
+
+- (NSMutableDictionary *)baseEvent
+{
+  NSMutableDictionary *event = [[NSMutableDictionary alloc] initWithDictionary: @{
+    @"target": self.reactTag,
+    @"uri": @"",
+  }];
+  return event;
 }
 
 - (NSURL *)imageURL
@@ -58,6 +71,12 @@
       self.layer.minificationFilter = kCAFilterTrilinear;
       self.layer.magnificationFilter = kCAFilterTrilinear;
     }
+    // Dispatch event to onLoadingStart
+    NSMutableDictionary *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"uri": [imageURL absoluteString]
+    }];
+    [_eventDispatcher sendInputEventWithName:@"topLoadingStart" body:event];
     if ([imageURL.pathExtension caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
       _downloadToken = [_imageDownloader downloadDataForURL:imageURL block:^(NSData *data, NSError *error) {
         if (data) {
@@ -67,9 +86,19 @@
             self.layer.minificationFilter = kCAFilterLinear;
             self.layer.magnificationFilter = kCAFilterLinear;
             [self.layer addAnimation:animation forKey:@"contents"];
+            // Dispatch event to onLoadingFinish
+            [_eventDispatcher sendInputEventWithName:@"topLoadingFinish" body:event];
           });
         }
-        // TODO: handle errors
+        // Dispatch event to onLoadingError
+        if (error) {
+          [event addEntriesFromDictionary: @{
+            @"domain": error.domain,
+            @"code": @(error.code),
+            @"description": [error localizedDescription],
+          }];
+          [_eventDispatcher sendInputEventWithName:@"topLoadingError" body:event];
+        }
       }];
     } else {
       _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() block:^(UIImage *image, NSError *error) {
@@ -78,9 +107,19 @@
             [self.layer removeAnimationForKey:@"contents"];
             self.layer.contentsScale = image.scale;
             self.layer.contents = (__bridge id)image.CGImage;
+            // Dispatch event to onLoadingFinish
+            [_eventDispatcher sendInputEventWithName:@"topLoadingFinish" body:event];
           });
         }
-        // TODO: handle errors
+        // Dispatch event to onLoadingError
+        if (error) {
+          [event addEntriesFromDictionary: @{
+            @"domain": error.domain,
+            @"code": @(error.code),
+            @"description": [error localizedDescription],
+          }];
+          [_eventDispatcher sendInputEventWithName:@"topLoadingError" body:event];
+        }
       }];
     }
   }

@@ -17,6 +17,7 @@
 
 var React = require('react-native');
 var {
+  Animation,
   Image,
   StyleSheet,
   Text,
@@ -36,10 +37,25 @@ exports.examples = [
     '"http", then it will be downloaded from the network.',
     render: function() {
       return (
-        <Image
-          source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
-          style={styles.base}
-        />
+        <View style={styles.horizontal}>
+          <Image
+            source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+            style={styles.base}
+          />
+          <Image
+            source={{uri: 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851549_767334479959628_274486868_n.png'}}
+            style={[styles.base, styles.hidden]}
+            onLoadingStart={(event) => console.log('onLoadingStart: ' + event.uri)}
+            onLoadingError={(event) => console.error('onLoadingError: ' + event.uri)}
+            onLoadingFinish={(event) => {
+              console.log('onLoadingFinish: ' + event.uri);
+              // Timeout to simulate image load latency
+              setTimeout(() => {
+                Animation.startAnimation(event.target, 250, 0, 'linear', { opacity: 1 });
+              }, 1000);
+            }}
+          />
+        </View>
       );
     },
   },
@@ -281,6 +297,9 @@ var styles = StyleSheet.create({
   base: {
     width: 38,
     height: 38,
+  },
+  hidden: {
+    opacity: 0
   },
   leftMargin: {
     marginLeft: 10,

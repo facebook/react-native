@@ -29,6 +29,8 @@ var invariant = require('invariant');
 var merge = require('merge');
 var warning = require('warning');
 
+type Event = Object;
+
 /**
  * A react component for displaying different types of images,
  * including network images, static resources, temporary local images, and
@@ -88,6 +90,33 @@ var Image = React.createClass({
      * testing scripts.
      */
     testID: PropTypes.string,
+    /**
+     * onLoadingStart - Event callback function to invoke when image load begins.
+     * Includes the following event arguments:
+     *
+     * - target: Image component instance,
+     * - uri: Network image source
+     */
+    onLoadingStart: PropTypes.func,
+    /**
+     * onLoadingFinish - Event callback function to invoke when image load completes.
+     * Includes the following event arguments:
+     *
+     * - target: Image component instance,
+     * - uri: Network image source
+     */
+    onLoadingFinish: PropTypes.func,
+    /**
+     * onLoadingError - Event callback function to invoke when image load fails.
+     * Includes the following event arguments:
+     *
+     * - target: Image component instance,
+     * - uri: Network image source,
+     * - domain: In which error occurred,
+     * - code: Error code,
+     * - description: Error description
+     */
+    onLoadingError: PropTypes.func,
   },
 
   statics: {
@@ -103,6 +132,24 @@ var Image = React.createClass({
   viewConfig: {
     uiViewClassName: 'UIView',
     validAttributes: ReactIOSViewAttributes.UIView
+  },
+
+  onLoadingStart: function(event: Event) {
+    if (this.props.onLoadingStart) {
+      this.props.onLoadingStart(merge(event.nativeEvent, { target: this }));
+    }
+  },
+
+  onLoadingFinish: function(event: Event) {
+    if (this.props.onLoadingFinish) {
+      this.props.onLoadingFinish(merge(event.nativeEvent, { target: this }));
+    }
+  },
+
+  onLoadingError: function(event: Event) {
+    if (this.props.onLoadingError) {
+      this.props.onLoadingError(merge(event.nativeEvent, { target: this }));
+    }
   },
 
   render: function() {
@@ -136,6 +183,9 @@ var Image = React.createClass({
       style,
       resizeMode,
       tintColor: style.tintColor,
+      onLoadingStart: this.onLoadingStart,
+      onLoadingFinish: this.onLoadingFinish,
+      onLoadingError: this.onLoadingError,
     });
 
     if (isStored) {
