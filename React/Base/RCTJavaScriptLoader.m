@@ -55,12 +55,20 @@
 
 - (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(void (^)(NSError *))onComplete
 {
-  if (!scriptURL) {
+  if (scriptURL == nil) {
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader"
                                          code:1
                                      userInfo:@{NSLocalizedDescriptionKey: @"No script URL provided"}];
     onComplete(error);
     return;
+  } else if ([scriptURL isFileURL]) {
+    NSString *bundlePath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    NSString *localPath = [scriptURL.absoluteString substringFromIndex:@"file://".length];
+
+    if (![localPath hasPrefix:bundlePath]) {
+      NSString *absolutePath = [NSString stringWithFormat:@"%@/%@", bundlePath, localPath];
+      scriptURL = [NSURL fileURLWithPath:absolutePath];
+    }
   }
 
   NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:scriptURL completionHandler:
@@ -115,18 +123,15 @@
                                     onComplete(error);
                                     return;
                                   }
-
-                                  // Success!
                                   RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
                                   sourceCodeModule.scriptURL = scriptURL;
                                   sourceCodeModule.scriptText = rawText;
 
                                   [_bridge enqueueApplicationScript:rawText url:scriptURL onComplete:^(NSError *_error) {
                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                      onComplete(error);
+                                      onComplete(_error);
                                     });
                                   }];
-
                                 }];
 
   [task resume];
