@@ -78,6 +78,8 @@ In our `CalendarManager` example, if we want to pass event date to native, we ha
 As `CalendarManager.addEvent` method gets more and more complex, the number of arguments will grow. Some of them might be optional. In this case it's worth considering changing the API a little bit to accept a dictionary of event attributes, like this:
 
 ```objective-c
+#import "RCTConvert.h"
+
 - (void)addEventWithName:(NSString *)name details:(NSDictionary *)details
 {
   RCT_EXPORT(addEvent);
