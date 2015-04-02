@@ -592,7 +592,13 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }];
 
 
-  if (_bundlePath != nil) { // Allow testing without a script
+  if (_javaScriptExecutor == nil) {
+    /**
+     * HACK (tadeu): If it failed to connect to the debugger, set loaded to true so we can
+     * reload
+     */
+    _loaded = YES;
+  } else if (_bundlePath != nil) { // Allow testing without a script
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:[NSURL URLWithString:_bundlePath]
                  onComplete:^(NSError *error) {
