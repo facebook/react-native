@@ -14,13 +14,10 @@
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTDimensionManager = NativeModules.DimensionManager;
-
-var logError = require('logError');
-
-var DEVICE_DIMENSIONS_EVENT = 'dimensionsDidChange';
+var invariant = require('invariant');
 
 /**
- * ViewPortDimensions class gives access to the viewport's height and width.
+ * Viewport gives access to the viewport's height and width.
  *
  * This could be used if someone wanted an image which stretched the width of
  * the device.
@@ -28,40 +25,44 @@ var DEVICE_DIMENSIONS_EVENT = 'dimensionsDidChange';
  * Note: The values returned here are all ready in terms of the pixel ratio of
  * the device. For example, the iPhone 6 renders 750x1334 pixels. However, it has
  * a pixel ratio of two. Therefore the return values of these functions will
- * all ready be modified by the pixel ratio. In the iPhone 6's case this means
+ * already be modified by the pixel ratio. In the iPhone 6's case this means
  * that the resolution that gets returned will be 375x667.
  */
 var Viewport = {};
 
-if (RCTDimensionManager) {
-  var _dimensionSubscriptions = {};
+var _dimensionSubscriptions = {};
 
-  Viewport.addEventListener = function(
-    eventName: ChangeEventName,
-    handler: Function
-  ): void {
-    _dimensionSubscriptions[handler] = RCTDeviceEventEmitter.addListener(
-      DEVICE_DIMENSIONS_EVENT,
-      handler
-    );
-  };
+Viewport.events = {
+  DEVICE_DIMENSIONS_EVENT: 'dimensionsDidChange'
+};
 
-  Viewport.removeEventListener = function(
-    eventName: ChangeEventName,
-    handler: Function
-  ): void {
-    if (!_dimensionSubscriptions[handler]) {
-      return;
-    }
-    _dimensionSubscriptions[handler].remove();
-    _dimensionSubscriptions[handler] = null;
-  };
+Viewport.addEventListener = function(
+  eventName: ChangeEventName,
+  handler: Function
+): void {
+  invariant(eventName === Viewport.events.DEVICE_DIMENSIONS_EVENT,
+    'No event by name ' + eventName);
+  _dimensionSubscriptions[handler] = RCTDeviceEventEmitter.addListener(
+    Viewport.events.DEVICE_DIMENSIONS_EVENT,
+    handler
+  );
+};
 
-  Viewport.getDimensions = function(
-    handler: Function
-  ) {
-    RCTDimensionManager.getCurrentDimensions(handler, logError);
+Viewport.removeEventListener = function(
+  eventName: ChangeEventName,
+  handler: Function
+): void {
+  if (!_dimensionSubscriptions[handler]) {
+    return;
   }
+  _dimensionSubscriptions[handler].remove();
+  _dimensionSubscriptions[handler] = null;
+};
+
+Viewport.getDimensions = function(
+  handler: Function
+) {
+  RCTDimensionManager.getCurrentDimensions(handler);
 }
 
 module.exports = Viewport;
