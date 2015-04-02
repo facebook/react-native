@@ -56,35 +56,33 @@ var warning = require('warning');
 
 var Image = React.createClass({
   propTypes: {
+    /**
+     * `uri` is a string representing the resource identifier for the image, which
+     * could be an http address, a local file path, or the name of a static image
+     * resource (which should be wrapped in the `required('image!name')` function).
+     */
     source: PropTypes.shape({
-      /**
-       * A string representing the resource identifier for the image, which
-       * could be an http address, a local file path, or the name of a static image
-       * resource (which should be wrapped in the `ix` function).
-       */
       uri: PropTypes.string,
     }),
     /**
-     * accessible - Whether this element should be revealed as an accessible
-     * element.
+     * Whether this element should be revealed as an accessible element.
      */
     accessible: PropTypes.bool,
     /**
-     * accessibilityLabel - Custom string to display for accessibility.
+     * Custom string to display for accessibility.
      */
     accessibilityLabel: PropTypes.string,
     /**
-     * capInsets - When the image is resized, the corners of the size specified
+     * When the image is resized, the corners of the size specified
      * by capInsets will stay a fixed size, but the center content and borders
      * of the image will be stretched.  This is useful for creating resizable
-     * rounded buttons, shadows, and other resizable assets.  More info:
-     *
-     *   https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets:
+     * rounded buttons, shadows, and other resizable assets.  More info on
+     * [Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets)
      */
     capInsets: EdgeInsetsPropType,
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
-     * testID - A unique identifier for this element to be used in UI Automation
+     * A unique identifier for this element to be used in UI Automation
      * testing scripts.
      */
     testID: PropTypes.string,

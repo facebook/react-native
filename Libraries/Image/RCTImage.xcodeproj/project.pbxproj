@@ -81,7 +81,9 @@
 				1304D5AA1AA8C4A30002E2BE /* RCTStaticImageManager.m */,
 				58B5115E1A9E6B3D00147676 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		58B5115E1A9E6B3D00147676 /* Products */ = {
 			isa = PBXGroup;
