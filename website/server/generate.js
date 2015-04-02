@@ -59,5 +59,8 @@ glob('src/**/*.*', function(er, files) {
     console.log('It is live at: http://facebook.github.io/react-native/');
   }).finally(function() {
     server.close();
+  }).catch(function(e) {
+    console.error(e);
+    process.exit(1);
   });
 });
