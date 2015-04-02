@@ -24,7 +24,7 @@ var SampleApp = React.createClass({
         </Text>
         <Text style={styles.instructions}>
           Press Cmd+R to reload,{'\n'}
-          Cmd+Shift+Z for dev menu
+          Ctrl+Cmd+Z for dev menu
         </Text>
       </View>
     );
