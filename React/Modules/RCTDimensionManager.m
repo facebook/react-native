@@ -23,8 +23,8 @@ static NSDictionary *RCTCurrentDimensions()
   }
   
   dimensions = @{
-                 @"width": [NSNumber numberWithFloat:frameSize.width],
-                 @"height": [NSNumber numberWithFloat:frameSize.height]
+                 @"width": @(frameSize.width),
+                 @"height": @(frameSize.height)
                  };
   
   return dimensions;
