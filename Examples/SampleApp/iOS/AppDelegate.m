@@ -33,6 +33,11 @@
   //
   // $ curl 'http://localhost:8081/Examples/SampleApp/index.ios.bundle?dev=false&minify=true' -o iOS/main.jsbundle
   //
+  // If you want to build the production version, add ?dev=false to the URL.
+  // You may also want to run the result through a tool which can remove dead code.
+  //
+  // $ curl http://localhost:8081/Examples/SampleApp/index.ios.bundle?dev=false -o main.jsbundle
+  //
   // and uncomment the next following line
   // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 
