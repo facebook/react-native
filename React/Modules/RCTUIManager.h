@@ -30,8 +30,7 @@
 @property (nonatomic, readwrite, weak) id<UIScrollViewDelegate> nativeMainScrollDelegate;
 
 /**
- * Register a root view with the RCTUIManager. Theoretically, a single manager
- * can support multiple root views, however this feature is not currently exposed.
+ * Register a root view with the RCTUIManager.
  */
 - (void)registerRootView:(UIView *)rootView;
 

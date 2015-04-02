@@ -9,6 +9,8 @@
 
 #import "RCTRootView.h"
 
+#import <objc/runtime.h>
+
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
 #import "RCTDevMenu.h"
@@ -23,7 +25,9 @@
 #import "RCTWebViewExecutor.h"
 #import "UIView+React.h"
 
+NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
+NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
 
 /**
  * HACK(t6568049) This should be removed soon, hiding to prevent people from
@@ -35,95 +39,113 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
 
 @end
 
+@interface RCTUIManager (RCTRootView)
+
+- (NSNumber *)allocateRootTag;
+
+@end
+
 @implementation RCTRootView
 {
   RCTDevMenu *_devMenu;
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
-  id<RCTJavaScriptExecutor> _executor;
+  NSString *_moduleName;
   BOOL _registered;
   NSDictionary *_launchOptions;
+  UIView *_contentView;
 }
 
-static Class _globalExecutorClass;
-
-+ (void)initialize
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
 {
+  RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
+  RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
-#if TARGET_IPHONE_SIMULATOR
-
-  // Register Cmd-R as a global refresh key
-  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
-                                                 modifierFlags:UIKeyModifierCommand
-                                                        action:^(UIKeyCommand *command) {
-                                                          [self reloadAll];
-                                                        }];
-
-  // Cmd-D reloads using the web view executor, allows attaching from Safari dev tools.
-  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
-                                                 modifierFlags:UIKeyModifierCommand
-                                                        action:^(UIKeyCommand *command) {
-                                                          _globalExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
-                                                          if (!_globalExecutorClass) {
-                                                            RCTLogError(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
-                                                          }
-                                                          [self reloadAll];
-                                                        }];
-
+  if ((self = [super init])) {
+#ifdef DEBUG
+    _enableDevMenu = YES;
 #endif
-
+    _bridge = bridge;
+    _moduleName = moduleName;
+    self.backgroundColor = [UIColor whiteColor];
+    [self setUp];
+  }
+  return self;
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
                     launchOptions:(NSDictionary *)launchOptions
 {
-  if ((self = [super init])) {
-    RCTAssert(bundleURL, @"A bundleURL is required to create an RCTRootView");
-    RCTAssert(moduleName, @"A bundleURL is required to create an RCTRootView");
-    _moduleName = moduleName;
-    _launchOptions = launchOptions;
-    [self setUp];
-    [self setScriptURL:bundleURL];
-  }
-  return self;
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundlePath:bundleURL.absoluteString
+                                             moduleProvider:nil
+                                              launchOptions:launchOptions];
+  return [self initWithBridge:bridge
+                   moduleName:moduleName];
 }
 
-  /**
-   * HACK(t6568049) Private constructor for testing purposes
-   */
-- (instancetype)_initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                    launchOptions:(NSDictionary *)launchOptions
-                    moduleProvider:(RCTBridgeModuleProviderBlock)moduleProvider
+- (void)dealloc
 {
-  if ((self = [super init])) {
-    _moduleProvider = moduleProvider;
-    _moduleName = moduleName;
-    _launchOptions = launchOptions;
-    [self setUp];
-    [self setScriptURL:bundleURL];
-  }
-  return self;
+  [self tearDown];
 }
 
 - (void)setUp
 {
-  // Every root view that is created must have a unique react tag.
-  // Numbering of these tags goes from 1, 11, 21, 31, etc
-  static NSInteger rootViewTag = 1;
-  self.reactTag = @(rootViewTag);
-#ifdef DEBUG
-  self.enableDevMenu = YES;
-#endif
-  self.backgroundColor = [UIColor whiteColor];
-  rootViewTag += 10;
+  if (!_registered) {
+    /**
+     * Every root view that is created must have a unique react tag.
+     * Numbering of these tags goes from 1, 11, 21, 31, etc
+     *
+     * NOTE: Since the bridge persists, the RootViews might be reused, so now
+     * the react tag is assigned every time we load new content.
+     */
+    _contentView = [[UIView alloc] init];
+    _contentView.reactTag = [_bridge.uiManager allocateRootTag];
+    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+    [_contentView addGestureRecognizer:_touchHandler];
+    [self addSubview:_contentView];
 
-  // Add reload observer
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(reload)
-                                               name:RCTReloadNotification
-                                             object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reload)
+                                                 name:RCTReloadViewsNotification
+                                               object:_bridge];
+    if (_bridge.loaded) {
+      [self bundleFinishedLoading];
+    } else {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(bundleFinishedLoading)
+                                                   name:RCTJavaScriptDidLoadNotification
+                                                 object:_bridge];
+    }
+  }
+}
+
+- (void)tearDown
+{
+  if (_registered) {
+    _registered = NO;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_contentView removeGestureRecognizer:_touchHandler];
+    [_contentView removeFromSuperview];
+    [_touchHandler invalidate];
+    [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
+                      args:@[_contentView.reactTag]];
+  }
+}
+
+- (BOOL)isValid
+{
+  return _registered;
+}
+
+- (void)invalidate
+{
+  [self tearDown];
+}
+
+- (UIViewController *)backingViewController {
+  return _backingViewController ?: [super backingViewController];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -135,7 +157,7 @@ static Class _globalExecutorClass;
 {
   if (motion == UIEventSubtypeMotionShake && self.enableDevMenu) {
     if (!_devMenu) {
-      _devMenu = [[RCTDevMenu alloc] initWithRootView:self];
+      _devMenu = [[RCTDevMenu alloc] initWithBridge:self.bridge];
     }
     [_devMenu show];
   }
@@ -149,194 +171,51 @@ static Class _globalExecutorClass;
   ];
 }
 
-- (void)dealloc
+- (void)bundleFinishedLoading
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-                    args:@[self.reactTag]];
-  [self invalidate];
-}
-
-#pragma mark - RCTInvalidating
-
-- (BOOL)isValid
-{
-  return [_bridge isValid];
-}
-
-- (void)invalidate
-{
-  // Clear view
-  [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-
-  [self removeGestureRecognizer:_touchHandler];
-  [_touchHandler invalidate];
-  [_executor invalidate];
-
-  // TODO: eventually we'll want to be able to share the bridge between
-  // multiple rootviews, in which case we'll need to move this elsewhere
-  [_bridge invalidate];
-}
-
-#pragma mark Bundle loading
-
-- (void)bundleFinishedLoading:(NSError *)error
-{
-  if (error != nil) {
-    NSArray *stack = [[error userInfo] objectForKey:@"stack"];
-    if (stack) {
-      [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withStack:stack];
-    } else {
-      [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withDetails:[error localizedFailureReason]];
-    }
-  } else {
-
-    [_bridge.uiManager registerRootView:self];
+  dispatch_async(dispatch_get_main_queue(), ^{
     _registered = YES;
-
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
-      @"rootTag": self.reactTag,
-      @"initialProps": self.initialProperties ?: @{},
-    };
+                                    @"rootTag": _contentView.reactTag,
+                                    @"initialProps": self.initialProperties ?: @{},
+                                    };
+    [_bridge.uiManager registerRootView:_contentView];
     [_bridge enqueueJSCall:@"AppRegistry.runApplication"
                       args:@[moduleName, appParameters]];
-  }
-}
-
-- (void)loadBundle
-{
-  [self invalidate];
-
-  if (!_scriptURL) {
-    return;
-  }
-
-  // Clean up
-  [self removeGestureRecognizer:_touchHandler];
-  [_touchHandler invalidate];
-  [_executor invalidate];
-  [_bridge invalidate];
-
-  _registered = NO;
-
-  // Choose local executor if specified, followed by global, followed by default
-  _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
-
-  /**
-   * HACK(t6568049) Most of the properties passed into the bridge are not used
-   * right now but it'll be changed soon so it's here for convenience.
-   */
-  _bridge = [[RCTBridge alloc] initWithBundlePath:_scriptURL.absoluteString
-                                   moduleProvider:_moduleProvider
-                                    launchOptions:_launchOptions];
-  [_bridge setJavaScriptExecutor:_executor];
-
-  _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-  [self addGestureRecognizer:_touchHandler];
-
-  // Load the bundle
-  NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:_scriptURL completionHandler:
-                                ^(NSData *data, NSURLResponse *response, NSError *error) {
-
-    // Handle general request errors
-    if (error) {
-      if ([[error domain] isEqualToString:NSURLErrorDomain]) {
-        NSDictionary *userInfo = @{
-          NSLocalizedDescriptionKey: @"Could not connect to development server. Ensure node server is running - run 'npm start' from React root",
-          NSLocalizedFailureReasonErrorKey: [error localizedDescription],
-          NSUnderlyingErrorKey: error,
-        };
-        error = [NSError errorWithDomain:@"JSServer"
-                                    code:error.code
-                                userInfo:userInfo];
-      }
-      [self bundleFinishedLoading:error];
-      return;
-    }
-
-    // Parse response as text
-    NSStringEncoding encoding = NSUTF8StringEncoding;
-    if (response.textEncodingName != nil) {
-      CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
-      if (cfEncoding != kCFStringEncodingInvalidId) {
-        encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
-      }
-    }
-    NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
-
-    // Handle HTTP errors
-    if ([response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)response statusCode] != 200) {
-      NSDictionary *userInfo;
-      NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
-      if ([errorDetails isKindOfClass:[NSDictionary class]]) {
-        userInfo = @{
-          NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
-          @"stack": @[@{
-            @"methodName": errorDetails[@"description"] ?: @"",
-            @"file": errorDetails[@"filename"] ?: @"",
-            @"lineNumber": errorDetails[@"lineNumber"] ?: @0
-          }]
-        };
-      } else {
-        userInfo = @{NSLocalizedDescriptionKey: rawText};
-      }
-      error = [NSError errorWithDomain:@"JSServer"
-                                  code:[(NSHTTPURLResponse *)response statusCode]
-                              userInfo:userInfo];
-
-      [self bundleFinishedLoading:error];
-      return;
-    }
-    if (!_bridge.isValid) {
-      return; // Bridge was invalidated in the meanwhile
-    }
-
-    // Success!
-    RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
-    sourceCodeModule.scriptURL = _scriptURL;
-    sourceCodeModule.scriptText = rawText;
-
-    [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *_error) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (_bridge.isValid) {
-          [self bundleFinishedLoading:_error];
-        }
-      });
-    }];
-
-  }];
-
-  [task resume];
-}
-
-- (void)setScriptURL:(NSURL *)scriptURL
-{
-  if ([_scriptURL isEqual:scriptURL]) {
-    return;
-  }
-
-  _scriptURL = scriptURL;
-  [self loadBundle];
+  });
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  _contentView.frame = self.bounds;
   if (_registered) {
-    [_bridge.uiManager setFrame:self.frame forRootView:self];
+    [_bridge.uiManager setFrame:self.frame forRootView:_contentView];
   }
+}
+
+- (void)setFrame:(CGRect)frame
+{
+  [super setFrame:frame];
+  _contentView.frame = self.bounds;
 }
 
 - (void)reload
 {
-  [self loadBundle];
+  [self tearDown];
+  [self setUp];
 }
 
 + (void)reloadAll
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                      object:self];
+}
+
+- (NSNumber *)reactTag
+{
+  return _contentView.reactTag;
 }
 
 - (void)startOrResetInteractionTiming
@@ -347,6 +226,17 @@ static Class _globalExecutorClass;
 - (NSDictionary *)endAndResetInteractionTiming
 {
   return [_touchHandler endAndResetInteractionTiming];
+}
+
+@end
+
+@implementation RCTUIManager (RCTRootView)
+
+- (NSNumber *)allocateRootTag
+{
+  NSNumber *rootTag = objc_getAssociatedObject(self, _cmd) ?: @1;
+  objc_setAssociatedObject(self, _cmd, @(rootTag.integerValue + 10), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  return rootTag;
 }
 
 @end
