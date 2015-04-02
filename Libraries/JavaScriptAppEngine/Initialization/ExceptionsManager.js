@@ -36,12 +36,12 @@ function handleException(e: Exception) {
   );
 
   if (RCTExceptionsManager) {
-    RCTExceptionsManager.reportUnhandledException(e.message, format(stack));
+    RCTExceptionsManager.reportUnhandledException(e.message, stack);
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, format(prettyStack));
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
         })
         .then(null, error => {
           console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
@@ -69,15 +69,6 @@ function stackFrameToString(stackFrame, maxLength) {
 
 function fillSpaces(n) {
   return new Array(n + 1).join(' ');
-}
-
-// HACK(frantic) Android currently expects stack trace to be a string #5920439
-function format(stack) {
-  if (Platform.OS === 'android') {
-    return stackToString(stack);
-  } else {
-    return stack;
-  }
 }
 
 module.exports = { handleException };
