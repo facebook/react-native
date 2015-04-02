@@ -38,6 +38,7 @@ var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var invariant = require('invariant');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');
@@ -94,6 +95,14 @@ function inject() {
   ReactNativeComponent.injection.injectTextComponentClass(
     ReactIOSTextComponent
   );
+  ReactNativeComponent.injection.injectAutoWrapper(function(tag) {
+    // Show a nicer error message for non-function tags
+    var info = '';
+    if (typeof tag === 'string' && /^[a-z]/.test(tag)) {
+      info += ' Each component name should start with an uppercase letter.';
+    }
+    invariant(false, 'Expected a component class, got %s.%s', tag, info);
+  });
 
   NodeHandle.injection.injectImplementation(UniversalWorkerNodeHandle);
 }
