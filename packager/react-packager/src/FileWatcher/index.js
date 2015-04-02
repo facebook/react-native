@@ -64,7 +64,10 @@ FileWatcher.prototype.end = function() {
 
 function createWatcher(rootConfig) {
   return detectingWatcherClass.then(function(Watcher) {
-    var watcher = new Watcher(rootConfig.dir, rootConfig.globs);
+    var watcher = new Watcher(rootConfig.dir, {
+      glob: rootConfig.globs,
+      dot: false,
+    });
 
     return new Promise(function(resolve, reject) {
       var rejectTimeout = setTimeout(function() {
