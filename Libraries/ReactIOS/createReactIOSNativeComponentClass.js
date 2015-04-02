@@ -37,6 +37,7 @@ var createReactIOSNativeComponentClass = function(
   };
   Constructor.displayName = viewConfig.uiViewClassName;
   Constructor.prototype = new ReactIOSNativeComponent(viewConfig);
+  Constructor.viewConfig = viewConfig;
 
   return Constructor;
 };

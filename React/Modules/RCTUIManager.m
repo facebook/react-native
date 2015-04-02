@@ -192,6 +192,7 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   NSMutableDictionary *_defaultShadowViews; // RCT thread only
   NSMutableDictionary *_defaultViews; // Main thread only
   NSDictionary *_viewManagers;
+  NSDictionary *_viewConfigs;
 }
 
 @synthesize bridge =_bridge;
@@ -207,6 +208,23 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
     name = [name substringToIndex:name.length - @"Manager".length];
   }
   return name;
+}
+
+static void RCTAddViewInfoForModule(Class managerClass, NSMutableDictionary *viewConfigs)
+{
+  static const char *prefix = "getViewPropDef_";
+  static const NSUInteger prefixLength = sizeof("getViewPropDef_") - 1;
+  unsigned int methodCount = 0;
+  Method *methods = class_copyMethodList(objc_getMetaClass(class_getName(managerClass)), &methodCount);
+  for (unsigned int i = 0; i < methodCount; i++) {
+    Method method = methods[i];
+    SEL getInfo = method_getName(method);
+    const char *selName = sel_getName(getInfo);
+    if (strlen(selName) > prefixLength && strncmp(selName, prefix, prefixLength) == 0) {
+      NSDictionary *info = ((NSDictionary *(*)(id, SEL))method_getImplementation(method))(managerClass, getInfo);
+      viewConfigs[info[@"name"]] = info[@"type"];
+    }
+  }
 }
 
 /**
@@ -261,13 +279,24 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
     _shadowQueue = _bridge.shadowQueue;
 
     // Get view managers from bridge
+    NSMutableDictionary *viewConfigs = [NSMutableDictionary new];
+
     NSMutableDictionary *viewManagers = [[NSMutableDictionary alloc] init];
+    NSString *baseViewName = RCTViewNameForModuleName([RCTViewManager moduleName]);
+    viewConfigs[baseViewName] = [NSMutableDictionary new];
+    RCTAddViewInfoForModule([RCTViewManager class], viewConfigs[baseViewName]);
     [_bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, RCTViewManager *manager, BOOL *stop) {
       if ([manager isKindOfClass:[RCTViewManager class]]) {
-        viewManagers[RCTViewNameForModuleName(moduleName)] = manager;
+        NSString *viewName = RCTViewNameForModuleName(moduleName);
+        viewManagers[viewName] = manager;
+        if (viewName == baseViewName) {
+          return;
+        }
+        viewConfigs[viewName] = [viewConfigs[baseViewName] mutableCopy]; // include base props
+        RCTAddViewInfoForModule([manager class], viewConfigs[viewName]);
       }
     }];
-
+    _viewConfigs = [viewConfigs copy];
     _viewManagers = [viewManagers copy];
   }
 }
@@ -1371,7 +1400,10 @@ static void RCTMeasureLayout(RCTShadowView *view,
       allJSConstants[name] = [constantsNamespace copy];
     }
   }];
-
+  allJSConstants[@"viewConfigs"] = [NSMutableDictionary new];
+  [_viewConfigs enumerateKeysAndObjectsUsingBlock:^(NSString *viewName, NSDictionary *viewProps, BOOL *stop) {
+    allJSConstants[@"viewConfigs"][viewName] = @{@"nativePropTypes": viewProps, @"uiViewClassName": viewName};
+  }];
   return allJSConstants;
 }
 

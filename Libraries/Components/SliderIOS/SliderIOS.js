@@ -14,13 +14,11 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
@@ -94,9 +92,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTSlider = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {value: true}),
-  uiViewClassName: 'RCTSlider',
-});
+var RCTSlider = requireNativeComponent('RCTSlider');
 
 module.exports = SliderIOS;
