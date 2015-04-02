@@ -14,5 +14,8 @@
     "react-docgen": "^1.1.0",
     "react-page-middleware": "git://github.com/facebook/react-page-middleware.git",
     "request": "*"
+  },
+  "devDependencies": {
+    "bluebird": "^2.9.21"
   }
 }

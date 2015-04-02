@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+var Promise = require('bluebird');
 var request = require('request');
 var glob = require('glob');
 var fs = require('fs.extra');
@@ -19,29 +20,7 @@ server.noconvert = true;
 // Sadly, our setup fatals when doing multiple concurrent requests
 // I don't have the time to dig into why, it's easier to just serialize
 // requests.
-var queue = (function() {
-  var is_executing = false;
-  var queue = [];
-  function push(fn) {
-    queue.push(fn);
-    execute();
-  }
-  function execute() {
-    if (is_executing) {
-      return;
-    }
-    if (queue.length === 0) {
-      return;
-    }
-    var fn = queue.shift();
-    is_executing = true;
-    fn(function() {
-      is_executing = false;
-      execute();
-    });
-  }
-  return {push: push};
-})();
+var queue = Promise.resolve();
 
 glob('src/**/*.*', function(er, files) {
   files.forEach(function(file) {
@@ -49,24 +28,36 @@ glob('src/**/*.*', function(er, files) {
 
     if (file.match(/\.js$/)) {
       targetFile = targetFile.replace(/\.js$/, '.html');
-      queue.push(function(cb) {
-        request('http://localhost:8079/' + targetFile.replace(/^build\//, ''), function(error, response, body) {
-          mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));
-          fs.writeFileSync(targetFile, body);
-          cb();
+      queue = queue.then(function() {
+        return new Promise(function(resolve, reject) {
+          request('http://localhost:8079/' + targetFile.replace(/^build\//, ''), function(error, response, body) {
+            if (error) {
+              reject(error);
+              return;
+            }
+            if (response.statusCode != 200) {
+              reject(new Error('Status ' + response.statusCode + ':\n' + body)); 
+              return;
+            }
+            mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));
+            fs.writeFileSync(targetFile, body);
+            resolve();
+          });
         });
       });
     } else {
-      queue.push(function(cb) {
-        mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));
-        fs.copy(file, targetFile, cb);
+      queue = queue.then(function() {
+        return new Promise(function(resolve, reject) {
+          mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));
+          fs.copy(file, targetFile, resolve);
+        });
       });
     }
   });
 
-  queue.push(function(cb) {
+  queue = queue.then(function() {
+    console.log('It is live at: http://facebook.github.io/react-native/');
+  }).finally(function() {
     server.close();
-    console.log('It is live at: http://facebook.github.io/react-native/')
-    cb();
   });
 });
