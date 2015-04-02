@@ -30,13 +30,16 @@ script:
   elif [ "$TEST_TYPE" = build_website ]
   then
 
-    # Automatically publish the website
+    cd website
+    npm install
+    ./setup.sh
     if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
+      # Automatically publish the website
       echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" >~/.netrc
-      cd website
-      npm install
-      ./setup.sh
       ./publish.sh
+    else
+      # Make sure the website builds without error
+      node server/generate.js
     fi
 
   else
