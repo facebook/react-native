@@ -51,7 +51,9 @@
 				1372B7361AB03E7B00659ED6 /* RCTReachability.m */,
 				58B511DC1A9E6C8500147676 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		58B511DC1A9E6C8500147676 /* Products */ = {
 			isa = PBXGroup;
