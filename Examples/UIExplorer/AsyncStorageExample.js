@@ -38,7 +38,8 @@ var BasicStorageExample = React.createClass({
           this._appendMessage('Initialized with no selection on disk.');
         }
       })
-      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message));
+      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
+      .done();
     });
   },
   getInitialState() {
@@ -84,13 +85,15 @@ var BasicStorageExample = React.createClass({
     this.setState({selectedValue});
     AsyncStorage.setItem(STORAGE_KEY, selectedValue)
       .then(() => this._appendMessage('Saved selection to disk: ' + selectedValue))
-      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message));
+      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
+      .done();
   },
 
   _removeStorage() {
     AsyncStorage.removeItem(STORAGE_KEY)
       .then(() => this._appendMessage('Selection removed from disk.'))
-      .catch((error) => { this._appendMessage('AsyncStorage error: ' + error.message) });
+      .catch((error) => { this._appendMessage('AsyncStorage error: ' + error.message) })
+      .done();
     });
   },
 
