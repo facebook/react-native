@@ -4,7 +4,7 @@ title: Testing
 layout: docs
 category: Guides
 permalink: docs/testing.html
-next:  embedded-app
+next: runningondevice
 ---
 
 ## Running Tests and Contributing
