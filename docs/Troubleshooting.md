@@ -44,7 +44,7 @@ Edit `AppDelegate.m` to use a different port.
 
 
 ## Watchman took too long to load
-Permission settings prevent Wathcman to load. A recent update solves this, get a HEAD install of Watchman if you are experiening this error.
+Permission settings prevent Watchman from loading. A recent update solves this, get a HEAD install of Watchman if you are experiening this error.
 
 ```
 brew uninstall watchman
