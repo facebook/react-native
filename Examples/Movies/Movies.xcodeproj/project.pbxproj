@@ -159,7 +159,9 @@
 				58C571FC1AA6124500CDF9C8 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
