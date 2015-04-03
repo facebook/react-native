@@ -5,5 +5,8 @@
   "main": "index.js",
   "bin": {
     "react-native": "index.js"
+  },
+  "dependencies": {
+    "commander": "^2.7.x"
   }
 }
