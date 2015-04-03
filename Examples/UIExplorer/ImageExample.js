@@ -45,10 +45,10 @@ exports.examples = [
           <Image
             source={{uri: 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851549_767334479959628_274486868_n.png'}}
             style={[styles.base, styles.hidden]}
-            onLoadingStart={(event) => console.log('onLoadingStart: ' + event.uri)}
-            onLoadingError={(event) => console.error('onLoadingError: ' + event.uri)}
-            onLoadingFinish={(event) => {
-              console.log('onLoadingFinish: ' + event.uri);
+            onLoadStart={(event) => console.log('onLoadStart: ' + event.uri)}
+            onError={(event) => console.error('onError: ' + event.uri)}
+            onLoad={(event) => {
+              console.log('onLoad: ' + event.uri);
               // Timeout to simulate image load latency
               setTimeout(() => {
                 Animation.startAnimation(event.target, 250, 0, 'linear', { opacity: 1 });
@@ -299,7 +299,7 @@ var styles = StyleSheet.create({
     height: 38,
   },
   hidden: {
-    opacity: 0
+    opacity: 0,
   },
   leftMargin: {
     marginLeft: 10,

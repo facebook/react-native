@@ -97,7 +97,7 @@ var Image = React.createClass({
      * - target: Image component instance,
      * - uri: Network image source
      */
-    onLoadingStart: PropTypes.func,
+    onLoadStart: PropTypes.func,
     /**
      * Event callback function to invoke when image load completes.
      * Includes the following event arguments:
@@ -105,7 +105,7 @@ var Image = React.createClass({
      * - target: Image component instance,
      * - uri: Network image source
      */
-    onLoadingFinish: PropTypes.func,
+    onLoad: PropTypes.func,
     /**
      * Event callback function to invoke when image load fails.
      * Includes the following event arguments:
@@ -116,7 +116,7 @@ var Image = React.createClass({
      * - code: Error code,
      * - description: Error description
      */
-    onLoadingError: PropTypes.func,
+    onError: PropTypes.func,
   },
 
   statics: {
@@ -135,20 +135,20 @@ var Image = React.createClass({
   },
 
   onLoadingStart: function(event: Event) {
-    if (this.props.onLoadingStart) {
-      this.props.onLoadingStart({...event.nativeEvent, target: this});
+    if (this.props.onLoadStart) {
+      this.props.onLoadStart({...event.nativeEvent, target: this});
     }
   },
 
   onLoadingFinish: function(event: Event) {
-    if (this.props.onLoadingFinish) {
-      this.props.onLoadingFinish({...event.nativeEvent, target: this});
+    if (this.props.onLoad) {
+      this.props.onLoad({...event.nativeEvent, target: this});
     }
   },
 
   onLoadingError: function(event: Event) {
-    if (this.props.onLoadingError) {
-      this.props.onLoadingError({...event.nativeEvent, target: this});
+    if (this.props.onError) {
+      this.props.onError({...event.nativeEvent, target: this});
     }
   },
 
