@@ -19,7 +19,7 @@ You can iterate quickly on device using development server. To do that, your lap
 
 > Hint
 >
-> Shake the device to open developemt menu (reload, debug, etc.)
+> Shake the device to open development menu (reload, debug, etc.)
 
 ## Using offline bundle
 
