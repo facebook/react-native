@@ -89,7 +89,7 @@ var styles = StyleSheet.create({
   },
   transitioner: {
     flex: 1,
-    backgroundColor: '#555555',
+    backgroundColor: 'transparent',
     overflow: 'hidden',
   }
 });
@@ -245,11 +245,6 @@ var Navigator = React.createClass({
      * so the scenes will remain mounted
      */
     shouldJumpOnBackstackPop: PropTypes.bool,
-
-    /**
-     * The background color when transitioning between scenes
-     */
-    transitionBackgroundColor: View.PropTypes.style.backgroundColor,
   },
 
   statics: {
@@ -977,14 +972,10 @@ var Navigator = React.createClass({
     var items = shouldRecurseToNavigator ?
       this.state.routeStack.map(this._routeToOptimizedStackItem) : null;
 
-    var transitionerStyle = this.props.transitionBackgroundColor ?
-      [styles.transitioner, {backgroundColor: this.props.transitionBackgroundColor}] :
-      styles.transitioner;
-
     return (
       <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
         <View
-          style={transitionerStyle}
+          style={styles.transitioner}
           {...this.panGesture.panHandlers}
           onResponderTerminationRequest={this._handleResponderTerminationRequest}>
           {items}
