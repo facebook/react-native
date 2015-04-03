@@ -6,6 +6,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var program = require('commander');
 var spawn = require('child_process').spawn;
 
 var CLI_MODULE_PATH = function() {
@@ -25,29 +26,22 @@ try {
 if (cli) {
   cli.run();
 } else {
-  var args = process.argv.slice(2);
-  if (args.length === 0) {
-    console.error(
-      'You did not pass any commands, did you mean to run `react-native init`?'
-    );
-    process.exit(1);
-  }
+  program
+    .command('init <projectName>')
+    .description('create new React Native project with given name')
+    .action(init);
 
-  if (args[0] === 'init') {
-    if (args[1]) {
-      init(args[1]);
-    } else {
-      console.error(
-        'Usage: react-native init <ProjectName>'
-      );
-      process.exit(1);
-    }
-  } else {
-    console.error(
-      'Command `%s` unrecognized. ' +
-      'Did you mean to run this inside a react-native project?',
-      args[0]
-    );
+  program.on('*', function(command) {
+    console.error('Unknown command: ' + command);
+    program.outputHelp();
+    process.exit(1);
+  });
+
+  program.parse(process.argv);
+
+  if (!program.args.length) {
+    console.error('You did not pass any commands, did you mean to run `react-native init`?');
+    program.outputHelp();
     process.exit(1);
   }
 }
