@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 /**
+ * This is the react-native installed globally and not expected to change much.
+ * It delegates calls to cli.js, which can be updated independently.
+ * 
  * Copyright 2004-present Facebook. All Rights Reserved.
  */
 
