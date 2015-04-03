@@ -6,36 +6,34 @@
 
 var spawn = require('child_process').spawn;
 var path = require('path');
-
-function printUsage() {
-  console.log([
-    'Usage: react-native <command>',
-    '',
-    'Commands:',
-    '  start: starts the webserver',
-  ].join('\n'));
-  process.exit(1);
-}
+var program = require('commander');
 
 function run() {
-  var args = process.argv.slice(2);
-  if (args.length === 0) {
-    printUsage();
-  }
+  program
+    .command('start')
+    .description('starts the webserver')
+    .action(startServer);
 
-  switch (args[0]) {
-  case 'start':
-    spawn('sh', [
-      path.resolve(__dirname, 'packager', 'packager.sh'),
-      '--projectRoots',
-      process.cwd(),
-    ], {stdio: 'inherit'});
-    break;
-  default:
-    console.error('Command `%s` unrecognized', args[0]);
-    printUsage();
+  program.on('*', function(command) {
+    console.error('Command `%s` unrecognized', command);
+    program.outputHelp();
+    process.exit(1);
+  });
+
+  program.parse(process.argv);
+
+  if (!program.args.length) {
+    program.outputHelp();
+    process.exit(1);
   }
-  // Here goes any cli commands we need to
+}
+
+function startServer() {
+  spawn('sh', [
+    path.resolve(__dirname, 'packager', 'packager.sh'),
+    '--projectRoots',
+    process.cwd(),
+  ], {stdio: 'inherit'});
 }
 
 function init(root, projectName) {
