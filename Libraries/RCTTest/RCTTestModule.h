@@ -21,6 +21,8 @@
 // This is used to give meaningful names to snapshot image files.
 @property (nonatomic, assign) SEL testSelector;
 
+@property (nonatomic, weak) UIView *view;
+
 - (instancetype)initWithSnapshotController:(FBSnapshotTestController *)controller view:(UIView *)view;
 
 @end
