@@ -10,10 +10,10 @@
 
 jest
   .dontMock('../index')
-  .dontMock('q')
   .dontMock('path')
   .dontMock('absolute-path')
   .dontMock('../docblock')
+  .dontMock('../../requirePattern')
   .setMock('../../../ModuleDescriptor', function(data) {return data;});
 
 describe('DependencyGraph', function() {

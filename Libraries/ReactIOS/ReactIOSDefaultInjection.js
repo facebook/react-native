@@ -24,6 +24,7 @@ var NodeHandle = require('NodeHandle');
 var ReactClass = require('ReactClass');
 var ReactComponentEnvironment = require('ReactComponentEnvironment');
 var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
+var ReactEmptyComponent = require('ReactEmptyComponent');
 var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactIOSComponentEnvironment = require('ReactIOSComponentEnvironment');
 var ReactIOSComponentMixin = require('ReactIOSComponentMixin');
@@ -35,6 +36,9 @@ var ReactNativeComponent = require('ReactNativeComponent');
 var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
+
+var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var invariant = require('invariant');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');
@@ -77,6 +81,13 @@ function inject() {
     ReactIOSComponentEnvironment
   );
 
+  // Can't import View here because it depends on React to make its composite
+  var RCTView = createReactIOSNativeComponentClass({
+    validAttributes: {},
+    uiViewClassName: 'RCTView',
+  });
+  ReactEmptyComponent.injection.injectEmptyComponent(RCTView);
+
   EventPluginUtils.injection.injectMount(ReactIOSMount);
 
   ReactClass.injection.injectMixin(ReactIOSComponentMixin);
@@ -84,6 +95,14 @@ function inject() {
   ReactNativeComponent.injection.injectTextComponentClass(
     ReactIOSTextComponent
   );
+  ReactNativeComponent.injection.injectAutoWrapper(function(tag) {
+    // Show a nicer error message for non-function tags
+    var info = '';
+    if (typeof tag === 'string' && /^[a-z]/.test(tag)) {
+      info += ' Each component name should start with an uppercase letter.';
+    }
+    invariant(false, 'Expected a component class, got %s.%s', tag, info);
+  });
 
   NodeHandle.injection.injectImplementation(UniversalWorkerNodeHandle);
 }

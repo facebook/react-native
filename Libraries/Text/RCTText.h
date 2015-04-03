@@ -14,5 +14,6 @@
 @property (nonatomic, copy) NSAttributedString *attributedText;
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 @property (nonatomic, assign) NSUInteger numberOfLines;
+@property (nonatomic, assign) UIEdgeInsets contentInset;
 
 @end

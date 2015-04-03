@@ -10,6 +10,8 @@
 
 var fs = require('fs');
 var path = require('path');
+var exec = require('child_process').exec;
+var http = require('http');
 
 if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   console.log(
@@ -21,11 +23,9 @@ if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   process.exit();
 }
 
-var exec = require('child_process').exec;
+var connect = require('connect');
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
-var connect = require('connect');
-var http = require('http');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
 var webSocketProxy = require('./webSocketProxy.js');
@@ -150,6 +150,17 @@ function getDevToolsLauncher(options) {
   };
 }
 
+// A status page so the React/project.pbxproj build script
+// can verify that packager is running on 8081 and not 
+// another program / service.
+function statusPageMiddleware(req, res, next) {
+  if (req.url === '/status') {
+    res.end('packager-status:running');
+  } else {
+    next();   
+  }
+}
+
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
     projectRoots: options.projectRoots,
@@ -168,6 +179,7 @@ function runServer(
     .use(loadRawBody)
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
+    .use(statusPageMiddleware)
     .use(getAppMiddleware(options));
 
   options.projectRoots.forEach(function(root) {

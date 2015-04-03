@@ -4,7 +4,7 @@ title: Native Modules (iOS)
 layout: docs
 category: Guides
 permalink: docs/nativemodulesios.html
-next: libraries
+next: linking-libraries
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding wrapper yet. Maybe you want to reuse some existing Objective-C or C++ code without having to reimplement it in JavaScript. Or write some high performance, multi-threaded code such as image processing, network stack, database or rendering.
@@ -22,6 +22,7 @@ Native module is just an Objectve-C class that implements `RCTBridgeModule` prot
 ```objective-c
 // CalendarManager.h
 #import "RCTBridgeModule.h"
+#import "RCTLog.h"
 
 @interface CalendarManager : NSObject <RCTBridgeModule>
 @end
@@ -77,6 +78,8 @@ In our `CalendarManager` example, if we want to pass event date to native, we ha
 As `CalendarManager.addEvent` method gets more and more complex, the number of arguments will grow. Some of them might be optional. In this case it's worth considering changing the API a little bit to accept a dictionary of event attributes, like this:
 
 ```objective-c
+#import "RCTConvert.h"
+
 - (void)addEventWithName:(NSString *)name details:(NSDictionary *)details
 {
   RCT_EXPORT(addEvent);
@@ -97,7 +100,8 @@ CalendarManager.addEvent('Birthday Party', {
 
 > **NOTE**: About array and map
 >
-> React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's developer's responsibility to check array/map values types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for helper methods).
+> React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect an array of strings, but if JavaScript calls your method with an array containing numbers and strings, you'll get `NSArray` with `NSNumber` and `NSString`. It is the developer's responsibility to check array/map value types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for helper methods).
+
 
 # Callbacks
 
@@ -177,12 +181,21 @@ Note that the constants are exported only at initialization time, so if you chan
 The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
 
 ```objective-c
+#import "RCTBridge.h"
+#import "RCTEventDispatcher.h"
+
+@implementation CalendarManager
+
+@synthesize bridge = _bridge;
+
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
   [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
                                                body:@{@"name": eventName}];
 }
+
+@end
 ```
 
 JavaScript code can subscribe to these events:

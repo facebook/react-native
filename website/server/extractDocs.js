@@ -25,6 +25,20 @@ function getNameFromPath(filepath) {
   return filepath;
 }
 
+function getExample(componentName) {
+  var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
+  if (!fs.existsSync(path)) {
+    path = '../Examples/UIExplorer/' + componentName + 'Example.ios.js';
+    if (!fs.existsSync(path)) {
+      return;
+    }
+  }
+  return {
+    path: path.replace(/^\.\.\//, ''),
+    content: fs.readFileSync(path).toString(),
+  };
+}
+
 function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
 
@@ -33,9 +47,12 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
   json.type = type;
+  json.filepath = filepath.replace(/^\.\.\//, '');
+  json.componentName = componentName;
   if (styles) {
     json.styles = styles;
   }
+  json.example = getExample(componentName);
 
   var res = [
     '---',
@@ -100,7 +117,7 @@ var components = [
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Text/Text.js',
-  '../Libraries/Components/TextInput/TextInput.ios.js',
+  '../Libraries/Components/TextInput/TextInput.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
   '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',

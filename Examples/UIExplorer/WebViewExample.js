@@ -18,7 +18,6 @@
 var React = require('react-native');
 var StyleSheet = require('StyleSheet');
 var {
-  ActivityIndicatorIOS,
   StyleSheet,
   Text,
   TextInput,
@@ -95,8 +94,6 @@ var WebViewExample = React.createClass({
           automaticallyAdjustContentInsets={false}
           style={styles.webView}
           url={this.state.url}
-          renderError={this.renderError}
-          renderLoading={this.renderLoading}
           onNavigationStateChange={this.onNavigationStateChange}
           startInLoadingState={true}
         />
@@ -127,33 +124,6 @@ var WebViewExample = React.createClass({
       status: navState.title,
       loading: navState.loading,
     });
-  },
-
-  renderError: function(errorDomain, errorCode, errorDesc) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorTextTitle}>
-          Error loading page
-        </Text>
-        <Text style={styles.errorText}>
-          {'Domain: ' + errorDomain}
-        </Text>
-        <Text style={styles.errorText}>
-          {'Error Code: ' + errorCode}
-        </Text>
-        <Text style={styles.errorText}>
-          {'Description: ' + errorDesc}
-        </Text>
-      </View>
-    );
-  },
-
-  renderLoading: function() {
-    return (
-      <View style={styles.loadingView}>
-        <ActivityIndicatorIOS />
-      </View>
-    );
   },
 
   onSubmitEditing: function(event) {
@@ -229,28 +199,6 @@ var styles = StyleSheet.create({
     borderColor: 'transparent',
     borderRadius: 3,
     alignSelf: 'stretch',
-  },
-  loadingView: {
-    backgroundColor: BGWASH,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: BGWASH,
-  },
-  errorTextTitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    marginBottom: 10,
-  },
-  errorText: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 2,
   },
   statusBar: {
     flexDirection: 'row',

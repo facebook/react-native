@@ -54,7 +54,9 @@
 				148699CE1ABD045300480536 /* RCTPushNotificationManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 /* End PBXGroup section */
 
