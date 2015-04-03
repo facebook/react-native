@@ -159,22 +159,30 @@ function openStackFrameInEditor(req, res, next) {
 }
 
 function getDevToolsLauncher(options) {
+  var connected = false;
   return function(req, res, next) {
     if (req.url === '/debugger-ui') {
       var debuggerPath = path.join(__dirname, 'debugger.html');
       res.writeHead(200, {'Content-Type': 'text/html'});
       fs.createReadStream(debuggerPath).pipe(res);
     } else if (req.url === '/launch-browser-devtools') {
-      var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
-      console.log('Launching Dev Tools in default browser...');
-      exec('open' + ' ' + debuggerURL, function(err, stdout, stderr) {
-        if (err) {
-          console.log('Failed to open ' + debuggerURL, err);
-        }
-        console.log(stdout);
-        console.warn(stderr);
-      });
-      res.end('OK');
+      if (connected) {
+        console.log('Already connect to Dev Tools in default browser...');
+        res.end('OK');
+      }
+      else {
+        var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
+        console.log('Launching Dev Tools in default browser...');
+        connected = true;
+        exec('open' + ' ' + debuggerURL, function(err, stdout, stderr) {
+          if (err) {
+            console.log('Failed to open ' + debuggerURL, err);
+          }
+          console.log(stdout);
+          console.warn(stderr);
+        });
+        res.end('OK');
+      }
     } else {
       next();
     }
