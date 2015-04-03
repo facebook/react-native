@@ -63,7 +63,7 @@ Images that specify a remote `uri` for `source` can use same HTML event-handler 
 
 ```javascript
 // Simple fade-in using Animation API
-fadeIn: function(event) {
+fadeInImage: function(event) {
   Animation.startAnimation(event.target, 250, 0, 'linear', { opacity: 1 });
 },
 render: function() {
