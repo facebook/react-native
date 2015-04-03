@@ -7,7 +7,7 @@ cache:
 before_install:
   - brew update
 install:
-  - brew reinstall xctool watchman
+  - brew reinstall flow watchman xctool
   - npm install
 
 script:
@@ -30,7 +30,7 @@ script:
   elif [ "$TEST_TYPE" = js ]
   then
 
-    npm test
+    flow check && npm test
 
   elif [ "$TEST_TYPE" = build_website ]
   then
