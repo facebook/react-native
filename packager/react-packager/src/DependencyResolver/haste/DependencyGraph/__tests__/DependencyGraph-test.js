@@ -13,7 +13,7 @@ jest
   .dontMock('path')
   .dontMock('absolute-path')
   .dontMock('../docblock')
-  .dontMock('../../requirePattern')
+  .dontMock('../../replacePatterns')
   .setMock('../../../ModuleDescriptor', function(data) {return data;});
 
 describe('DependencyGraph', function() {
