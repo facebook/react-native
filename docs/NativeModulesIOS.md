@@ -100,7 +100,8 @@ CalendarManager.addEvent('Birthday Party', {
 
 > **NOTE**: About array and map
 >
-> React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect array of strings, but if JavaScript calls your method with an array that contains number and string you'll get `NSArray` with `NSNumber` and `NSString`. It's the developer's responsibility to check array/map values types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for helper methods).
+> React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect an array of strings, but if JavaScript calls your method with an array containing numbers and strings, you'll get `NSArray` with `NSNumber` and `NSString`. It is the developer's responsibility to check array/map value types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for helper methods).
+
 
 # Callbacks
 
@@ -180,12 +181,12 @@ Note that the constants are exported only at initialization time, so if you chan
 The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
 
 ```objective-c
-#import "RCTBridge.h" 
+#import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 
 @implementation CalendarManager
 
-@synthesize bridge = _bridge; 
+@synthesize bridge = _bridge;
 
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
