@@ -122,6 +122,9 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
       (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
     RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
   } \
+} \
++ (NSDictionary *)getViewPropDef_##name {     \
+  return @{@"name": @#name, @"type": @#type}; \
 }
 
 #define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                         \
@@ -138,6 +141,9 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
++ (NSDictionary *)getViewPropDef_##name {     \
+return @{@"name": @#name, @"type": @#type}; \
+} \
 - (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 #define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \

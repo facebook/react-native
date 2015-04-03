@@ -32,6 +32,7 @@ var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
+var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
 
@@ -355,10 +356,12 @@ if (Platform.OS === 'android') {
     uiViewClassName: 'AndroidHorizontalScrollView',
   });
 } else if (Platform.OS === 'ios') {
-  var RCTScrollView = createReactIOSNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'RCTScrollView',
-  });
+  var differs = {
+    contentInset: insetsDiffer,
+    contentOffset: pointsDiffer,
+    scrollIndicatorInsets: insetsDiffer,
+  };
+  var RCTScrollView = requireNativeComponent('RCTScrollView', differs);
 }
 
 module.exports = ScrollView;

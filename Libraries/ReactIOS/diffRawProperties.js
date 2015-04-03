@@ -11,6 +11,8 @@
  */
 'use strict';
 
+var deepDiffer = require('deepDiffer');
+
 /**
  * diffRawProperties takes two sets of props and a set of valid attributes
  * and write to updatePayload the values that changed or were deleted
@@ -31,6 +33,7 @@ function diffRawProperties(
   var validAttributeConfig;
   var nextProp;
   var prevProp;
+  var differ;
   var isScalar;
   var shouldUpdate;
 
@@ -43,15 +46,11 @@ function diffRawProperties(
       prevProp = prevProps && prevProps[propKey];
       nextProp = nextProps[propKey];
       if (prevProp !== nextProp) {
-        // If you want a property's diff to be detected, you must configure it
-        // to be so - *or* it must be a scalar property. For now, we'll allow
-        // creation with any attribute that is not scalar, but we should
-        // eventually even reject those unless they are properly configured.
+        // Scalars and new props are always updated.  Objects use deepDiffer by
+        // default, but can be optimized with custom differs.
+        differ = validAttributeConfig.diff || deepDiffer;
         isScalar = typeof nextProp !== 'object' || nextProp === null;
-        shouldUpdate = isScalar ||
-          !prevProp ||
-          validAttributeConfig.diff &&
-          validAttributeConfig.diff(prevProp, nextProp);
+        shouldUpdate = isScalar || !prevProp || differ(prevProp, nextProp);
 
         if (shouldUpdate) {
           updatePayload = updatePayload || {};
