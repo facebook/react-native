@@ -7,8 +7,11 @@
 var spawn = require('child_process').spawn;
 var path = require('path');
 var program = require('commander');
+var spec = require('./package.json');
 
 function run() {
+  program.version(spec.version);
+
   program
     .command('start')
     .description('starts the webserver')
