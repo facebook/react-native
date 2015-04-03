@@ -50,3 +50,11 @@ Permission settings prevent Watchman from loading. A recent update solves this, 
 brew uninstall watchman
 brew install --HEAD watchman
 ```
+
+## NPM locking error
+
+If in the `react-native init <project>` phase you saw npm fail with "npm WARN locking Error: EACCES" then try the following:
+```
+sudo chown -R $USER ~/.npm
+sudo chown -R $USER /usr/local/lib/node_modules
+```
