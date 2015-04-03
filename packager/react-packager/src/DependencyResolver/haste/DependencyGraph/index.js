@@ -12,7 +12,7 @@ var ModuleDescriptor = require('../../ModuleDescriptor');
 var Promise = require('bluebird');
 var fs = require('fs');
 var docblock = require('./docblock');
-var requirePattern = require('../requirePattern');
+var replacePatterns = require('../replacePatterns');
 var path = require('path');
 var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
@@ -609,7 +609,11 @@ function extractRequires(code) {
   code
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
-    .replace(requirePattern, function(match, _, dep) {
+    .replace(replacePatterns.IMPORT_RE, function(match, pre, quot, dep, post) {
+      deps.push(dep);
+      return match;
+    })
+    .replace(replacePatterns.REQUIRE_RE, function(match, pre, quot, dep, post) {
       deps.push(dep);
     });
 
