@@ -23,7 +23,10 @@ node server/generate.js
 cp -R build/react-native/* ../../react-native-gh-pages/
 rm -Rf build/
 cd ../../react-native-gh-pages
-git add --all
-git commit -m "update website"
-git push
+git status
+if ! git diff-index --quiet HEAD --; then
+  git add -A .
+  git commit -m "update website"
+  git push origin gh-pages
+fi
 cd ../react-native/website
