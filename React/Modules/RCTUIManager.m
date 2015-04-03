@@ -192,9 +192,10 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   NSMutableDictionary *_defaultShadowViews; // RCT thread only
   NSMutableDictionary *_defaultViews; // Main thread only
   NSDictionary *_viewManagers;
+  NSUInteger _rootTag;
 }
 
-@synthesize bridge =_bridge;
+@synthesize bridge = _bridge;
 
 /**
  * This function derives the view name automatically
@@ -239,6 +240,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
     // Internal resources
     _pendingUIBlocks = [[NSMutableArray alloc] init];
     _rootViewTags = [[NSMutableSet alloc] init];
+    _rootTag = 1;
   }
   return self;
 }
@@ -259,6 +261,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 
     _bridge = bridge;
     _shadowQueue = _bridge.shadowQueue;
+    _shadowViewRegistry = [[RCTSparseArray alloc] init];
 
     // Get view managers from bridge
     NSMutableDictionary *viewManagers = [[NSMutableDictionary alloc] init];
