@@ -1,4 +1,9 @@
 language: objective-c
+
+cache:
+  directories:
+  - node_modules
+
 before_install:
   - brew update
 install:
