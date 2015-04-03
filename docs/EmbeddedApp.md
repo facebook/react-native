@@ -3,7 +3,7 @@ id: embedded-app
 title: Integration with Existing App
 layout: docs
 category: Guides
-permalink: docs/embeded-app.html
+permalink: docs/embedded-app.html
 next: activityindicatorios
 ---
 
