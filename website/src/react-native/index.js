@@ -174,7 +174,7 @@ var GeoInfo = React.createClass({
 - (void)processString:(NSString *)input callback:(RCTResponseSenderBlock)callback
 {
   RCT_EXPORT(); // available as NativeModules.MyCustomModule.processString
-  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"];]]);
+  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"]]);
 }
 @end`}
           </Prism>
