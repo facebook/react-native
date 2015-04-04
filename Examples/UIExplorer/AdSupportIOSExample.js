@@ -15,13 +15,12 @@
  */
 'use strict';
 
-var AdSupportIOS = require('AdSupportIOS');
-
 var React = require('react-native');
 var {
   StyleSheet,
   Text,
   View,
+  AdSupportIOS,
 } = React;
 
 exports.framework = 'React';
