@@ -40,6 +40,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   WebView: require('WebView'),
 
   // APIs
+  AdSupportIOS: require('AdSupportIOS'),
   AlertIOS: require('AlertIOS'),
   Animation: require('Animation'),
   AppRegistry: require('AppRegistry'),
