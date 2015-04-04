@@ -37,7 +37,7 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
-  assetRoots: {
+  assetRoots_DEPRECATED: {
     type: 'array',
     default: [],
   },
@@ -51,7 +51,7 @@ function DependecyGraph(options) {
   var opts = validateOpts(options);
 
   this._roots = opts.roots;
-  this._assetRoots = opts.assetRoots;
+  this._assetRoots_DEPRECATED = opts.assetRoots_DEPRECATED;
   this._assetExts = opts.assetExts;
   this._ignoreFilePath = opts.ignoreFilePath;
   this._fileWatcher = options.fileWatcher;
@@ -64,6 +64,10 @@ function DependecyGraph(options) {
   this._moduleById = Object.create(null);
   this._debugUpdateEvents = [];
 
+  this._moduleExtPattern = new RegExp(
+    '.' + ['js'].concat(this._assetExts).join('|') + '$'
+  );
+
   // Kick off the search process to precompute the dependency graph.
   this._init();
 }
@@ -75,7 +79,7 @@ DependecyGraph.prototype.load = function() {
 
   this._loading = Promise.all([
     this._search(),
-    this._buildAssetMap(),
+    this._buildAssetMap_DEPRECATED(),
   ]);
 
   return this._loading;
@@ -147,15 +151,15 @@ DependecyGraph.prototype.resolveDependency = function(
   fromModule,
   depModuleId
 ) {
-  if (this._assetMap != null) {
-    // Process asset requires.
+  if (this._assetMap_DEPRECATED != null) {
     var assetMatch = depModuleId.match(/^image!(.+)/);
+    // Process DEPRECATED global asset requires.
     if (assetMatch && assetMatch[1]) {
-      if (!this._assetMap[assetMatch[1]]) {
+      if (!this._assetMap_DEPRECATED[assetMatch[1]]) {
         debug('WARINING: Cannot find asset:', assetMatch[1]);
         return null;
       }
-      return this._assetMap[assetMatch[1]];
+      return this._assetMap_DEPRECATED[assetMatch[1]];
     }
   }
 
@@ -218,7 +222,11 @@ DependecyGraph.prototype.resolveDependency = function(
     //          fromModule.path: /x/y/z
     //          modulePath: /x/y/a/b
     var dir = path.dirname(fromModule.path);
-    modulePath = withExtJs(path.join(dir, depModuleId));
+    modulePath = path.join(dir, depModuleId);
+
+    if (this._assetExts.indexOf(extname(modulePath)) === -1) {
+      modulePath = withExtJs(modulePath);
+    }
 
     dep = this._graph[modulePath];
 
@@ -287,7 +295,7 @@ DependecyGraph.prototype._search = function() {
           return false;
         }
 
-        return filePath.match(/\.js$/);
+        return filePath.match(self._moduleExtPattern);
       });
 
       var processing = self._findAndProcessPackage(files, dir)
@@ -370,11 +378,21 @@ DependecyGraph.prototype._removePackageFromIndices = function(packageJson) {
  * Parse a module and update indices.
  */
 DependecyGraph.prototype._processModule = function(modulePath) {
+  var moduleData = { path: path.resolve(modulePath) };
+  var module;
+
+  if (this._assetExts.indexOf(extname(modulePath)) > -1) {
+    moduleData.id = this._lookupName(modulePath);
+    moduleData.isAsset = true;
+    moduleData.dependencies = [];
+    module = Promise.resolve(new ModuleDescriptor(moduleData));
+    this._updateGraphWithModule(module);
+  }
+
   var self = this;
   return readFile(modulePath, 'utf8')
     .then(function(content) {
       var moduleDocBlock = docblock.parseAsObject(content);
-      var moduleData = { path: path.resolve(modulePath) };
       if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
         moduleData.id =
           moduleDocBlock.providesModule || moduleDocBlock.provides;
@@ -387,7 +405,7 @@ DependecyGraph.prototype._processModule = function(modulePath) {
       }
       moduleData.dependencies = extractRequires(content);
 
-      var module = new ModuleDescriptor(moduleData);
+      module = new ModuleDescriptor(moduleData);
       self._updateGraphWithModule(module);
       return module;
     });
@@ -497,8 +515,8 @@ DependecyGraph.prototype._processFileChange = function(
   this._debugUpdateEvents.push({event: eventType, path: filePath});
 
   if (this._assetExts.indexOf(extname(filePath)) > -1) {
-    this._processAssetChange(eventType, absPath);
-    return;
+    this._processAssetChange_DEPRECATED(eventType, absPath);
+    // Fall through because new-style assets are actually modules.
   }
 
   var isPackage = path.basename(filePath) === 'package.json';
@@ -554,27 +572,28 @@ DependecyGraph.prototype._getAbsolutePath = function(filePath) {
   return null;
 };
 
-DependecyGraph.prototype._buildAssetMap = function() {
-  if (this._assetRoots == null || this._assetRoots.length === 0) {
+DependecyGraph.prototype._buildAssetMap_DEPRECATED = function() {
+  if (this._assetRoots_DEPRECATED == null ||
+      this._assetRoots_DEPRECATED.length === 0) {
     return Promise.resolve();
   }
 
-  this._assetMap = Object.create(null);
-  return buildAssetMap(
-    this._assetRoots,
-    this._processAsset.bind(this)
+  this._assetMap_DEPRECATED = Object.create(null);
+  return buildAssetMap_DEPRECATED(
+    this._assetRoots_DEPRECATED,
+    this._processAsset_DEPRECATED.bind(this)
   );
 };
 
-DependecyGraph.prototype._processAsset = function(file) {
+DependecyGraph.prototype._processAsset_DEPRECATED = function(file) {
   var ext = extname(file);
   if (this._assetExts.indexOf(ext) !== -1) {
     var name = assetName(file, ext);
-    if (this._assetMap[name] != null) {
+    if (this._assetMap_DEPRECATED[name] != null) {
       debug('Conflcting assets', name);
     }
 
-    this._assetMap[name] = new ModuleDescriptor({
+    this._assetMap_DEPRECATED[name] = new ModuleDescriptor({
       id: 'image!' + name,
       path: path.resolve(file),
       isAsset: true,
@@ -583,18 +602,18 @@ DependecyGraph.prototype._processAsset = function(file) {
   }
 };
 
-DependecyGraph.prototype._processAssetChange = function(eventType, file) {
-  if (this._assetMap == null) {
+DependecyGraph.prototype._processAssetChange_DEPRECATED = function(eventType, file) {
+  if (this._assetMap_DEPRECATED == null) {
     return;
   }
 
   var name = assetName(file, extname(file));
   if (eventType === 'change' || eventType === 'delete') {
-    delete this._assetMap[name];
+    delete this._assetMap_DEPRECATED[name];
   }
 
   if (eventType === 'change' || eventType === 'add') {
-    this._processAsset(file);
+    this._processAsset_DEPRECATED(file);
   }
 };
 
@@ -673,7 +692,7 @@ function readAndStatDir(dir) {
  * Given a list of roots and list of extensions find all the files in
  * the directory with that extension and build a map of those assets.
  */
-function buildAssetMap(roots, processAsset) {
+function buildAssetMap_DEPRECATED(roots, processAsset) {
   var queue = roots.slice(0);
 
   function search() {
