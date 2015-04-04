@@ -13,7 +13,7 @@
 
 var AdSupport = require('NativeModules').AdSupport;
 
-module.exports = {
+var AdSupportIOS = {
   getAdvertisingId: function(onSuccess: Function, onFailure: Function) {
     AdSupport.getAdvertisingId(onSuccess, onFailure);
   },
@@ -22,3 +22,5 @@ module.exports = {
     AdSupport.getAdvertisingTrackingEnabled(onSuccess, onFailure);
   },
 };
+
+module.exports = AdSupportIOS;
