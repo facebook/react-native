@@ -7,7 +7,7 @@ permalink: docs/network.html
 next: timers
 ---
 
-One of React Native's goals is to be a playground where we can experiment with different architectures and crazy ideas. Since browsers are not flexible enough, we had no choice but to reimplement the entire stack. In the places that we did not intend to change, we tried to be as faithful as possible to the browser APIs. The networking stack is a great example.
+One of React Native's goals is to be a playground where we can experiment with different architectures and crazy ideas. Since browsers are not flexible enough, we had no choice but to reimplement the entire stack. In the places that we did not intend to change anything, we tried to be as faithful as possible to the browser APIs. The networking stack is a great example.
 
 ## XMLHttpRequest
 
