@@ -318,6 +318,7 @@ var Navigator = React.createClass({
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
       parentNavigator: this.props.navigator,
+      getCurrentRoutes: this.getCurrentRoutes,
       // We want to bubble focused routes to the top navigation stack. If we
       // are a child navigator, this allows us to call props.navigator.on*Focus
       // of the topmost Navigator
@@ -996,6 +997,10 @@ var Navigator = React.createClass({
       this.replaceAtIndex(route, 0);
       this.popToRoute(route);
     }
+  },
+
+  getCurrentRoutes: function() {
+    return this.state.routeStack;
   },
 
   _onItemRef: function(itemId, ref) {
