@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTAnimationManager.h"
+#import "RCTAnimationExperimentalManager.h"
 
 #import <UIKit/UIKit.h>
 
@@ -20,7 +20,7 @@
   #define CG_APPEND(PREFIX, SUFFIX_F, SUFFIX_D) PREFIX##SUFFIX_F
 #endif
 
-@implementation RCTAnimationManager
+@implementation RCTAnimationExperimentalManager
 {
   RCTSparseArray *_animationRegistry; // Main thread only; animation tag -> view tag
 }
@@ -65,9 +65,9 @@
 {
   RCT_EXPORT(startAnimation);
 
-  __weak RCTAnimationManager *weakSelf = self;
+  __weak RCTAnimationExperimentalManager *weakSelf = self;
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    RCTAnimationManager *strongSelf = weakSelf;
+    RCTAnimationExperimentalManager *strongSelf = weakSelf;
 
     UIView *view = viewRegistry[reactTag];
     if (!view) {
@@ -182,9 +182,9 @@
 {
   RCT_EXPORT(stopAnimation);
 
-  __weak RCTAnimationManager *weakSelf = self;
+  __weak RCTAnimationExperimentalManager *weakSelf = self;
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    RCTAnimationManager *strongSelf = weakSelf;
+    RCTAnimationExperimentalManager *strongSelf = weakSelf;
 
     NSNumber *reactTag = strongSelf->_animationRegistry[animationTag];
     if (!reactTag) return;

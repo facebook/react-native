@@ -14,7 +14,7 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var POPAnimation = require('POPAnimation');
-var Animation = require('Animation');
+var AnimationExperimental = require('AnimationExperimental');
 var Touchable = require('Touchable');
 
 var merge = require('merge');
@@ -79,7 +79,7 @@ var TouchableBounce = React.createClass({
       this.state.animationID = POPAnimation.createSpringAnimation(anim);
       this.addAnimation(this.state.animationID, callback);
     } else {
-      Animation.startAnimation(this, 300, 0, 'easeOutBack', {scaleXY: [value, value]});
+      AnimationExperimental.startAnimation(this, 300, 0, 'easeOutBack', {scaleXY: [value, value]});
       if (fromValue && typeof fromValue === 'function') {
         callback = fromValue;
       }
