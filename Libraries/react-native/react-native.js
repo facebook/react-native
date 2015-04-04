@@ -62,6 +62,9 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   NativeModules: require('NativeModules'),
   requireNativeComponent: require('requireNativeComponent'),
 
+  // Utilities
+  invariant: require('invariant'),
+
   addons: {
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,
