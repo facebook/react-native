@@ -15,7 +15,7 @@ This is a more advanced guide that shows how to build a native module. It assume
 
 ## iOS Calendar module example
 
-This guide will use [iOS Calendar API](https://developer.apple.com/library/mac/documentation/DataManagement/Conceptual/EventKitProgGuide/Introduction/Introduction.html) example. Let's say we would like to be able to access iOS calendar from JavaScript.
+This guide will use [iOS Calendar API](https://developer.apple.com/library/mac/documentation/DataManagement/Conceptual/EventKitProgGuide/Introduction/Introduction.html) example. Let's say we would like to be able to access the iOS calendar from JavaScript.
 
 Native module is just an Objectve-C class that implements `RCTBridgeModule` protocol. If you are wondering, RCT is a shorthand for ReaCT.
 
@@ -52,7 +52,7 @@ CalendarManager.addEventWithName('Birthday Party', '4 Privet Drive, Surrey');
 
 Notice that the exported method name was generated from first part of Objective-C selector. Sometimes it results in a non-idiomatic JavaScript name (like the one in our example). You can change the name by supplying an optional argument to `RCT_EXPORT`, e.g. `RCT_EXPORT(addEvent)`.
 
-The return type of the method should always be `void`. React Native bridge is asynchronous, so the only way to pass result to JavaScript is by using callbacks or emitting events (see below).
+The return type of the method should always be `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
 
 ## Argument types
 
@@ -109,7 +109,7 @@ CalendarManager.addEvent('Birthday Party', {
 >
 > This section is even more experimental than others, we don't have a set of best practices around callbacks yet.
 
-Native module also supports a special kind of argument - callback. In most cases it is used to provide function call result to JavaScript.
+Native module also supports a special kind of argument- a callback. In most cases it is used to provide the function call result to JavaScript.
 
 ```objective-c
 - (void)findEvents:(RCTResponseSenderBlock)callback
@@ -120,7 +120,7 @@ Native module also supports a special kind of argument - callback. In most cases
 }
 ```
 
-`RCTResponseSenderBlock` accepts only one argument - array of arguments to pass to JavaScript callback. In this case we use node's convention to set first argument to error and the rest - to the result of the function.
+`RCTResponseSenderBlock` accepts only one argument - an array of arguments to pass to the JavaScript callback. In this case we use node's convention to set first argument to error and the rest - to the result of the function.
 
 ```javascript
 CalendarManager.findEvents((error, events) => {
@@ -132,7 +132,7 @@ CalendarManager.findEvents((error, events) => {
 })
 ```
 
-Native module is supposed to invoke callback only once. It can, however, store the callback as an ivar and invoke it later. This pattern is often used to wrap iOS APIs that require delegate. See [`RCTAlertManager`](https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m).
+Native module is supposed to invoke its callback only once. It can, however, store the callback as an ivar and invoke it later. This pattern is often used to wrap iOS APIs that require delegate. See [`RCTAlertManager`](https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m).
 
 If you want to pass error-like object to JavaScript, use `RCTMakeError` from [`RCTUtils.h`](https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h).
 
