@@ -64,7 +64,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies', function() {
+    pit('should get dependencies with deprecated assets', function() {
       var root = '/root';
       fs.__setMockFilesystem({
         'root': {
@@ -83,7 +83,7 @@ describe('DependencyGraph', function() {
       var dgraph = new DependencyGraph({
         roots: [root],
         fileWatcher: fileWatcher,
-        assetRoots: ['/root/imgs']
+        assetRoots_DEPRECATED: ['/root/imgs'],
       });
       return dgraph.load().then(function() {
         expect(dgraph.getOrderedDependencies('/root/index.js'))
@@ -93,6 +93,97 @@ describe('DependencyGraph', function() {
                path: '/root/imgs/a.png',
                dependencies: [],
                isAsset: true
+            },
+          ]);
+      });
+    });
+
+    pit('should get dependencies with relative assets', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./imgs/a.png")'
+          ].join('\n'),
+          'imgs': {
+            'a.png': ''
+          },
+          'package.json': JSON.stringify({
+            name: 'rootPackage'
+          }),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {
+              id: 'index',
+              altId: 'rootPackage/index',
+              path: '/root/index.js',
+              dependencies: ['./imgs/a.png']
+            },
+            {  id: 'rootPackage/imgs/a.png',
+               path: '/root/imgs/a.png',
+               dependencies: [],
+               isAsset: true
+            },
+          ]);
+      });
+    });
+
+    pit('Deprecated and relative assets can live together', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./imgs/a.png")',
+            'require("image!a")',
+          ].join('\n'),
+          'imgs': {
+            'a.png': ''
+          },
+          'package.json': JSON.stringify({
+            name: 'rootPackage'
+          }),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetRoots_DEPRECATED: ['/root/imgs'],
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {
+              id: 'index',
+              altId: 'rootPackage/index',
+              path: '/root/index.js',
+              dependencies: ['./imgs/a.png', 'image!a']
+            },
+            {
+              id: 'rootPackage/imgs/a.png',
+              path: '/root/imgs/a.png',
+              dependencies: [],
+              isAsset: true
+            },
+            {
+              id: 'image!a',
+              path: '/root/imgs/a.png',
+              dependencies: [],
+              isAsset: true
             },
           ]);
       });
@@ -821,7 +912,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on asset add', function() {
+    pit('updates module dependencies on deprecated asset add', function() {
       var root = '/root';
       var filesystem = fs.__setMockFilesystem({
         'root': {
@@ -836,7 +927,7 @@ describe('DependencyGraph', function() {
 
       var dgraph = new DependencyGraph({
         roots: [root],
-        assetRoots: [root],
+        assetRoots_DEPRECATED: [root],
         assetExts: ['png'],
         fileWatcher: fileWatcher
       });
@@ -861,6 +952,57 @@ describe('DependencyGraph', function() {
               dependencies: ['image!foo']
             },
             { id: 'image!foo',
+              path: '/root/foo.png',
+              dependencies: [],
+              isAsset: true,
+            },
+          ]);
+        });
+      });
+    });
+
+    pit('updates module dependencies on relative asset add', function() {
+      var root = '/root';
+      var filesystem = fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./foo.png")'
+          ].join('\n'),
+          'package.json': JSON.stringify({
+            name: 'aPackage'
+          }),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        assetExts: ['png'],
+        fileWatcher: fileWatcher
+      });
+
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: 'aPackage/index',
+              path: '/root/index.js',
+              dependencies: ['./foo.png']
+            }
+          ]);
+
+        filesystem.root['foo.png'] = '';
+        triggerFileChange('add', 'foo.png', root);
+
+        return dgraph.load().then(function() {
+          expect(dgraph.getOrderedDependencies('/root/index.js'))
+            .toEqual([
+            { id: 'index', altId: 'aPackage/index',
+              path: '/root/index.js',
+              dependencies: ['./foo.png']
+            },
+            { id: 'aPackage/foo.png',
               path: '/root/foo.png',
               dependencies: [],
               isAsset: true,
