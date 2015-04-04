@@ -40,3 +40,4 @@ Packager supports a couple of options:
 If `curl` command fails make sure the packager is running. Also try adding `--ipv4` flag to the end of it.
 
 If you started your project a while ago, `main.jsbundle` might not be included into Xcode project. To add it, right click on your project directory and click "Add Files to ..." - choose the `main.jsbundle` file that you generated. Then make sure you √ the `Add to targets`
+![](http://lvyile.github.io/img/addToTargets.png)
