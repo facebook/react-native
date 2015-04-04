@@ -146,7 +146,7 @@ var { NativeModules, Text } = React;
 
 var Message = React.createClass({
   getInitialState() {
-    return { text: 'Goodbye World.' };
+    return { text: 'Hello World.' };
   },
   componentDidMount() {
     NativeModules.MyCustomModule.processString(this.state.text, (text) => {
