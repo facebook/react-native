@@ -13,7 +13,7 @@
  *   var argv = parseCommandLine([{
  *     command: 'web',
  *     description: 'Run in a web browser instead of iOS',
- *     default: true
+ *     default: true,
  *   }])
  */
 'use strict';
