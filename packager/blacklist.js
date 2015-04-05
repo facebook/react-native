@@ -15,11 +15,11 @@ var sharedBlacklist = [
   'website',
   'node_modules/react-tools/src/utils/ImmutableObject.js',
   'node_modules/react-tools/src/core/ReactInstanceHandles.js',
-  'node_modules/react-tools/src/event/EventPropagators.js'
+  'node_modules/react-tools/src/event/EventPropagators.js',
 ];
 
 var webBlacklist = [
-  '.ios.js'
+  '.ios.js',
 ];
 
 var iosBlacklist = [
