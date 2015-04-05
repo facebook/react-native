@@ -978,7 +978,6 @@ div[data-twttr-id] iframe {
   #content {
     display: inline;
   }
-
   .container {
     min-width: 0;
     overflow: auto;
