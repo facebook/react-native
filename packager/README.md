@@ -62,7 +62,7 @@ if the option is boolean `1/0` or `true/false` is accepted.
 Here are the current options the packager accepts:
 
 * `dev` boolean, defaults to true: sets a global `__DEV__` variable
-  which will effect how the React Nativeg core libraries behave.
+  which will effect how the React Native core libraries behave.
 * `minify` boolean, defaults to false: whether to minify the bundle.
 * `runModule` boolean, defaults to true: whether to require your entry
   point module. So if you requested `moduleName`, this option will add
