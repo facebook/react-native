@@ -223,7 +223,7 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
         json = [json mutableCopy];                       \
         for (NSString *alias in aliases) {               \
           NSString *key = aliases[alias];                \
-          NSNumber *number = json[key];                  \
+          NSNumber *number = json[alias];                \
           if (number) {                                  \
             RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, #type, key); \
             ((NSMutableDictionary *)json)[key] = number; \
