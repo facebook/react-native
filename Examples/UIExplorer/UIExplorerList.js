@@ -27,6 +27,7 @@ var {
   View,
 } = React;
 var NavigatorExample = require('./Navigator/NavigatorExample');
+var NavigatorIOSColorsExample = require('./NavigatorIOSColorsExample');
 
 var { TestModule } = React.addons;
 
@@ -40,6 +41,7 @@ var COMPONENTS = [
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
   require('./NavigatorIOSExample'),
+  NavigatorIOSColorsExample,
   NavigatorExample,
   require('./PickerIOSExample'),
   require('./ScrollViewExample'),
@@ -184,6 +186,12 @@ class UIExplorerList extends React.Component {
     if (example === NavigatorExample) {
       this.props.onExternalExampleRequested(
         NavigatorExample
+      );
+      return;
+    }
+    if (example === NavigatorIOSColorsExample) {
+      this.props.onExternalExampleRequested(
+        NavigatorIOSColorsExample
       );
       return;
     }
