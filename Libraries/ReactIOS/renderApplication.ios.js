@@ -11,10 +11,7 @@
  */
 'use strict';
 
-var Portal = require('Portal');
 var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
 
 var invariant = require('invariant');
 
@@ -28,26 +25,11 @@ function renderApplication<D, P, S>(
     'Expect to have a valid rootTag, instead got ', rootTag
   );
   React.render(
-    <View style={styles.appContainer}>
-      <RootComponent
-        {...initialProps}
-      />
-      <Portal />
-    </View>,
+    <RootComponent
+      {...initialProps}
+    />,
     rootTag
   );
 }
-
-var styles = StyleSheet.create({
-  // This is needed so the application covers the whole screen
-  // and therefore the contents of the Portal are not clipped.
-  appContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-  },
-});
 
 module.exports = renderApplication;

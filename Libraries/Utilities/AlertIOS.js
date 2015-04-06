@@ -20,32 +20,28 @@ var DEFAULT_BUTTON = {
 };
 
 /**
- * AlertIOS manages native iOS alerts, option sheets, and share dialogs
+ * Launches an alert dialog with the specified title and message.
+ *
+ * Optionally provide a list of buttons. Tapping any button will fire the
+ * respective onPress callback and dismiss the alert. By default, the only
+ * button will be an 'OK' button
+ *
+ * The last button in the list will be considered the 'Primary' button and
+ * it will appear bold.
+ *
+ * ```
+ * AlertIOS.alert(
+ *   'Foo Title',
+ *   'My Alert Msg',
+ *   [
+ *     {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
+ *     {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
+ *   ]
+ * )}
+ * ```
  */
 
 class AlertIOS {
-
-  /**
-   * Launches an alert dialog with the specified title and message.
-   *
-   * Optionally provide a list of buttons. Tapping any button will fire the
-   * respective onPress callback and dismiss the alert. By default, the only
-   * button will be an 'OK' button
-   *
-   * The last button in the list will be considered the 'Primary' button and
-   * it will appear bold.
-   *
-   * ```
-   * AlertIOS.alert(
-   *   'Foo Title',
-   *   'My Alert Msg',
-   *   [
-   *     {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
-   *     {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
-   *   ]
-   * )}
-   * ```
-   */
   static alert(
     title: ?string,
     message?: ?string,

@@ -52,26 +52,45 @@ var ROUTE_STACK = [
 var INIT_ROUTE_INDEX = 1;
 
 class JumpingNavBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tabIndex: props.initTabIndex,
+    };
+  }
+  handleWillFocus(route) {
+    var tabIndex = ROUTE_STACK.indexOf(route);
+    this.setState({ tabIndex, });
+  }
   render() {
     return (
       <View style={styles.tabs}>
         <TabBarIOS>
           <TabBarIOS.Item
             icon={require('image!tabnav_notification')}
-            selected={this.props.tabIndex === 0}
-            onPress={() => { this.props.onTabIndex(0); }}>
+            selected={this.state.tabIndex === 0}
+            onPress={() => {
+              this.props.onTabIndex(0);
+              this.setState({ tabIndex: 0, });
+            }}>
             <View />
           </TabBarIOS.Item>
           <TabBarIOS.Item
             icon={require('image!tabnav_list')}
-            selected={this.props.tabIndex === 1}
-            onPress={() => { this.props.onTabIndex(1); }}>
+            selected={this.state.tabIndex === 1}
+            onPress={() => {
+              this.props.onTabIndex(1);
+              this.setState({ tabIndex: 1, });
+            }}>
             <View />
           </TabBarIOS.Item>
           <TabBarIOS.Item
             icon={require('image!tabnav_settings')}
-            selected={this.props.tabIndex === 2}
-            onPress={() => { this.props.onTabIndex(2); }}>
+            selected={this.state.tabIndex === 2}
+            onPress={() => {
+              this.props.onTabIndex(2);
+              this.setState({ tabIndex: 2, });
+            }}>
             <View />
           </TabBarIOS.Item>
         </TabBarIOS>
@@ -81,12 +100,6 @@ class JumpingNavBar extends React.Component {
 }
 
 var JumpingNavSample = React.createClass({
-  getInitialState: function() {
-    return {
-      tabIndex: INIT_ROUTE_INDEX,
-    };
-  },
-
   render: function() {
     return (
       <Navigator
@@ -98,23 +111,19 @@ var JumpingNavSample = React.createClass({
         initialRoute={ROUTE_STACK[INIT_ROUTE_INDEX]}
         initialRouteStack={ROUTE_STACK}
         renderScene={this.renderScene}
+        configureScene={() => ({
+          ...Navigator.SceneConfigs.HorizontalSwipeJump,
+        })}
         navigationBar={
           <JumpingNavBar
+            ref={(navBar) => { this.navBar = navBar; }}
+            initTabIndex={INIT_ROUTE_INDEX}
             routeStack={ROUTE_STACK}
-            tabIndex={this.state.tabIndex}
             onTabIndex={(index) => {
-              this.setState({ tabIndex: index }, () => {
-                this._navigator.jumpTo(ROUTE_STACK[index]);
-              });
+              this._navigator.jumpTo(ROUTE_STACK[index]);
             }}
           />
         }
-        onWillFocus={(route) => {
-          this.setState({
-            tabIndex: ROUTE_STACK.indexOf(route),
-          });
-        }}
-        shouldJumpOnBackstackPop={true}
       />
     );
   },
