@@ -13,10 +13,7 @@
 
 var React = require('React');
 var Touchable = require('Touchable');
-var keyOf = require('keyOf');
 var onlyChild = require('onlyChild');
-var cloneWithProps = require('cloneWithProps');
-var ensureComponentIsNative = require('ensureComponentIsNative');
 
 /**
  * When the scroll view is disabled, this defines how far your touch may move
@@ -51,14 +48,6 @@ var TouchableWithoutFeedback = React.createClass({
     return this.touchableGetInitialState();
   },
 
-  componentDidMount: function() {
-    ensureComponentIsNative(this.refs[CHILD_REF]);
-  },
-
-  componentDidUpdate: function() {
-    ensureComponentIsNative(this.refs[CHILD_REF]);
-  },
-
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
@@ -88,17 +77,8 @@ var TouchableWithoutFeedback = React.createClass({
   },
 
   render: function(): ReactElement {
-    var child = cloneWithProps(
-      onlyChild(this.props.children),
-      {
-        ref: CHILD_REF,
-        accessible: true,
-        testID: this.props.testID,
-      }
-    );
-
     // Note(avik): remove dynamic typecast once Flow has been upgraded
-    return (React: any).cloneElement(child, {
+    return (React: any).cloneElement(onlyChild(this.props.children), {
       accessible: true,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
@@ -110,7 +90,5 @@ var TouchableWithoutFeedback = React.createClass({
     });
   }
 });
-
-var CHILD_REF = keyOf({childRef: null});
 
 module.exports = TouchableWithoutFeedback;
