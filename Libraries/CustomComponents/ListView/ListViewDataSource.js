@@ -32,38 +32,6 @@ var invariant = require('invariant');
 var isEmpty = require('isEmpty');
 var warning = require('warning');
 
-/**
- * ListViewDataSource - Provides efficient data processing and access to the
- * ListView component.  A ListViewDataSource is created with functions for
- * extracting data from the input blob, and comparing elements (with default
- * implementations for convenience).  The input blob can be as simple as an
- * array of strings, or an object with rows nested inside section objects.
- *
- * To update the data in the datasource, use `cloneWithRows` (or
- * `cloneWithRowsAndSections` if you care about sections).  The data in the
- * data source is immutable, so you can't modify it directly.  The clone methods
- * suck in the new data and compute a diff for each row so ListView knows
- * whether to re-render it or not.
- *
- * In this example, a component receives data in chunks, handled by
- * `_onDataArrived`, which concats the new data onto the old data and updates the
- * data source.  We use `concat` to create a new array - mutating `this._data`,
- * e.g. with `this._data.push(newRowData)`, would be an error. `_rowHasChanged`
- * understands the shape of the row data and knows how to efficiently compare
- * it.
- *
- *   getInitialState: function() {
- *     var ds = new ListViewDataSource({rowHasChanged: this._rowHasChanged});
- *     return {ds};
- *   },
- *   _onDataArrived(newData) {
- *     this._data = this._data.concat(newData);
- *     this.setState({
- *       ds: this.state.ds.cloneWithRows(this._data)
- *     });
- *   }
- */
-
 function defaultGetRowData(
   dataBlob: any,
   sectionID: number | string,
@@ -88,14 +56,57 @@ type ParamType = {
   getSectionHeaderData: ?typeof defaultGetSectionHeaderData;
 }
 
+/**
+ * Provides efficient data processing and access to the
+ * `ListView` component.  A `ListViewDataSource` is created with functions for
+ * extracting data from the input blob, and comparing elements (with default
+ * implementations for convenience).  The input blob can be as simple as an
+ * array of strings, or an object with rows nested inside section objects.
+ *
+ * To update the data in the datasource, use `cloneWithRows` (or
+ * `cloneWithRowsAndSections` if you care about sections).  The data in the
+ * data source is immutable, so you can't modify it directly.  The clone methods
+ * suck in the new data and compute a diff for each row so ListView knows
+ * whether to re-render it or not.
+ *
+ * In this example, a component receives data in chunks, handled by
+ * `_onDataArrived`, which concats the new data onto the old data and updates the
+ * data source.  We use `concat` to create a new array - mutating `this._data`,
+ * e.g. with `this._data.push(newRowData)`, would be an error. `_rowHasChanged`
+ * understands the shape of the row data and knows how to efficiently compare
+ * it.
+ *
+ * ```
+ * getInitialState: function() {
+ *   var ds = new ListViewDataSource({rowHasChanged: this._rowHasChanged});
+ *   return {ds};
+ * },
+ * _onDataArrived(newData) {
+ *   this._data = this._data.concat(newData);
+ *   this.setState({
+ *     ds: this.state.ds.cloneWithRows(this._data)
+ *   });
+ * }
+ * ```
+ */
+
 class ListViewDataSource {
 
   /**
-   * @param {ParamType} params
-   *
-   * You can provide custom extraction and 'hasChanged' functions for section
+   * You can provide custom extraction and `hasChanged` functions for section
    * headers and rows.  If absent, data will be extracted with the
    * `defaultGetRowData` and `defaultGetSectionHeaderData` functions.
+   *
+   * The default extractor expects data of one of the following forms:
+   *
+   *      { sectionID_1: { rowID_1: <rowData1>, ... }, ... }
+   *
+   *    or
+   *
+   *      [ [ <rowData1>, <rowData2>, ... ], ... ]
+   *
+   * The constructor takes in a params argument that can contain any of the
+   * following:
    *
    * - getRowData(dataBlob, sectionID, rowID);
    * - getSectionHeaderData(dataBlob, sectionID);
@@ -125,14 +136,25 @@ class ListViewDataSource {
   }
 
   /**
-  * @param {object} dataBlob -- This is an arbitrary blob of data. An extractor
-  *    function was defined at construction time.  The default extractor assumes
-  *    the data is a plain array or keyed object.
-  */
-  cloneWithRows(
-    dataBlob: Array<any> | {[key: string]: any},
-    rowIdentities: ?Array<string>
-  ): ListViewDataSource {
+   * Clones this `ListViewDataSource` with the specified `dataBlob` and
+   * `rowIdentities`. The `dataBlob` is just an aribitrary blob of data. At
+   * construction an extractor to get the interesting informatoin was defined
+   * (or the default was used).
+   *
+   * The `rowIdentities` is is a 2D array of identifiers for rows.
+   * ie. [['a1', 'a2'], ['b1', 'b2', 'b3'], ...].  If not provided, it's
+   * assumed that the keys of the section data are the row identities.
+   *
+   * Note: This function does NOT clone the data in this data source. It simply
+   * passes the functions defined at construction to a new data source with
+   * the data specified. If you wish to maintain the existing data you must
+   * handle merging of old and new data separately and then pass that into
+   * this function as the `dataBlob`.
+   */
+   cloneWithRows(
+       dataBlob: Array<any> | {[key: string]: any},
+       rowIdentities: ?Array<string>
+   ): ListViewDataSource {
     var rowIds = rowIdentities ? [rowIdentities] : null;
     if (!this._sectionHeaderHasChanged) {
       this._sectionHeaderHasChanged = () => false;
@@ -141,29 +163,20 @@ class ListViewDataSource {
   }
 
   /**
-   * @param {object} dataBlob -- This is an arbitrary blob of data. An extractor
-   *    function was defined at construction time.  The default extractor assumes
-   *    the data is a nested array or keyed object of the form:
+   * This performs the same function as the `cloneWithRows` function but here
+   * you also specify what your `sectionIdentities` are. If you don't care
+   * about sections you should safely be able to use `cloneWithRows`.
    *
-   *      { sectionID_1: { rowID_1: <rowData1>, ... }, ... }
-   *
-   *    or
-   *
-   *      [ [ <rowData1>, <rowData2>, ... ], ... ]
-   *
-   * @param {array} sectionIdentities -- This is an array of identifiers for
-   *    sections. ie. ['s1', 's2', ...].  If not provided, it's assumed that the
-   *    keys of dataBlob are the section identities.
-   * @param {array} rowIdentities -- This is a 2D array of identifiers for rows.
-   *    ie. [['a1', 'a2'], ['b1', 'b2', 'b3'], ...].  If not provided, it's
-   *    assumed that the keys of the section data are the row identities.
+   * `sectionIdentities` is an array of identifiers for  sections.
+   * ie. ['s1', 's2', ...].  If not provided, it's assumed that the
+   * keys of dataBlob are the section identities.
    *
    * Note: this returns a new object!
    */
   cloneWithRowsAndSections(
-    dataBlob: any,
-    sectionIdentities: ?Array<string>,
-    rowIdentities: ?Array<Array<string>>
+      dataBlob: any,
+      sectionIdentities: ?Array<string>,
+      rowIdentities: ?Array<Array<string>>
   ): ListViewDataSource {
     invariant(
       typeof this._sectionHeaderHasChanged === 'function',
@@ -205,9 +218,6 @@ class ListViewDataSource {
   }
 
   /**
-   * @param {number} sectionIndex
-   * @param {number} rowIndex
-   *
    * Returns if the row is dirtied and needs to be rerendered
    */
   rowShouldUpdate(sectionIndex: number, rowIndex: number): bool {
@@ -218,9 +228,6 @@ class ListViewDataSource {
   }
 
   /**
-   * @param {number} sectionIndex
-   * @param {number} rowIndex
-   *
    * Gets the data required to render the row.
    */
   getRowData(sectionIndex: number, rowIndex: number): any {
@@ -234,8 +241,6 @@ class ListViewDataSource {
   }
 
   /**
-   * @param {number} index
-   *
    * Gets the rowID at index provided if the dataSource arrays were flattened,
    * or null of out of range indexes.
    */
@@ -252,8 +257,6 @@ class ListViewDataSource {
   }
 
   /**
-   * @param {number} index
-   *
    * Gets the sectionID at index provided if the dataSource arrays were flattened,
    * or null for out of range indexes.
    */
@@ -281,8 +284,6 @@ class ListViewDataSource {
   }
 
   /**
-   * @param {number} sectionIndex
-   *
    * Returns if the section header is dirtied and needs to be rerendered
    */
   sectionHeaderShouldUpdate(sectionIndex: number): bool {
@@ -293,8 +294,6 @@ class ListViewDataSource {
   }
 
   /**
-   * @param {number} sectionIndex
-   *
    * Gets the data required to render the section header
    */
   getSectionHeaderData(sectionIndex: number): any {

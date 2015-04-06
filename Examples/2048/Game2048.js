@@ -18,13 +18,13 @@
 
 var React = require('react-native');
 var {
-  Animation,
   AppRegistry,
   StyleSheet,
   Text,
   View,
 } = React;
 
+var AnimationExperimental = require('AnimationExperimental');
 var GameBoard = require('GameBoard');
 var TouchableBounce = require('TouchableBounce');
 
@@ -77,17 +77,15 @@ class Tile extends React.Component {
         animationPosition(tile.toColumn()),
         animationPosition(tile.toRow()),
       ];
-      Animation.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {position: point});
+      AnimationExperimental.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {position: point});
     }
 
     return offset;
   }
 
+
   componentDidMount() {
-    setTimeout(() => {
-      Animation.startAnimation(this.refs['this'], 300, 0, 'easeInOutQuad', {scaleXY: [1, 1]});
-      Animation.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {opacity: 1});
-    }, 0);
+    AnimationExperimental.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {opacity: 1});
   }
 
   render() {
