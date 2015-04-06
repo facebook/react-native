@@ -39,6 +39,9 @@ var options = parseCommandLine([{
 }, {
   command: 'assetRoots',
   description: 'specify the root directories of app assets'
+}, {
+  command: 'skipflow',
+  description: 'Disable flow checks'
 }]);
 
 if (options.projectRoots) {
@@ -151,13 +154,13 @@ function getDevToolsLauncher(options) {
 }
 
 // A status page so the React/project.pbxproj build script
-// can verify that packager is running on 8081 and not 
+// can verify that packager is running on 8081 and not
 // another program / service.
 function statusPageMiddleware(req, res, next) {
   if (req.url === '/status') {
     res.end('packager-status:running');
   } else {
-    next();   
+    next();
   }
 }
 
@@ -168,6 +171,7 @@ function getAppMiddleware(options) {
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
     assetRoots: options.assetRoots,
+    skipflow: options.skipflow,
   });
 }
 

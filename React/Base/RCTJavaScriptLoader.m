@@ -102,19 +102,30 @@
 
                                   // Handle HTTP errors
                                   if ([response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)response statusCode] != 200) {
-                                    NSDictionary *userInfo;
+                                    NSMutableDictionary *userInfo;
                                     NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
                                     if ([errorDetails isKindOfClass:[NSDictionary class]]) {
-                                      userInfo = @{
-                                                   NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
-                                                   @"stack": @[@{
-                                                                 @"methodName": errorDetails[@"description"] ?: @"",
-                                                                 @"file": errorDetails[@"filename"] ?: @"",
-                                                                 @"lineNumber": errorDetails[@"lineNumber"] ?: @0
-                                                                 }]
-                                                   };
+                                      userInfo = [@{
+                                        NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
+                                      } mutableCopy];
+                                      if ([errorDetails[@"errors"] isKindOfClass:[NSArray class]]) {
+                                        userInfo[@"stack"] = [NSMutableArray new];
+                                        for (NSDictionary* err in errorDetails[@"errors"]) {
+                                          [userInfo[@"stack"] addObject: @{
+                                            @"methodName": err[@"description"] ?: @"",
+                                            @"file": err[@"filename"] ?: @"",
+                                            @"lineNumber": err[@"lineNumber"] ?: @0
+                                          }];
+                                        }
+                                      } else {
+                                        userInfo[@"stack"] = @[@{
+                                          @"methodName": errorDetails[@"description"] ?: @"",
+                                          @"file": errorDetails[@"filename"] ?: @"",
+                                          @"lineNumber": errorDetails[@"lineNumber"] ?: @0
+                                        }];
+                                      };
                                     } else {
-                                      userInfo = @{NSLocalizedDescriptionKey: rawText};
+                                      userInfo = [@{NSLocalizedDescriptionKey: rawText} mutableCopy];
                                     }
                                     error = [NSError errorWithDomain:@"JSServer"
                                                                 code:[(NSHTTPURLResponse *)response statusCode]
