@@ -131,6 +131,7 @@ function getDocBlock(node, commentsForFile, linesForFile) {
   }
   var docblock;
   var prevLine = node.loc.start.line - 1;
+
   // skip blank lines
   while (linesForFile[prevLine - 1].trim() === '') {
     prevLine--;
@@ -209,6 +210,7 @@ function getFunctionData(node, state, source, commentsForFile, linesForFile) {
   var params = [];
   var typechecks = commentsForFile.typechecks;
   var typehintsFromBlock = null;
+
   if (typechecks) {
     // esprima has trouble with some params so ignore them (e.g. $__0)
     if (!node.params.some(function(param) { return !param.name; })) {
@@ -383,6 +385,10 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
             commentsForFile, linesForFile);
         methodData.name = bodyItem.key.name;
         methodData.source = source.substring.apply(source, bodyItem.range);
+        // Override docblock from getFunctionData as Function node does not
+        // have correct source range to get docblock
+        methodData.docblock =
+          getDocBlock(bodyItem, commentsForFile, linesForFile);
         if (bodyItem.static) {
           methodData.modifiers.push('static');
         }
