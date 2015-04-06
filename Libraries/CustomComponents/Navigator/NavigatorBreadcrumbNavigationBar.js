@@ -46,15 +46,12 @@ var TITLE_PROPS = Interpolators.map(() => {return {style: {}};});
 var RIGHT_BUTTON_PROPS = Interpolators.map(() => {return {style: {}};});
 
 
-/**
- * TODO: Rename `observedTopOfStack` to `presentedIndex` in `NavigationStack`.
- */
 var navStatePresentedIndex = function(navState) {
   if (navState.presentedIndex !== undefined) {
     return navState.presentedIndex;
-  } else {
-    return navState.observedTopOfStack;
   }
+  // TODO: rename `observedTopOfStack` to `presentedIndex` in `NavigatorIOS`
+  return navState.observedTopOfStack;
 };
 
 
@@ -80,12 +77,17 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       popToRoute: PropTypes.func,
       popToTop: PropTypes.func,
     }),
-    navigationBarRouteMapper: PropTypes.shape({
+    routeMapper: PropTypes.shape({
       rightContentForRoute: PropTypes.func,
       titleContentForRoute: PropTypes.func,
       iconForRoute: PropTypes.func,
     }),
-    navigationBarStyles: PropTypes.number,
+    navState: React.PropTypes.shape({
+      routeStack: React.PropTypes.arrayOf(React.PropTypes.object),
+      idStack: React.PropTypes.arrayOf(React.PropTypes.number),
+      presentedIndex: React.PropTypes.number,
+    }),
+    style: View.propTypes.style,
   },
 
   statics: {
@@ -142,7 +144,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var titles = navState.routeStack.map(this._renderOrReturnTitle);
     var buttons = navState.routeStack.map(this._renderOrReturnRightButton);
     return (
-      <View style={[styles.breadCrumbContainer, this.props.navigationBarStyles]}>
+      <View style={[styles.breadCrumbContainer, this.props.style]}>
         {titles}
         {icons}
         {buttons}
@@ -152,7 +154,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
 
   _renderOrReturnBreadcrumb: function(route, index) {
     var uid = this.props.navState.idStack[index];
-    var navBarRouteMapper = this.props.navigationBarRouteMapper;
+    var navBarRouteMapper = this.props.routeMapper;
     var navOps = this.props.navigator;
     var alreadyRendered = this.refs['crumbContainer' + uid];
     if (alreadyRendered) {
@@ -197,7 +199,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
         />
       );
     }
-    var navBarRouteMapper = this.props.navigationBarRouteMapper;
+    var navBarRouteMapper = this.props.routeMapper;
     var titleContent = navBarRouteMapper.titleContentForRoute(
       navState.routeStack[index],
       this.props.navigator
@@ -217,7 +219,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
 
   _renderOrReturnRightButton: function(route, index) {
     var navState = this.props.navState;
-    var navBarRouteMapper = this.props.navigationBarRouteMapper;
+    var navBarRouteMapper = this.props.routeMapper;
     var uid = navState.idStack[index];
     var alreadyRendered = this.refs['rightContainer' + uid];
     if (alreadyRendered) {

@@ -54,7 +54,9 @@
 				14C644C21AB0DFC900DE3C65 /* RCTActionSheetManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 /* End PBXGroup section */
 

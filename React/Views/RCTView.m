@@ -16,6 +16,20 @@
 
 static const RCTBorderSide RCTBorderSideCount = 4;
 
+static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
+{
+  for (UIView *subview in [view.subviews reverseObjectEnumerator]) {
+    if (!subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
+      CGPoint convertedPoint = [subview convertPoint:point fromView:view];
+      UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
+      if (subviewHitTestView != nil) {
+        return subviewHitTestView;
+      }
+    }
+  }
+  return nil;
+}
+
 @implementation UIView (RCTViewUnmounting)
 
 - (void)react_remountAllSubviews
@@ -120,20 +134,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     case RCTPointerEventsNone:
       return nil;
     case RCTPointerEventsUnspecified:
-      return [super hitTest:point withEvent:event];
+      return RCTViewHitTest(self, point, event) ?: [super hitTest:point withEvent:event];
     case RCTPointerEventsBoxOnly:
       return [super hitTest:point withEvent:event] ? self: nil;
     case RCTPointerEventsBoxNone:
-      for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
-        if (!subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
-          CGPoint convertedPoint = [subview convertPoint:point fromView:self];
-          UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
-          if (subviewHitTestView != nil) {
-            return subviewHitTestView;
-          }
-        }
-      }
-      return nil;
+      return RCTViewHitTest(self, point, event);
     default:
       RCTLogError(@"Invalid pointer-events specified %zd on %@", _pointerEvents, self);
       return [super hitTest:point withEvent:event];

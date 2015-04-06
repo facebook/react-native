@@ -12,7 +12,6 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
@@ -358,7 +357,7 @@ var ScrollResponderMixin = {
    * A helper function to zoom to a specific rect in the scrollview.
    * @param {object} rect Should have shape {x, y, w, h}
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; w: number; h: number; }) {
+  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
     RCTUIManagerDeprecated.zoomToRect(this.getNodeHandle(), rect);
   },
 

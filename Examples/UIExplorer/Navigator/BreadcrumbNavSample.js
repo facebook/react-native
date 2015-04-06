@@ -115,7 +115,7 @@ var BreadcrumbNavSample = React.createClass({
         renderScene={this._renderScene}
         navigationBar={
           <Navigator.BreadcrumbNavigationBar
-            navigationBarRouteMapper={this._navBarRouteMapper}
+            routeMapper={this._navBarRouteMapper}
           />
         }
       />

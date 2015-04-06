@@ -73,6 +73,11 @@
   [_webView loadRequest:[NSURLRequest requestWithURL:URL]];
 }
 
+- (void)setHTML:(NSString *)HTML
+{
+  [_webView loadHTMLString:HTML baseURL:nil];
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
