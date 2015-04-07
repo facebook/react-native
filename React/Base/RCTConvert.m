@@ -45,7 +45,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
     return number;
   } else if (json && json != [NSNull null]) {
-    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a number", json, [json class]);
+    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a number", json, [json classForCoder]);
   }
   return nil;
 }
@@ -53,7 +53,7 @@ RCT_CONVERTER(NSString *, NSString, description)
 + (NSURL *)NSURL:(id)json
 {
   if (![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json classForCoder], json);
     return nil;
   }
 
@@ -98,7 +98,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
     return date;
   } else if (json && json != [NSNull null]) {
-    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a date", json, [json class]);
+    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a date", json, [json classForCoder]);
   }
   return nil;
 }
@@ -234,7 +234,8 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
         ((CGFloat *)&result)[i] = [self CGFloat:json[fields[i]]]; \
       }                                                  \
     } else if (json && json != [NSNull null]) {          \
-      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
+      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", \
+                  #type, [json classForCoder], json);    \
     }                                                    \
     return result;                                       \
   }                                                      \
@@ -511,8 +512,8 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   } else if (json && ![json isKindOfClass:[NSNull class]]) {
 
-    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, \
-                received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, received %@: %@",
+                [json classForCoder], json);
   }
 
   // Default color
@@ -538,7 +539,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   // image itself) so as to reduce overhead on subsequent checks of the same input
 
   if (![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json classForCoder], json);
     return nil;
   }
 

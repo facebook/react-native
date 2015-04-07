@@ -198,6 +198,11 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
 @synthesize bridge = _bridge;
 
 /**
+ * Declared in RCTBridge.
+ */
+extern NSString *RCTBridgeModuleNameForClass(Class cls);
+
+/**
  * This function derives the view name automatically
  * from the module name.
  */
@@ -334,7 +339,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 
   dispatch_async(_bridge.shadowQueue, ^{
     RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
-    RCTAssert(rootShadowView != nil, @"Could not locate root view with tag %@", reactTag);
+    RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
     rootShadowView.frame = frame;
     [rootShadowView updateLayout];
 
@@ -672,7 +677,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
   }
 }
 
-static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
+static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
 {
   // TODO: cache respondsToSelector tests
   if ([manager respondsToSelector:setter]) {
@@ -681,7 +686,25 @@ static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView,
       value = nil;
     }
 
-    ((void (*)(id, SEL, id, id, id))objc_msgSend)(manager, setter, value, view, defaultView);
+    void (^block)() = ^{
+      ((void (*)(id, SEL, id, id, id))objc_msgSend)(manager, setter, value, view, defaultView);
+    };
+
+#if DEBUG
+
+    NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([manager class]));
+    NSString *logPrefix = [NSString stringWithFormat:
+                           @"Error setting property '%@' of %@ with tag #%@: ",
+                           key, viewName, [view reactTag]];
+
+    RCTPerformBlockWithLogPrefix(block, logPrefix);
+
+#else
+
+    block();
+
+#endif
+
     return YES;
   }
   return NO;
@@ -693,7 +716,7 @@ static void RCTSetViewProps(NSDictionary *props, UIView *view,
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
 
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forView:withDefaultView:", key]);
-    RCTCallPropertySetter(setter, obj, view, defaultView, manager);
+    RCTCallPropertySetter(key, setter, obj, view, defaultView, manager);
 
   }];
 }
@@ -704,7 +727,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
 
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forShadowView:withDefaultView:", key]);
-    RCTCallPropertySetter(setter, obj, shadowView, defaultView, manager);
+    RCTCallPropertySetter(key, setter, obj, shadowView, defaultView, manager);
 
   }];
 
@@ -875,7 +898,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
     if (!view) {
-      RCTLogError(@"measure cannot find view with tag %@", reactTag);
+      RCTLogError(@"measure cannot find view with tag #%@", reactTag);
       return;
     }
     CGRect frame = view.frame;
@@ -1039,7 +1062,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
         uiManager.mainScrollView = (id<RCTScrollableProtocol>)rkObject;
         ((id<RCTScrollableProtocol>)rkObject).nativeMainScrollDelegate = uiManager.nativeMainScrollDelegate;
       } else {
-        RCTCAssert(NO, @"Tag %@ does not conform to RCTScrollableProtocol", reactTag);
+        RCTCAssert(NO, @"Tag #%@ does not conform to RCTScrollableProtocol", reactTag);
       }
     } else {
       uiManager.mainScrollView = nil;
@@ -1056,7 +1079,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:YES];
     } else {
-      RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+      RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
     }
   }];
 }
@@ -1070,7 +1093,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
         if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
             [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:NO];
         } else {
-            RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+            RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
         }
     }];
 }
@@ -1084,7 +1107,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view zoomToRect:[RCTConvert CGRect:rectDict] animated:YES];
     } else {
-      RCTLogError(@"tried to zoomToRect: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+      RCTLogError(@"tried to zoomToRect: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
     }
   }];
 }
