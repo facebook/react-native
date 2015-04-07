@@ -83,6 +83,20 @@ module.exports = {
         throw e;
       }
     }
+
+    return {
+      podfileExists: function() {
+        try {
+          var podfileText = fs.readFileSync(PODFILE_PATH, 'utf8');
+          return true;
+        } catch(e) {
+          return false;
+        }
+      },
+      podfileText: function() {
+        return podfileText;
+      }
+    };
   },
   init: function(arguement) {
     // arguement is available for future arguement commands
