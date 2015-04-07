@@ -121,8 +121,8 @@ var NavigationBarSample = React.createClass({
         )}
         navigationBar={
           <Navigator.NavigationBar
-            navigationBarRouteMapper={NavigationBarRouteMapper}
-            navigationBarStyles={styles.navBar}
+            routeMapper={NavigationBarRouteMapper}
+            style={styles.navBar}
           />
         }
       />

@@ -6,19 +6,26 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule AnimationMixin
+ * @providesModule AnimationExperimentalMixin
  * @flow
  */
 'use strict';
 
 var AnimationUtils = require('AnimationUtils');
-var RCTAnimationManager = require('NativeModules').AnimationManager;
+var RCTAnimationManager = require('NativeModules').AnimationExperimentalManager;
 
 var invariant = require('invariant');
 
 type EasingFunction = (t: number) => number;
 
-var AnimationMixin = {
+/**
+ * This is an experimental module that is under development, incomplete,
+ * potentially buggy, not used in any production apps, and will probably change
+ * in non-backward compatible ways.
+ *
+ * Use at your own risk.
+ */
+var AnimationExperimentalMixin = {
   getInitialState: function(): Object {
     return {};
   },
@@ -48,4 +55,4 @@ var AnimationMixin = {
   },
 };
 
-module.exports = AnimationMixin;
+module.exports = AnimationExperimentalMixin;

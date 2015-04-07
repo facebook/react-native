@@ -12,6 +12,6 @@
 
 #import "RCTBridgeModule.h"
 
-@interface RCTAnimationManager : NSObject <RCTBridgeModule>
+@interface RCTAnimationExperimentalManager : NSObject <RCTBridgeModule>
 
 @end

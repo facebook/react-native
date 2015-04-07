@@ -22,9 +22,8 @@ var {
   Text,
   View,
 } = React;
-var TabBarItemIOS = TabBarIOS.Item;
-var TabBarExample = React.createClass({
 
+var TabBarExample = React.createClass({
   statics: {
     title: '<TabBarIOS>',
     description: 'Tab-based navigation.'
@@ -42,19 +41,16 @@ var TabBarExample = React.createClass({
     return (
       <View style={[styles.tabContent, {backgroundColor: color}]}>
         <Text style={styles.tabText}>{pageText}</Text>
-        <Text style={styles.tabText}>{this.state.presses} re-renders of this tab</Text>
+        <Text style={styles.tabText}>{this.state.presses} re-renders of the More tab</Text>
       </View>
     );
   },
 
   render: function() {
     return (
-      <TabBarIOS
-        selectedTab={this.state.selectedTab}>
-        <TabBarItemIOS
-          name="blueTab"
-          icon={_ix_DEPRECATED('favorites')}
-          accessibilityLabel="Blue Tab"
+      <TabBarIOS>
+        <TabBarIOS.Item
+          title="Blue Tab"
           selected={this.state.selectedTab === 'blueTab'}
           onPress={() => {
             this.setState({
@@ -62,12 +58,10 @@ var TabBarExample = React.createClass({
             });
           }}>
           {this._renderContent('#414A8C', 'Blue Tab')}
-        </TabBarItemIOS>
-        <TabBarItemIOS
-          accessibilityLabel="Red Tab"
-          name="redTab"
-          icon={_ix_DEPRECATED('history')}
-          badgeValue={this.state.notifCount ? String(this.state.notifCount) : null}
+        </TabBarIOS.Item>
+        <TabBarIOS.Item
+          systemIcon="history"
+          badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
           selected={this.state.selectedTab === 'redTab'}
           onPress={() => {
             this.setState({
@@ -76,11 +70,9 @@ var TabBarExample = React.createClass({
             });
           }}>
           {this._renderContent('#783E33', 'Red Tab')}
-        </TabBarItemIOS>
-        <TabBarItemIOS
-          name="greenTab"
-          icon={_ix_DEPRECATED('more')}
-          accessibilityLabel="Green Tab"
+        </TabBarIOS.Item>
+        <TabBarIOS.Item
+          systemIcon="more"
           selected={this.state.selectedTab === 'greenTab'}
           onPress={() => {
             this.setState({
@@ -89,7 +81,7 @@ var TabBarExample = React.createClass({
             });
           }}>
           {this._renderContent('#21551C', 'Green Tab')}
-        </TabBarItemIOS>
+        </TabBarIOS.Item>
       </TabBarIOS>
     );
   },
@@ -106,15 +98,5 @@ var styles = StyleSheet.create({
     margin: 50,
   },
 });
-
-// This is needed because the actual image may not exist as a file and
-// is used by the native code to load a system image.
-// TODO(nicklockwood): How can this fit our require system?
-function _ix_DEPRECATED(imageUri) {
-  return {
-    uri: imageUri,
-    isStatic: true,
-  };
-}
 
 module.exports = TabBarExample;

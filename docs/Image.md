@@ -1,4 +1,4 @@
-Displaying images is a fascinating subject, React Native uses some cool tricks to make it a better experience.
+Displaying images is a fascinating subject; React Native uses some cool tricks to make it a better experience.
 
 ## No Automatic Sizing
 

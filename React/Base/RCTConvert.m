@@ -225,6 +225,7 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
           NSString *key = aliases[alias];                \
           NSNumber *number = json[key];                  \
           if (number) {                                  \
+            RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, #type, key); \
             ((NSMutableDictionary *)json)[key] = number; \
           }                                              \
         }                                                \
@@ -245,9 +246,9 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
 }
 
 RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
-RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), nil)
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), (@{@"l": @"x", @"t": @"y"}))
 RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
-RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"l": @"x", @"t": @"y", @"w": @"width", @"h": @"height"}))
 RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]), nil)
 
 RCT_ENUM_CONVERTER(CGLineJoin, (@{
@@ -547,7 +548,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   UIImage *image = nil;
   NSString *path = json;
-  if ([path isAbsolutePath]) {
+  if ([path hasPrefix:@"data:"]) {
+    NSURL *url = [NSURL URLWithString:path];
+    NSData *imageData = [NSData dataWithContentsOfURL:url];
+    image = [UIImage imageWithData:imageData];
+  } else if ([path isAbsolutePath]) {
     image = [UIImage imageWithContentsOfFile:path];
   } else {
     image = [UIImage imageNamed:path];

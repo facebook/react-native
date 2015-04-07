@@ -240,7 +240,9 @@ var APIDoc = React.createClass({
   render: function() {
     var content = this.props.content;
     if (!content.methods) {
-      return <div>Error</div>;
+      throw new Error(
+        'No component methods found for ' + content.componentName
+      );
     }
     return (
       <div>

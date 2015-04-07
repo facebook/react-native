@@ -217,8 +217,6 @@ var TextInput = React.createClass({
      */
     onFocus: PropTypes.func,
     /**
-     * (text: string) => void
-     *
      * Callback that is called when the text input's text changes.
      */
     onChange: PropTypes.func,

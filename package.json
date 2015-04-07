@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.3.3",
+  "version": "0.3.1",
   "description": "A framework for building native apps using React",
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "Examples/SampleApp",
     "Libraries",
     "packager",
+    "local-cli",
     "cli.js",
     "init.sh",
     "LICENSE",
@@ -42,9 +43,9 @@
   },
   "dependencies": {
     "connect": "2.8.3",
-    "jstransform": "10.0.1",
+    "jstransform": "10.1.0",
     "react-timer-mixin": "^0.13.1",
-    "react-tools": "0.13.0-rc2",
+    "react-tools": "0.13.1",
     "rebound": "^0.0.12",
     "source-map": "0.1.31",
     "stacktrace-parser": "0.1.1",

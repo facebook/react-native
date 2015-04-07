@@ -51,7 +51,9 @@
 				00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */,
 				832C81811AAF6DEF007FA2F7 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		832C81811AAF6DEF007FA2F7 /* Products */ = {
 			isa = PBXGroup;
