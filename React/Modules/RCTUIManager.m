@@ -750,44 +750,47 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   // Register manager
   _viewManagerRegistry[reactTag] = manager;
 
-  // Generate default view, used for resetting default props
-  if (!_defaultShadowViews[viewName]) {
-    _defaultShadowViews[viewName] = [manager shadowView];
-  }
-
   RCTShadowView *shadowView = [manager shadowView];
-  shadowView.viewName = viewName;
-  shadowView.reactTag = reactTag;
-  RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], manager);
-  _shadowViewRegistry[shadowView.reactTag] = shadowView;
+  if (shadowView) {
+
+    // Generate default view, used for resetting default props
+    if (!_defaultShadowViews[viewName]) {
+      _defaultShadowViews[viewName] = [manager shadowView];
+    }
+
+    // Set properties
+    shadowView.viewName = viewName;
+    shadowView.reactTag = reactTag;
+    RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], manager);
+  }
+  _shadowViewRegistry[reactTag] = shadowView;
 
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTCAssertMainThread();
 
-    // Generate default view, used for resetting default props
-    if (!uiManager->_defaultViews[viewName]) {
-      // Note the default is setup after the props are read for the first time ever
-      // for this className - this is ok because we only use the default for restoring
-      // defaults, which never happens on first creation.
-      uiManager->_defaultViews[viewName] = [manager view];
-    }
-
     UIView *view = [manager view];
     if (view) {
 
-      // Set required properties
-      view.reactTag = reactTag;
-      view.multipleTouchEnabled = YES;
-      view.userInteractionEnabled = YES; // required for touch handling
-      view.layer.allowsGroupOpacity = YES; // required for touch handling
+      // Generate default view, used for resetting default props
+      if (!uiManager->_defaultViews[viewName]) {
+        // Note the default is setup after the props are read for the first time ever
+        // for this className - this is ok because we only use the default for restoring
+        // defaults, which never happens on first creation.
+        uiManager->_defaultViews[viewName] = [manager view];
+      }
 
-      // Set custom properties
+      // Set properties
+      view.reactTag = reactTag;
+      if ([view isKindOfClass:[UIView class]]) {
+        view.multipleTouchEnabled = YES;
+        view.userInteractionEnabled = YES; // required for touch handling
+        view.layer.allowsGroupOpacity = YES; // required for touch handling
+      }
       RCTSetViewProps(props, view, uiManager->_defaultViews[viewName], manager);
     }
-    viewRegistry[view.reactTag] = view;
+    viewRegistry[reactTag] = view;
   }];
 }
-
 // TODO: remove viewName param as it isn't needed
 - (void)updateView:(NSNumber *)reactTag viewName:(__unused NSString *)_ props:(NSDictionary *)props
 {
