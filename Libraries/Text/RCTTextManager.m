@@ -33,15 +33,6 @@
 #pragma mark - View properties
 
 RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
-RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, NSInteger, RCTText)
-{
-  NSLineBreakMode truncationMode = NSLineBreakByClipping;
-  view.numberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.numberOfLines;
-  if (view.numberOfLines > 0) {
-    truncationMode = NSLineBreakByTruncatingTail;
-  }
-  view.lineBreakMode = truncationMode;
-}
 
 #pragma mark - Shadow properties
 
@@ -65,8 +56,8 @@ RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, UIColor, RCTShadowText)
 RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;
-  view.maxNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maxNumberOfLines;
-  if (view.maxNumberOfLines > 0) {
+  view.maximumNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maximumNumberOfLines;
+  if (view.maximumNumberOfLines > 0) {
     truncationMode = NSLineBreakByTruncatingTail;
   }
   view.truncationMode = truncationMode;
@@ -124,12 +115,16 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
   };
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowText *)shadowView
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
+
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    ((RCTText *)viewRegistry[reactTag]).contentInset = padding;
+    RCTText *text = (RCTText *)viewRegistry[reactTag];
+    text.contentInset = padding;
+    text.layoutManager = shadowView.layoutManager;
+    text.textContainer = shadowView.textContainer;
   };
 }
 
