@@ -177,7 +177,9 @@ Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a 
   return [[MyCustomView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
+RCT_EXPORT_VIEW_PROPERTY(myCustomArrayProperty, NSArray);
+RCT_EXPORT_VIEW_PROPERTY(myCustomDictionaryProperty, NSDictionaryArray);
 
 @end
 ```
@@ -185,8 +187,16 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
 ```javascript
 // JavaScript
 
+// A built-in diffing function, others are: insetsDiffer, matricesDiffer
+// and pointsDiffer
+var deepDiffer = require('deepDiffer');
+
 var MyCustomView = createReactIOSNativeComponentClass({
-  validAttributes: { myCustomProperty: true },
+  validAttributes: {
+    myCustomProperty: true,
+    myCustomArrayProperty: {diff: deepDiffer},
+    myCustomDictionaryProperty: {diff: (a, b) => { return a.id !== b.id }}
+  },
   uiViewClassName: 'MyCustomView',
 });
 ```
