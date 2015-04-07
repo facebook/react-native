@@ -230,11 +230,11 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomDictionaryProperty, NSDictionaryArray);
 // and pointsDiffer
 var deepDiffer = require('deepDiffer');
 
-var MyCustomView = createReactIOSNativeComponentClass({
+module.exports = createReactIOSNativeComponentClass({
   validAttributes: {
     myCustomProperty: true,
     myCustomArrayProperty: {diff: deepDiffer},
-    myCustomDictionaryProperty: {diff: (a, b) => { return a.id !== b.id }}
+    myCustomDictionaryProperty: {diff: ((a, b) => { return a.id !== b.id })}
   },
   uiViewClassName: 'MyCustomView',
 });`}
