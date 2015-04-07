@@ -22,6 +22,7 @@
 #import "RCTJavaScriptLoader.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
@@ -41,10 +42,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 
 NSString *const RCTReloadBridge = @"RCTReloadBridge";
 
-/**
- * This function returns the module name for a given class.
- */
-static NSString *RCTModuleNameForClass(Class cls)
+NSString *RCTBridgeModuleNameForClass(Class cls)
 {
   return [cls respondsToSelector:@selector(moduleName)] ? [cls moduleName] : NSStringFromClass(cls);
 }
@@ -92,7 +90,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
         [(NSMutableArray *)modules addObject:cls];
 
         // Add module name
-        NSString *moduleName = RCTModuleNameForClass(cls);
+        NSString *moduleName = RCTBridgeModuleNameForClass(cls);
         [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
       }
     });
@@ -187,7 +185,7 @@ static Class _globalExecutorClass;
           RCT_ARG_BLOCK( \
             if (json && ![json isKindOfClass:[_class class]]) { \
               RCTLogError(@"Argument %tu (%@) of %@.%@ should be of type %@", index, \
-                json, RCTModuleNameForClass(_moduleClass), _JSMethodName, [_class class]); \
+                json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, [_class class]); \
               return; \
             } \
             _logic \
@@ -203,7 +201,7 @@ static Class _globalExecutorClass;
           RCT_ARG_BLOCK( \
             if (json && ![json respondsToSelector:@selector(_selector)]) { \
               RCTLogError(@"Argument %tu (%@) of %@.%@ does not respond to selector: %@", \
-                index, json, RCTModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
+                index, json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
               return; \
             } \
             _type value = [json _selector];                     \
@@ -231,7 +229,7 @@ static Class _globalExecutorClass;
             RCT_ARG_BLOCK(
               if (json && ![json isKindOfClass:[NSNumber class]]) {
                 RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
-                            json, RCTModuleNameForClass(_moduleClass), _JSMethodName);
+                            json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
                 return;
               }
               // Marked as autoreleasing, because NSInvocation doesn't retain arguments
@@ -268,7 +266,7 @@ static Class _globalExecutorClass;
   // Safety check
   if (arguments.count != _argumentBlocks.count) {
     RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
-                RCTModuleNameForClass(_moduleClass), _JSMethodName,
+                RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
                 arguments.count, _argumentBlocks.count);
     return;
   }
@@ -544,7 +542,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
   for (id<RCTBridgeModule> module in _moduleProvider ? _moduleProvider() : nil) {
-    preregisteredModules[RCTModuleNameForClass([module class])] = module;
+    preregisteredModules[RCTBridgeModuleNameForClass([module class])] = module;
   }
 
   // Instantiate modules
@@ -895,27 +893,18 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return (_latestJSExecutor != nil && [_latestJSExecutor isValid]);
 }
 
-+ (void)log:(NSArray *)objects level:(NSString *)level
++ (void)logMessage:(NSString *)message level:(NSString *)level
 {
   if (!_latestJSExecutor || ![_latestJSExecutor isValid]) {
-    RCTLogError(@"ERROR: No valid JS executor to log %@.", objects);
+    RCTLogError(@"ERROR: No valid JS executor to log '%@'.", message);
     return;
   }
-  NSMutableArray *args = [NSMutableArray arrayWithObject:level];
 
-  // TODO (#5906496): Find out and document why we skip the first object
-  for (id ob in [objects subarrayWithRange:(NSRange){1, [objects count] - 1}]) {
-    if ([NSJSONSerialization isValidJSONObject:@[ob]]) {
-      [args addObject:ob];
-    } else {
-      [args addObject:[ob description]];
-    }
-  }
-
-  // Note: the js executor could get invalidated while we're trying to call this...need to watch out for that.
+  // Note: the js executor could get invalidated while we're trying to call
+  // this...need to watch out for that.
   [_latestJSExecutor executeJSCall:@"RCTLog"
                             method:@"logIfNoNativeHook"
-                         arguments:args
+                         arguments:@[level, message]
                           callback:^(id json, NSError *error) {}];
 }
 

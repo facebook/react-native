@@ -9,6 +9,7 @@
 
 #import "RCTAlertManager.h"
 
+#import "RCTAssert.h"
 #import "RCTLog.h"
 
 @interface RCTAlertManager() <UIAlertViewDelegate>
