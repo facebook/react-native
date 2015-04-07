@@ -27,7 +27,6 @@
 'use strict';
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
-var Backstack = require('Backstack');
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
 var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
@@ -58,8 +57,6 @@ var __uid = 0;
 function getuid() {
   return __uid++;
 }
-
-var nextComponentUid = 0;
 
 // styles moved to the top of the file so getDefaultProps can refer to it
 var styles = StyleSheet.create({
@@ -242,13 +239,6 @@ var Navigator = React.createClass({
      * Styles to apply to the container of each scene
      */
     sceneStyle: View.propTypes.style,
-
-    /**
-     * Should the backstack back button "jump" back instead of pop? Set to true
-     * if a jump forward might happen after the android back button is pressed,
-     * so the scenes will remain mounted
-     */
-    shouldJumpOnBackstackPop: PropTypes.bool,
   },
 
   statics: {
@@ -336,13 +326,6 @@ var Navigator = React.createClass({
     });
     this._itemRefs = {};
     this._interactionHandle = null;
-    this._backstackComponentKey = 'jsnavstack' + nextComponentUid;
-    nextComponentUid++;
-
-    Backstack.eventEmitter && this.addListenerOn(
-      Backstack.eventEmitter,
-      'popNavigation',
-      this._onBackstackPopState);
 
     this._emitWillFocus(this.state.presentedIndex);
   },
@@ -361,31 +344,7 @@ var Navigator = React.createClass({
     animationConfig && this._configureSpring(animationConfig);
     this.spring.addListener(this);
     this.onSpringUpdate();
-
-    // Fill up the Backstack with routes that have been provided in
-    // initialRouteStack
-    this._fillBackstackRange(0, this.state.routeStack.indexOf(this.props.initialRoute));
     this._emitDidFocus(this.state.presentedIndex);
-  },
-
-  componentWillUnmount: function() {
-    Backstack.removeComponentHistory(this._backstackComponentKey);
-  },
-
-  _onBackstackPopState: function(componentKey, stateKey, state) {
-    if (componentKey !== this._backstackComponentKey) {
-      return;
-    }
-    if (!this._canNavigate()) {
-      // A bit hacky: if we can't actually handle the pop, just push it back on the stack
-      Backstack.pushNavigation(componentKey, stateKey, state);
-    } else {
-      if (this.props.shouldJumpOnBackstackPop) {
-        this._jumpToWithoutBackstack(state.fromRoute);
-      } else {
-        this._popToRouteWithoutBackstack(state.fromRoute);
-      }
-    }
   },
 
   /**
@@ -737,41 +696,6 @@ var Navigator = React.createClass({
     return !this.state.isAnimating;
   },
 
-  _jumpNWithoutBackstack: function(n) {
-    var destIndex = this._getDestIndexWithinBounds(n);
-    if (!this._canNavigate()) {
-      return; // It's busy animating or transitioning.
-    }
-    var requestTransitionAndResetUpdatingRange = () => {
-      this._requestTransitionTo(destIndex);
-      this._resetUpdatingRange();
-    };
-    this.setState({
-      updatingRangeStart: destIndex,
-      updatingRangeLength: 1,
-      toIndex: destIndex,
-    }, requestTransitionAndResetUpdatingRange);
-  },
-
-  _fillBackstackRange: function(start, end) {
-    invariant(
-      start <= end,
-      'Can only fill the backstack forward. Provide end index greater than start'
-    );
-    for (var i = 0; i < (end - start); i++) {
-      var fromIndex = start + i;
-      var toIndex = start + i + 1;
-      Backstack.pushNavigation(
-        this._backstackComponentKey,
-        toIndex,
-        {
-          fromRoute: this.state.routeStack[fromIndex],
-          toRoute: this.state.routeStack[toIndex],
-        }
-      );
-    }
-  },
-
   _getDestIndexWithinBounds: function(n) {
     var currentIndex = this.state.presentedIndex;
     var destIndex = currentIndex + n;
@@ -788,20 +712,19 @@ var Navigator = React.createClass({
   },
 
   _jumpN: function(n) {
-    var currentIndex = this.state.presentedIndex;
+    var destIndex = this._getDestIndexWithinBounds(n);
     if (!this._canNavigate()) {
       return; // It's busy animating or transitioning.
     }
-    if (n > 0) {
-      this._fillBackstackRange(currentIndex, currentIndex + n);
-    } else {
-      var landingBeforeIndex = currentIndex + n + 1;
-      Backstack.resetToBefore(
-        this._backstackComponentKey,
-        landingBeforeIndex
-      );
-    }
-    this._jumpNWithoutBackstack(n);
+    var requestTransitionAndResetUpdatingRange = () => {
+      this._requestTransitionTo(destIndex);
+      this._resetUpdatingRange();
+    };
+    this.setState({
+      updatingRangeStart: destIndex,
+      updatingRangeLength: 1,
+      toIndex: destIndex,
+    }, requestTransitionAndResetUpdatingRange);
   },
 
   jumpTo: function(route) {
@@ -811,15 +734,6 @@ var Navigator = React.createClass({
       'Cannot jump to route that is not in the route stack'
     );
     this._jumpN(destIndex - this.state.presentedIndex);
-  },
-
-  _jumpToWithoutBackstack: function(route) {
-    var destIndex = this.state.routeStack.indexOf(route);
-    invariant(
-      destIndex !== -1,
-      'Cannot jump to route that is not in the route stack'
-    );
-    this._jumpNWithoutBackstack(destIndex - this.state.presentedIndex);
   },
 
   jumpForward: function() {
@@ -852,11 +766,6 @@ var Navigator = React.createClass({
       toRoute: route,
       fromRoute: this.state.routeStack[this.state.routeStack.length - 1],
     };
-    Backstack.pushNavigation(
-      this._backstackComponentKey,
-      this.state.routeStack.length,
-      navigationState);
-
     this.setState({
       idStack: nextIDStack,
       routeStack: nextStack,
@@ -867,14 +776,7 @@ var Navigator = React.createClass({
     }, requestTransitionAndResetUpdatingRange);
   },
 
-   _manuallyPopBackstack: function(n) {
-    Backstack.resetToBefore(this._backstackComponentKey, this.state.routeStack.length - n);
-  },
-
-  /**
-   * Like popN, but doesn't also update the Backstack.
-   */
-  _popNWithoutBackstack: function(n) {
+  popN: function(n) {
     if (n === 0 || !this._canNavigate()) {
       return;
     }
@@ -886,14 +788,6 @@ var Navigator = React.createClass({
     this._requestTransitionTo(
       this.state.presentedIndex - n
     );
-  },
-
-  popN: function(n) {
-    if (n === 0 || !this._canNavigate()) {
-      return;
-    }
-    this._popNWithoutBackstack(n);
-    this._manuallyPopBackstack(n);
   },
 
   pop: function() {
@@ -968,14 +862,6 @@ var Navigator = React.createClass({
       'Calling pop to route for a route that doesn\'t exist!'
     );
     return this.state.routeStack.length - indexOfRoute - 1;
-  },
-
-  /**
-   * Like popToRoute, but doesn't update the Backstack, presumably because it's already up to date.
-   */
-  _popToRouteWithoutBackstack: function(route) {
-    var numToPop = this._getNumToPopForRoute(route);
-    this._popNWithoutBackstack(numToPop);
   },
 
   popToRoute: function(route) {
