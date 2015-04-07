@@ -27,11 +27,14 @@
 'use strict';
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
+var BackAndroid = require('BackAndroid');
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
-var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
-var NavigatorNavigationBar = require('NavigatorNavigationBar');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
+var NavigatorInterceptor = require('NavigatorInterceptor');
+var NavigatorNavigationBar = require('NavigatorNavigationBar');
+var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
+var NavigatorStaticContextContainer = require('NavigatorStaticContextContainer');
 var PanResponder = require('PanResponder');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
@@ -40,6 +43,7 @@ var Subscribable = require('Subscribable');
 var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
+var getNavigatorContext = require('getNavigatorContext');
 var clamp = require('clamp');
 var invariant = require('invariant');
 var keyMirror = require('keyMirror');
@@ -182,12 +186,11 @@ var Navigator = React.createClass({
 
     /**
      * Required function which renders the scene for a given route. Will be
-     * invoked with the route, the navigator object, and a ref handler that
-     * will allow a ref to your scene to be provided by props.onItemRef
+     * invoked with the route and the navigator object
      *
      * ```
-     * (route, navigator, onRef) =>
-     *   <MySceneComponent title={route.title} ref={onRef} />
+     * (route, navigator) =>
+     *   <MySceneComponent title={route.title} />
      * ```
      */
     renderScene: PropTypes.func.isRequired,
@@ -241,10 +244,16 @@ var Navigator = React.createClass({
     sceneStyle: View.propTypes.style,
   },
 
+  contextTypes: {
+    navigator: PropTypes.object,
+  },
+
   statics: {
     BreadcrumbNavigationBar: NavigatorBreadcrumbNavigationBar,
     NavigationBar: NavigatorNavigationBar,
     SceneConfigs: NavigatorSceneConfigs,
+    Interceptor: NavigatorInterceptor,
+    getContext: getNavigatorContext,
   },
 
   mixins: [TimerMixin, InteractionMixin, Subscribable.Mixin],
@@ -293,7 +302,20 @@ var Navigator = React.createClass({
   },
 
   componentWillMount: function() {
-    this.navigatorActions = {
+    this.parentNavigator = getNavigatorContext(this) || this.props.navigator;
+    this.navigatorContext = {
+      setHandlerForRoute: this.setHandlerForRoute,
+      request: this.request,
+
+      parentNavigator: this.parentNavigator,
+      getCurrentRoutes: this.getCurrentRoutes,
+      // We want to bubble focused routes to the top navigation stack. If we
+      // are a child navigator, this allows us to call props.navigator.on*Focus
+      // of the topmost Navigator
+      onWillFocus: this.props.onWillFocus,
+      onDidFocus: this.props.onDidFocus,
+
+      // Legacy, imperitive nav actions. Use request when possible.
       jumpBack: this.jumpBack,
       jumpForward: this.jumpForward,
       jumpTo: this.jumpTo,
@@ -307,14 +329,8 @@ var Navigator = React.createClass({
       resetTo: this.resetTo,
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
-      parentNavigator: this.props.navigator,
-      getCurrentRoutes: this.getCurrentRoutes,
-      // We want to bubble focused routes to the top navigation stack. If we
-      // are a child navigator, this allows us to call props.navigator.on*Focus
-      // of the topmost Navigator
-      onWillFocus: this.props.onWillFocus,
-      onDidFocus: this.props.onDidFocus,
     };
+    this._handlers = {};
 
     this.panGesture = PanResponder.create({
       onStartShouldSetPanResponderCapture: this._handleStartShouldSetPanResponderCapture,
@@ -328,6 +344,46 @@ var Navigator = React.createClass({
     this._interactionHandle = null;
 
     this._emitWillFocus(this.state.presentedIndex);
+  },
+
+  request: function(action, arg1, arg2) {
+    if (this.parentNavigator) {
+      return this.parentNavigator.request.apply(null, arguments);
+    }
+    return this._handleRequest.apply(null, arguments);
+  },
+
+  _handleRequest: function(action, arg1, arg2) {
+    var childHandler = this._handlers[this.state.presentedIndex];
+    if (childHandler && childHandler(action, arg1, arg2)) {
+      return true;
+    }
+    switch (action) {
+      case 'pop':
+        return this._handlePop();
+      case 'push':
+        return this._handlePush(arg1);
+      default:
+        invariant(false, 'Unsupported request type ' + action);
+        return false;
+    }
+  },
+
+  _handlePop: function() {
+    if (this.state.presentedIndex === 0) {
+      return false;
+    }
+    this.pop();
+    return true;
+  },
+
+  _handlePush: function(route) {
+    this.push(route);
+    return true;
+  },
+
+  setHandlerForRoute: function(route, handler) {
+    this._handlers[this.state.routeStack.indexOf(route)] = handler;
   },
 
   _configureSpring: function(animationConfig) {
@@ -345,6 +401,28 @@ var Navigator = React.createClass({
     this.spring.addListener(this);
     this.onSpringUpdate();
     this._emitDidFocus(this.state.presentedIndex);
+    if (this.parentNavigator) {
+      this.parentNavigator.setHandler(this._handleRequest);
+    } else {
+      // There is no navigator in our props or context, so this is the
+      // top-level navigator. We will handle back button presses here
+      BackAndroid.addEventListener('hardwareBackPress', this._handleBackPress);
+    }
+  },
+
+  componentWillUnmount: function() {
+    if (this.parentNavigator) {
+      this.parentNavigator.setHandler(null);
+    } else {
+      BackAndroid.removeEventListener('hardwareBackPress', this._handleBackPress);
+    }
+  },
+
+  _handleBackPress: function() {
+    var didPop = this.request('pop');
+    if (!didPop) {
+      BackAndroid.exitApp();
+    }
   },
 
   /**
@@ -791,8 +869,9 @@ var Navigator = React.createClass({
   },
 
   pop: function() {
-    if (this.props.navigator && this.state.routeStack.length === 1) {
-      return this.props.navigator.pop();
+    // TODO (t6707686): remove this parentNavigator call after transitioning call sites to `.request('pop')`
+    if (this.parentNavigator && this.state.routeStack.length === 1) {
+      return this.parentNavigator.pop();
     }
     this.popN(1);
   },
@@ -889,7 +968,7 @@ var Navigator = React.createClass({
     return this.state.routeStack;
   },
 
-  _onItemRef: function(itemId, ref) {
+  _handleItemRef: function(itemId, ref) {
     this._itemRefs[itemId] = ref;
     var itemIndex = this.state.idStack.indexOf(itemId);
     if (itemIndex === -1) {
@@ -922,23 +1001,33 @@ var Navigator = React.createClass({
       this.state.updatingRangeLength !== 0 &&
       i >= this.state.updatingRangeStart &&
       i <= this.state.updatingRangeStart + this.state.updatingRangeLength;
+    var sceneNavigatorContext = {
+      ...this.navigatorContext,
+      route,
+      setHandler: (handler) => {
+        this.navigatorContext.setHandlerForRoute(route, handler);
+      },
+    };
     var child = this.props.renderScene(
       route,
-      this.navigatorActions,
-      this._onItemRef.bind(null, this.state.idStack[i])
+      sceneNavigatorContext
     );
-
     var initialSceneStyle =
       i === this.state.presentedIndex ? styles.presentNavItem : styles.futureNavItem;
     return (
-      <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
+      <NavigatorStaticContextContainer
+        navigatorContext={sceneNavigatorContext}
+        key={'nav' + i}
+        shouldUpdate={shouldUpdateChild}>
         <View
           key={this.state.idStack[i]}
           ref={'scene_' + i}
           style={[initialSceneStyle, this.props.sceneStyle]}>
-          {child}
+          {React.cloneElement(child, {
+            ref: this._handleItemRef.bind(null, this.state.idStack[i]),
+          })}
         </View>
-      </StaticContainer>
+      </NavigatorStaticContextContainer>
     );
   },
 
@@ -967,7 +1056,7 @@ var Navigator = React.createClass({
     }
     return React.cloneElement(this.props.navigationBar, {
       ref: (navBar) => { this._navBar = navBar; },
-      navigator: this.navigatorActions,
+      navigator: this.navigatorContext,
       navState: this.state,
     });
   },
