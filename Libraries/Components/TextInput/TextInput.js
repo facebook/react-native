@@ -126,8 +126,9 @@ type Event = Object;
  * force the component to always revert to the value you are setting, you can
  * set `controlled={true}`.
  *
- * The `multiline` prop is not supported in all releases, and some props are
- * multiline only.
+ * The `multiline` prop is not currently supported in the iOS open source release.
+ * Additionally, the `onSelectionChange`, `onTextInput` and `children` props are
+ * unsupported because they only apply when `multiline` is available and `true`.
  */
 
 var TextInput = React.createClass({
