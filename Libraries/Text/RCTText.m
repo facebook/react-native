@@ -62,8 +62,8 @@
 
   _layoutManager = layoutManager;
 
-  for (NSLayoutManager *layoutManager in _textStorage.layoutManagers) {
-    [_textStorage removeLayoutManager:layoutManager];
+  for (NSLayoutManager *existingLayoutManager in _textStorage.layoutManagers) {
+    [_textStorage removeLayoutManager:existingLayoutManager];
   }
   [_textStorage addLayoutManager:_layoutManager];
 
