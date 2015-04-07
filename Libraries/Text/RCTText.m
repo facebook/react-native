@@ -23,15 +23,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _textContainer = [[NSTextContainer alloc] init];
-    _textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
-    _textContainer.lineFragmentPadding = 0.0;
-
-    _layoutManager = [[NSLayoutManager alloc] init];
-    [_layoutManager addTextContainer:_textContainer];
-
     _textStorage = [[NSTextStorage alloc] init];
-    [_textStorage addLayoutManager:_layoutManager];
 
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -50,25 +42,31 @@
   [self setNeedsDisplay];
 }
 
-- (NSUInteger)numberOfLines
+- (void)setTextContainer:(NSTextContainer *)textContainer
 {
-  return _textContainer.maximumNumberOfLines;
-}
+  if ([_textContainer isEqual:textContainer]) return;
 
-- (void)setNumberOfLines:(NSUInteger)numberOfLines
-{
-  _textContainer.maximumNumberOfLines = numberOfLines;
+  _textContainer = textContainer;
+
+  for (NSInteger i = _layoutManager.textContainers.count - 1; i >= 0; i--) {
+    [_layoutManager removeTextContainerAtIndex:i];
+  }
+  [_layoutManager addTextContainer:_textContainer];
+
   [self setNeedsDisplay];
 }
 
-- (NSLineBreakMode)lineBreakMode
+- (void)setLayoutManager:(NSLayoutManager *)layoutManager
 {
-  return _textContainer.lineBreakMode;
-}
+  if ([_layoutManager isEqual:layoutManager]) return;
 
-- (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode
-{
-  _textContainer.lineBreakMode = lineBreakMode;
+  _layoutManager = layoutManager;
+
+  for (NSLayoutManager *layoutManager in _textStorage.layoutManagers) {
+    [_textStorage removeLayoutManager:layoutManager];
+  }
+  [_textStorage addLayoutManager:_layoutManager];
+
   [self setNeedsDisplay];
 }
 
