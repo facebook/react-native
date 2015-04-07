@@ -6,18 +6,25 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Animation
+ * @providesModule AnimationExperimental
  * @flow
  */
 'use strict';
 
-var RCTAnimationManager = require('NativeModules').AnimationManager;
+var RCTAnimationManager = require('NativeModules').AnimationExperimentalManager;
 var AnimationUtils = require('AnimationUtils');
 
 type EasingFunction = (t: number) => number;
 
-var Animation = {
-  Mixin: require('AnimationMixin'),
+/**
+ * This is an experimental module that is under development, incomplete,
+ * potentially buggy, not used in any production apps, and will probably change
+ * in non-backward compatible ways.
+ *
+ * Use at your own risk.
+ */
+var AnimationExperimental = {
+  Mixin: require('AnimationExperimentalMixin'),
 
   startAnimation: function(
     node: any,
@@ -28,7 +35,14 @@ var Animation = {
   ): number {
     var nodeHandle = +node.getNodeHandle();
     var easingSample = AnimationUtils.evaluateEasingFunction(duration, easing);
-    var tag: number = RCTAnimationManager.startAnimation(nodeHandle, AnimationUtils.allocateTag(), duration, delay, easingSample, properties);
+    var tag: number = RCTAnimationManager.startAnimation(
+      nodeHandle,
+      AnimationUtils.allocateTag(),
+      duration,
+      delay,
+      easingSample,
+      properties
+    );
     return tag;
   },
 
@@ -37,4 +51,4 @@ var Animation = {
   },
 };
 
-module.exports = Animation;
+module.exports = AnimationExperimental;

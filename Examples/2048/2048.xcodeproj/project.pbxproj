@@ -7,29 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13ACB6741AC2117000FF4204 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13ACB6711AC2113600FF4204 /* libRCTAnimation.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1461632C1AC3E22900C2F5AD /* libReact.a */; };
+		58C1E40E1ACF54E9006D1A47 /* libRCTAnimationExperimental.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C1E40B1ACF54B4006D1A47 /* libRCTAnimationExperimental.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		13ACB6701AC2113600FF4204 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 13ACB66C1AC2113500FF4204 /* RCTAnimation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = RCTAnimation;
-		};
 		1461632B1AC3E22900C2F5AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 146163271AC3E22900C2F5AD /* React.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = React;
+		};
+		58C1E40A1ACF54B4006D1A47 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13ACB66C1AC2113500FF4204 /* RCTAnimationExperimental.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTAnimationExperimental;
 		};
 		832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -41,7 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		13ACB66C1AC2113500FF4204 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = ../../Libraries/Animation/RCTAnimation.xcodeproj; sourceTree = "<group>"; };
+		13ACB66C1AC2113500FF4204 /* RCTAnimationExperimental.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimationExperimental.xcodeproj; path = ../../Libraries/Animation/RCTAnimationExperimental.xcodeproj; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* 2048.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2048.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = 2048/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = 2048/AppDelegate.m; sourceTree = "<group>"; };
@@ -59,7 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */,
-				13ACB6741AC2117000FF4204 /* libRCTAnimation.a in Frameworks */,
+				58C1E40E1ACF54E9006D1A47 /* libRCTAnimationExperimental.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,14 +67,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13ACB66D1AC2113500FF4204 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				13ACB6711AC2113600FF4204 /* libRCTAnimation.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* 2048 */ = {
 			isa = PBXGroup;
 			children = (
@@ -96,12 +88,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		58C1E4071ACF54B4006D1A47 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				58C1E40B1ACF54B4006D1A47 /* libRCTAnimationExperimental.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
 				146163271AC3E22900C2F5AD /* React.xcodeproj */,
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
-				13ACB66C1AC2113500FF4204 /* RCTAnimation.xcodeproj */,
+				13ACB66C1AC2113500FF4204 /* RCTAnimationExperimental.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -175,8 +175,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 13ACB66D1AC2113500FF4204 /* Products */;
-					ProjectRef = 13ACB66C1AC2113500FF4204 /* RCTAnimation.xcodeproj */;
+					ProductGroup = 58C1E4071ACF54B4006D1A47 /* Products */;
+					ProjectRef = 13ACB66C1AC2113500FF4204 /* RCTAnimationExperimental.xcodeproj */;
 				},
 				{
 					ProductGroup = 832341B11AAA6A8300B99B32 /* Products */;
@@ -195,18 +195,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		13ACB6711AC2113600FF4204 /* libRCTAnimation.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRCTAnimation.a;
-			remoteRef = 13ACB6701AC2113600FF4204 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		1461632C1AC3E22900C2F5AD /* libReact.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libReact.a;
 			remoteRef = 1461632B1AC3E22900C2F5AD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		58C1E40B1ACF54B4006D1A47 /* libRCTAnimationExperimental.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAnimationExperimental.a;
+			remoteRef = 58C1E40A1ACF54B4006D1A47 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		832341B51AAA6A8300B99B32 /* libRCTText.a */ = {
@@ -266,6 +266,10 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/2048/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/sahrens/src/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/Animation/build/Debug-iphoneos",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = 2048;
 			};
@@ -282,6 +286,10 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/2048/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/sahrens/src/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/Animation/build/Debug-iphoneos",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = 2048;
 			};

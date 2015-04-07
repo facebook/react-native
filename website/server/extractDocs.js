@@ -127,7 +127,6 @@ var components = [
 
 var apis = [
   '../Libraries/Utilities/AlertIOS.js',
-  '../Libraries/Animation/Animation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',

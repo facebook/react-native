@@ -38,7 +38,7 @@ var NavigatorIOSExample = React.createClass({
   _previousLeft: 0,
   _previousTop: 0,
   _circleStyles: {},
-  circle: (null : ?React.Element),
+  circle: (null : ?{ setNativeProps(props: Object): void }),
 
   componentWillMount: function() {
     this._panResponder = PanResponder.create({
