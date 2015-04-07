@@ -23,7 +23,7 @@
 		14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
 		58005BF21ABA80A60062E044 /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58005BEE1ABA80530062E044 /* libRCTTest.a */; };
-		B79346C81ACCB987009F700F /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B79346BE1ACCB974009F700F /* libRCTAnimation.a */; };
+		B7C2D87B1AD48BD5000E934C /* libRCTAnimationExperimental.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7C2D8711AD48BC4000E934C /* libRCTAnimationExperimental.a */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
 /* End PBXBuildFile section */
 
@@ -112,6 +112,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTAnimation;
 		};
+		B7C2D8701AD48BC4000E934C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7C2D86A1AD48BC4000E934C /* RCTAnimationExperimental.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTAnimationExperimental;
+		};
 		D85B829B1AB6D5CE003F4FE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */;
@@ -144,6 +151,7 @@
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 		B79346B71ACCB974009F700F /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = ../../Libraries/Animation/RCTAnimation.xcodeproj; sourceTree = "<group>"; };
+		B7C2D86A1AD48BC4000E934C /* RCTAnimationExperimental.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimationExperimental.xcodeproj; path = ../../Libraries/Animation/RCTAnimationExperimental.xcodeproj; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -165,9 +173,9 @@
 				58005BF21ABA80A60062E044 /* libRCTTest.a in Frameworks */,
 				D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */,
 				14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */,
-				B79346C81ACCB987009F700F /* libRCTAnimation.a in Frameworks */,
 				147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */,
 				134454601AAFCABD003F0779 /* libRCTAdSupport.a in Frameworks */,
+				B7C2D87B1AD48BD5000E934C /* libRCTAnimationExperimental.a in Frameworks */,
 				134A8A2A1AACED7A00945AAE /* libRCTGeolocation.a in Frameworks */,
 				1341802C1AA9178B003F314A /* libRCTNetwork.a in Frameworks */,
 				134180011AA9153C003F314A /* libRCTText.a in Frameworks */,
@@ -207,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				14AADEFF1AC3DB95002390C9 /* React.xcodeproj */,
+				B7C2D86A1AD48BC4000E934C /* RCTAnimationExperimental.xcodeproj */,
 				14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */,
 				14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */,
 				134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */,
@@ -337,6 +346,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B7C2D86B1AD48BC4000E934C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B7C2D8711AD48BC4000E934C /* libRCTAnimationExperimental.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		D85B82921AB6D5CE003F4FE2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -421,6 +438,10 @@
 				{
 					ProductGroup = B79346B81ACCB974009F700F /* Products */;
 					ProjectRef = B79346B71ACCB974009F700F /* RCTAnimation.xcodeproj */;
+				},
+				{
+					ProductGroup = B7C2D86B1AD48BC4000E934C /* Products */;
+					ProjectRef = B7C2D86A1AD48BC4000E934C /* RCTAnimationExperimental.xcodeproj */;
 				},
 				{
 					ProductGroup = 134A8A211AACED6A00945AAE /* Products */;
@@ -543,6 +564,13 @@
 			fileType = archive.ar;
 			path = libRCTAnimation.a;
 			remoteRef = B79346BD1ACCB974009F700F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B7C2D8711AD48BC4000E934C /* libRCTAnimationExperimental.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAnimationExperimental.a;
+			remoteRef = B7C2D8701AD48BC4000E934C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */ = {

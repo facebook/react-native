@@ -17,13 +17,13 @@
 
 var React = require('react-native');
 var {
-  Animation,
   Image,
   StyleSheet,
   Text,
   View,
 } = React;
 
+var AnimationExperimental = require('AnimationExperimental');
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 
 exports.framework = 'React';
@@ -51,7 +51,7 @@ exports.examples = [
               console.log('onLoad: ' + event.uri);
               // Timeout to simulate image load latency
               setTimeout(() => {
-                Animation.startAnimation(event.target, 250, 0, 'linear', { opacity: 1 });
+                AnimationExperimental.startAnimation(event.target, 250, 0, 'linear', { opacity: 1 });
               }, 1000);
             }}
           />
