@@ -37,7 +37,7 @@ Viewport.events = {
 };
 
 Viewport.addEventListener = function(
-  eventName: ChangeEventName,
+  eventName: string,
   handler: Function
 ): void {
   invariant(eventName === Viewport.events.DEVICE_DIMENSIONS_EVENT,
@@ -49,7 +49,7 @@ Viewport.addEventListener = function(
 };
 
 Viewport.removeEventListener = function(
-  eventName: ChangeEventName,
+  eventName: string,
   handler: Function
 ): void {
   if (!_dimensionSubscriptions[handler]) {
