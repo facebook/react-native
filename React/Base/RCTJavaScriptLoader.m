@@ -24,7 +24,7 @@
  */
 @implementation RCTJavaScriptLoader
 {
-  __weak RCTBridge *_bridge;
+  RCTBridge *_bridge;
 }
 
 /**

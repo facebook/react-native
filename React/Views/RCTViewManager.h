@@ -28,7 +28,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * allowing the manager (or the views that it manages) to manipulate the view
  * hierarchy and send events back to the JS context.
  */
-@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, strong) RCTBridge *bridge;
 
 /**
  * The module name exposed to React JS. If omitted, this will be inferred

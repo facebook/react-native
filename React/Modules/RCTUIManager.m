@@ -177,7 +177,7 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
 
 @implementation RCTUIManager
 {
-  __weak dispatch_queue_t _shadowQueue;
+  dispatch_queue_t _shadowQueue;
 
   // Root views are only mutated on the shadow queue
   NSMutableSet *_rootViewTags;
@@ -319,6 +319,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 
   // Register shadow view
   dispatch_async(_shadowQueue, ^{
+
     RCTShadowView *shadowView = [[RCTShadowView alloc] init];
     shadowView.reactTag = reactTag;
     shadowView.frame = frame;
@@ -933,9 +934,11 @@ static void RCTMeasureLayout(RCTShadowView *view,
                              RCTResponseSenderBlock callback)
 {
   if (!view) {
+    RCTLogError(@"Attempting to measure view that does not exist");
     return;
   }
   if (!ancestor) {
+    RCTLogError(@"Attempting to measure relative to ancestor that does not exist");
     return;
   }
   CGRect result = [view measureLayoutRelativeToAncestor:ancestor];
