@@ -327,8 +327,9 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 
 - (void)assertLocationEnabled
 {
-  RCTAssert([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"],
-    @"NSLocationWhenInUseUsageDescription key must be present in Info.plist");
+  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+    RCTLogError(@"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
+  }
 }
 
 @end
