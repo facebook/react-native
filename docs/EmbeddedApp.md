@@ -123,7 +123,7 @@ NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.b
 //
 // To generate that file, run the curl command and add the output to your main Xcode build target:
 //
-//   curl http://localhost:8081/index.ios.bundle -o main.jsbundle
+//   curl -4 http://localhost:8081/index.ios.bundle -o main.jsbundle
 RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                     moduleName: @"SimpleApp"
                                                  launchOptions:nil];
