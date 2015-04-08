@@ -47,7 +47,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
     [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
     if (![self connectToProxy]) {
-      RCTLogError(@"Connection to %@ timed out. Are you running node proxy?", url);
+      RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If you are running on the device check if you have the right IP address on `RCTWebSocketExecutor.m` file.", url);
       [self invalidate];
       return nil;
     }

@@ -26,7 +26,6 @@
 #import "RCTRootView.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
-#import "RCTWebViewExecutor.h"
 
 /**
  * Must be kept in sync with `MessageQueue.js`.
@@ -530,11 +529,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 - (void)setUp
 {
   Class executorClass = _executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class];
-  if ([NSStringFromClass(executorClass) isEqualToString:@"RCTWebViewExecutor"]) {
-    _javaScriptExecutor = [[RCTWebViewExecutor alloc] initWithWebView:[[UIWebView alloc] init]];
-  } else {
-    _javaScriptExecutor = [[executorClass alloc] init];
-  }
+  _javaScriptExecutor = [[executorClass alloc] init];
   _latestJSExecutor = _javaScriptExecutor;
   _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
   _shadowQueue = dispatch_queue_create("com.facebook.ReactKit.ShadowQueue", DISPATCH_QUEUE_SERIAL);
