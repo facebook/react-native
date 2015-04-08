@@ -74,11 +74,6 @@ extern NSString *const RCTReloadViewsNotification;
 - (void)reload;
 + (void)reloadAll;
 
-/**
- * Method to allow programmatic debug enable upon boot of the application
- */
-- (void)toggleDebug;
-
 @property (nonatomic, weak) UIViewController *backingViewController;
 
 @property (nonatomic, strong, readonly) UIView *contentView;
