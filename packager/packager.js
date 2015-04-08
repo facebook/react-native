@@ -40,6 +40,9 @@ var options = parseCommandLine([{
 }, {
   command: 'assetRoots',
   description: 'specify the root directories of app assets'
+}, {
+  command: 'skipflow',
+  description: 'Disable flow checks'
 }]);
 
 if (options.projectRoots) {
@@ -191,6 +194,7 @@ function getAppMiddleware(options) {
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
     assetRoots: options.assetRoots,
+    skipflow: options.skipflow,
   });
 }
 

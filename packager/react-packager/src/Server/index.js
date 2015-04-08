@@ -8,6 +8,7 @@
  */
 'use strict';
 
+var exec = require('child_process').exec;
 var url = require('url');
 var path = require('path');
 var declareOpts = require('../lib/declareOpts');
@@ -59,11 +60,17 @@ var validateOpts = declareOpts({
     type: 'array',
     default: ['png'],
   },
+  skipflow: {
+    type: 'boolean',
+    required: false,
+    default: false,
+  },
 });
 
 function Server(options) {
   var opts = validateOpts(options);
 
+  this._options = opts;
   this._projectRoots = opts.projectRoots;
   this._packages = Object.create(null);
   this._changeWatchers = [];
@@ -255,19 +262,73 @@ Server.prototype.processRequest = function(req, res, next) {
   var building = this._packages[req.url] || this._buildPackage(options);
 
   this._packages[req.url] = building;
-    building.then(
+  building.then(
     function(p) {
       if (requestType === 'bundle') {
-        res.end(p.getSource({
-          inlineSourceMap: options.inlineSourceMap,
-          minify: options.minify,
-        }));
-        Activity.endEvent(startReqEventId);
+        var finishBundling = function() {
+          res.end(p.getSource({
+            inlineSourceMap: options.inlineSourceMap,
+            minify: options.minify,
+          }));
+          Activity.endEvent(startReqEventId);
+        }
+        if (this._options.skipflow || options.skipflow) {
+          finishBundling();
+          return;
+        } else if (this._projectRoots.length === 1) {
+          var cmd = 'cd ' + this._projectRoots[0] + ' && flow --json';
+        } else {
+          console.warn('flow: Skipping because 0 or multiple roots.');
+          finishBundling();
+          return;
+        }
+        exec('command -v flow >/dev/null 2>&1', function(error1, stdout) {
+          if (error1) {
+            console.warn('flow: Skipping because not installed.  Install with ' +
+              '`brew install flow`');
+            finishBundling();
+          } else {
+            var flowActivityID = Activity.startEvent(cmd);
+            exec(cmd, function(error2, stdout) {
+              if (error2) {
+                var response = JSON.parse(stdout);
+                var errors = [];
+                var errorNum = 1;
+                response.errors.forEach(function(err) {
+                  // flow errors are paired across callsites, so we indent to
+                  // group them
+                  var prefix = '';
+                  err.message.forEach(function(msg) {
+                    errors.push({
+                      description: prefix + 'E' + errorNum + ': ' + msg.descr,
+                      filename: msg.path,
+                      lineNumber: msg.line,
+                      column: msg.start,
+                    });
+                    prefix = '  ';
+                  });
+                  errorNum++;
+                });
+                var errorOut = {
+                  message: 'Flow typecheck errors.  Run\n\n  ' + cmd +
+                    '\n\nto reproduce.  Disable with --skipflow or &skipflow=1',
+                  type: 'FlowError',
+                  errors: errors,
+                };
+                handleError(res, errorOut);
+              } else {
+                console.log('flow: typechecks passed');
+              }
+              Activity.endEvent(flowActivityID);
+              finishBundling();
+            });
+          }
+        });
       } else if (requestType === 'map') {
         res.end(JSON.stringify(p.getSourceMap()));
         Activity.endEvent(startReqEventId);
       }
-    },
+    }.bind(this),
     function(error) {
       handleError(res, error);
     }
@@ -303,6 +364,7 @@ function getOptionsFromUrl(reqUrl) {
       'inlineSourceMap',
       false
     ),
+    skipflow: getBoolOptionFromQuery(urlObj.query, 'skipflow'),
   };
 }
 
@@ -319,7 +381,10 @@ function handleError(res, error) {
     'Content-Type': 'application/json; charset=UTF-8',
   });
 
-  if (error.type === 'TransformError' || error.type === 'NotFoundError') {
+  if (error.type === 'TransformError' ||
+      error.type === 'FlowError' ||
+      error.type === 'NotFoundError') {
+    console.error(error);
     res.end(JSON.stringify(error));
   } else {
     console.error(error.stack || error);
