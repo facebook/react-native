@@ -26,9 +26,10 @@
     error: 4
   };
 
-  var originalConsole = global.console;
 
   function setupConsole(global) {
+
+    var originalConsole = global.console;
 
     if (!global.nativeLoggingHook) {
       return;
@@ -140,19 +141,13 @@
     // If available, also call the original `console` method since that is sometimes useful
     // Ex. On OS X, this will let you see rich output to the Safari REPL console
     if (originalConsole) {
-      for (var methodName in global.console) {
-        if (global.console.hasOwnProperty(methodName)) {
-          if (originalConsole[methodName]) {
-            (function () {
-              var nativeMethod = global.console[methodName];
-              global.console[methodName] = function () {
-                originalConsole[methodName].apply(originalConsole, arguments);
-                nativeMethod.apply(global.console, arguments);
-              };
-            })();
-          }
-        }
-      }
+      Object.keys(global.console).forEach((methodName) => {
+        var nativeMethod = global.console[methodName];
+        global.console[methodName] = function () {
+          originalConsole[methodName].apply(originalConsole, arguments);
+          nativeMethod.apply(global.console, arguments);
+        };
+      });
     }
 
   }
