@@ -510,7 +510,7 @@ var Navigator = React.createClass({
       this.state.fromIndex = this.state.presentedIndex;
       this.state.toIndex = this.state.presentedIndex;
     }
-    this._hideOtherScenes(presentedIndex);
+    this._hideOtherScenes(this.state.presentedIndex);
   },
 
   _transitionToToIndexWithVelocity: function(v) {
