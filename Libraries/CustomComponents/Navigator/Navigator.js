@@ -28,7 +28,6 @@
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var BackAndroid = require('BackAndroid');
-var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 var NavigatorInterceptor = require('NavigatorInterceptor');
@@ -52,9 +51,6 @@ var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
 
-var SCREEN_WIDTH = Dimensions.get('window').width;
-var SCREEN_HEIGHT = Dimensions.get('window').height;
-
 var OFF_SCREEN = {style: {opacity: 0}};
 
 var __uid = 0;
@@ -69,8 +65,11 @@ var styles = StyleSheet.create({
     overflow: 'hidden',
   },
   defaultSceneStyle: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
   },
   presentNavItem: {
     position: 'absolute',
