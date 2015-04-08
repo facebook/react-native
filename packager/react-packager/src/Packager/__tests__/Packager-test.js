@@ -43,14 +43,21 @@ describe('Packager', function() {
       };
     });
 
-    var packager = new Packager({projectRoots: []});
+    var packager = new Packager({projectRoots: ['/root']});
     var modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
       {id: 'bar', path: '/root/bar.js', dependencies: []},
-      { id: 'image!img',
+      {
+        id: 'image!img',
         path: '/root/img/img.png',
-        isAsset: true,
+        isAsset_DEPRECATED: true,
         dependencies: [],
+      },
+      {
+        id: 'new_image.png',
+        path: '/root/img/new_image.png',
+        isAsset: true,
+        dependencies: []
       }
     ];
 
@@ -74,6 +81,10 @@ describe('Packager', function() {
       return 'lol ' + code + ' lol';
     });
 
+    require('image-size').mockImpl(function(path, cb) {
+      cb(null, { width: 50, height: 100 });
+    });
+
     return packager.package('/root/foo.js', true, 'source_map_url')
       .then(function(p) {
         expect(p.addModule.mock.calls[0]).toEqual([
@@ -94,6 +105,24 @@ describe('Packager', function() {
             JSON.stringify({ uri: 'img', isStatic: true}) +
             ';',
           '/root/img/img.png'
+        ]);
+
+        var imgModule = {
+          isStatic: true,
+          path: '/root/img/new_image.png',
+          uri: 'img/new_image.png',
+          width: 50,
+          height: 100,
+        };
+
+        expect(p.addModule.mock.calls[3]).toEqual([
+          'lol module.exports = ' +
+            JSON.stringify(imgModule) +
+            '; lol',
+          'module.exports = ' +
+            JSON.stringify(imgModule) +
+            ';',
+          '/root/img/new_image.png'
         ]);
 
         expect(p.finalize.mock.calls[0]).toEqual([

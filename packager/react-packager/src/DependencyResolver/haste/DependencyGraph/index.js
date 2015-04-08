@@ -596,7 +596,7 @@ DependecyGraph.prototype._processAsset_DEPRECATED = function(file) {
     this._assetMap_DEPRECATED[name] = new ModuleDescriptor({
       id: 'image!' + name,
       path: path.resolve(file),
-      isAsset: true,
+      isAsset_DEPRECATED: true,
       dependencies: [],
     });
   }
