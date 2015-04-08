@@ -88,7 +88,7 @@ var styles = StyleSheet.create({
   },
   transitioner: {
     flex: 1,
-    backgroundColor: '#555555',
+    backgroundColor: 'transparent',
     overflow: 'hidden',
   }
 });
