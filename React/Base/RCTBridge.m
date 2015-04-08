@@ -514,6 +514,7 @@ static NSDictionary *RCTLocalModulesConfig()
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (instancetype)initWithBundlePath:(NSString *)bundlePath
+                  withDebugEnabled:(BOOL)debugEnabled
                     moduleProvider:(RCTBridgeModuleProviderBlock)block
                      launchOptions:(NSDictionary *)launchOptions
 {
@@ -521,6 +522,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _bundlePath = bundlePath;
     _moduleProvider = block;
     _launchOptions = launchOptions;
+#if DEBUG
+    if (debugEnabled == YES) {
+      self.executorClass = NSClassFromString(@"RCTWebSocketExecutor");
+    }
+#endif
     [self setUp];
     [self bindKeys];
   }

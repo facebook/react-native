@@ -42,6 +42,7 @@
   // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+                                                withDebugEnabled:NO  // YES to enable debugging upon app launch
                                                       moduleName:@"UIExplorerApp"
                                                    launchOptions:launchOptions];
 

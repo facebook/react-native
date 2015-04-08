@@ -31,6 +31,7 @@ extern NSString *const RCTReloadViewsNotification;
  * to all the instances.
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                 withDebugEnabled:(BOOL)debugginEnable
                        moduleName:(NSString *)moduleName
                     launchOptions:(NSDictionary *)launchOptions;
 
@@ -72,6 +73,11 @@ extern NSString *const RCTReloadViewsNotification;
  */
 - (void)reload;
 + (void)reloadAll;
+
+/**
+ * Method to allow programmatic debug enable upon boot of the application
+ */
+- (void)toggleDebug;
 
 @property (nonatomic, weak) UIViewController *backingViewController;
 
