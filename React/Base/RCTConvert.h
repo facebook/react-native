@@ -82,14 +82,26 @@
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style;
 
-+ (NSArray *)NSStringArray:(id)json;
-+ (NSArray *)NSDictionaryArray:(id)json;
-+ (NSArray *)NSURLArray:(id)json;
-+ (NSArray *)NSNumberArray:(id)json;
-+ (NSArray *)UIColorArray:(id)json;
-+ (NSArray *)CGColorArray:(id)json;
+typedef NSArray NSStringArray;
++ (NSStringArray *)NSStringArray:(id)json;
 
-+ (BOOL)css_overflow:(id)json;
+typedef NSArray NSDictionaryArray;
++ (NSDictionaryArray *)NSDictionaryArray:(id)json;
+
+typedef NSArray NSURLArray;
++ (NSURLArray *)NSURLArray:(id)json;
+
+typedef NSArray NSNumberArray;
++ (NSNumberArray *)NSNumberArray:(id)json;
+
+typedef NSArray UIColorArray;
++ (UIColorArray *)UIColorArray:(id)json;
+
+typedef NSArray CGColorArray;
++ (CGColorArray *)CGColorArray:(id)json;
+
+typedef BOOL css_overflow;
++ (css_overflow)css_overflow:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;
 + (css_justify_t)css_justify_t:(id)json;
 + (css_align_t)css_align_t:(id)json;
@@ -195,7 +207,7 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                         \
-+ (NSArray *)type##Array:(id)json                         \
++ (type##Array *)type##Array:(id)json                     \
 {                                                         \
   NSMutableArray *values = [[NSMutableArray alloc] init]; \
   for (id jsonValue in [self NSArray:json]) {             \

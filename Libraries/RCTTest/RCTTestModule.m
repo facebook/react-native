@@ -32,10 +32,8 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (void)verifySnapshot:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   if (!_snapshotController) {
     RCTLogWarn(@"No snapshot controller configured.");
     callback(@[]);
@@ -55,10 +53,8 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)markTestCompleted
+RCT_EXPORT_METHOD(markTestCompleted)
 {
-  RCT_EXPORT();
-
   dispatch_async(dispatch_get_main_queue(), ^{
     _done = YES;
   });

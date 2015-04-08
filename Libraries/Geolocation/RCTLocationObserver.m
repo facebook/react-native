@@ -153,10 +153,8 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Public API
 
-- (void)startObserving:(NSDictionary *)optionsJSON
+RCT_EXPORT_METHOD(startObserving:(NSDictionary *)optionsJSON)
 {
-  RCT_EXPORT();
-
   dispatch_async(dispatch_get_main_queue(), ^{
 
     // Select best options
@@ -172,10 +170,8 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)stopObserving
+RCT_EXPORT_METHOD(stopObserving)
 {
-  RCT_EXPORT();
-
   dispatch_async(dispatch_get_main_queue(), ^{
 
     // Stop observing
@@ -189,12 +185,10 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)getCurrentPosition:(NSDictionary *)optionsJSON
-       withSuccessCallback:(RCTResponseSenderBlock)successBlock
-             errorCallback:(RCTResponseSenderBlock)errorBlock
+RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary *)optionsJSON
+                  withSuccessCallback:(RCTResponseSenderBlock)successBlock
+                  errorCallback:(RCTResponseSenderBlock)errorBlock)
 {
-  RCT_EXPORT();
-
   if (!successBlock) {
     RCTLogError(@"%@.getCurrentPosition called with nil success parameter.", [self class]);
     return;

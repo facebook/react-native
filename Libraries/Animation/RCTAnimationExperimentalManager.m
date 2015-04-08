@@ -63,10 +63,13 @@ RCT_EXPORT_MODULE()
   };
 }
 
-- (void)startAnimationForTag:(NSNumber *)reactTag animationTag:(NSNumber *)animationTag duration:(double)duration delay:(double)delay easingSample:(NSArray *)easingSample properties:(NSDictionary *)properties
+RCT_EXPORT_METHOD(startAnimationForTag:(NSNumber *)reactTag
+                  animationTag:(NSNumber *)animationTag
+                  duration:(NSTimeInterval)duration
+                  delay:(NSTimeInterval)delay
+                  easingSample:(NSArray *)easingSample
+                  properties:(NSDictionary *)properties)
 {
-  RCT_EXPORT(startAnimation);
-
   __weak RCTAnimationExperimentalManager *weakSelf = self;
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTAnimationExperimentalManager *strongSelf = weakSelf;
@@ -165,8 +168,8 @@ RCT_EXPORT_MODULE()
       }
 
       CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:key];
-      animation.beginTime = CACurrentMediaTime() + delay / 1000.0;
-      animation.duration = duration / 1000.0;
+      animation.beginTime = CACurrentMediaTime() + delay;
+      animation.duration = duration;
       animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
       animation.values = sampledValues;
 
@@ -180,10 +183,8 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)stopAnimation:(NSNumber *)animationTag
+RCT_EXPORT_METHOD(stopAnimation:(NSNumber *)animationTag)
 {
-  RCT_EXPORT(stopAnimation);
-
   __weak RCTAnimationExperimentalManager *weakSelf = self;
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTAnimationExperimentalManager *strongSelf = weakSelf;
