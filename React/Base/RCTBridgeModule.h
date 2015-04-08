@@ -9,8 +9,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTJSMethodRegistrar.h"
-
 @class RCTBridge;
 
 /**
@@ -22,7 +20,7 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 /**
  * Provides the interface needed to register a bridge module.
  */
-@protocol RCTBridgeModule <RCTJSMethodRegistrar>
+@protocol RCTBridgeModule <NSObject>
 @optional
 
 /**
@@ -34,10 +32,14 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 @property (nonatomic, strong) RCTBridge *bridge;
 
 /**
- * The module name exposed to JS. If omitted, this will be inferred
- * automatically by using the native module's class name.
+ * Place this macro in your class implementation, to automatically register
+ * your module with the bridge when it loads. The optional js_name argument
+ * will be used as the JS module name. If omitted, the JS module name will
+ * match the Objective-C class name.
  */
-+ (NSString *)moduleName;
+#define RCT_EXPORT_MODULE(js_name) \
++ (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
+))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; } \
 
 /**
  * Place this macro inside the method body of any method you want to expose

@@ -14,6 +14,8 @@
 
 @implementation RCTTabBarManager
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 - (UIView *)view

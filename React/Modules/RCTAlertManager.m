@@ -23,6 +23,8 @@
   NSMutableArray *_alertButtonKeys;
 }
 
+RCT_EXPORT_MODULE()
+
 - (instancetype)init
 {
   if ((self = [super init])) {

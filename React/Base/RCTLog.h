@@ -42,8 +42,7 @@ typedef NS_ENUM(NSInteger, RCTLogLevel) {
 /**
  * A block signature to be used for custom logging functions. In most cases you
  * will want to pass these arguments to the RCTFormatLog function in order to
- * generate a string, or use the RCTSimpleLogFunction() constructor to register
- * a simple function that does not use all of the arguments.
+ * generate a string.
  */
 typedef void (^RCTLogFunction)(
   RCTLogLevel level,
@@ -64,13 +63,6 @@ NSString *RCTFormatLog(
   NSNumber *lineNumber,
   NSString *message
 );
-
-/**
- * A method to generate a log function from a block with a much simpler
- * template. The message passed to the simpler block is equivalent to the
- * output of the RCTFormatLog() function.
- */
-RCTLogFunction RCTSimpleLogFunction(void (^logFunction)(RCTLogLevel level, NSString *message));
 
 /**
  * The default logging function used by RCTLogXX.

@@ -14,6 +14,8 @@
 
 @implementation RCTSourceCode
 
+RCT_EXPORT_MODULE()
+
 - (void)getScriptText:(RCTResponseSenderBlock)successCallback failureCallback:(RCTResponseSenderBlock)failureCallback
 {
   RCT_EXPORT();

@@ -183,31 +183,6 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
   return NO;
 }
 
-void RCTEnumerateClasses(void (^block)(Class cls))
-{
-  static Class *classes;
-  static unsigned int classCount;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    classes = objc_copyClassList(&classCount);
-  });
-
-  for (unsigned int i = 0; i < classCount; i++)
-  {
-    Class cls = classes[i];
-    Class superclass = cls;
-    while (superclass)
-    {
-      if (class_conformsToProtocol(superclass, @protocol(NSObject)))
-      {
-        block(cls);
-        break;
-      }
-      superclass = class_getSuperclass(superclass);
-    }
-  }
-}
-
 NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
 {
   if (toStringify) {

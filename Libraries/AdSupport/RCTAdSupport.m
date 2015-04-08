@@ -11,6 +11,8 @@
 
 @implementation RCTAdSupport
 
+RCT_EXPORT_MODULE()
+
 - (void)getAdvertisingId:(RCTResponseSenderBlock)callback withErrorCallback:(RCTResponseSenderBlock)errorCallback
 {
   RCT_EXPORT();

@@ -88,6 +88,8 @@ static dispatch_queue_t RCTFileQueue(void)
   NSString *_storageDirectory;
 }
 
+RCT_EXPORT_MODULE()
+
 - (NSString *)_filePathForKey:(NSString *)key
 {
   NSString *safeFileName = RCTMD5Hash(key);

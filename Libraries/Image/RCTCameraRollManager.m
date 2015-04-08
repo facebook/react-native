@@ -19,6 +19,8 @@
 
 @implementation RCTCameraRollManager
 
+RCT_EXPORT_MODULE()
+
 - (void)saveImageWithTag:(NSString *)imageTag successCallback:(RCTResponseSenderBlock)successCallback errorCallback:(RCTResponseSenderBlock)errorCallback
 {
   RCT_EXPORT();

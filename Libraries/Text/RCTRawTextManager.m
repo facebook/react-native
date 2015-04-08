@@ -13,6 +13,8 @@
 
 @implementation RCTRawTextManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return nil;

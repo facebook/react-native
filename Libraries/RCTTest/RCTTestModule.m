@@ -13,11 +13,14 @@
 #import "RCTAssert.h"
 #import "RCTLog.h"
 
-@implementation RCTTestModule {
+@implementation RCTTestModule
+{
   __weak FBSnapshotTestController *_snapshotController;
   __weak UIView *_view;
   NSMutableDictionary *_snapshotCounter;
 }
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)initWithSnapshotController:(FBSnapshotTestController *)controller view:(UIView *)view
 {

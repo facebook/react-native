@@ -99,6 +99,8 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
   RCTLocationOptions _observerOptions;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 #pragma mark - Lifecycle

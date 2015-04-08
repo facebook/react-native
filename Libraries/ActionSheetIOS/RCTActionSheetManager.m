@@ -15,9 +15,12 @@
 
 @end
 
-@implementation RCTActionSheetManager {
+@implementation RCTActionSheetManager
+{
   NSMutableDictionary *_callbacks;
 }
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {

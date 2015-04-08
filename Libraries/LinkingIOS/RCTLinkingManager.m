@@ -16,6 +16,8 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 @implementation RCTLinkingManager
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 - (instancetype)init

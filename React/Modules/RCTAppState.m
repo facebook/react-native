@@ -33,6 +33,8 @@ static NSString *RCTCurrentAppBackgroundState()
   NSString *_lastKnownState;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 #pragma mark - Lifecycle

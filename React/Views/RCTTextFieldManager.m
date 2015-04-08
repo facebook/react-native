@@ -17,6 +17,8 @@
 
 @implementation RCTTextFieldManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];

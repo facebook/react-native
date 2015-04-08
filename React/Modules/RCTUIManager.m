@@ -195,6 +195,8 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   NSUInteger _rootTag;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 /**
@@ -209,6 +211,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 static NSString *RCTViewNameForModuleName(NSString *moduleName)
 {
   NSString *name = moduleName;
+  RCTCAssert(name.length, @"Invalid moduleName '%@'", moduleName);
   if ([name hasSuffix:@"Manager"]) {
     name = [name substringToIndex:name.length - @"Manager".length];
   }
@@ -797,7 +800,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   RCT_EXPORT();
 
   RCTViewManager *viewManager = _viewManagerRegistry[reactTag];
-  NSString *viewName = RCTViewNameForModuleName([[viewManager class] moduleName]);
+  NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([viewManager class]));
 
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], viewManager);
@@ -1417,7 +1420,8 @@ static void RCTMeasureLayout(RCTShadowView *view,
   if (config[@"delete"] != nil) {
     RCTLogError(@"LayoutAnimation only supports create and update right now. Config: %@", config);
   }
-  _nextLayoutAnimation = [[RCTLayoutAnimation alloc] initWithDictionary:config callback:callback];
+  _nextLayoutAnimation = [[RCTLayoutAnimation alloc] initWithDictionary:config
+                                                               callback:callback];
 }
 
 - (void)startOrResetInteractionTiming
@@ -1449,7 +1453,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
         timingData[reactTag.stringValue] = [rootView endAndResetInteractionTiming];
       }
     }
-    onSuccess(@[ timingData ]);
+    onSuccess(@[timingData]);
   }];
 }
 
@@ -1466,7 +1470,7 @@ static UIView *_jsResponder;
 
 - (RCTUIManager *)uiManager
 {
-  return self.modules[NSStringFromClass([RCTUIManager class])];
+  return self.modules[RCTBridgeModuleNameForClass([RCTUIManager class])];
 }
 
 @end

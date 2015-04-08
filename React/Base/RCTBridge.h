@@ -26,8 +26,6 @@
  */
 typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
 
-extern NSString *const RCTReloadBridge;
-
 /**
  * This function returns the module name for a given class.
  */
@@ -37,8 +35,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
-
-@property (nonatomic, assign, readonly, getter=isLoaded) BOOL loaded;
 
 /**
  * The designated initializer. This creates a new bridge on top of the specified
@@ -55,16 +51,31 @@ extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 /**
  * This method is used to call functions in the JavaScript application context.
  * It is primarily intended for use by modules that require two-way communication
- * with the JavaScript code.
+ * with the JavaScript code. Method should be regsitered using the
+ * RCT_IMPORT_METHOD macro below. Attempting to call a method that has not been
+ * registered will result in an error.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
+
+/**
+ * This macro is used to register a JS method to be called via the enqueueJSCall
+ * bridge method. You should place this macro inside any file that uses the
+ * imported method. If a method has already been registered by another class, it
+ * is not necessary to register it again, but it is good practice. Registering
+ * the same method more than once will not result in an error.
+ */
+#define RCT_IMPORT_METHOD(module, method) \
+__attribute__((used, section("__DATA,RCTImport"))) \
+static const char *__rct_import_##module##_##method##__ = #module"."#method;
 
 /**
  * This method is used to execute a new application script. It is called
  * internally whenever a JS application bundle is loaded/reloaded, but should
  * probably not be used at any other time.
  */
-- (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete;
+- (void)enqueueApplicationScript:(NSString *)script
+                             url:(NSURL *)url
+                      onComplete:(RCTJavaScriptCompleteBlock)onComplete;
 
 @property (nonatomic, strong) Class executorClass;
 
@@ -86,14 +97,19 @@ extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  */
 @property (nonatomic, readonly) dispatch_queue_t shadowQueue;
 
+/**
+ * The launch options that were used to initialize the bridge.
+ */
 @property (nonatomic, copy, readonly) NSDictionary *launchOptions;
 
+/**
+ * Use this to check if the bridge is currently loading.
+ */
+@property (nonatomic, readonly, getter=isLoaded) BOOL loaded;
 
 /**
- * Method to check that a valid executor exists with which to log
+ * Reload the bundle and reset executor and modules.
  */
-+ (BOOL)hasValidJSExecutor;
-
 - (void)reload;
 
 @end

@@ -16,6 +16,8 @@
   __weak id<RCTExceptionsManagerDelegate> _delegate;
 }
 
+RCT_EXPORT_MODULE()
+
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
 {
   if ((self = [super init])) {

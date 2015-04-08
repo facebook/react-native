@@ -61,12 +61,11 @@
   id _updateTimer;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
-+ (NSArray *)JSMethods
-{
-  return @[@"RCTJSTimers.callTimers"];
-}
+RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
 - (instancetype)init
 {
