@@ -31,7 +31,7 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
  * will be set automatically by the bridge when it initializes the module.
 * To implement this in your module, just add @synthesize bridge = _bridge;
  */
-@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, strong) RCTBridge *bridge;
 
 /**
  * The module name exposed to JS. If omitted, this will be inferred

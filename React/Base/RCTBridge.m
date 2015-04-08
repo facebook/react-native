@@ -610,6 +610,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                                                               selector:@selector(reload)
                                                                   name:RCTReloadNotification
                                                                 object:nil];
+                     ;
                    }
                  }];
   }
@@ -618,8 +619,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 - (void)bindKeys
 {
 #if TARGET_IPHONE_SIMULATOR
-  __weak RCTBridge *weakSelf = self;
-
   // Workaround around the first cmd+r not working: http://openradar.appspot.com/19613391
   // You can register just the cmd key and do nothing. This will trigger the bug and cmd+r
   // will work like a charm!
@@ -628,33 +627,27 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                                                         action:^(UIKeyCommand *command) {
                                                           // Do nothing
                                                         }];
+
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          [weakSelf reload];
+                                                          [self reload];
                                                         }];
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"n"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          RCTBridge *strongSelf = weakSelf;
-                                                          if (!strongSelf) {
-                                                            return;
-                                                          }
-                                                          strongSelf->_executorClass = Nil;
-                                                          [strongSelf reload];
+                                                          _executorClass = Nil;
+                                                          [self reload];
                                                         }];
+
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          RCTBridge *strongSelf = weakSelf;
-                                                          if (!strongSelf) {
-                                                            return;
-                                                          }
-                                                          strongSelf->_executorClass = NSClassFromString(@"RCTWebSocketExecutor");
-                                                          if (!strongSelf->_executorClass) {
+                                                          _executorClass = NSClassFromString(@"RCTWebSocketExecutor");
+                                                          if (!_executorClass) {
                                                             RCTLogError(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
                                                           }
-                                                          [strongSelf reload];
+                                                          [self reload];
                                                         }];
 #endif
 }
@@ -669,7 +662,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)dealloc
 {
-  [self invalidate];
+  RCTAssert(!self.valid, @"must call -invalidate before -dealloc");
 }
 
 #pragma mark - RCTInvalidating
@@ -681,15 +674,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)invalidate
 {
-  if (!self.isValid && _modulesByID == nil) {
-    return;
-  }
-
-  if (![NSThread isMainThread]) {
-    [self performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
-    return;
-  }
-
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   // Wait for queued methods to finish
