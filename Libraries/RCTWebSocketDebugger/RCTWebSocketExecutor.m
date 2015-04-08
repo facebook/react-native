@@ -119,7 +119,9 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 
   [_jsQueue addOperationWithBlock:^{
     if (!self.valid) {
-      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{NSLocalizedDescriptionKey:@"socket closed"}];
+      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
+        NSLocalizedDescriptionKey: @"socket closed"
+      }];
       callback(error, nil);
       return;
     }

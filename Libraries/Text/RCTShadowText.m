@@ -20,9 +20,17 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 static css_dim_t RCTMeasure(void *context, float width)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
-  CGSize computedSize = [[shadowText attributedString] boundingRectWithSize:(CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX}
-                                                                    options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
-                                                                    context:nil].size;
+
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:[shadowText attributedString]];
+  [textStorage addLayoutManager:shadowText.layoutManager];
+
+  shadowText.textContainer.size = CGSizeMake(isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX);
+  shadowText.layoutManager.textStorage = textStorage;
+  [shadowText.layoutManager ensureLayoutForTextContainer:shadowText.textContainer];
+
+  CGSize computedSize = [shadowText.layoutManager usedRectForTextContainer:shadowText.textContainer].size;
+
+  [textStorage removeLayoutManager:shadowText.layoutManager];
 
   css_dim_t result;
   result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
@@ -30,8 +38,9 @@ static css_dim_t RCTMeasure(void *context, float width)
   return result;
 }
 
-@implementation RCTShadowText
-{
+@implementation RCTShadowText {
+  NSLayoutManager *_layoutManager;
+  NSTextContainer *_textContainer;
   NSAttributedString *_cachedAttributedString;
   UIFont *_font;
 }
@@ -41,7 +50,15 @@ static css_dim_t RCTMeasure(void *context, float width)
   if ((self = [super init])) {
     _fontSize = NAN;
     _isHighlighted = NO;
+
+    _textContainer = [[NSTextContainer alloc] init];
+    _textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
+    _textContainer.lineFragmentPadding = 0.0;
+
+    _layoutManager = [[NSLayoutManager alloc] init];
+    [_layoutManager addTextContainer:_textContainer];
   }
+
   return self;
 }
 
@@ -201,11 +218,31 @@ RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *);
 RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat);
 RCT_TEXT_PROPERTY(FontWeight, _fontWeight, NSString *);
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat);
-RCT_TEXT_PROPERTY(MaxNumberOfLines, _maxNumberOfLines, NSInteger);
 RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize);
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment);
-RCT_TEXT_PROPERTY(TruncationMode, _truncationMode, NSLineBreakMode);
 RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL);
 RCT_TEXT_PROPERTY(Font, _font, UIFont *);
+
+- (NSLineBreakMode)truncationMode
+{
+  return _textContainer.lineBreakMode;
+}
+
+- (void)setTruncationMode:(NSLineBreakMode)truncationMode
+{
+  _textContainer.lineBreakMode = truncationMode;
+  [self dirtyText];
+}
+
+- (NSUInteger)maximumNumberOfLines
+{
+  return _textContainer.maximumNumberOfLines;
+}
+
+- (void)setMaximumNumberOfLines:(NSUInteger)maximumNumberOfLines
+{
+  _textContainer.maximumNumberOfLines = maximumNumberOfLines;
+  [self dirtyText];
+}
 
 @end

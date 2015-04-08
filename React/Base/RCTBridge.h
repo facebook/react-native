@@ -29,6 +29,11 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
 extern NSString *const RCTReloadBridge;
 
 /**
+ * This function returns the module name for a given class.
+ */
+extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
+
+/**
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
@@ -80,14 +85,6 @@ extern NSString *const RCTReloadBridge;
  * queue.
  */
 @property (nonatomic, readonly) dispatch_queue_t shadowQueue;
-
-/**
- * Global logging function that will print to both xcode and JS debugger consoles.
- *
- * NOTE: Use via RCTLog* macros defined in RCTLog.h
- * TODO (#5906496): should log function be exposed here, or could it be a module?
- */
-+ (void)log:(NSArray *)objects level:(NSString *)level;
 
 @property (nonatomic, copy, readonly) NSDictionary *launchOptions;
 

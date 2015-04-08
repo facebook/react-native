@@ -17,6 +17,9 @@ extern NSString *const RCTReloadViewsNotification;
 
 @interface RCTRootView : UIView <RCTInvalidating>
 
+/**
+ * - Designated initializer -
+ */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName NS_DESIGNATED_INITIALIZER;
 
@@ -39,6 +42,10 @@ extern NSString *const RCTReloadViewsNotification;
  */
 @property (nonatomic, copy, readonly) NSString *moduleName;
 
+/**
+ * The bridge used by the root view. Bridges can be shared between multiple
+ * root views, so you can use this property to initialize another RCTRootView.
+ */
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 /**

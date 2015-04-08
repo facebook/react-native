@@ -29,16 +29,17 @@ var COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
 
 var BasicStorageExample = React.createClass({
   componentDidMount() {
-    AsyncStorage.getItem(STORAGE_KEY, (error, value) => {
-      if (error) {
-        this._appendMessage('AsyncStorage error: ' + error.message);
-      } else if (value !== null) {
-        this.setState({selectedValue: value});
-        this._appendMessage('Recovered selection from disk: ' + value);
-      } else {
-        this._appendMessage('Initialized with no selection on disk.');
-      }
-    });
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((value) => {
+        if (value !== null){
+          this.setState({selectedValue: value});
+          this._appendMessage('Recovered selection from disk: ' + value);
+        } else {
+          this._appendMessage('Initialized with no selection on disk.');
+        }
+      })
+      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
+      .done();
   },
   getInitialState() {
     return {
@@ -81,23 +82,17 @@ var BasicStorageExample = React.createClass({
 
   _onValueChange(selectedValue) {
     this.setState({selectedValue});
-    AsyncStorage.setItem(STORAGE_KEY, selectedValue, (error) => {
-      if (error) {
-        this._appendMessage('AsyncStorage error: ' + error.message);
-      } else {
-        this._appendMessage('Saved selection to disk: ' + selectedValue);
-      }
-    });
+    AsyncStorage.setItem(STORAGE_KEY, selectedValue)
+      .then(() => this._appendMessage('Saved selection to disk: ' + selectedValue))
+      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
+      .done();
   },
 
   _removeStorage() {
-    AsyncStorage.removeItem(STORAGE_KEY, (error) => {
-      if (error) {
-        this._appendMessage('AsyncStorage error: ' + error.message);
-      } else {
-        this._appendMessage('Selection removed from disk.');
-      }
-    });
+    AsyncStorage.removeItem(STORAGE_KEY)
+      .then(() => this._appendMessage('Selection removed from disk.'))
+      .catch((error) => { this._appendMessage('AsyncStorage error: ' + error.message) })
+      .done();
   },
 
   _appendMessage(message) {
