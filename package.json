@@ -39,6 +39,7 @@
     "start": "./packager/packager.sh"
   },
   "bin": {
+    "react-native": "local-cli/wrong-react-native.js",
     "react-native-start": "packager/packager.sh"
   },
   "dependencies": {
