@@ -4,7 +4,7 @@ title: Integration with Existing App
 layout: docs
 category: Guides
 permalink: docs/embedded-app.html
-next: activityindicatorios
+next: javascript-environment
 ---
 
 Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [CocoaPods](http://cocoapods.org/).
