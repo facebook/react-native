@@ -37,7 +37,7 @@
   // OPTION 2
   // Load from pre-bundled file on disk. To re-generate the static bundle, run
   //
-  // $ curl http://localhost:8081/Examples/Movies/MoviesApp.includeRequire.runModule.bundle -o main.jsbundle
+  // $ curl -4 http://localhost:8081/Examples/Movies/MoviesApp.includeRequire.runModule.bundle -o main.jsbundle
   //
   // and uncomment the next following line
   // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
