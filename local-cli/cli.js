@@ -44,7 +44,7 @@ function run() {
 }
 
 function init(root, projectName) {
-  spawn(path.resolve(__dirname, 'init.sh'), [projectName], {stdio:'inherit'});
+  spawn(path.resolve(__dirname, '../init.sh'), [projectName], {stdio:'inherit'});
 }
 
 if (require.main === module) {
