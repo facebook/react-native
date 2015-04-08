@@ -73,19 +73,29 @@ class Tile extends React.Component {
     if (tile.isNew()) {
       offset.opacity = 0;
     } else {
-      var point = [
-        animationPosition(tile.toColumn()),
-        animationPosition(tile.toRow()),
-      ];
-      AnimationExperimental.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {position: point});
+      var point = {
+        x: animationPosition(tile.toColumn()),
+        y: animationPosition(tile.toRow()),
+      };
+      AnimationExperimental.startAnimation({
+        node: this.refs['this'],
+        duration: 100,
+        easing: 'easeInOutQuad',
+        property: 'position',
+        toValue: point,
+      });
     }
-
     return offset;
   }
 
-
   componentDidMount() {
-    AnimationExperimental.startAnimation(this.refs['this'], 100, 0, 'easeInOutQuad', {opacity: 1});
+    AnimationExperimental.startAnimation({
+      node: this.refs['this'],
+      duration: 100,
+      easing: 'easeInOutQuad',
+      property: 'opacity',
+      toValue: 1,
+    });
   }
 
   render() {

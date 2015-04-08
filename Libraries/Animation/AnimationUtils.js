@@ -20,27 +20,27 @@
 type EasingFunction = (t: number) => number;
 
 var defaults = {
-  easeInQuad: function(t) {
+  easeInQuad: function(t: number): number {
     return t * t;
   },
-  easeOutQuad: function(t) {
+  easeOutQuad: function(t: number): number {
     return -t * (t - 2);
   },
-  easeInOutQuad: function(t) {
+  easeInOutQuad: function(t: number): number {
     t = t * 2;
     if (t < 1) {
       return 0.5 * t * t;
     }
     return -((t - 1) * (t - 3) - 1) / 2;
   },
-  easeInCubic: function(t) {
+  easeInCubic: function(t: number): number {
     return t * t * t;
   },
-  easeOutCubic: function(t) {
+  easeOutCubic: function(t: number): number {
     t -= 1;
     return t * t * t + 1;
   },
-  easeInOutCubic: function(t) {
+  easeInOutCubic: function(t: number): number {
     t *= 2;
     if (t < 1) {
       return 0.5 * t * t * t;
@@ -48,14 +48,14 @@ var defaults = {
     t -= 2;
     return (t * t * t + 2) / 2;
   },
-  easeInQuart: function(t) {
+  easeInQuart: function(t: number): number {
     return t * t * t * t;
   },
-  easeOutQuart: function(t) {
+  easeOutQuart: function(t: number): number {
     t -= 1;
     return -(t * t * t * t - 1);
   },
-  easeInOutQuart: function(t) {
+  easeInOutQuart: function(t: number): number {
     t *= 2;
     if (t < 1) {
       return 0.5 * t * t * t * t;
@@ -63,14 +63,14 @@ var defaults = {
     t -= 2;
     return -(t * t * t * t - 2) / 2;
   },
-  easeInQuint: function(t) {
+  easeInQuint: function(t: number): number {
     return t * t * t * t * t;
   },
-  easeOutQuint: function(t) {
+  easeOutQuint: function(t: number): number {
     t -= 1;
     return t * t * t * t * t + 1;
   },
-  easeInOutQuint: function(t) {
+  easeInOutQuint: function(t: number): number {
     t *= 2;
     if (t < 1) {
       return (t * t * t * t * t) / 2;
@@ -78,22 +78,22 @@ var defaults = {
     t -= 2;
     return (t * t * t * t * t + 2) / 2;
   },
-  easeInSine: function(t) {
+  easeInSine: function(t: number): number {
     return -Math.cos(t * (Math.PI / 2)) + 1;
   },
-  easeOutSine: function(t) {
+  easeOutSine: function(t: number): number {
     return Math.sin(t * (Math.PI / 2));
   },
-  easeInOutSine: function(t) {
+  easeInOutSine: function(t: number): number {
     return -(Math.cos(Math.PI * t) - 1) / 2;
   },
-  easeInExpo: function(t) {
+  easeInExpo: function(t: number): number {
     return (t === 0) ? 0 : Math.pow(2, 10 * (t - 1));
   },
-  easeOutExpo: function(t) {
+  easeOutExpo: function(t: number): number {
     return (t === 1) ? 1 : (-Math.pow(2, -10 * t) + 1);
   },
-  easeInOutExpo: function(t) {
+  easeInOutExpo: function(t: number): number {
     if (t === 0) {
       return 0;
     }
@@ -106,14 +106,14 @@ var defaults = {
     }
     return (-Math.pow(2, -10 * (t - 1)) + 2) / 2;
   },
-  easeInCirc: function(t) {
+  easeInCirc: function(t: number): number {
     return -(Math.sqrt(1 - t * t) - 1);
   },
-  easeOutCirc: function(t) {
+  easeOutCirc: function(t: number): number {
     t -= 1;
     return Math.sqrt(1 - t * t);
   },
-  easeInOutCirc: function(t) {
+  easeInOutCirc: function(t: number): number {
     t *= 2;
     if (t < 1) {
       return -(Math.sqrt(1 - t * t) - 1) / 2;
@@ -121,7 +121,7 @@ var defaults = {
     t -= 2;
     return (Math.sqrt(1 - t * t) + 1) / 2;
   },
-  easeInElastic: function(t) {
+  easeInElastic: function(t: number): number {
     var s = 1.70158;
     var p = 0.3;
     if (t === 0) {
@@ -134,7 +134,7 @@ var defaults = {
     t -= 1;
     return -(Math.pow(2, 10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
   },
-  easeOutElastic: function(t) {
+  easeOutElastic: function(t: number): number {
     var s = 1.70158;
     var p = 0.3;
     if (t === 0) {
@@ -146,7 +146,7 @@ var defaults = {
     var s = p / (2 * Math.PI) * Math.asin(1);
     return Math.pow(2, -10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) + 1;
   },
-  easeInOutElastic: function(t) {
+  easeInOutElastic: function(t: number): number {
     var s = 1.70158;
     var p = 0.3 * 1.5;
     if (t === 0) {
@@ -164,16 +164,16 @@ var defaults = {
     t -= 1;
     return Math.pow(2, -10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) / 2 + 1;
   },
-  easeInBack: function(t) {
+  easeInBack: function(t: number): number {
     var s = 1.70158;
     return t * t * ((s + 1) * t - s);
   },
-  easeOutBack: function(t) {
+  easeOutBack: function(t: number): number {
     var s = 1.70158;
     t -= 1;
     return (t * t * ((s + 1) * t + s) + 1);
   },
-  easeInOutBack: function(t) {
+  easeInOutBack: function(t: number): number {
     var s = 1.70158 * 1.525;
     t *= 2;
     if (t < 1) {
@@ -182,10 +182,10 @@ var defaults = {
     t -= 2;
     return (t * t * ((s + 1) * t + s) + 2) / 2;
   },
-  easeInBounce: function(t) {
+  easeInBounce: function(t: number): number {
     return 1 - this.easeOutBounce(1 - t);
   },
-  easeOutBounce: function(t) {
+  easeOutBounce: function(t: number): number {
     if (t < (1 / 2.75)) {
       return 7.5625 * t * t;
     } else if (t < (2 / 2.75)) {
@@ -199,7 +199,7 @@ var defaults = {
       return 7.5625 * t * t + 0.984375;
     }
   },
-  easeInOutBounce: function(t) {
+  easeInOutBounce: function(t: number): number {
     if (t < 0.5) {
       return this.easeInBounce(t * 2) / 2;
     }
@@ -234,4 +234,6 @@ module.exports = {
 
     return samples;
   },
+
+  Defaults: defaults,
 };
