@@ -28,7 +28,7 @@ function run() {
   switch (args[0]) {
   case 'start':
     spawn('sh', [
-      path.resolve(__dirname, 'packager', 'packager.sh'),
+      path.resolve(__dirname, '../packager', 'packager.sh'),
       '--projectRoots',
       process.cwd(),
     ], {stdio: 'inherit'});
