@@ -167,12 +167,13 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (void)invalidate
 {
-  if ([NSThread currentThread] != _javaScriptThread) {
-    // Yes, block until done. If we're getting called right before dealloc, it's the only safe option.
-    [self performSelector:@selector(invalidate) onThread:_javaScriptThread withObject:nil waitUntilDone:YES];
-  } else if (_context != NULL) {
-    JSGlobalContextRelease(_context);
-    _context = NULL;
+  if (self.isValid) {
+    if ([NSThread currentThread] != _javaScriptThread) {
+      [self performSelector:@selector(invalidate) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
+    } else {
+      JSGlobalContextRelease(_context);
+      _context = NULL;
+    }
   }
 }
 
