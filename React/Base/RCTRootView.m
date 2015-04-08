@@ -162,13 +162,8 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
   }
 }
 
-+ (NSArray *)JSMethods
-{
-  return @[
-    @"AppRegistry.runApplication",
-    @"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-  ];
-}
+RCT_IMPORT_METHOD(AppRegistry, runApplication)
+RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 
 - (void)bundleFinishedLoading
 {
@@ -176,9 +171,9 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
     _registered = YES;
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
-                                    @"rootTag": _contentView.reactTag,
-                                    @"initialProps": self.initialProperties ?: @{},
-                                    };
+      @"rootTag": _contentView.reactTag,
+      @"initialProps": self.initialProperties ?: @{},
+    };
     [_bridge.uiManager registerRootView:_contentView];
     [_bridge enqueueJSCall:@"AppRegistry.runApplication"
                       args:@[moduleName, appParameters]];

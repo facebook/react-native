@@ -15,6 +15,8 @@
 
 @implementation RCTDataManager
 
+RCT_EXPORT_MODULE()
+
 /**
  * Executes a network request.
  * The responseSender block won't be called on same thread as called.

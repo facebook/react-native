@@ -25,6 +25,8 @@
   RCTSparseArray *_animationRegistry; // Main thread only; animation tag -> view tag
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 - (instancetype)init

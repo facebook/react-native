@@ -39,11 +39,32 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldFlushDateMillis
 };
 
-NSString *const RCTReloadBridge = @"RCTReloadBridge";
+#ifdef __LP64__
+typedef uint64_t RCTHeaderValue;
+typedef struct section_64 RCTHeaderSection;
+#define RCTGetSectByNameFromHeader getsectbynamefromheader_64
+#else
+typedef uint32_t RCTHeaderValue;
+typedef struct section RCTHeaderSection;
+#define RCTGetSectByNameFromHeader getsectbynamefromheader
+#endif
 
+/**
+ * This function returns the module name for a given class.
+ */
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
-  return [cls respondsToSelector:@selector(moduleName)] ? [cls moduleName] : NSStringFromClass(cls);
+  NSString *name = nil;
+  if ([cls respondsToSelector:@selector(moduleName)]) {
+    name = [cls valueForKey:@"moduleName"];
+  }
+  if ([name length] == 0) {
+    name = NSStringFromClass(cls);
+  }
+  if ([name hasPrefix:@"RK"]) {
+    name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
+  }
+  return name;
 }
 
 /**
@@ -57,11 +78,22 @@ static NSArray *RCTJSMethods(void)
   dispatch_once(&onceToken, ^{
     NSMutableSet *uniqueMethods = [NSMutableSet set];
 
-    RCTEnumerateClasses(^(__unsafe_unretained Class cls) {
-      if (RCTClassOverridesClassMethod(cls, @selector(JSMethods))) {
-        [uniqueMethods addObjectsFromArray:[cls JSMethods]];
+    Dl_info info;
+    dladdr(&RCTJSMethods, &info);
+
+    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
+    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTImport");
+
+    if (section) {
+      for (RCTHeaderValue addr = section->offset;
+           addr < section->offset + section->size;
+           addr += sizeof(const char **)) {
+
+        // Get data entry
+        NSString *entry = @(*(const char **)(mach_header + addr));
+        [uniqueMethods addObject:entry];
       }
-    });
+    }
 
     JSMethods = [uniqueMethods allObjects];
   });
@@ -70,35 +102,85 @@ static NSArray *RCTJSMethods(void)
 }
 
 /**
- * This function scans all classes available at runtime and returns an array
- * of all classes that implement the RTCBridgeModule protocol.
+ * This function scans all exported modules available at runtime and returns an
+ * array. As a backup, it also scans all classes that implement the
+ * RTCBridgeModule protocol to ensure they've been exported. This scanning
+ * functionality is disabled in release mode to improve startup performance.
  */
 static NSArray *RCTModuleNamesByID;
+static NSArray *RCTModuleClassesByID;
 static NSArray *RCTBridgeModuleClassesByModuleID(void)
 {
-  static NSArray *modules;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    modules = [NSMutableArray array];
+
     RCTModuleNamesByID = [NSMutableArray array];
+    RCTModuleClassesByID = [NSMutableArray array];
 
-    RCTEnumerateClasses(^(__unsafe_unretained Class cls) {
-      if ([cls conformsToProtocol:@protocol(RCTBridgeModule)]) {
+    Dl_info info;
+    dladdr(&RCTBridgeModuleClassesByModuleID, &info);
 
-        // Add module
-        [(NSMutableArray *)modules addObject:cls];
+    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
+    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExportModule");
 
-        // Add module name
-        NSString *moduleName = RCTBridgeModuleNameForClass(cls);
-        [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
+    if (section) {
+      for (RCTHeaderValue addr = section->offset;
+           addr < section->offset + section->size;
+           addr += sizeof(const char **)) {
+
+        // Get data entry
+        NSString *entry = @(*(const char **)(mach_header + addr));
+        NSArray *parts = [[entry substringWithRange:(NSRange){2, entry.length - 3}] componentsSeparatedByString:@" "];
+
+        // Parse class name
+        NSString *moduleClassName = parts[0];
+        NSRange categoryRange = [moduleClassName rangeOfString:@"("];
+        if (categoryRange.length) {
+          moduleClassName = [moduleClassName substringToIndex:categoryRange.location];
+        }
+
+        // Get class
+        Class cls = NSClassFromString(moduleClassName);
+        RCTCAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
+                   @"%@ does not conform to the RCTBridgeModule protocol",
+                   NSStringFromClass(cls));
+
+        // Register module
+        [(NSMutableArray *)RCTModuleNamesByID addObject:RCTBridgeModuleNameForClass(cls)];
+        [(NSMutableArray *)RCTModuleClassesByID addObject:cls];
       }
-    });
+    }
 
-    modules = [modules copy];
-    RCTModuleNamesByID = [RCTModuleNamesByID copy];
+#if DEBUG
+
+    // We may be able to get rid of this check in future, once people
+    // get used to the new registration system. That would potentially
+    // allow you to create modules that are not automatically registered
+
+    static unsigned int classCount;
+    Class *classes = objc_copyClassList(&classCount);
+    for (unsigned int i = 0; i < classCount; i++)
+    {
+      Class cls = classes[i];
+      Class superclass = cls;
+      while (superclass)
+      {
+        if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
+        {
+          if (![RCTModuleClassesByID containsObject:cls]) {
+            RCTLogError(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", NSStringFromClass(cls));
+          }
+          break;
+        }
+        superclass = class_getSuperclass(superclass);
+      }
+    }
+
+#endif
+
   });
 
-  return modules;
+  return RCTModuleClassesByID;
 }
 
 @interface RCTBridge ()
@@ -137,13 +219,12 @@ static Class _globalExecutorClass;
   if ((self = [super init])) {
 
     _methodName = methodName;
-    NSArray *parts = [[methodName substringWithRange:NSMakeRange(2, methodName.length - 3)] componentsSeparatedByString:@" "];
+    NSArray *parts = [[methodName substringWithRange:(NSRange){2, methodName.length - 3}] componentsSeparatedByString:@" "];
 
     // Parse class and method
     _moduleClassName = parts[0];
     NSRange categoryRange = [_moduleClassName rangeOfString:@"("];
-    if (categoryRange.length)
-    {
+    if (categoryRange.length) {
       _moduleClassName = [_moduleClassName substringToIndex:categoryRange.location];
     }
 
@@ -308,18 +389,8 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
     Dl_info info;
     dladdr(&RCTExportedMethodsByModuleID, &info);
 
-#ifdef __LP64__
-    typedef uint64_t RCTExportValue;
-    typedef struct section_64 RCTExportSection;
-#define RCTGetSectByNameFromHeader getsectbynamefromheader_64
-#else
-    typedef uint32_t RCTExportValue;
-    typedef struct section RCTExportSection;
-#define RCTGetSectByNameFromHeader getsectbynamefromheader
-#endif
-
-    const RCTExportValue mach_header = (RCTExportValue)info.dli_fbase;
-    const RCTExportSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExport");
+    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
+    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExport");
 
     if (section == NULL) {
       return;
@@ -328,7 +399,7 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
     NSArray *classes = RCTBridgeModuleClassesByModuleID();
     NSMutableDictionary *methodsByModuleClassName = [NSMutableDictionary dictionaryWithCapacity:[classes count]];
 
-    for (RCTExportValue addr = section->offset;
+    for (RCTHeaderValue addr = section->offset;
          addr < section->offset + section->size;
          addr += sizeof(const char **) * 2) {
 
@@ -593,31 +664,34 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _loaded = YES;
   } else if (_bundlePath != nil) { // Allow testing without a script
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
-    [loader loadBundleAtURL:[NSURL URLWithString:_bundlePath]
-                 onComplete:^(NSError *error) {
-                   _loaded = YES;
-                   if (error != nil) {
-                     NSArray *stack = [[error userInfo] objectForKey:@"stack"];
-                     if (stack) {
-                       [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withStack:stack];
-                     } else {
-                       [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withDetails:[error localizedFailureReason]];
-                     }
-                   } else {
-                     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                                         object:self];
-                   }
-                   [[NSNotificationCenter defaultCenter] addObserver:self
-                                                            selector:@selector(reload)
-                                                                name:RCTReloadNotification
-                                                              object:nil];
-                 }];
+    [loader loadBundleAtURL:[NSURL URLWithString:_bundlePath] onComplete:^(NSError *error) {
+      _loaded = YES;
+      if (error != nil) {
+        NSArray *stack = [[error userInfo] objectForKey:@"stack"];
+        if (stack) {
+          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
+                                             withStack:stack];
+        } else {
+          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
+                                           withDetails:[error localizedFailureReason]];
+        }
+      } else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                           object:self];
+      }
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                              selector:@selector(reload)
+                                                  name:RCTReloadNotification
+                                                object:nil];
+    }];
   }
 }
 
 - (void)bindKeys
 {
 #if TARGET_IPHONE_SIMULATOR
+  __weak RCTBridge *weakSelf = self;
+
   // Workaround around the first cmd+r not working: http://openradar.appspot.com/19613391
   // You can register just the cmd key and do nothing. This will trigger the bug and cmd+r
   // will work like a charm!
@@ -626,30 +700,37 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                                                         action:^(UIKeyCommand *command) {
                                                           // Do nothing
                                                         }];
-
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          [self reload];
+                                                          [weakSelf reload];
                                                         }];
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"n"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          _executorClass = Nil;
-                                                          [self reload];
+                                                          RCTBridge *strongSelf = weakSelf;
+                                                          if (!strongSelf) {
+                                                            return;
+                                                          }
+                                                          strongSelf->_executorClass = Nil;
+                                                          [strongSelf reload];
                                                         }];
-
   [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
                                                  modifierFlags:UIKeyModifierCommand
                                                         action:^(UIKeyCommand *command) {
-                                                          _executorClass = NSClassFromString(@"RCTWebSocketExecutor");
-                                                          if (!_executorClass) {
+                                                          RCTBridge *strongSelf = weakSelf;
+                                                          if (!strongSelf) {
+                                                            return;
+                                                          }
+                                                          strongSelf->_executorClass = NSClassFromString(@"RCTWebSocketExecutor");
+                                                          if (!strongSelf->_executorClass) {
                                                             RCTLogError(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
                                                           }
-                                                          [self reload];
+                                                          [strongSelf reload];
                                                         }];
 #endif
 }
+
 
 - (NSDictionary *)modules
 {
@@ -882,15 +963,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
 }
 
-+ (BOOL)hasValidJSExecutor
-{
-  return (_latestJSExecutor != nil && [_latestJSExecutor isValid]);
-}
-
 + (void)logMessage:(NSString *)message level:(NSString *)level
 {
   if (!_latestJSExecutor || ![_latestJSExecutor isValid]) {
-    RCTLogError(@"ERROR: No valid JS executor to log '%@'.", message);
     return;
   }
 

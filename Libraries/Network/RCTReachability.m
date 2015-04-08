@@ -23,6 +23,8 @@ static NSString *const RCTReachabilityStateCell = @"cell";
   NSString *_status;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)

@@ -19,6 +19,8 @@ NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
   NSDictionary *_initialNotification;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 - (instancetype)init

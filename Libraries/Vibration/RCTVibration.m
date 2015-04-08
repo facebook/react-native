@@ -13,6 +13,8 @@
 
 @implementation RCTVibration
 
+RCT_EXPORT_MODULE()
+
 - (void)vibrate
 {
   RCT_EXPORT();

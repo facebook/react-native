@@ -17,6 +17,8 @@
 
 @implementation RCTScrollViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];

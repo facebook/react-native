@@ -24,6 +24,8 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   return value;
 }
 
+RCT_EXPORT_MODULE()
+
 - (void)setStyle:(UIStatusBarStyle)statusBarStyle animated:(BOOL)animated
 {
   RCT_EXPORT();

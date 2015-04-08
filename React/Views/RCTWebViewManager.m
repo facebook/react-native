@@ -16,6 +16,8 @@
 
 @implementation RCTWebViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTWebView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];

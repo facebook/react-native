@@ -116,12 +116,11 @@ NSString *RCTFormatLog(
     });
     [log appendString:[formatter stringFromDate:timestamp]];
   }
-  [log appendString:@"[react]"];
   if (level) {
     [log appendFormat:@"[%s]", RCTLogLevels[level - 1]];
   }
   if (thread) {
-    NSString *threadName = thread.name;
+    NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
     if (threadName.length == 0) {
 #if DEBUG
 #pragma clang diagnostic push
@@ -147,19 +146,6 @@ NSString *RCTFormatLog(
     [log appendString:message];
   }
   return log;
-}
-
-RCTLogFunction RCTSimpleLogFunction(void (^logFunction)(RCTLogLevel level, NSString *message))
-{
-  return ^(RCTLogLevel level,
-           NSString *fileName,
-           NSNumber *lineNumber,
-           NSString *message) {
-
-    logFunction(level, RCTFormatLog(
-      [NSDate date], [NSThread currentThread], level, fileName, lineNumber, message
-    ));
-  };
 }
 
 void _RCTLogFormat(RCTLogLevel level, const char *fileName, int lineNumber, NSString *format, ...)
@@ -193,9 +179,7 @@ void _RCTLogFormat(RCTLogLevel level, const char *fileName, int lineNumber, NSSt
     }
 
     // Log to JS executor
-    if ([RCTBridge hasValidJSExecutor]) {
-      [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
-    }
+    [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
 
 #endif
 

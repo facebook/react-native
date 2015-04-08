@@ -45,9 +45,6 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);
 BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 
-// Enumerate all classes that conform to NSObject protocol
-void RCTEnumerateClasses(void (^block)(Class cls));
-
 // Creates a standardized error object
 // TODO(#6472857): create NSErrors and automatically convert them over the bridge.
 NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);

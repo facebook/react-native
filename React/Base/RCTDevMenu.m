@@ -67,7 +67,7 @@
 - (void)_pollAndReload
 {
   if (_liveReload) {
-    RCTSourceCode *sourceCodeModule = self.bridge.modules[NSStringFromClass([RCTSourceCode class])];
+    RCTSourceCode *sourceCodeModule = self.bridge.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
     NSURL *url = sourceCodeModule.scriptURL;
     NSURL *longPollURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:url];
     [self performSelectorInBackground:@selector(_checkForUpdates:) withObject:longPollURL];
