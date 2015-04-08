@@ -606,12 +606,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                    } else {
                      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                                          object:self];
-                     [[NSNotificationCenter defaultCenter] addObserver:self
-                                                              selector:@selector(reload)
-                                                                  name:RCTReloadNotification
-                                                                object:nil];
-                     ;
                    }
+                   [[NSNotificationCenter defaultCenter] addObserver:self
+                                                            selector:@selector(reload)
+                                                                name:RCTReloadNotification
+                                                              object:nil];
                  }];
   }
 }
