@@ -18,6 +18,7 @@ var _ = require('underscore');
 var Package = require('./Package');
 var Activity = require('../Activity');
 var declareOpts = require('../lib/declareOpts');
+var imageSize = require('image-size');
 
 var validateOpts = declareOpts({
   projectRoots: {
@@ -88,6 +89,8 @@ function Packager(options) {
     transformModulePath: opts.transformModulePath,
     nonPersistent: opts.nonPersistent,
   });
+
+  this._projectRoots = opts.projectRoots;
 }
 
 Packager.prototype.kill = function() {
@@ -138,8 +141,13 @@ Packager.prototype.getDependencies = function(main, isDev) {
 Packager.prototype._transformModule = function(module) {
   var transform;
 
-  if (module.isAsset) {
-    transform = Promise.resolve(generateAssetModule(module));
+  if (module.isAsset_DEPRECATED) {
+    transform = Promise.resolve(generateAssetModule_DEPRECATED(module));
+  } else if (module.isAsset) {
+    transform = generateAssetModule(
+      module,
+      getPathRelativeToRoot(this._projectRoots, module.path)
+    );
   } else {
     transform = this._transformer.loadFileAndTransform(
       path.resolve(module.path)
@@ -166,7 +174,7 @@ Packager.prototype.getGraphDebugInfo = function() {
   return this._resolver.getDebugInfo();
 };
 
-function generateAssetModule(module) {
+function generateAssetModule_DEPRECATED(module) {
   var code = 'module.exports = ' + JSON.stringify({
     uri: module.id.replace(/^[^!]+!/, ''),
     isStatic: true,
@@ -177,6 +185,41 @@ function generateAssetModule(module) {
     sourceCode: code,
     sourcePath: module.path,
   };
+}
+
+var sizeOf = Promise.promisify(imageSize);
+
+function generateAssetModule(module, relPath) {
+  return sizeOf(module.path).then(function(dimensions) {
+    var img = {
+      isStatic: true,
+      path: module.path, //TODO(amasad): this should be path inside tar file.
+      uri: relPath,
+      width: dimensions.width,
+      height: dimensions.height,
+    };
+
+    var code = 'module.exports = ' + JSON.stringify(img) + ';';
+
+    return {
+      code: code,
+      sourceCode: code,
+      sourcePath: module.path,
+    };
+  });
+}
+
+function getPathRelativeToRoot(roots, absPath) {
+  for (var i = 0; i < roots.length; i++) {
+    var relPath = path.relative(roots[i], absPath);
+    if (relPath[0] !== '.') {
+      return relPath;
+    }
+  }
+
+  throw new Error(
+    'Expected root module to be relative to one of the project roots'
+  );
 }
 
 module.exports = Packager;
