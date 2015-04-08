@@ -13,6 +13,8 @@ var path = require('path');
 var exec = require('child_process').exec;
 var http = require('http');
 
+var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
+
 if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   console.log(
     '\n' +
@@ -40,6 +42,9 @@ var options = parseCommandLine([{
 }, {
   command: 'assetRoots',
   description: 'specify the root directories of app assets'
+}, {
+  command: 'skipflow',
+  description: 'Disable flow checks'
 }]);
 
 if (options.projectRoots) {
@@ -203,6 +208,7 @@ function runServer(
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
     .use(statusPageMiddleware)
+    .use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));
 
   options.projectRoots.forEach(function(root) {
