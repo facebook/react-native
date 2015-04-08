@@ -596,7 +596,7 @@ var Navigator = React.createClass({
 
   _handlePanResponderGrant: function(e, gestureState) {
     invariant(
-      this._expectingGestureGrant,
+      this._expectingGestureGrant || this.state.isAnimating,
       'Responder granted unexpectedly.'
     );
     this._activeGestureAction = this._expectingGestureGrant;
