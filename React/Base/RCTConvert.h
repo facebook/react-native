@@ -145,7 +145,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
   }                                            \
   @catch (__unused NSException *e) {           \
     RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
-    json, [json class], #type); \
+    json, [json classForCoder], #type); \
     json = nil; \
     return code; \
   } \
@@ -181,7 +181,8 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
     return default;                                       \
   }                                                       \
   if (![json isKindOfClass:[NSString class]]) {           \
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", #type, [json class], json); \
+    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", \
+                #type, [json classForCoder], json);       \
   }                                                       \
   id value = mapping[json];                               \
   if(!value && [json description].length > 0) {           \

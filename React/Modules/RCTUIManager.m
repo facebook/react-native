@@ -198,6 +198,11 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
 @synthesize bridge = _bridge;
 
 /**
+ * Declared in RCTBridge.
+ */
+extern NSString *RCTBridgeModuleNameForClass(Class cls);
+
+/**
  * This function derives the view name automatically
  * from the module name.
  */
@@ -334,7 +339,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 
   dispatch_async(_bridge.shadowQueue, ^{
     RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
-    RCTAssert(rootShadowView != nil, @"Could not locate root view with tag %@", reactTag);
+    RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
     rootShadowView.frame = frame;
     [rootShadowView updateLayout];
 
@@ -672,7 +677,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
   }
 }
 
-static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
+static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
 {
   // TODO: cache respondsToSelector tests
   if ([manager respondsToSelector:setter]) {
@@ -681,7 +686,25 @@ static BOOL RCTCallPropertySetter(SEL setter, id value, id view, id defaultView,
       value = nil;
     }
 
-    ((void (*)(id, SEL, id, id, id))objc_msgSend)(manager, setter, value, view, defaultView);
+    void (^block)() = ^{
+      ((void (*)(id, SEL, id, id, id))objc_msgSend)(manager, setter, value, view, defaultView);
+    };
+
+#if DEBUG
+
+    NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([manager class]));
+    NSString *logPrefix = [NSString stringWithFormat:
+                           @"Error setting property '%@' of %@ with tag #%@: ",
+                           key, viewName, [view reactTag]];
+
+    RCTPerformBlockWithLogPrefix(block, logPrefix);
+
+#else
+
+    block();
+
+#endif
+
     return YES;
   }
   return NO;
@@ -693,7 +716,7 @@ static void RCTSetViewProps(NSDictionary *props, UIView *view,
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
 
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forView:withDefaultView:", key]);
-    RCTCallPropertySetter(setter, obj, view, defaultView, manager);
+    RCTCallPropertySetter(key, setter, obj, view, defaultView, manager);
 
   }];
 }
@@ -704,7 +727,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
 
     SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forShadowView:withDefaultView:", key]);
-    RCTCallPropertySetter(setter, obj, shadowView, defaultView, manager);
+    RCTCallPropertySetter(key, setter, obj, shadowView, defaultView, manager);
 
   }];
 
@@ -727,44 +750,47 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   // Register manager
   _viewManagerRegistry[reactTag] = manager;
 
-  // Generate default view, used for resetting default props
-  if (!_defaultShadowViews[viewName]) {
-    _defaultShadowViews[viewName] = [manager shadowView];
-  }
-
   RCTShadowView *shadowView = [manager shadowView];
-  shadowView.viewName = viewName;
-  shadowView.reactTag = reactTag;
-  RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], manager);
-  _shadowViewRegistry[shadowView.reactTag] = shadowView;
+  if (shadowView) {
+
+    // Generate default view, used for resetting default props
+    if (!_defaultShadowViews[viewName]) {
+      _defaultShadowViews[viewName] = [manager shadowView];
+    }
+
+    // Set properties
+    shadowView.viewName = viewName;
+    shadowView.reactTag = reactTag;
+    RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], manager);
+  }
+  _shadowViewRegistry[reactTag] = shadowView;
 
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTCAssertMainThread();
 
-    // Generate default view, used for resetting default props
-    if (!uiManager->_defaultViews[viewName]) {
-      // Note the default is setup after the props are read for the first time ever
-      // for this className - this is ok because we only use the default for restoring
-      // defaults, which never happens on first creation.
-      uiManager->_defaultViews[viewName] = [manager view];
-    }
-
     UIView *view = [manager view];
     if (view) {
 
-      // Set required properties
-      view.reactTag = reactTag;
-      view.multipleTouchEnabled = YES;
-      view.userInteractionEnabled = YES; // required for touch handling
-      view.layer.allowsGroupOpacity = YES; // required for touch handling
+      // Generate default view, used for resetting default props
+      if (!uiManager->_defaultViews[viewName]) {
+        // Note the default is setup after the props are read for the first time ever
+        // for this className - this is ok because we only use the default for restoring
+        // defaults, which never happens on first creation.
+        uiManager->_defaultViews[viewName] = [manager view];
+      }
 
-      // Set custom properties
+      // Set properties
+      view.reactTag = reactTag;
+      if ([view isKindOfClass:[UIView class]]) {
+        view.multipleTouchEnabled = YES;
+        view.userInteractionEnabled = YES; // required for touch handling
+        view.layer.allowsGroupOpacity = YES; // required for touch handling
+      }
       RCTSetViewProps(props, view, uiManager->_defaultViews[viewName], manager);
     }
-    viewRegistry[view.reactTag] = view;
+    viewRegistry[reactTag] = view;
   }];
 }
-
 // TODO: remove viewName param as it isn't needed
 - (void)updateView:(NSNumber *)reactTag viewName:(__unused NSString *)_ props:(NSDictionary *)props
 {
@@ -875,7 +901,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
     if (!view) {
-      RCTLogError(@"measure cannot find view with tag %@", reactTag);
+      RCTLogError(@"measure cannot find view with tag #%@", reactTag);
       return;
     }
     CGRect frame = view.frame;
@@ -1039,7 +1065,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
         uiManager.mainScrollView = (id<RCTScrollableProtocol>)rkObject;
         ((id<RCTScrollableProtocol>)rkObject).nativeMainScrollDelegate = uiManager.nativeMainScrollDelegate;
       } else {
-        RCTCAssert(NO, @"Tag %@ does not conform to RCTScrollableProtocol", reactTag);
+        RCTCAssert(NO, @"Tag #%@ does not conform to RCTScrollableProtocol", reactTag);
       }
     } else {
       uiManager.mainScrollView = nil;
@@ -1056,7 +1082,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:YES];
     } else {
-      RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+      RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
     }
   }];
 }
@@ -1070,7 +1096,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
         if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
             [(id<RCTScrollableProtocol>)view scrollToOffset:CGPointMake([offsetX floatValue], [offsetY floatValue]) animated:NO];
         } else {
-            RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+            RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
         }
     }];
 }
@@ -1084,7 +1110,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view zoomToRect:[RCTConvert CGRect:rectDict] animated:YES];
     } else {
-      RCTLogError(@"tried to zoomToRect: on non-RCTScrollableProtocol view %@ with tag %@", view, reactTag);
+      RCTLogError(@"tried to zoomToRect: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
     }
   }];
 }

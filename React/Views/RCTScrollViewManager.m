@@ -72,7 +72,7 @@ RCT_DEPRECATED_VIEW_PROPERTY(throttleScrollCallbackMS, scrollEventThrottle)
 
     UIView *view = viewRegistry[reactTag];
     if (!view) {
-      RCTLogError(@"Cannot find view with tag %@", reactTag);
+      RCTLogError(@"Cannot find view with tag #%@", reactTag);
       return;
     }
 

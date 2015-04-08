@@ -77,13 +77,14 @@ static NSString *RCTCacheKeyForURL(NSURL *url)
 
       __weak RCTImageDownloader *weakSelf = self;
       RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSData *data, NSError *error) {
-
-        RCTImageDownloader *strongSelf = weakSelf;
-        NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
-        [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
-        for (RCTCachedDataDownloadBlock block in blocks) {
-          block(cached, data, error);
-        }
+        dispatch_async(_processingQueue, ^{
+          RCTImageDownloader *strongSelf = weakSelf;
+          NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
+          [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
+          for (RCTCachedDataDownloadBlock block in blocks) {
+            block(cached, data, error);
+          }
+        });
       };
 
       if ([_cache hasDataForKey:cacheKey]) {

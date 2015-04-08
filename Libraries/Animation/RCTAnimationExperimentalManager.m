@@ -71,7 +71,7 @@
 
     UIView *view = viewRegistry[reactTag];
     if (!view) {
-      RCTLogWarn(@"React tag %@ is not registered with the view registry", reactTag);
+      RCTLogWarn(@"React tag #%@ is not registered with the view registry", reactTag);
       return;
     }
 

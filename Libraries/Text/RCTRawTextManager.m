@@ -15,7 +15,7 @@
 
 - (UIView *)view
 {
-  return [[UIView alloc] init];
+  return nil;
 }
 
 - (RCTShadowView *)shadowView
@@ -26,4 +26,3 @@
 RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 
 @end
-
