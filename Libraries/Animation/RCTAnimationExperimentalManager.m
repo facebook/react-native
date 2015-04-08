@@ -13,6 +13,7 @@
 
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
+#import "RCTUtils.h"
 
 #if CGFLOAT_IS_DOUBLE
   #define CG_APPEND(PREFIX, SUFFIX_F, SUFFIX_D) PREFIX##SUFFIX_D
@@ -23,6 +24,8 @@
 @implementation RCTAnimationExperimentalManager
 {
   RCTSparseArray *_animationRegistry; // Main thread only; animation tag -> view tag
+  RCTSparseArray *_callbackRegistry; // Main thread only; animation tag -> callback
+  NSDictionary *_keypathMapping;
 }
 
 RCT_EXPORT_MODULE()
@@ -33,6 +36,33 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _animationRegistry = [[RCTSparseArray alloc] init];
+    _callbackRegistry = [[RCTSparseArray alloc] init];
+    _keypathMapping = @{
+      @"opacity": @{
+        @"keypath": @"opacity",
+        @"type": @"NSNumber",
+      },
+      @"position": @{
+        @"keypath": @"position",
+        @"type": @"CGPoint",
+      },
+      @"positionX": @{
+        @"keypath": @"position.x",
+        @"type": @"NSNumber",
+      },
+      @"positionY": @{
+        @"keypath": @"position.y",
+        @"type": @"NSNumber",
+      },
+      @"rotation": @{
+        @"keypath": @"transform.rotation.z",
+        @"type": @"NSNumber",
+      },
+      @"scaleXY": @{
+        @"keypath": @"transform.scale",
+        @"type": @"CGPoint",
+      },
+    };
   }
 
   return self;
@@ -63,12 +93,25 @@ RCT_EXPORT_MODULE()
   };
 }
 
-RCT_EXPORT_METHOD(startAnimationForTag:(NSNumber *)reactTag
+static void RCTInvalidAnimationProp(RCTSparseArray *callbacks, NSNumber *tag, NSString *key, id value)
+{
+  RCTResponseSenderBlock callback = callbacks[tag];
+  RCTLogError(@"Invalid animation property `%@ = %@`", key, value);
+  if (callback) {
+    callback(@[@NO]);
+    callbacks[tag] = nil;
+  }
+  [CATransaction commit];
+  return;
+}
+
+RCT_EXPORT_METHOD(startAnimation:(NSNumber *)reactTag
                   animationTag:(NSNumber *)animationTag
                   duration:(NSTimeInterval)duration
                   delay:(NSTimeInterval)delay
                   easingSample:(NSArray *)easingSample
-                  properties:(NSDictionary *)properties)
+                  properties:(NSDictionary *)properties
+                  callback:(RCTResponseSenderBlock)callback)
 {
   __weak RCTAnimationExperimentalManager *weakSelf = self;
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
@@ -79,12 +122,21 @@ RCT_EXPORT_METHOD(startAnimationForTag:(NSNumber *)reactTag
       RCTLogWarn(@"React tag #%@ is not registered with the view registry", reactTag);
       return;
     }
-
-    [properties enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
+    __block BOOL completionBlockSet = NO;
+    [CATransaction begin];
+    for (NSString *prop in properties) {
+      NSString *keypath = _keypathMapping[prop][@"keypath"];
+      id obj = properties[prop][@"to"];
+      if (!keypath) {
+        return RCTInvalidAnimationProp(strongSelf->_callbackRegistry, animationTag, keypath, obj);
+      }
       NSValue *toValue = nil;
-      if ([key isEqualToString:@"scaleXY"]) {
-        key = @"transform.scale";
-        toValue = obj[0];
+      if ([keypath isEqualToString:@"transform.scale"]) {
+        CGPoint point = [RCTConvert CGPoint:obj];
+        if (point.x != point.y) {
+          return RCTInvalidAnimationProp(strongSelf->_callbackRegistry, animationTag, keypath, obj);
+        }
+        toValue = @(point.x);
       } else if ([obj respondsToSelector:@selector(count)]) {
         switch ([obj count]) {
           case 2:
@@ -100,11 +152,15 @@ RCT_EXPORT_METHOD(startAnimationForTag:(NSNumber *)reactTag
           case 16:
             toValue = [NSValue valueWithCGAffineTransform:[RCTConvert CGAffineTransform:obj]];
             break;
+          default:
+            return RCTInvalidAnimationProp(strongSelf->_callbackRegistry, animationTag, keypath, obj);
         }
+      } else if (![obj respondsToSelector:@selector(objCType)]) {
+        return RCTInvalidAnimationProp(strongSelf->_callbackRegistry, animationTag, keypath, obj);
       }
-
-      if (!toValue) toValue = obj;
-
+      if (!toValue) {
+        toValue = obj;
+      }
       const char *typeName = toValue.objCType;
 
       size_t count;
@@ -155,7 +211,7 @@ RCT_EXPORT_METHOD(startAnimationForTag:(NSNumber *)reactTag
           break;
       }
 
-      NSValue *fromValue = [view.layer.presentationLayer valueForKeyPath:key];
+      NSValue *fromValue = [view.layer.presentationLayer valueForKeyPath:keypath];
       CGFloat fromFields[count];
       [fromValue getValue:fromFields];
 
@@ -166,19 +222,32 @@ RCT_EXPORT_METHOD(startAnimationForTag:(NSNumber *)reactTag
         CGFloat t = sample.CG_APPEND(, floatValue, doubleValue);
         [sampledValues addObject:interpolationBlock(t)];
       }
-
-      CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:key];
+      CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:keypath];
       animation.beginTime = CACurrentMediaTime() + delay;
       animation.duration = duration;
       animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
       animation.values = sampledValues;
-
-      [view.layer setValue:toValue forKey:key];
-
-      NSString *animationKey = [NSString stringWithFormat:@"RCT.%@.%@", animationTag, key];
-      [view.layer addAnimation:animation forKey:animationKey];
-    }];
-
+      @try {
+        [view.layer setValue:toValue forKey:keypath];
+        NSString *animationKey = [@"RCT" stringByAppendingString:RCTJSONStringify(@{@"tag": animationTag, @"key": keypath}, nil)];
+        [view.layer addAnimation:animation forKey:animationKey];
+        if (!completionBlockSet) {
+          strongSelf->_callbackRegistry[animationTag] = callback;
+          [CATransaction setCompletionBlock:^{
+            RCTResponseSenderBlock cb = strongSelf->_callbackRegistry[animationTag];
+            if (cb) {
+              cb(@[@YES]);
+              strongSelf->_callbackRegistry[animationTag] = nil;
+            }
+          }];
+          completionBlockSet = YES;
+        }
+      }
+      @catch (NSException *exception) {
+        return RCTInvalidAnimationProp(strongSelf->_callbackRegistry, animationTag, keypath, toValue);
+      }
+    }
+    [CATransaction commit];
     strongSelf->_animationRegistry[animationTag] = reactTag;
   }];
 }
@@ -194,19 +263,25 @@ RCT_EXPORT_METHOD(stopAnimation:(NSNumber *)animationTag)
 
     UIView *view = viewRegistry[reactTag];
     for (NSString *animationKey in view.layer.animationKeys) {
-      if ([animationKey hasPrefix:@"RCT"]) {
-        NSRange periodLocation = [animationKey rangeOfString:@"." options:0 range:(NSRange){3, animationKey.length - 3}];
-        if (periodLocation.location != NSNotFound) {
-          NSInteger integerTag = [[animationKey substringWithRange:(NSRange){3, periodLocation.location}] integerValue];
-          if (animationTag.integerValue == integerTag) {
-            [view.layer removeAnimationForKey:animationKey];
-          }
+      if ([animationKey hasPrefix:@"RCT{"]) {
+        NSDictionary *data = RCTJSONParse([animationKey substringFromIndex:3], nil);
+        if (animationTag.integerValue == [data[@"tag"] integerValue]) {
+          [view.layer removeAnimationForKey:animationKey];
         }
       }
     }
-
+    RCTResponseSenderBlock cb = strongSelf->_callbackRegistry[animationTag];
+    if (cb) {
+      cb(@[@NO]);
+      strongSelf->_callbackRegistry[animationTag] = nil;
+    }
     strongSelf->_animationRegistry[animationTag] = nil;
   }];
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{@"Properties": [_keypathMapping allKeys] };
 }
 
 @end
