@@ -111,7 +111,7 @@ Here I disabled **AutoLayout** for simplicity. In real production world, you sho
 
 ## Add RCTRootView To Container View
 
-Ready for the most interesting part? Now we shall create the `RCTRootView`, where your React Native app lives in.
+Ready for the most interesting part? Now we shall create the `RCTRootView`, where your React Native app lives.
 
 In `ReactView.m`, we need to first initiate `RCTRootView` with the URI of your `index.ios.bundle`. `index.ios.bundle` will be created by packager and served by React Native server, which will be discussed later on.
 
