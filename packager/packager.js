@@ -219,5 +219,5 @@ function runServer(
     .use(connect.compress())
     .use(connect.errorHandler());
 
-  return http.createServer(app).listen(options.port, readyCallback);
+  return http.createServer(app).listen(options.port, '::', readyCallback);
 }
