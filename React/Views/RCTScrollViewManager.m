@@ -65,11 +65,9 @@ RCT_DEPRECATED_VIEW_PROPERTY(throttleScrollCallbackMS, scrollEventThrottle)
   };
 }
 
-- (void)getContentSize:(NSNumber *)reactTag
-              callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(getContentSize:(NSNumber *)reactTag
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
 
     UIView *view = viewRegistry[reactTag];

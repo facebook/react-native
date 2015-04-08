@@ -68,29 +68,23 @@ RCT_EXPORT_MODULE()
 /**
  * Update the application icon badge number on the home screen
  */
-+ (void)setApplicationIconBadgeNumber:(NSInteger)number
+RCT_EXPORT_METHOD(setApplicationIconBadgeNumber:(NSInteger)number)
 {
-  RCT_EXPORT();
-
   [UIApplication sharedApplication].applicationIconBadgeNumber = number;
 }
 
 /**
  * Get the current application icon badge number on the home screen
  */
-+ (void)getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   callback(@[
     @([UIApplication sharedApplication].applicationIconBadgeNumber)
   ]);
 }
 
-+ (void)requestPermissions
+RCT_EXPORT_METHOD(requestPermissions)
 {
-  RCT_EXPORT();
-
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
   // if we are targeting iOS 7, *and* the new UIUserNotificationSettings
@@ -106,13 +100,10 @@ RCT_EXPORT_MODULE()
   UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
   UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
   [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
-
 }
 
-+ (void)checkPermissions:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
 
   UIUserNotificationType types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];

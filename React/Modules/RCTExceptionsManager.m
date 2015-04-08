@@ -31,10 +31,9 @@ RCT_EXPORT_MODULE()
   return [self initWithDelegate:nil];
 }
 
-- (void)reportUnhandledExceptionWithMessage:(NSString *)message stack:(NSArray *)stack
+RCT_EXPORT_METHOD(reportUnhandledExceptionWithMessage:(NSString *)message
+                  stack:(NSArray *)stack)
 {
-  RCT_EXPORT(reportUnhandledException);
-
   if (_delegate) {
     [_delegate unhandledJSExceptionWithMessage:message stack:stack];
   } else {
@@ -42,10 +41,9 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (void)updateExceptionMessage:(NSString *)message stack:(NSArray *)stack
+RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
+                  stack:(NSArray *)stack)
 {
-  RCT_EXPORT(updateExceptionMessage);
-
   [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
 }
 

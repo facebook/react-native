@@ -742,8 +742,6 @@ RCT_ARRAY_CONVERTER(UIColor)
   return colors;
 }
 
-typedef BOOL css_overflow;
-
 RCT_ENUM_CONVERTER(css_overflow, (@{
   @"hidden": @NO,
   @"visible": @YES

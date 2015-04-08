@@ -21,13 +21,11 @@ RCT_EXPORT_MODULE()
  * Executes a network request.
  * The responseSender block won't be called on same thread as called.
  */
-- (void)executeQuery:(NSString *)queryType
-               query:(id)query
-           queryHash:(__unused NSString *)queryHash
-      responseSender:(RCTResponseSenderBlock)responseSender
+RCT_EXPORT_METHOD(queryData:(NSString *)queryType
+                  withQuery:(id)query
+                  queryHash:(__unused NSString *)queryHash
+                  responseSender:(RCTResponseSenderBlock)responseSender)
 {
-  RCT_EXPORT(queryData);
-
   if ([queryType isEqualToString:@"http"]) {
 
     // Parse query

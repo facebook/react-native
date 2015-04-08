@@ -61,9 +61,9 @@
   id _updateTimer;
 }
 
-RCT_EXPORT_MODULE()
-
 @synthesize bridge = _bridge;
+
+RCT_EXPORT_MODULE()
 
 RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
@@ -165,34 +165,29 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
  * calculating the timer's target time. We calculate this by passing in
  * Date.now() from JS and then subtracting that from the current time here.
  */
-- (void)createTimer:(NSNumber *)callbackID
-           duration:(double)jsDuration
-   jsSchedulingTime:(double)jsSchedulingTime
-            repeats:(BOOL)repeats
+RCT_EXPORT_METHOD(createTimer:(NSNumber *)callbackID
+                  duration:(NSTimeInterval)jsDuration
+                  jsSchedulingTime:(NSDate *)jsSchedulingTime
+                  repeats:(BOOL)repeats)
 {
-  RCT_EXPORT();
-
   if (jsDuration == 0 && repeats == NO) {
     // For super fast, one-off timers, just enqueue them immediately rather than waiting a frame.
     [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[@[callbackID]]];
     return;
   }
 
-  NSTimeInterval interval = jsDuration / 1000;
-  NSTimeInterval jsCreationTimeSinceUnixEpoch = jsSchedulingTime / 1000;
-  NSTimeInterval currentTimeSinceUnixEpoch = [[NSDate date] timeIntervalSince1970];
-  NSTimeInterval jsSchedulingOverhead = currentTimeSinceUnixEpoch - jsCreationTimeSinceUnixEpoch;
+  NSTimeInterval jsSchedulingOverhead = -jsSchedulingTime.timeIntervalSinceNow;
   if (jsSchedulingOverhead < 0) {
     RCTLogWarn(@"jsSchedulingOverhead (%ims) should be positive", (int)(jsSchedulingOverhead * 1000));
   }
 
-  NSTimeInterval targetTime = interval - jsSchedulingOverhead;
-  if (interval < 0.018) { // Make sure short intervals run each frame
-    interval = 0;
+  NSTimeInterval targetTime = jsDuration - jsSchedulingOverhead;
+  if (jsDuration < 0.018) { // Make sure short intervals run each frame
+    jsDuration = 0;
   }
 
   RCTTimer *timer = [[RCTTimer alloc] initWithCallbackID:callbackID
-                                                interval:interval
+                                                interval:jsDuration
                                               targetTime:targetTime
                                                  repeats:repeats];
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -201,10 +196,8 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
   });
 }
 
-- (void)deleteTimer:(NSNumber *)timerID
+RCT_EXPORT_METHOD(deleteTimer:(NSNumber *)timerID)
 {
-  RCT_EXPORT();
-
   if (timerID) {
     dispatch_async(dispatch_get_main_queue(), ^{
       _timers[timerID] = nil;

@@ -188,10 +188,9 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Exported JS Functions
 
-- (void)multiGet:(NSArray *)keys callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   if (!callback) {
     RCTLogError(@"Called getItem without a callback.");
     return;
@@ -214,10 +213,9 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)multiSet:(NSArray *)kvPairs callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {
@@ -236,10 +234,9 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)multiRemove:(NSArray *)keys callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {
@@ -263,10 +260,8 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)clear:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (!errorOut) {
@@ -284,10 +279,8 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)getAllKeys:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {

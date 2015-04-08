@@ -16,9 +16,9 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 @implementation RCTLinkingManager
 
-RCT_EXPORT_MODULE()
-
 @synthesize bridge = _bridge;
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
@@ -54,19 +54,15 @@ RCT_EXPORT_MODULE()
                                               body:[notification userInfo]];
 }
 
-- (void)openURL:(NSString *)url
+RCT_EXPORT_METHOD(openURL:(NSURL *)url)
 {
-  RCT_EXPORT();
-
-  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+  [[UIApplication sharedApplication] openURL:url];
 }
 
-- (void)canOpenURL:(NSString *)url
-          callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(canOpenURL:(NSURL *)url
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
-  BOOL supported = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]];
+  BOOL supported = [[UIApplication sharedApplication] canOpenURL:url];
   callback(@[@(supported)]);
 }
 

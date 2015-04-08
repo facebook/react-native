@@ -15,9 +15,8 @@
 
 RCT_EXPORT_MODULE()
 
-- (void)vibrate
+RCT_EXPORT_METHOD(vibrate)
 {
-  RCT_EXPORT();
   AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 

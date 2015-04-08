@@ -213,11 +213,18 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 
 static Class _globalExecutorClass;
 
+NS_INLINE NSString *RCTStringUpToFirstArgument(NSString *methodName) {
+  NSRange colonRange = [methodName rangeOfString:@":"];
+  if (colonRange.length) {
+    methodName = [methodName substringToIndex:colonRange.location];
+  }
+  return methodName;
+}
+
 - (instancetype)initWithMethodName:(NSString *)methodName
                       JSMethodName:(NSString *)JSMethodName
 {
   if ((self = [super init])) {
-
     _methodName = methodName;
     NSArray *parts = [[methodName substringWithRange:(NSRange){2, methodName.length - 3}] componentsSeparatedByString:@" "];
 
@@ -228,14 +235,39 @@ static Class _globalExecutorClass;
       _moduleClassName = [_moduleClassName substringToIndex:categoryRange.location];
     }
 
+    NSArray *argumentNames = nil;
+    if ([parts[1] hasPrefix:@"__rct_export__"]) {
+      // New format
+      NSString *selectorString = [parts[1] substringFromIndex:14];
+      _selector = NSSelectorFromString(selectorString);
+      _JSMethodName = RCTStringUpToFirstArgument(selectorString);
+
+      static NSRegularExpression *regExp;
+      if (!regExp) {
+        NSString *unusedPattern = @"(?:(?:__unused|__attribute__\\(\\(unused\\)\\)))";
+        NSString *constPattern = @"(?:const)";
+        NSString *constUnusedPattern = [NSString stringWithFormat:@"(?:(?:%@|%@)\\s*)", unusedPattern, constPattern];
+        NSString *pattern = [NSString stringWithFormat:@"\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\)", constUnusedPattern];
+        regExp = [[NSRegularExpression alloc] initWithPattern:pattern options:0 error:NULL];
+      }
+
+      argumentNames = [NSMutableArray array];
+      [regExp enumerateMatchesInString:JSMethodName options:0 range:NSMakeRange(0, JSMethodName.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        NSString *argumentName = [JSMethodName substringWithRange:[result rangeAtIndex:1]];
+        [(NSMutableArray *)argumentNames addObject:argumentName];
+      }];
+    } else {
+      // Old format
+      NSString *selectorString = parts[1];
+      _selector = NSSelectorFromString(selectorString);
+      _JSMethodName = JSMethodName ?: RCTStringUpToFirstArgument(selectorString);
+    }
+
     // Extract class and method details
     _isClassMethod = [methodName characterAtIndex:0] == '+';
     _moduleClass = NSClassFromString(_moduleClassName);
-    _selector = NSSelectorFromString(parts[1]);
-    _JSMethodName = JSMethodName ?: [NSStringFromSelector(_selector) componentsSeparatedByString:@":"][0];
 
 #if DEBUG
-
     // Sanity check
     RCTAssert([_moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
               @"You are attempting to export the method %@, but %@ does not \
@@ -250,15 +282,87 @@ static Class _globalExecutorClass;
     // Process arguments
     NSUInteger numberOfArguments = _methodSignature.numberOfArguments;
     NSMutableArray *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
-    for (NSUInteger i = 2; i < numberOfArguments; i++) {
-      const char *argumentType = [_methodSignature getArgumentTypeAtIndex:i];
-      switch (argumentType[0]) {
 
 #define RCT_ARG_BLOCK(_logic) \
-          [argumentBlocks addObject:^(RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) { \
-            _logic \
-            [invocation setArgument:&value atIndex:index]; \
-          }]; \
+    [argumentBlocks addObject:^(RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) { \
+      _logic \
+      [invocation setArgument:&value atIndex:index]; \
+    }]; \
+
+    void (^addBlockArgument)(void) = ^{
+      RCT_ARG_BLOCK(
+        if (json && ![json isKindOfClass:[NSNumber class]]) {
+          RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
+                      json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+          return;
+        }
+
+        // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+        __autoreleasing id value = (json ? ^(NSArray *args) {
+          [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                   method:@"invokeCallbackAndReturnFlushedQueue"
+                                arguments:@[json, args]];
+        } : ^(NSArray *unused) {});
+      )
+    };
+
+    void (^defaultCase)(const char *) = ^(const char *argumentType) {
+      static const char *blockType = @encode(typeof(^{}));
+      if (!strcmp(argumentType, blockType)) {
+        addBlockArgument();
+      } else {
+        RCT_ARG_BLOCK( id value = json; )
+      }
+    };
+
+    for (NSUInteger i = 2; i < numberOfArguments; i++) {
+      const char *argumentType = [_methodSignature getArgumentTypeAtIndex:i];
+
+      BOOL useFallback = YES;
+      if (argumentNames) {
+        NSString *argumentName = argumentNames[i - 2];
+        SEL selector = NSSelectorFromString([argumentName stringByAppendingString:@":"]);
+        if ([RCTConvert respondsToSelector:selector]) {
+          useFallback = NO;
+          switch (argumentType[0]) {
+
+#define RCT_CONVERT_CASE(_value, _type) \
+            case _value: { \
+              _type (*convert)(id, SEL, id) = (typeof(convert))[RCTConvert methodForSelector:selector]; \
+              RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
+              break; \
+            }
+
+            RCT_CONVERT_CASE(':', SEL)
+            RCT_CONVERT_CASE('*', const char *)
+            RCT_CONVERT_CASE('c', char)
+            RCT_CONVERT_CASE('C', unsigned char)
+            RCT_CONVERT_CASE('s', short)
+            RCT_CONVERT_CASE('S', unsigned short)
+            RCT_CONVERT_CASE('i', int)
+            RCT_CONVERT_CASE('I', unsigned int)
+            RCT_CONVERT_CASE('l', long)
+            RCT_CONVERT_CASE('L', unsigned long)
+            RCT_CONVERT_CASE('q', long long)
+            RCT_CONVERT_CASE('Q', unsigned long long)
+            RCT_CONVERT_CASE('f', float)
+            RCT_CONVERT_CASE('d', double)
+            RCT_CONVERT_CASE('B', BOOL)
+            RCT_CONVERT_CASE('@', id)
+            RCT_CONVERT_CASE('^', void *)
+
+            default:
+              defaultCase(argumentType);
+              break;
+          }
+        } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
+          addBlockArgument();
+          useFallback = NO;
+        }
+      }
+
+      if (useFallback) {
+        switch (argumentType[0]) {
 
 #define RCT_CASE(_value, _class, _logic) \
         case _value: {                   \
@@ -273,61 +377,46 @@ static Class _globalExecutorClass;
           break; \
         }
 
-        RCT_CASE(':', NSString, SEL value = NSSelectorFromString(json); );
-        RCT_CASE('*', NSString, const char *value = [json UTF8String]; );
+          RCT_CASE(':', NSString, SEL value = NSSelectorFromString(json); )
+          RCT_CASE('*', NSString, const char *value = [json UTF8String]; )
 
 #define RCT_SIMPLE_CASE(_value, _type, _selector) \
-        case _value: {                              \
-          RCT_ARG_BLOCK( \
-            if (json && ![json respondsToSelector:@selector(_selector)]) { \
-              RCTLogError(@"Argument %tu (%@) of %@.%@ does not respond to selector: %@", \
-                index, json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
-              return; \
-            } \
-            _type value = [json _selector];                     \
-          ) \
-          break; \
-        }
-
-        RCT_SIMPLE_CASE('c', char, charValue)
-        RCT_SIMPLE_CASE('C', unsigned char, unsignedCharValue)
-        RCT_SIMPLE_CASE('s', short, shortValue)
-        RCT_SIMPLE_CASE('S', unsigned short, unsignedShortValue)
-        RCT_SIMPLE_CASE('i', int, intValue)
-        RCT_SIMPLE_CASE('I', unsigned int, unsignedIntValue)
-        RCT_SIMPLE_CASE('l', long, longValue)
-        RCT_SIMPLE_CASE('L', unsigned long, unsignedLongValue)
-        RCT_SIMPLE_CASE('q', long long, longLongValue)
-        RCT_SIMPLE_CASE('Q', unsigned long long, unsignedLongLongValue)
-        RCT_SIMPLE_CASE('f', float, floatValue)
-        RCT_SIMPLE_CASE('d', double, doubleValue)
-        RCT_SIMPLE_CASE('B', BOOL, boolValue)
-
-        default: {
-          static const char *blockType = @encode(typeof(^{}));
-          if (!strcmp(argumentType, blockType)) {
-            RCT_ARG_BLOCK(
-              if (json && ![json isKindOfClass:[NSNumber class]]) {
-                RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
-                            json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
-                return;
-              }
-              // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-              __autoreleasing id value = (json ? ^(NSArray *args) {
-                [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                         method:@"invokeCallbackAndReturnFlushedQueue"
-                                      arguments:@[json, args]];
-              } : ^(NSArray *unused) {});
-            )
-          } else {
-            RCT_ARG_BLOCK( id value = json; )
+          case _value: {                              \
+            RCT_ARG_BLOCK( \
+              if (json && ![json respondsToSelector:@selector(_selector)]) { \
+                RCTLogError(@"Argument %tu (%@) of %@.%@ does not respond to selector: %@", \
+                  index, json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
+                return; \
+              } \
+              _type value = [json _selector];                     \
+            ) \
+            break; \
           }
-          break;
+
+          RCT_SIMPLE_CASE('c', char, charValue)
+          RCT_SIMPLE_CASE('C', unsigned char, unsignedCharValue)
+          RCT_SIMPLE_CASE('s', short, shortValue)
+          RCT_SIMPLE_CASE('S', unsigned short, unsignedShortValue)
+          RCT_SIMPLE_CASE('i', int, intValue)
+          RCT_SIMPLE_CASE('I', unsigned int, unsignedIntValue)
+          RCT_SIMPLE_CASE('l', long, longValue)
+          RCT_SIMPLE_CASE('L', unsigned long, unsignedLongValue)
+          RCT_SIMPLE_CASE('q', long long, longLongValue)
+          RCT_SIMPLE_CASE('Q', unsigned long long, unsignedLongLongValue)
+          RCT_SIMPLE_CASE('f', float, floatValue)
+          RCT_SIMPLE_CASE('d', double, doubleValue)
+          RCT_SIMPLE_CASE('B', BOOL, boolValue)
+
+          default:
+            defaultCase(argumentType);
+            break;
         }
       }
     }
+
     _argumentBlocks = [argumentBlocks copy];
   }
+
   return self;
 }
 
@@ -337,7 +426,6 @@ static Class _globalExecutorClass;
 {
 
 #if DEBUG
-
   // Sanity check
   RCTAssert([module class] == _moduleClass, @"Attempted to invoke method \
             %@ on a module of class %@", _methodName, [module class]);
@@ -354,6 +442,7 @@ static Class _globalExecutorClass;
   // Create invocation (we can't re-use this as it wouldn't be thread-safe)
   NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:_methodSignature];
   [invocation setArgument:&_selector atIndex:1];
+  [invocation retainArguments];
 
   // Set arguments
   NSUInteger index = 0;
@@ -361,7 +450,7 @@ static Class _globalExecutorClass;
     id arg = (json == [NSNull null]) ? nil : json;
     void (^block)(RCTBridge *, NSInvocation *, NSUInteger, id) = _argumentBlocks[index];
     block(bridge, invocation, index + 2, arg);
-    index ++;
+    index++;
   }
 
   // Invoke method
@@ -767,6 +856,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
   [_javaScriptExecutor invalidate];
   _javaScriptExecutor = nil;
+
+  // Wait for queued methods to finish
+  dispatch_sync(self.shadowQueue, ^{
+    // Make sure all dispatchers have been executed before continuing
+  });
 
   // Invalidate modules
   for (id target in _modulesByID.allObjects) {

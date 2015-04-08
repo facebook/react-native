@@ -11,7 +11,7 @@
 
 #import "RCTLog.h"
 
-@interface RCTActionSheetManager() <UIActionSheetDelegate>
+@interface RCTActionSheetManager () <UIActionSheetDelegate>
 
 @end
 
@@ -30,12 +30,10 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (void)showActionSheetWithOptions:(NSDictionary *)options
-                          failureCallback:(RCTResponseSenderBlock)failureCallback
-                          successCallback:(RCTResponseSenderBlock)successCallback
+RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
+                  failureCallback:(RCTResponseSenderBlock)failureCallback
+                  successCallback:(RCTResponseSenderBlock)successCallback)
 {
-  RCT_EXPORT();
-
   dispatch_async(dispatch_get_main_queue(), ^{
     UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
 
@@ -65,12 +63,10 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)showShareActionSheetWithOptions:(NSDictionary *)options
-                        failureCallback:(RCTResponseSenderBlock)failureCallback
-                        successCallback:(RCTResponseSenderBlock)successCallback
+RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
+                  failureCallback:(RCTResponseSenderBlock)failureCallback
+                  successCallback:(RCTResponseSenderBlock)successCallback)
 {
-  RCT_EXPORT();
-
   dispatch_async(dispatch_get_main_queue(), ^{
     NSMutableArray *items = [NSMutableArray array];
     id message = options[@"message"];
@@ -137,7 +133,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark Private
 
-static NSString *keyForInstance(id instance)
+NS_INLINE NSString *keyForInstance(id instance)
 {
   return [NSString stringWithFormat:@"%p", instance];
 }

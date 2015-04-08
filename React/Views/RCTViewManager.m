@@ -19,9 +19,9 @@
 
 @implementation RCTViewManager
 
-RCT_EXPORT_MODULE()
-
 @synthesize bridge = _bridge;
+
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
