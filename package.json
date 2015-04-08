@@ -26,6 +26,7 @@
     "Examples/SampleApp",
     "Libraries",
     "packager",
+    "local-cli",
     "cli.js",
     "init.sh",
     "LICENSE",
