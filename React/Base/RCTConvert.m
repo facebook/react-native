@@ -670,11 +670,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     isCondensed = RCTFontIsCondensed(font);
   }
 
-  // Get font weight
-  if (weight) {
-    fontWeight = [self RCTFontWeight:weight];
-  }
-
   // Get font style
   if (style) {
     isItalic = [self RCTFontStyle:style];
@@ -698,6 +693,11 @@ static BOOL RCTFontIsCondensed(UIFont *font)
       RCTLogError(@"Unrecognized font family '%@'", familyName);
       familyName = RCTDefaultFontFamily;
     }
+  }
+
+  // Get font weight
+  if (weight) {
+    fontWeight = [self RCTFontWeight:weight];
   }
 
   // Get closest match
