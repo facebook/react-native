@@ -19,9 +19,12 @@
 
 #import <Availability.h>
 
-#if TARGET_OS_IPHONE
-#define HAS_ICU
-#endif
+//NOTE: libicucore ins't actually needed for the socket to function
+//and by commenting this out, we avoid the need to import it into every app.
+
+//#if TARGET_OS_IPHONE
+//#define HAS_ICU
+//#endif
 
 #ifdef HAS_ICU
 #import <unicode/utf8.h>

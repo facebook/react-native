@@ -13,11 +13,14 @@
 #import "RCTAssert.h"
 #import "RCTLog.h"
 
-@implementation RCTTestModule {
+@implementation RCTTestModule
+{
   __weak FBSnapshotTestController *_snapshotController;
   __weak UIView *_view;
   NSMutableDictionary *_snapshotCounter;
 }
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)initWithSnapshotController:(FBSnapshotTestController *)controller view:(UIView *)view
 {
@@ -29,10 +32,8 @@
   return self;
 }
 
-- (void)verifySnapshot:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   if (!_snapshotController) {
     RCTLogWarn(@"No snapshot controller configured.");
     callback(@[]);
@@ -52,10 +53,8 @@
   });
 }
 
-- (void)markTestCompleted
+RCT_EXPORT_METHOD(markTestCompleted)
 {
-  RCT_EXPORT();
-
   dispatch_async(dispatch_get_main_queue(), ^{
     _done = YES;
   });

@@ -320,6 +320,12 @@ function handleError(res, error) {
   });
 
   if (error.type === 'TransformError' || error.type === 'NotFoundError') {
+    error.errors = [{
+      description: error.description,
+      filename: error.filename,
+      lineNumber: error.lineNumber,
+    }];
+    console.error(error);
     res.end(JSON.stringify(error));
   } else {
     console.error(error.stack || error);

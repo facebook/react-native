@@ -14,6 +14,8 @@
 
 @implementation RCTNavItemManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTNavItem alloc] init];

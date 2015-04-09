@@ -11,10 +11,11 @@
 
 @implementation RCTAdSupport
 
-- (void)getAdvertisingId:(RCTResponseSenderBlock)callback withErrorCallback:(RCTResponseSenderBlock)errorCallback
-{
-  RCT_EXPORT();
+RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(getAdvertisingId:(RCTResponseSenderBlock)callback
+                  withErrorCallback:(RCTResponseSenderBlock)errorCallback)
+{
   if ([ASIdentifierManager class]) {
     callback(@[[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]]);
   } else {
@@ -22,12 +23,11 @@
   }
 }
 
-- (void)getAdvertisingTrackingEnabled:(RCTResponseSenderBlock)callback withErrorCallback:(RCTResponseSenderBlock)errorCallback
+RCT_EXPORT_METHOD(getAdvertisingTrackingEnabled:(RCTResponseSenderBlock)callback
+                  withErrorCallback:(RCTResponseSenderBlock)errorCallback)
 {
-  RCT_EXPORT();
-
   if ([ASIdentifierManager class]) {
-    bool hasTracking = [[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled];
+    BOOL hasTracking = [[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled];
     callback(@[@(hasTracking)]);
   } else {
     return errorCallback(@[@"as_identifier_unavailable"]);

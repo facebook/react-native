@@ -21,18 +21,7 @@
 
 @synthesize bridge = _bridge;
 
-+ (NSString *)moduleName
-{
-  // Default implementation, works in most cases
-  NSString *name = NSStringFromClass(self);
-  if ([name hasPrefix:@"RK"]) {
-    name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
-  }
-  if ([name hasPrefix:@"RCTUI"]) {
-    name = [name substringFromIndex:@"RCT".length];
-  }
-  return name;
-}
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {

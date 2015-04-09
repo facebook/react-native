@@ -104,15 +104,20 @@
                                   if ([response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)response statusCode] != 200) {
                                     NSDictionary *userInfo;
                                     NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
-                                    if ([errorDetails isKindOfClass:[NSDictionary class]]) {
+                                    if ([errorDetails isKindOfClass:[NSDictionary class]] &&
+                                        [errorDetails[@"errors"] isKindOfClass:[NSArray class]]) {
+                                      NSMutableArray *fakeStack = [[NSMutableArray alloc] init];
+                                      for (NSDictionary *err in errorDetails[@"errors"]) {
+                                        [fakeStack addObject: @{
+                                          @"methodName": err[@"description"] ?: @"",
+                                          @"file": err[@"filename"] ?: @"",
+                                          @"lineNumber": err[@"lineNumber"] ?: @0
+                                        }];
+                                      }
                                       userInfo = @{
-                                                   NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
-                                                   @"stack": @[@{
-                                                                 @"methodName": errorDetails[@"description"] ?: @"",
-                                                                 @"file": errorDetails[@"filename"] ?: @"",
-                                                                 @"lineNumber": errorDetails[@"lineNumber"] ?: @0
-                                                                 }]
-                                                   };
+                                        NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
+                                        @"stack": fakeStack,
+                                      };
                                     } else {
                                       userInfo = @{NSLocalizedDescriptionKey: rawText};
                                     }
@@ -123,7 +128,7 @@
                                     onComplete(error);
                                     return;
                                   }
-                                  RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
+                                  RCTSourceCode *sourceCodeModule = _bridge.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
                                   sourceCodeModule.scriptURL = scriptURL;
                                   sourceCodeModule.scriptText = rawText;
 

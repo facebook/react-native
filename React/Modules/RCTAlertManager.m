@@ -23,6 +23,8 @@
   NSMutableArray *_alertButtonKeys;
 }
 
+RCT_EXPORT_MODULE()
+
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -47,10 +49,9 @@
  * Buttons are displayed in the order they are specified. If "cancel" is used as
  * the button key, it will be differently highlighted, according to iOS UI conventions.
  */
-- (void)alertWithArgs:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   NSString *title = args[@"title"];
   NSString *message = args[@"message"];
   NSArray *buttons = args[@"buttons"];

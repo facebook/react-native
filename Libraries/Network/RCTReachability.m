@@ -53,6 +53,8 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 }
 
+RCT_EXPORT_MODULE()
+
 #pragma mark - Lifecycle
 
 - (instancetype)initWithHost:(NSString *)host
@@ -81,11 +83,9 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 #pragma mark - Public API
 
 // TODO: remove error callback - not needed except by Subscribable interface
-- (void)getCurrentReachability:(RCTResponseSenderBlock)getSuccess
-             withErrorCallback:(__unused RCTResponseSenderBlock)getError
+RCT_EXPORT_METHOD(getCurrentReachability:(RCTResponseSenderBlock)getSuccess
+                  withErrorCallback:(__unused RCTResponseSenderBlock)getError)
 {
-  RCT_EXPORT();
-
   getSuccess(@[@{@"network_reachability": _status}]);
 }
 
