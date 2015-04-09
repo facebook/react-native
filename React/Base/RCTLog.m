@@ -55,6 +55,7 @@ RCTLogFunction RCTDefaultLogFunction = ^(
     [NSDate date], [NSThread currentThread], level, fileName, lineNumber, message
   );
   fprintf(stderr, "%s\n", log.UTF8String);
+  fflush(stderr);
 };
 
 void RCTSetLogFunction(RCTLogFunction logFunction)
