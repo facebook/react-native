@@ -52,6 +52,7 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   placeholder: true,
   placeholderTextColor: true,
   text: true,
+  textAlign: true
 });
 
 var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
