@@ -31,7 +31,7 @@ RCT_EXPORT_MODULE()
   return [self initWithDelegate:nil];
 }
 
-RCT_EXPORT_METHOD(reportUnhandledExceptionWithMessage:(NSString *)message
+RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
                   stack:(NSArray *)stack)
 {
   if (_delegate) {
