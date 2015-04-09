@@ -1038,6 +1038,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }
     @catch (NSException *exception) {
       RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
+      if ([exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
+        @throw;
+      }
     }
   });
 
