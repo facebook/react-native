@@ -168,15 +168,22 @@ DependecyGraph.prototype.resolveDependency = function(
   // Package relative modules starts with '.' or '..'.
   if (depModuleId[0] !== '.') {
 
-    // 1. `depModuleId` is simply a top-level `providesModule`.
-    // 2. `depModuleId` is a package module but given the full path from the
-    //     package, i.e. package_name/module_name
+    // Check if we need to map the dependency to something else via the
+    // `browser` field in package.json
+    var fromPackageJson = this._lookupPackage(fromModule.path);
+    if (fromPackageJson && fromPackageJson.browser &&
+        fromPackageJson.browser[depModuleId]) {
+      depModuleId = fromPackageJson.browser[depModuleId];
+    }
+
+    // `depModuleId` is simply a top-level `providesModule`.
+    // `depModuleId` is a package module but given the full path from the
+    //  package, i.e. package_name/module_name
     if (this._moduleById[sansExtJs(depModuleId)]) {
       return this._moduleById[sansExtJs(depModuleId)];
     }
 
-    // 3. `depModuleId` is a package and it's depending on the "main"
-    //    resolution.
+    // `depModuleId` is a package and it's depending on the "main" resolution.
     packageJson = this._packagesById[depModuleId];
 
     // We are being forgiving here and raising an error because we could be
@@ -190,7 +197,25 @@ DependecyGraph.prototype.resolveDependency = function(
       return null;
     }
 
-    var main = packageJson.main || 'index';
+    var main;
+
+    // We prioritize the `browser` field if it's a module path.
+    if (typeof packageJson.browser === 'string') {
+      main = packageJson.browser;
+    } else {
+      main = packageJson.main || 'index';
+    }
+
+    // If there is a mapping for main in the `browser` field.
+    if (packageJson.browser && typeof packageJson.browser === 'object') {
+      var tmpMain = packageJson.browser[main] ||
+            packageJson.browser[withExtJs(main)] ||
+            packageJson.browser[sansExtJs(main)];
+      if (tmpMain) {
+        main = tmpMain;
+      }
+    }
+
     modulePath = withExtJs(path.join(packageJson._root, main));
     dep = this._graph[modulePath];
 
@@ -207,8 +232,7 @@ DependecyGraph.prototype.resolveDependency = function(
     return dep;
   } else {
 
-    // 4. `depModuleId` is a module defined in a package relative to
-    //    `fromModule`.
+    // `depModuleId` is a module defined in a package relative to `fromModule`.
     packageJson = this._lookupPackage(fromModule.path);
 
     if (packageJson == null) {
@@ -224,12 +248,23 @@ DependecyGraph.prototype.resolveDependency = function(
     var dir = path.dirname(fromModule.path);
     modulePath = path.join(dir, depModuleId);
 
+    if (packageJson.browser && typeof packageJson.browser === 'object') {
+      var relPath = './' + path.relative(packageJson._root, modulePath);
+      var tmpModulePath = packageJson.browser[withExtJs(relPath)] ||
+            packageJson.browser[sansExtJs(relPath)];
+      if (tmpModulePath) {
+        modulePath = path.join(packageJson._root, tmpModulePath);
+      }
+    }
+
+    // JS modules can be required without extensios.
     if (this._assetExts.indexOf(extname(modulePath)) === -1) {
       modulePath = withExtJs(modulePath);
     }
 
     dep = this._graph[modulePath];
 
+    // Maybe the dependency is a directory and there is an index.js inside it.
     if (dep == null) {
       modulePath = path.join(dir, depModuleId, 'index.js');
     }

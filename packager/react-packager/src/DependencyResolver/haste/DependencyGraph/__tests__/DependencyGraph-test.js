@@ -674,6 +674,296 @@ describe('DependencyGraph', function() {
           ]);
       });
     });
+
+    pit('should support simple browser field in packages', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              main: 'main.js',
+              browser: 'client.js',
+            }),
+            'main.js': 'some other code',
+            'client.js': 'some code',
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['aPackage']
+            },
+            { id: 'aPackage/client',
+              path: '/root/aPackage/client.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
+    pit('should supportbrowser field in packages w/o .js ext', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              main: 'main.js',
+              browser: 'client',
+            }),
+            'main.js': 'some other code',
+            'client.js': 'some code',
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['aPackage']
+            },
+            { id: 'aPackage/client',
+              path: '/root/aPackage/client.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
+    pit('should support mapping main in browser field json', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              main: './main.js',
+              browser: {
+                './main.js': './client.js',
+              },
+            }),
+            'main.js': 'some other code',
+            'client.js': 'some code',
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['aPackage']
+            },
+            { id: 'aPackage/client',
+              path: '/root/aPackage/client.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
+    pit('should work do correct browser mapping w/o js ext', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              main: './main.js',
+              browser: {
+                './main': './client.js',
+              },
+            }),
+            'main.js': 'some other code',
+            'client.js': 'some code',
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['aPackage']
+            },
+            { id: 'aPackage/client',
+              path: '/root/aPackage/client.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
+    pit('should support browser mapping of files', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              main: './main.js',
+              browser: {
+                './main': './client.js',
+                './node.js': './not-node.js',
+                './not-browser': './browser.js',
+                './dir/server.js': './dir/client',
+              },
+            }),
+            'main.js': 'some other code',
+            'client.js': 'require("./node")\nrequire("./dir/server.js")',
+            'not-node.js': 'require("./not-browser")',
+            'not-browser.js': 'require("./dir/server")',
+            'browser.js': 'some browser code',
+            'dir': {
+              'server.js': 'some node code',
+              'client.js': 'some browser code',
+            }
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['aPackage']
+            },
+            { id: 'aPackage/client',
+              path: '/root/aPackage/client.js',
+              dependencies: ['./node', './dir/server.js']
+            },
+            { id: 'aPackage/not-node',
+              path: '/root/aPackage/not-node.js',
+              dependencies: ['./not-browser']
+            },
+            { id: 'aPackage/browser',
+              path: '/root/aPackage/browser.js',
+              dependencies: []
+            },
+            { id: 'aPackage/dir/client',
+              path: '/root/aPackage/dir/client.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
+    pit('should support browser mapping for packages', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              browser: {
+                'node-package': 'browser-package',
+              }
+            }),
+            'index.js': 'require("node-package")',
+            'node-package': {
+              'package.json': JSON.stringify({
+                'name': 'node-package',
+              }),
+              'index.js': 'some node code',
+            },
+            'browser-package': {
+              'package.json': JSON.stringify({
+                'name': 'browser-package',
+              }),
+              'index.js': 'some browser code',
+            },
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            { id: 'index', altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['aPackage']
+            },
+            { id: 'aPackage/index',
+              path: '/root/aPackage/index.js',
+              dependencies: ['node-package']
+            },
+            { id: 'browser-package/index',
+              path: '/root/aPackage/browser-package/index.js',
+              dependencies: []
+            },
+          ]);
+      });
+    });
   });
 
   describe('file watch updating', function() {
