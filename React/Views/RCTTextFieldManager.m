@@ -34,6 +34,7 @@ RCT_EXPORT_VIEW_PROPERTY(enablesReturnKeyAutomatically, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, autocapitalizationType, UITextAutocapitalizationType)
+RCT_REMAP_VIEW_PROPERTY(textAlign, textAlignment, NSTextAlignment)
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
