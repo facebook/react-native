@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13BE3DEE1AC21097009241FE /* RCTAnimationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BE3DED1AC21097009241FE /* RCTAnimationManager.m */; };
+		13BE3DEE1AC21097009241FE /* RCTAnimationExperimentalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BE3DED1AC21097009241FE /* RCTAnimationExperimentalManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,9 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		134814201AA4EA6300B7C361 /* libRCTAnimation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTAnimation.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		13BE3DEC1AC21097009241FE /* RCTAnimationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAnimationManager.h; sourceTree = "<group>"; };
-		13BE3DED1AC21097009241FE /* RCTAnimationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAnimationManager.m; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libRCTAnimationExperimental.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTAnimationExperimental.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		13BE3DEC1AC21097009241FE /* RCTAnimationExperimentalManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAnimationExperimentalManager.h; sourceTree = "<group>"; };
+		13BE3DED1AC21097009241FE /* RCTAnimationExperimentalManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAnimationExperimentalManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,7 +42,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libRCTAnimation.a */,
+				134814201AA4EA6300B7C361 /* libRCTAnimationExperimental.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -50,8 +50,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				13BE3DEC1AC21097009241FE /* RCTAnimationManager.h */,
-				13BE3DED1AC21097009241FE /* RCTAnimationManager.m */,
+				13BE3DEC1AC21097009241FE /* RCTAnimationExperimentalManager.h */,
+				13BE3DED1AC21097009241FE /* RCTAnimationExperimentalManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,9 +59,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* RCTAnimation */ = {
+		58B511DA1A9E6C8500147676 /* RCTAnimationExperimental */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTAnimation" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTAnimationExperimental" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -71,9 +71,9 @@
 			);
 			dependencies = (
 			);
-			name = RCTAnimation;
+			name = RCTAnimationExperimental;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libRCTAnimation.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libRCTAnimationExperimental.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -90,7 +90,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTAnimation" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTAnimationExperimental" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -102,7 +102,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* RCTAnimation */,
+				58B511DA1A9E6C8500147676 /* RCTAnimationExperimental */,
 			);
 		};
 /* End PBXProject section */
@@ -112,7 +112,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13BE3DEE1AC21097009241FE /* RCTAnimationManager.m in Sources */,
+				13BE3DEE1AC21097009241FE /* RCTAnimationExperimentalManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,7 +203,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RCTAnimation;
+				PRODUCT_NAME = RCTAnimationExperimental;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -218,7 +218,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RCTAnimation;
+				PRODUCT_NAME = RCTAnimationExperimental;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -226,7 +226,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTAnimation" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTAnimationExperimental" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -235,7 +235,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTAnimation" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTAnimationExperimental" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,

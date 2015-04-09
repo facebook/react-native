@@ -33,7 +33,8 @@ if (cli) {
     process.exit(1);
   }
 
-  if (args[0] === 'init') {
+  switch (args[0]) {
+  case 'init':
     if (args[1]) {
       init(args[1]);
     } else {
@@ -42,13 +43,15 @@ if (cli) {
       );
       process.exit(1);
     }
-  } else {
+    break;
+  default:
     console.error(
       'Command `%s` unrecognized. ' +
       'Did you mean to run this inside a react-native project?',
       args[0]
     );
     process.exit(1);
+    break;
   }
 }
 

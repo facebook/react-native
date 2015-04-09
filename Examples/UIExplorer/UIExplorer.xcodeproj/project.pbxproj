@@ -305,7 +305,9 @@
 				004D289F1AAF61C70097A701 /* UIExplorerTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;

@@ -38,23 +38,18 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object,
     if (!string) {
       return JSValueMakeUndefined(context);
     }
-
-    NSString *str = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, string);
-    NSError *error = nil;
+    NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, string);
+    JSStringRelease(string);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:
                                   @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/([a-z0-9_]+).includeRequire.runModule.bundle(:[0-9]+:[0-9]+)"
                                                                            options:NSRegularExpressionCaseInsensitive
-                                                                             error:&error];
-    NSString *modifiedString = [regex stringByReplacingMatchesInString:str options:0 range:NSMakeRange(0, [str length]) withTemplate:@"[$4$5]  \t$2"];
+                                                                             error:NULL];
+    message = [regex stringByReplacingMatchesInString:message
+                                              options:0
+                                                range:(NSRange){0, message.length}
+                                         withTemplate:@"[$4$5]  \t$2"];
 
-    modifiedString = [@"RCTJSLog> " stringByAppendingString:modifiedString];
-#if TARGET_IPHONE_SIMULATOR
-    fprintf(stderr, "%s\n", [modifiedString UTF8String]); // don't print timestamps and other junk
-#else
-    // Print normal errors with timestamps to files when not in simulator.
-    RCTLogObjects(@[modifiedString], @"log");
-#endif
-    JSStringRelease(string);
+    _RCTLogFormat(0, NULL, -1, @"%@", message);
   }
 
   return JSValueMakeUndefined(context);

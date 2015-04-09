@@ -40,7 +40,7 @@ var SliderIOS = React.createClass({
      * Default value is 0.
      *
      * *This is not a controlled component*, e.g. if you don't update
-     * the value, the component won't be reset to it's inital value.
+     * the value, the component won't be reset to its inital value.
      */
     value: PropTypes.number,
 
@@ -82,6 +82,8 @@ var SliderIOS = React.createClass({
       <RCTSlider
         style={[styles.slider, this.props.style]}
         value={this.props.value}
+        maximumValue={this.props.maximumValue}
+        minimumValue={this.props.minimumValue}
         onChange={this._onValueChange}
       />
     );
@@ -94,8 +96,15 @@ var styles = StyleSheet.create({
   },
 });
 
+var validAttributes = {
+  ...ReactIOSViewAttributes.UIView,
+  value: true,
+  minimumValue: true,
+  maximumValue: true,
+};
+
 var RCTSlider = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {value: true}),
+  validAttributes: validAttributes,
   uiViewClassName: 'RCTSlider',
 });
 

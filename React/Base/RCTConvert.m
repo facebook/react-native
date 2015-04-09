@@ -45,7 +45,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
     return number;
   } else if (json && json != [NSNull null]) {
-    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a number", json, [json class]);
+    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a number", json, [json classForCoder]);
   }
   return nil;
 }
@@ -53,7 +53,7 @@ RCT_CONVERTER(NSString *, NSString, description)
 + (NSURL *)NSURL:(id)json
 {
   if (![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json classForCoder], json);
     return nil;
   }
 
@@ -98,7 +98,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
     return date;
   } else if (json && json != [NSNull null]) {
-    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a date", json, [json class]);
+    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a date", json, [json classForCoder]);
   }
   return nil;
 }
@@ -223,8 +223,9 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
         json = [json mutableCopy];                       \
         for (NSString *alias in aliases) {               \
           NSString *key = aliases[alias];                \
-          NSNumber *number = json[key];                  \
+          NSNumber *number = json[alias];                \
           if (number) {                                  \
+            RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, #type, key); \
             ((NSMutableDictionary *)json)[key] = number; \
           }                                              \
         }                                                \
@@ -233,7 +234,8 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
         ((CGFloat *)&result)[i] = [self CGFloat:json[fields[i]]]; \
       }                                                  \
     } else if (json && json != [NSNull null]) {          \
-      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
+      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", \
+                  #type, [json classForCoder], json);    \
     }                                                    \
     return result;                                       \
   }                                                      \
@@ -245,9 +247,9 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
 }
 
 RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
-RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), nil)
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), (@{@"l": @"x", @"t": @"y"}))
 RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
-RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"l": @"x", @"t": @"y", @"w": @"width", @"h": @"height"}))
 RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]), nil)
 
 RCT_ENUM_CONVERTER(CGLineJoin, (@{
@@ -459,7 +461,17 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     NSUInteger blue = -1;
     CGFloat alpha = 1.0;
     if ([colorString hasPrefix:@"#"]) {
-      sscanf([colorString UTF8String], "#%02tX%02tX%02tX", &red, &green, &blue);
+      if (colorString.length == 4) { // 3 digit hex
+        sscanf([colorString UTF8String], "#%01tX%01tX%01tX", &red, &green, &blue);
+        // expand to 6 digit hex
+        red = red | (red << 4);
+        green = green | (green << 4);
+        blue = blue | (blue << 4);
+      } else if (colorString.length == 7) { // normal 6 digit hex
+        sscanf([colorString UTF8String], "#%02tX%02tX%02tX", &red, &green, &blue);
+      } else {
+        RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long", colorString);
+      }
     } else if ([colorString hasPrefix:@"rgba("]) {
       double tmpAlpha;
       sscanf([colorString UTF8String], "rgba(%zd,%zd,%zd,%lf)", &red, &green, &blue, &tmpAlpha);
@@ -500,8 +512,8 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   } else if (json && ![json isKindOfClass:[NSNull class]]) {
 
-    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, \
-                received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, received %@: %@",
+                [json classForCoder], json);
   }
 
   // Default color
@@ -527,7 +539,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   // image itself) so as to reduce overhead on subsequent checks of the same input
 
   if (![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json class], json);
+    RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json classForCoder], json);
     return nil;
   }
 
@@ -537,7 +549,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   UIImage *image = nil;
   NSString *path = json;
-  if ([path isAbsolutePath]) {
+  if ([path hasPrefix:@"data:"]) {
+    NSURL *url = [NSURL URLWithString:path];
+    NSData *imageData = [NSData dataWithContentsOfURL:url];
+    image = [UIImage imageWithData:imageData];
+  } else if ([path isAbsolutePath]) {
     image = [UIImage imageWithContentsOfFile:path];
   } else {
     image = [UIImage imageNamed:path];

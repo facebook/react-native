@@ -59,13 +59,20 @@ var ScrollView = React.createClass({
     contentOffset: PointPropType, // zeros
     onScroll: PropTypes.func,
     onScrollAnimationEnd: PropTypes.func,
-    scrollEnabled: PropTypes.bool, // tre
+    scrollEnabled: PropTypes.bool, // true
     scrollIndicatorInsets: EdgeInsetsPropType, // zeros
     showsHorizontalScrollIndicator: PropTypes.bool,
     showsVerticalScrollIndicator: PropTypes.bool,
     style: StyleSheetPropType(ViewStylePropTypes),
     scrollEventThrottle: PropTypes.number, // null
 
+    /**
+     * When true, the scroll view bounces when it reaches the end of the
+     * content if the content is larger then the scroll view along the axis of
+     * the scroll direction. When false, it disables all bouncing even if
+     * the `alwaysBounce*` props are true. The default value is true.
+     */
+    bounces: PropTypes.bool,
     /**
      * When true, the scroll view bounces horizontally when it reaches the end
      * even if the content is smaller than the scroll view itself. The default
@@ -195,6 +202,14 @@ var ScrollView = React.createClass({
     );
   },
 
+  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
+    RCTUIManager.scrollWithoutAnimationTo(
+      this.getNodeHandle(),
+      destX || 0,
+      destY || 0
+    );
+  },
+
   render: function() {
     var contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
@@ -308,6 +323,7 @@ var validAttributes = {
   alwaysBounceHorizontal: true,
   alwaysBounceVertical: true,
   automaticallyAdjustContentInsets: true,
+  bounces: true,
   centerContent: true,
   contentInset: {diff: insetsDiffer},
   contentOffset: {diff: pointsDiffer},

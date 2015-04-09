@@ -16,11 +16,17 @@
 #import <mach-o/dyld.h>
 #import <mach-o/getsect.h>
 
+#import "RCTContextExecutor.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTJavaScriptLoader.h"
+#import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTRedBox.h"
+#import "RCTRootView.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
+#import "RCTWebViewExecutor.h"
 
 /**
  * Must be kept in sync with `MessageQueue.js`.
@@ -34,10 +40,9 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldFlushDateMillis
 };
 
-/**
- * This function returns the module name for a given class.
- */
-static NSString *RCTModuleNameForClass(Class cls)
+NSString *const RCTReloadBridge = @"RCTReloadBridge";
+
+NSString *RCTBridgeModuleNameForClass(Class cls)
 {
   return [cls respondsToSelector:@selector(moduleName)] ? [cls moduleName] : NSStringFromClass(cls);
 }
@@ -85,7 +90,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
         [(NSMutableArray *)modules addObject:cls];
 
         // Add module name
-        NSString *moduleName = RCTModuleNameForClass(cls);
+        NSString *moduleName = RCTBridgeModuleNameForClass(cls);
         [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
       }
     });
@@ -124,6 +129,8 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
   NSArray *_argumentBlocks;
   NSString *_methodName;
 }
+
+static Class _globalExecutorClass;
 
 - (instancetype)initWithMethodName:(NSString *)methodName
                       JSMethodName:(NSString *)JSMethodName
@@ -178,7 +185,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
           RCT_ARG_BLOCK( \
             if (json && ![json isKindOfClass:[_class class]]) { \
               RCTLogError(@"Argument %tu (%@) of %@.%@ should be of type %@", index, \
-                json, RCTModuleNameForClass(_moduleClass), _JSMethodName, [_class class]); \
+                json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, [_class class]); \
               return; \
             } \
             _logic \
@@ -194,7 +201,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
           RCT_ARG_BLOCK( \
             if (json && ![json respondsToSelector:@selector(_selector)]) { \
               RCTLogError(@"Argument %tu (%@) of %@.%@ does not respond to selector: %@", \
-                index, json, RCTModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
+                index, json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
               return; \
             } \
             _type value = [json _selector];                     \
@@ -222,7 +229,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
             RCT_ARG_BLOCK(
               if (json && ![json isKindOfClass:[NSNumber class]]) {
                 RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
-                            json, RCTModuleNameForClass(_moduleClass), _JSMethodName);
+                            json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
                 return;
               }
               // Marked as autoreleasing, because NSInvocation doesn't retain arguments
@@ -259,7 +266,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
   // Safety check
   if (arguments.count != _argumentBlocks.count) {
     RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
-                RCTModuleNameForClass(_moduleClass), _JSMethodName,
+                RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
                 arguments.count, _argumentBlocks.count);
     return;
   }
@@ -497,37 +504,45 @@ static NSDictionary *RCTLocalModulesConfig()
   RCTSparseArray *_modulesByID;
   NSDictionary *_modulesByName;
   id<RCTJavaScriptExecutor> _javaScriptExecutor;
+  Class _executorClass;
+  NSString *_bundlePath;
+  NSDictionary *_launchOptions;
   RCTBridgeModuleProviderBlock _moduleProvider;
+  BOOL _loaded;
 }
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
-- (instancetype)initWithBundlePath:(NSString *)bundlepath
+- (instancetype)initWithBundlePath:(NSString *)bundlePath
                     moduleProvider:(RCTBridgeModuleProviderBlock)block
                      launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
-    _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
-    _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+    _bundlePath = bundlePath;
     _moduleProvider = block;
     _launchOptions = launchOptions;
+    [self setUp];
+    [self bindKeys];
   }
+
   return self;
 }
-
-- (void)setJavaScriptExecutor:(id<RCTJavaScriptExecutor>)executor
-{
-  _javaScriptExecutor = executor;
-  _latestJSExecutor = _javaScriptExecutor;
-  [self setUp];
-}
-
 - (void)setUp
 {
+  Class executorClass = _executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class];
+  if ([NSStringFromClass(executorClass) isEqualToString:@"RCTWebViewExecutor"]) {
+    _javaScriptExecutor = [[RCTWebViewExecutor alloc] initWithWebView:[[UIWebView alloc] init]];
+  } else {
+    _javaScriptExecutor = [[executorClass alloc] init];
+  }
+  _latestJSExecutor = _javaScriptExecutor;
+  _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
+  _shadowQueue = dispatch_queue_create("com.facebook.ReactKit.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
   for (id<RCTBridgeModule> module in _moduleProvider ? _moduleProvider() : nil) {
-    preregisteredModules[RCTModuleNameForClass([module class])] = module;
+    preregisteredModules[RCTBridgeModuleNameForClass([module class])] = module;
   }
 
   // Instantiate modules
@@ -574,11 +589,73 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     dispatch_semaphore_signal(semaphore);
   }];
 
-  if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) != 0) {
-    RCTLogError(@"JavaScriptExecutor took too long to inject JSON object");
+
+  if (_javaScriptExecutor == nil) {
+    /**
+     * HACK (tadeu): If it failed to connect to the debugger, set loaded to true so we can
+     * reload
+     */
+    _loaded = YES;
+  } else if (_bundlePath != nil) { // Allow testing without a script
+    RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
+    [loader loadBundleAtURL:[NSURL URLWithString:_bundlePath]
+                 onComplete:^(NSError *error) {
+                   _loaded = YES;
+                   if (error != nil) {
+                     NSArray *stack = [[error userInfo] objectForKey:@"stack"];
+                     if (stack) {
+                       [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withStack:stack];
+                     } else {
+                       [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withDetails:[error localizedFailureReason]];
+                     }
+                   } else {
+                     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                                         object:self];
+                     [[NSNotificationCenter defaultCenter] addObserver:self
+                                                              selector:@selector(reload)
+                                                                  name:RCTReloadNotification
+                                                                object:nil];
+                     ;
+                   }
+                 }];
   }
 }
 
+- (void)bindKeys
+{
+#if TARGET_IPHONE_SIMULATOR
+  // Workaround around the first cmd+r not working: http://openradar.appspot.com/19613391
+  // You can register just the cmd key and do nothing. This will trigger the bug and cmd+r
+  // will work like a charm!
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@""
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          // Do nothing
+                                                        }];
+
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          [self reload];
+                                                        }];
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"n"
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          _executorClass = Nil;
+                                                          [self reload];
+                                                        }];
+
+  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:^(UIKeyCommand *command) {
+                                                          _executorClass = NSClassFromString(@"RCTWebSocketExecutor");
+                                                          if (!_executorClass) {
+                                                            RCTLogError(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
+                                                          }
+                                                          [self reload];
+                                                        }];
+#endif
+}
 
 - (NSDictionary *)modules
 {
@@ -602,17 +679,19 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)invalidate
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  // Wait for queued methods to finish
+  dispatch_sync(self.shadowQueue, ^{
+    // Make sure all dispatchers have been executed before continuing
+  });
+
   // Release executor
   if (_latestJSExecutor == _javaScriptExecutor) {
     _latestJSExecutor = nil;
   }
   [_javaScriptExecutor invalidate];
   _javaScriptExecutor = nil;
-
-  // Wait for queued methods to finish
-  dispatch_sync(self.shadowQueue, ^{
-    // Make sure all dispatchers have been executed before continuing
-  });
 
   // Invalidate modules
   for (id target in _modulesByID.allObjects) {
@@ -624,6 +703,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   // Release modules (breaks retain cycle if module has strong bridge reference)
   _modulesByID = nil;
   _modulesByName = nil;
+  _loaded = NO;
 }
 
 /**
@@ -647,9 +727,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
   RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
 
+  if (self.loaded) {
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
                       arguments:@[moduleID, methodID, args ?: @[]]];
+  }
 }
 
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete
@@ -793,32 +875,36 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return YES;
 }
 
+- (void)reload
+{
+  if (_loaded) {
+    // If the bridge has not loaded yet, the context will be already invalid at
+    // the time the javascript gets executed.
+    // It will crash the javascript, and even the next `load` won't render.
+    [self invalidate];
+    [self setUp];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadViewsNotification
+                                                        object:self];
+  }
+}
+
 + (BOOL)hasValidJSExecutor
 {
   return (_latestJSExecutor != nil && [_latestJSExecutor isValid]);
 }
 
-+ (void)log:(NSArray *)objects level:(NSString *)level
++ (void)logMessage:(NSString *)message level:(NSString *)level
 {
   if (!_latestJSExecutor || ![_latestJSExecutor isValid]) {
-    RCTLogError(@"ERROR: No valid JS executor to log %@.", objects);
+    RCTLogError(@"ERROR: No valid JS executor to log '%@'.", message);
     return;
   }
-  NSMutableArray *args = [NSMutableArray arrayWithObject:level];
 
-  // TODO (#5906496): Find out and document why we skip the first object
-  for (id ob in [objects subarrayWithRange:(NSRange){1, [objects count] - 1}]) {
-    if ([NSJSONSerialization isValidJSONObject:@[ob]]) {
-      [args addObject:ob];
-    } else {
-      [args addObject:[ob description]];
-    }
-  }
-
-  // Note: the js executor could get invalidated while we're trying to call this...need to watch out for that.
+  // Note: the js executor could get invalidated while we're trying to call
+  // this...need to watch out for that.
   [_latestJSExecutor executeJSCall:@"RCTLog"
                             method:@"logIfNoNativeHook"
-                         arguments:args
+                         arguments:@[level, message]
                           callback:^(id json, NSError *error) {}];
 }
 

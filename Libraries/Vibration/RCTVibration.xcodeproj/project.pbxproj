@@ -46,7 +46,9 @@
 				832C819B1AAF6E1A007FA2F7 /* RCTVibration.m */,
 				832C81811AAF6DEF007FA2F7 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		832C81811AAF6DEF007FA2F7 /* Products */ = {
 			isa = PBXGroup;

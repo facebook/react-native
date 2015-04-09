@@ -11,13 +11,12 @@
 jest
   .setMock('worker-farm', function() { return function() {};})
   .dontMock('path')
-  .dontMock('q')
   .dontMock('os')
   .dontMock('underscore')
   .setMock('uglify-js')
   .dontMock('../');
 
-var q = require('q');
+var Promise = require('bluebird');
 
 describe('Packager', function() {
   var getDependencies;
@@ -56,7 +55,7 @@ describe('Packager', function() {
     ];
 
     getDependencies.mockImpl(function() {
-      return q({
+      return Promise.resolve({
         mainModuleId: 'foo',
         dependencies: modules
       });
@@ -64,7 +63,7 @@ describe('Packager', function() {
 
     require('../../JSTransformer').prototype.loadFileAndTransform
       .mockImpl(function(path) {
-        return q({
+        return Promise.resolve({
           code: 'transformed ' + path,
           sourceCode: 'source ' + path,
           sourcePath: path

@@ -964,6 +964,11 @@ div[data-twttr-id] iframe {
   font-size: 13px;
 }
 
+.edit-github {
+  font-size: 15px;
+  font-weight: normal;
+  float: right;
+}
 
 #content {
   display: none;

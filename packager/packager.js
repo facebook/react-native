@@ -10,6 +10,8 @@
 
 var fs = require('fs');
 var path = require('path');
+var exec = require('child_process').exec;
+var http = require('http');
 
 if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   console.log(
@@ -21,11 +23,10 @@ if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   process.exit();
 }
 
-var exec = require('child_process').exec;
+var chalk = require('chalk');
+var connect = require('connect');
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
-var connect = require('connect');
-var http = require('http');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
 var webSocketProxy = require('./webSocketProxy.js');
@@ -88,13 +89,35 @@ console.log('\n' +
 ' ===============================================================\n'
 );
 
-console.log('Looking for JS files in\n  ', options.projectRoots.join('\n   '));
+console.log(
+  'Looking for JS files in\n  ',
+  chalk.dim(options.projectRoots.join('\n   ')),
+  '\n'
+);
 
 process.on('uncaughtException', function(e) {
-  console.error(e);
-  console.error(e.stack);
-  console.error('\n  >>> ERROR: could not create packager - please shut down ' +
-                'any existing instances that are already running.\n\n');
+  if (e.code === 'EADDRINUSE') {
+    console.log(
+      chalk.bgRed.bold(' ERROR '),
+      chalk.red('Packager can\'t listen on port', chalk.bold(options.port))
+    );
+    console.log('Most likely another process is already using this port');
+    console.log('Run the following command to find out which process:');
+    console.log('\n  ', chalk.bold('lsof -n -i4TCP:' + options.port), '\n');
+    console.log('You can either shut down the other process:');
+    console.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
+    console.log('or run packager on different port.');
+  } else {
+    console.log(chalk.bgRed.bold(' ERROR '), chalk.red(e.message));
+    var errorAttributes = JSON.stringify(e);
+    if (errorAttributes !== '{}') {
+      console.error(chalk.red(errorAttributes));
+    }
+    console.error(chalk.red(e.stack));
+  }
+  console.log('\nSee', chalk.underline('http://facebook.github.io/react-native/docs/troubleshooting.html'));
+  console.log('for common problems and solutions.');
+  process.exit(1);
 });
 
 var server = runServer(options, function() {
@@ -150,6 +173,17 @@ function getDevToolsLauncher(options) {
   };
 }
 
+// A status page so the React/project.pbxproj build script
+// can verify that packager is running on 8081 and not
+// another program / service.
+function statusPageMiddleware(req, res, next) {
+  if (req.url === '/status') {
+    res.end('packager-status:running');
+  } else {
+    next();
+  }
+}
+
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
     projectRoots: options.projectRoots,
@@ -168,6 +202,7 @@ function runServer(
     .use(loadRawBody)
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
+    .use(statusPageMiddleware)
     .use(getAppMiddleware(options));
 
   options.projectRoots.forEach(function(root) {
