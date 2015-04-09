@@ -35,8 +35,10 @@ RCT_EXPORT_METHOD(queryData:(NSString *)queryType
       queryDict = RCTJSONParse(query, NULL);
     }
 
+    // Escape url entities
+    NSString *urlStr = [queryDict[@"url"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     // Build request
-    NSURL *url = [NSURL URLWithString:queryDict[@"url"]];
+    NSURL *url = [NSURL URLWithString:urlStr];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod = queryDict[@"method"] ?: @"GET";
     request.allHTTPHeaderFields = queryDict[@"headers"];
