@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
+var path = require('path');
 
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
@@ -31,7 +32,8 @@ var iosBlacklist = [
 ];
 
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  var escaped = str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  return escaped.replace(/\//g,"\\"+path.sep);
 }
 
 function blacklist(isWeb, additionalBlacklist) {
