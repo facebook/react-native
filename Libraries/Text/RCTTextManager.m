@@ -20,6 +20,8 @@
 
 @implementation RCTTextManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTText alloc] init];

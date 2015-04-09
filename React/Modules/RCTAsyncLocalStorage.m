@@ -88,6 +88,8 @@ static dispatch_queue_t RCTFileQueue(void)
   NSString *_storageDirectory;
 }
 
+RCT_EXPORT_MODULE()
+
 - (NSString *)_filePathForKey:(NSString *)key
 {
   NSString *safeFileName = RCTMD5Hash(key);
@@ -186,10 +188,9 @@ static dispatch_queue_t RCTFileQueue(void)
 
 #pragma mark - Exported JS Functions
 
-- (void)multiGet:(NSArray *)keys callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   if (!callback) {
     RCTLogError(@"Called getItem without a callback.");
     return;
@@ -212,10 +213,9 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)multiSet:(NSArray *)kvPairs callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {
@@ -234,10 +234,9 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)multiRemove:(NSArray *)keys callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {
@@ -261,10 +260,8 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)clear:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (!errorOut) {
@@ -282,10 +279,8 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)getAllKeys:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {

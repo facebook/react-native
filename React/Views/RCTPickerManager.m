@@ -15,6 +15,8 @@
 
 @implementation RCTPickerManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTPicker alloc] initWithEventDispatcher:self.bridge.eventDispatcher];

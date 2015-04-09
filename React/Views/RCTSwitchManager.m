@@ -16,6 +16,8 @@
 
 @implementation RCTSwitchManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   RCTSwitch *switcher = [[RCTSwitch alloc] init];

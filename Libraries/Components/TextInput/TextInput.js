@@ -492,7 +492,7 @@ var TextInput = React.createClass({
 
   _renderAndroid: function() {
     var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
-    return (
+    var textContainer =
       <AndroidTextInput
         ref="input"
         style={[this.props.style]}
@@ -503,11 +503,19 @@ var TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onEndEditing={this.props.onEndEditing}
+        onSubmitEditing={this.props.onSubmitEditing}
         password={this.props.password}
         placeholder={this.props.placeholder}
-        value={this.props.value}
-        testID={this.props.testID}
-      />
+        value={this.state.bufferedValue}
+      />;
+
+    return (
+      <TouchableWithoutFeedback
+        onPress={this._onPress}
+        testID={this.props.testID}>
+        {textContainer}
+      </TouchableWithoutFeedback>
     );
   },
 

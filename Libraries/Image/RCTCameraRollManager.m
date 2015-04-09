@@ -14,15 +14,17 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
- #import "RCTImageLoader.h"
+#import "RCTImageLoader.h"
 #import "RCTLog.h"
 
 @implementation RCTCameraRollManager
 
-- (void)saveImageWithTag:(NSString *)imageTag successCallback:(RCTResponseSenderBlock)successCallback errorCallback:(RCTResponseSenderBlock)errorCallback
-{
-  RCT_EXPORT();
+RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
+                  successCallback:(RCTResponseSenderBlock)successCallback
+                  errorCallback:(RCTResponseSenderBlock)errorCallback)
+{
   [RCTImageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
     if (loadError) {
       errorCallback(@[[loadError localizedDescription]]);
@@ -59,10 +61,10 @@
                }]);
 }
 
-- (void)getPhotos:(NSDictionary *)params callback:(RCTResponseSenderBlock)callback errorCallback:(RCTResponseSenderBlock)errorCallback
+RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
+                  callback:(RCTResponseSenderBlock)callback
+                  errorCallback:(RCTResponseSenderBlock)errorCallback)
 {
-  RCT_EXPORT();
-
   NSUInteger first = [params[@"first"] integerValue];
   NSString *afterCursor = params[@"after"];
   NSString *groupTypesStr = params[@"groupTypes"];
