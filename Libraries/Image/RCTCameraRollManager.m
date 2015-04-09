@@ -94,12 +94,12 @@
   [[RCTImageLoader assetsLibrary] enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
     if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:ALAssetsGroupPropertyName]])) {
       
-      if (assetType == nil || [assetType isEqualToString:@"all"]) {
-        [group setAssetsFilter:ALAssetsFilter.allAssets];
-      } else if ([assetType isEqualToString:@"photos"]) {
+      if (assetType == nil || [assetType isEqualToString:@"photos"]) {
         [group setAssetsFilter:ALAssetsFilter.allPhotos];
       } else if ([assetType isEqualToString:@"videos"]) {
         [group setAssetsFilter:ALAssetsFilter.allVideos];
+      } else if ([assetType isEqualToString:@"all"]) {
+        [group setAssetsFilter:ALAssetsFilter.allAssets];
       }
 
       [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stopAssets) {

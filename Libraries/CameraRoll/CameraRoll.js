@@ -29,8 +29,16 @@ var GROUP_TYPES_OPTIONS = [
   'SavedPhotos', // default
 ];
 
+var ASSET_TYPE_OPTIONS = [
+  'All',
+  'Videos',
+  'Photos', // default
+];
+
+
 // Flow treats Object and Array as disjoint types, currently.
 deepFreezeAndThrowOnMutationInDev((GROUP_TYPES_OPTIONS: any));
+deepFreezeAndThrowOnMutationInDev((ASSET_TYPE_OPTIONS: any));
 
 /**
  * Shape of the param arg for the `getPhotos` function.
@@ -60,9 +68,9 @@ var getPhotosParamChecker = createStrictShapeTypeChecker({
   groupName: ReactPropTypes.string,
 
   /**
-  * Specifies filter on asset type, like 'all', 'photos' or 'videos'
+  * Specifies filter on asset type
   */
-  assetType: ReactPropTypes.string,
+  assetType: ReactPropTypes.oneOf(ASSET_TYPE_OPTIONS),
 });
 
 /**
@@ -157,5 +165,6 @@ class CameraRoll {
 }
 
 CameraRoll.GroupTypesOptions = GROUP_TYPES_OPTIONS;
+CameraRoll.AssetTypeOptions = ASSET_TYPE_OPTIONS;
 
 module.exports = CameraRoll;
