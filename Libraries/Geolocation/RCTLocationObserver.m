@@ -154,7 +154,7 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 - (void)startObserving:(NSDictionary *)optionsJSON
 {
   RCT_EXPORT();
-  [self assertLocationEnabled];
+  [self checkLocationConfig];
 
   dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -193,7 +193,7 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
              errorCallback:(RCTResponseSenderBlock)errorBlock
 {
   RCT_EXPORT();
-  [self assertLocationEnabled];
+  [self checkLocationConfig];
 
   if (!successBlock) {
     RCTLogError(@"%@.getCurrentPosition called with nil success parameter.", [self class]);
@@ -325,7 +325,7 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
   _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
 }
 
-- (void)assertLocationEnabled
+- (void)checkLocationConfig
 {
   if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
     RCTLogError(@"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
