@@ -50,6 +50,7 @@ var RCTNavigatorItem = createReactIOSNativeComponentClass({
     rightButtonTitle: true,
     onNavRightButtonTap: true,
     tintColor: true,
+    navigationBarHidden: true,
     backButtonTitle: true,
     titleTextColor: true,
     style: true,
@@ -234,6 +235,11 @@ var NavigatorIOS = React.createClass({
       wrapperStyle: View.propTypes.style,
 
     }).isRequired,
+
+    /**
+     * A Boolean value that indicates whether the navigation bar is hidden
+     */
+    navigationBarHidden: PropTypes.bool,
 
     /**
      * The default wrapper style for components in the navigator.
@@ -547,6 +553,7 @@ var NavigatorIOS = React.createClass({
           backButtonTitle={route.backButtonTitle}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
+          navigationBarHidden={this.props.navigationBarHidden}
           tintColor={this.props.tintColor}>
           <Component
             navigator={this.navigator}
