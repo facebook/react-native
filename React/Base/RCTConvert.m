@@ -670,11 +670,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     isCondensed = RCTFontIsCondensed(font);
   }
 
-  // Get font weight
-  if (weight) {
-    fontWeight = [self RCTFontWeight:weight];
-  }
-
   // Get font style
   if (style) {
     isItalic = [self RCTFontStyle:style];
@@ -698,6 +693,11 @@ static BOOL RCTFontIsCondensed(UIFont *font)
       RCTLogError(@"Unrecognized font family '%@'", familyName);
       familyName = RCTDefaultFontFamily;
     }
+  }
+
+  // Get font weight
+  if (weight) {
+    fontWeight = [self RCTFontWeight:weight];
   }
 
   // Get closest match
@@ -741,8 +741,6 @@ RCT_ARRAY_CONVERTER(UIColor)
   }
   return colors;
 }
-
-typedef BOOL css_overflow;
 
 RCT_ENUM_CONVERTER(css_overflow, (@{
   @"hidden": @NO,

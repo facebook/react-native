@@ -16,6 +16,8 @@
 
 @implementation RCTWebViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTWebView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
@@ -41,10 +43,8 @@ RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
   };
 }
 
-- (void)goBack:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(goBack:(NSNumber *)reactTag)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
@@ -54,10 +54,8 @@ RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
   }];
 }
 
-- (void)goForward:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(goForward:(NSNumber *)reactTag)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     id view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
@@ -68,10 +66,8 @@ RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
 }
 
 
-- (void)reload:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(reload:(NSNumber *)reactTag)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {

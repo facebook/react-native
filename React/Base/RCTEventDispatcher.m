@@ -25,14 +25,9 @@
   return self;
 }
 
-+ (NSArray *)JSMethods
-{
-  return @[
-    @"RCTNativeAppEventEmitter.emit",
-    @"RCTDeviceEventEmitter.emit",
-    @"RCTEventEmitter.receiveEvent",
-  ];
-}
+RCT_IMPORT_METHOD(RCTNativeAppEventEmitter, emit);
+RCT_IMPORT_METHOD(RCTDeviceEventEmitter, emit);
+RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {

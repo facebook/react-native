@@ -16,6 +16,8 @@
   __weak id<RCTExceptionsManagerDelegate> _delegate;
 }
 
+RCT_EXPORT_MODULE()
+
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
 {
   if ((self = [super init])) {
@@ -29,10 +31,9 @@
   return [self initWithDelegate:nil];
 }
 
-- (void)reportUnhandledExceptionWithMessage:(NSString *)message stack:(NSArray *)stack
+RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
+                  stack:(NSArray *)stack)
 {
-  RCT_EXPORT(reportUnhandledException);
-
   if (_delegate) {
     [_delegate unhandledJSExceptionWithMessage:message stack:stack];
   } else {
@@ -40,10 +41,9 @@
   }
 }
 
-- (void)updateExceptionMessage:(NSString *)message stack:(NSArray *)stack
+RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
+                  stack:(NSArray *)stack)
 {
-  RCT_EXPORT(updateExceptionMessage);
-
   [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
 }
 

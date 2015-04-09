@@ -18,6 +18,8 @@
 
 @implementation RCTStaticImageManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTStaticImage alloc] init];

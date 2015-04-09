@@ -39,7 +39,6 @@
     "start": "./packager/packager.sh"
   },
   "bin": {
-    "react-native": "local-cli/wrong-react-native.js",
     "react-native-start": "packager/packager.sh"
   },
   "dependencies": {
@@ -62,7 +61,9 @@
     "underscore": "1.7.0",
     "worker-farm": "1.1.0",
     "ws": "0.4.31",
-    "yargs": "1.3.2"
+    "yargs": "1.3.2",
+    "bluebird": "^2.9.21",
+    "image-size": "0.3.5"
   },
   "devDependencies": {
     "jest-cli": "0.2.1",

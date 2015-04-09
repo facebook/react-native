@@ -18,6 +18,8 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 @synthesize bridge = _bridge;
 
+RCT_EXPORT_MODULE()
+
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -52,19 +54,15 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
                                               body:[notification userInfo]];
 }
 
-- (void)openURL:(NSString *)url
+RCT_EXPORT_METHOD(openURL:(NSURL *)url)
 {
-  RCT_EXPORT();
-
-  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+  [[UIApplication sharedApplication] openURL:url];
 }
 
-- (void)canOpenURL:(NSString *)url
-          callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(canOpenURL:(NSURL *)url
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
-  BOOL supported = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]];
+  BOOL supported = [[UIApplication sharedApplication] canOpenURL:url];
   callback(@[@(supported)]);
 }
 

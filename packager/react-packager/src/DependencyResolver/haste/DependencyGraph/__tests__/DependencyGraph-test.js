@@ -92,7 +92,7 @@ describe('DependencyGraph', function() {
             {  id: 'image!a',
                path: '/root/imgs/a.png',
                dependencies: [],
-               isAsset: true
+               isAsset_DEPRECATED: true
             },
           ]);
       });
@@ -183,7 +183,7 @@ describe('DependencyGraph', function() {
               id: 'image!a',
               path: '/root/imgs/a.png',
               dependencies: [],
-              isAsset: true
+              isAsset_DEPRECATED: true
             },
           ]);
       });
@@ -954,7 +954,7 @@ describe('DependencyGraph', function() {
             { id: 'image!foo',
               path: '/root/foo.png',
               dependencies: [],
-              isAsset: true,
+              isAsset_DEPRECATED: true,
             },
           ]);
         });

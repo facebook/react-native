@@ -34,7 +34,7 @@ var buildStyleInterpolator = require('buildStyleInterpolator');
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
 
-var ToTheLeft = {
+var FadeToTheLeft = {
   // Rotate *requires* you to break out each individual component of
   // rotation (x, y, z, w)
   transformTranslate: {
@@ -100,6 +100,23 @@ var ToTheLeft = {
     extrapolate: true
   },
 };
+
+var ToTheLeft = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: -Dimensions.get('window').width, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  opacity: {
+    value: 1.0,
+    type: 'constant',
+  },
+};
+
 
 var FromTheRight = {
   opacity: {
@@ -271,7 +288,7 @@ var BaseConfig = {
   // Animation interpolators for horizontal transitioning:
   animationInterpolators: {
     into: buildStyleInterpolator(FromTheRight),
-    out: buildStyleInterpolator(ToTheLeft),
+    out: buildStyleInterpolator(FadeToTheLeft),
   },
 };
 
@@ -312,8 +329,12 @@ var NavigatorSceneConfigs = {
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
       },
-    }
-  }
+    },
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheRight),
+      out: buildStyleInterpolator(ToTheLeft),
+    },
+  },
 };
 
 module.exports = NavigatorSceneConfigs;

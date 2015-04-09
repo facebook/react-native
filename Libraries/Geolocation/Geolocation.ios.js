@@ -23,11 +23,9 @@ var subscriptions = [];
 var updatesEnabled = false;
 
 /**
- * /!\ ATTENTION /!\
- * You need to add NSLocationWhenInUseUsageDescription key
- * in Info.plist to enable geolocation, otherwise it's going
- * to *fail silently*!
- * \!/           \!/
+ * You need to include the `NSLocationWhenInUseUsageDescription` key
+ * in Info.plist to enable geolocation. Geolocation is enabled by default
+ * when you create a project with `react-native init`.
  *
  * Geolocation follows the MDN specification:
  * https://developer.mozilla.org/en-US/docs/Web/API/Geolocation
