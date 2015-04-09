@@ -85,31 +85,51 @@ RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback
 
 RCT_EXPORT_METHOD(requestPermissions)
 {
+  Class _UIUserNotificationSettings;
+  if ((_UIUserNotificationSettings = NSClassFromString(@"UIUserNotificationSettings"))) {
+    UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *notificationSettings = [_UIUserNotificationSettings settingsForTypes:types categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+  } else {
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
-  // if we are targeting iOS 7, *and* the new UIUserNotificationSettings
-  // class is not available, then register using the old mechanism
-  if (![UIUserNotificationSettings class]) {
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert];
-    return;
-  }
 
 #endif
 
-  UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
-  UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-  [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+  }
 }
 
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
-  NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
 
-  UIUserNotificationType types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
-  permissions[@"alert"] = @((BOOL)(types & UIUserNotificationTypeAlert));
-  permissions[@"badge"] = @((BOOL)(types & UIUserNotificationTypeBadge));
-  permissions[@"sound"] = @((BOOL)(types & UIUserNotificationTypeSound));
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+
+#define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
+#define UIUserNotificationTypeBadge UIRemoteNotificationTypeBadge
+#define UIUserNotificationTypeSound UIRemoteNotificationTypeSound
+
+#endif
+
+  NSUInteger types;
+  if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
+    types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
+  } else {
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+
+    types = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+
+#endif
+
+  }
+
+  NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
+  permissions[@"alert"] = @((types & UIUserNotificationTypeAlert) > 0);
+  permissions[@"badge"] = @((types & UIUserNotificationTypeBadge) > 0);
+  permissions[@"sound"] = @((types & UIUserNotificationTypeSound) > 0);
 
   callback(@[permissions]);
 }
