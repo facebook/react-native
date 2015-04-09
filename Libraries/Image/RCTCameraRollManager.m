@@ -96,11 +96,11 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   [[RCTImageLoader assetsLibrary] enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
     if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:ALAssetsGroupPropertyName]])) {
       
-      if (assetType == nil || [assetType isEqualToString:@"photos"]) {
+      if (assetType == nil || [assetType isEqualToString:@"Photos"]) {
         [group setAssetsFilter:ALAssetsFilter.allPhotos];
-      } else if ([assetType isEqualToString:@"videos"]) {
+      } else if ([assetType isEqualToString:@"Videos"]) {
         [group setAssetsFilter:ALAssetsFilter.allVideos];
-      } else if ([assetType isEqualToString:@"all"]) {
+      } else if ([assetType isEqualToString:@"All"]) {
         [group setAssetsFilter:ALAssetsFilter.allAssets];
       }
 
