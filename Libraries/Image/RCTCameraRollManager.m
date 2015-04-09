@@ -67,7 +67,9 @@
   NSString *afterCursor = params[@"after"];
   NSString *groupTypesStr = params[@"groupTypes"];
   NSString *groupName = params[@"groupName"];
+  NSString *assetType = params[@"assetType"];
   ALAssetsGroupType groupTypes;
+
   if ([groupTypesStr isEqualToString:@"Album"]) {
     groupTypes = ALAssetsGroupAlbum;
   } else if ([groupTypesStr isEqualToString:@"All"]) {
@@ -83,7 +85,7 @@
   } else {
     groupTypes = ALAssetsGroupSavedPhotos;
   }
-
+  
   BOOL __block foundAfter = NO;
   BOOL __block hasNextPage = NO;
   BOOL __block calledCallback = NO;
@@ -91,7 +93,15 @@
 
   [[RCTImageLoader assetsLibrary] enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
     if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:ALAssetsGroupPropertyName]])) {
-      [group setAssetsFilter:ALAssetsFilter.allPhotos];
+      
+      if (assetType == nil || [assetType isEqualToString:@"all"]) {
+        [group setAssetsFilter:ALAssetsFilter.allAssets];
+      } else if ([assetType isEqualToString:@"photos"]) {
+        [group setAssetsFilter:ALAssetsFilter.allPhotos];
+      } else if ([assetType isEqualToString:@"videos"]) {
+        [group setAssetsFilter:ALAssetsFilter.allVideos];
+      }
+
       [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stopAssets) {
         if (result) {
           NSString *uri = [(NSURL *)[result valueForProperty:ALAssetPropertyAssetURL] absoluteString];

@@ -58,6 +58,11 @@ var getPhotosParamChecker = createStrictShapeTypeChecker({
    * titles.
    */
   groupName: ReactPropTypes.string,
+
+  /**
+  * Specifies filter on asset type, like 'all', 'photos' or 'videos'
+  */
+  assetType: ReactPropTypes.string,
 });
 
 /**
