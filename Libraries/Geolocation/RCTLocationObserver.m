@@ -155,6 +155,8 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(startObserving:(NSDictionary *)optionsJSON)
 {
+  [self checkLocationConfig];
+
   dispatch_async(dispatch_get_main_queue(), ^{
 
     // Select best options
@@ -189,6 +191,8 @@ RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary *)optionsJSON
                   withSuccessCallback:(RCTResponseSenderBlock)successBlock
                   errorCallback:(RCTResponseSenderBlock)errorBlock)
 {
+  [self checkLocationConfig];
+
   if (!successBlock) {
     RCTLogError(@"%@.getCurrentPosition called with nil success parameter.", [self class]);
     return;
@@ -317,6 +321,13 @@ RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary *)optionsJSON
 
   // Reset location accuracy
   _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+}
+
+- (void)checkLocationConfig
+{
+  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+    RCTLogError(@"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
+  }
 }
 
 @end
