@@ -64,6 +64,42 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should get dependencies with the correct extensions', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("a")'
+          ].join('\n'),
+          'a.js': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+          ].join('\n'),
+          'a.js.orig': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+          ].join('\n'),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {id: 'index', altId: '/root/index.js', path: '/root/index.js', dependencies: ['a']},
+            {id: 'a', altId: '/root/a.js', path: '/root/a.js', dependencies: []},
+          ]);
+      });
+    });
+
     pit('should get dependencies with deprecated assets', function() {
       var root = '/root';
       fs.__setMockFilesystem({

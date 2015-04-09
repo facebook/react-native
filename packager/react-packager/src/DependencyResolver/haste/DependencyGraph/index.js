@@ -65,7 +65,7 @@ function DependecyGraph(options) {
   this._debugUpdateEvents = [];
 
   this._moduleExtPattern = new RegExp(
-    '.' + ['js'].concat(this._assetExts).join('|') + '$'
+    '\.(' + ['js'].concat(this._assetExts).join('|') + ')$'
   );
 
   // Kick off the search process to precompute the dependency graph.
