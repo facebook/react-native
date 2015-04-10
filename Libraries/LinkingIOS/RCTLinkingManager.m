@@ -37,11 +37,11 @@ RCT_EXPORT_MODULE()
 }
 
 + (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
+            openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary *payload = @{@"url": [url absoluteString]};
+  NSDictionary *payload = @{@"url": [URL absoluteString]};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
                                                       object:self
                                                     userInfo:payload];
@@ -54,23 +54,22 @@ RCT_EXPORT_MODULE()
                                               body:[notification userInfo]];
 }
 
-RCT_EXPORT_METHOD(openURL:(NSURL *)url)
+RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 {
-  [[UIApplication sharedApplication] openURL:url];
+  [[UIApplication sharedApplication] openURL:URL];
 }
 
-RCT_EXPORT_METHOD(canOpenURL:(NSURL *)url
+RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
                   callback:(RCTResponseSenderBlock)callback)
 {
-  BOOL supported = [[UIApplication sharedApplication] canOpenURL:url];
-  callback(@[@(supported)]);
+  BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
+  callback(@[@(canOpen)]);
 }
 
 - (NSDictionary *)constantsToExport
 {
-  return @{
-    @"initialURL": [[_bridge.launchOptions objectForKey:UIApplicationLaunchOptionsURLKey] absoluteString] ?: [NSNull null]
-  };
+  NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+  return @{@"initialURL": [initialURL absoluteString] ?: [NSNull null]};
 }
 
 @end
