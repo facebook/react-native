@@ -61,7 +61,7 @@ function setLinterTransform(transformSource) {
         severity: 2,
         line: e.lineNumber,
         message: e.message,
-        source: text
+        source: text,
       }];
     }
     var originalLines = text.split('\n');
