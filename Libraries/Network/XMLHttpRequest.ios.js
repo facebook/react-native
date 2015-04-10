@@ -22,12 +22,13 @@ class XMLHttpRequest extends XMLHttpRequestBase {
   sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
     RCTDataManager.queryData(
       'http',
-      JSON.stringify({
+      {
         method: method,
         url: url,
         data: data,
         headers: headers,
-      }),
+      },
+      // TODO: Do we need this? is it used anywhere?
       'h' + crc32(method + '|' + url + '|' + data),
       (result) => {
         result = JSON.parse(result);

@@ -50,6 +50,12 @@ RCT_CONVERTER(NSString *, NSString, description)
   return nil;
 }
 
++ (NSData *)NSData:(id)json
+{
+  // TODO: should we automatically decode base64 data? Probably not...
+  return [[self NSString:json] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
 + (NSURL *)NSURL:(id)json
 {
   if (![json isKindOfClass:[NSString class]]) {
