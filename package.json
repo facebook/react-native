@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "A framework for building native apps using React",
   "repository": {
     "type": "git",
@@ -62,7 +62,6 @@
     "worker-farm": "1.1.0",
     "ws": "0.4.31",
     "yargs": "1.3.2",
-    "bluebird": "^2.9.21",
     "image-size": "0.3.5"
   },
   "devDependencies": {
