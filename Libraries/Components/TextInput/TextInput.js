@@ -198,12 +198,6 @@ var TextInput = React.createClass({
      * automatically enables it when there is text. Default value is false.
      */
     enablesReturnKeyAutomatically: PropTypes.bool,
-
-    /**
-     * If true, the text input obscures the text entered so that sensitive text
-     * like passwords stay secure. Default value is false.
-     */
-    secureTextEntry: PropTypes.bool,
     /**
      * If true, the text input can be multiple lines. Default value is false.
      */
@@ -221,11 +215,17 @@ var TextInput = React.createClass({
      */
     onChange: PropTypes.func,
     onChangeText: PropTypes.func,
-
+    /**
+     * Callback that is called when text input ends.
+     */
     onEndEditing: PropTypes.func,
+    /**
+     * Callback that is called when the text input's submit button is pressed.
+     */
     onSubmitEditing: PropTypes.func,
     /**
-     * If true, the TextInput will be a password field. Default value is false.
+     * If true, the text input obscures the text entered so that sensitive text
+     * like passwords stay secure. Default value is false.
      */
     password: PropTypes.bool,
     /**
@@ -419,7 +419,7 @@ var TextInput = React.createClass({
           keyboardType={keyboardType}
           returnKeyType={returnKeyType}
           enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
-          secureTextEntry={this.props.secureTextEntry}
+          secureTextEntry={this.props.password || this.props.secureTextEntry}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
@@ -464,7 +464,7 @@ var TextInput = React.createClass({
           keyboardType={keyboardType}
           returnKeyType={returnKeyType}
           enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
-          secureTextEntry={this.props.secureTextEntry}
+          secureTextEntry={this.props.password || this.props.secureTextEntry}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
@@ -505,7 +505,7 @@ var TextInput = React.createClass({
         onChange={this._onChange}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
-        password={this.props.password}
+        password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         value={this.state.bufferedValue}
       />;
