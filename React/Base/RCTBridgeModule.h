@@ -29,7 +29,7 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
  * will be set automatically by the bridge when it initializes the module.
 * To implement this in your module, just add @synthesize bridge = _bridge;
  */
-@property (nonatomic, strong) RCTBridge *bridge;
+@property (nonatomic, weak) RCTBridge *bridge;
 
 /**
  * Place this macro in your class implementation, to automatically register

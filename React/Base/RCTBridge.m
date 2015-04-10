@@ -769,12 +769,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
         }
       } else {
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                           object:self];
+                                                            object:self];
       }
       [[NSNotificationCenter defaultCenter] addObserver:self
-                                              selector:@selector(reload)
-                                                  name:RCTReloadNotification
-                                                object:nil];
+                                               selector:@selector(reload)
+                                                   name:RCTReloadNotification
+                                                 object:nil];
     }];
   }
 }
@@ -834,7 +834,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)dealloc
 {
-  RCTAssert(!self.valid, @"must call -invalidate before -dealloc");
+  [self invalidate];
 }
 
 #pragma mark - RCTInvalidating
@@ -846,12 +846,16 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)invalidate
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  if (!self.isValid && _modulesByID == nil) {
+    return;
+  }
 
-  // Wait for queued methods to finish
-  dispatch_sync(self.shadowQueue, ^{
-    // Make sure all dispatchers have been executed before continuing
-  });
+  if (![NSThread isMainThread]) {
+    [self performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   // Release executor
   if (_latestJSExecutor == _javaScriptExecutor) {
@@ -859,11 +863,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
   [_javaScriptExecutor invalidate];
   _javaScriptExecutor = nil;
-
-  // Wait for queued methods to finish
-  dispatch_sync(self.shadowQueue, ^{
-    // Make sure all dispatchers have been executed before continuing
-  });
 
   // Invalidate modules
   for (id target in _modulesByID.allObjects) {
