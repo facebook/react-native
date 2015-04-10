@@ -47,10 +47,12 @@
     "chalk": "^1.0.0",
     "connect": "2.8.3",
     "debug": "~2.1.0",
+    "image-size": "0.3.5",
     "joi": "~5.1.0",
     "jstransform": "10.1.0",
     "module-deps": "3.5.6",
     "optimist": "0.6.1",
+    "promise": "^7.0.0",
     "react-timer-mixin": "^0.13.1",
     "react-tools": "0.13.1",
     "rebound": "^0.0.12",
@@ -61,9 +63,7 @@
     "underscore": "1.7.0",
     "worker-farm": "1.1.0",
     "ws": "0.4.31",
-    "yargs": "1.3.2",
-    "bluebird": "^2.9.21",
-    "image-size": "0.3.5"
+    "yargs": "1.3.2"
   },
   "devDependencies": {
     "jest-cli": "0.2.1",
