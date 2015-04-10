@@ -20,6 +20,9 @@
 type EasingFunction = (t: number) => number;
 
 var defaults = {
+  linear: function(t: number): number {
+    return t;
+  },
   easeInQuad: function(t: number): number {
     return t * t;
   },
