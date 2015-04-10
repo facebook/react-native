@@ -92,19 +92,6 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
 - (void)setUp
 {
   if (!_registered) {
-    /**
-     * Every root view that is created must have a unique react tag.
-     * Numbering of these tags goes from 1, 11, 21, 31, etc
-     *
-     * NOTE: Since the bridge persists, the RootViews might be reused, so now
-     * the react tag is assigned every time we load new content.
-     */
-    _contentView = [[UIView alloc] init];
-    _contentView.reactTag = [_bridge.uiManager allocateRootTag];
-    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-    [_contentView addGestureRecognizer:_touchHandler];
-    [self addSubview:_contentView];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reload)
                                                  name:RCTReloadViewsNotification
@@ -122,9 +109,9 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
 
 - (void)tearDown
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   if (_registered) {
     _registered = NO;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_contentView removeGestureRecognizer:_touchHandler];
     [_contentView removeFromSuperview];
     [_touchHandler invalidate];
@@ -169,6 +156,19 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     _registered = YES;
+    /**
+     * Every root view that is created must have a unique react tag.
+     * Numbering of these tags goes from 1, 11, 21, 31, etc
+     *
+     * NOTE: Since the bridge persists, the RootViews might be reused, so now
+     * the react tag is assigned every time we load new content.
+     */
+    _contentView = [[UIView alloc] initWithFrame:self.bounds];
+    _contentView.reactTag = [_bridge.uiManager allocateRootTag];
+    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+    [_contentView addGestureRecognizer:_touchHandler];
+    [self addSubview:_contentView];
+
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
       @"rootTag": _contentView.reactTag,
