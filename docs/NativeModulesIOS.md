@@ -28,15 +28,16 @@ Native module is just an Objectve-C class that implements `RCTBridgeModule` prot
 @end
 ```
 
-React Native will not expose any methods of `CalendarManager` to JavaScript unless explicitly asked. Fortunately this is pretty easy with `RCT_EXPORT`:
+React Native will not expose any methods of `CalendarManager` to JavaScript unless explicitly asked. Fortunately this is pretty easy with `RCT_EXPORT_METHOD`:
 
 ```objective-c
 // CalendarManager.m
 @implementation CalendarManager
 
-- (void)addEventWithName:(NSString *)name location:(NSString *)location
+RCT_EXPORT_MODULE();
+
+RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 {
-  RCT_EXPORT();
   RCTLogInfo(@"Pretending to create an event %@ at %@", name, location);
 }
 
@@ -47,12 +48,10 @@ Now from your JavaScript file you can call the method like this:
 
 ```javascript
 var CalendarManager = require('NativeModules').CalendarManager;
-CalendarManager.addEventWithName('Birthday Party', '4 Privet Drive, Surrey');
+CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 ```
 
-Notice that the exported method name was generated from first part of Objective-C selector. Sometimes it results in a non-idiomatic JavaScript name (like the one in our example). You can change the name by supplying an optional argument to `RCT_EXPORT`, e.g. `RCT_EXPORT(addEvent)`.
-
-The return type of the method should always be `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
+The return type of bridge methods is always `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
 
 ## Argument types
 
@@ -68,9 +67,8 @@ React Native supports several types of arguments that can be passed from JavaScr
 In our `CalendarManager` example, if we want to pass event date to native, we have to convert it to a string or a number:
 
 ```objective-c
-- (void)addEventWithName:(NSString *)name location:(NSString *)location date:(NSInteger)secondsSinceUnixEpoch
+RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(NSInteger)secondsSinceUnixEpoch)
 {
-  RCT_EXPORT(addEvent);
   NSDate *date = [NSDate dateWithTimeIntervalSince1970:secondsSinceUnixEpoch];
 }
 ```
@@ -80,9 +78,8 @@ As `CalendarManager.addEvent` method gets more and more complex, the number of a
 ```objective-c
 #import "RCTConvert.h"
 
-- (void)addEventWithName:(NSString *)name details:(NSDictionary *)details
+RCT_EXPORT_METHOD(addEvent:(NSString *)name details:(NSDictionary *)details)
 {
-  RCT_EXPORT(addEvent);
   NSString *location = [RCTConvert NSString:details[@"location"]]; // ensure location is a string
   ...
 }
@@ -112,9 +109,8 @@ CalendarManager.addEvent('Birthday Party', {
 Native module also supports a special kind of argument- a callback. In most cases it is used to provide the function call result to JavaScript.
 
 ```objective-c
-- (void)findEvents:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(findEvents:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
   NSArray *events = ...
   callback(@[[NSNull null], events]);
 }
@@ -142,9 +138,8 @@ The native module should not have any assumptions about what thread it is being 
 
 
 ```objective-c
-- (void)addEventWithName:(NSString *)name callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(addEvent:(NSString *)name callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT(addEvent);
   dispatch_async(dispatch_get_main_queue(), ^{
     // Call iOS API on main thread
     ...
