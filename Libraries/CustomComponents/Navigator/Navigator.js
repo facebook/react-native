@@ -372,7 +372,7 @@ var Navigator = React.createClass({
     if (this.state.presentedIndex === 0) {
       return false;
     }
-    this.pop();
+    this._popN(1);
     return true;
   },
 
@@ -418,7 +418,7 @@ var Navigator = React.createClass({
   },
 
   _handleBackPress: function() {
-    var didPop = this.request('pop');
+    var didPop = this.pop();
     if (!didPop) {
       BackAndroid.exitApp();
     }
@@ -853,7 +853,7 @@ var Navigator = React.createClass({
     }, requestTransitionAndResetUpdatingRange);
   },
 
-  popN: function(n) {
+  _popN: function(n) {
     if (n === 0 || !this._canNavigate()) {
       return;
     }
@@ -868,11 +868,7 @@ var Navigator = React.createClass({
   },
 
   pop: function() {
-    // TODO (t6707686): remove this parentNavigator call after transitioning call sites to `.request('pop')`
-    if (this.parentNavigator && this.state.routeStack.length === 1) {
-      return this.parentNavigator.pop();
-    }
-    this.popN(1);
+    return this.request('pop');
   },
 
   /**
@@ -944,7 +940,7 @@ var Navigator = React.createClass({
 
   popToRoute: function(route) {
     var numToPop = this._getNumToPopForRoute(route);
-    this.popN(numToPop);
+    this._popN(numToPop);
   },
 
   replacePreviousAndPop: function(route) {
