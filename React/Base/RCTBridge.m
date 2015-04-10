@@ -49,6 +49,9 @@ typedef struct section RCTHeaderSection;
 #define RCTGetSectByNameFromHeader getsectbynamefromheader
 #endif
 
+NSString *const RCTEnqueueNotification = @"RCTEnqueueNotification";
+NSString *const RCTDequeueNotification = @"RCTDequeueNotification";
+
 /**
  * This function returns the module name for a given class.
  */
@@ -926,10 +929,10 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"JS_PERF_ENQUEUE" object:nil userInfo:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
 
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"JS_PERF_DEQUEUE" object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
     [self _handleBuffer:json];
   };
 
