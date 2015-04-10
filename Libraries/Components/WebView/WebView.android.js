@@ -34,8 +34,8 @@ var WebViewState = keyMirror({
 var WebView = React.createClass({
 
   propTypes: {
-    renderError: PropTypes.func.isRequired, // view to show if there's an error
-    renderLoading: PropTypes.func.isRequired, // loading indicator to show
+    renderError: PropTypes.func, // view to show if there's an error
+    renderLoading: PropTypes.func, // loading indicator to show
     url: PropTypes.string.isRequired,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -66,10 +66,10 @@ var WebView = React.createClass({
     var otherView = null;
 
    if (this.state.viewState === WebViewState.LOADING) {
-      otherView = this.props.renderLoading();
+      otherView = this.props.renderLoading && this.props.renderLoading();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
-      otherView = this.props.renderError(
+      otherView = this.props.renderError && this.props.renderError(
         errorEvent.domain,
         errorEvent.code,
         errorEvent.description);

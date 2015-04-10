@@ -97,6 +97,12 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
       @"x": @(scrollView.contentOffset.x),
       @"y": @(scrollView.contentOffset.y)
     },
+    @"contentInset": @{
+      @"top": @(scrollView.contentInset.top),
+      @"left": @(scrollView.contentInset.left),
+      @"bottom": @(scrollView.contentInset.bottom),
+      @"right": @(scrollView.contentInset.right)
+    },
     @"contentSize": @{
       @"width": @(scrollView.contentSize.width),
       @"height": @(scrollView.contentSize.height)

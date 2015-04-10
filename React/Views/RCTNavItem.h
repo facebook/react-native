@@ -14,6 +14,7 @@
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *rightButtonTitle;
 @property (nonatomic, copy) NSString *backButtonTitle;
+@property (nonatomic, assign) BOOL navigationBarHidden;
 @property (nonatomic, copy) UIColor *tintColor;
 @property (nonatomic, copy) UIColor *barTintColor;
 @property (nonatomic, copy) UIColor *titleTextColor;
