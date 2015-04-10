@@ -71,7 +71,7 @@ var styles = StyleSheet.create({
     bottom: 0,
     top: 0,
   },
-  presentNavItem: {
+  currentScene: {
     position: 'absolute',
     overflow: 'hidden',
     left: 0,
@@ -79,7 +79,7 @@ var styles = StyleSheet.create({
     bottom: 0,
     top: 0,
   },
-  futureNavItem: {
+  futureScene: {
     overflow: 'hidden',
     position: 'absolute',
     left: 0,
@@ -991,9 +991,42 @@ var Navigator = React.createClass({
     }
   },
 
-  _routeToOptimizedStackItem: function(route, i) {
-    var shouldUpdateChild =
-      this.state.updatingRangeLength !== 0 &&
+  _renderOptimizedScenes: function() {
+    // To avoid rendering scenes that are not visible, we use
+    // updatingRangeStart and updatingRangeLength to track the scenes that need
+    // to be updated.
+
+    // To avoid visual glitches, we never re-render scenes during a transition.
+    // We assume that `state.updatingRangeLength` will have a length during the
+    // initial render of any scene
+    var shouldRenderScenes = !this.state.isAnimating &&
+      this.state.updatingRangeLength !== 0;
+    if (shouldRenderScenes) {
+      return (
+        <StaticContainer shouldUpdate={true}>
+          <View
+            style={styles.transitioner}
+            {...this.panGesture.panHandlers}
+            onResponderTerminationRequest={
+              this._handleResponderTerminationRequest
+            }>
+            {this.state.routeStack.map(this._renderOptimizedScene)}
+          </View>
+        </StaticContainer>
+      );
+    }
+    // If no scenes are changing, we can save render time. React will notice
+    // that we are rendering a StaticContainer in the same place, so the
+    // existing element will be updated. When React asks the element
+    // shouldComponentUpdate, the StaticContainer will return false, and the
+    // children from the previous reconciliation will remain.
+    return (
+      <StaticContainer shouldUpdate={false} />
+    );
+  },
+
+  _renderOptimizedScene: function(route, i) {
+    var shouldRenderScene =
       i >= this.state.updatingRangeStart &&
       i <= this.state.updatingRangeStart + this.state.updatingRangeLength;
     var sceneNavigatorContext = {
@@ -1003,49 +1036,38 @@ var Navigator = React.createClass({
         this.navigatorContext.setHandlerForRoute(route, handler);
       },
     };
-    var child = this.props.renderScene(
-      route,
-      sceneNavigatorContext
-    );
-    var initialSceneStyle =
-      i === this.state.presentedIndex ? styles.presentNavItem : styles.futureNavItem;
+    var scene = shouldRenderScene ?
+      this._renderScene(route, i, sceneNavigatorContext) : null;
     return (
       <NavigatorStaticContextContainer
         navigatorContext={sceneNavigatorContext}
         key={'nav' + i}
-        shouldUpdate={shouldUpdateChild}>
-        <View
-          key={this.state.idStack[i]}
-          ref={'scene_' + i}
-          style={[initialSceneStyle, this.props.sceneStyle]}>
-          {React.cloneElement(child, {
-            ref: this._handleItemRef.bind(null, this.state.idStack[i]),
-          })}
-        </View>
+        shouldUpdate={shouldRenderScene}>
+        {scene}
       </NavigatorStaticContextContainer>
     );
   },
 
-  renderNavigationStackItems: function() {
-    var shouldRecurseToNavigator = this.state.updatingRangeLength !== 0;
-    // If not recursing update to navigator at all, may as well avoid
-    // computation of navigator children.
-    var items = shouldRecurseToNavigator ?
-      this.state.routeStack.map(this._routeToOptimizedStackItem) : null;
-
+  _renderScene: function(route, i, sceneNavigatorContext) {
+    var child = this.props.renderScene(
+      route,
+      sceneNavigatorContext
+    );
+    var initialSceneStyle = i === this.state.presentedIndex ?
+      styles.currentScene : styles.futureScene;
     return (
-      <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
-        <View
-          style={styles.transitioner}
-          {...this.panGesture.panHandlers}
-          onResponderTerminationRequest={this._handleResponderTerminationRequest}>
-          {items}
-        </View>
-      </StaticContainer>
+      <View
+        key={this.state.idStack[i]}
+        ref={'scene_' + i}
+        style={[initialSceneStyle, this.props.sceneStyle]}>
+        {React.cloneElement(child, {
+          ref: this._handleItemRef.bind(null, this.state.idStack[i]),
+        })}
+      </View>
     );
   },
 
-  renderNavigationStackBar: function() {
+  _renderNavigationBar: function() {
     if (!this.props.navigationBar) {
       return null;
     }
@@ -1059,8 +1081,8 @@ var Navigator = React.createClass({
   render: function() {
     return (
       <View style={[styles.container, this.props.style]}>
-        {this.renderNavigationStackItems()}
-        {this.renderNavigationStackBar()}
+        {this._renderOptimizedScenes()}
+        {this._renderNavigationBar()}
       </View>
     );
   },
