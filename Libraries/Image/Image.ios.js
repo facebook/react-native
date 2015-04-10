@@ -119,6 +119,11 @@ var Image = React.createClass({
     if (this.props.style && this.props.style.tintColor) {
       warning(RawImage === RCTStaticImage, 'tintColor style only supported on static images.');
     }
+    
+    warning(
+      this.props.width === undefined && this.props.height === undefined,
+      'Width and height props are not supported. Please set them using a style instead.'
+    );
 
     var contentModes = NativeModules.UIManager.UIView.ContentMode;
     var resizeMode;
