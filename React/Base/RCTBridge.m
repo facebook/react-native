@@ -224,12 +224,19 @@ NS_INLINE NSString *RCTStringUpToFirstArgument(NSString *methodName) {
   return methodName;
 }
 
-- (instancetype)initWithMethodName:(NSString *)methodName
-                      JSMethodName:(NSString *)JSMethodName
+- (instancetype)initLegacyWithMethodName:(NSString *)methodName
+                            JSMethodName:(NSString *)JSMethodName
+{
+  return [self initWithReactMethodName:methodName objCMethodName:methodName JSMethodName:JSMethodName];
+}
+
+- (instancetype)initWithReactMethodName:(NSString *)reactMethodName
+                         objCMethodName:(NSString *)objCMethodName
+                           JSMethodName:(NSString *)JSMethodName
 {
   if ((self = [super init])) {
-    _methodName = methodName;
-    NSArray *parts = [[methodName substringWithRange:(NSRange){2, methodName.length - 3}] componentsSeparatedByString:@" "];
+    _methodName = reactMethodName;
+    NSArray *parts = [[reactMethodName substringWithRange:(NSRange){2, reactMethodName.length - 3}] componentsSeparatedByString:@" "];
 
     // Parse class and method
     _moduleClassName = parts[0];
@@ -243,7 +250,7 @@ NS_INLINE NSString *RCTStringUpToFirstArgument(NSString *methodName) {
       // New format
       NSString *selectorString = [parts[1] substringFromIndex:14];
       _selector = NSSelectorFromString(selectorString);
-      _JSMethodName = RCTStringUpToFirstArgument(selectorString);
+      _JSMethodName = JSMethodName ?: RCTStringUpToFirstArgument(selectorString);
 
       static NSRegularExpression *regExp;
       if (!regExp) {
@@ -255,8 +262,8 @@ NS_INLINE NSString *RCTStringUpToFirstArgument(NSString *methodName) {
       }
 
       argumentNames = [NSMutableArray array];
-      [regExp enumerateMatchesInString:JSMethodName options:0 range:NSMakeRange(0, JSMethodName.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-        NSString *argumentName = [JSMethodName substringWithRange:[result rangeAtIndex:1]];
+      [regExp enumerateMatchesInString:objCMethodName options:0 range:NSMakeRange(0, objCMethodName.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        NSString *argumentName = [objCMethodName substringWithRange:[result rangeAtIndex:1]];
         [(NSMutableArray *)argumentNames addObject:argumentName];
       }];
     } else {
@@ -267,14 +274,14 @@ NS_INLINE NSString *RCTStringUpToFirstArgument(NSString *methodName) {
     }
 
     // Extract class and method details
-    _isClassMethod = [methodName characterAtIndex:0] == '+';
+    _isClassMethod = [reactMethodName characterAtIndex:0] == '+';
     _moduleClass = NSClassFromString(_moduleClassName);
 
 #if DEBUG
     // Sanity check
     RCTAssert([_moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
               @"You are attempting to export the method %@, but %@ does not \
-              conform to the RCTBridgeModule Protocol", methodName, _moduleClassName);
+              conform to the RCTBridgeModule Protocol", objCMethodName, _moduleClassName);
 #endif
 
     // Get method signature
@@ -493,15 +500,21 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
 
     for (RCTHeaderValue addr = section->offset;
          addr < section->offset + section->size;
-         addr += sizeof(const char **) * 2) {
+         addr += sizeof(const char **) * 3) {
 
       // Get data entry
       const char **entries = (const char **)(mach_header + addr);
 
       // Create method
-      RCTModuleMethod *moduleMethod =
-        [[RCTModuleMethod alloc] initWithMethodName:@(entries[0])
-                                       JSMethodName:strlen(entries[1]) ? @(entries[1]) : nil];
+      RCTModuleMethod *moduleMethod;
+      if (entries[2] == NULL) {
+        moduleMethod = [[RCTModuleMethod alloc] initLegacyWithMethodName:@(entries[0])
+                                                            JSMethodName:strlen(entries[1]) ? @(entries[1]) : nil];
+      } else {
+        moduleMethod = [[RCTModuleMethod alloc] initWithReactMethodName:@(entries[0])
+                                                         objCMethodName:strlen(entries[1]) ? @(entries[1]) : nil
+                                                           JSMethodName:strlen(entries[2]) ? @(entries[2]) : nil];
+      }
 
       // Cache method
       NSArray *methods = methodsByModuleClassName[moduleMethod.moduleClassName];
