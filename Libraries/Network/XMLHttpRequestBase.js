@@ -53,13 +53,18 @@ class XMLHttpRequestBase {
   }
 
   getAllResponseHeaders(): ?string {
-    /* Stub */
+    if (this.responseHeaders) {
+      var headers = [];
+      for (var headerName in this.responseHeaders) {
+        headers.push(headerName + ': ' + this.responseHeaders[headerName]);
+      }
+      return headers.join('\n');
+    }
     return '';
   }
 
   getResponseHeader(header: string): ?string {
-    /* Stub */
-    return '';
+    return this.responseHeaders[header];
   }
 
   setRequestHeader(header: string, value: any): void {
