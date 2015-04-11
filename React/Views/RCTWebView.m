@@ -97,12 +97,28 @@
                       updateOffset:YES];
 }
 
+- (void)setAllowBounce:(BOOL)allowBounce {
+  _webView.scrollView.bounces = allowBounce;
+}
+
+- (void)setAllowScroll:(BOOL)allowScroll {
+  _webView.scrollView.scrollEnabled = allowScroll;
+}
+
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
   _contentInset = contentInset;
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_webView.scrollView
                       updateOffset:NO];
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor {
+  float alpha = CGColorGetAlpha(backgroundColor.CGColor);
+  if (alpha < 1) {
+    _webView.opaque = NO;
+  }
+  _webView.backgroundColor = backgroundColor;
 }
 
 - (NSMutableDictionary *)baseEvent
