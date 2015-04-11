@@ -14,7 +14,6 @@
 var Image = require('Image');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var Dimensions = require('Dimensions');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -134,8 +133,10 @@ var TabBarItemIOS = React.createClass({
 var styles = StyleSheet.create({
   tab: {
     position: 'absolute',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   }
 });
 
