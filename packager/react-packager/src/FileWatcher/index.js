@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
-
+ 
 var EventEmitter  = require('events').EventEmitter;
 var sane = require('sane');
 var Promise = require('bluebird');
