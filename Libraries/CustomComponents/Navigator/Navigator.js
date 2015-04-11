@@ -302,17 +302,13 @@ var Navigator = React.createClass({
 
   componentWillMount: function() {
     this.parentNavigator = getNavigatorContext(this) || this.props.navigator;
+    this._subRouteFocus = [];
     this.navigatorContext = {
       setHandlerForRoute: this.setHandlerForRoute,
       request: this.request,
 
       parentNavigator: this.parentNavigator,
       getCurrentRoutes: this.getCurrentRoutes,
-      // We want to bubble focused routes to the top navigation stack. If we
-      // are a child navigator, this allows us to call props.navigator.on*Focus
-      // of the topmost Navigator
-      onWillFocus: this.props.onWillFocus,
-      onDidFocus: this.props.onDidFocus,
 
       // Legacy, imperitive nav actions. Use request when possible.
       jumpBack: this.jumpBack,
@@ -341,8 +337,7 @@ var Navigator = React.createClass({
     });
     this._itemRefs = {};
     this._interactionHandle = null;
-
-    this._emitWillFocus(this.state.presentedIndex);
+    this._emitWillFocus(this.state.routeStack[this.state.presentedIndex]);
   },
 
   request: function(action, arg1, arg2) {
@@ -399,7 +394,7 @@ var Navigator = React.createClass({
     animationConfig && this._configureSpring(animationConfig);
     this.spring.addListener(this);
     this.onSpringUpdate();
-    this._emitDidFocus(this.state.presentedIndex);
+    this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
     if (this.parentNavigator) {
       this.parentNavigator.setHandler(this._handleRequest);
     } else {
@@ -500,7 +495,8 @@ var Navigator = React.createClass({
       var presentedIndex = this.state.toIndex;
       this.state.presentedIndex = presentedIndex;
       this.state.fromIndex = presentedIndex;
-      this._emitDidFocus(presentedIndex);
+      var didFocusRoute = this._subRouteFocus[presentedIndex] || this.state.routeStack[presentedIndex];
+      this._emitDidFocus(didFocusRoute);
       this._removePoppedRoutes();
       if (AnimationsDebugModule) {
         AnimationsDebugModule.stopRecordingFps(Date.now());
@@ -520,7 +516,8 @@ var Navigator = React.createClass({
     this.state.isAnimating = true;
     this.spring.setVelocity(v);
     this.spring.setEndValue(1);
-    this._emitWillFocus(this.state.toIndex);
+    var willFocusRoute = this._subRouteFocus[this.state.toIndex] || this.state.routeStack[this.state.toIndex];
+    this._emitWillFocus(willFocusRoute);
   },
 
   _transitionToFromIndexWithVelocity: function(v) {
@@ -532,25 +529,31 @@ var Navigator = React.createClass({
     this.spring.setEndValue(0);
   },
 
-  _emitDidFocus: function(index) {
-    var route = this.state.routeStack[index];
+  _emitDidFocus: function(route) {
+    if (this._lastDidFocus === route) {
+      return;
+    }
+    this._lastDidFocus = route;
     if (this.props.onDidFocus) {
       this.props.onDidFocus(route);
-    } else if (this.props.navigator && this.props.navigator.onDidFocus) {
-      this.props.navigator.onDidFocus(route);
+    } else if (this.parentNavigator && this.parentNavigator.onDidFocus) {
+      this.parentNavigator.onDidFocus(route);
     }
   },
 
-  _emitWillFocus: function(index) {
-    var route = this.state.routeStack[index];
+  _emitWillFocus: function(route) {
+    if (this._lastWillFocus === route) {
+      return;
+    }
+    this._lastWillFocus = route;
     var navBar = this._navBar;
     if (navBar && navBar.handleWillFocus) {
       navBar.handleWillFocus(route);
     }
     if (this.props.onWillFocus) {
       this.props.onWillFocus(route);
-    } else if (this.props.navigator && this.props.navigator.onWillFocus) {
-      this.props.navigator.onWillFocus(route);
+    } else if (this.parentNavigator && this.parentNavigator.onWillFocus) {
+      this.parentNavigator.onWillFocus(route);
     }
   },
 
@@ -905,8 +908,8 @@ var Navigator = React.createClass({
     }, () => {
       this._resetUpdatingRange();
       if (index === this.state.presentedIndex) {
-        this._emitWillFocus(this.state.presentedIndex);
-        this._emitDidFocus(this.state.presentedIndex);
+        this._emitWillFocus(route);
+        this._emitDidFocus(route);
       }
     });
   },
@@ -1034,6 +1037,18 @@ var Navigator = React.createClass({
       route,
       setHandler: (handler) => {
         this.navigatorContext.setHandlerForRoute(route, handler);
+      },
+      onWillFocus: (childRoute) => {
+        this._subRouteFocus[i] = childRoute;
+        if (this.state.presentedIndex === i) {
+          this._emitWillFocus(childRoute);
+        }
+      },
+      onDidFocus: (childRoute) => {
+        this._subRouteFocus[i] = childRoute;
+        if (this.state.presentedIndex === i) {
+          this._emitDidFocus(childRoute);
+        }
       },
     };
     var scene = shouldRenderScene ?
