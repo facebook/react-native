@@ -8,6 +8,7 @@ before_install:
   - brew update
 install:
   - brew reinstall flow watchman xctool
+  - npm config set spin=false
   - npm install
 
 script:
@@ -47,6 +48,9 @@ script:
       node server/generate.js
     fi
 
+  elif [ "$TEST_TYPE" = e2e ]
+  then
+    ./scripts/e2e-test.sh
   else
     echo "Unknown test type: $TEST_TYPE"
     exit 1
@@ -57,6 +61,7 @@ env:
     - TEST_TYPE=objc
     - TEST_TYPE=js
     - TEST_TYPE=build_website
+    - TEST_TYPE=e2e
   global:
     - secure: "HlmG8M2DmBUSBh6KH1yVIe/8gR4iibg4WfcHq1x/xYQxGbvleq7NOo04V6eFHnl9cvZCu+PKH0841WLnGR7c4BBf47GVu/o16nXzggPumHKy++lDzxFPlJ1faMDfjg/5vjbAxRUe7D3y98hQSeGHH4tedc8LvTaFLVu7iiGqvjU="
 
