@@ -30,7 +30,7 @@ if ARGV.count == 0
 else
   app_name = ARGV.first
   dest = Dir.pwd
-  puts "Setting up new React Native app in #{dest}"
+  puts "Setting up moo React Native app in #{dest}"
   puts ""
 
   main(dest, app_name)
