@@ -38,8 +38,8 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
  * match the Objective-C class name.
  */
 #define RCT_EXPORT_MODULE(js_name) \
-+ (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
-))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; } \
+  + (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
+  ))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; }
 
 /**
  * Place this macro inside the method body of any method you want to expose
@@ -59,17 +59,17 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
  * a js_name argument and the exposed method will match the first part of the
  * Objective-C method selector name (up to the first colon).
  *
- * For example, in MyClass.m:
+ * For example, in ModuleName.m:
  *
  * - (void)doSomething:(NSString *)aString withA:(NSInteger)a andB:(NSInteger)b
- * {}
+ * { ... }
  *
  * becomes
  *
  * RCT_EXPORT_METHOD(doSomething:(NSString *)aString
  *                   withA:(NSInteger)a
  *                   andB:(NSInteger)b)
- * {}
+ * { ... }
  *
  * and is exposed to JavaScript as `NativeModules.ModuleName.doSomething`.
  */
@@ -96,11 +96,3 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 - (void)batchDidComplete;
 
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-void RCTBridgeModuleRegisterClass(Class cls, NSString *moduleName);
-#ifdef __cplusplus
-}
-#endif

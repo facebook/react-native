@@ -24,12 +24,6 @@ extern "C" {
 #define RCTLOG_REDBOX_LEVEL RCTLogLevelError
 
 /**
- * A regular expression that can be used to selectively limit the throwing of
- * a exception to specific log contents.
- */
-#define RCTLOG_FATAL_REGEX nil
-
-/**
  * An enum representing the severity of the log message.
  */
 typedef NS_ENUM(NSInteger, RCTLogLevel) {
@@ -104,23 +98,9 @@ void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
  */
 void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
 #define _RCTLog(lvl, ...) do { \
-  NSString *msg = [NSString stringWithFormat:__VA_ARGS__]; \
-  if (lvl >= RCTLOG_FATAL_LEVEL) { \
-    BOOL fail = YES; \
-    if (RCTLOG_FATAL_REGEX) { \
-      if ([msg rangeOfString:RCTLOG_FATAL_REGEX options:NSRegularExpressionSearch].length) { \
-        fail = NO; \
-      } \
-    } \
-    RCTCAssert(!fail, @"FATAL ERROR: %@", msg); \
-  }\
+  if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
   _RCTLogFormat(lvl, __FILE__, __LINE__, __VA_ARGS__); \
 } while (0)
-
-/**
- * Legacy injection function - don't use this.
- */
-void RCTInjectLogFunction(void (^)(NSString *msg));
 
 /**
  * Logging macros. Use these to log information, warnings and errors in your

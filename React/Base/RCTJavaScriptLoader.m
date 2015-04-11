@@ -46,8 +46,7 @@
  */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  RCTAssertMainThread();
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _bridge = bridge;
   }
   return self;
@@ -56,12 +55,14 @@
 - (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(void (^)(NSError *))onComplete
 {
   if (scriptURL == nil) {
-    NSError *error = [NSError errorWithDomain:@"JavaScriptLoader"
-                                         code:1
-                                     userInfo:@{NSLocalizedDescriptionKey: @"No script URL provided"}];
+    NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
+      NSLocalizedDescriptionKey: @"No script URL provided"
+    }];
     onComplete(error);
     return;
-  } else if ([scriptURL isFileURL]) {
+  }
+
+  if ([scriptURL isFileURL]) {
     NSString *bundlePath = [[NSBundle bundleForClass:[self class]] resourcePath];
     NSString *localPath = [scriptURL.absoluteString substringFromIndex:@"file://".length];
 

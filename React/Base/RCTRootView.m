@@ -24,10 +24,6 @@
 #import "RCTWebViewExecutor.h"
 #import "UIView+React.h"
 
-NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
-NSString *const RCTReloadNotification = @"RCTReloadNotification";
-NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
-
 /**
  * HACK(t6568049) This should be removed soon, hiding to prevent people from
  * relying on it
@@ -50,7 +46,6 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
   NSString *_moduleName;
-  BOOL _registered;
   NSDictionary *_launchOptions;
   UIView *_contentView;
 }
@@ -62,13 +57,26 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
   if ((self = [super init])) {
+
+    self.backgroundColor = [UIColor whiteColor];
+
 #ifdef DEBUG
+
     _enableDevMenu = YES;
+
 #endif
+
     _bridge = bridge;
     _moduleName = moduleName;
-    self.backgroundColor = [UIColor whiteColor];
-    [self setUp];
+    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bundleFinishedLoading)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:_bridge];
+    if (!_bridge.loading) {
+      [self bundleFinishedLoading];
+    }
   }
   return self;
 }
@@ -77,57 +85,29 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
                        moduleName:(NSString *)moduleName
                     launchOptions:(NSDictionary *)launchOptions
 {
-  RCTBridge *bridge = [[RCTBridge alloc] initWithBundlePath:bundleURL.absoluteString
-                                             moduleProvider:nil
-                                              launchOptions:launchOptions];
-  return [self initWithBridge:bridge
-                   moduleName:moduleName];
-}
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL
+                                            moduleProvider:nil
+                                             launchOptions:launchOptions];
 
-- (void)dealloc
-{
-  [self tearDown];
-}
-
-- (void)setUp
-{
-  if (!_registered) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reload)
-                                                 name:RCTReloadViewsNotification
-                                               object:_bridge];
-    if (_bridge.loaded) {
-      [self bundleFinishedLoading];
-    } else {
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(bundleFinishedLoading)
-                                                   name:RCTJavaScriptDidLoadNotification
-                                                 object:_bridge];
-    }
-  }
-}
-
-- (void)tearDown
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  if (_registered) {
-    _registered = NO;
-    [_contentView removeGestureRecognizer:_touchHandler];
-    [_contentView removeFromSuperview];
-    [_touchHandler invalidate];
-    [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-                      args:@[_contentView.reactTag]];
-  }
+  return [self initWithBridge:bridge moduleName:moduleName];
 }
 
 - (BOOL)isValid
 {
-  return _registered;
+  return _contentView.userInteractionEnabled;
 }
 
 - (void)invalidate
 {
-  [self tearDown];
+  _contentView.userInteractionEnabled = NO;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_touchHandler invalidate];
+  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
+                    args:@[_contentView.reactTag]];
 }
 
 - (UIViewController *)backingViewController {
@@ -143,7 +123,7 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
 {
   if (motion == UIEventSubtypeMotionShake && self.enableDevMenu) {
     if (!_devMenu) {
-      _devMenu = [[RCTDevMenu alloc] initWithBridge:self.bridge];
+      _devMenu = [[RCTDevMenu alloc] initWithBridge:_bridge];
     }
     [_devMenu show];
   }
@@ -155,7 +135,7 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 - (void)bundleFinishedLoading
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    _registered = YES;
+
     /**
      * Every root view that is created must have a unique react tag.
      * Numbering of these tags goes from 1, 11, 21, 31, etc
@@ -163,6 +143,8 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
      * NOTE: Since the bridge persists, the RootViews might be reused, so now
      * the react tag is assigned every time we load new content.
      */
+    [_touchHandler invalidate];
+    [_contentView removeFromSuperview];
     _contentView = [[UIView alloc] initWithFrame:self.bounds];
     _contentView.reactTag = [_bridge.uiManager allocateRootTag];
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
@@ -183,43 +165,15 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  _contentView.frame = self.bounds;
-  if (_registered) {
+  if (_contentView) {
+    _contentView.frame = self.bounds;
     [_bridge.uiManager setFrame:self.frame forRootView:_contentView];
   }
-}
-
-- (void)setFrame:(CGRect)frame
-{
-  [super setFrame:frame];
-  _contentView.frame = self.bounds;
-}
-
-- (void)reload
-{
-  [self tearDown];
-  [self setUp];
-}
-
-+ (void)reloadAll
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                      object:self];
 }
 
 - (NSNumber *)reactTag
 {
   return _contentView.reactTag;
-}
-
-- (void)startOrResetInteractionTiming
-{
-  [_touchHandler startOrResetInteractionTiming];
-}
-
-- (NSDictionary *)endAndResetInteractionTiming
-{
-  return [_touchHandler endAndResetInteractionTiming];
 }
 
 @end

@@ -21,7 +21,7 @@
 @interface RCTTestRunner : NSObject
 
 @property (nonatomic, assign) BOOL recordMode;
-@property (nonatomic, copy) NSString *script;
+@property (nonatomic, strong) NSURL *scriptURL;
 
 /**
  * Initialize a runner.  It's recommended that you use the initRunnerForApp macro instead of calling this directly.
@@ -55,7 +55,7 @@
  * @param initialProps props that are passed into the component when rendered.
  * @param expectErrorRegex A regex that must match the error thrown.  If no error is thrown, the test fails.
  */
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSRegularExpression *)expectErrorRegex;
+- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)expectErrorRegex;
 
 /**
  * Same as runTest:, but allows for passing initialProps for providing mock data or requesting different behaviors, and
