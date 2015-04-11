@@ -72,7 +72,23 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
+RCT_CUSTOM_VIEW_PROPERTY(annotate, CLLocationCoordinate2D, RCTMap){
+    CLLocationCoordinate2D coordinate = [RCTConvert CLLocationCoordinate2D:json];
+    NSString *title = @"";
+    if ([json objectForKey:@"title"]){
+        title = [RCTConvert NSString:[json valueForKey:@"title"]];
+    }
 
+    if (!CLLocationCoordinate2DIsValid(coordinate)){
+        return;
+    }
+    MKPointAnnotation *pin = [[MKPointAnnotation alloc]init];
+    pin.coordinate = coordinate;
+    if (title.length){
+        pin.title = title;
+    }
+    [view addAnnotation:pin];
+}
 #pragma mark MKMapViewDelegate
 
 - (void)mapView:(RCTMap *)mapView didUpdateUserLocation:(MKUserLocation *)location
