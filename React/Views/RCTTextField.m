@@ -35,6 +35,13 @@
   return self;
 }
 
+- (void)setText:(NSString *)text
+{
+  if (![text isEqualToString:self.text]) {
+    [super setText:text];
+  }
+}
+
 - (NSArray *)reactSubviews
 {
   // TODO: do we support subviews of textfield in React?

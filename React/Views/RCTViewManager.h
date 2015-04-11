@@ -31,14 +31,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 @property (nonatomic, strong) RCTBridge *bridge;
 
 /**
- * The module name exposed to React JS. If omitted, this will be inferred
- * automatically by using the view module's class name. It is better to not
- * override this, and just follow standard naming conventions for your view
- * module subclasses.
- */
-+ (NSString *)moduleName;
-
-/**
  * This method instantiates a native view to be managed by the module. Override
  * this to return a custom view instance, which may be preconfigured with default
  * properties, subviews, etc. This method will be called many times, and should

@@ -18,6 +18,8 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 @synthesize bridge = _bridge;
 
+RCT_EXPORT_MODULE()
+
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -35,11 +37,11 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 }
 
 + (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
+            openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary *payload = @{@"url": [url absoluteString]};
+  NSDictionary *payload = @{@"url": [URL absoluteString]};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
                                                       object:self
                                                     userInfo:payload];
@@ -52,27 +54,22 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
                                               body:[notification userInfo]];
 }
 
-- (void)openURL:(NSString *)url
+RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 {
-  RCT_EXPORT();
-
-  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+  [[UIApplication sharedApplication] openURL:URL];
 }
 
-- (void)canOpenURL:(NSString *)url
-          callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
-  BOOL supported = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]];
-  callback(@[@(supported)]);
+  BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
+  callback(@[@(canOpen)]);
 }
 
 - (NSDictionary *)constantsToExport
 {
-  return @{
-    @"initialURL": [[_bridge.launchOptions objectForKey:UIApplicationLaunchOptionsURLKey] absoluteString] ?: [NSNull null]
-  };
+  NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+  return @{@"initialURL": [initialURL absoluteString] ?: [NSNull null]};
 }
 
 @end

@@ -99,6 +99,8 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
   RCTLocationOptions _observerOptions;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize bridge = _bridge;
 
 #pragma mark - Lifecycle
@@ -151,9 +153,9 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 
 #pragma mark - Public API
 
-- (void)startObserving:(NSDictionary *)optionsJSON
+RCT_EXPORT_METHOD(startObserving:(NSDictionary *)optionsJSON)
 {
-  RCT_EXPORT();
+  [self checkLocationConfig];
 
   dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -170,10 +172,8 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
   });
 }
 
-- (void)stopObserving
+RCT_EXPORT_METHOD(stopObserving)
 {
-  RCT_EXPORT();
-
   dispatch_async(dispatch_get_main_queue(), ^{
 
     // Stop observing
@@ -187,11 +187,11 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
   });
 }
 
-- (void)getCurrentPosition:(NSDictionary *)optionsJSON
-       withSuccessCallback:(RCTResponseSenderBlock)successBlock
-             errorCallback:(RCTResponseSenderBlock)errorBlock
+RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary *)optionsJSON
+                  withSuccessCallback:(RCTResponseSenderBlock)successBlock
+                  errorCallback:(RCTResponseSenderBlock)errorBlock)
 {
-  RCT_EXPORT();
+  [self checkLocationConfig];
 
   if (!successBlock) {
     RCTLogError(@"%@.getCurrentPosition called with nil success parameter.", [self class]);
@@ -321,6 +321,13 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 
   // Reset location accuracy
   _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+}
+
+- (void)checkLocationConfig
+{
+  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+    RCTLogError(@"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
+  }
 }
 
 @end

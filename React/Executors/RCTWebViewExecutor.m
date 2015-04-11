@@ -125,6 +125,8 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   RCTAssert(onComplete != nil, @"");
   _onApplicationScriptLoaded = onComplete;
 
+  script = [script stringByReplacingOccurrencesOfString:@"<script>" withString:@""];
+  script = [script stringByReplacingOccurrencesOfString:@"</script>" withString:@""];
   if (_objectsToInject.count > 0) {
     NSMutableString *scriptWithInjections = [[NSMutableString alloc] initWithString:@"/* BEGIN NATIVELY INJECTED OBJECTS */\n"];
     [_objectsToInject enumerateKeysAndObjectsUsingBlock:^(NSString *objectName, NSString *blockScript, BOOL *stop) {

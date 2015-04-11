@@ -30,7 +30,12 @@ function ModuleDescriptor(fields) {
 
   this.isPolyfill = fields.isPolyfill || false;
 
+  this.isAsset_DEPRECATED = fields.isAsset_DEPRECATED || false;
   this.isAsset = fields.isAsset || false;
+
+  if (this.isAsset_DEPRECATED && this.isAsset) {
+    throw new Error('Cannot be an asset and a deprecated asset');
+  }
 
   this.altId = fields.altId;
 

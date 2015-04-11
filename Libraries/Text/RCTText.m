@@ -38,34 +38,53 @@
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-  [_textStorage setAttributedString:attributedText];
+  for (NSLayoutManager *existingLayoutManager in _textStorage.layoutManagers) {
+    [_textStorage removeLayoutManager:existingLayoutManager];
+  }
+
+  _textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedText];
+
+  if (_layoutManager) {
+    [_textStorage addLayoutManager:_layoutManager];
+  }
+
   [self setNeedsDisplay];
 }
 
 - (void)setTextContainer:(NSTextContainer *)textContainer
 {
-  if ([_textContainer isEqual:textContainer]) return;
+  if ([_textContainer isEqual:textContainer]) {
+    return;
+  }
 
   _textContainer = textContainer;
 
   for (NSInteger i = _layoutManager.textContainers.count - 1; i >= 0; i--) {
     [_layoutManager removeTextContainerAtIndex:i];
   }
-  [_layoutManager addTextContainer:_textContainer];
+
+  if (_textContainer) {
+    [_layoutManager addTextContainer:_textContainer];
+  }
 
   [self setNeedsDisplay];
 }
 
 - (void)setLayoutManager:(NSLayoutManager *)layoutManager
 {
-  if ([_layoutManager isEqual:layoutManager]) return;
+  if ([_layoutManager isEqual:layoutManager]) {
+    return;
+  }
 
   _layoutManager = layoutManager;
 
   for (NSLayoutManager *existingLayoutManager in _textStorage.layoutManagers) {
     [_textStorage removeLayoutManager:existingLayoutManager];
   }
-  [_textStorage addLayoutManager:_layoutManager];
+
+  if (_layoutManager) {
+    [_textStorage addLayoutManager:_layoutManager];
+  }
 
   [self setNeedsDisplay];
 }

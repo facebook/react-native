@@ -9,8 +9,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTJSMethodRegistrar.h"
-
 @class RCTBridge;
 
 /**
@@ -22,7 +20,7 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 /**
  * Provides the interface needed to register a bridge module.
  */
-@protocol RCTBridgeModule <RCTJSMethodRegistrar>
+@protocol RCTBridgeModule <NSObject>
 @optional
 
 /**
@@ -34,10 +32,14 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 @property (nonatomic, strong) RCTBridge *bridge;
 
 /**
- * The module name exposed to JS. If omitted, this will be inferred
- * automatically by using the native module's class name.
+ * Place this macro in your class implementation, to automatically register
+ * your module with the bridge when it loads. The optional js_name argument
+ * will be used as the JS module name. If omitted, the JS module name will
+ * match the Objective-C class name.
  */
-+ (NSString *)moduleName;
+#define RCT_EXPORT_MODULE(js_name) \
++ (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
+))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; } \
 
 /**
  * Place this macro inside the method body of any method you want to expose
@@ -46,8 +48,37 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
  * If omitted, the JS method name will match the first part of the Objective-C
  * method selector name (up to the first colon).
  */
-#define RCT_EXPORT(js_name) __attribute__((used, section("__DATA,RCTExport" \
-))) static const char *__rct_export_entry__[] = { __func__, #js_name }
+#define RCT_EXPORT(js_name) \
+  _Pragma("message(\"RCT_EXPORT is deprecated. Use RCT_EXPORT_METHOD instead.\")") \
+  __attribute__((used, section("__DATA,RCTExport"))) \
+  static const char *__rct_export_entry__[] = { __func__, #js_name }
+
+/**
+ * Wrap the parameter line of your method implementation with this macro to
+ * expose it to JS. Unlike the deprecated RCT_EXPORT, this macro does not take
+ * a js_name argument and the exposed method will match the first part of the
+ * Objective-C method selector name (up to the first colon).
+ *
+ * For example, in MyClass.m:
+ *
+ * - (void)doSomething:(NSString *)aString withA:(NSInteger)a andB:(NSInteger)b
+ * {}
+ *
+ * becomes
+ *
+ * RCT_EXPORT_METHOD(doSomething:(NSString *)aString
+ *                   withA:(NSInteger)a
+ *                   andB:(NSInteger)b)
+ * {}
+ *
+ * and is exposed to JavaScript as `NativeModules.ModuleName.doSomething`.
+ */
+#define RCT_EXPORT_METHOD(method) \
+  - (void)__rct_export__##method { \
+    __attribute__((used, section("__DATA,RCTExport"))) \
+    static const char *__rct_export_entry__[] = { __func__, #method }; \
+  } \
+  - (void)method
 
 /**
  * Injects constants into JS. These constants are made accessible via
@@ -65,3 +96,11 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 - (void)batchDidComplete;
 
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+void RCTBridgeModuleRegisterClass(Class cls, NSString *moduleName);
+#ifdef __cplusplus
+}
+#endif

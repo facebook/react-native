@@ -1,0 +1,5 @@
+; travis:travis
+_auth=dHJhdmlzOnRyYXZpcw==
+email=travis@example.com
+spin=false
+registry=http://localhost:4873/

@@ -50,6 +50,12 @@ RCT_CONVERTER(NSString *, NSString, description)
   return nil;
 }
 
++ (NSData *)NSData:(id)json
+{
+  // TODO: should we automatically decode base64 data? Probably not...
+  return [[self NSString:json] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
 + (NSURL *)NSURL:(id)json
 {
   if (![json isKindOfClass:[NSString class]]) {
@@ -670,11 +676,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     isCondensed = RCTFontIsCondensed(font);
   }
 
-  // Get font weight
-  if (weight) {
-    fontWeight = [self RCTFontWeight:weight];
-  }
-
   // Get font style
   if (style) {
     isItalic = [self RCTFontStyle:style];
@@ -698,6 +699,11 @@ static BOOL RCTFontIsCondensed(UIFont *font)
       RCTLogError(@"Unrecognized font family '%@'", familyName);
       familyName = RCTDefaultFontFamily;
     }
+  }
+
+  // Get font weight
+  if (weight) {
+    fontWeight = [self RCTFontWeight:weight];
   }
 
   // Get closest match
@@ -741,8 +747,6 @@ RCT_ARRAY_CONVERTER(UIColor)
   }
   return colors;
 }
-
-typedef BOOL css_overflow;
 
 RCT_ENUM_CONVERTER(css_overflow, (@{
   @"hidden": @NO,
