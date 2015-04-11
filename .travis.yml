@@ -8,6 +8,7 @@ before_install:
   - brew update
 install:
   - brew reinstall flow watchman xctool
+  - npm config set spin=false
   - npm install
 
 script:

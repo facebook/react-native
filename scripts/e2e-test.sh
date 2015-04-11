@@ -13,9 +13,9 @@ TEMP=$(mktemp -d /tmp/react-native-XXXXXXXX)
 MARKER=$(mktemp $ROOT/Examples/SampleApp/XXXXXXXX)
 
 function cleanup {
-  kill -9 $SINOPIA_PID
-  mv ~/.npmrc.bak ~/.npmrc
   rm $MARKER
+  [ $SINOPIA_PID ] && kill -9 $SINOPIA_PID
+  [ -f ~/.npmrc.bak ] && mv ~/.npmrc.bak ~/.npmrc
 }
 trap cleanup EXIT
 
@@ -44,4 +44,4 @@ cd EndToEndTest
 
 # Make sure we installed local version of react-native
 ls `basename $MARKER` > /dev/null
-xctool -scheme EndToEndTest -sdk iphonesimulator8.2 test
+xctool -scheme EndToEndTest -sdk iphonesimulator8.1 test
