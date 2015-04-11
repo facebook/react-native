@@ -31,12 +31,16 @@ which sinopia || npm install -g sinopia
 [ -f ~/.npmrc ] && cp ~/.npmrc ~/.npmrc.bak
 cp $SCRIPTS/e2e-npmrc ~/.npmrc
 
-[ -d $SCRIPTS/.published-packages ] && rm -r $SCRIPTS/.published-packages
 sinopia --config $SCRIPTS/e2e-sinopia.config.yml &
 SINOPIA_PID=$!
 
+# Make sure to remove old version of react-native in
+# case it was cached
+npm unpublish react-native --force
+npm unpublish react-native-cli --force
 npm publish $ROOT
 npm publish $ROOT/react-native-cli
+
 
 npm install -g react-native-cli
 react-native init EndToEndTest
@@ -44,4 +48,5 @@ cd EndToEndTest
 
 # Make sure we installed local version of react-native
 ls `basename $MARKER` > /dev/null
-xctool -scheme EndToEndTest -sdk iphonesimulator8.1 test
+
+xctool -scheme EndToEndTest -sdk iphonesimulator test

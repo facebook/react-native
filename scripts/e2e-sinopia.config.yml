@@ -1,4 +1,4 @@
-storage: .published-packages
+storage: /tmp/sinopia-package-cache
 
 uplinks:
   npmjs:
