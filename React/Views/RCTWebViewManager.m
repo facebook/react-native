@@ -30,8 +30,6 @@ RCT_EXPORT_VIEW_PROPERTY(allowScroll, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(opaque, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(underlayColor, UIColor);
 
 - (NSDictionary *)constantsToExport
 {

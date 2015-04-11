@@ -78,16 +78,6 @@
   [_webView loadHTMLString:HTML baseURL:nil];
 }
 
-- (void)setOpaque:(BOOL)isOpaque
-{
-  [_webView setOpaque:isOpaque];
-}
-
-- (void)setUnderlayColor:(UIColor *)color
-{
-  [_webView setBackgroundColor:color];
-}
-
 - (void)layoutSubviews
 {
   [super layoutSubviews];
