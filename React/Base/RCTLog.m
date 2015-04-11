@@ -149,14 +149,25 @@ NSString *RCTFormatLog(
   return log;
 }
 
-void _RCTLogFormat(RCTLogLevel level, const char *fileName, int lineNumber, NSString *format, ...)
+void _RCTLogFormat(
+  RCTLogLevel level,
+  const char *fileName,
+  int lineNumber,
+  NSString *format, ...)
 {
-  if (RCTCurrentLogFunction && level >= RCTCurrentLogThreshold) {
+
+#if DEBUG
+  BOOL log = YES;
+#else
+  BOOL log = (RCTCurrentLogFunction != nil);
+#endif
+
+  if (log && level >= RCTCurrentLogThreshold) {
 
     // Get message
     va_list args;
     va_start(args, format);
-    __block NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
     va_end(args);
 
     // Add prefix
@@ -185,27 +196,4 @@ void _RCTLogFormat(RCTLogLevel level, const char *fileName, int lineNumber, NSSt
 #endif
 
   }
-}
-
-#pragma mark - Deprecated
-
-void RCTInjectLogFunction(void (^logFunction)(NSString *msg))
-{
-  RCTSetLogFunction(^(RCTLogLevel level,
-                      NSString *fileName,
-                      NSNumber *lineNumber,
-                      NSString *message) {
-
-    if (level > RCTLogLevelError) {
-
-      // Use custom log function
-      NSString *loc = fileName ? [NSString stringWithFormat:@"[%@:%@] ", fileName, lineNumber] : @"";
-      logFunction([loc stringByAppendingString:message]);
-
-    } else if (RCTDefaultLogFunction && level >= RCTCurrentLogThreshold) {
-
-      // Use default logger
-      RCTDefaultLogFunction(level, fileName, lineNumber, message);
-    }
-  });
 }
