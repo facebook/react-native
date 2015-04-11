@@ -110,7 +110,7 @@ HasteDependencyResolver.prototype.getDependencies = function(main, options) {
       };
     });
 };
-
+ 
 HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
   dependencies,
   isDev
