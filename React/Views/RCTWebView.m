@@ -87,12 +87,12 @@
                       updateOffset:YES];
 }
 
-- (void)setAllowBounce:(BOOL)allowBounce {
-  _webView.scrollView.bounces = allowBounce;
+- (void)setBounces:(BOOL)bounces {
+  _webView.scrollView.bounces = bounces;
 }
 
-- (void)setAllowScroll:(BOOL)allowScroll {
-  _webView.scrollView.scrollEnabled = allowScroll;
+- (void)setScrollEnabled:(BOOL)scrollEnabled {
+  _webView.scrollView.scrollEnabled = scrollEnabled;
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
