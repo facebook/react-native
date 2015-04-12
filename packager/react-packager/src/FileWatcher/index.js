@@ -16,7 +16,7 @@ var exec = require('child_process').exec;
 var os = require('os');
 
 // returns true if this is running on Windows
-function isWindows() { return !!os.type().match(/Windows/);}
+function isWindows() { return !!os.type() && !!os.type().match(/Windows/);}
 
 var detectingWatcherClass = new Promise(function(resolve) {
   // watchman is not available on Windows, just return NodeWatcher (even if it's installed)
