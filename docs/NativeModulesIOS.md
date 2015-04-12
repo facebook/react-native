@@ -51,6 +51,9 @@ var CalendarManager = require('NativeModules').CalendarManager;
 CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 ```
 
+> **NOTE:** JavaScript method names
+> The name of the method exported to JavaScript is the native method's name up to the first colon. React Native also defines a macro called `RCT_REMAP_METHOD` to specify the JavaScript method's name. This is useful when multiple native methods are the same up to the first colon and would have conflicting JavaScript names.
+
 The return type of bridge methods is always `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
 
 ## Argument types
@@ -100,7 +103,7 @@ CalendarManager.addEvent('Birthday Party', {
 > React Native doesn't provide any guarantees about the types of values in these structures. Your native module might expect an array of strings, but if JavaScript calls your method with an array containing numbers and strings, you'll get `NSArray` with `NSNumber` and `NSString`. It is the developer's responsibility to check array/map value types (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for helper methods).
 
 
-# Callbacks
+## Callbacks
 
 > **WARNING**
 >
