@@ -52,7 +52,9 @@
 
 @end
 
-@implementation RCTMapManager
+@implementation RCTMapManager{
+    NSMutableDictionary *pinAnnotations;
+}
 
 RCT_EXPORT_MODULE()
 
@@ -72,23 +74,53 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
-RCT_CUSTOM_VIEW_PROPERTY(annotate, CLLocationCoordinate2D, RCTMap){
-    CLLocationCoordinate2D coordinate = [RCTConvert CLLocationCoordinate2D:json];
-    NSString *title = @"";
-    if ([json objectForKey:@"title"]){
-        title = [RCTConvert NSString:[json valueForKey:@"title"]];
-    }
+RCT_CUSTOM_VIEW_PROPERTY(annotations, CLLocationCoordinate2D, RCTMap){
+    if ([json isKindOfClass:[NSArray class]]){
+        NSMutableDictionary *pins = [NSMutableDictionary dictionary];
+        id anObject;
+        NSEnumerator *enumerator = [json objectEnumerator];
+        while (anObject = [enumerator nextObject]){
+            CLLocationCoordinate2D coordinate = [RCTConvert CLLocationCoordinate2D:anObject];
+            if (CLLocationCoordinate2DIsValid(coordinate)){
+                NSString *title = @"";
+                if ([anObject objectForKey:@"title"]){
+                    title = [RCTConvert NSString:[anObject valueForKey:@"title"]];
+                }
+                MKPointAnnotation *pin = [[MKPointAnnotation alloc]init];
+                pin.coordinate = coordinate;
+                if (title.length){
+                    pin.title = title;
+                }
 
-    if (!CLLocationCoordinate2DIsValid(coordinate)){
-        return;
+                NSValue *key = [NSValue valueWithMKCoordinate:pin.coordinate];
+                [pins setObject:pin forKey:key];
+            }
+        }
+        if (pins.count){
+            if (!pinAnnotations){
+                pinAnnotations = [NSMutableDictionary dictionary];
+            }
+            NSArray *oldKeys = [pinAnnotations allKeys];
+            NSArray *newKeys = [pins allKeys];
+
+            // Remove old coordinates from dictionary if new ones are different
+            // and also remove them from Map
+            if (oldKeys.count){
+                NSMutableArray *removeableKeys = [NSMutableArray array];
+                for (NSValue *oldKey in oldKeys){
+                    if (![newKeys containsObject:oldKey]){
+                        [removeableKeys addObject:oldKey];
+                    }
+                }
+                [view removeAnnotations:[pinAnnotations objectsForKeys:removeableKeys notFoundMarker:[NSNull null]]];
+                [pinAnnotations removeObjectsForKeys:removeableKeys];
+            }
+            [pinAnnotations setValuesForKeysWithDictionary:pins];
+            [view addAnnotations:[pinAnnotations allValues]];
+        }
     }
-    MKPointAnnotation *pin = [[MKPointAnnotation alloc]init];
-    pin.coordinate = coordinate;
-    if (title.length){
-        pin.title = title;
-    }
-    [view addAnnotation:pin];
 }
+
 #pragma mark MKMapViewDelegate
 
 - (void)mapView:(RCTMap *)mapView didUpdateUserLocation:(MKUserLocation *)location

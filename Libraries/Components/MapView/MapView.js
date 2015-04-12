@@ -98,7 +98,7 @@ var MapView = React.createClass({
     /**
      * Coordinates for the pin annotation on the map using title
      */
-     annotate: React.PropTypes.shape({
+     annotations: React.PropTypes.shape({
       latitude: React.PropTypes.number.isRequired,
       longitude:React.PropTypes.number.isRequired,
       title: React.PropTypes.string
@@ -151,7 +151,7 @@ var MapView = React.createClass({
         pitchEnabled={this.props.pitchEnabled}
         scrollEnabled={this.props.scrollEnabled}
         region={this.props.region}
-        annotate={this.props.annotate}
+        annotations={this.props.annotations}
         maxDelta={this.props.maxDelta}
         minDelta={this.props.minDelta}
         legalLabelInsets={this.props.legalLabelInsets}
@@ -175,7 +175,7 @@ var RCTMap = createReactIOSNativeComponentClass({
       pitchEnabled: true,
       scrollEnabled: true,
       region: {diff: deepDiffer},
-      annotate: {diff: deepDiffer},
+      annotations: {diff: deepDiffer},
       maxDelta: true,
       minDelta: true,
       legalLabelInsets: {diff: insetsDiffer},
