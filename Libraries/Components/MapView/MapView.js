@@ -98,11 +98,13 @@ var MapView = React.createClass({
     /**
      * Coordinates for the pin annotation on the map using title
      */
-     annotations: React.PropTypes.shape({
-      latitude: React.PropTypes.number.isRequired,
-      longitude:React.PropTypes.number.isRequired,
-      title: React.PropTypes.string
-    }),
+     annotations: React.PropTypes.arrayOf(
+      React.PropTypes.shape({
+        latitude: React.PropTypes.number.isRequired,
+        longitude: React.PropTypes.number.isRequired,
+        title: React.PropTypes.string
+      })
+    ),
 
     /**
      * Maximum size of area that can be displayed.
