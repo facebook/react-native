@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <objc/message.h>
+
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
@@ -172,6 +174,8 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
 #define RCT_NUMBER_CONVERTER(type, getter) \
 RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
 
+NSNumber *RCTEnumConverterImpl(const char *typeName, NSDictionary *values, NSNumber *defaultValue, id json);
+
 /**
  * This macro is used for creating converters for enum types.
  */
@@ -183,25 +187,8 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
   dispatch_once(&onceToken, ^{                            \
     mapping = values;                                     \
   });                                                     \
-  if (!json || json == [NSNull null]) {                   \
-    return default;                                       \
-  }                                                       \
-  if ([json isKindOfClass:[NSNumber class]]) {            \
-    if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
-      return [json getter];                               \
-    }                                                     \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
-    return default;                                       \
-  }                                                       \
-  if (![json isKindOfClass:[NSString class]]) {           \
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", \
-                #type, [json classForCoder], json);       \
-  }                                                       \
-  id value = mapping[json];                               \
-  if(!value && [json description].length > 0) {           \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
-  }                                                       \
-  return value ? [value getter] : default;                \
+  NSNumber *converted = RCTEnumConverterImpl(#type, mapping, @(default), json); \
+  return ((type(*)(id, SEL))objc_msgSend)(converted, @selector(getter)); \
 }
 
 /**

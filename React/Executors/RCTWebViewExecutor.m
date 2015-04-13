@@ -42,12 +42,9 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
 
 - (instancetype)initWithWebView:(UIWebView *)webView
 {
-  if (!webView) {
-    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Can't init with a nil webview" userInfo:nil];
-  }
   if ((self = [super init])) {
     _objectsToInject = [[NSMutableDictionary alloc] init];
-    _webView = webView;
+    _webView = webView ?: [[UIWebView alloc] init];
     _webView.delegate = self;
   }
   return self;
@@ -55,7 +52,7 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
 
 - (id)init
 {
-  return [self initWithWebView:[[UIWebView alloc] init]];
+  return [self initWithWebView:nil];
 }
 
 - (BOOL)isValid
