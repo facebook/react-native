@@ -67,6 +67,7 @@
   RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
   testModule.testSelector = test;
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundlePath:_script
+                                                withDebugEnabled:NO
                                                 moduleProvider:^(){
                                                   return @[testModule];
                                                 }

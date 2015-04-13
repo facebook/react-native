@@ -74,10 +74,12 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                  withDebugEnabled:(BOOL)debugEnabled
                        moduleName:(NSString *)moduleName
                     launchOptions:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundlePath:bundleURL.absoluteString
+                                           withDebugEnabled:debugEnabled
                                              moduleProvider:nil
                                               launchOptions:launchOptions];
   return [self initWithBridge:bridge

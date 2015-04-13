@@ -45,6 +45,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * parameters or configuration.
  */
 - (instancetype)initWithBundlePath:(NSString *)bundlepath
+                  withDebugEnabled:(BOOL)debugEnabled
                     moduleProvider:(RCTBridgeModuleProviderBlock)block
                      launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 

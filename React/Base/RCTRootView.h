@@ -31,6 +31,7 @@ extern NSString *const RCTReloadViewsNotification;
  * to all the instances.
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                 withDebugEnabled:(BOOL)debugginEnable
                        moduleName:(NSString *)moduleName
                     launchOptions:(NSDictionary *)launchOptions;
 
