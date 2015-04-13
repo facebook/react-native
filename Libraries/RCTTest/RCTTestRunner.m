@@ -29,7 +29,7 @@
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
     _snapshotController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
     _snapshotController.referenceImagesDirectory = referenceDir;
-    _script = [NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app];
+    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
   }
   return self;
 }
@@ -49,10 +49,10 @@
   [self runTest:test module:moduleName initialProps:nil expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSRegularExpression *)errorRegex
+- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)errorRegex
 {
   [self runTest:test module:moduleName initialProps:initialProps expectErrorBlock:^BOOL(NSString *error){
-    return [errorRegex numberOfMatchesInString:error options:0 range:NSMakeRange(0, [error length])] > 0;
+    return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;
   }];
 }
 
@@ -66,11 +66,12 @@
 
   RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
   testModule.testSelector = test;
-  RCTBridge *bridge = [[RCTBridge alloc] initWithBundlePath:_script
-                                                moduleProvider:^(){
-                                                  return @[testModule];
-                                                }
-                                                 launchOptions:nil];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
+                                            moduleProvider:^(){
+                                              return @[testModule];
+                                            }
+                                             launchOptions:nil];
+
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:moduleName];
   testModule.view = rootView;

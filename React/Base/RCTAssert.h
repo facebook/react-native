@@ -9,35 +9,73 @@
 
 #import <Foundation/Foundation.h>
 
-#define RCTErrorDomain @"RCTErrorDomain"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define RCTAssert(condition, message, ...) _RCTAssert((condition) != 0, message, ##__VA_ARGS__)
-#define RCTCAssert(condition, message, ...) _RCTCAssert((condition) != 0, message, ##__VA_ARGS__)
+/**
+ * By default, only raise an NSAssertion in debug mode
+ * (custom assert functions will still be called).
+ */
+#ifndef RCT_ASSERT
+#if DEBUG
+#define RCT_ASSERT 1
+#else
+#define RCT_ASSERT 0
+#endif
+#endif
 
-typedef void (^RCTAssertFunction)(BOOL condition, NSString *message, ...);
+/**
+ * The default error domain to be used for React errors.
+ */
+extern NSString *const RCTErrorDomain;
 
-extern RCTAssertFunction RCTInjectedAssertFunction;
-extern RCTAssertFunction RCTInjectedCAssertFunction;
+/**
+ * A block signature to be used for custom assertion handling.
+ */
+typedef void (^RCTAssertFunction)(
+  BOOL condition,
+  NSString *fileName,
+  NSNumber *lineNumber,
+  NSString *function,
+  NSString *message
+);
 
-void RCTInjectAssertFunctions(RCTAssertFunction assertFunction, RCTAssertFunction cAssertFunction);
+/**
+ * Private logging function - ignore this.
+ */
+void _RCTAssertFormat(BOOL, const char *, int, const char *, NSString *, ...) NS_FORMAT_FUNCTION(5,6);
 
-#define _RCTAssert(condition, message, ...) \
-do { \
-  if (RCTInjectedAssertFunction) { \
-    RCTInjectedAssertFunction(condition, message, ##__VA_ARGS__); \
-  } else { \
-    NSAssert(condition, message, ##__VA_ARGS__); \
-  } \
+/**
+ * This is the main assert macro that you should use.
+ */
+#define RCTAssert(condition, ...) do { BOOL pass = ((condition) != 0); \
+if (RCT_ASSERT && !pass) { [[NSAssertionHandler currentHandler] handleFailureInFunction:@(__func__) \
+file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; } \
+_RCTAssertFormat(pass, __FILE__, __LINE__, __func__, __VA_ARGS__); \
 } while (false)
 
-#define _RCTCAssert(condition, message, ...) \
-do { \
-  if (RCTInjectedCAssertFunction) { \
-    RCTInjectedCAssertFunction(condition, message, ##__VA_ARGS__); \
-  } else { \
-    NSCAssert(condition, message, ##__VA_ARGS__); \
-  } \
-} while (false)
+/**
+ * Convenience macro for asserting that we're running on main thread.
+ */
+#define RCTAssertMainThread() RCTAssert([NSThread isMainThread], \
+@"This function must be called on the main thread");
 
-#define RCTAssertMainThread() RCTAssert([NSThread isMainThread], @"This method must be called on the main thread");
-#define RCTCAssertMainThread() RCTCAssert([NSThread isMainThread], @"This function must be called on the main thread");
+/**
+ * These methods get and set the current assert function called by the RCTAssert
+ * macros. You can use these to replace the standard behavior with custom log
+ * functionality.
+ */
+void RCTSetAssertFunction(RCTAssertFunction assertFunction);
+RCTAssertFunction RCTGetAssertFunction(void);
+
+/**
+ * This appends additional code to the existing assert function, without
+ * replacing the existing functionality. Useful if you just want to forward
+ * assert info to an extra service without changing the default behavior.
+ */
+void RCTAddAssertFunction(RCTAssertFunction assertFunction);
+
+#ifdef __cplusplus
+}
+#endif
