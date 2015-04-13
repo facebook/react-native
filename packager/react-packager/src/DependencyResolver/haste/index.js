@@ -58,12 +58,12 @@ var validateOpts = declareOpts({
 });
 
 // returns true if this is running on Windows
-function isWindows() { return !!os.type() && !!os.type().match(/Windows/);}
+function isWindows() { return !!os.type && !!os.type() && !!os.type().match(/Windows/);}
 // convert a Windows path to forward slash path
 function __convertPath(path) {
     return path.replace(/\\/g,'/');
 }
-// check if we're running on windows. If not, then this function becomes a no-op
+// check if we're running on windows. If not, then this function becomes a no-opu
 var convertPath = isWindows() ? __convertPath : function(path) { return path; }
 
 
