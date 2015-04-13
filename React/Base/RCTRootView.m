@@ -126,6 +126,8 @@
       _devMenu = [[RCTDevMenu alloc] initWithBridge:_bridge];
     }
     [_devMenu show];
+  } else {
+    [super motionEnded:motion withEvent:event];
   }
 }
 
