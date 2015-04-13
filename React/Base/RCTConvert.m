@@ -58,14 +58,18 @@ RCT_CONVERTER(NSString *, NSString, description)
 
 + (NSURL *)NSURL:(id)json
 {
-  NSString *path = [self NSString:json];
+  if (![json isKindOfClass:[NSString class]]) {
+    RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json classForCoder], json);
+    return nil;
+  }
+
+  NSString *path = json;
   if ([path isAbsolutePath])
   {
     return [NSURL fileURLWithPath:path];
   }
   else if ([path length])
   {
-    path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *URL = [NSURL URLWithString:path relativeToURL:[[NSBundle mainBundle] resourceURL]];
     if ([URL isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[URL path]]) {
       RCTLogWarn(@"The file '%@' does not exist", URL);
