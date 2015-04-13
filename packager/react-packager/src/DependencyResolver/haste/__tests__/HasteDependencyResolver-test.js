@@ -82,6 +82,17 @@ describe('HasteDependencyResolver', function() {
                 'polyfills/console.js'
               ],
             },
+            { id: 'polyfills/String.prototype.es6.js',
+              isPolyfill: true,
+              path: 'polyfills/String.prototype.es6.js',
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js',
+                'polyfills/console.js',
+                'polyfills/error-guard.js'
+              ],
+            },
             module
           ]);
         });
@@ -140,6 +151,17 @@ describe('HasteDependencyResolver', function() {
                 'polyfills/require.js',
                 'polyfills/polyfills.js',
                 'polyfills/console.js'
+              ],
+            },
+            { id: 'polyfills/String.prototype.es6.js',
+              isPolyfill: true,
+              path: 'polyfills/String.prototype.es6.js',
+              dependencies: [
+                'polyfills/prelude_dev.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js',
+                'polyfills/console.js',
+                'polyfills/error-guard.js'
               ],
             },
             module
@@ -203,6 +225,17 @@ describe('HasteDependencyResolver', function() {
                 'polyfills/console.js'
               ],
             },
+            { id: 'polyfills/String.prototype.es6.js',
+              isPolyfill: true,
+              path: 'polyfills/String.prototype.es6.js',
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js',
+                'polyfills/console.js',
+                'polyfills/error-guard.js'
+              ],
+            },
             { path: 'some module',
               id: 'some module',
               isPolyfill: true,
@@ -212,6 +245,7 @@ describe('HasteDependencyResolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/String.prototype.es6.js'
               ]
             },
             module
