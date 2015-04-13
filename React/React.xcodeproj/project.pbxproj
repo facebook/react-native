@@ -60,6 +60,7 @@
 		83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */; };
 		83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */; };
 		83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBACB1A6023D300E9B192 /* RCTConvert.m */; };
+		BB73581F1ADC943800EDB04F /* RCTSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = BB73581E1ADC943800EDB04F /* RCTSlider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -192,6 +193,8 @@
 		83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTouchHandler.m; sourceTree = "<group>"; };
 		83CBBACA1A6023D300E9B192 /* RCTConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTConvert.h; sourceTree = "<group>"; };
 		83CBBACB1A6023D300E9B192 /* RCTConvert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert.m; sourceTree = "<group>"; };
+		BB73581D1ADC943800EDB04F /* RCTSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSlider.h; sourceTree = "<group>"; };
+		BB73581E1ADC943800EDB04F /* RCTSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSlider.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,6 +282,8 @@
 				13C325271AA63B6A0048765F /* RCTScrollableProtocol.h */,
 				13E0674B1A70F44B002CDEE1 /* RCTShadowView.h */,
 				13E0674C1A70F44B002CDEE1 /* RCTShadowView.m */,
+				BB73581D1ADC943800EDB04F /* RCTSlider.h */,
+				BB73581E1ADC943800EDB04F /* RCTSlider.m */,
 				14F484541AABFCE100FDF6B9 /* RCTSliderManager.h */,
 				14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */,
 				14F362071AABD06A001CE568 /* RCTSwitch.h */,
@@ -469,6 +474,7 @@
 				83CBBA5A1A601E9000E9B192 /* RCTRedBox.m in Sources */,
 				83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */,
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
+				BB73581F1ADC943800EDB04F /* RCTSlider.m in Sources */,
 				832348161A77A5AA00B55238 /* Layout.c in Sources */,
 				14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,

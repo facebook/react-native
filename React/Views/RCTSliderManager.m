@@ -8,6 +8,7 @@
  */
 
 #import "RCTSliderManager.h"
+#import "RCTSlider.h"
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
@@ -19,7 +20,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  UISlider *slider = [[UISlider alloc] init];
+  RCTSlider *slider = [[RCTSlider alloc] init];
   [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
   [slider addTarget:self action:@selector(sliderTouchEnd:) forControlEvents:UIControlEventTouchUpInside];
   return slider;
