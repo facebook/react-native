@@ -85,7 +85,7 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object,
                                                 range:(NSRange){0, message.length}
                                          withTemplate:@"[$4$5]  \t$2"];
 
-    _RCTLogFormat(0, NULL, -1, @"%@", message);
+    _RCTLogFormat(RCTLogLevelInfo, NULL, -1, @"%@", message);
   }
 
   return JSValueMakeUndefined(context);
