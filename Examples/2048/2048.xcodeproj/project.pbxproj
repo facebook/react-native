@@ -15,7 +15,6 @@
 		58C1E40E1ACF54E9006D1A47 /* libRCTAnimationExperimental.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C1E40B1ACF54B4006D1A47 /* libRCTAnimationExperimental.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		D134104F1AD725F900AED5BC /* libRCTWebSocketDebugger.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D134104D1AD725E700AED5BC /* libRCTWebSocketDebugger.a */; };
-		D13410511AD7260500AED5BC /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D13410501AD7260500AED5BC /* libicucore.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,7 +60,6 @@
 		146163271AC3E22900C2F5AD /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
 		D13410461AD725E700AED5BC /* RCTWebSocketDebugger.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocketDebugger.xcodeproj; path = ../../Libraries/RCTWebSocketDebugger/RCTWebSocketDebugger.xcodeproj; sourceTree = "<group>"; };
-		D13410501AD7260500AED5BC /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,7 +67,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D13410511AD7260500AED5BC /* libicucore.dylib in Frameworks */,
 				D134104F1AD725F900AED5BC /* libRCTWebSocketDebugger.a in Frameworks */,
 				1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */,
 				58C1E40E1ACF54E9006D1A47 /* libRCTAnimationExperimental.a in Frameworks */,
@@ -112,7 +109,6 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				D13410501AD7260500AED5BC /* libicucore.dylib */,
 				D13410461AD725E700AED5BC /* RCTWebSocketDebugger.xcodeproj */,
 				146163271AC3E22900C2F5AD /* React.xcodeproj */,
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,

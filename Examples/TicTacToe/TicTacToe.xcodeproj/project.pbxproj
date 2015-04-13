@@ -15,7 +15,6 @@
 		144C5F691AC3E5E300B004E7 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 144C5F681AC3E5D800B004E7 /* libReact.a */; };
 		58C572511AA6229D00CDF9C8 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5724D1AA6224400CDF9C8 /* libRCTText.a */; };
 		D1E4EBF01AD72862004B086C /* libRCTWebSocketDebugger.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E4EBEE1AD7285D004B086C /* libRCTWebSocketDebugger.a */; };
-		D1E4EBF21AD7286F004B086C /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E4EBF11AD7286F004B086C /* libicucore.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,7 +60,6 @@
 		144C5F631AC3E5D800B004E7 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
 		D1E4EBE71AD7285D004B086C /* RCTWebSocketDebugger.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocketDebugger.xcodeproj; path = ../../Libraries/RCTWebSocketDebugger/RCTWebSocketDebugger.xcodeproj; sourceTree = "<group>"; };
-		D1E4EBF11AD7286F004B086C /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,7 +67,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D1E4EBF21AD7286F004B086C /* libicucore.dylib in Frameworks */,
 				D1E4EBF01AD72862004B086C /* libRCTWebSocketDebugger.a in Frameworks */,
 				144C5F691AC3E5E300B004E7 /* libReact.a in Frameworks */,
 				1341803E1AA91802003F314A /* libRCTImage.a in Frameworks */,
@@ -113,7 +110,6 @@
 			isa = PBXGroup;
 			children = (
 				D1E4EBE71AD7285D004B086C /* RCTWebSocketDebugger.xcodeproj */,
-				D1E4EBF11AD7286F004B086C /* libicucore.dylib */,
 				144C5F631AC3E5D800B004E7 /* React.xcodeproj */,
 				134180381AA917ED003F314A /* RCTImage.xcodeproj */,
 				587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */,
