@@ -119,6 +119,8 @@ function scheduleUpdate() {
  * Notify listeners, process queue, etc
  */
 function processUpdate() {
+  _nextUpdateHandle = null;
+
   var interactionCount = _interactionSet.size;
   _addInteractionSet.forEach(handle =>
     _interactionSet.add(handle)
@@ -138,12 +140,13 @@ function processUpdate() {
 
   // process the queue regardless of a transition
   if (nextInteractionCount === 0) {
-    _queue.forEach(callback => {
+    var queue = _queue;
+    _queue = [];
+    queue.forEach(callback => {
       ErrorUtils.applyWithGuard(callback);
     });
-    _queue = [];
   }
-  _nextUpdateHandle = null;
+
   _addInteractionSet.clear();
   _deleteInteractionSet.clear();
 }
