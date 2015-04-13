@@ -36,7 +36,8 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
-    "start": "./packager/packager.sh"
+    "start": "./packager/packager.sh",
+    "postinstall": "./packager/warn-if-installed-globally.sh"
   },
   "bin": {
     "react-native-start": "packager/packager.sh"
