@@ -113,6 +113,7 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
     path.join(__dirname, 'polyfills/console.js'),
     path.join(__dirname, 'polyfills/error-guard.js'),
     path.join(__dirname, 'polyfills/String.prototype.es6.js'),
+    path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
   ].concat(this._polyfillModuleNames);
 
   var polyfillModules = polyfillModuleNames.map(
