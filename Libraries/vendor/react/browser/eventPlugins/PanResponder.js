@@ -64,7 +64,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *         // The accumulated gesture distance since becoming responder is
  *         // gestureState.d{x,y}
  *       },
- *       onResponderTerminationRequest: (evt, gestureState) => true,
+ *       onPanResponderTerminationRequest: (evt, gestureState) => true,
  *       onPanResponderRelease: (evt, gestureState) => {
  *         // The user has released all touches while this view is the
  *         // responder. This typically means a gesture has succeeded
