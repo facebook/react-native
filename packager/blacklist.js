@@ -18,26 +18,35 @@ var sharedBlacklist = [
   'node_modules/react-tools/src/event/EventPropagators.js'
 ];
 
-var webBlacklist = [
-  '.ios.js'
-];
-
-var iosBlacklist = [
-  'node_modules/react-tools/src/browser/ui/React.js',
-  'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
-  // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
-  '.web.js',
-  '.android.js',
-];
+var platformBlacklists = {
+  web: [
+    '.ios.js'
+  ],
+  ios: [
+    'node_modules/react-tools/src/browser/ui/React.js',
+    'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
+    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
+    '.web.js',
+    '.android.js',
+  ],
+  android: [
+    'node_modules/react-tools/src/browser/ui/React.js',
+    'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
+    'node_modules/react-tools/src/browser/ReactTextComponent.js',
+    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
+    '.web.js',
+    '.ios.js',
+  ],
+};
 
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
 
-function blacklist(isWeb, additionalBlacklist) {
+function blacklist(platform, additionalBlacklist) {
   return new RegExp('(' +
     (additionalBlacklist || []).concat(sharedBlacklist)
-      .concat(isWeb ? webBlacklist : iosBlacklist)
+      .concat(platformBlacklists[platform] || [])
       .map(escapeRegExp)
       .join('|') +
     ')$'
