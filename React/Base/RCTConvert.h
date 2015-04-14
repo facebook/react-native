@@ -135,6 +135,11 @@ BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
  */
 BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 
+/**
+ * Underlying implementation of RCT_ENUM_CONVERTER macro. Ignore this.
+ */
+NSNumber *RCTConverterEnumValue(const char *, NSDictionary *, NSNumber *, id);
+
 #ifdef __cplusplus
 }
 #endif
@@ -169,12 +174,10 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
 /**
  * This macro is similar to RCT_CONVERTER, but specifically geared towards
  * numeric types. It will handle string input correctly, and provides more
- * detailed error reporting if a wrong value is passed in.
+ * detailed error reporting if an invalid value is passed in.
  */
 #define RCT_NUMBER_CONVERTER(type, getter) \
 RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
-
-NSNumber *RCTEnumConverterImpl(const char *typeName, NSDictionary *values, NSNumber *defaultValue, id json);
 
 /**
  * This macro is used for creating converters for enum types.
@@ -187,7 +190,7 @@ NSNumber *RCTEnumConverterImpl(const char *typeName, NSDictionary *values, NSNum
   dispatch_once(&onceToken, ^{                            \
     mapping = values;                                     \
   });                                                     \
-  NSNumber *converted = RCTEnumConverterImpl(#type, mapping, @(default), json); \
+  NSNumber *converted = RCTConverterEnumValue(#type, mapping, @(default), json); \
   return ((type(*)(id, SEL))objc_msgSend)(converted, @selector(getter)); \
 }
 

@@ -32,7 +32,7 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 @property (nonatomic, weak) RCTBridge *bridge;
 
 /**
- * Place this macro in your class implementation, to automatically register
+ * Place this macro in your class implementation to automatically register
  * your module with the bridge when it loads. The optional js_name argument
  * will be used as the JS module name. If omitted, the JS module name will
  * match the Objective-C class name.
@@ -42,22 +42,10 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
   ))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; }
 
 /**
- * Place this macro inside the method body of any method you want to expose
- * to JS. The optional js_name argument will be used as the JS method name
- * (the method will be namespaced to the module name, as specified above).
- * If omitted, the JS method name will match the first part of the Objective-C
- * method selector name (up to the first colon).
- */
-#define RCT_EXPORT(js_name) \
-  _Pragma("message(\"RCT_EXPORT is deprecated. Use RCT_EXPORT_METHOD instead.\")") \
-  __attribute__((used, section("__DATA,RCTExport"))) \
-  static const char *__rct_export_entry__[] = { __func__, #js_name }
-
-/**
  * Wrap the parameter line of your method implementation with this macro to
- * expose it to JS. Unlike the deprecated RCT_EXPORT, this macro does not take
- * a js_name argument and the exposed method will match the first part of the
- * Objective-C method selector name (up to the first colon).
+ * expose it to JS. By default the exposed method will match the first part of
+ * the Objective-C method selector name (up to the first colon). Use
+ * RCT_REMAP_METHOD to specify the JS name of the method.
  *
  * For example, in ModuleName.m:
  *
@@ -74,11 +62,32 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
  * and is exposed to JavaScript as `NativeModules.ModuleName.doSomething`.
  */
 #define RCT_EXPORT_METHOD(method) \
+  RCT_REMAP_METHOD(, method)
+
+/**
+ * Similar to RCT_EXPORT_METHOD but lets you set the JS name of the exported
+ * method. Example usage:
+ *
+ * RCT_REMAP_METHOD(executeQueryWithParameters,
+ *   executeQuery:(NSString *)query parameters:(NSDictionary *)parameters)
+ * { ... }
+ */
+#define RCT_REMAP_METHOD(js_name, method) \
   - (void)__rct_export__##method { \
     __attribute__((used, section("__DATA,RCTExport"))) \
-    static const char *__rct_export_entry__[] = { __func__, #method }; \
+    __attribute__((__aligned__(1))) \
+    static const char *__rct_export_entry__[] = { __func__, #method, #js_name }; \
   } \
   - (void)method
+
+/**
+ * Deprecated, do not use.
+ */
+#define RCT_EXPORT(js_name) \
+  _Pragma("message(\"RCT_EXPORT is deprecated. Use RCT_EXPORT_METHOD instead.\")") \
+  __attribute__((used, section("__DATA,RCTExport"))) \
+  __attribute__((__aligned__(1))) \
+  static const char *__rct_export_entry__[] = { __func__, #js_name, NULL }
 
 /**
  * Injects constants into JS. These constants are made accessible via
