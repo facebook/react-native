@@ -56,7 +56,7 @@
     "react-timer-mixin": "^0.13.1",
     "react-tools": "0.13.1",
     "rebound": "^0.0.12",
-    "sane": "1.0.1",
+    "sane": "1.0.3",
     "source-map": "0.1.31",
     "stacktrace-parser": "0.1.1",
     "uglify-js": "~2.4.16",
