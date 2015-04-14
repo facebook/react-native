@@ -109,6 +109,10 @@ NSString *const RCTReloadViewsNotification = @"RCTReloadViewsNotification";
                                              selector:@selector(reload)
                                                  name:RCTReloadViewsNotification
                                                object:_bridge];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reload)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
     if (_bridge.loaded) {
       [self bundleFinishedLoading];
     } else {
