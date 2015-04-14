@@ -51,6 +51,7 @@
 + (NSTimeInterval)NSTimeInterval:(id)json;
 
 + (NSTextAlignment)NSTextAlignment:(id)json;
++ (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;

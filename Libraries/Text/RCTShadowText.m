@@ -250,6 +250,14 @@ static css_dim_t RCTMeasure(void *context, float width)
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];
   }
+  
+  //line-through
+  self.strikeThrough = _strikeThrough ?: NSUnderlineStyleNone;
+  [self _addAttribute: NSStrikethroughStyleAttributeName withValue:[NSNumber numberWithInt:self.strikeThrough] toAttributedString:attributedString];
+  if(_strikeThroughColor) {
+    [self _addAttribute: NSStrikethroughColorAttributeName withValue: _strikeThroughColor toAttributedString:attributedString];
+  }
+  
 }
 
 - (void)fillCSSNode:(css_node_t *)node
@@ -291,5 +299,7 @@ RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
 RCT_TEXT_PROPERTY(TextBackgroundColor, _textBackgroundColor, UIColor *)
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
+RCT_TEXT_PROPERTY(StrikeThrough, _strikeThrough, NSUnderlineStyle);
+RCT_TEXT_PROPERTY(StrikeThroughColor, _strikeThroughColor, UIColor *);
 
 @end

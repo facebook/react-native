@@ -177,6 +177,23 @@ exports.examples = [
     );
   },
 }, {
+  title: 'StrikeThrough',
+  render: function() {
+    return (
+      <View>
+        <Text style={{strikeThrough: 'none'}}>
+          None strikeThrough line
+        </Text>
+        <Text style={{strikeThrough: 'single'}}>
+          Single strikeThrough line
+        </Text>
+        <Text style={{strikeThrough: 'double', strikeThroughColor: '#C40000'}}>
+          Double strikeThrough line with custom color
+        </Text>
+      </View>
+    );
+  },
+}, {
   title: 'Nested',
   description: 'Nested text components will inherit the styles of their ' +
     'parents (only backgroundColor is inherited from non-Text parents).  ' +

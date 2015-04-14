@@ -202,6 +202,12 @@ RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"justify": @(NSTextAlignmentJustified),
 }), NSTextAlignmentNatural, integerValue)
 
+RCT_ENUM_CONVERTER(NSUnderlineStyle, (@{
+  @"none": @(NSUnderlineStyleNone),
+  @"single": @(NSUnderlineStyleSingle),
+  @"double": @(NSUnderlineStyleDouble),
+}), NSUnderlineStyleNone, integerValue)
+
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{
   @"auto": @(NSWritingDirectionNatural),
   @"ltr": @(NSWritingDirectionLeftToRight),

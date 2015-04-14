@@ -27,6 +27,8 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) NSTextAlignment textAlign;
 @property (nonatomic, strong) UIColor *textBackgroundColor;
 @property (nonatomic, assign) NSWritingDirection writingDirection;
+@property (nonatomic, assign) NSUnderlineStyle strikeThrough;
+@property (nonatomic, strong) UIColor *strikeThroughColor;
 
 - (void)recomputeText;
 
