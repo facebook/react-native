@@ -169,7 +169,74 @@ describe('DependencyGraph', function() {
             {  id: 'rootPackage/imgs/a.png',
                path: '/root/imgs/a.png',
                dependencies: [],
-               isAsset: true
+               isAsset: true,
+               resolution: 1,
+            },
+          ]);
+      });
+    });
+
+    pit('should get dependencies with assets and resolution', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./imgs/a.png");',
+            'require("./imgs/b.png");',
+            'require("./imgs/c.png");',
+          ].join('\n'),
+          'imgs': {
+            'a@1.5x.png': '',
+            'b@.7x.png': '',
+            'c.png': '',
+            'c@2x.png': '',
+          },
+          'package.json': JSON.stringify({
+            name: 'rootPackage'
+          }),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {
+              id: 'index',
+              altId: 'rootPackage/index',
+              path: '/root/index.js',
+              dependencies: [
+                './imgs/a.png',
+                './imgs/b.png',
+                './imgs/c.png',
+              ]
+            },
+            {
+              id: 'rootPackage/imgs/a.png',
+              path: '/root/imgs/a@1.5x.png',
+              resolution: 1.5,
+              dependencies: [],
+              isAsset: true,
+            },
+            {
+              id: 'rootPackage/imgs/b.png',
+              path: '/root/imgs/b@.7x.png',
+              resolution: 0.7,
+              dependencies: [],
+              isAsset: true
+            },
+            {
+              id: 'rootPackage/imgs/c.png',
+              path: '/root/imgs/c.png',
+              resolution: 1,
+              dependencies: [],
+              isAsset: true
             },
           ]);
       });
@@ -213,7 +280,8 @@ describe('DependencyGraph', function() {
               id: 'rootPackage/imgs/a.png',
               path: '/root/imgs/a.png',
               dependencies: [],
-              isAsset: true
+              isAsset: true,
+              resolution: 1,
             },
             {
               id: 'image!a',
@@ -1332,6 +1400,7 @@ describe('DependencyGraph', function() {
               path: '/root/foo.png',
               dependencies: [],
               isAsset: true,
+              resolution: 1,
             },
           ]);
         });
