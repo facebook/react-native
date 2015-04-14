@@ -196,7 +196,7 @@ var MyCustomView = createReactIOSNativeComponentClass({
 
 ## Running the Examples
 
-- `git clone git@github.com:facebook/react-native.git`
+- `git clone https://github.com/facebook/react-native.git`
 - `cd react-native && npm install`
 - `cd Examples`
 
