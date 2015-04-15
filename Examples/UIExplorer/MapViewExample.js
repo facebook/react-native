@@ -24,33 +24,44 @@ var {
   View,
 } = React;
 
+var regionText = {
+  latitude: '0',
+  longitude: '0',
+  latitudeDelta: '0',
+  longitudeDelta: '0',
+}
+
 var MapRegionInput = React.createClass({
 
   propTypes: {
     region: React.PropTypes.shape({
-      latitude: React.PropTypes.number,
-      longitude: React.PropTypes.number,
-      latitudeDelta: React.PropTypes.number,
-      longitudeDelta: React.PropTypes.number,
+      latitude: React.PropTypes.number.isRequired,
+      longitude: React.PropTypes.number.isRequired,
+      latitudeDelta: React.PropTypes.number.isRequired,
+      longitudeDelta: React.PropTypes.number.isRequired,
     }),
     onChange: React.PropTypes.func.isRequired,
   },
 
   getInitialState: function() {
     return {
-      latitude: 0,
-      longitude: 0,
-      latitudeDelta: 0,
-      longitudeDelta: 0,
+      region: {
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0,
+        longitudeDelta: 0,
+      }
     };
   },
 
   componentWillReceiveProps: function(nextProps) {
-    this.setState(nextProps.region);
+    this.setState({
+      region: nextProps.region || this.getInitialState().region
+    });
   },
 
   render: function() {
-    var region = this.state;
+    var region = this.state.region || this.getInitialState().region;
     return (
       <View>
         <View style={styles.row}>
@@ -61,6 +72,7 @@ var MapRegionInput = React.createClass({
             value={'' + region.latitude}
             style={styles.textInput}
             onChange={this._onChangeLatitude}
+            selectTextOnFocus={true}
           />
         </View>
         <View style={styles.row}>
@@ -71,6 +83,7 @@ var MapRegionInput = React.createClass({
             value={'' + region.longitude}
             style={styles.textInput}
             onChange={this._onChangeLongitude}
+            selectTextOnFocus={true}
           />
         </View>
         <View style={styles.row}>
@@ -81,6 +94,7 @@ var MapRegionInput = React.createClass({
             value={'' + region.latitudeDelta}
             style={styles.textInput}
             onChange={this._onChangeLatitudeDelta}
+            selectTextOnFocus={true}
           />
         </View>
         <View style={styles.row}>
@@ -91,6 +105,7 @@ var MapRegionInput = React.createClass({
             value={'' + region.longitudeDelta}
             style={styles.textInput}
             onChange={this._onChangeLongitudeDelta}
+            selectTextOnFocus={true}
           />
         </View>
         <View style={styles.changeButton}>
@@ -103,23 +118,29 @@ var MapRegionInput = React.createClass({
   },
 
   _onChangeLatitude: function(e) {
-    this.setState({latitude: parseFloat(e.nativeEvent.text)});
+    regionText.latitude = e.nativeEvent.text;
   },
 
   _onChangeLongitude: function(e) {
-    this.setState({longitude: parseFloat(e.nativeEvent.text)});
+    regionText.longitude = e.nativeEvent.text;
   },
 
   _onChangeLatitudeDelta: function(e) {
-    this.setState({latitudeDelta: parseFloat(e.nativeEvent.text)});
+    regionText.latitudeDelta = e.nativeEvent.text;
   },
 
   _onChangeLongitudeDelta: function(e) {
-    this.setState({longitudeDelta: parseFloat(e.nativeEvent.text)});
+    regionText.longitudeDelta = e.nativeEvent.text;
   },
 
   _change: function() {
-    this.props.onChange(this.state);
+    this.setState({
+      latitude: parseFloat(regionText.latitude),
+      longitude: parseFloat(regionText.longitude),
+      latitudeDelta: parseFloat(regionText.latitudeDelta),
+      longitudeDelta: parseFloat(regionText.longitudeDelta),
+    });
+    this.props.onChange(this.state.region);
   },
 
 });
@@ -130,6 +151,8 @@ var MapViewExample = React.createClass({
     return {
       mapRegion: null,
       mapRegionInput: null,
+      annotations: null,
+      isFirstLoad: true,
     };
   },
 
@@ -138,8 +161,10 @@ var MapViewExample = React.createClass({
       <View>
         <MapView
           style={styles.map}
-          onRegionChange={this._onRegionChanged}
+          onRegionChange={this._onRegionChange}
+          onRegionChangeComplete={this._onRegionChangeComplete}
           region={this.state.mapRegion}
+          annotations={this.state.annotations}
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}
@@ -149,14 +174,35 @@ var MapViewExample = React.createClass({
     );
   },
 
-  _onRegionChanged(region) {
-    this.setState({mapRegionInput: region});
+  _getAnnotations(region) {
+    return [{
+      longitude: region.longitude,
+      latitude: region.latitude,
+      title: 'You Are Here',
+    }];
+  },
+
+  _onRegionChange(region) {
+    this.setState({
+      mapRegionInput: region,
+    });
+  },
+
+  _onRegionChangeComplete(region) {
+    if (this.state.isFirstLoad) {
+      this.setState({
+        mapRegionInput: region,
+        annotations: this._getAnnotations(region),
+        isFirstLoad: false,
+      });
+    }
   },
 
   _onRegionInputChanged(region) {
     this.setState({
       mapRegion: region,
       mapRegionInput: region,
+      annotations: this._getAnnotations(region),
     });
   },
 

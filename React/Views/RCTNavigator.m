@@ -494,17 +494,20 @@ NSInteger kNeverProgressed = -10000;
         jsMakingNoProgressAndDoesntNeedTo)) {
     RCTLogError(@"JS has only made partial progress to catch up to UIKit");
   }
-  RCTAssert(
-    currentReactCount <= _currentViews.count,
-    @"Cannot adjust current top of stack beyond available views"
-  );
+  if (currentReactCount > _currentViews.count) {
+    RCTLogError(@"Cannot adjust current top of stack beyond available views");
+  }
 
   // Views before the previous react count must not have changed. Views greater than previousReactCount
   // up to currentReactCount may have changed.
   for (NSInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
-    RCTAssert(_currentViews[i] == _previousViews[i], @"current view should equal previous view");
+    if (_currentViews[i] != _previousViews[i]) {
+      RCTLogError(@"current view should equal previous view");
+    }
   }
-  RCTAssert(currentReactCount >= 1, @"should be at least one current view");
+  if (currentReactCount < 1) {
+    RCTLogError(@"should be at least one current view");
+  }
   if (jsGettingAhead) {
     if (reactPushOne) {
       UIView *lastView = [_currentViews lastObject];
@@ -517,7 +520,7 @@ NSInteger kNeverProgressed = -10000;
       _numberOfViewControllerMovesToIgnore = viewControllerCount - currentReactCount;
       [_navigationController popToViewController:viewControllerToPopTo animated:YES];
     } else {
-      RCTAssert(NO, @"Pushing or popping more than one view at a time from JS");
+      RCTLogError(@"Pushing or popping more than one view at a time from JS");
     }
   } else if (jsCatchingUp) {
     [self freeLock]; // Nothing to push/pop

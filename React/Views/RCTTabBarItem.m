@@ -31,20 +31,19 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     systemIcons = @{
-                    @"bookmarks": @(UITabBarSystemItemBookmarks),
-                    @"contacts": @(UITabBarSystemItemContacts),
-                    @"downloads": @(UITabBarSystemItemDownloads),
-                    @"favorites": @(UITabBarSystemItemFavorites),
-                    @"featured": @(UITabBarSystemItemFeatured),
-                    @"history": @(UITabBarSystemItemHistory),
-                    @"more": @(UITabBarSystemItemMore),
-                    @"most-recent": @(UITabBarSystemItemMostRecent),
-                    @"most-viewed": @(UITabBarSystemItemMostViewed),
-                    @"recents": @(UITabBarSystemItemRecents),
-                    @"search": @(UITabBarSystemItemSearch),
-                    @"top-rated": @(UITabBarSystemItemTopRated),
-                    };
-
+      @"bookmarks": @(UITabBarSystemItemBookmarks),
+      @"contacts": @(UITabBarSystemItemContacts),
+      @"downloads": @(UITabBarSystemItemDownloads),
+      @"favorites": @(UITabBarSystemItemFavorites),
+      @"featured": @(UITabBarSystemItemFeatured),
+      @"history": @(UITabBarSystemItemHistory),
+      @"more": @(UITabBarSystemItemMore),
+      @"most-recent": @(UITabBarSystemItemMostRecent),
+      @"most-viewed": @(UITabBarSystemItemMostViewed),
+      @"recents": @(UITabBarSystemItemRecents),
+      @"search": @(UITabBarSystemItemSearch),
+      @"top-rated": @(UITabBarSystemItemTopRated),
+    };
   });
 
   // Update icon

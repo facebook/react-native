@@ -106,11 +106,14 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_touchHandler invalidate];
-  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-                    args:@[_contentView.reactTag]];
+  if (_contentView) {
+    [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
+                      args:@[_contentView.reactTag]];
+  }
 }
 
-- (UIViewController *)backingViewController {
+- (UIViewController *)backingViewController
+{
   return _backingViewController ?: [super backingViewController];
 }
 
