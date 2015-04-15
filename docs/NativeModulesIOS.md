@@ -17,7 +17,7 @@ This is a more advanced guide that shows how to build a native module. It assume
 
 This guide will use [iOS Calendar API](https://developer.apple.com/library/mac/documentation/DataManagement/Conceptual/EventKitProgGuide/Introduction/Introduction.html) example. Let's say we would like to be able to access the iOS calendar from JavaScript.
 
-Native module is just an Objectve-C class that implements `RCTBridgeModule` protocol. If you are wondering, RCT is a shorthand for ReaCT.
+Native module is just an Objective-C class that implements `RCTBridgeModule` protocol. If you are wondering, RCT is a shorthand for ReaCT.
 
 ```objective-c
 // CalendarManager.h
