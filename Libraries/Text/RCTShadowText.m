@@ -22,15 +22,21 @@ static css_dim_t RCTMeasure(void *context, float width)
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
 
   NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:[shadowText attributedString]];
+  NSTextStorage *previousTextStorage = shadowText.layoutManager.textStorage;
+  if (previousTextStorage) {
+    [previousTextStorage removeLayoutManager:shadowText.layoutManager];
+  }
   [textStorage addLayoutManager:shadowText.layoutManager];
 
   shadowText.textContainer.size = CGSizeMake(isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX);
-  shadowText.layoutManager.textStorage = textStorage;
   [shadowText.layoutManager ensureLayoutForTextContainer:shadowText.textContainer];
 
   CGSize computedSize = [shadowText.layoutManager usedRectForTextContainer:shadowText.textContainer].size;
 
   [textStorage removeLayoutManager:shadowText.layoutManager];
+  if (previousTextStorage) {
+    [previousTextStorage addLayoutManager:shadowText.layoutManager];
+  }
 
   css_dim_t result;
   result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
