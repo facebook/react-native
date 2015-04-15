@@ -49,7 +49,8 @@
   [self runTest:test module:moduleName initialProps:nil expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)errorRegex
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)errorRegex
 {
   [self runTest:test module:moduleName initialProps:initialProps expectErrorBlock:^BOOL(NSString *error){
     return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;

@@ -58,7 +58,6 @@
 @implementation RCTTiming
 {
   RCTSparseArray *_timers;
-  id _updateTimer;
 }
 
 @synthesize bridge = _bridge;
@@ -113,32 +112,21 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
 - (void)stopTimers
 {
-  [_updateTimer invalidate];
-  _updateTimer = nil;
+  [_bridge removeFrameUpdateObserver:self];
 }
 
 - (void)startTimers
 {
   RCTAssertMainThread();
 
-  if (![self isValid] || _updateTimer != nil || _timers.count == 0) {
+  if (![self isValid] || _timers.count == 0) {
     return;
   }
 
-  _updateTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
-  if (_updateTimer) {
-    [_updateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-  } else {
-    RCTLogWarn(@"Failed to create a display link (probably on buildbot) - using an NSTimer for AppEngine instead.");
-    _updateTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60)
-                                                    target:self
-                                                  selector:@selector(update)
-                                                  userInfo:nil
-                                                   repeats:YES];
-  }
+  [_bridge addFrameUpdateObserver:self];
 }
 
-- (void)update
+- (void)didUpdateFrame:(RCTFrameUpdate *)update
 {
   RCTAssertMainThread();
 

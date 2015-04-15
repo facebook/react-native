@@ -677,6 +677,73 @@ static NSDictionary *RCTLocalModulesConfig()
   return localModules;
 }
 
+@interface RCTDisplayLink : NSObject <RCTInvalidating>
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@interface RCTBridge (RCTDisplayLink)
+
+- (void)_update:(CADisplayLink *)displayLink;
+
+@end
+
+@implementation RCTDisplayLink
+{
+  __weak RCTBridge *_bridge;
+  CADisplayLink *_displayLink;
+}
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+{
+  if ((self = [super init])) {
+    _bridge = bridge;
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_update:)];
+    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+  }
+  return self;
+}
+
+- (BOOL)isValid
+{
+  return _displayLink != nil;
+}
+
+- (void)invalidate
+{
+  if (self.isValid) {
+    [_displayLink invalidate];
+    _displayLink = nil;
+  }
+}
+
+- (void)_update:(CADisplayLink *)displayLink
+{
+  [_bridge _update:displayLink];
+}
+
+@end
+
+@interface RCTFrameUpdate (Private)
+
+- (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink;
+
+@end
+
+@implementation RCTFrameUpdate
+
+- (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink
+{
+  if ((self = [super init])) {
+    _timestamp = displayLink.timestamp;
+    _deltaTime = displayLink.duration;
+  }
+  return self;
+}
+
+@end
+
 @implementation RCTBridge
 {
   RCTSparseArray *_modulesByID;
@@ -685,6 +752,8 @@ static NSDictionary *RCTLocalModulesConfig()
   Class _executorClass;
   NSURL *_bundleURL;
   RCTBridgeModuleProviderBlock _moduleProvider;
+  RCTDisplayLink *_displayLink;
+  NSMutableSet *_frameUpdateObservers;
   BOOL _loading;
 }
 
@@ -711,6 +780,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   _latestJSExecutor = _javaScriptExecutor;
   _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
   _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+  _displayLink = [[RCTDisplayLink alloc] initWithBridge:self];
+  _frameUpdateObservers = [[NSMutableSet alloc] init];
 
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
@@ -890,6 +961,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
   [_javaScriptExecutor invalidate];
   _javaScriptExecutor = nil;
+
+  [_displayLink invalidate];
+  _frameUpdateObservers = nil;
 
   // Invalidate modules
   for (id target in _modulesByID.allObjects) {
@@ -1073,6 +1147,26 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   });
 
   return YES;
+}
+
+- (void)_update:(CADisplayLink *)displayLink
+{
+  RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
+  for (id<RCTFrameUpdateObserver> observer in _frameUpdateObservers) {
+    if (![observer respondsToSelector:@selector(isPaused)] || ![observer isPaused]) {
+      [observer didUpdateFrame:frameUpdate];
+    }
+  }
+}
+
+- (void)addFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer
+{
+  [_frameUpdateObservers addObject:observer];
+}
+
+- (void)removeFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer
+{
+  [_frameUpdateObservers removeObject:observer];
 }
 
 - (void)reload

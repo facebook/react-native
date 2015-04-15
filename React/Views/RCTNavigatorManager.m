@@ -21,7 +21,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTNavigator alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [[RCTNavigator alloc] initWithBridge:self.bridge];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)

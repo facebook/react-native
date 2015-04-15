@@ -10,6 +10,8 @@
 #import <MapKit/MapKit.h>
 #import <UIKit/UIKit.h>
 
+#import "RCTConvert+MapKit.h"
+
 extern const CLLocationDegrees RCTMapDefaultSpan;
 extern const NSTimeInterval RCTMapRegionChangeObserveInterval;
 extern const CGFloat RCTMapZoomBoundBuffer;
@@ -19,9 +21,12 @@ extern const CGFloat RCTMapZoomBoundBuffer;
 @interface RCTMap: MKMapView
 
 @property (nonatomic, assign) BOOL followUserLocation;
+@property (nonatomic, assign) BOOL hasStartedLoading;
 @property (nonatomic, assign) CGFloat minDelta;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
+
+- (void)setAnnotations:(MKShapeArray *)annotations;
 
 @end

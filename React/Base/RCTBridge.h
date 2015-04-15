@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
 
@@ -121,5 +122,15 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
  * Reload the bundle and reset executor and modules.
  */
 - (void)reload;
+
+/**
+ * Add a new observer that will be called on every screen refresh
+ */
+- (void)addFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
+
+/**
+ * Stop receiving screen refresh updates for the given observer
+ */
+- (void)removeFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
 
 @end
