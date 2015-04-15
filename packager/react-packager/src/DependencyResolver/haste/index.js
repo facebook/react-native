@@ -147,7 +147,7 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
   var relativizeCode = function(codeMatch, pre, quot, depName, post) {
     var depId = resolvedDeps[depName];
     if (depId) {
-      return pre + quot + depId + post;
+      return pre + quot + depId.replace(/\\/g,'/') + post;
     } else {
       return codeMatch;
     }
@@ -155,10 +155,10 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
 
   return DEFINE_MODULE_CODE.replace(DEFINE_MODULE_REPLACE_RE, function(key) {
     return {
-      '_moduleName_': module.id,
+      '_moduleName_': module.id.replace(/\\/g, '/'),
       '_code_': code.replace(replacePatterns.IMPORT_RE, relativizeCode)
                     .replace(replacePatterns.REQUIRE_RE, relativizeCode),
-      '_deps_': JSON.stringify(resolvedDepsArr),
+      '_deps_': JSON.stringify(resolvedDepsArr.map(function (i) { return i.replace(/\\/g,'/'); })),
     }[key];
   });
 };

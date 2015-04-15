@@ -39,7 +39,7 @@ Package.prototype.addModule = function(
 Package.prototype.finalize = function(options) {
   options = options || {};
   if (options.runMainModule) {
-    var runCode = ';require("' + this._mainModuleId + '");';
+    var runCode = ';require("' + this._mainModuleId.replace(/\\/g,"/") + '");';
     this.addModule(
       runCode,
       runCode,
