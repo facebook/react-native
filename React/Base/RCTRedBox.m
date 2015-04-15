@@ -9,6 +9,7 @@
 
 #import "RCTRedBox.h"
 
+#import "RCTBridge.h"
 #import "RCTUtils.h"
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
@@ -120,7 +121,7 @@
 
 - (void)reload
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTReloadNotification" object:nil userInfo:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
   [self dismiss];
 }
 

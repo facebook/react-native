@@ -10,11 +10,22 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
+
+/**
+ * This notification triggers a reload of all bridges currently running.
+ */
+extern NSString *const RCTReloadNotification;
+
+/**
+ * This notification fires when the bridge has finished loading.
+ */
+extern NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
  * This block can be used to instantiate modules that require additional
@@ -44,9 +55,9 @@ extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * array of pre-initialized module instances if they require additional init
  * parameters or configuration.
  */
-- (instancetype)initWithBundlePath:(NSString *)bundlepath
-                    moduleProvider:(RCTBridgeModuleProviderBlock)block
-                     launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                    launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 /**
  * This method is used to call functions in the JavaScript application context.
@@ -105,11 +116,21 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
 /**
  * Use this to check if the bridge is currently loading.
  */
-@property (nonatomic, readonly, getter=isLoaded) BOOL loaded;
+@property (nonatomic, readonly, getter=isLoading) BOOL loading;
 
 /**
  * Reload the bundle and reset executor and modules.
  */
 - (void)reload;
+
+/**
+ * Add a new observer that will be called on every screen refresh
+ */
+- (void)addFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
+
+/**
+ * Stop receiving screen refresh updates for the given observer
+ */
+- (void)removeFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
 
 @end

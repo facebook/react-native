@@ -37,7 +37,7 @@
 + (instancetype)touchWithEventName:(NSString *)eventName touches:(NSArray *)touches changedIndexes:(NSArray *)changedIndexes originatingTime:(CFTimeInterval)originatingTime
 {
   RCTTouchEvent *touchEvent = [[self alloc] init];
-  touchEvent->_id = [self newID];
+  touchEvent->_id = [self newTaskID];
   touchEvent->_eventName = [eventName copy];
   touchEvent->_touches = [touches copy];
   touchEvent->_changedIndexes = [changedIndexes copy];
@@ -45,10 +45,10 @@
   return touchEvent;
 }
 
-+ (NSUInteger)newID
++ (NSUInteger)newTaskID
 {
-  static NSUInteger id = 0;
-  return ++id;
+  static NSUInteger taskID = 0;
+  return ++taskID;
 }
 
 @end
@@ -282,7 +282,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
       [_bridgeInteractionTiming addObject:@{
         @"timeSeconds": @(sender.timestamp),
         @"operation": @"mainThreadDisplayLink",
-        @"taskID": @([RCTTouchEvent newID]),
+        @"taskID": @([RCTTouchEvent newTaskID]),
       }];
     }
   }

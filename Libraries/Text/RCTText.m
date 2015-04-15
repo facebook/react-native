@@ -114,7 +114,9 @@
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
   CGFloat fraction;
-  NSUInteger characterIndex = [_layoutManager characterIndexForPoint:point inTextContainer:_textContainer fractionOfDistanceBetweenInsertionPoints:&fraction];
+  NSUInteger characterIndex = [_layoutManager characterIndexForPoint:point
+                                                     inTextContainer:_textContainer
+                            fractionOfDistanceBetweenInsertionPoints:&fraction];
 
   NSNumber *reactTag = nil;
 

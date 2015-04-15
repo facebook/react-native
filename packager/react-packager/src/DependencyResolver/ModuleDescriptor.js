@@ -37,6 +37,12 @@ function ModuleDescriptor(fields) {
     throw new Error('Cannot be an asset and a deprecated asset');
   }
 
+  this.resolution = fields.resolution;
+
+  if (this.isAsset && isNaN(this.resolution)) {
+    throw new Error('Expected resolution to be a number for asset modules');
+  }
+
   this.altId = fields.altId;
 
   this._fields = fields;

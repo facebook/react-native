@@ -10,6 +10,7 @@
 #import "RCTNavigator.h"
 
 #import "RCTAssert.h"
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
@@ -190,10 +191,6 @@ NSInteger kNeverProgressed = -10000;
 @end
 
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
-{
-  RCTEventDispatcher *_eventDispatcher;
-  NSInteger _numberOfViewControllerMovesToIgnore;
-}
 
 @property (nonatomic, assign) NSInteger previousRequestedTopOfStack;
 
@@ -251,7 +248,6 @@ NSInteger kNeverProgressed = -10000;
  *
  */
 @property (nonatomic, readonly, assign) CGFloat mostRecentProgress;
-@property (nonatomic, readwrite, strong) CADisplayLink *displayLink;
 @property (nonatomic, readonly, strong) NSTimer *runTimer;
 @property (nonatomic, readonly, assign) NSInteger currentlyTransitioningFrom;
 @property (nonatomic, readonly, assign) NSInteger currentlyTransitioningTo;
@@ -263,22 +259,17 @@ NSInteger kNeverProgressed = -10000;
 @end
 
 @implementation RCTNavigator
+{
+  __weak RCTBridge *_bridge;
+  NSInteger _numberOfViewControllerMovesToIgnore;
+}
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (id)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super initWithFrame:CGRectZero])) {
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(reportNavigationProgress:)];
+    _bridge = bridge;
     _mostRecentProgress = kNeverProgressed;
     _dummyView = [[UIView alloc] initWithFrame:CGRectZero];
-    if (_displayLink) {
-      [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-      _displayLink.paused = YES;
-    } else {
-      // It's okay to leak this on a build bot.
-      RCTLogWarn(@"Failed to create a display link (probably on automated build system) - using an NSTimer for AppEngine instead.");
-     _runTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60.0) target:self selector:@selector(reportNavigationProgress:) userInfo:nil repeats:YES];
-    }
-    _eventDispatcher = eventDispatcher;
     _previousRequestedTopOfStack = kNeverRequested; // So that we initialize with a push.
     _previousViews = @[];
     _currentViews = [[NSMutableArray alloc] initWithCapacity:0];
@@ -295,7 +286,7 @@ NSInteger kNeverProgressed = -10000;
   return self;
 }
 
-- (void)reportNavigationProgress:(CADisplayLink *)sender
+- (void)didUpdateFrame:(RCTFrameUpdate *)update
 {
   if (_currentlyTransitioningFrom != _currentlyTransitioningTo) {
     UIView *topView = _dummyView;
@@ -307,7 +298,7 @@ NSInteger kNeverProgressed = -10000;
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_eventDispatcher sendInputEventWithName:@"topNavigationProgress" body:@{
+    [_bridge.eventDispatcher sendInputEventWithName:@"topNavigationProgress" body:@{
       @"fromIndex": @(_currentlyTransitioningFrom),
       @"toIndex": @(_currentlyTransitioningTo),
       @"progress": @(nextProgress),
@@ -350,16 +341,14 @@ NSInteger kNeverProgressed = -10000;
     _dummyView.frame = (CGRect){{destination}};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
-    if (indexOfFrom != indexOfTo) {
-      _displayLink.paused = NO;
-    }
+    [_bridge addFrameUpdateObserver:self];
   }
   completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
     _dummyView.frame = CGRectZero;
-    _displayLink.paused = YES;
+    [_bridge removeFrameUpdateObserver:self];
     // Reset the parallel position tracker
   }];
 }
@@ -400,19 +389,6 @@ NSInteger kNeverProgressed = -10000;
   return _currentViews;
 }
 
-- (BOOL)isValid
-{
-  return _displayLink != nil;
-}
-
-- (void)invalidate
-{
-  // Prevent displayLink from retaining the navigator indefinitely
-  [_displayLink invalidate];
-  _displayLink = nil;
-  _runTimer = nil;
-}
-
 - (void)layoutSubviews
 {
   [super layoutSubviews];
@@ -430,7 +406,7 @@ NSInteger kNeverProgressed = -10000;
 
 - (void)handleTopOfStackChanged
 {
-  [_eventDispatcher sendInputEventWithName:@"topNavigateBack" body:@{
+  [_bridge.eventDispatcher sendInputEventWithName:@"topNavigateBack" body:@{
     @"target":self.reactTag,
     @"stackLength":@(_navigationController.viewControllers.count)
   }];
@@ -438,7 +414,7 @@ NSInteger kNeverProgressed = -10000;
 
 - (void)dispatchFakeScrollEvent
 {
-  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
+  [_bridge.eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
                                    reactTag:self.reactTag
                                  scrollView:nil
                                    userData:nil];
@@ -494,21 +470,24 @@ NSInteger kNeverProgressed = -10000;
         jsMakingNoProgressAndDoesntNeedTo)) {
     RCTLogError(@"JS has only made partial progress to catch up to UIKit");
   }
-  RCTAssert(
-    currentReactCount <= _currentViews.count,
-    @"Cannot adjust current top of stack beyond available views"
-  );
+  if (currentReactCount > _currentViews.count) {
+    RCTLogError(@"Cannot adjust current top of stack beyond available views");
+  }
 
   // Views before the previous react count must not have changed. Views greater than previousReactCount
   // up to currentReactCount may have changed.
   for (NSInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
-    RCTAssert(_currentViews[i] == _previousViews[i], @"current view should equal previous view");
+    if (_currentViews[i] != _previousViews[i]) {
+      RCTLogError(@"current view should equal previous view");
+    }
   }
-  RCTAssert(currentReactCount >= 1, @"should be at least one current view");
+  if (currentReactCount < 1) {
+    RCTLogError(@"should be at least one current view");
+  }
   if (jsGettingAhead) {
     if (reactPushOne) {
       UIView *lastView = [_currentViews lastObject];
-      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView eventDispatcher:_eventDispatcher];
+      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView eventDispatcher:_bridge.eventDispatcher];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
       [_navigationController pushViewController:vc animated:(currentReactCount > 1)];
@@ -517,7 +496,7 @@ NSInteger kNeverProgressed = -10000;
       _numberOfViewControllerMovesToIgnore = viewControllerCount - currentReactCount;
       [_navigationController popToViewController:viewControllerToPopTo animated:YES];
     } else {
-      RCTAssert(NO, @"Pushing or popping more than one view at a time from JS");
+      RCTLogError(@"Pushing or popping more than one view at a time from JS");
     }
   } else if (jsCatchingUp) {
     [self freeLock]; // Nothing to push/pop

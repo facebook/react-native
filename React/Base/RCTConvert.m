@@ -115,6 +115,31 @@ RCT_CUSTOM_CONVERTER(NSTimeInterval, NSTimeInterval, [self double:json] / 1000.0
 // JS standard for time zones is minutes.
 RCT_CUSTOM_CONVERTER(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[self double:json] * 60.0])
 
+NSNumber *RCTConverterEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
+{
+  if (!json || json == (id)kCFNull) {
+    return defaultValue;
+  }
+  if ([json isKindOfClass:[NSNumber class]]) {
+    NSArray *allValues = [mapping allValues];
+    if ([[mapping allValues] containsObject:json] || [json isEqual:defaultValue]) {
+      return json;
+    }
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
+    return defaultValue;
+  }
+
+  if (![json isKindOfClass:[NSString class]]) {
+    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@",
+                typeName, [json classForCoder], json);
+  }
+  id value = mapping[json];
+  if (!value && [json description].length > 0) {
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [mapping allKeys]);
+  }
+  return value ?: defaultValue;
+}
+
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
   @"left": @(NSTextAlignmentLeft),

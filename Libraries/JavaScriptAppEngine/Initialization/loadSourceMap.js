@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule loadSourceMap
- * @flow
+ * -- disabled flow due to mysterious validation errors --
  */
 
 'use strict';

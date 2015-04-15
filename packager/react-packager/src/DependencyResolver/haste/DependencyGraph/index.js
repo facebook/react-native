@@ -258,7 +258,7 @@ DependecyGraph.prototype.resolveDependency = function(
     }
 
     // JS modules can be required without extensios.
-    if (this._assetExts.indexOf(extname(modulePath)) === -1) {
+    if (!this._isFileAsset(modulePath)) {
       modulePath = withExtJs(modulePath);
     }
 
@@ -266,10 +266,14 @@ DependecyGraph.prototype.resolveDependency = function(
 
     // Maybe the dependency is a directory and there is an index.js inside it.
     if (dep == null) {
-      modulePath = path.join(dir, depModuleId, 'index.js');
+      dep = this._graph[path.join(dir, depModuleId, 'index.js')];
     }
 
-    dep = this._graph[modulePath];
+    // Maybe it's an asset with @n.nx resolution and the path doesn't map
+    // to the id
+    if (dep == null && this._isFileAsset(modulePath)) {
+      dep = this._moduleById[this._lookupName(modulePath)];
+    }
 
     if (dep == null) {
       debug(
@@ -417,11 +421,14 @@ DependecyGraph.prototype._processModule = function(modulePath) {
   var module;
 
   if (this._assetExts.indexOf(extname(modulePath)) > -1) {
-    moduleData.id = this._lookupName(modulePath);
+    var assetData = extractResolutionPostfix(this._lookupName(modulePath));
+    moduleData.id = assetData.assetName;
+    moduleData.resolution = assetData.resolution;
     moduleData.isAsset = true;
     moduleData.dependencies = [];
-    module = Promise.resolve(new ModuleDescriptor(moduleData));
+    module = new ModuleDescriptor(moduleData);
     this._updateGraphWithModule(module);
+    return Promise.resolve(module);
   }
 
   var self = this;
@@ -652,6 +659,10 @@ DependecyGraph.prototype._processAssetChange_DEPRECATED = function(eventType, fi
   }
 };
 
+DependecyGraph.prototype._isFileAsset = function(file) {
+  return this._assetExts.indexOf(extname(file)) !== -1;
+};
+
 /**
  * Extract all required modules from a `code` string.
  */
@@ -761,6 +772,27 @@ function extname(name) {
   return path.extname(name).replace(/^\./, '');
 }
 
+function extractResolutionPostfix(filename) {
+  var ext = extname(filename);
+  var re = new RegExp('@([\\d\\.]+)x\\.' + ext + '$');
+
+  var match = filename.match(re);
+  var resolution;
+
+  if (!(match && match[1])) {
+    resolution = 1;
+  } else {
+    resolution = parseFloat(match[1], 10);
+    if (isNaN(resolution)) {
+      resolution = 1;
+    }
+  }
+
+  return {
+    resolution: resolution,
+    assetName: match ? filename.replace(re, '.' + ext) : filename,
+  };
+}
 
 function NotFoundError() {
   Error.call(this);

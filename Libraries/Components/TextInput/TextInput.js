@@ -58,6 +58,8 @@ var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   caretHidden: true,
   enabled: true,
   clearButtonMode: true,
+  clearTextOnFocus: true,
+  selectTextOnFocus: true,
 });
 
 var onlyMultiline = {
@@ -267,7 +269,17 @@ var TextInput = React.createClass({
       'unless-editing',
       'always',
     ]),
-
+    /**
+     * If true, clears the text field automatically when editing begins
+     */
+    clearTextOnFocus: PropTypes.bool,
+    /**
+     * If true, selected the text automatically when editing begins
+     */
+    selectTextOnFocus: PropTypes.bool,
+    /**
+     * Styles
+     */
     style: Text.propTypes.style,
     /**
      * Used to locate this view in end-to-end tests.
@@ -431,6 +443,8 @@ var TextInput = React.createClass({
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}
+          clearTextOnFocus={this.props.clearTextOnFocus}
+          selectTextOnFocus={this.props.selectTextOnFocus}
         />;
     } else {
       for (var propKey in notMultiline) {
