@@ -52,7 +52,9 @@
 
 @end
 
-@implementation RCTMapManager
+@implementation RCTMapManager{
+    NSMutableDictionary *pinAnnotations;
+}
 
 RCT_EXPORT_MODULE()
 
@@ -72,6 +74,57 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
+RCT_CUSTOM_VIEW_PROPERTY(annotations, CLLocationCoordinate2D, RCTMap){
+    if ([json isKindOfClass:[NSArray class]]){
+        NSMutableDictionary *pins = [NSMutableDictionary dictionary];
+        id anObject;
+        NSEnumerator *enumerator = [json objectEnumerator];
+        while (anObject = [enumerator nextObject]){
+            CLLocationCoordinate2D coordinate = [RCTConvert CLLocationCoordinate2D:anObject];
+            if (CLLocationCoordinate2DIsValid(coordinate)){
+                NSString *title = @"";
+                if ([anObject objectForKey:@"title"]){
+                    title = [RCTConvert NSString:[anObject valueForKey:@"title"]];
+                }
+                MKPointAnnotation *pin = [[MKPointAnnotation alloc]init];
+                pin.coordinate = coordinate;
+                if (title.length){
+                    pin.title = title;
+                }
+
+                NSValue *key = [NSValue valueWithMKCoordinate:pin.coordinate];
+                [pins setObject:pin forKey:key];
+            }
+        }
+        if (pins.count){
+            if (!pinAnnotations){
+                pinAnnotations = [NSMutableDictionary dictionary];
+            }
+            NSArray *oldKeys = [pinAnnotations allKeys];
+            NSArray *newKeys = [pins allKeys];
+            // Remove objects from dictionary if new set has no same coordinates
+            // and also remove from Map view
+            if (oldKeys.count){
+                NSMutableArray *removeableKeys = [NSMutableArray array];
+                for (NSValue *oldKey in oldKeys){
+                    if (![newKeys containsObject:oldKey]){
+                        [removeableKeys addObject:oldKey];
+                    }
+                }
+                // remove keys that are already existing and added onto maps
+                [pins removeObjectsForKeys:[pinAnnotations allKeys]];
+                if (removeableKeys.count){
+                    NSArray *removed = [pinAnnotations objectsForKeys:removeableKeys notFoundMarker:[NSNull null]];
+                    [view removeAnnotations: removed];
+                    [pins removeObjectsForKeys:removeableKeys];
+                    [pinAnnotations removeObjectsForKeys:removeableKeys];
+                }
+            }
+            [pinAnnotations addEntriesFromDictionary:pins];
+            [view addAnnotations:[pinAnnotations allValues]];
+        }
+    }
+}
 
 #pragma mark MKMapViewDelegate
 
