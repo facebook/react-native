@@ -13,6 +13,7 @@
 
 var StyleSheetRegistry = require('StyleSheetRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
+var StyleSheetInheritance = require('StyleSheetInheritance');
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -62,6 +63,7 @@ class StyleSheet {
   static create(obj: {[key: string]: any}): {[key: string]: number} {
     var result = {};
     for (var key in obj) {
+      obj[key] = StyleSheetInheritance.resolve( key, obj );
       StyleSheetValidation.validateStyle(key, obj);
       result[key] = StyleSheetRegistry.registerStyle(obj[key]);
     }
