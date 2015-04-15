@@ -102,9 +102,8 @@ RCT_CUSTOM_VIEW_PROPERTY(annotations, CLLocationCoordinate2D, RCTMap){
             }
             NSArray *oldKeys = [pinAnnotations allKeys];
             NSArray *newKeys = [pins allKeys];
-
-            // Remove old coordinates from dictionary if new ones are different
-            // and also remove them from Map
+            // Remove objects from dictionary if new set has no same coordinates
+            // and also remove from Map view
             if (oldKeys.count){
                 NSMutableArray *removeableKeys = [NSMutableArray array];
                 for (NSValue *oldKey in oldKeys){
@@ -112,10 +111,16 @@ RCT_CUSTOM_VIEW_PROPERTY(annotations, CLLocationCoordinate2D, RCTMap){
                         [removeableKeys addObject:oldKey];
                     }
                 }
-                [view removeAnnotations:[pinAnnotations objectsForKeys:removeableKeys notFoundMarker:[NSNull null]]];
-                [pinAnnotations removeObjectsForKeys:removeableKeys];
+                // remove keys that are already existing and added onto maps
+                [pins removeObjectsForKeys:[pinAnnotations allKeys]];
+                if (removeableKeys.count){
+                    NSArray *removed = [pinAnnotations objectsForKeys:removeableKeys notFoundMarker:[NSNull null]];
+                    [view removeAnnotations: removed];
+                    [pins removeObjectsForKeys:removeableKeys];
+                    [pinAnnotations removeObjectsForKeys:removeableKeys];
+                }
             }
-            [pinAnnotations setValuesForKeysWithDictionary:pins];
+            [pinAnnotations addEntriesFromDictionary:pins];
             [view addAnnotations:[pinAnnotations allValues]];
         }
     }
