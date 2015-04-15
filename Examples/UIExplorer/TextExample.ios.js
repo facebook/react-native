@@ -191,7 +191,7 @@ exports.examples = [
           Dashed underline with custom color
         </Text>
         <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'dotted', textDecorationColor: 'blue'}}>
-          Dotted strikeThrough line with custom color
+          Dotted underline line with custom color
         </Text>
         <Text style={{textDecorationLine: 'none'}}>
           None textDecoration line
