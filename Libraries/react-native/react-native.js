@@ -41,7 +41,6 @@ var ReactNative = Object.assign(Object.create(require('React')), {
 
   // APIs
   AlertIOS: require('AlertIOS'),
-  Animation: require('Animation'),
   AppRegistry: require('AppRegistry'),
   AppStateIOS: require('AppStateIOS'),
   AsyncStorage: require('AsyncStorage'),
@@ -69,6 +68,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
     TestUtils: undefined,
     batchedUpdates: require('ReactUpdates').batchedUpdates,
     cloneWithProps: require('cloneWithProps'),
+    createFragment: require('ReactFragment').create,
     update: require('update'),
   },
 });

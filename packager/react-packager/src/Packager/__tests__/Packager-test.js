@@ -11,13 +11,12 @@
 jest
   .setMock('worker-farm', function() { return function() {};})
   .dontMock('path')
-  .dontMock('q')
   .dontMock('os')
   .dontMock('underscore')
   .setMock('uglify-js')
   .dontMock('../');
 
-var q = require('q');
+var Promise = require('bluebird');
 
 describe('Packager', function() {
   var getDependencies;
@@ -44,19 +43,27 @@ describe('Packager', function() {
       };
     });
 
-    var packager = new Packager({projectRoots: []});
+    var packager = new Packager({projectRoots: ['/root']});
     var modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
       {id: 'bar', path: '/root/bar.js', dependencies: []},
-      { id: 'image!img',
+      {
+        id: 'image!img',
         path: '/root/img/img.png',
-        isAsset: true,
+        isAsset_DEPRECATED: true,
         dependencies: [],
+      },
+      {
+        id: 'new_image.png',
+        path: '/root/img/new_image.png',
+        isAsset: true,
+        resolution: 2,
+        dependencies: []
       }
     ];
 
     getDependencies.mockImpl(function() {
-      return q({
+      return Promise.resolve({
         mainModuleId: 'foo',
         dependencies: modules
       });
@@ -64,7 +71,7 @@ describe('Packager', function() {
 
     require('../../JSTransformer').prototype.loadFileAndTransform
       .mockImpl(function(path) {
-        return q({
+        return Promise.resolve({
           code: 'transformed ' + path,
           sourceCode: 'source ' + path,
           sourcePath: path
@@ -73,6 +80,10 @@ describe('Packager', function() {
 
     wrapModule.mockImpl(function(module, code) {
       return 'lol ' + code + ' lol';
+    });
+
+    require('image-size').mockImpl(function(path, cb) {
+      cb(null, { width: 50, height: 100 });
     });
 
     return packager.package('/root/foo.js', true, 'source_map_url')
@@ -95,6 +106,24 @@ describe('Packager', function() {
             JSON.stringify({ uri: 'img', isStatic: true}) +
             ';',
           '/root/img/img.png'
+        ]);
+
+        var imgModule = {
+          isStatic: true,
+          path: '/root/img/new_image.png',
+          uri: 'img/new_image.png',
+          width: 25,
+          height: 50,
+        };
+
+        expect(p.addModule.mock.calls[3]).toEqual([
+          'lol module.exports = ' +
+            JSON.stringify(imgModule) +
+            '; lol',
+          'module.exports = ' +
+            JSON.stringify(imgModule) +
+            ';',
+          '/root/img/new_image.png'
         ]);
 
         expect(p.finalize.mock.calls[0]).toEqual([

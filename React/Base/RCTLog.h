@@ -7,58 +7,110 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <Foundation/Foundation.h>
+
 #import "RCTAssert.h"
-#import "RCTRedBox.h"
-
-#define RCTLOG_INFO 1
-#define RCTLOG_WARN 2
-#define RCTLOG_ERROR 3
-#define RCTLOG_MUSTFIX 4
-
-// If set to e.g. `RCTLOG_ERROR`, will assert after logging the first error.
-#if DEBUG
-#define RCTLOG_FATAL_LEVEL RCTLOG_MUSTFIX
-#define RCTLOG_REDBOX_LEVEL RCTLOG_ERROR
-#else
-#define RCTLOG_FATAL_LEVEL (RCTLOG_MUSTFIX + 1)
-#define RCTLOG_REDBOX_LEVEL (RCTLOG_MUSTFIX + 1)
-#endif
-
-// If defined, only log messages that match this regex will fatal
-#define RCTLOG_FATAL_REGEX nil
-
-extern __unsafe_unretained NSString *RCTLogLevels[];
-
-#define _RCTLog(_level, ...) do {                                                                                                          \
-  NSString *__RCTLog__levelStr = RCTLogLevels[_level - 1];                                                                                 \
-  NSString *__RCTLog__msg = RCTLogObjects(RCTLogFormat(__FILE__, __LINE__, __PRETTY_FUNCTION__, __VA_ARGS__), __RCTLog__levelStr);         \
-  if (_level >= RCTLOG_FATAL_LEVEL) {                                                                                                      \
-    BOOL __RCTLog__fail = YES;                                                                                                             \
-    if (RCTLOG_FATAL_REGEX) {                                                                                                              \
-      NSRegularExpression *__RCTLog__regex = [NSRegularExpression regularExpressionWithPattern:RCTLOG_FATAL_REGEX options:0 error:NULL];   \
-      __RCTLog__fail = [__RCTLog__regex numberOfMatchesInString:__RCTLog__msg options:0 range:NSMakeRange(0, [__RCTLog__msg length])] > 0; \
-    }                                                                                                                                      \
-    RCTCAssert(!__RCTLog__fail, @"RCTLOG_FATAL_LEVEL %@: %@", __RCTLog__levelStr, __RCTLog__msg);                                          \
-  }                                                                                                                                        \
-  if (_level >= RCTLOG_REDBOX_LEVEL) {                                                                                                     \
-    [[RCTRedBox sharedInstance] showErrorMessage:__RCTLog__msg];                                                                           \
-  }                                                                                                                                        \
-} while (0)
-
-#define RCTLog(...) _RCTLog(RCTLOG_INFO, __VA_ARGS__)
-#define RCTLogInfo(...) _RCTLog(RCTLOG_INFO, __VA_ARGS__)
-#define RCTLogWarn(...) _RCTLog(RCTLOG_WARN, __VA_ARGS__)
-#define RCTLogError(...) _RCTLog(RCTLOG_ERROR, __VA_ARGS__)
-#define RCTLogMustFix(...) _RCTLog(RCTLOG_MUSTFIX, __VA_ARGS__)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-NSString *RCTLogObjects(NSArray *objects, NSString *level);
-NSArray *RCTLogFormat(const char *file, int lineNumber, const char *funcName, NSString *format, ...) NS_FORMAT_FUNCTION(4,5);
+/**
+ * Thresholds for logs to raise an assertion, or display redbox, respectively.
+ * You can override these values when debugging in order to tweak the default
+ * logging behavior.
+ */
+#define RCTLOG_FATAL_LEVEL RCTLogLevelMustFix
+#define RCTLOG_REDBOX_LEVEL RCTLogLevelError
 
-void RCTInjectLogFunction(void (^logFunction)(NSString *msg));
+/**
+ * An enum representing the severity of the log message.
+ */
+typedef NS_ENUM(NSInteger, RCTLogLevel) {
+  RCTLogLevelInfo = 1,
+  RCTLogLevelWarning = 2,
+  RCTLogLevelError = 3,
+  RCTLogLevelMustFix = 4
+};
+
+/**
+ * A block signature to be used for custom logging functions. In most cases you
+ * will want to pass these arguments to the RCTFormatLog function in order to
+ * generate a string.
+ */
+typedef void (^RCTLogFunction)(
+  RCTLogLevel level,
+  NSString *fileName,
+  NSNumber *lineNumber,
+  NSString *message
+);
+
+/**
+ * A method to generate a string from a collection of log data. To omit any
+ * particular data from the log, just pass nil or zero for the argument.
+ */
+NSString *RCTFormatLog(
+  NSDate *timestamp,
+  NSThread *thread,
+  RCTLogLevel level,
+  NSString *fileName,
+  NSNumber *lineNumber,
+  NSString *message
+);
+
+/**
+ * The default logging function used by RCTLogXX.
+ */
+extern RCTLogFunction RCTDefaultLogFunction;
+
+/**
+ * These methods get and set the current logging threshold. This is the level
+ * below which logs will be ignored. Default is RCTLogLevelInfo for debug and
+ * RCTLogLevelError for production.
+ */
+void RCTSetLogThreshold(RCTLogLevel threshold);
+RCTLogLevel RCTGetLogThreshold(void);
+
+/**
+ * These methods get and set the current logging function called by the RCTLogXX
+ * macros. You can use these to replace the standard behavior with custom log
+ * functionality.
+ */
+void RCTSetLogFunction(RCTLogFunction logFunction);
+RCTLogFunction RCTGetLogFunction(void);
+
+/**
+ * This appends additional code to the existing log function, without replacing
+ * the existing functionality. Useful if you just want to forward logs to an
+ * extra service without changing the default behavior.
+ */
+void RCTAddLogFunction(RCTLogFunction logFunction);
+
+/**
+ * This method adds a conditional prefix to any messages logged within the scope
+ * of the passed block. This is useful for adding additional context to log
+ * messages. The block will be performed synchronously on the current thread.
+ */
+void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
+
+/**
+ * Private logging functions - ignore these.
+ */
+void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
+#define _RCTLog(lvl, ...) do { \
+  if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
+  _RCTLogFormat(lvl, __FILE__, __LINE__, __VA_ARGS__); \
+} while (0)
+
+/**
+ * Logging macros. Use these to log information, warnings and errors in your
+ * own code.
+ */
+#define RCTLog(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
+#define RCTLogInfo(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
+#define RCTLogWarn(...) _RCTLog(RCTLogLevelWarning, __VA_ARGS__)
+#define RCTLogError(...) _RCTLog(RCTLogLevelError, __VA_ARGS__)
+#define RCTLogMustFix(...) _RCTLog(RCTLogLevelMustFix, __VA_ARGS__)
 
 #ifdef __cplusplus
 }

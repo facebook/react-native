@@ -17,6 +17,8 @@
 
 @implementation RCTScrollViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
@@ -39,12 +41,14 @@ RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollsToTop, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSNumberArray);
-RCT_EXPORT_VIEW_PROPERTY(throttleScrollCallbackMS, double);
-RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat);
-RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
-RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets);
-RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint);
+RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSNumberArray)
+RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)
+RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets)
+RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
+
+RCT_DEPRECATED_VIEW_PROPERTY(throttleScrollCallbackMS, scrollEventThrottle)
 
 - (NSDictionary *)constantsToExport
 {
@@ -61,16 +65,14 @@ RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint);
   };
 }
 
-- (void)getContentSize:(NSNumber *)reactTag
-              callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(getContentSize:(NSNumber *)reactTag
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
 
     UIView *view = viewRegistry[reactTag];
     if (!view) {
-      RCTLogError(@"Cannot find view with tag %@", reactTag);
+      RCTLogError(@"Cannot find view with tag #%@", reactTag);
       return;
     }
 

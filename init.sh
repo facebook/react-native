@@ -18,7 +18,9 @@ def main(dest, app_name)
   files = Dir.chdir(source) { Dir["**/*"] }
     .reject { |file| file["project.xcworkspace"] || file["xcuserdata"] }
     .each { |file|
-      new_file = file.gsub("SampleApp", app_name)
+      new_file = file
+        .gsub("SampleApp", app_name)
+        .gsub(/^_/, ".")
       cp File.join(source, file), File.join(dest, new_file), app_name
     }
 end

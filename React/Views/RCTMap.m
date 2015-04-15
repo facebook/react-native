@@ -9,7 +9,6 @@
 
 #import "RCTMap.h"
 
-#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -28,10 +27,14 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 - (instancetype)init
 {
   if ((self = [super init])) {
+
+    _hasStartedLoading = NO;
+
     // Find Apple link label
     for (UIView *subview in self.subviews) {
       if ([NSStringFromClass(subview.class) isEqualToString:@"MKAttributionLabel"]) {
-        // This check is super hacky, but the whole premise of moving around Apple's internal subviews is super hacky
+        // This check is super hacky, but the whole premise of moving around
+        // Apple's internal subviews is super hacky
         _legalLabel = subview;
         break;
       }
@@ -89,11 +92,11 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
         [_locationManager requestWhenInUseAuthorization];
       }
     }
-    [super setShowsUserLocation:showsUserLocation];
+    super.showsUserLocation = showsUserLocation;
 
     // If it needs to show user location, force map view centered
     // on user's current location on user location updates
-    self.followUserLocation = showsUserLocation;
+    _followUserLocation = showsUserLocation;
   }
 }
 
@@ -116,11 +119,20 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [super setRegion:region animated:YES];
 }
 
+
 - (void)setPins:(NSArray *)pins
 {
   if (_pins != pins) {
     _pins = [pins copy];
     [self setNeedsLayout];
+  }
+}
+
+- (void)setAnnotations:(MKShapeArray *)annotations
+{
+  [self removeAnnotations:self.annotations];
+  if (annotations.count) {
+    [self addAnnotations:annotations];
   }
 }
 
@@ -138,5 +150,4 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   pin.subtitle = [pinObject valueForKey:@"subtitle"];
   [mapView addAnnotation:pin];
 }
-
 @end

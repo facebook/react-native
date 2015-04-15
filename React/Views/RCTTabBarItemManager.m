@@ -14,6 +14,8 @@
 
 @implementation RCTTabBarItemManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTTabBarItem alloc] init];

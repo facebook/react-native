@@ -9,16 +9,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
 
-@class RCTEventDispatcher;
+@class RCTBridge;
 
-@interface RCTNavigator : UIView <RCTInvalidating>
+@interface RCTNavigator : UIView <RCTFrameUpdateObserver>
 
 @property (nonatomic, strong) UIView *reactNavSuperviewLink;
 @property (nonatomic, assign) NSInteger requestedTopOfStack;
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 /**
  * Schedules a JavaScript navigation and prevents `UIKit` from navigating until

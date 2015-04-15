@@ -37,7 +37,7 @@
 + (instancetype)touchWithEventName:(NSString *)eventName touches:(NSArray *)touches changedIndexes:(NSArray *)changedIndexes originatingTime:(CFTimeInterval)originatingTime
 {
   RCTTouchEvent *touchEvent = [[self alloc] init];
-  touchEvent->_id = [self newID];
+  touchEvent->_id = [self newTaskID];
   touchEvent->_eventName = [eventName copy];
   touchEvent->_touches = [touches copy];
   touchEvent->_changedIndexes = [changedIndexes copy];
@@ -45,10 +45,10 @@
   return touchEvent;
 }
 
-+ (NSUInteger)newID
++ (NSUInteger)newTaskID
 {
-  static NSUInteger id = 0;
-  return ++id;
+  static NSUInteger taskID = 0;
+  return ++taskID;
 }
 
 @end
@@ -200,10 +200,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
 }
 
-+ (NSArray *)JSMethods
-{
-  return @[@"RCTEventEmitter.receiveTouches"];
-}
+RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
 
 /**
  * Constructs information about touch events to send across the serialized
@@ -285,7 +282,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
       [_bridgeInteractionTiming addObject:@{
         @"timeSeconds": @(sender.timestamp),
         @"operation": @"mainThreadDisplayLink",
-        @"taskID": @([RCTTouchEvent newID]),
+        @"taskID": @([RCTTouchEvent newTaskID]),
       }];
     }
   }

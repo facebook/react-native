@@ -9,19 +9,20 @@
 'use strict';
 
 var ModuleDescriptor = require('../../ModuleDescriptor');
-var q = require('q');
+var Promise = require('bluebird');
 var fs = require('fs');
 var docblock = require('./docblock');
+var replacePatterns = require('../replacePatterns');
 var path = require('path');
 var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
 var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
 
-var readFile = q.nfbind(fs.readFile);
-var readDir = q.nfbind(fs.readdir);
-var lstat = q.nfbind(fs.lstat);
-var realpath = q.nfbind(fs.realpath);
+var readFile = Promise.promisify(fs.readFile);
+var readDir = Promise.promisify(fs.readdir);
+var lstat = Promise.promisify(fs.lstat);
+var realpath = Promise.promisify(fs.realpath);
 
 var validateOpts = declareOpts({
   roots: {
@@ -36,7 +37,7 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
-  assetRoots: {
+  assetRoots_DEPRECATED: {
     type: 'array',
     default: [],
   },
@@ -50,7 +51,7 @@ function DependecyGraph(options) {
   var opts = validateOpts(options);
 
   this._roots = opts.roots;
-  this._assetRoots = opts.assetRoots;
+  this._assetRoots_DEPRECATED = opts.assetRoots_DEPRECATED;
   this._assetExts = opts.assetExts;
   this._ignoreFilePath = opts.ignoreFilePath;
   this._fileWatcher = options.fileWatcher;
@@ -63,6 +64,10 @@ function DependecyGraph(options) {
   this._moduleById = Object.create(null);
   this._debugUpdateEvents = [];
 
+  this._moduleExtPattern = new RegExp(
+    '\.(' + ['js'].concat(this._assetExts).join('|') + ')$'
+  );
+
   // Kick off the search process to precompute the dependency graph.
   this._init();
 }
@@ -72,9 +77,9 @@ DependecyGraph.prototype.load = function() {
     return this._loading;
   }
 
-  this._loading = q.all([
+  this._loading = Promise.all([
     this._search(),
-    this._buildAssetMap(),
+    this._buildAssetMap_DEPRECATED(),
   ]);
 
   return this._loading;
@@ -146,15 +151,15 @@ DependecyGraph.prototype.resolveDependency = function(
   fromModule,
   depModuleId
 ) {
-  if (this._assetMap != null) {
-    // Process asset requires.
+  if (this._assetMap_DEPRECATED != null) {
     var assetMatch = depModuleId.match(/^image!(.+)/);
+    // Process DEPRECATED global asset requires.
     if (assetMatch && assetMatch[1]) {
-      if (!this._assetMap[assetMatch[1]]) {
+      if (!this._assetMap_DEPRECATED[assetMatch[1]]) {
         debug('WARINING: Cannot find asset:', assetMatch[1]);
         return null;
       }
-      return this._assetMap[assetMatch[1]];
+      return this._assetMap_DEPRECATED[assetMatch[1]];
     }
   }
 
@@ -163,15 +168,22 @@ DependecyGraph.prototype.resolveDependency = function(
   // Package relative modules starts with '.' or '..'.
   if (depModuleId[0] !== '.') {
 
-    // 1. `depModuleId` is simply a top-level `providesModule`.
-    // 2. `depModuleId` is a package module but given the full path from the
-    //     package, i.e. package_name/module_name
+    // Check if we need to map the dependency to something else via the
+    // `browser` field in package.json
+    var fromPackageJson = this._lookupPackage(fromModule.path);
+    if (fromPackageJson && fromPackageJson.browser &&
+        fromPackageJson.browser[depModuleId]) {
+      depModuleId = fromPackageJson.browser[depModuleId];
+    }
+
+    // `depModuleId` is simply a top-level `providesModule`.
+    // `depModuleId` is a package module but given the full path from the
+    //  package, i.e. package_name/module_name
     if (this._moduleById[sansExtJs(depModuleId)]) {
       return this._moduleById[sansExtJs(depModuleId)];
     }
 
-    // 3. `depModuleId` is a package and it's depending on the "main"
-    //    resolution.
+    // `depModuleId` is a package and it's depending on the "main" resolution.
     packageJson = this._packagesById[depModuleId];
 
     // We are being forgiving here and raising an error because we could be
@@ -185,7 +197,25 @@ DependecyGraph.prototype.resolveDependency = function(
       return null;
     }
 
-    var main = packageJson.main || 'index';
+    var main;
+
+    // We prioritize the `browser` field if it's a module path.
+    if (typeof packageJson.browser === 'string') {
+      main = packageJson.browser;
+    } else {
+      main = packageJson.main || 'index';
+    }
+
+    // If there is a mapping for main in the `browser` field.
+    if (packageJson.browser && typeof packageJson.browser === 'object') {
+      var tmpMain = packageJson.browser[main] ||
+            packageJson.browser[withExtJs(main)] ||
+            packageJson.browser[sansExtJs(main)];
+      if (tmpMain) {
+        main = tmpMain;
+      }
+    }
+
     modulePath = withExtJs(path.join(packageJson._root, main));
     dep = this._graph[modulePath];
 
@@ -202,8 +232,7 @@ DependecyGraph.prototype.resolveDependency = function(
     return dep;
   } else {
 
-    // 4. `depModuleId` is a module defined in a package relative to
-    //    `fromModule`.
+    // `depModuleId` is a module defined in a package relative to `fromModule`.
     packageJson = this._lookupPackage(fromModule.path);
 
     if (packageJson == null) {
@@ -217,15 +246,34 @@ DependecyGraph.prototype.resolveDependency = function(
     //          fromModule.path: /x/y/z
     //          modulePath: /x/y/a/b
     var dir = path.dirname(fromModule.path);
-    modulePath = withExtJs(path.join(dir, depModuleId));
+    modulePath = path.join(dir, depModuleId);
 
-    dep = this._graph[modulePath];
+    if (packageJson.browser && typeof packageJson.browser === 'object') {
+      var relPath = './' + path.relative(packageJson._root, modulePath);
+      var tmpModulePath = packageJson.browser[withExtJs(relPath)] ||
+            packageJson.browser[sansExtJs(relPath)];
+      if (tmpModulePath) {
+        modulePath = path.join(packageJson._root, tmpModulePath);
+      }
+    }
 
-    if (dep == null) {
-      modulePath = path.join(dir, depModuleId, 'index.js');
+    // JS modules can be required without extensios.
+    if (!this._isFileAsset(modulePath)) {
+      modulePath = withExtJs(modulePath);
     }
 
     dep = this._graph[modulePath];
+
+    // Maybe the dependency is a directory and there is an index.js inside it.
+    if (dep == null) {
+      dep = this._graph[path.join(dir, depModuleId, 'index.js')];
+    }
+
+    // Maybe it's an asset with @n.nx resolution and the path doesn't map
+    // to the id
+    if (dep == null && this._isFileAsset(modulePath)) {
+      dep = this._moduleById[this._lookupName(modulePath)];
+    }
 
     if (dep == null) {
       debug(
@@ -262,7 +310,7 @@ DependecyGraph.prototype._search = function() {
   var dir = this._queue.shift();
 
   if (dir == null) {
-    return q.Promise.resolve(this._graph);
+    return Promise.resolve(this._graph);
   }
 
   // Steps:
@@ -286,15 +334,15 @@ DependecyGraph.prototype._search = function() {
           return false;
         }
 
-        return filePath.match(/\.js$/);
+        return filePath.match(self._moduleExtPattern);
       });
 
       var processing = self._findAndProcessPackage(files, dir)
         .then(function() {
-          return q.all(modulePaths.map(self._processModule.bind(self)));
+          return Promise.all(modulePaths.map(self._processModule.bind(self)));
         });
 
-      return q.all([
+      return Promise.all([
         processing,
         self._search()
       ]);
@@ -323,7 +371,7 @@ DependecyGraph.prototype._findAndProcessPackage = function(files, root) {
   if (packagePath != null) {
     return this._processPackage(packagePath);
   } else {
-    return q();
+    return Promise.resolve();
   }
 };
 
@@ -337,7 +385,7 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
         packageJson = JSON.parse(content);
       } catch (e) {
         debug('WARNING: malformed package.json: ', packagePath);
-        return q();
+        return Promise.resolve();
       }
 
       if (packageJson.name == null) {
@@ -345,7 +393,7 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
           'WARNING: package.json `%s` is missing a name field',
           packagePath
         );
-        return q();
+        return Promise.resolve();
       }
 
       packageJson._root = packageRoot;
@@ -369,11 +417,24 @@ DependecyGraph.prototype._removePackageFromIndices = function(packageJson) {
  * Parse a module and update indices.
  */
 DependecyGraph.prototype._processModule = function(modulePath) {
+  var moduleData = { path: path.resolve(modulePath) };
+  var module;
+
+  if (this._assetExts.indexOf(extname(modulePath)) > -1) {
+    var assetData = extractResolutionPostfix(this._lookupName(modulePath));
+    moduleData.id = assetData.assetName;
+    moduleData.resolution = assetData.resolution;
+    moduleData.isAsset = true;
+    moduleData.dependencies = [];
+    module = new ModuleDescriptor(moduleData);
+    this._updateGraphWithModule(module);
+    return Promise.resolve(module);
+  }
+
   var self = this;
   return readFile(modulePath, 'utf8')
     .then(function(content) {
       var moduleDocBlock = docblock.parseAsObject(content);
-      var moduleData = { path: path.resolve(modulePath) };
       if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
         moduleData.id =
           moduleDocBlock.providesModule || moduleDocBlock.provides;
@@ -386,7 +447,7 @@ DependecyGraph.prototype._processModule = function(modulePath) {
       }
       moduleData.dependencies = extractRequires(content);
 
-      var module = new ModuleDescriptor(moduleData);
+      module = new ModuleDescriptor(moduleData);
       self._updateGraphWithModule(module);
       return module;
     });
@@ -496,8 +557,8 @@ DependecyGraph.prototype._processFileChange = function(
   this._debugUpdateEvents.push({event: eventType, path: filePath});
 
   if (this._assetExts.indexOf(extname(filePath)) > -1) {
-    this._processAssetChange(eventType, absPath);
-    return;
+    this._processAssetChange_DEPRECATED(eventType, absPath);
+    // Fall through because new-style assets are actually modules.
   }
 
   var isPackage = path.basename(filePath) === 'package.json';
@@ -553,54 +614,58 @@ DependecyGraph.prototype._getAbsolutePath = function(filePath) {
   return null;
 };
 
-DependecyGraph.prototype._buildAssetMap = function() {
-  if (this._assetRoots == null || this._assetRoots.length === 0) {
-    return q();
+DependecyGraph.prototype._buildAssetMap_DEPRECATED = function() {
+  if (this._assetRoots_DEPRECATED == null ||
+      this._assetRoots_DEPRECATED.length === 0) {
+    return Promise.resolve();
   }
 
-  this._assetMap = Object.create(null);
-  return buildAssetMap(
-    this._assetRoots,
-    this._processAsset.bind(this)
+  this._assetMap_DEPRECATED = Object.create(null);
+  return buildAssetMap_DEPRECATED(
+    this._assetRoots_DEPRECATED,
+    this._processAsset_DEPRECATED.bind(this)
   );
 };
 
-DependecyGraph.prototype._processAsset = function(file) {
+DependecyGraph.prototype._processAsset_DEPRECATED = function(file) {
   var ext = extname(file);
   if (this._assetExts.indexOf(ext) !== -1) {
     var name = assetName(file, ext);
-    if (this._assetMap[name] != null) {
+    if (this._assetMap_DEPRECATED[name] != null) {
       debug('Conflcting assets', name);
     }
 
-    this._assetMap[name] = new ModuleDescriptor({
+    this._assetMap_DEPRECATED[name] = new ModuleDescriptor({
       id: 'image!' + name,
       path: path.resolve(file),
-      isAsset: true,
+      isAsset_DEPRECATED: true,
       dependencies: [],
     });
   }
 };
 
-DependecyGraph.prototype._processAssetChange = function(eventType, file) {
-  if (this._assetMap == null) {
+DependecyGraph.prototype._processAssetChange_DEPRECATED = function(eventType, file) {
+  if (this._assetMap_DEPRECATED == null) {
     return;
   }
 
   var name = assetName(file, extname(file));
   if (eventType === 'change' || eventType === 'delete') {
-    delete this._assetMap[name];
+    delete this._assetMap_DEPRECATED[name];
   }
 
   if (eventType === 'change' || eventType === 'add') {
-    this._processAsset(file);
+    this._processAsset_DEPRECATED(file);
   }
+};
+
+DependecyGraph.prototype._isFileAsset = function(file) {
+  return this._assetExts.indexOf(extname(file)) !== -1;
 };
 
 /**
  * Extract all required modules from a `code` string.
  */
-var requireRe = /\brequire\s*\(\s*[\'"]([^"\']+)["\']\s*\)/g;
 var blockCommentRe = /\/\*(.|\n)*?\*\//g;
 var lineCommentRe = /\/\/.+(\n|$)/g;
 function extractRequires(code) {
@@ -609,7 +674,11 @@ function extractRequires(code) {
   code
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
-    .replace(requireRe, function(match, dep) {
+    .replace(replacePatterns.IMPORT_RE, function(match, pre, quot, dep, post) {
+      deps.push(dep);
+      return match;
+    })
+    .replace(replacePatterns.REQUIRE_RE, function(match, pre, quot, dep, post) {
       deps.push(dep);
     });
 
@@ -640,13 +709,13 @@ function withExtJs(file) {
 
 function handleBrokenLink(e) {
   debug('WARNING: error stating, possibly broken symlink', e.message);
-  return q();
+  return Promise.resolve();
 }
 
 function readAndStatDir(dir) {
   return readDir(dir)
     .then(function(files){
-      return q.all(files.map(function(filePath) {
+      return Promise.all(files.map(function(filePath) {
         return realpath(path.join(dir, filePath)).catch(handleBrokenLink);
       }));
     }).then(function(files) {
@@ -660,7 +729,7 @@ function readAndStatDir(dir) {
 
       return [
         files,
-        q.all(stats),
+        Promise.all(stats),
       ];
     });
 }
@@ -669,14 +738,14 @@ function readAndStatDir(dir) {
  * Given a list of roots and list of extensions find all the files in
  * the directory with that extension and build a map of those assets.
  */
-function buildAssetMap(roots, processAsset) {
+function buildAssetMap_DEPRECATED(roots, processAsset) {
   var queue = roots.slice(0);
 
   function search() {
     var root = queue.shift();
 
     if (root == null) {
-      return q();
+      return Promise.resolve();
     }
 
     return readAndStatDir(root).spread(function(files, stats) {
@@ -703,6 +772,27 @@ function extname(name) {
   return path.extname(name).replace(/^\./, '');
 }
 
+function extractResolutionPostfix(filename) {
+  var ext = extname(filename);
+  var re = new RegExp('@([\\d\\.]+)x\\.' + ext + '$');
+
+  var match = filename.match(re);
+  var resolution;
+
+  if (!(match && match[1])) {
+    resolution = 1;
+  } else {
+    resolution = parseFloat(match[1], 10);
+    if (isNaN(resolution)) {
+      resolution = 1;
+    }
+  }
+
+  return {
+    resolution: resolution,
+    assetName: match ? filename.replace(re, '.' + ext) : filename,
+  };
+}
 
 function NotFoundError() {
   Error.call(this);
@@ -713,6 +803,6 @@ function NotFoundError() {
   this.status = 404;
 }
 
-NotFoundError.__proto__ = Error.prototype;
+util.inherits(NotFoundError, Error);
 
 module.exports = DependecyGraph;

@@ -17,6 +17,8 @@
 
 @implementation RCTTextFieldManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
@@ -28,7 +30,12 @@ RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
 RCT_EXPORT_VIEW_PROPERTY(clearButtonMode, UITextFieldViewMode)
+RCT_REMAP_VIEW_PROPERTY(clearTextOnFocus, clearsOnBeginEditing, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType, UIKeyboardType)
+RCT_EXPORT_VIEW_PROPERTY(returnKeyType, UIReturnKeyType)
+RCT_EXPORT_VIEW_PROPERTY(enablesReturnKeyAutomatically, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, autocapitalizationType, UITextAutocapitalizationType)
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextField)
@@ -53,7 +60,7 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    ((RCTTextField *)viewRegistry[reactTag]).paddingEdgeInsets = padding;
+    ((RCTTextField *)viewRegistry[reactTag]).contentInset = padding;
   };
 }
 

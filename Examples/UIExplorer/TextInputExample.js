@@ -109,7 +109,7 @@ var styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    width: 80,
+    width: 120,
     justifyContent: 'flex-end',
     flexDirection: 'row',
     marginRight: 10,
@@ -175,6 +175,89 @@ exports.examples = [
     }
   },
   {
+    title: 'Keyboard types',
+    render: function() {
+      var keyboardTypes = [
+        'default',
+        'ascii-capable',
+        'numbers-and-punctuation',
+        'url',
+        'number-pad',
+        'phone-pad',
+        'name-phone-pad',
+        'email-address',
+        'decimal-pad',
+        'twitter',
+        'web-search',
+        'numeric',
+      ];
+      var examples = keyboardTypes.map((type) => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput
+              keyboardType={type}
+              style={styles.default}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    }
+  },
+  {
+    title: 'Return key types',
+    render: function() {
+      var returnKeyTypes = [
+        'default',
+        'go',
+        'google',
+        'join',
+        'next',
+        'route',
+        'search',
+        'send',
+        'yahoo',
+        'done',
+        'emergency-call',
+      ];
+      var examples = returnKeyTypes.map((type) => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput
+              returnKeyType={type}
+              style={styles.default}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    }
+  },
+  {
+    title: 'Enable return key automatically',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="true">
+            <TextInput enablesReturnKeyAutomatically={true} style={styles.default} />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Secure text entry',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="true">
+            <TextInput password={true} style={styles.default} value="abc" />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
+  {
     title: 'Event handling',
     render: function(): ReactElement { return <TextEventsExample /> },
   },
@@ -222,6 +305,31 @@ exports.examples = [
             <TextInput
               style={styles.default}
               clearButtonMode="always"
+            />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Clear and select',
+    render: function () {
+      return (
+        <View>
+          <WithLabel label="clearTextOnFocus">
+            <TextInput
+              placeholder="text is cleared on focus"
+              value="text is cleared on focus"
+              style={styles.default}
+              clearTextOnFocus={true}
+            />
+          </WithLabel>
+          <WithLabel label="selectTextOnFocus">
+            <TextInput
+              placeholder="text is selected on focus"
+              value="text is selected on focus"
+              style={styles.default}
+              selectTextOnFocus={true}
             />
           </WithLabel>
         </View>

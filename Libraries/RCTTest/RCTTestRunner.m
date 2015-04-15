@@ -17,15 +17,6 @@
 
 #define TIMEOUT_SECONDS 240
 
-@interface RCTRootView (Testing)
-
-- (instancetype)_initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                    launchOptions:(NSDictionary *)launchOptions
-                   moduleProvider:(RCTBridgeModuleProviderBlock)moduleProvider;
-
-@end
-
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_snapshotController;
@@ -38,7 +29,7 @@
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
     _snapshotController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
     _snapshotController.referenceImagesDirectory = referenceDir;
-    _script = [NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app];
+    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
   }
   return self;
 }
@@ -58,10 +49,11 @@
   [self runTest:test module:moduleName initialProps:nil expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSRegularExpression *)errorRegex
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)errorRegex
 {
   [self runTest:test module:moduleName initialProps:initialProps expectErrorBlock:^BOOL(NSString *error){
-    return [errorRegex numberOfMatchesInString:error options:0 range:NSMakeRange(0, [error length])] > 0;
+    return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;
   }];
 }
 
@@ -75,17 +67,18 @@
 
   RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
   testModule.testSelector = test;
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
+                                            moduleProvider:^(){
+                                              return @[testModule];
+                                            }
+                                             launchOptions:nil];
 
-  RCTRootView *rootView = [[RCTRootView alloc] _initWithBundleURL:[NSURL URLWithString:_script]
-                                                      moduleName:moduleName
-                                                   launchOptions:nil
-                                                   moduleProvider:^{
-                                                     return @[testModule];
-                                                   }];
-  [testModule setValue:rootView forKey:@"_view"];
-  rootView.frame = CGRectMake(0, 0, 320, 2000);
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+                                                   moduleName:moduleName];
+  testModule.view = rootView;
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
   rootView.initialProperties = initialProps;
+  rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
@@ -94,8 +87,9 @@
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:date];
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
-  [rootView invalidate];
   [rootView removeFromSuperview];
+  [rootView.bridge invalidate];
+  [rootView invalidate];
   RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
   vc.view = nil;
   [[RCTRedBox sharedInstance] dismiss];

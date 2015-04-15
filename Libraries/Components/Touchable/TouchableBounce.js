@@ -14,7 +14,7 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var POPAnimation = require('POPAnimation');
-var Animation = require('Animation');
+var AnimationExperimental = require('AnimationExperimental');
 var Touchable = require('Touchable');
 
 var merge = require('merge');
@@ -22,7 +22,7 @@ var copyProperties = require('copyProperties');
 var onlyChild = require('onlyChild');
 
 type State = {
-    animationID: ?number;
+  animationID: ?number;
 };
 
 /**
@@ -60,7 +60,7 @@ var TouchableBounce = React.createClass({
     value: number,
     velocity: number,
     bounciness: number,
-    fromValue?: ?Function | number,
+    fromValue?: ?number,
     callback?: ?Function
   ) {
     if (POPAnimation) {
@@ -71,21 +71,21 @@ var TouchableBounce = React.createClass({
         toValue: [value, value],
         velocity: [velocity, velocity],
         springBounciness: bounciness,
-        fromValue: (undefined: ?any),
+        fromValue: fromValue ? [fromValue, fromValue] : undefined,
       };
-      if (fromValue) {
-        anim.fromValue = [fromValue, fromValue];
-      }
       this.state.animationID = POPAnimation.createSpringAnimation(anim);
       this.addAnimation(this.state.animationID, callback);
     } else {
-      Animation.startAnimation(this, 300, 0, 'easeOutBack', {scaleXY: [value, value]});
-      if (fromValue && typeof fromValue === 'function') {
-        callback = fromValue;
-      }
-      if (callback) {
-        setTimeout(callback, 300);
-      }
+      AnimationExperimental.startAnimation(
+        {
+          node: this,
+          duration: 300,
+          easing: 'easeOutBack',
+          property: 'scaleXY',
+          toValue: { x: value, y: value},
+        },
+        callback
+      );
     }
   },
 

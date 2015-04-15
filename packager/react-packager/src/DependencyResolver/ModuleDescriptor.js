@@ -30,7 +30,18 @@ function ModuleDescriptor(fields) {
 
   this.isPolyfill = fields.isPolyfill || false;
 
+  this.isAsset_DEPRECATED = fields.isAsset_DEPRECATED || false;
   this.isAsset = fields.isAsset || false;
+
+  if (this.isAsset_DEPRECATED && this.isAsset) {
+    throw new Error('Cannot be an asset and a deprecated asset');
+  }
+
+  this.resolution = fields.resolution;
+
+  if (this.isAsset && isNaN(this.resolution)) {
+    throw new Error('Expected resolution to be a number for asset modules');
+  }
 
   this.altId = fields.altId;
 

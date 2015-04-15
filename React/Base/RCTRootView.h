@@ -11,18 +11,24 @@
 
 #import "RCTBridge.h"
 
-@interface RCTRootView : UIView<RCTInvalidating>
-
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                    launchOptions:(NSDictionary *)launchOptions /* NS_DESIGNATED_INITIALIZER */;
+@interface RCTRootView : UIView <RCTInvalidating>
 
 /**
- * The URL of the bundled application script (required).
- * Setting this will clear the view contents, and trigger
- * an asynchronous load/download and execution of the script.
+ * - Designated initializer -
  */
-@property (nonatomic, strong, readonly) NSURL *scriptURL;
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName NS_DESIGNATED_INITIALIZER;
+
+/**
+ * - Convenience initializer -
+ * A bridge will be created internally.
+ * This initializer is intended to be used when the app has a single RCTRootView,
+ * otherwise create an `RCTBridge` and pass it in via `initWithBridge:moduleName:`
+ * to all the instances.
+ */
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                    launchOptions:(NSDictionary *)launchOptions;
 
 /**
  * The name of the JavaScript module to execute within the
@@ -33,11 +39,10 @@
 @property (nonatomic, copy, readonly) NSString *moduleName;
 
 /**
- * A block that returns an array of pre-allocated modules.  These
- * modules will take precedence over any automatically registered
- * modules of the same name.
+ * The bridge used by the root view. Bridges can be shared between multiple
+ * root views, so you can use this property to initialize another RCTRootView.
  */
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
+@property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 /**
  * The default properties to apply to the view when the script bundle
@@ -59,12 +64,13 @@
 @property (nonatomic, assign) BOOL enableDevMenu;
 
 /**
- * Reload this root view, or all root views, respectively.
+ * The backing view controller of the root view.
  */
-- (void)reload;
-+ (void)reloadAll;
+@property (nonatomic, weak) UIViewController *backingViewController;
 
-- (void)startOrResetInteractionTiming;
-- (NSDictionary *)endAndResetInteractionTiming;
+/**
+ * The React-managed contents view of the root view.
+ */
+@property (nonatomic, strong, readonly) UIView *contentView;
 
 @end

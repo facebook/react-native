@@ -9,85 +9,191 @@
 
 #import "RCTLog.h"
 
+#import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTRedBox.h"
 
-__unsafe_unretained NSString *RCTLogLevels[] = {
-  @"info",
-  @"warn",
-  @"error",
-  @"mustfix"
+@interface RCTBridge (Logging)
+
++ (void)logMessage:(NSString *)message level:(NSString *)level;
+
+@end
+
+static NSString *const RCTLogPrefixStack = @"RCTLogPrefixStack";
+
+const char *RCTLogLevels[] = {
+  "info",
+  "warn",
+  "error",
+  "mustfix"
 };
 
-static void (^RCTInjectedLogFunction)(NSString *msg);
+static RCTLogFunction RCTCurrentLogFunction;
+static RCTLogLevel RCTCurrentLogThreshold;
 
-void RCTInjectLogFunction(void (^logFunction)(NSString *msg)) {
-  RCTInjectedLogFunction = logFunction;
-}
-
-static inline NSString *_RCTLogPreamble(const char *file, int lineNumber, const char *funcName)
+void RCTLogSetup(void) __attribute__((constructor));
+void RCTLogSetup()
 {
-  NSString *threadName = [[NSThread currentThread] name];
-  NSString *fileName=[[NSString stringWithUTF8String:file] lastPathComponent];
-  if (!threadName || threadName.length <= 0) {
-    threadName = [NSString stringWithFormat:@"%p", [NSThread currentThread]];
-  }
-  return [NSString stringWithFormat:@"[RCTLog][tid:%@][%@:%d]>", threadName, fileName, lineNumber];
-}
+  RCTCurrentLogFunction = RCTDefaultLogFunction;
 
-// TODO (#5906496): Does this need to be tied to RCTBridge?
-NSString *RCTLogObjects(NSArray *objects, NSString *level)
-{
-  NSString *str = objects[0];
-#if TARGET_IPHONE_SIMULATOR
-  if ([RCTBridge hasValidJSExecutor]) {
-    fprintf(stderr, "%s\n", [str UTF8String]); // don't print timestamps and other junk
-    [RCTBridge log:objects level:level];
-  } else
+#if DEBUG
+  RCTCurrentLogThreshold = RCTLogLevelInfo - 1;
+#else
+  RCTCurrentLogThreshold = RCTLogLevelError;
 #endif
-  {
-    // Print normal errors with timestamps when not in simulator.
-    // Non errors are already compiled out above, so log as error here.
-    if (RCTInjectedLogFunction) {
-      RCTInjectedLogFunction(str);
-    } else {
-      NSLog(@">\n  %@", str);
-    }
-  }
-  return str;
+
 }
 
-// Returns array of objects.  First arg is a simple string to print, remaining args
-// are objects to pass through to the debugger so they are inspectable in the console.
-NSArray *RCTLogFormat(const char *file, int lineNumber, const char *funcName, NSString *format, ...)
+RCTLogFunction RCTDefaultLogFunction = ^(
+  RCTLogLevel level,
+  NSString *fileName,
+  NSNumber *lineNumber,
+  NSString *message
+)
 {
-  va_list args;
-  va_start(args, format);
-  NSString *preamble = _RCTLogPreamble(file, lineNumber, funcName);
+  NSString *log = RCTFormatLog(
+    [NSDate date], [NSThread currentThread], level, fileName, lineNumber, message
+  );
+  fprintf(stderr, "%s\n", log.UTF8String);
+  fflush(stderr);
+};
 
-  // Pull out NSObjects so we can pass them through as inspectable objects to the js debugger
-  NSArray *formatParts = [format componentsSeparatedByString:@"%"];
-  NSMutableArray *objects = [NSMutableArray arrayWithObject:preamble];
-  BOOL valid = YES;
-  for (int i = 0; i < formatParts.count; i++) {
-    if (i == 0) { // first part is always a string
-      [objects addObject:formatParts[i]];
+void RCTSetLogFunction(RCTLogFunction logFunction)
+{
+  RCTCurrentLogFunction = logFunction;
+}
+
+RCTLogFunction RCTGetLogFunction()
+{
+  return RCTCurrentLogFunction;
+}
+
+void RCTAddLogFunction(RCTLogFunction logFunction)
+{
+  RCTLogFunction existing = RCTCurrentLogFunction;
+  if (existing) {
+    RCTCurrentLogFunction = ^(RCTLogLevel level,
+                              NSString *fileName,
+                              NSNumber *lineNumber,
+                              NSString *message) {
+
+      existing(level, fileName, lineNumber, message);
+      logFunction(level, fileName, lineNumber, message);
+    };
+  } else {
+    RCTCurrentLogFunction = logFunction;
+  }
+}
+
+void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
+{
+  NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+  NSMutableArray *prefixStack = threadDictionary[RCTLogPrefixStack];
+  if (!prefixStack) {
+    prefixStack = [[NSMutableArray alloc] init];
+    threadDictionary[RCTLogPrefixStack] = prefixStack;
+  }
+  [prefixStack addObject:prefix];
+  block();
+  [prefixStack removeLastObject];
+}
+
+NSString *RCTFormatLog(
+  NSDate *timestamp,
+  NSThread *thread,
+  RCTLogLevel level,
+  NSString *fileName,
+  NSNumber *lineNumber,
+  NSString *message
+)
+{
+  NSMutableString *log = [[NSMutableString alloc] init];
+  if (timestamp) {
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      formatter = [[NSDateFormatter alloc] init];
+      formatter.dateFormat = formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS ";
+    });
+    [log appendString:[formatter stringFromDate:timestamp]];
+  }
+  if (level) {
+    [log appendFormat:@"[%s]", RCTLogLevels[level - 1]];
+  }
+  if (thread) {
+    NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
+    if (threadName.length == 0) {
+#if DEBUG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
+#pragma clang diagnostic pop
+#else
+      threadName = [NSString stringWithFormat:@"%p", thread];
+#endif
+    }
+    [log appendFormat:@"[tid:%@]", threadName];
+  }
+  if (fileName) {
+    fileName = [fileName lastPathComponent];
+    if (lineNumber) {
+      [log appendFormat:@"[%@:%@]", fileName, lineNumber];
     } else {
-      if (valid && [formatParts[i] length] && [formatParts[i] characterAtIndex:0] == '@') {
-        id obj = va_arg(args, id);
-        [objects addObject:obj ?: @"null"];
-        [objects addObject:[formatParts[i] substringFromIndex:1]]; // remove formatting char
-      } else {
-        // We could determine the type (double, int?) of the va_arg by parsing the formatPart, but for now we just bail.
-        valid = NO;
-        [objects addObject:[NSString stringWithFormat:@"unknown object for %%%@", formatParts[i]]];
-      }
+      [log appendFormat:@"[%@]", fileName];
     }
   }
-  va_end(args);
-  va_start(args, format);
-  NSString *strOut = [preamble stringByAppendingString:[[NSString alloc] initWithFormat:format arguments:args]];
-  va_end(args);
-  NSMutableArray *objectsOut = [NSMutableArray arrayWithObject:strOut];
-  [objectsOut addObjectsFromArray:objects];
-  return objectsOut;
+  if (message) {
+    [log appendString:@" "];
+    [log appendString:message];
+  }
+  return log;
+}
+
+void _RCTLogFormat(
+  RCTLogLevel level,
+  const char *fileName,
+  int lineNumber,
+  NSString *format, ...)
+{
+
+#if DEBUG
+  BOOL log = YES;
+#else
+  BOOL log = (RCTCurrentLogFunction != nil);
+#endif
+
+  if (log && level >= RCTCurrentLogThreshold) {
+
+    // Get message
+    va_list args;
+    va_start(args, format);
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+
+    // Add prefix
+    NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+    NSArray *prefixStack = threadDictionary[RCTLogPrefixStack];
+    NSString *prefix = [prefixStack lastObject];
+    if (prefix) {
+      message = [prefix stringByAppendingString:message];
+    }
+
+    // Call log function
+    RCTCurrentLogFunction(
+      level, fileName ? @(fileName) : nil, (lineNumber >= 0) ? @(lineNumber) : nil, message
+    );
+
+#if DEBUG
+
+    // Log to red box
+    if (level >= RCTLOG_REDBOX_LEVEL) {
+      [[RCTRedBox sharedInstance] showErrorMessage:message];
+    }
+
+    // Log to JS executor
+    [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
+
+#endif
+
+  }
 }

@@ -10,6 +10,7 @@
 #import "RCTWebSocketExecutor.h"
 
 #import "RCTLog.h"
+#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 #import "SRWebSocket.h"
 
@@ -18,10 +19,11 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 @interface RCTWebSocketExecutor () <SRWebSocketDelegate>
 @end
 
-@implementation RCTWebSocketExecutor {
+@implementation RCTWebSocketExecutor
+{
   SRWebSocket *_socket;
-  NSOperationQueue *_jsQueue;
-  NSMutableDictionary *_callbacks;
+  dispatch_queue_t _jsQueue;
+  RCTSparseArray *_callbacks;
   dispatch_semaphore_t _socketOpenSemaphore;
   NSMutableDictionary *_injectedObjects;
 }
@@ -31,23 +33,24 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
   return [self initWithURL:[NSURL URLWithString:@"http://localhost:8081/debugger-proxy"]];
 }
 
-- (instancetype)initWithURL:(NSURL *)url
+- (instancetype)initWithURL:(NSURL *)URL
 {
   if (self = [super init]) {
-    _jsQueue = [[NSOperationQueue alloc] init];
-    _jsQueue.maxConcurrentOperationCount = 1;
-    _socket = [[SRWebSocket alloc] initWithURL:url];
+
+    _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
+    _socket = [[SRWebSocket alloc] initWithURL:URL];
     _socket.delegate = self;
-    _callbacks = [NSMutableDictionary dictionary];
-    _injectedObjects = [NSMutableDictionary dictionary];
-    [_socket setDelegateOperationQueue:_jsQueue];
+    _callbacks = [[RCTSparseArray alloc] init];
+    _injectedObjects = [[NSMutableDictionary alloc] init];
+    [_socket setDelegateDispatchQueue:_jsQueue];
 
-
-    NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:url];
+    NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:URL];
     [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
     if (![self connectToProxy]) {
-      RCTLogError(@"Connection to %@ timed out. Are you running node proxy?", url);
+      RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If \
+                  you are running on the device, check if you have the right IP \
+                  address in `RCTWebSocketExecutor.m`.", URL);
       [self invalidate];
       return nil;
     }
@@ -91,8 +94,8 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 {
   NSError *error = nil;
   NSDictionary *reply = RCTJSONParse(message, &error);
-  NSUInteger messageID = [reply[@"replyID"] integerValue];
-  WSMessageCallback callback = [_callbacks objectForKey:@(messageID)];
+  NSNumber *messageID = reply[@"replyID"];
+  WSMessageCallback callback = _callbacks[messageID];
   if (callback) {
     callback(error, reply);
   }
@@ -108,35 +111,30 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
   RCTLogError(@"WebSocket connection failed with error %@", error);
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
-{
-
-}
-
 - (void)sendMessage:(NSDictionary *)message waitForReply:(WSMessageCallback)callback
 {
   static NSUInteger lastID = 10000;
 
-  [_jsQueue addOperationWithBlock:^{
+  dispatch_async(_jsQueue, ^{
     if (!self.valid) {
-      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{NSLocalizedDescriptionKey:@"socket closed"}];
+      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
+        NSLocalizedDescriptionKey: @"socket closed"
+      }];
       callback(error, nil);
       return;
     }
 
-    NSUInteger expectedID = lastID++;
-
-    _callbacks[@(expectedID)] = [callback copy];
-
+    NSNumber *expectedID = @(lastID++);
+    _callbacks[expectedID] = [callback copy];
     NSMutableDictionary *messageWithID = [message mutableCopy];
-    messageWithID[@"id"] = @(expectedID);
+    messageWithID[@"id"] = expectedID;
     [_socket send:RCTJSONStringify(messageWithID, NULL)];
-  }];
+  });
 }
 
-- (void)executeApplicationScript:(NSString *)script sourceURL:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete
+- (void)executeApplicationScript:(NSString *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  NSDictionary *message = @{@"method": NSStringFromSelector(_cmd), @"url": [url absoluteString], @"inject": _injectedObjects};
+  NSDictionary *message = @{@"method": NSStringFromSelector(_cmd), @"url": [URL absoluteString], @"inject": _injectedObjects};
   [self sendMessage:message waitForReply:^(NSError *error, NSDictionary *reply) {
     onComplete(error);
   }];
@@ -145,7 +143,12 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 - (void)executeJSCall:(NSString *)name method:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
-  NSDictionary *message = @{@"method": NSStringFromSelector(_cmd), @"moduleName": name, @"moduleMethod": method, @"arguments": arguments};
+  NSDictionary *message = @{
+    @"method": NSStringFromSelector(_cmd),
+    @"moduleName": name,
+    @"moduleMethod": method,
+    @"arguments": arguments
+  };
   [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary *reply) {
     if (socketError) {
       onComplete(nil, socketError);
@@ -160,10 +163,10 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (void)injectJSONText:(NSString *)script asGlobalObjectNamed:(NSString *)objectName callback:(RCTJavaScriptCompleteBlock)onComplete
 {
-  [_jsQueue addOperationWithBlock:^{
-    [_injectedObjects setObject:script forKey:objectName];
+  dispatch_async(_jsQueue, ^{
+    _injectedObjects[objectName] = script;
     onComplete(nil);
-  }];
+  });
 }
 
 - (void)invalidate

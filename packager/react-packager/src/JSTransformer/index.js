@@ -9,14 +9,13 @@
 'use strict';
 
 var fs = require('fs');
-var q = require('q');
+var Promise = require('bluebird');
 var Cache = require('./Cache');
-var _ = require('underscore');
 var workerFarm = require('worker-farm');
 var declareOpts = require('../lib/declareOpts');
 var util = require('util');
 
-var readFile = q.nfbind(fs.readFile);
+var readFile = Promise.promisify(fs.readFile);
 
 module.exports = Transformer;
 Transformer.TransformError = TransformError;
@@ -62,13 +61,13 @@ function Transformer(options) {
       projectRoots: options.projectRoots,
     });
 
-  if (options.transformModulePath == null) {
-    this._failedToStart = q.Promise.reject(new Error('No transfrom module'));
-  } else {
+  if (options.transformModulePath != null) {
     this._workers = workerFarm(
       {autoStart: true, maxConcurrentCallsPerWorker: 1},
       options.transformModulePath
     );
+
+    this._transform = Promise.promisify(this._workers);
   }
 }
 
@@ -82,17 +81,17 @@ Transformer.prototype.invalidateFile = function(filePath) {
 };
 
 Transformer.prototype.loadFileAndTransform = function(filePath) {
-  if (this._failedToStart) {
-    return this._failedToStart;
+  if (this._transform == null) {
+    return Promise.reject(new Error('No transfrom module'));
   }
 
-  var workers = this._workers;
+  var transform = this._transform;
   return this._cache.get(filePath, function() {
     return readFile(filePath)
       .then(function(buffer) {
         var sourceCode = buffer.toString();
 
-        return q.nfbind(workers)({
+        return transform({
           sourceCode: sourceCode,
           filename: filePath,
         }).then(
@@ -126,7 +125,7 @@ function formatError(err, filename, source) {
 function formatGenericError(err, filename) {
   var msg = 'TransformError: ' + filename + ': ' + err.message;
   var error = new TransformError();
-  var stack = err.stack.split('\n').slice(0, -1);
+  var stack = (err.stack || '').split('\n').slice(0, -1);
   stack.push(msg);
   error.stack = stack.join('\n');
   error.message = msg;

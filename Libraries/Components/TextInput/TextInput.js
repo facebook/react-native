@@ -15,6 +15,7 @@ var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var RCTUIManager = require('NativeModules').UIManager;
+var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
@@ -27,12 +28,12 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var emptyFunction = require('emptyFunction');
-var getObjectValues = require('getObjectValues');
 var invariant = require('invariant');
 var merge = require('merge');
 
 var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
-var clearButtonModeConsts = RCTUIManager.UITextField.clearButtonMode;
+var keyboardTypeConsts = RCTUIManager.UIKeyboardType;
+var returnKeyTypeConsts = RCTUIManager.UIReturnKeyType;
 
 var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   autoCorrect: true,
@@ -44,6 +45,9 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   fontStyle: true,
   fontWeight: true,
   keyboardType: true,
+  returnKeyType: true,
+  enablesReturnKeyAutomatically: true,
+  secureTextEntry: true,
   mostRecentEventCounter: true,
   placeholder: true,
   placeholderTextColor: true,
@@ -54,6 +58,8 @@ var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   caretHidden: true,
   enabled: true,
   clearButtonMode: true,
+  clearTextOnFocus: true,
+  selectTextOnFocus: true,
 });
 
 var onlyMultiline = {
@@ -64,6 +70,27 @@ var onlyMultiline = {
 
 var notMultiline = {
   onSubmitEditing: true,
+};
+
+var TextInputAndroidAttributes = {
+  autoCapitalize: true,
+  autoCorrect: true,
+  autoFocus: true,
+  keyboardType: true,
+  multiline: true,
+  password: true,
+  placeholder: true,
+  value: true,
+  testID: true,
+};
+
+var AndroidTextInput = createReactIOSNativeComponentClass({
+  validAttributes: TextInputAndroidAttributes,
+  uiViewClassName: 'AndroidTextInput',
+});
+
+var crossPlatformKeyboardTypeMap = {
+  'numeric': 'decimal-pad',
 };
 
 type DefaultProps = {
@@ -138,8 +165,41 @@ var TextInput = React.createClass({
      */
     keyboardType: PropTypes.oneOf([
       'default',
+      // iOS
+      'ascii-capable',
+      'numbers-and-punctuation',
+      'url',
+      'number-pad',
+      'phone-pad',
+      'name-phone-pad',
+      'email-address',
+      'decimal-pad',
+      'twitter',
+      'web-search',
+      // Cross-platform
       'numeric',
     ]),
+    /**
+     * Determines how the return key should look.
+     */
+    returnKeyType: PropTypes.oneOf([
+      'default',
+      'go',
+      'google',
+      'join',
+      'next',
+      'route',
+      'search',
+      'send',
+      'yahoo',
+      'done',
+      'emergency-call',
+    ]),
+    /**
+     * If true, the keyboard disables the return key when there is no text and
+     * automatically enables it when there is text. Default value is false.
+     */
+    enablesReturnKeyAutomatically: PropTypes.bool,
     /**
      * If true, the text input can be multiple lines. Default value is false.
      */
@@ -153,14 +213,23 @@ var TextInput = React.createClass({
      */
     onFocus: PropTypes.func,
     /**
-     * (text: string) => void
-     *
      * Callback that is called when the text input's text changes.
      */
+    onChange: PropTypes.func,
     onChangeText: PropTypes.func,
-
+    /**
+     * Callback that is called when text input ends.
+     */
     onEndEditing: PropTypes.func,
+    /**
+     * Callback that is called when the text input's submit button is pressed.
+     */
     onSubmitEditing: PropTypes.func,
+    /**
+     * If true, the text input obscures the text entered so that sensitive text
+     * like passwords stay secure. Default value is false.
+     */
+    password: PropTypes.bool,
     /**
      * The string that will be rendered before text input has been entered
      */
@@ -200,8 +269,22 @@ var TextInput = React.createClass({
       'unless-editing',
       'always',
     ]),
-
+    /**
+     * If true, clears the text field automatically when editing begins
+     */
+    clearTextOnFocus: PropTypes.bool,
+    /**
+     * If true, selected the text automatically when editing begins
+     */
+    selectTextOnFocus: PropTypes.bool,
+    /**
+     * Styles
+     */
     style: Text.propTypes.style,
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID: PropTypes.string,
   },
 
   /**
@@ -313,10 +396,24 @@ var TextInput = React.createClass({
   },
 
   render: function() {
+    if (Platform.OS === 'ios') {
+      return this._renderIOs();
+    } else if (Platform.OS === 'android') {
+      return this._renderAndroid();
+    }
+  },
+
+  _renderIOs: function() {
     var textContainer;
 
     var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
-    var clearButtonMode = clearButtonModeConsts[this.props.clearButtonMode];
+    var clearButtonMode = RCTUIManager.UITextField.clearButtonMode[this.props.clearButtonMode];
+
+    var keyboardType = keyboardTypeConsts[
+      crossPlatformKeyboardTypeMap[this.props.keyboardType] ||
+      this.props.keyboardType
+    ];
+    var returnKeyType = returnKeyTypeConsts[this.props.returnKeyType];
 
     if (!this.props.multiline) {
       for (var propKey in onlyMultiline) {
@@ -331,7 +428,10 @@ var TextInput = React.createClass({
           ref="input"
           style={[styles.input, this.props.style]}
           enabled={this.props.editable}
-          keyboardType={this.props.keyboardType}
+          keyboardType={keyboardType}
+          returnKeyType={returnKeyType}
+          enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
+          secureTextEntry={this.props.password || this.props.secureTextEntry}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
@@ -343,6 +443,8 @@ var TextInput = React.createClass({
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}
+          clearTextOnFocus={this.props.clearTextOnFocus}
+          selectTextOnFocus={this.props.selectTextOnFocus}
         />;
     } else {
       for (var propKey in notMultiline) {
@@ -373,6 +475,10 @@ var TextInput = React.createClass({
           children={children}
           mostRecentEventCounter={this.state.mostRecentEventCounter}
           editable={this.props.editable}
+          keyboardType={keyboardType}
+          returnKeyType={returnKeyType}
+          enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
+          secureTextEntry={this.props.password || this.props.secureTextEntry}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
@@ -393,6 +499,35 @@ var TextInput = React.createClass({
       <TouchableWithoutFeedback
         onPress={this._onPress}
         rejectResponderTermination={true}>
+        {textContainer}
+      </TouchableWithoutFeedback>
+    );
+  },
+
+  _renderAndroid: function() {
+    var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
+    var textContainer =
+      <AndroidTextInput
+        ref="input"
+        style={[this.props.style]}
+        autoCapitalize={autoCapitalize}
+        autoCorrect={this.props.autoCorrect}
+        keyboardType={this.props.keyboardType}
+        multiline={this.props.multiline}
+        onFocus={this._onFocus}
+        onBlur={this._onBlur}
+        onChange={this._onChange}
+        onEndEditing={this.props.onEndEditing}
+        onSubmitEditing={this.props.onSubmitEditing}
+        password={this.props.password || this.props.secureTextEntry}
+        placeholder={this.props.placeholder}
+        value={this.state.bufferedValue}
+      />;
+
+    return (
+      <TouchableWithoutFeedback
+        onPress={this._onPress}
+        testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
     );

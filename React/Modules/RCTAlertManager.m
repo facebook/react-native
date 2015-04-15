@@ -9,6 +9,7 @@
 
 #import "RCTAlertManager.h"
 
+#import "RCTAssert.h"
 #import "RCTLog.h"
 
 @interface RCTAlertManager() <UIAlertViewDelegate>
@@ -21,6 +22,8 @@
   NSMutableArray *_alertCallbacks;
   NSMutableArray *_alertButtonKeys;
 }
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
@@ -46,10 +49,9 @@
  * Buttons are displayed in the order they are specified. If "cancel" is used as
  * the button key, it will be differently highlighted, according to iOS UI conventions.
  */
-- (void)alertWithArgs:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   NSString *title = args[@"title"];
   NSString *message = args[@"message"];
   NSArray *buttons = args[@"buttons"];

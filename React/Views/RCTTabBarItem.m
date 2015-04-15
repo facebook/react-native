@@ -31,18 +31,18 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     systemIcons = @{
-      @"more": @(UITabBarSystemItemMore),
+      @"bookmarks": @(UITabBarSystemItemBookmarks),
+      @"contacts": @(UITabBarSystemItemContacts),
+      @"downloads": @(UITabBarSystemItemDownloads),
       @"favorites": @(UITabBarSystemItemFavorites),
       @"featured": @(UITabBarSystemItemFeatured),
-      @"topRated": @(UITabBarSystemItemTopRated),
-      @"recents": @(UITabBarSystemItemRecents),
-      @"contacts": @(UITabBarSystemItemContacts),
       @"history": @(UITabBarSystemItemHistory),
-      @"bookmarks": @(UITabBarSystemItemBookmarks),
+      @"more": @(UITabBarSystemItemMore),
+      @"most-recent": @(UITabBarSystemItemMostRecent),
+      @"most-viewed": @(UITabBarSystemItemMostViewed),
+      @"recents": @(UITabBarSystemItemRecents),
       @"search": @(UITabBarSystemItemSearch),
-      @"downloads": @(UITabBarSystemItemDownloads),
-      @"mostRecent": @(UITabBarSystemItemMostRecent),
-      @"mostViewed": @(UITabBarSystemItemMostViewed),
+      @"top-rated": @(UITabBarSystemItemTopRated),
     };
   });
 

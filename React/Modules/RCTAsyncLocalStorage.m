@@ -88,6 +88,8 @@ static dispatch_queue_t RCTFileQueue(void)
   NSString *_storageDirectory;
 }
 
+RCT_EXPORT_MODULE()
+
 - (NSString *)_filePathForKey:(NSString *)key
 {
   NSString *safeFileName = RCTMD5Hash(key);
@@ -157,7 +159,7 @@ static dispatch_queue_t RCTFileQueue(void)
     return RCTMakeAndLogError(@"Entries must be arrays of the form [key: string, value: string], got: ", entry, nil);
   }
   if (![entry[1] isKindOfClass:[NSString class]]) {
-    return RCTMakeAndLogError(@"Values must be strings, got: ", entry[1], entry[0]);
+    return RCTMakeAndLogError(@"Values must be strings, got: ", entry[1], @{@"key": entry[0]});
   }
   NSString *key = entry[0];
   id errorOut = RCTErrorForKey(key);
@@ -186,10 +188,9 @@ static dispatch_queue_t RCTFileQueue(void)
 
 #pragma mark - Exported JS Functions
 
-- (void)multiGet:(NSArray *)keys callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   if (!callback) {
     RCTLogError(@"Called getItem without a callback.");
     return;
@@ -212,10 +213,9 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)multiSet:(NSArray *)kvPairs callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {
@@ -234,10 +234,9 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)multiRemove:(NSArray *)keys callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {
@@ -261,10 +260,8 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)clear:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (!errorOut) {
@@ -282,10 +279,8 @@ static dispatch_queue_t RCTFileQueue(void)
   });
 }
 
-- (void)getAllKeys:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
   dispatch_async(RCTFileQueue(), ^{
     id errorOut = [self _ensureSetup];
     if (errorOut) {

@@ -23,15 +23,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _textContainer = [[NSTextContainer alloc] init];
-    _textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
-    _textContainer.lineFragmentPadding = 0.0;
-
-    _layoutManager = [[NSLayoutManager alloc] init];
-    [_layoutManager addTextContainer:_textContainer];
-
     _textStorage = [[NSTextStorage alloc] init];
-    [_textStorage addLayoutManager:_layoutManager];
 
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -46,30 +38,60 @@
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-  [_textStorage setAttributedString:attributedText];
+  for (NSLayoutManager *existingLayoutManager in _textStorage.layoutManagers) {
+    [_textStorage removeLayoutManager:existingLayoutManager];
+  }
+
+  _textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedText];
+
+  if (_layoutManager) {
+    [_textStorage addLayoutManager:_layoutManager];
+  }
+
   [self setNeedsDisplay];
 }
 
-- (NSUInteger)numberOfLines
+- (void)setTextContainer:(NSTextContainer *)textContainer
 {
-  return _textContainer.maximumNumberOfLines;
-}
+  if ([_textContainer isEqual:textContainer]) {
+    return;
+  }
 
-- (void)setNumberOfLines:(NSUInteger)numberOfLines
-{
-  _textContainer.maximumNumberOfLines = numberOfLines;
+  _textContainer = textContainer;
+
+  for (NSInteger i = _layoutManager.textContainers.count - 1; i >= 0; i--) {
+    [_layoutManager removeTextContainerAtIndex:i];
+  }
+
+  if (_textContainer) {
+    [_layoutManager addTextContainer:_textContainer];
+  }
+
   [self setNeedsDisplay];
 }
 
-- (NSLineBreakMode)lineBreakMode
+- (void)setLayoutManager:(NSLayoutManager *)layoutManager
 {
-  return _textContainer.lineBreakMode;
+  if ([_layoutManager isEqual:layoutManager]) {
+    return;
+  }
+
+  _layoutManager = layoutManager;
+
+  for (NSLayoutManager *existingLayoutManager in _textStorage.layoutManagers) {
+    [_textStorage removeLayoutManager:existingLayoutManager];
+  }
+
+  if (_layoutManager) {
+    [_textStorage addLayoutManager:_layoutManager];
+  }
+
+  [self setNeedsDisplay];
 }
 
-- (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode
+- (CGRect)textFrame
 {
-  _textContainer.lineBreakMode = lineBreakMode;
-  [self setNeedsDisplay];
+  return UIEdgeInsetsInsetRect(self.bounds, _contentInset);
 }
 
 - (void)layoutSubviews
@@ -78,20 +100,23 @@
 
   // The header comment for `size` says that a height of 0.0 should be enough,
   // but it isn't.
-  _textContainer.size = CGSizeMake(self.bounds.size.width, CGFLOAT_MAX);
+  _textContainer.size = CGSizeMake([self textFrame].size.width, CGFLOAT_MAX);
 }
 
 - (void)drawRect:(CGRect)rect
 {
+  CGPoint origin = [self textFrame].origin;
   NSRange glyphRange = [_layoutManager glyphRangeForTextContainer:_textContainer];
-  [_layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:CGPointZero];
-  [_layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:CGPointZero];
+  [_layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:origin];
+  [_layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:origin];
 }
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
   CGFloat fraction;
-  NSUInteger characterIndex = [_layoutManager characterIndexForPoint:point inTextContainer:_textContainer fractionOfDistanceBetweenInsertionPoints:&fraction];
+  NSUInteger characterIndex = [_layoutManager characterIndexForPoint:point
+                                                     inTextContainer:_textContainer
+                            fractionOfDistanceBetweenInsertionPoints:&fraction];
 
   NSNumber *reactTag = nil;
 

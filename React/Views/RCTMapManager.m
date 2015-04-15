@@ -10,49 +10,21 @@
 #import "RCTMapManager.h"
 
 #import "RCTBridge.h"
+#import "RCTConvert+CoreLocation.h"
+#import "RCTConvert+MapKit.h"
 #import "RCTEventDispatcher.h"
 #import "RCTMap.h"
 #import "UIView+React.h"
 
-@implementation RCTConvert(CoreLocation)
-
-+ (CLLocationCoordinate2D)CLLocationCoordinate2D:(id)json
-{
-  json = [self NSDictionary:json];
-  return (CLLocationCoordinate2D){
-    [self double:json[@"latitude"]],
-    [self double:json[@"longitude"]]
-  };
-}
-
-@end
-
-@implementation RCTConvert(MapKit)
-
-+ (MKCoordinateSpan)MKCoordinateSpan:(id)json
-{
-  json = [self NSDictionary:json];
-  return (MKCoordinateSpan){
-    [self double:json[@"latitudeDelta"]],
-    [self double:json[@"longitudeDelta"]]
-  };
-}
-
-+ (MKCoordinateRegion)MKCoordinateRegion:(id)json
-{
-  return (MKCoordinateRegion){
-    [self CLLocationCoordinate2D:json],
-    [self MKCoordinateSpan:json]
-  };
-}
-
-@end
+static NSString *const RCTMapViewKey = @"MapView";
 
 @interface RCTMapManager() <MKMapViewDelegate>
 
 @end
 
 @implementation RCTMapManager
+
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
@@ -71,6 +43,7 @@ RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
 RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
+RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
 
 #pragma mark MKMapViewDelegate
 
@@ -92,13 +65,15 @@ RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
 {
   [self _regionChanged:mapView];
 
-  mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval
-                                                             target:self
-                                                           selector:@selector(_onTick:)
-                                                           userInfo:@{ @"mapView": mapView }
-                                                            repeats:YES];
-  [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
+  if (animated) {
+    mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval
+                                                               target:self
+                                                             selector:@selector(_onTick:)
+                                                             userInfo:@{ RCTMapViewKey: mapView }
+                                                              repeats:YES];
 
+    [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
+  }
 }
 
 - (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(BOOL)animated
@@ -107,13 +82,24 @@ RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
   mapView.regionChangeObserveTimer = nil;
 
   [self _regionChanged:mapView];
+
+  // Don't send region did change events until map has
+  // started loading, as these won't represent the final location
+  if (mapView.hasStartedLoading) {
+    [self _emitRegionChangeEvent:mapView continuous:NO];
+  };
+}
+
+- (void)mapViewWillStartLoadingMap:(RCTMap *)mapView
+{
+  mapView.hasStartedLoading = YES;
   [self _emitRegionChangeEvent:mapView continuous:NO];
 }
 
 #pragma mark Private
 - (void)_onTick:(NSTimer *)timer
 {
-  [self _regionChanged:timer.userInfo[@"mapView"]];
+  [self _regionChanged:timer.userInfo[RCTMapViewKey]];
 }
 
 - (void)_regionChanged:(RCTMap *)mapView

@@ -1,0 +1,5 @@
+// Offline JS
+// To re-generate the offline bundle, run this from root of your project
+// $ curl 'http://localhost:8081/Examples/SampleApp/index.ios.bundle?dev=false&minify=true' -o iOS/main.jsbundle
+
+throw new Error('Offline JS file is empty. See iOS/main.jsbundle for instructions');

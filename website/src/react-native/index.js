@@ -30,7 +30,7 @@ var index = React.createClass({
           <p>
             React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and
             {' '}<a href="http://facebook.github.io/react/" >React</a>{'. '}
-            The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere.
+            The focus of React Native is on developer efficiency across all the platforms you care about &mdash; learn once, write anywhere.
             Facebook uses React Native in multiple production apps and will continue investing in React Native.
           </p>
           </div>
@@ -159,7 +159,7 @@ var GeoInfo = React.createClass({
 
           <h2>Extensibility</h2>
           <p>
-            It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily extended with custom native views and modules - that means you can reuse anything you{"'"}ve already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the RCTBridgeModule protocol, and add RCT_EXPORT to the function you want to make available in JavaScript.
+            It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily extended with custom native views and modules - that means you can reuse anything you{"'"}ve already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the RCTBridgeModule protocol, and wrap the function that you want to make available to JavaScript in RCT_EXPORT_METHOD. Additionally, the class itself must be explicitly exported with RCT_EXPORT_MODULE();.
           </p>
           <Prism>
 {`// Objective-C
@@ -171,9 +171,11 @@ var GeoInfo = React.createClass({
 
 @implementation MyCustomModule
 
-- (void)processString:(NSString *)input callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_MODULE();
+
+// Available as NativeModules.MyCustomModule.processString
+RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT(); // available as NativeModules.MyCustomModule.processString
   callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"];]]);
 }
 @end`}

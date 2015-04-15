@@ -24,7 +24,7 @@ function renderApplication<D, P, S>(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
-   React.render(
+  React.render(
     <RootComponent
       {...initialProps}
     />,

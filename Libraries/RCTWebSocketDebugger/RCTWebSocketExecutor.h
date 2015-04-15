@@ -11,6 +11,6 @@
 
 @interface RCTWebSocketExecutor : NSObject <RCTJavaScriptExecutor>
 
-- (instancetype)initWithURL:(NSURL *)url;
+- (instancetype)initWithURL:(NSURL *)URL;
 
 @end

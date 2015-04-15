@@ -18,6 +18,8 @@
 
 @implementation RCTNetworkImageViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   RCTNetworkImageView *view = [[RCTNetworkImageView alloc] initWithFrame:CGRectZero imageDownloader:[RCTImageDownloader sharedInstance]];

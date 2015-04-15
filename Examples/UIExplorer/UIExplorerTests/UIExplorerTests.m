@@ -39,9 +39,10 @@
 #endif
   NSString *version = [[UIDevice currentDevice] systemVersion];
   RCTAssert([version isEqualToString:@"8.1"], @"Snapshot tests should be run on iOS 8.1, found %@", version);
-  _runner = initRunnerForApp(@"Examples/UIExplorer/UIExplorerApp");
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp");
 
-  // If tests have changes, set recordMode = YES below and run the affected tests on an iPhone5, iOS 8.1 simulator.
+  // If tests have changes, set recordMode = YES below and run the affected
+  // tests on an iPhone5, iOS 8.1 simulator.
   _runner.recordMode = NO;
 }
 
@@ -58,8 +59,10 @@
   return NO;
 }
 
-// Make sure this test runs first (underscores sort early) otherwise the other tests will tear out the rootView
-- (void)test__RootViewLoadsAndRenders {
+// Make sure this test runs first (underscores sort early) otherwise the
+// other tests will tear out the rootView
+- (void)test__RootViewLoadsAndRenders
+{
   UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
   RCTAssert([vc.view isKindOfClass:[RCTRootView class]], @"This test must run first.");
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];

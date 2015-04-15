@@ -31,9 +31,15 @@
     [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     _reactSubviews = [[NSMutableArray alloc] init];
-    self.returnKeyType = UIReturnKeyDone;
   }
   return self;
+}
+
+- (void)setText:(NSString *)text
+{
+  if (![text isEqualToString:self.text]) {
+    [super setText:text];
+  }
 }
 
 - (NSArray *)reactSubviews
@@ -71,7 +77,7 @@
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
   CGRect rect = [super textRectForBounds:bounds];
-  return UIEdgeInsetsInsetRect(rect, _paddingEdgeInsets);
+  return UIEdgeInsetsInsetRect(rect, _contentInset);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds
@@ -98,15 +104,26 @@
 }
 
 RCT_TEXT_EVENT_HANDLER(_textFieldDidChange, RCTTextEventTypeChange)
-RCT_TEXT_EVENT_HANDLER(_textFieldBeginEditing, RCTTextEventTypeFocus)
 RCT_TEXT_EVENT_HANDLER(_textFieldEndEditing, RCTTextEventTypeEnd)
 RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
+
+- (void)_textFieldBeginEditing
+{
+  if (_selectTextOnFocus) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self selectAll:nil];
+    });
+  }
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
+                                 reactTag:self.reactTag
+                                     text:self.text];
+}
 
 // TODO: we should support shouldChangeTextInRect (see UITextFieldDelegate)
 
 - (BOOL)becomeFirstResponder
 {
-  _jsRequestingFirstResponder = YES; // TODO: is this still needed?
+  _jsRequestingFirstResponder = YES;
   BOOL result = [super becomeFirstResponder];
   _jsRequestingFirstResponder = NO;
   return result;

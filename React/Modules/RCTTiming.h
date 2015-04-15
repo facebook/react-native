@@ -10,8 +10,9 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
 
-@interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating>
+@interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver>
 
 @end
