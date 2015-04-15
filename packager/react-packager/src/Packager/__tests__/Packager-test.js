@@ -57,6 +57,7 @@ describe('Packager', function() {
         id: 'new_image.png',
         path: '/root/img/new_image.png',
         isAsset: true,
+        resolution: 2,
         dependencies: []
       }
     ];
@@ -111,8 +112,8 @@ describe('Packager', function() {
           isStatic: true,
           path: '/root/img/new_image.png',
           uri: 'img/new_image.png',
-          width: 50,
-          height: 100,
+          width: 25,
+          height: 50,
         };
 
         expect(p.addModule.mock.calls[3]).toEqual([

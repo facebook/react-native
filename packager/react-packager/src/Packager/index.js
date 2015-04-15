@@ -195,8 +195,8 @@ function generateAssetModule(module, relPath) {
       isStatic: true,
       path: module.path, //TODO(amasad): this should be path inside tar file.
       uri: relPath,
-      width: dimensions.width,
-      height: dimensions.height,
+      width: dimensions.width / module.resolution,
+      height: dimensions.height / module.resolution,
     };
 
     var code = 'module.exports = ' + JSON.stringify(img) + ';';

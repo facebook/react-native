@@ -71,7 +71,7 @@ var styles = StyleSheet.create({
     bottom: 0,
     top: 0,
   },
-  presentNavItem: {
+  currentScene: {
     position: 'absolute',
     overflow: 'hidden',
     left: 0,
@@ -79,7 +79,7 @@ var styles = StyleSheet.create({
     bottom: 0,
     top: 0,
   },
-  futureNavItem: {
+  futureScene: {
     overflow: 'hidden',
     position: 'absolute',
     left: 0,
@@ -302,17 +302,13 @@ var Navigator = React.createClass({
 
   componentWillMount: function() {
     this.parentNavigator = getNavigatorContext(this) || this.props.navigator;
+    this._subRouteFocus = [];
     this.navigatorContext = {
       setHandlerForRoute: this.setHandlerForRoute,
       request: this.request,
 
       parentNavigator: this.parentNavigator,
       getCurrentRoutes: this.getCurrentRoutes,
-      // We want to bubble focused routes to the top navigation stack. If we
-      // are a child navigator, this allows us to call props.navigator.on*Focus
-      // of the topmost Navigator
-      onWillFocus: this.props.onWillFocus,
-      onDidFocus: this.props.onDidFocus,
 
       // Legacy, imperitive nav actions. Use request when possible.
       jumpBack: this.jumpBack,
@@ -341,8 +337,7 @@ var Navigator = React.createClass({
     });
     this._itemRefs = {};
     this._interactionHandle = null;
-
-    this._emitWillFocus(this.state.presentedIndex);
+    this._emitWillFocus(this.state.routeStack[this.state.presentedIndex]);
   },
 
   request: function(action, arg1, arg2) {
@@ -372,7 +367,7 @@ var Navigator = React.createClass({
     if (this.state.presentedIndex === 0) {
       return false;
     }
-    this.pop();
+    this._popN(1);
     return true;
   },
 
@@ -399,7 +394,7 @@ var Navigator = React.createClass({
     animationConfig && this._configureSpring(animationConfig);
     this.spring.addListener(this);
     this.onSpringUpdate();
-    this._emitDidFocus(this.state.presentedIndex);
+    this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
     if (this.parentNavigator) {
       this.parentNavigator.setHandler(this._handleRequest);
     } else {
@@ -418,7 +413,7 @@ var Navigator = React.createClass({
   },
 
   _handleBackPress: function() {
-    var didPop = this.request('pop');
+    var didPop = this.pop();
     if (!didPop) {
       BackAndroid.exitApp();
     }
@@ -500,7 +495,8 @@ var Navigator = React.createClass({
       var presentedIndex = this.state.toIndex;
       this.state.presentedIndex = presentedIndex;
       this.state.fromIndex = presentedIndex;
-      this._emitDidFocus(presentedIndex);
+      var didFocusRoute = this._subRouteFocus[presentedIndex] || this.state.routeStack[presentedIndex];
+      this._emitDidFocus(didFocusRoute);
       this._removePoppedRoutes();
       if (AnimationsDebugModule) {
         AnimationsDebugModule.stopRecordingFps(Date.now());
@@ -520,7 +516,8 @@ var Navigator = React.createClass({
     this.state.isAnimating = true;
     this.spring.setVelocity(v);
     this.spring.setEndValue(1);
-    this._emitWillFocus(this.state.toIndex);
+    var willFocusRoute = this._subRouteFocus[this.state.toIndex] || this.state.routeStack[this.state.toIndex];
+    this._emitWillFocus(willFocusRoute);
   },
 
   _transitionToFromIndexWithVelocity: function(v) {
@@ -532,25 +529,31 @@ var Navigator = React.createClass({
     this.spring.setEndValue(0);
   },
 
-  _emitDidFocus: function(index) {
-    var route = this.state.routeStack[index];
+  _emitDidFocus: function(route) {
+    if (this._lastDidFocus === route) {
+      return;
+    }
+    this._lastDidFocus = route;
     if (this.props.onDidFocus) {
       this.props.onDidFocus(route);
-    } else if (this.props.navigator && this.props.navigator.onDidFocus) {
-      this.props.navigator.onDidFocus(route);
+    } else if (this.parentNavigator && this.parentNavigator.onDidFocus) {
+      this.parentNavigator.onDidFocus(route);
     }
   },
 
-  _emitWillFocus: function(index) {
-    var route = this.state.routeStack[index];
+  _emitWillFocus: function(route) {
+    if (this._lastWillFocus === route) {
+      return;
+    }
+    this._lastWillFocus = route;
     var navBar = this._navBar;
     if (navBar && navBar.handleWillFocus) {
       navBar.handleWillFocus(route);
     }
     if (this.props.onWillFocus) {
       this.props.onWillFocus(route);
-    } else if (this.props.navigator && this.props.navigator.onWillFocus) {
-      this.props.navigator.onWillFocus(route);
+    } else if (this.parentNavigator && this.parentNavigator.onWillFocus) {
+      this.parentNavigator.onWillFocus(route);
     }
   },
 
@@ -853,7 +856,7 @@ var Navigator = React.createClass({
     }, requestTransitionAndResetUpdatingRange);
   },
 
-  popN: function(n) {
+  _popN: function(n) {
     if (n === 0 || !this._canNavigate()) {
       return;
     }
@@ -868,11 +871,7 @@ var Navigator = React.createClass({
   },
 
   pop: function() {
-    // TODO (t6707686): remove this parentNavigator call after transitioning call sites to `.request('pop')`
-    if (this.parentNavigator && this.state.routeStack.length === 1) {
-      return this.parentNavigator.pop();
-    }
-    this.popN(1);
+    return this.request('pop');
   },
 
   /**
@@ -909,8 +908,8 @@ var Navigator = React.createClass({
     }, () => {
       this._resetUpdatingRange();
       if (index === this.state.presentedIndex) {
-        this._emitWillFocus(this.state.presentedIndex);
-        this._emitDidFocus(this.state.presentedIndex);
+        this._emitWillFocus(route);
+        this._emitDidFocus(route);
       }
     });
   },
@@ -944,7 +943,7 @@ var Navigator = React.createClass({
 
   popToRoute: function(route) {
     var numToPop = this._getNumToPopForRoute(route);
-    this.popN(numToPop);
+    this._popN(numToPop);
   },
 
   replacePreviousAndPop: function(route) {
@@ -995,9 +994,42 @@ var Navigator = React.createClass({
     }
   },
 
-  _routeToOptimizedStackItem: function(route, i) {
-    var shouldUpdateChild =
-      this.state.updatingRangeLength !== 0 &&
+  _renderOptimizedScenes: function() {
+    // To avoid rendering scenes that are not visible, we use
+    // updatingRangeStart and updatingRangeLength to track the scenes that need
+    // to be updated.
+
+    // To avoid visual glitches, we never re-render scenes during a transition.
+    // We assume that `state.updatingRangeLength` will have a length during the
+    // initial render of any scene
+    var shouldRenderScenes = !this.state.isAnimating &&
+      this.state.updatingRangeLength !== 0;
+    if (shouldRenderScenes) {
+      return (
+        <StaticContainer shouldUpdate={true}>
+          <View
+            style={styles.transitioner}
+            {...this.panGesture.panHandlers}
+            onResponderTerminationRequest={
+              this._handleResponderTerminationRequest
+            }>
+            {this.state.routeStack.map(this._renderOptimizedScene)}
+          </View>
+        </StaticContainer>
+      );
+    }
+    // If no scenes are changing, we can save render time. React will notice
+    // that we are rendering a StaticContainer in the same place, so the
+    // existing element will be updated. When React asks the element
+    // shouldComponentUpdate, the StaticContainer will return false, and the
+    // children from the previous reconciliation will remain.
+    return (
+      <StaticContainer shouldUpdate={false} />
+    );
+  },
+
+  _renderOptimizedScene: function(route, i) {
+    var shouldRenderScene =
       i >= this.state.updatingRangeStart &&
       i <= this.state.updatingRangeStart + this.state.updatingRangeLength;
     var sceneNavigatorContext = {
@@ -1006,50 +1038,51 @@ var Navigator = React.createClass({
       setHandler: (handler) => {
         this.navigatorContext.setHandlerForRoute(route, handler);
       },
+      onWillFocus: (childRoute) => {
+        this._subRouteFocus[i] = childRoute;
+        if (this.state.presentedIndex === i) {
+          this._emitWillFocus(childRoute);
+        }
+      },
+      onDidFocus: (childRoute) => {
+        this._subRouteFocus[i] = childRoute;
+        if (this.state.presentedIndex === i) {
+          this._emitDidFocus(childRoute);
+        }
+      },
     };
-    var child = this.props.renderScene(
-      route,
-      sceneNavigatorContext
-    );
-    var initialSceneStyle =
-      i === this.state.presentedIndex ? styles.presentNavItem : styles.futureNavItem;
+    var scene = shouldRenderScene ?
+      this._renderScene(route, i, sceneNavigatorContext) : null;
     return (
       <NavigatorStaticContextContainer
         navigatorContext={sceneNavigatorContext}
         key={'nav' + i}
-        shouldUpdate={shouldUpdateChild}>
-        <View
-          key={this.state.idStack[i]}
-          ref={'scene_' + i}
-          style={[initialSceneStyle, this.props.sceneStyle]}>
-          {React.cloneElement(child, {
-            ref: this._handleItemRef.bind(null, this.state.idStack[i]),
-          })}
-        </View>
+        shouldUpdate={shouldRenderScene}>
+        {scene}
       </NavigatorStaticContextContainer>
     );
   },
 
-  renderNavigationStackItems: function() {
-    var shouldRecurseToNavigator = this.state.updatingRangeLength !== 0;
-    // If not recursing update to navigator at all, may as well avoid
-    // computation of navigator children.
-    var items = shouldRecurseToNavigator ?
-      this.state.routeStack.map(this._routeToOptimizedStackItem) : null;
-
+  _renderScene: function(route, i, sceneNavigatorContext) {
+    var child = this.props.renderScene(
+      route,
+      sceneNavigatorContext
+    );
+    var initialSceneStyle = i === this.state.presentedIndex ?
+      styles.currentScene : styles.futureScene;
     return (
-      <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
-        <View
-          style={styles.transitioner}
-          {...this.panGesture.panHandlers}
-          onResponderTerminationRequest={this._handleResponderTerminationRequest}>
-          {items}
-        </View>
-      </StaticContainer>
+      <View
+        key={this.state.idStack[i]}
+        ref={'scene_' + i}
+        style={[initialSceneStyle, this.props.sceneStyle]}>
+        {React.cloneElement(child, {
+          ref: this._handleItemRef.bind(null, this.state.idStack[i]),
+        })}
+      </View>
     );
   },
 
-  renderNavigationStackBar: function() {
+  _renderNavigationBar: function() {
     if (!this.props.navigationBar) {
       return null;
     }
@@ -1063,8 +1096,8 @@ var Navigator = React.createClass({
   render: function() {
     return (
       <View style={[styles.container, this.props.style]}>
-        {this.renderNavigationStackItems()}
-        {this.renderNavigationStackBar()}
+        {this._renderOptimizedScenes()}
+        {this._renderNavigationBar()}
       </View>
     );
   },

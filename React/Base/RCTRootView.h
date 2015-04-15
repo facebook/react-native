@@ -11,10 +11,6 @@
 
 #import "RCTBridge.h"
 
-extern NSString *const RCTJavaScriptDidLoadNotification;
-extern NSString *const RCTReloadNotification;
-extern NSString *const RCTReloadViewsNotification;
-
 @interface RCTRootView : UIView <RCTInvalidating>
 
 /**
@@ -68,16 +64,13 @@ extern NSString *const RCTReloadViewsNotification;
 @property (nonatomic, assign) BOOL enableDevMenu;
 
 /**
- * Reload this root view, or all root views, respectively.
+ * The backing view controller of the root view.
  */
-- (void)reload;
-+ (void)reloadAll;
-
 @property (nonatomic, weak) UIViewController *backingViewController;
 
+/**
+ * The React-managed contents view of the root view.
+ */
 @property (nonatomic, strong, readonly) UIView *contentView;
-
-- (void)startOrResetInteractionTiming;
-- (NSDictionary *)endAndResetInteractionTiming;
 
 @end

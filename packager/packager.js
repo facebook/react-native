@@ -43,6 +43,10 @@ var options = parseCommandLine([{
   command: 'assetRoots',
   description: 'specify the root directories of app assets'
 }, {
+  command: 'platform',
+  default: 'ios',
+  description: 'Specify the platform-specific blacklist (ios, android, web).'
+}, {
   command: 'skipflow',
   description: 'Disable flow checks'
 }]);
@@ -192,7 +196,7 @@ function statusPageMiddleware(req, res, next) {
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
     projectRoots: options.projectRoots,
-    blacklistRE: blacklist(false),
+    blacklistRE: blacklist(options.platform),
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
     assetRoots: options.assetRoots,
@@ -200,7 +204,7 @@ function getAppMiddleware(options) {
 }
 
 function runServer(
-  options, /* {[]string projectRoot, bool web} */
+  options,
   readyCallback
 ) {
   var app = connect()

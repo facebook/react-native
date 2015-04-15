@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <objc/message.h>
+
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
@@ -133,6 +135,11 @@ BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
  */
 BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 
+/**
+ * Underlying implementation of RCT_ENUM_CONVERTER macro. Ignore this.
+ */
+NSNumber *RCTConverterEnumValue(const char *, NSDictionary *, NSNumber *, id);
+
 #ifdef __cplusplus
 }
 #endif
@@ -167,7 +174,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
 /**
  * This macro is similar to RCT_CONVERTER, but specifically geared towards
  * numeric types. It will handle string input correctly, and provides more
- * detailed error reporting if a wrong value is passed in.
+ * detailed error reporting if an invalid value is passed in.
  */
 #define RCT_NUMBER_CONVERTER(type, getter) \
 RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
@@ -183,25 +190,8 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
   dispatch_once(&onceToken, ^{                            \
     mapping = values;                                     \
   });                                                     \
-  if (!json || json == [NSNull null]) {                   \
-    return default;                                       \
-  }                                                       \
-  if ([json isKindOfClass:[NSNumber class]]) {            \
-    if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
-      return [json getter];                               \
-    }                                                     \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
-    return default;                                       \
-  }                                                       \
-  if (![json isKindOfClass:[NSString class]]) {           \
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", \
-                #type, [json classForCoder], json);       \
-  }                                                       \
-  id value = mapping[json];                               \
-  if(!value && [json description].length > 0) {           \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
-  }                                                       \
-  return value ? [value getter] : default;                \
+  NSNumber *converted = RCTConverterEnumValue(#type, mapping, @(default), json); \
+  return ((type(*)(id, SEL))objc_msgSend)(converted, @selector(getter)); \
 }
 
 /**
