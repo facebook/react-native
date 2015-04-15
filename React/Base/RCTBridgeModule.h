@@ -81,6 +81,24 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
   - (void)method
 
 /**
+ * Conforming classes may return an array of mixed NSStrings or [NSString,
+ * NSString], representing selector name or selector name and js method name,
+ * respectively. This is an alternative to the above RCT_EXPORT_METHOD macro.
+ */
++ (NSArray *)methodsToExport;
+
+/**
+ * An array of JavaScript methods that the class will call via the
+ * -[RCTBridge enqueueJSCall:args:] method. Each method should be specified
+ * as a string of the form "JSModuleName.jsMethodName". Attempting to call a
+ * method that has not been registered will result in an error. If a method
+ * has already been registered by another class, it is not necessary to
+ * register it again, but it is good practice. Registering the same method
+ * more than once is silently ignored and will not result in an error.
+ */
++ (NSArray *)JSMethods;
+
+/**
  * Injects constants into JS. These constants are made accessible via
  * NativeModules.ModuleName.X. This method is called when the module is
  * registered by the bridge. It is only called once for the lifetime of the
