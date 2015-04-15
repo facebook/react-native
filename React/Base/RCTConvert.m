@@ -204,8 +204,10 @@ RCT_ENUM_CONVERTER(NSTextAlignment, (@{
 
 RCT_ENUM_CONVERTER(NSUnderlineStyle, (@{
   @"none": @(NSUnderlineStyleNone),
-  @"single": @(NSUnderlineStyleSingle),
+  @"solid": @(NSUnderlineStyleSingle),
   @"double": @(NSUnderlineStyleDouble),
+  @"dotted": @(NSUnderlinePatternDot | NSUnderlineStyleSingle),
+  @"dashed": @(NSUnderlinePatternDash | NSUnderlineStyleSingle),
 }), NSUnderlineStyleNone, integerValue)
 
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{

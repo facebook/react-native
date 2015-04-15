@@ -184,11 +184,17 @@ exports.examples = [
         <Text style={{strikeThrough: 'none'}}>
           None strikeThrough line
         </Text>
-        <Text style={{strikeThrough: 'single'}}>
+        <Text style={{strikeThrough: 'solid'}}>
           Single strikeThrough line
         </Text>
-        <Text style={{strikeThrough: 'double', strikeThroughColor: '#C40000'}}>
+        <Text style={{strikeThrough: 'double', strikeThroughColor: '#00ff00'}}>
           Double strikeThrough line with custom color
+        </Text>
+        <Text style={{strikeThrough: 'dashed', strikeThroughColor: 'red'}}>
+          Dashed strikeThrough line with custom color
+        </Text>
+        <Text style={{strikeThrough: 'dotted', strikeThroughColor: '#0000ff'}}>
+          Dotted strikeThrough line with custom color
         </Text>
       </View>
     );

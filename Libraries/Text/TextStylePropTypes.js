@@ -35,7 +35,7 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   ),
   letterSpacing: ReactPropTypes.number,
   strikeThrough:ReactPropTypes.oneOf(
-    ['none' /*default*/, 'single', 'double']
+    ['none' /*default*/, 'solid', 'double', 'dotted','dashed']
   ),
   strikeThroughColor: ReactPropTypes.string
 });
