@@ -7,6 +7,7 @@
 var spawn = require('child_process').spawn;
 var path = require('path');
 var install = require('./install.js');
+var bundle = require('./bundle.js');
 
 function printUsage() {
   console.log([
@@ -14,7 +15,8 @@ function printUsage() {
     '',
     'Commands:',
     '  start: starts the webserver',
-    '  install: installs npm react components'
+    '  install: installs npm react components',
+    '  bundle: builds the javascript bundle for offline use'
   ].join('\n'));
   process.exit(1);
 }
@@ -35,6 +37,9 @@ function run() {
     break;
   case 'install':
     install.init();
+    break;
+  case 'bundle':
+    bundle.init(args);
     break;
   default:
     console.error('Command `%s` unrecognized', args[0]);
