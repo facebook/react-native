@@ -45,6 +45,7 @@ RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
 RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
 RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
 
+
 #pragma mark MKMapViewDelegate
 
 - (void)mapView:(RCTMap *)mapView didUpdateUserLocation:(MKUserLocation *)location
@@ -97,6 +98,7 @@ RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
 }
 
 #pragma mark Private
+
 - (void)_onTick:(NSTimer *)timer
 {
   [self _regionChanged:timer.userInfo[RCTMapViewKey]];
