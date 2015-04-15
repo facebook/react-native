@@ -70,6 +70,12 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
       _legalLabel.frame = frame;
     });
   }
+
+  if (_pins) {
+    for (NSDictionary *pin in _pins) {
+      [self _addPin:pin ToMapView:self];
+    }
+  }
 }
 
 #pragma mark Accessors
@@ -116,6 +122,21 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
     _pins = [pins copy];
     [self setNeedsLayout];
   }
+}
+
+#pragma mark Private
+
+- (void)_addPin:(NSDictionary *)pinObject ToMapView:(RCTMap *)mapView
+{
+  MKPointAnnotation *pin = [[MKPointAnnotation alloc] init];
+  CLLocationCoordinate2D coords;
+  coords.latitude = [[pinObject valueForKey:@"latitude"] doubleValue];
+  coords.longitude = [[pinObject valueForKey:@"longitude"] doubleValue];
+  pin.coordinate = coords;
+
+  pin.title = [pinObject valueForKey:@"title"];
+  pin.subtitle = [pinObject valueForKey:@"subtitle"];
+  [mapView addAnnotation:pin];
 }
 
 @end

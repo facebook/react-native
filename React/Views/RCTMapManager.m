@@ -108,27 +108,9 @@ RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
 
   [self _regionChanged:mapView];
   [self _emitRegionChangeEvent:mapView continuous:NO];
-
-  for (NSDictionary *pin in mapView.pins) {
-    [self _addPin:pin ToMapView:mapView];
-  }
 }
 
 #pragma mark Private
-
-- (void)_addPin:(NSDictionary *)pinObject ToMapView:(RCTMap *)mapView
-{
-  MKPointAnnotation *pin = [[MKPointAnnotation alloc] init];
-  CLLocationCoordinate2D coords;
-  coords.latitude = [[pinObject valueForKey:@"latitude"] doubleValue];
-  coords.longitude = [[pinObject valueForKey:@"longitude"] doubleValue];
-  pin.coordinate = coords;
-
-  pin.title = [pinObject valueForKey:@"title"];
-  pin.subtitle = [pinObject valueForKey:@"subtitle"];
-  [mapView addAnnotation:pin];
-}
-
 - (void)_onTick:(NSTimer *)timer
 {
   [self _regionChanged:timer.userInfo[@"mapView"]];
