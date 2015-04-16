@@ -80,7 +80,7 @@ var TextInputAndroidAttributes = {
   multiline: true,
   password: true,
   placeholder: true,
-  value: true,
+  text: true,
   testID: true,
 };
 
@@ -521,7 +521,7 @@ var TextInput = React.createClass({
         onSubmitEditing={this.props.onSubmitEditing}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
-        value={this.state.bufferedValue}
+        text={this.state.bufferedValue}
       />;
 
     return (
