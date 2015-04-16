@@ -14,6 +14,7 @@ var declareOpts = require('../lib/declareOpts');
 var FileWatcher = require('../FileWatcher');
 var Packager = require('../Packager');
 var Activity = require('../Activity');
+var AssetServer = require('../AssetServer');
 var Promise = require('bluebird');
 var _ = require('underscore');
 
@@ -98,6 +99,11 @@ function Server(options) {
   var packagerOpts = Object.create(opts);
   packagerOpts.fileWatcher = this._fileWatcher;
   this._packager = new Packager(packagerOpts);
+
+  this._assetServer = new AssetServer({
+    projectRoots: opts.projectRoots,
+    assetExts: opts.assetExts,
+  });
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);
@@ -230,6 +236,22 @@ Server.prototype._processOnChangeRequest = function(req, res) {
   });
 };
 
+Server.prototype._processAssetsRequest = function(req, res) {
+  var urlObj = url.parse(req.url, true);
+  var assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
+  this._assetServer.get(assetPath[1])
+    .then(
+      function(data) {
+        res.end(data);
+      },
+      function(error) {
+        console.error(error.stack);
+        res.writeHead('404');
+        res.end('Asset not found');
+      }
+    ).done();
+};
+
 Server.prototype.processRequest = function(req, res, next) {
   var urlObj = url.parse(req.url, true);
   var pathname = urlObj.pathname;
@@ -244,6 +266,9 @@ Server.prototype.processRequest = function(req, res, next) {
     return;
   } else if (pathname.match(/^\/onchange\/?$/)) {
     this._processOnChangeRequest(req, res);
+    return;
+  } else if (pathname.match(/^\/assets\//)) {
+    this._processAssetsRequest(req, res);
     return;
   } else {
     next();
