@@ -36,7 +36,8 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
-    "start": "./packager/packager.sh"
+    "start": "./packager/packager.sh",
+    "postinstall": "npm list -g react-native &>/dev/null && echo $\"\\n\\033[4;31mWARNING:\\033[0m Looks like you installed react-native globally. Did you mean react-native-cli?\\n\\n\" || true"
   },
   "bin": {
     "react-native-start": "packager/packager.sh"
