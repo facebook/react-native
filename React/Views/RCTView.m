@@ -18,15 +18,30 @@ static const RCTBorderSide RCTBorderSideCount = 4;
 
 static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
 {
+  NSMutableArray *hits = [[NSMutableArray alloc] init];
   for (UIView *subview in [view.subviews reverseObjectEnumerator]) {
     if (!subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
       CGPoint convertedPoint = [subview convertPoint:point fromView:view];
       UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
       if (subviewHitTestView != nil) {
-        return subviewHitTestView;
+        [hits addObject:subviewHitTestView];
       }
     }
   }
+
+  float z = -HUGE_VALF;
+  UIView *highestView;
+  for (UIView *subview in [hits objectEnumerator]) {
+    if (subview.layer.zPosition > z) {
+      highestView = subview;
+      z = subview.layer.zPosition;
+    }
+  }
+  
+  if (highestView != nil) {
+    return highestView;
+  }
+  
   return nil;
 }
 
