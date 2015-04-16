@@ -287,9 +287,10 @@ var Navigator = React.createClass({
       ),
       idStack: routeStack.map(() => getuid()),
       routeStack,
-      // These are tracked to avoid rendering everything all the time.
-      updatingRangeStart: initialRouteIndex,
-      updatingRangeLength: initialRouteIndex + 1,
+      // `updatingRange*` allows us to only render the visible or staged scenes
+      // On first render, we will render every scene in the initialRouteStack
+      updatingRangeStart: 0,
+      updatingRangeLength: routeStack.length,
       // Either animating or gesturing.
       isAnimating: false,
       jumpToIndex: routeStack.length - 1,
