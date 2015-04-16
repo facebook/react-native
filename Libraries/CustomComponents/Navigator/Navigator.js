@@ -35,6 +35,7 @@ var NavigatorNavigationBar = require('NavigatorNavigationBar');
 var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
 var NavigatorStaticContextContainer = require('NavigatorStaticContextContainer');
 var PanResponder = require('PanResponder');
+var Platform = require('Platform');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
@@ -398,22 +399,22 @@ var Navigator = React.createClass({
     this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
     if (this.parentNavigator) {
       this.parentNavigator.setHandler(this._handleRequest);
-    } else {
+    } else if (Platform.OS === 'android') {
       // There is no navigator in our props or context, so this is the
       // top-level navigator. We will handle back button presses here
-      BackAndroid.addEventListener('hardwareBackPress', this._handleBackPress);
+      BackAndroid.addEventListener('hardwareBackPress', this._handleAndroidBackPress);
     }
   },
 
   componentWillUnmount: function() {
     if (this.parentNavigator) {
       this.parentNavigator.setHandler(null);
-    } else {
-      BackAndroid.removeEventListener('hardwareBackPress', this._handleBackPress);
+    } else if (Platform.OS === 'android') {
+      BackAndroid.removeEventListener('hardwareBackPress', this._handleAndroidBackPress);
     }
   },
 
-  _handleBackPress: function() {
+  _handleAndroidBackPress: function() {
     var didPop = this.pop();
     if (!didPop) {
       BackAndroid.exitApp();
