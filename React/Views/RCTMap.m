@@ -47,14 +47,14 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
+- (void)reactSetFrame:(CGRect)frame
+{
+  self.frame = frame;
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-
-  // Force resize subviews - only the layer is resized by default
-  CGRect mapFrame = self.frame;
-  self.frame = CGRectZero;
-  self.frame = mapFrame;
 
   if (_legalLabel) {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -62,12 +62,12 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
       if (_legalLabelInsets.left) {
         frame.origin.x = _legalLabelInsets.left;
       } else if (_legalLabelInsets.right) {
-        frame.origin.x = mapFrame.size.width - _legalLabelInsets.right - frame.size.width;
+        frame.origin.x = self.frame.size.width - _legalLabelInsets.right - frame.size.width;
       }
       if (_legalLabelInsets.top) {
         frame.origin.y = _legalLabelInsets.top;
       } else if (_legalLabelInsets.bottom) {
-        frame.origin.y = mapFrame.size.height - _legalLabelInsets.bottom - frame.size.height;
+        frame.origin.y = self.frame.size.height - _legalLabelInsets.bottom - frame.size.height;
       }
       _legalLabel.frame = frame;
     });
@@ -93,7 +93,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   }
 }
 
-- (void)setRegion:(MKCoordinateRegion)region
+- (void)setRegion:(MKCoordinateRegion)region animated:(BOOL)animated
 {
   // If location is invalid, abort
   if (!CLLocationCoordinate2DIsValid(region.center)) {
@@ -109,7 +109,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   }
 
   // Animate to new position
-  [super setRegion:region animated:YES];
+  [super setRegion:region animated:animated];
 }
 
 - (void)setAnnotations:(MKShapeArray *)annotations
