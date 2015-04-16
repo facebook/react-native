@@ -133,6 +133,10 @@ function setupGeolocation() {
   GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
+function setupWebSockets() {
+  GLOBAL.WebSocket = require('WebSocket');
+}
+
 setupDocumentShim();
 setupRedBoxErrorHandler();
 setupTimers();
@@ -140,3 +144,4 @@ setupAlert();
 setupPromise();
 setupXHR();
 setupGeolocation();
+setupWebSockets();
