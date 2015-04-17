@@ -41,10 +41,11 @@ There are two pieces you’ll need to set up:
 1. The root JavaScript file that will contain your actual React Native app and other components
 - Wrapper Objective-C code that will load up your script and create a `RCTRootView` to display and manage your React Native components
 
-First, create a directory for your app’s React code and create a simple `index.ios.js` file:
+First, create a directory `ReactComponent`, enter the directory and create `index.ios.js` inside .
 
 ```
 $ mkdir ReactComponent
+$ cd ReactComponent
 $ touch index.ios.js
 ```
 
