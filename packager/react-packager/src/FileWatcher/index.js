@@ -73,7 +73,7 @@ function createWatcher(rootConfig) {
       var rejectTimeout = setTimeout(function() {
         reject(new Error([
           'Watcher took too long to load',
-          'Try running `watchman` from your terminal',
+          'Try running `watchman version` from your terminal',
           'https://facebook.github.io/watchman/docs/troubleshooting.html',
         ].join('\n')));
       }, MAX_WAIT_TIME);
