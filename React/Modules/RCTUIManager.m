@@ -677,14 +677,12 @@ RCT_EXPORT_METHOD(manageChildren:(NSNumber *)containerReactTag
 
   [self _purgeChildren:permanentlyRemovedChildren fromRegistry:registry];
 
-  // TODO (#5906496): optimize all these loops - constantly calling array.count is not efficient
-
   // Figure out what to insert - merge temporary inserts and adds
   NSMutableDictionary *destinationsToChildrenToAdd = [NSMutableDictionary dictionary];
-  for (NSInteger index = 0; index < temporarilyRemovedChildren.count; index++) {
+  for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
     destinationsToChildrenToAdd[moveToIndices[index]] = temporarilyRemovedChildren[index];
   }
-  for (NSInteger index = 0; index < addAtIndices.count; index++) {
+  for (NSInteger index = 0, length = addAtIndices.count; index < length; index++) {
     id view = registry[addChildReactTags[index]];
     if (view) {
       destinationsToChildrenToAdd[addAtIndices[index]] = view;
@@ -1418,41 +1416,6 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   }
   _nextLayoutAnimation = [[RCTLayoutAnimation alloc] initWithDictionary:config
                                                                callback:callback];
-}
-
-RCT_EXPORT_METHOD(startOrResetInteractionTiming)
-{
-  NSSet *rootViewTags = [_rootViewTags copy];
-  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    for (NSNumber *reactTag in rootViewTags) {
-      UIView *rootView = viewRegistry[reactTag];
-      for (RCTTouchHandler *handler in rootView.gestureRecognizers) {
-        if ([handler isKindOfClass:[RCTTouchHandler class]]) {
-          [handler startOrResetInteractionTiming];
-          break;
-        }
-      }
-    }
-  }];
-}
-
-RCT_EXPORT_METHOD(endAndResetInteractionTiming:(RCTResponseSenderBlock)onSuccess
-                  onError:(RCTResponseSenderBlock)onError)
-{
-  NSSet *rootViewTags = [_rootViewTags copy];
-  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    NSMutableDictionary *timingData = [[NSMutableDictionary alloc] init];
-    for (NSNumber *reactTag in rootViewTags) {
-      UIView *rootView = viewRegistry[reactTag];
-      for (RCTTouchHandler *handler in rootView.gestureRecognizers) {
-        if ([handler isKindOfClass:[RCTTouchHandler class]]) {
-          [handler endAndResetInteractionTiming];
-          break;
-        }
-      }
-    }
-    onSuccess(@[timingData]);
-  }];
 }
 
 static UIView *_jsResponder;

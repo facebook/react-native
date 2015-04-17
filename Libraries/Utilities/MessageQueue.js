@@ -307,6 +307,25 @@ var MessageQueueMixin = {
     );
   },
 
+  processBatch: function (batch) {
+    var self = this;
+    batch.forEach(function (call) {
+      invariant(
+        call.module === 'BatchedBridge',
+        'All the calls should pass through the BatchedBridge module'
+      );
+      if (call.method === 'callFunctionReturnFlushedQueue') {
+        self.callFunction.apply(self, call.args);
+      } else if (call.method === 'invokeCallbackAndReturnFlushedQueue') {
+        self.invokeCallback.apply(self, call.args);
+      } else {
+        throw new Error(
+          'Unrecognized method called on BatchedBridge: ' + call.method);
+      }
+    });
+    return this.flushedQueue();
+  },
+
   setLoggingEnabled: function(enabled) {
     this._enableLogging = enabled;
     this._loggedIncomingItems = [];

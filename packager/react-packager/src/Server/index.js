@@ -17,6 +17,8 @@ var Activity = require('../Activity');
 var AssetServer = require('../AssetServer');
 var Promise = require('bluebird');
 var _ = require('underscore');
+var exec = require('child_process').exec;
+var fs = require('fs');
 
 module.exports = Server;
 
@@ -252,6 +254,42 @@ Server.prototype._processAssetsRequest = function(req, res) {
     ).done();
 };
 
+Server.prototype._processProfile = function(req, res) {
+  console.log('Dumping profile information...');
+  var dumpName = '/tmp/dump_' + Date.now() + '.json';
+  var prefix = process.env.TRACE_VIEWER_PATH || '';
+  var cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
+  fs.writeFileSync(dumpName, req.rawBody);
+  exec(cmd, function (error) {
+    if (error) {
+      if (error.code === 127) {
+        console.error(
+          '\n** Failed executing `' + cmd + '` **\n\n' +
+          'Google trace-viewer is required to visualize the data, do you have it installled?\n\n' +
+          'You can get it at:\n\n' +
+          '  https://github.com/google/trace-viewer\n\n' +
+          'If it\'s not in your path,  you can set a custom path with:\n\n' +
+          '  TRACE_VIEWER_PATH=/path/to/trace-viewer\n\n' +
+          'NOTE: Your profile data was kept at:\n\n' +
+          '  ' + dumpName
+        );
+      } else {
+        console.error('Unknown error', error);
+      }
+      res.end();
+      return;
+    } else {
+      exec('rm ' + dumpName);
+      exec('open ' + dumpName.replace(/json$/, 'html'), function (error) {
+        if (error) {
+          console.error(error);
+        }
+        res.end();
+      });
+    }
+  });
+};
+
 Server.prototype.processRequest = function(req, res, next) {
   var urlObj = url.parse(req.url, true);
   var pathname = urlObj.pathname;
@@ -269,6 +307,9 @@ Server.prototype.processRequest = function(req, res, next) {
     return;
   } else if (pathname.match(/^\/assets\//)) {
     this._processAssetsRequest(req, res);
+    return;
+  } else if (pathname.match(/^\/profile\/?$/)) {
+    this._processProfile(req, res);
     return;
   } else {
     next();

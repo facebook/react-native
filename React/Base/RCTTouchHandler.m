@@ -20,39 +20,6 @@
 
 // TODO: this class behaves a lot like a module, and could be implemented as a
 // module if we were to assume that modules and RootViews had a 1:1 relationship
-
-@interface RCTTouchEvent : NSObject
-
-@property (nonatomic, assign, readonly) NSUInteger id;
-@property (nonatomic, copy, readonly) NSString *eventName;
-@property (nonatomic, copy, readonly) NSArray *touches;
-@property (nonatomic, copy, readonly) NSArray *changedIndexes;
-@property (nonatomic, assign, readonly) CFTimeInterval originatingTime;
-
-@end
-
-
-@implementation RCTTouchEvent
-
-+ (instancetype)touchWithEventName:(NSString *)eventName touches:(NSArray *)touches changedIndexes:(NSArray *)changedIndexes originatingTime:(CFTimeInterval)originatingTime
-{
-  RCTTouchEvent *touchEvent = [[self alloc] init];
-  touchEvent->_id = [self newTaskID];
-  touchEvent->_eventName = [eventName copy];
-  touchEvent->_touches = [touches copy];
-  touchEvent->_changedIndexes = [changedIndexes copy];
-  touchEvent->_originatingTime = originatingTime;
-  return touchEvent;
-}
-
-+ (NSUInteger)newTaskID
-{
-  static NSUInteger taskID = 0;
-  return ++taskID;
-}
-
-@end
-
 @implementation RCTTouchHandler
 {
   __weak RCTBridge *_bridge;
@@ -69,7 +36,6 @@
 
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
-  CADisplayLink *_displayLink;
   NSMutableArray *_pendingTouches;
   NSMutableArray *_bridgeInteractionTiming;
 }
@@ -86,28 +52,14 @@
     _reactTouches = [[NSMutableArray alloc] init];
     _touchViews = [[NSMutableArray alloc] init];
 
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_update:)];
     _pendingTouches = [[NSMutableArray alloc] init];
     _bridgeInteractionTiming = [[NSMutableArray alloc] init];
-
-    [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 
     // `cancelsTouchesInView` is needed in order to be used as a top level event delegated recognizer. Otherwise, lower
     // level components not build using RCT, will fail to recognize gestures.
     self.cancelsTouchesInView = NO;
   }
   return self;
-}
-
-- (BOOL)isValid
-{
-  return _displayLink != nil;
-}
-
-- (void)invalidate
-{
-  [_displayLink invalidate];
-  _displayLink = nil;
 }
 
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
@@ -216,7 +168,6 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
 - (void)_updateAndDispatchTouches:(NSSet *)touches eventName:(NSString *)eventName originatingTime:(CFTimeInterval)originatingTime
 {
   // Update touches
-  CFTimeInterval enqueueTime = CACurrentMediaTime();
   NSMutableArray *changedIndexes = [[NSMutableArray alloc] init];
   for (UITouch *touch in touches) {
     NSInteger index = [_nativeTouches indexOfObject:touch];
@@ -239,71 +190,8 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
     [reactTouches addObject:[touch copy]];
   }
 
-  RCTTouchEvent *touch = [RCTTouchEvent touchWithEventName:eventName
-                                              touches:reactTouches
-                                       changedIndexes:changedIndexes
-                                      originatingTime:originatingTime];
-  [_pendingTouches addObject:touch];
-
-  if (_recordingInteractionTiming) {
-    [_bridgeInteractionTiming addObject:@{
-      @"timeSeconds": @(touch.originatingTime),
-      @"operation": @"taskOriginated",
-      @"taskID": @(touch.id),
-    }];
-    [_bridgeInteractionTiming addObject:@{
-      @"timeSeconds": @(enqueueTime),
-      @"operation": @"taskEnqueuedPending",
-      @"taskID": @(touch.id),
-    }];
-  }
-}
-
-- (void)_update:(CADisplayLink *)sender
-{
-  // Dispatch touch event
-  NSUInteger pendingCount = _pendingTouches.count;
-  for (RCTTouchEvent *touch in _pendingTouches) {
-    _mostRecentEnqueueJS = CACurrentMediaTime();
-    [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
-                      args:@[touch.eventName, touch.touches, touch.changedIndexes]];
-  }
-
-  if (_recordingInteractionTiming) {
-    for (RCTTouchEvent *touch in _pendingTouches) {
-      [_bridgeInteractionTiming addObject:@{
-        @"timeSeconds": @(sender.timestamp),
-        @"operation": @"frameAlignedDispatch",
-        @"taskID": @(touch.id),
-      }];
-    }
-
-    if (pendingCount > 0 || sender.timestamp - _mostRecentEnqueueJS < 0.1) {
-      [_bridgeInteractionTiming addObject:@{
-        @"timeSeconds": @(sender.timestamp),
-        @"operation": @"mainThreadDisplayLink",
-        @"taskID": @([RCTTouchEvent newTaskID]),
-      }];
-    }
-  }
-
-  [_pendingTouches removeAllObjects];
-}
-
-- (void)startOrResetInteractionTiming
-{
-  RCTAssertMainThread();
-  [_bridgeInteractionTiming removeAllObjects];
-  _recordingInteractionTiming = YES;
-}
-
-- (NSDictionary *)endAndResetInteractionTiming
-{
-  RCTAssertMainThread();
-  _recordingInteractionTiming = NO;
-  NSArray *_prevInteractionTimingData = _bridgeInteractionTiming;
-  _bridgeInteractionTiming = [[NSMutableArray alloc] init];
-  return @{ @"interactionTiming": _prevInteractionTimingData };
+  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
+                    args:@[eventName, reactTouches, changedIndexes]];
 }
 
 #pragma mark - Gesture Recognizer Delegate Callbacks

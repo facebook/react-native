@@ -68,7 +68,6 @@
 
     _bridge = bridge;
     _moduleName = moduleName;
-    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bundleFinishedLoading)
@@ -105,7 +104,6 @@
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_touchHandler invalidate];
   if (_contentView) {
     [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
                       args:@[_contentView.reactTag]];
@@ -148,7 +146,6 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
      * NOTE: Since the bridge persists, the RootViews might be reused, so now
      * the react tag is assigned every time we load new content.
      */
-    [_touchHandler invalidate];
     [_contentView removeFromSuperview];
     _contentView = [[UIView alloc] initWithFrame:self.bounds];
     _contentView.reactTag = [_bridge.uiManager allocateRootTag];
