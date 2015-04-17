@@ -30,8 +30,6 @@ if (dimensions.windowPhysicalPixels) {
     height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
     scale: windowPhysicalPixels.scale,
   };
-  // TODO(andrews): Remove modalFullscreenView
-  dimensions.modalFullscreenView = dimensions.window;
 
   // delete so no callers rely on this existing
   delete dimensions.windowPhysicalPixels;
