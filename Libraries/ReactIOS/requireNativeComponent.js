@@ -20,18 +20,27 @@ var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');
 var matricesDiffer = require('matricesDiffer');
 var sizesDiffer = require('sizesDiffer');
+var verifyPropTypes = require('verifyPropTypes');
 
 /**
  * Used to create React components that directly wrap native component
  * implementations.  Config information is extracted from data exported from the
- * RCTUIManager module.  It is still strongly preferred that you wrap the native
- * component in a hand-written component with full propTypes definitions and
- * other documentation.
+ * RCTUIManager module.  You should also wrap the native component in a
+ * hand-written component with full propTypes definitions and other
+ * documentation - pass the hand-written component in as `wrapperComponent` to
+ * verify all the native props are documented via `propTypes`.
+ *
+ * If some native props shouldn't be exposed in the wrapper interface, you can
+ * pass null for `wrapperComponent` and call `verifyPropTypes` directly
+ * with `nativePropsToIgnore`;
  *
  * Common types are lined up with the appropriate prop differs with
  * `TypeToDifferMap`.  Non-scalar types not in the map default to `deepDiffer`.
  */
-function requireNativeComponent(viewName: string): Function {
+function requireNativeComponent(
+  viewName: string,
+  wrapperComponent: ?Function
+): Function {
   var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs[viewName];
   if (!viewConfig) {
     return UnimplementedView;
@@ -45,6 +54,9 @@ function requireNativeComponent(viewName: string): Function {
     // TODO: deep diff by default in diffRawProperties instead of setting it here
     var differ = TypeToDifferMap[nativeProps[key].type] || deepDiffer;
     viewConfig.validAttributes[key] = {diff: differ};
+  }
+  if (__DEV__) {
+    wrapperComponent && verifyPropTypes(wrapperComponent, viewConfig);
   }
   return createReactIOSNativeComponentClass(viewConfig);
 }
