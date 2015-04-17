@@ -71,13 +71,17 @@ function Server(options) {
   this._packages = Object.create(null);
   this._changeWatchers = [];
 
+  var assetGlobs = opts.assetExts.map(function(ext) {
+    return '**/*.' + ext;
+  });
+
   var watchRootConfigs = opts.projectRoots.map(function(dir) {
     return {
       dir: dir,
       globs: [
         '**/*.js',
         '**/package.json',
-      ]
+      ].concat(assetGlobs),
     };
   });
 
@@ -86,9 +90,7 @@ function Server(options) {
       opts.assetRoots.map(function(dir) {
         return {
           dir: dir,
-          globs: opts.assetExts.map(function(ext) {
-            return '**/*.' + ext;
-          }),
+          globs: assetGlobs,
         };
       })
     );
