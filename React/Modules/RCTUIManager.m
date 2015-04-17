@@ -193,6 +193,7 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   NSMutableDictionary *_defaultShadowViews; // RCT thread only
   NSMutableDictionary *_defaultViews; // Main thread only
   NSDictionary *_viewManagers;
+  NSDictionary *_viewConfigs;
   NSUInteger _rootTag;
 }
 
@@ -217,6 +218,28 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
     name = [name substringToIndex:name.length - @"Manager".length];
   }
   return name;
+}
+
+static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewName)
+{
+  NSMutableDictionary *nativeProps = [[NSMutableDictionary alloc] init];
+  static const char *prefix = "getPropConfig";
+  static const NSUInteger prefixLength = sizeof("getPropConfig") - 1;
+  unsigned int methodCount = 0;
+  Method *methods = class_copyMethodList(objc_getMetaClass(class_getName(managerClass)), &methodCount);
+  for (unsigned int i = 0; i < methodCount; i++) {
+    Method method = methods[i];
+    SEL getInfo = method_getName(method);
+    const char *selName = sel_getName(getInfo);
+    if (strlen(selName) > prefixLength && strncmp(selName, prefix, prefixLength) == 0) {
+      NSDictionary *info = ((NSDictionary *(*)(id, SEL))method_getImplementation(method))(managerClass, getInfo);
+      nativeProps[info[@"name"]] = info;
+    }
+  }
+  return @{
+    @"uiViewClassName": viewName,
+    @"nativeProps": nativeProps
+  };
 }
 
 /**
@@ -292,13 +315,17 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 
   // Get view managers from bridge
   NSMutableDictionary *viewManagers = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *viewConfigs = [[NSMutableDictionary alloc] init];
   [_bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, RCTViewManager *manager, BOOL *stop) {
     if ([manager isKindOfClass:[RCTViewManager class]]) {
-      viewManagers[RCTViewNameForModuleName(moduleName)] = manager;
+      NSString *viewName = RCTViewNameForModuleName(moduleName);
+      viewManagers[viewName] = manager;
+      viewConfigs[viewName] = RCTViewConfigForModule([manager class], viewName);
     }
   }];
 
   _viewManagers = [viewManagers copy];
+  _viewConfigs = [viewConfigs copy];
 }
 
 - (void)registerRootView:(UIView *)rootView;
@@ -1374,7 +1401,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
       allJSConstants[name] = [constantsNamespace copy];
     }
   }];
-
+  allJSConstants[@"viewConfigs"] = _viewConfigs;
   return allJSConstants;
 }
 
