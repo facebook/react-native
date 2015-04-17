@@ -109,6 +109,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * within the view or shadowView.
  */
 #define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)                           \
+RCT_EXPORT_VIEW_PROP_CONFIG(name, type)                                        \
 - (void)set_##name:(id)json forView:(id)view withDefaultView:(id)defaultView { \
   if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
       (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
@@ -117,6 +118,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 }
 
 #define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                         \
+RCT_EXPORT_SHADOW_PROP_CONFIG(name, type)                                      \
 - (void)set_##name:(id)json forShadowView:(id)view withDefaultView:(id)defaultView { \
   if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
       (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
@@ -130,9 +132,11 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
+RCT_EXPORT_VIEW_PROP_CONFIG(name, type)                 \
 - (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 #define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
+RCT_EXPORT_SHADOW_PROP_CONFIG(name, type)                 \
 - (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 /**
@@ -158,6 +162,19 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 - (void)set_##oldName:(id)json forShadowView:(id)view withDefaultView:(id)defaultView { \
   RCTLogError(@"Property '%s' has been replaced by '%s'.", #oldName, #newName); \
   [self set_##newName:json forView:view withDefaultView:defaultView]; \
+}
+
+/**
+ * PROP_CONFIG macros should only be paired with property setters.
+ */
+#define RCT_EXPORT_VIEW_PROP_CONFIG(name, type) \
++ (NSDictionary *)getPropConfigView_##name {   \
+  return @{@"name": @#name, @"type": @#type};  \
+}
+
+#define RCT_EXPORT_SHADOW_PROP_CONFIG(name, type) \
++ (NSDictionary *)getPropConfigShadow_##name {   \
+  return @{@"name": @#name, @"type": @#type};    \
 }
 
 @end

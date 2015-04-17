@@ -42,6 +42,45 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldFlushDateMillis
 };
 
+/**
+ * Temporarily allow to turn on and off the call batching in case someone wants
+ * to profile both
+ */
+#define BATCHED_BRIDGE 1
+
+#ifdef DEBUG
+
+#define RCT_PROFILE_START() \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+NSTimeInterval __rct_profile_start = CACurrentMediaTime() \
+_Pragma("clang diagnostic pop")
+
+#define RCT_PROFILE_END(cat, args, profileName...) \
+do { \
+if (_profile) { \
+  [_profileLock lock]; \
+  [_profile addObject:@{ \
+    @"name": [@[profileName] componentsJoinedByString: @"_"], \
+    @"cat": @ #cat, \
+    @"ts": @((NSUInteger)((__rct_profile_start - _startingTime) * 1e6)), \
+    @"dur": @((NSUInteger)((CACurrentMediaTime() - __rct_profile_start) * 1e6)), \
+    @"ph": @"X", \
+    @"pid": @([[NSProcessInfo processInfo] processIdentifier]), \
+    @"tid": [[NSThread currentThread] description], \
+    @"args": args ?: [NSNull null], \
+  }]; \
+  [_profileLock unlock]; \
+} \
+} while(0)
+
+#else
+
+#define RCT_PROFILE_START(...)
+#define RCT_PROFILE_END(...)
+
+#endif
+
 #ifdef __LP64__
 typedef uint64_t RCTHeaderValue;
 typedef struct section_64 RCTHeaderSection;
@@ -191,9 +230,15 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 
 @interface RCTBridge ()
 
+@property (nonatomic, copy, readonly) NSArray *profile;
+
 - (void)_invokeAndProcessModule:(NSString *)module
                          method:(NSString *)method
                       arguments:(NSArray *)args;
+
+- (void)_actuallyInvokeAndProcessModule:(NSString *)module
+                                 method:(NSString *)method
+                              arguments:(NSArray *)args;
 
 @end
 
@@ -754,7 +799,13 @@ static NSDictionary *RCTLocalModulesConfig()
   RCTBridgeModuleProviderBlock _moduleProvider;
   RCTDisplayLink *_displayLink;
   NSMutableSet *_frameUpdateObservers;
+  NSMutableArray *_scheduledCalls;
+  NSMutableArray *_scheduledCallbacks;
   BOOL _loading;
+
+  NSUInteger _startingTime;
+  NSMutableArray *_profile;
+  NSLock *_profileLock;
 }
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
@@ -782,6 +833,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
   _displayLink = [[RCTDisplayLink alloc] initWithBridge:self];
   _frameUpdateObservers = [[NSMutableSet alloc] init];
+  _scheduledCalls = [[NSMutableArray alloc] init];
+  _scheduledCallbacks = [[NSMutableArray alloc] init];
 
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
@@ -1005,20 +1058,54 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
 }
 
+/**
+ * Private hack to support `setTimeout(fn, 0)`
+ */
+- (void)_immediatelyCallTimer:(NSNumber *)timer
+{
+  NSString *moduleDotMethod = @"RCTJSTimers.callTimers";
+  NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
+  RCTAssert(moduleID != nil, @"Module '%@' not registered.",
+            [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
+
+  NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
+  RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
+
+  if (!_loading) {
+#if BATCHED_BRIDGE
+    [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
+                                   method:@"callFunctionReturnFlushedQueue"
+                                arguments:@[moduleID, methodID, @[@[timer]]]];
+
+#else
+
+    [self _invokeAndProcessModule:@"BatchedBridge"
+                           method:@"callFunctionReturnFlushedQueue"
+                        arguments:@[moduleID, methodID, @[@[timer]]]];
+#endif
+  }
+}
+
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
   RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
+  RCT_PROFILE_START();
   [_javaScriptExecutor executeApplicationScript:script sourceURL:url onComplete:^(NSError *scriptLoadError) {
+    RCT_PROFILE_END(js_call, scriptLoadError, @"initial_script");
     if (scriptLoadError) {
       onComplete(scriptLoadError);
       return;
     }
 
+    RCT_PROFILE_START();
     [_javaScriptExecutor executeJSCall:@"BatchedBridge"
                                 method:@"flushedQueue"
                              arguments:@[]
                               callback:^(id json, NSError *error) {
+                                RCT_PROFILE_END(js_call, error, @"initial_call", @"BatchedBridge.flushedQueue");
+                                RCT_PROFILE_START();
                                 [self _handleBuffer:json];
+                                RCT_PROFILE_END(objc_call, json, @"batched_js_calls");
                                 onComplete(error);
                               }];
   }];
@@ -1028,11 +1115,46 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
 {
+#if BATCHED_BRIDGE
+  RCT_PROFILE_START();
+
+  if ([module isEqualToString:@"RCTEventEmitter"]) {
+    for (NSDictionary *call in _scheduledCalls) {
+      if ([call[@"module"] isEqualToString:module] && [call[@"method"] isEqualToString:method] && [call[@"args"][0] isEqualToString:args[0]]) {
+        [_scheduledCalls removeObject:call];
+      }
+    }
+  }
+
+  id call = @{
+    @"module": module,
+    @"method": method,
+    @"args": args,
+  };
+
+  if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
+    [_scheduledCallbacks addObject:call];
+  } else {
+    [_scheduledCalls addObject:call];
+  }
+
+  RCT_PROFILE_END(js_call, args, @"schedule", module, method);
+}
+
+- (void)_actuallyInvokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
+{
+#endif
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
 
+  NSString *moduleDotMethod = [NSString stringWithFormat:@"%@.%@", module, method];
+  RCT_PROFILE_START();
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
+    RCT_PROFILE_END(js_call, args, moduleDotMethod);
+
+    RCT_PROFILE_START();
     [self _handleBuffer:json];
+    RCT_PROFILE_END(objc_call, json, @"batched_js_calls");
   };
 
   [_javaScriptExecutor executeJSCall:module
@@ -1151,12 +1273,34 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)_update:(CADisplayLink *)displayLink
 {
+  RCT_PROFILE_START();
+
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
   for (id<RCTFrameUpdateObserver> observer in _frameUpdateObservers) {
     if (![observer respondsToSelector:@selector(isPaused)] || ![observer isPaused]) {
       [observer didUpdateFrame:frameUpdate];
     }
   }
+
+  [self _runScheduledCalls];
+
+  RCT_PROFILE_END(display_link, nil, @"main_thread");
+}
+
+- (void)_runScheduledCalls
+{
+#if BATCHED_BRIDGE
+
+  NSArray *calls = [_scheduledCallbacks arrayByAddingObjectsFromArray:_scheduledCalls];
+  if (calls.count > 0) {
+    _scheduledCalls = [[NSMutableArray alloc] init];
+    _scheduledCallbacks = [[NSMutableArray alloc] init];
+    [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
+                                         method:@"processBatch"
+                                      arguments:@[calls]];
+  }
+
+#endif
 }
 
 - (void)addFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer
@@ -1192,6 +1336,44 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                             method:@"logIfNoNativeHook"
                          arguments:@[level, message]
                           callback:^(id json, NSError *error) {}];
+}
+
+- (void)startProfiling
+{
+  if (![_bundleURL.scheme isEqualToString:@"http"]) {
+    RCTLogError(@"To run the profiler you must be running from the dev server");
+    return;
+  }
+  _profileLock = [[NSLock alloc] init];
+  _startingTime = CACurrentMediaTime();
+
+  [_profileLock lock];
+  _profile = [[NSMutableArray alloc] init];
+  [_profileLock unlock];
+}
+
+- (void)stopProfiling
+{
+  [_profileLock lock];
+  NSArray *profile = _profile;
+  _profile = nil;
+  [_profileLock unlock];
+  _profileLock = nil;
+
+  NSString *log = RCTJSONStringify(profile, NULL);
+  NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", _bundleURL.scheme, _bundleURL.host, _bundleURL.port];
+  NSURL *URL = [NSURL URLWithString:URLString];
+  NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
+  URLRequest.HTTPMethod = @"POST";
+  [URLRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+  NSURLSessionTask *task = [[NSURLSession sharedSession] uploadTaskWithRequest:URLRequest
+                                                                      fromData:[log dataUsingEncoding:NSUTF8StringEncoding]
+                                                             completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                                               if (error) {
+                                                                 RCTLogError(@"%@", error.localizedDescription);
+                                                               }
+                                                             }];
+  [task resume];
 }
 
 @end
