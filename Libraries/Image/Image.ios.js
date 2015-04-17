@@ -14,7 +14,6 @@
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
-var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
@@ -23,9 +22,7 @@ var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var flattenStyle = require('flattenStyle');
-var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
@@ -156,12 +153,6 @@ var Image = React.createClass({
       contentMode,
       tintColor: style.tintColor,
     });
-    if (Platform.OS === 'android') {
-      // TODO: update android native code to not need this
-      nativeProps.resizeMode = contentMode;
-      delete nativeProps.contentMode;
-    }
-
     if (isStored) {
       nativeProps.imageTag = source.uri;
     } else {
@@ -180,30 +171,9 @@ var styles = StyleSheet.create({
   },
 });
 
-if (Platform.OS === 'android') {
-  var CommonImageViewAttributes = merge(ReactIOSViewAttributes.UIView, {
-    accessible: true,
-    accessibilityLabel: true,
-    capInsets: {diff: insetsDiffer}, // UIEdgeInsets=UIEdgeInsetsZero
-    imageTag: true,
-    resizeMode: true,
-    src: true,
-    testID: PropTypes.string,
-  });
+var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
+var RCTNetworkImage = requireNativeComponent('RCTNetworkImageView', null);
 
-  var RCTStaticImage = createReactIOSNativeComponentClass({
-    validAttributes: merge(CommonImageViewAttributes, { tintColor: true }),
-    uiViewClassName: 'RCTStaticImage',
-  });
-
-  var RCTNetworkImage = createReactIOSNativeComponentClass({
-    validAttributes: merge(CommonImageViewAttributes, { defaultImageSrc: true }),
-    uiViewClassName: 'RCTNetworkImageView',
-  });
-} else {
-  var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
-  var RCTNetworkImage = requireNativeComponent('RCTNetworkImageView', null);
-}
 var nativeOnlyProps = {
   src: true,
   defaultImageSrc: true,

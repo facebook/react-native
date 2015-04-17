@@ -12,16 +12,11 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
-var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
@@ -98,20 +93,6 @@ var styles = StyleSheet.create({
   },
 });
 
-if (Platform.OS === 'ios') {
-  var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS);
-} else {
-  var validAttributes = {
-    ...ReactIOSViewAttributes.UIView,
-    value: true,
-    minimumValue: true,
-    maximumValue: true,
-  };
-
-  var RCTSlider = createReactIOSNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'RCTSlider',
-  });
-}
+var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS);
 
 module.exports = SliderIOS;
