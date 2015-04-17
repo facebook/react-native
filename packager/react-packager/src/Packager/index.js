@@ -20,6 +20,8 @@ var Activity = require('../Activity');
 var declareOpts = require('../lib/declareOpts');
 var imageSize = require('image-size');
 
+var sizeOf = Promise.promisify(imageSize);
+
 var validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
@@ -142,7 +144,7 @@ Packager.prototype._transformModule = function(module) {
   var transform;
 
   if (module.isAsset_DEPRECATED) {
-    transform = Promise.resolve(generateAssetModule_DEPRECATED(module));
+    transform = generateAssetModule_DEPRECATED(module);
   } else if (module.isAsset) {
     transform = generateAssetModule(
       module,
@@ -175,19 +177,26 @@ Packager.prototype.getGraphDebugInfo = function() {
 };
 
 function generateAssetModule_DEPRECATED(module) {
-  var code = 'module.exports = ' + JSON.stringify({
-    uri: module.id.replace(/^[^!]+!/, ''),
-    isStatic: true,
-  }) + ';';
+  return sizeOf(module.path).then(function(dimensions) {
+    var img = {
+      isStatic: true,
+      path: module.path,
+      uri: module.id.replace(/^[^!]+!/, ''),
+      width: dimensions.width / module.resolution,
+      height: dimensions.height / module.resolution,
+      deprecated: true,
+    };
 
-  return {
-    code: code,
-    sourceCode: code,
-    sourcePath: module.path,
-  };
+
+    var code = 'module.exports = ' + JSON.stringify(img) + ';';
+
+    return {
+      code: code,
+      sourceCode: code,
+      sourcePath: module.path,
+    };
+  });
 }
-
-var sizeOf = Promise.promisify(imageSize);
 
 function generateAssetModule(module, relPath) {
   return sizeOf(module.path).then(function(dimensions) {

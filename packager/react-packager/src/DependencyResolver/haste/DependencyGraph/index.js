@@ -642,6 +642,7 @@ DependecyGraph.prototype._processAsset_DEPRECATED = function(file) {
       path: path.resolve(file),
       isAsset_DEPRECATED: true,
       dependencies: [],
+      resolution: extractAssetResolution(file).resolution,
     });
   }
 };

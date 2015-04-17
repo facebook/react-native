@@ -52,6 +52,7 @@ describe('Packager', function() {
         path: '/root/img/img.png',
         isAsset_DEPRECATED: true,
         dependencies: [],
+        resolution: 2,
       },
       {
         id: 'new_image.png',
@@ -98,12 +99,22 @@ describe('Packager', function() {
           'source /root/bar.js',
           '/root/bar.js'
         ]);
+
+        var imgModule_DEPRECATED = {
+          isStatic: true,
+          path: '/root/img/img.png',
+          uri: 'img',
+          width: 25,
+          height: 50,
+          deprecated: true,
+        };
+
         expect(p.addModule.mock.calls[2]).toEqual([
           'lol module.exports = ' +
-            JSON.stringify({ uri: 'img', isStatic: true}) +
+            JSON.stringify(imgModule_DEPRECATED) +
             '; lol',
           'module.exports = ' +
-            JSON.stringify({ uri: 'img', isStatic: true}) +
+            JSON.stringify(imgModule_DEPRECATED) +
             ';',
           '/root/img/img.png'
         ]);
