@@ -153,6 +153,7 @@ var MapViewExample = React.createClass({
       mapRegionInput: null,
       annotations: null,
       isFirstLoad: true,
+      pins: null,
     };
   },
 
@@ -165,6 +166,7 @@ var MapViewExample = React.createClass({
           onRegionChangeComplete={this._onRegionChangeComplete}
           region={this.state.mapRegion}
           annotations={this.state.annotations}
+          pins={this.state.pins}
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}
@@ -172,6 +174,24 @@ var MapViewExample = React.createClass({
         />
       </View>
     );
+  },
+
+  _getPins(region) {
+    var arr = [],
+      pin;
+
+    for (var i = 4; i >= 0; i--) {
+      pin = {
+        title: 'Pin number ' + i,
+        subtitle: 'My cool subtitle',
+        latitude: region.latitude + (region.latitudeDelta * Math.random() * 2 - region.latitudeDelta),
+        longitude: region.longitude + (region.longitudeDelta * Math.random() * 2 - region.longitudeDelta)
+      };
+
+      arr.push(pin);
+    };
+
+    return arr;
   },
 
   _getAnnotations(region) {
@@ -193,6 +213,7 @@ var MapViewExample = React.createClass({
       this.setState({
         mapRegionInput: region,
         annotations: this._getAnnotations(region),
+        pins: this._getPins(region),
         isFirstLoad: false,
       });
     }
@@ -203,6 +224,7 @@ var MapViewExample = React.createClass({
       mapRegion: region,
       mapRegionInput: region,
       annotations: this._getAnnotations(region),
+      pins: this._getPins(region),
     });
   },
 

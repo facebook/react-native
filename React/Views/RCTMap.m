@@ -20,6 +20,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 @implementation RCTMap
 {
   UIView *_legalLabel;
+  NSArray *_pins;
   CLLocationManager *_locationManager;
 }
 
@@ -72,6 +73,12 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
       _legalLabel.frame = frame;
     });
   }
+
+  if (_pins) {
+    for (NSDictionary *pin in _pins) {
+      [self _addPin:pin ToMapView:self];
+    }
+  }
 }
 
 #pragma mark Accessors
@@ -112,6 +119,15 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [super setRegion:region animated:YES];
 }
 
+
+- (void)setPins:(NSArray *)pins
+{
+  if (_pins != pins) {
+    _pins = [pins copy];
+    [self setNeedsLayout];
+  }
+}
+
 - (void)setAnnotations:(MKShapeArray *)annotations
 {
   [self removeAnnotations:self.annotations];
@@ -120,4 +136,18 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   }
 }
 
+#pragma mark Private
+
+- (void)_addPin:(NSDictionary *)pinObject ToMapView:(RCTMap *)mapView
+{
+  MKPointAnnotation *pin = [[MKPointAnnotation alloc] init];
+  CLLocationCoordinate2D coords;
+  coords.latitude = [[pinObject valueForKey:@"latitude"] doubleValue];
+  coords.longitude = [[pinObject valueForKey:@"longitude"] doubleValue];
+  pin.coordinate = coords;
+
+  pin.title = [pinObject valueForKey:@"title"];
+  pin.subtitle = [pinObject valueForKey:@"subtitle"];
+  [mapView addAnnotation:pin];
+}
 @end

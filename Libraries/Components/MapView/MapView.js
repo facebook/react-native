@@ -129,6 +129,16 @@ var MapView = React.createClass({
     legalLabelInsets: EdgeInsetsPropType,
 
     /**
+    * Pins displayed on the map, with a title, latitude and longitude
+    */
+    pins: React.PropTypes.arrayOf(React.PropTypes.shape({
+      title: React.PropTypes.string,
+      subtitle: React.PropTypes.string,
+      latitude: React.PropTypes.number.isRequired,
+      longitude: React.PropTypes.number.isRequired,
+    })),
+
+    /**
      * Callback that is called continuously when the user is dragging the map.
      */
     onRegionChange: React.PropTypes.func,
@@ -163,6 +173,7 @@ var MapView = React.createClass({
         maxDelta={this.props.maxDelta}
         minDelta={this.props.minDelta}
         legalLabelInsets={this.props.legalLabelInsets}
+        pins={this.props.pins}
         onChange={this._onChange}
         onTouchStart={this.props.onTouchStart}
         onTouchMove={this.props.onTouchMove}
@@ -186,6 +197,7 @@ var RCTMap = createReactIOSNativeComponentClass({
       annotations: {diff: deepDiffer},
       maxDelta: true,
       minDelta: true,
+      pins: true,
       legalLabelInsets: {diff: insetsDiffer},
     }
   ),

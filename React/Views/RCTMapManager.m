@@ -42,6 +42,7 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
+RCT_EXPORT_VIEW_PROPERTY(pins, NSDictionaryArray)
 RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
 
 
