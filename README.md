@@ -203,3 +203,5 @@ var MyCustomView = createReactIOSNativeComponentClass({
 Now open any example and hit run in Xcode.
 
 Further documentation, tutorials, and more on the [React Native website](http://facebook.github.io/react-native/docs/getting-started.html).
+
+test
