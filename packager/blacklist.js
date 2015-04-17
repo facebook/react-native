@@ -8,11 +8,14 @@
  */
 'use strict';
 
+var path = require("path"); // used for path separator
+
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
   __dirname,
   'website',
+  '/.git',             // added because nodeWatcher does not ignore hidden files
   'node_modules/react-tools/src/utils/ImmutableObject.js',
   'node_modules/react-tools/src/core/ReactInstanceHandles.js',
   'node_modules/react-tools/src/event/EventPropagators.js'
@@ -40,7 +43,9 @@ var platformBlacklists = {
 };
 
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  var escaped = str.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  // convert the '/' into an escaped local file separator
+  return escaped.replace(/\//g,"\\"+path.sep);
 }
 
 function blacklist(platform, additionalBlacklist) {

@@ -56,8 +56,9 @@ if (options.projectRoots) {
     options.projectRoots = options.projectRoots.split(',');
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
-    // packager is running from node_modules of another project
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
+     // packager is running from node_modules of another project
     options.projectRoots = [path.resolve(__dirname, '../../..')];
   } else {
     options.projectRoots = [path.resolve(__dirname, '..')];
@@ -79,7 +80,8 @@ if (options.assetRoots) {
     options.assetRoots = options.assetRoots.split(',');
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];
   } else {
     options.assetRoots = [path.resolve(__dirname, '..')];
