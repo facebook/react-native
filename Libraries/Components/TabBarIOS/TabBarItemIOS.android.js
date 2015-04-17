@@ -11,7 +11,6 @@
 
 'use strict';
 
-var Dimensions = require('Dimensions');
 var React = require('React');
 var View = require('View');
 var StyleSheet = require('StyleSheet');
@@ -33,8 +32,10 @@ var styles = StyleSheet.create({
   tab: {
     // TODO(5405356): Implement overflow: visible so position: absolute isn't useless
     // position: 'absolute',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     borderColor: 'red',
     borderWidth: 1,
   }

@@ -17,7 +17,6 @@ var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
 var ScrollResponder = require('ScrollResponder');
@@ -32,6 +31,7 @@ var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
+var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
 
@@ -73,6 +73,12 @@ var ScrollView = React.createClass({
      * the `alwaysBounce*` props are true. The default value is true.
      */
     bounces: PropTypes.bool,
+    /**
+     * When true, gestures can drive zoom past min/max and the zoom will animate
+     * to the min/max value at gesture end, otherwise the zoom will not exceed
+     * the limits.
+     */
+    bouncesZoom: PropTypes.bool,
     /**
      * When true, the scroll view bounces horizontally when it reaches the end
      * even if the content is smaller than the scroll view itself. The default
@@ -120,6 +126,16 @@ var ScrollView = React.createClass({
      * instead of vertically in a column. The default value is false.
      */
     horizontal: PropTypes.bool,
+    /**
+     * When true, the ScrollView will try to lock to only vertical or horizontal
+     * scrolling while dragging.  The default value is false.
+     */
+    directionalLockEnabled: PropTypes.bool,
+    /**
+     * When false, once tracking starts, won't try to drag if the touch moves.
+     * The default value is true.
+     */
+    canCancelContentTouches: PropTypes.bool,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.
@@ -359,6 +375,7 @@ if (Platform.OS === 'android') {
     validAttributes: validAttributes,
     uiViewClassName: 'RCTScrollView',
   });
+  var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
 }
 
 module.exports = ScrollView;
