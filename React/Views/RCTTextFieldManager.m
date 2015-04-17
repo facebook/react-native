@@ -54,6 +54,13 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
+RCT_CUSTOM_VIEW_PROPERTY(placeholderTextColor, UIColor, RCTTextField)
+{
+  if (view.placeholder != nil && [view respondsToSelector:@selector(setAttributedPlaceholder:)]) {
+    NSAttributedString *attributedPlaceholder = [[NSAttributedString alloc] initWithString:view.placeholder attributes:@{NSFontAttributeName:view.font, NSForegroundColorAttributeName:[RCTConvert UIColor:json]}];
+    [view setAttributedPlaceholder:attributedPlaceholder];
+  }
+}
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {
