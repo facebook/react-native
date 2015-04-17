@@ -72,7 +72,7 @@ var notMultiline = {
   onSubmitEditing: true,
 };
 
-var TextInputAndroidAttributes = {
+var AndroidTextInputAttributes = {
   autoCapitalize: true,
   autoCorrect: true,
   autoFocus: true,
@@ -84,10 +84,15 @@ var TextInputAndroidAttributes = {
   testID: true,
 };
 
-var AndroidTextInput = createReactIOSNativeComponentClass({
-  validAttributes: TextInputAndroidAttributes,
+var viewConfigIOS = {
+  uiViewClassName: 'RCTTextField',
+  validAttributes: RCTTextFieldAttributes,
+};
+
+var viewConfigAndroid = {
   uiViewClassName: 'AndroidTextInput',
-});
+  validAttributes: AndroidTextInputAttributes,
+};
 
 var crossPlatformKeyboardTypeMap = {
   'numeric': 'decimal-pad',
@@ -293,10 +298,8 @@ var TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig: {
-    uiViewClassName: 'RCTTextField',
-    validAttributes: RCTTextFieldAttributes,
-  },
+  viewConfig: ((Platform.OS === 'ios' ? viewConfigIOS :
+    (Platform.OS === 'android' ? viewConfigAndroid : {})) : Object),
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
@@ -589,6 +592,11 @@ var RCTTextView = createReactIOSNativeComponentClass({
 var RCTTextField = createReactIOSNativeComponentClass({
   validAttributes: RCTTextFieldAttributes,
   uiViewClassName: 'RCTTextField',
+});
+
+var AndroidTextInput = createReactIOSNativeComponentClass({
+  validAttributes: AndroidTextInputAttributes,
+  uiViewClassName: 'AndroidTextInput',
 });
 
 module.exports = TextInput;
