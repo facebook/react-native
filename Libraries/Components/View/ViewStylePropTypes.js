@@ -34,12 +34,8 @@ var ViewStylePropTypes = {
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
+  transform: ReactPropTypes.arrayOf(ReactPropTypes.object),
   transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
-  rotation: ReactPropTypes.number,
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
 };
 
 module.exports = ViewStylePropTypes;
