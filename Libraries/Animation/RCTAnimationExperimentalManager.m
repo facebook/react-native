@@ -68,6 +68,11 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return _bridge.uiManager.methodQueue;
+}
+
 - (id (^)(CGFloat))interpolateFrom:(CGFloat[])fromArray to:(CGFloat[])toArray count:(NSUInteger)count typeName:(const char *)typeName
 {
   if (count == 1) {

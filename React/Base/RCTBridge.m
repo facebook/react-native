@@ -792,6 +792,7 @@ static NSDictionary *RCTLocalModulesConfig()
 @implementation RCTBridge
 {
   RCTSparseArray *_modulesByID;
+  RCTSparseArray *_queuesByID;
   NSDictionary *_modulesByName;
   id<RCTJavaScriptExecutor> _javaScriptExecutor;
   Class _executorClass;
@@ -824,13 +825,13 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
   return self;
 }
+
 - (void)setUp
 {
   Class executorClass = _executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class];
   _javaScriptExecutor = [[executorClass alloc] init];
   _latestJSExecutor = _javaScriptExecutor;
   _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
-  _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
   _displayLink = [[RCTDisplayLink alloc] initWithBridge:self];
   _frameUpdateObservers = [[NSMutableSet alloc] init];
   _scheduledCalls = [[NSMutableArray alloc] init];
@@ -848,21 +849,29 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   [RCTBridgeModuleClassesByModuleID() enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
     NSString *moduleName = RCTModuleNamesByID[moduleID];
     // Check if module instance has already been registered for this name
-    if ((_modulesByID[moduleID] = modulesByName[moduleName])) {
+    id<RCTBridgeModule> module = modulesByName[moduleName];
+    if (module) {
       // Preregistered instances takes precedence, no questions asked
       if (!preregisteredModules[moduleName]) {
         // It's OK to have a name collision as long as the second instance is nil
         RCTAssert([[moduleClass alloc] init] == nil,
-                  @"Attempted to register RCTBridgeModule class %@ for the name '%@', \
-                  but name was already registered by class %@", moduleClass,
+                  @"Attempted to register RCTBridgeModule class %@ for the name "
+                  "'%@', but name was already registered by class %@", moduleClass,
                   moduleName, [modulesByName[moduleName] class]);
+      }
+      if ([module class] != moduleClass) {
+        RCTLogInfo(@"RCTBridgeModule of class %@ with name '%@' was encountered "
+                   "in the project, but name was already registered by class %@."
+                   "That's fine if it's intentional - just letting you know.",
+                   moduleClass, moduleName, [modulesByName[moduleName] class]);
       }
     } else {
       // Module name hasn't been used before, so go ahead and instantiate
-      id<RCTBridgeModule> module = [[moduleClass alloc] init];
-      if (module) {
-        _modulesByID[moduleID] = modulesByName[moduleName] = module;
-      }
+      module = [[moduleClass alloc] init];
+    }
+    if (module) {
+      // Store module instance
+      _modulesByID[moduleID] = modulesByName[moduleName] = module;
     }
   }];
 
@@ -875,6 +884,14 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       module.bridge = self;
     }
   }
+
+  // Get method queue
+  _queuesByID = [[RCTSparseArray alloc] init];
+  [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, BOOL *stop) {
+    if ([module respondsToSelector:@selector(methodQueue)]) {
+      _queuesByID[moduleID] = [module methodQueue] ?: dispatch_get_main_queue();
+    }
+  }];
 
   // Inject module data into JS context
   NSString *configJSON = RCTJSONStringify(@{
@@ -1027,6 +1044,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
   // Release modules (breaks retain cycle if module has strong bridge reference)
   _modulesByID = nil;
+  _queuesByID = nil;
   _modulesByName = nil;
 }
 
@@ -1203,6 +1221,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     return;
   }
 
+  // TODO: if we sort the requests by module, we could dispatch once per
+  // module instead of per request, which would reduce the call overhead.
   for (NSUInteger i = 0; i < numRequests; i++) {
     @autoreleasepool {
       [self _handleRequestNumber:i
@@ -1212,14 +1232,15 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }
   }
 
-  // TODO: only used by RCTUIManager - can we eliminate this special case?
-  dispatch_async(self.shadowQueue, ^{
-    for (id module in _modulesByID.allObjects) {
-      if ([module respondsToSelector:@selector(batchDidComplete)]) {
+  // TODO: batchDidComplete is only used by RCTUIManager - can we eliminate this special case?
+  [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, BOOL *stop) {
+    if ([module respondsToSelector:@selector(batchDidComplete)]) {
+      dispatch_queue_t queue = _queuesByID[moduleID];
+      dispatch_async(queue ?: dispatch_get_main_queue(), ^{
         [module batchDidComplete];
-      }
+      });
     }
-  });
+  }];
 }
 
 - (BOOL)_handleRequestNumber:(NSUInteger)i
@@ -1241,7 +1262,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   RCTModuleMethod *method = methods[methodID];
 
   __weak RCTBridge *weakSelf = self;
-  dispatch_async(self.shadowQueue, ^{
+  dispatch_queue_t queue = _queuesByID[moduleID];
+  dispatch_async(queue ?: dispatch_get_main_queue(), ^{
     __strong RCTBridge *strongSelf = weakSelf;
 
     if (!strongSelf.isValid) {

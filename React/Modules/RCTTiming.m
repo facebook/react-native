@@ -187,21 +187,17 @@ RCT_EXPORT_METHOD(createTimer:(NSNumber *)callbackID
                                                 interval:jsDuration
                                               targetTime:targetTime
                                                  repeats:repeats];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    _timers[callbackID] = timer;
-    [self startTimers];
-  });
+  _timers[callbackID] = timer;
+  [self startTimers];
 }
 
 RCT_EXPORT_METHOD(deleteTimer:(NSNumber *)timerID)
 {
   if (timerID) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      _timers[timerID] = nil;
-      if (_timers.count == 0) {
-        [self stopTimers];
-      }
-    });
+    _timers[timerID] = nil;
+    if (_timers.count == 0) {
+      [self stopTimers];
+    }
   } else {
     RCTLogWarn(@"Called deleteTimer: with a nil timerID");
   }

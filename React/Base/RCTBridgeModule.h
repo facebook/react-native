@@ -90,6 +90,23 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
   static const char *__rct_export_entry__[] = { __func__, #js_name, NULL }
 
 /**
+ * The queue that will be used to call all exported methods. If omitted, this
+ * will default the main queue, which is recommended for any methods that
+ * interact with UIKit. If your methods perform heavy work such as filesystem
+ * or network access, you should return a custom serial queue. Example:
+ *
+ * - (dispatch_queue_t)methodQueue
+ * {
+ *   return dispatch_queue_create("com.mydomain.FileQueue", DISPATCH_QUEUE_SERIAL);
+ * }
+ *
+ * Alternatively, if only some methods on the module should be executed on a
+ * background queue you can leave this method unimplemented, and simply
+ * dispatch_async() within the method itself.
+ */
+- (dispatch_queue_t)methodQueue;
+
+/**
  * Injects constants into JS. These constants are made accessible via
  * NativeModules.ModuleName.X. This method is called when the module is
  * registered by the bridge. It is only called once for the lifetime of the

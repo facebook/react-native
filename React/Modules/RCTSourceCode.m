@@ -24,7 +24,6 @@ RCT_EXPORT_METHOD(getScriptText:(RCTResponseSenderBlock)successCallback
   } else {
     failureCallback(@[RCTMakeError(@"Source code is not available", nil, nil)]);
   }
-
 }
 
 @end

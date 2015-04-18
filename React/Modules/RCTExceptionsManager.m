@@ -48,13 +48,11 @@ RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
   }
 
 #ifdef DEBUG
-    [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
+  [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
 #else
   if (RCTReloadRetries < _maxReloadAttempts) {
     RCTReloadRetries++;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
-    });
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
   } else {
     NSError *error;
     const NSUInteger MAX_SANITIZED_LENGTH = 75;

@@ -102,13 +102,6 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
 @property (nonatomic, copy, readonly) NSDictionary *modules;
 
 /**
- * The shadow queue is used to execute callbacks from the JavaScript code. All
- * native hooks (e.g. exported module methods) will be executed on the shadow
- * queue.
- */
-@property (nonatomic, readonly) dispatch_queue_t shadowQueue;
-
-/**
  * The launch options that were used to initialize the bridge.
  */
 @property (nonatomic, copy, readonly) NSDictionary *launchOptions;

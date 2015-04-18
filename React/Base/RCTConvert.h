@@ -138,7 +138,7 @@ BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 /**
  * Underlying implementation of RCT_ENUM_CONVERTER macro. Ignore this.
  */
-NSNumber *RCTConverterEnumValue(const char *, NSDictionary *, NSNumber *, id);
+NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 
 #ifdef __cplusplus
 }
@@ -190,7 +190,7 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
   dispatch_once(&onceToken, ^{                            \
     mapping = values;                                     \
   });                                                     \
-  NSNumber *converted = RCTConverterEnumValue(#type, mapping, @(default), json); \
+  NSNumber *converted = RCTConvertEnumValue(#type, mapping, @(default), json); \
   return ((type(*)(id, SEL))objc_msgSend)(converted, @selector(getter)); \
 }
 

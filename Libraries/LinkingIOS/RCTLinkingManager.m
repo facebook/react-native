@@ -62,8 +62,10 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
                   callback:(RCTResponseSenderBlock)callback)
 {
-  BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
-  callback(@[@(canOpen)]);
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
+    callback(@[@(canOpen)]);
+  });
 }
 
 - (NSDictionary *)constantsToExport

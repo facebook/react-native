@@ -58,6 +58,10 @@ RCT_CONVERTER(NSString *, NSString, description)
 
 + (NSURL *)NSURL:(id)json
 {
+  if (!json || json == (id)kCFNull) {
+    return nil;
+  }
+
   if (![json isKindOfClass:[NSString class]]) {
     RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json classForCoder], json);
     return nil;
@@ -115,7 +119,7 @@ RCT_CUSTOM_CONVERTER(NSTimeInterval, NSTimeInterval, [self double:json] / 1000.0
 // JS standard for time zones is minutes.
 RCT_CUSTOM_CONVERTER(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFromGMT:[self double:json] * 60.0])
 
-NSNumber *RCTConverterEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
+NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
 {
   if (!json || json == (id)kCFNull) {
     return defaultValue;

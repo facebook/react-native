@@ -178,7 +178,7 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
 
 @implementation RCTUIManager
 {
-  __weak dispatch_queue_t _shadowQueue;
+  dispatch_queue_t _shadowQueue;
 
   // Root views are only mutated on the shadow queue
   NSMutableSet *_rootViewTags;
@@ -242,23 +242,11 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   };
 }
 
-/**
- * This private constructor should only be called when creating
- * isolated UIImanager instances for testing. Normal initialization
- * is via -init:, which is called automatically by the bridge.
- */
-- (instancetype)initWithShadowQueue:(dispatch_queue_t)shadowQueue
-{
-  if ((self = [self init])) {
-    _shadowQueue = shadowQueue;
-    _viewManagers = [[NSMutableDictionary alloc] init];
-  }
-  return self;
-}
-
 - (instancetype)init
 {
   if ((self = [super init])) {
+
+    _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
 
     _pendingUIBlocksLock = [[NSLock alloc] init];
 
@@ -310,7 +298,6 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
 
   _bridge = bridge;
-  _shadowQueue = _bridge.shadowQueue;
   _shadowViewRegistry = [[RCTSparseArray alloc] init];
 
   // Get view managers from bridge
@@ -326,6 +313,11 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
   _viewManagers = [viewManagers copy];
   _viewConfigs = [viewConfigs copy];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return _shadowQueue;
 }
 
 - (void)registerRootView:(UIView *)rootView;
@@ -366,7 +358,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   NSNumber *reactTag = rootView.reactTag;
   RCTAssert(RCTIsReactRootView(reactTag), @"Specified view %@ is not a root view", reactTag);
 
-  dispatch_async(_bridge.shadowQueue, ^{
+  dispatch_async(_shadowQueue, ^{
     RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
     RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
     rootShadowView.frame = frame;
@@ -396,8 +388,6 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssert(![NSThread isMainThread], @"This method should only be called on the shadow thread");
-
   if (!self.isValid) {
     return;
   }
@@ -417,7 +407,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTShadowView *)rootShadowView
 {
-  RCTAssert(![NSThread isMainThread], @"This should never be executed on main thread.");
+  RCTAssert(![NSThread isMainThread], @"Should be called on shadow thread");
 
   NSMutableSet *viewsWithNewFrames = [NSMutableSet setWithCapacity:1];
 
@@ -679,6 +669,8 @@ RCT_EXPORT_METHOD(manageChildren:(NSNumber *)containerReactTag
 
   [self _purgeChildren:permanentlyRemovedChildren fromRegistry:registry];
 
+  // TODO (#5906496): optimize all these loops - constantly calling array.count is not efficient
+
   // Figure out what to insert - merge temporary inserts and adds
   NSMutableDictionary *destinationsToChildrenToAdd = [NSMutableDictionary dictionary];
   for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
@@ -886,8 +878,6 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
 
 - (void)flushUIBlocks
 {
-  RCTAssert(![NSThread isMainThread], @"Should be called on shadow thread");
-
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while
   // processing the pending blocks in another thread.
