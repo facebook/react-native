@@ -33,7 +33,7 @@ You can also pack all the JavaScript code within the app itself. This way you ca
 Packager supports a couple of options:
 
 * `dev` (true by default) - sets the value of `__DEV__` variable. When `true` it turns on a bunch of useful development warnings. For production it is recommended to use `dev=false`.
-* `minify` (false by default) - whenever or not to pipe the JS code through UglifyJS.
+* `minify` (false by default) - whether or not to pipe the JS code through UglifyJS.
 
 ## Troubleshooting
 
