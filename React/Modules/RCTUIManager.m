@@ -398,13 +398,15 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 {
   RCTAssert(![NSThread isMainThread], @"This method should only be called on the shadow thread");
 
+  if (!self.isValid) {
+    return;
+  }
+
   __weak RCTUIManager *weakViewManager = self;
-  __weak RCTSparseArray *weakViewRegistry = _viewRegistry;
   dispatch_block_t outerBlock = ^{
     RCTUIManager *strongViewManager = weakViewManager;
-    RCTSparseArray *strongViewRegistry = weakViewRegistry;
-    if (strongViewManager && strongViewRegistry) {
-      block(strongViewManager, strongViewRegistry);
+    if (strongViewManager && strongViewManager.isValid) {
+      block(strongViewManager, strongViewManager->_viewRegistry);
     }
   };
 
