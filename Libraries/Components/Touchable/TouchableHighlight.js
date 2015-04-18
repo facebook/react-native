@@ -29,7 +29,7 @@ var onlyChild = require('onlyChild');
 
 var DEFAULT_PROPS = {
   activeOpacity: 0.8,
-  underlayColor: 'black',
+  underlayColor: 'rgba(0, 0, 0, 0.15)',
 };
 
 /**
