@@ -23,7 +23,6 @@ var styleDiffer = require('styleDiffer');
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var diffRawProperties = require('diffRawProperties');
 var flattenStyle = require('flattenStyle');
-var precomputeStyle = require('precomputeStyle');
 var warning = require('warning');
 
 var registrationNames = ReactIOSEventEmitter.registrationNames;
@@ -161,7 +160,7 @@ ReactIOSNativeComponent.Mixin = {
     // before actually doing the expensive flattening operation in order to
     // compute the diff.
     if (styleDiffer(nextProps.style, prevProps.style)) {
-      var nextFlattenedStyle = precomputeStyle(flattenStyle(nextProps.style));
+      var nextFlattenedStyle = flattenStyle(nextProps.style);
       updatePayload = diffRawProperties(
         updatePayload,
         this.previousFlattenedStyle,
