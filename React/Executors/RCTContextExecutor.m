@@ -85,7 +85,14 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object,
                                                 range:(NSRange){0, message.length}
                                          withTemplate:@"[$4$5]  \t$2"];
 
-    _RCTLogFormat(RCTLogLevelInfo, NULL, -1, @"%@", message);
+    // TODO: it would be good if log level was sent as a param, instead of this hack
+    RCTLogLevel level = RCTLogLevelInfo;
+    if ([message rangeOfString:@"error" options:NSCaseInsensitiveSearch].length) {
+      level = RCTLogLevelError;
+    } else if ([message rangeOfString:@"warning" options:NSCaseInsensitiveSearch].length) {
+      level = RCTLogLevelWarning;
+    }
+    _RCTLogFormat(level, NULL, -1, @"%@", message);
   }
 
   return JSValueMakeUndefined(context);
@@ -126,8 +133,6 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 + (void)runRunLoopThread
 {
-  // TODO (#5906496): Investigate exactly what this does and why
-
   @autoreleasepool {
     // copy thread name to pthread name
     pthread_setname_np([[[NSThread currentThread] name] UTF8String]);
@@ -273,11 +278,11 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 }
 
 - (void)executeApplicationScript:(NSString *)script
-                       sourceURL:(NSURL *)url
+                       sourceURL:(NSURL *)sourceURL
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  RCTAssert(url != nil, @"url should not be nil");
-  RCTAssert(onComplete != nil, @"onComplete block should not be nil");
+  RCTAssert(sourceURL != nil, @"url should not be nil");
+
   __weak RCTContextExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:^{
     RCTContextExecutor *strongSelf = weakSelf;
@@ -286,17 +291,18 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     }
     JSValueRef jsError = NULL;
     JSStringRef execJSString = JSStringCreateWithCFString((__bridge CFStringRef)script);
-    JSStringRef sourceURL = JSStringCreateWithCFString((__bridge CFStringRef)url.absoluteString);
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, sourceURL, 0, &jsError);
-    JSStringRelease(sourceURL);
+    JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, &jsError);
+    JSStringRelease(jsURL);
     JSStringRelease(execJSString);
 
-    NSError *error;
-    if (!result) {
-      error = RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError);
+    if (onComplete) {
+      NSError *error;
+      if (!result) {
+        error = RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError);
+      }
+      onComplete(error);
     }
-
-    onComplete(error);
   }];
 }
 
@@ -314,7 +320,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
 {
-  RCTAssert(onComplete != nil, @"onComplete block should not be nil");
+
 #if DEBUG
   RCTAssert(RCTJSONParse(script, NULL) != nil, @"%@ wasn't valid JSON!", script);
 #endif
@@ -333,19 +339,21 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       NSString *errorDesc = [NSString stringWithFormat:@"Can't make JSON value from script '%@'", script];
       RCTLogError(@"%@", errorDesc);
 
-      NSError *error = [NSError errorWithDomain:@"JS" code:2 userInfo:@{NSLocalizedDescriptionKey: errorDesc}];
-      onComplete(error);
+      if (onComplete) {
+        NSError *error = [NSError errorWithDomain:@"JS" code:2 userInfo:@{NSLocalizedDescriptionKey: errorDesc}];
+        onComplete(error);
+      }
       return;
     }
 
     JSObjectRef globalObject = JSContextGetGlobalObject(strongSelf->_context.ctx);
-
     JSStringRef JSName = JSStringCreateWithCFString((__bridge CFStringRef)objectName);
     JSObjectSetProperty(strongSelf->_context.ctx, globalObject, JSName, valueToInject, kJSPropertyAttributeNone, NULL);
     JSStringRelease(JSName);
-    onComplete(nil);
+    if (onComplete) {
+      onComplete(nil);
+    }
   }];
-
 }
 
 @end

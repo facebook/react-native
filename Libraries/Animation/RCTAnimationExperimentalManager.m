@@ -264,7 +264,9 @@ RCT_EXPORT_METHOD(stopAnimation:(NSNumber *)animationTag)
     RCTAnimationExperimentalManager *strongSelf = weakSelf;
 
     NSNumber *reactTag = strongSelf->_animationRegistry[animationTag];
-    if (!reactTag) return;
+    if (!reactTag) {
+      return;
+    }
 
     UIView *view = viewRegistry[reactTag];
     for (NSString *animationKey in view.layer.animationKeys) {

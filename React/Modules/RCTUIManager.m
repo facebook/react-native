@@ -999,7 +999,7 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(NSNumber *)reactTag
  * Only layouts for views that are within the rect passed in are returned. Invokes the error callback if the
  * passed in parent view does not exist. Invokes the supplied callback with the array of computed layouts.
  */
-RCT_EXPORT_METHOD(measureViewsInRect:(NSDictionary *)rect
+RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
                   parentView:(NSNumber *)reactTag
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
@@ -1011,7 +1011,7 @@ RCT_EXPORT_METHOD(measureViewsInRect:(NSDictionary *)rect
   }
   NSArray *childShadowViews = [shadowView reactSubviews];
   NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:[childShadowViews count]];
-  CGRect layoutRect = [RCTConvert CGRect:rect];
+
 
   [childShadowViews enumerateObjectsUsingBlock:^(RCTShadowView *childShadowView, NSUInteger idx, BOOL *stop) {
     CGRect childLayout = [childShadowView measureLayoutRelativeToAncestor:shadowView];
@@ -1026,10 +1026,11 @@ RCT_EXPORT_METHOD(measureViewsInRect:(NSDictionary *)rect
     CGFloat width = childLayout.size.width;
     CGFloat height = childLayout.size.height;
 
-    if (leftOffset <= layoutRect.origin.x + layoutRect.size.width &&
-        leftOffset + width >= layoutRect.origin.x &&
-        topOffset <= layoutRect.origin.y + layoutRect.size.height &&
-        topOffset + height >= layoutRect.origin.y) {
+    if (leftOffset <= rect.origin.x + rect.size.width &&
+        leftOffset + width >= rect.origin.x &&
+        topOffset <= rect.origin.y + rect.size.height &&
+        topOffset + height >= rect.origin.y) {
+
       // This view is within the layout rect
       NSDictionary *result = @{@"index": @(idx),
                                @"left": @(leftOffset),

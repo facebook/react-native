@@ -31,8 +31,8 @@ const char *RCTLogLevels[] = {
 static RCTLogFunction RCTCurrentLogFunction;
 static RCTLogLevel RCTCurrentLogThreshold;
 
-void RCTLogSetup(void) __attribute__((constructor));
-void RCTLogSetup()
+__attribute__((constructor))
+static void RCTLogSetup()
 {
   RCTCurrentLogFunction = RCTDefaultLogFunction;
 
