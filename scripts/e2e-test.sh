@@ -7,12 +7,19 @@ SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
 TEMP=$(mktemp -d /tmp/react-native-XXXXXXXX)
 
+# When tests run on CI server, we won't be able to see logs
+# from packager because it runs in a separate window. This is
+# a simple workaround, see packager/packager.sh
+export REACT_PACKAGER_LOG="$TEMP/server.log"
+
 # To make sure we actually installed the local version
 # of react-native, we will create a temp file inside SampleApp
 # and check that it exists after `react-native init`
 MARKER=$(mktemp $ROOT/Examples/SampleApp/XXXXXXXX)
 
 function cleanup {
+  set +e
+  [ -f $REACT_PACKAGER_LOG ] && cat $REACT_PACKAGER_LOG
   rm $MARKER
   [ $SINOPIA_PID ] && kill -9 $SINOPIA_PID
   [ -f ~/.npmrc.bak ] && mv ~/.npmrc.bak ~/.npmrc
