@@ -138,14 +138,15 @@ If you want to pass error-like object to JavaScript, use `RCTMakeError` from [`R
 
 ## Implementing native module
 
-The native module should not have any assumptions about what thread it is being called on. React Native invokes native modules methods on a separate serial GCD queue, but this is an implementation detail and might change. If the native module needs to call main-thread-only iOS API, it should schedule the operation on the main queue:
+By default, native module methods will be called on the main thread, which is usually what you want for interacting with iOS APIs, as many are not safe to access from a background thread (check the Apple developer documentation for each API if you're unsure).
 
+For long-running operations, such as disk or network access, it is not a good idea to perform this work on the main thread as it can interupt animation or user interaction. For these methods, it is a good idea to use `dispatch_async` to schedule expensive work on a background queue:
 
 ```objective-c
-RCT_EXPORT_METHOD(addEvent:(NSString *)name callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSenderBlock)callback)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Call iOS API on main thread
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // Call long-running code on background thread
     ...
     // You can invoke callback from any thread/queue
     callback(@[...]);
@@ -153,7 +154,16 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name callback:(RCTResponseSenderBlock)cal
 }
 ```
 
-The same way if the operation can take a long time to complete, the native module should not block. It is a good idea to use `dispatch_async` to schedule expensive work on background queue.
+If all of the methods in your module should be run on a background thread, you can use the `-(dispatch_queue_t)methodQueue` of the `RCTBridgeModule` protocol to specify the queue that React Native should use to call your module methods, like this:
+
+```objective-c
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_queue_create("com.mydomain.FileQueue", DISPATCH_QUEUE_SERIAL);
+}
+```
+
+The advantage of this approach is that there is no need to call `dispatch_async()` inside each and every exported method.
 
 ## Exporting constants
 
