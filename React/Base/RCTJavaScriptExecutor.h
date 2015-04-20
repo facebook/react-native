@@ -49,11 +49,13 @@ __used static id<RCTJavaScriptExecutor> RCTCreateExecutor(Class executorClass)
 {
   static NSUInteger executorID = 0;
   id<RCTJavaScriptExecutor> executor = [[executorClass alloc] init];
-  objc_setAssociatedObject(executor, RCTJavaScriptExecutorID, @(++executorID), OBJC_ASSOCIATION_RETAIN);
+  if (executor) {
+    objc_setAssociatedObject(executor, RCTJavaScriptExecutorID, @(++executorID), OBJC_ASSOCIATION_RETAIN);
+  }
   return executor;
 }
 
 __used static NSNumber *RCTGetExecutorID(id<RCTJavaScriptExecutor> executor)
 {
-  return objc_getAssociatedObject(executor, RCTJavaScriptExecutorID);
+  return executor ? objc_getAssociatedObject(executor, RCTJavaScriptExecutorID) : @0;
 }
