@@ -19,6 +19,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
@@ -888,9 +889,13 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
 
   // Execute the previously queued UI blocks
   dispatch_async(dispatch_get_main_queue(), ^{
+    RCTProfileBeginEvent();
     for (dispatch_block_t block in previousPendingUIBlocks) {
       block();
     }
+    RCTProfileEndEvent(@"UIManager flushUIBlocks", @"objc_call", @{
+      @"count": @(previousPendingUIBlocks.count),
+    });
   });
 }
 

@@ -22,6 +22,7 @@
 #import "RCTJavaScriptLoader.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTSparseArray.h"
@@ -47,39 +48,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
  * to profile both
  */
 #define BATCHED_BRIDGE 1
-
-#ifdef DEBUG
-
-#define RCT_PROFILE_START() \
-_Pragma("clang diagnostic push") \
-_Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSTimeInterval __rct_profile_start = CACurrentMediaTime() \
-_Pragma("clang diagnostic pop")
-
-#define RCT_PROFILE_END(cat, args, profileName...) \
-do { \
-if (_profile) { \
-  [_profileLock lock]; \
-  [_profile addObject:@{ \
-    @"name": [@[profileName] componentsJoinedByString: @"_"], \
-    @"cat": @ #cat, \
-    @"ts": @((NSUInteger)((__rct_profile_start - _startingTime) * 1e6)), \
-    @"dur": @((NSUInteger)((CACurrentMediaTime() - __rct_profile_start) * 1e6)), \
-    @"ph": @"X", \
-    @"pid": @([[NSProcessInfo processInfo] processIdentifier]), \
-    @"tid": [[NSThread currentThread] description], \
-    @"args": args ?: [NSNull null], \
-  }]; \
-  [_profileLock unlock]; \
-} \
-} while(0)
-
-#else
-
-#define RCT_PROFILE_START(...)
-#define RCT_PROFILE_END(...)
-
-#endif
 
 #ifdef __LP64__
 typedef uint64_t RCTHeaderValue;
@@ -230,8 +198,6 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 
 @interface RCTBridge ()
 
-@property (nonatomic, copy, readonly) NSArray *profile;
-
 - (void)_invokeAndProcessModule:(NSString *)module
                          method:(NSString *)method
                       arguments:(NSArray *)args
@@ -250,6 +216,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 
 @property (nonatomic, copy, readonly) NSString *moduleClassName;
 @property (nonatomic, copy, readonly) NSString *JSMethodName;
+@property (nonatomic, assign, readonly) SEL selector;
 
 @end
 
@@ -805,10 +772,6 @@ static NSDictionary *RCTLocalModulesConfig()
   NSMutableArray *_scheduledCalls;
   RCTSparseArray *_scheduledCallbacks;
   BOOL _loading;
-
-  NSUInteger _startingTime;
-  NSMutableArray *_profile;
-  NSLock *_profileLock;
 }
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
@@ -1111,25 +1074,28 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 - (void)enqueueApplicationScript:(NSString *)script url:(NSURL *)url onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
   RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
-  RCT_PROFILE_START();
-  NSNumber *context = RCTGetExecutorID(_javaScriptExecutor);
+  RCTProfileBeginEvent();
   [_javaScriptExecutor executeApplicationScript:script sourceURL:url onComplete:^(NSError *scriptLoadError) {
-    RCT_PROFILE_END(js_call, scriptLoadError, @"initial_script");
+    RCTProfileEndEvent(@"ApplicationScript", @"js_call,init", scriptLoadError);
     if (scriptLoadError) {
       onComplete(scriptLoadError);
       return;
     }
 
-    RCT_PROFILE_START();
+    RCTProfileBeginEvent();
+    NSNumber *context = RCTGetExecutorID(_javaScriptExecutor);
     [_javaScriptExecutor executeJSCall:@"BatchedBridge"
                                 method:@"flushedQueue"
                              arguments:@[]
                                context:context
                               callback:^(id json, NSError *error) {
-                                RCT_PROFILE_END(js_call, error, @"initial_call", @"BatchedBridge.flushedQueue");
-                                RCT_PROFILE_START();
+                                RCTProfileEndEvent(@"FetchApplicationScriptCallbacks", @"js_call,init", @{
+                                  @"json": json ?: [NSNull null],
+                                  @"error": error ?: [NSNull null],
+                                });
+
                                 [self _handleBuffer:json context:context];
-                                RCT_PROFILE_END(objc_call, json, @"batched_js_calls");
+
                                 onComplete(error);
                               }];
   }];
@@ -1140,7 +1106,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
 #if BATCHED_BRIDGE
-  RCT_PROFILE_START();
+  RCTProfileBeginEvent();
 
   if ([module isEqualToString:@"RCTEventEmitter"]) {
     for (NSDictionary *call in _scheduledCalls) {
@@ -1163,7 +1129,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     [_scheduledCalls addObject:call];
   }
 
-  RCT_PROFILE_END(js_call, args, @"schedule", module, method);
+  RCTProfileEndEvent(@"enqueue_call", @"objc_call", call);
 }
 
 - (void)_actuallyInvokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
@@ -1171,15 +1137,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 #endif
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
 
-  NSString *moduleDotMethod = [NSString stringWithFormat:@"%@.%@", module, method];
-  RCT_PROFILE_START();
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
-    RCT_PROFILE_END(js_call, args, moduleDotMethod);
-
-    RCT_PROFILE_START();
     [self _handleBuffer:json context:context];
-    RCT_PROFILE_END(objc_call, json, @"batched_js_calls");
   };
 
   [_javaScriptExecutor executeJSCall:module
@@ -1271,21 +1231,22 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
   RCTModuleMethod *method = methods[methodID];
 
+  // Look up module
+  id module = self->_modulesByID[moduleID];
+  if (!module) {
+    RCTLogError(@"No module found for name '%@'", RCTModuleNamesByID[moduleID]);
+    return NO;
+  }
+
   __weak RCTBridge *weakSelf = self;
   dispatch_queue_t queue = _queuesByID[moduleID];
   dispatch_async(queue ?: dispatch_get_main_queue(), ^{
+    RCTProfileBeginEvent();
     __strong RCTBridge *strongSelf = weakSelf;
 
     if (!strongSelf.isValid) {
       // strongSelf has been invalidated since the dispatch_async call and this
       // invocation should not continue.
-      return;
-    }
-
-    // Look up module
-    id module = strongSelf->_modulesByID[moduleID];
-    if (!module) {
-      RCTLogError(@"No module found for name '%@'", RCTModuleNamesByID[moduleID]);
       return;
     }
 
@@ -1298,6 +1259,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
         @throw;
       }
     }
+
+    RCTProfileEndEvent(@"Invoke callback", @"objc_call", @{
+      @"module": method.moduleClassName,
+      @"method": method.JSMethodName,
+      @"selector": NSStringFromSelector(method.selector),
+    });
   });
 
   return YES;
@@ -1305,7 +1272,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)_update:(CADisplayLink *)displayLink
 {
-  RCT_PROFILE_START();
+  RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
+  RCTProfileBeginEvent();
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
   for (id<RCTFrameUpdateObserver> observer in _frameUpdateObservers) {
@@ -1316,7 +1284,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
   [self _runScheduledCalls];
 
-  RCT_PROFILE_END(display_link, nil, @"main_thread");
+  RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
 }
 
 - (void)_runScheduledCalls
@@ -1382,23 +1350,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     RCTLogError(@"To run the profiler you must be running from the dev server");
     return;
   }
-  _profileLock = [[NSLock alloc] init];
-  _startingTime = CACurrentMediaTime();
-
-  [_profileLock lock];
-  _profile = [[NSMutableArray alloc] init];
-  [_profileLock unlock];
+  RCTProfileInit();
 }
 
 - (void)stopProfiling
 {
-  [_profileLock lock];
-  NSArray *profile = _profile;
-  _profile = nil;
-  [_profileLock unlock];
-  _profileLock = nil;
-
-  NSString *log = RCTJSONStringify(profile, NULL);
+  NSString *log = RCTProfileEnd();
   NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", _bundleURL.scheme, _bundleURL.host, _bundleURL.port];
   NSURL *URL = [NSURL URLWithString:URLString];
   NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];

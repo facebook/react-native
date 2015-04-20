@@ -11,13 +11,12 @@
 
 #import "RCTBridge.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
 
 @interface RCTBridge (Profiling)
-
-@property (nonatomic, copy, readonly) NSArray *profile;
 
 - (void)startProfiling;
 - (void)stopProfiling;
@@ -94,7 +93,7 @@ RCT_EXPORT_MODULE()
   NSString *debugTitleChrome = _bridge.executorClass && _bridge.executorClass == NSClassFromString(@"RCTWebSocketExecutor") ? @"Disable Chrome Debugging" : @"Enable Chrome Debugging";
   NSString *debugTitleSafari = _bridge.executorClass && _bridge.executorClass == NSClassFromString(@"RCTWebViewExecutor") ? @"Disable Safari Debugging" : @"Enable Safari Debugging";
   NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
-  NSString *profilingTitle  = _bridge.profile ? @"Stop Profiling" : @"Start Profiling";
+  NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Profiling" : @"Start Profiling";
 
   UIActionSheet *actionSheet =
   [[UIActionSheet alloc] initWithTitle:@"React Native: Development"
@@ -148,7 +147,7 @@ RCT_EXPORT_MODULE()
   }
 
   _profilingEnabled = enabled;
-  if (_bridge.profile) {
+  if (RCTProfileIsProfiling()) {
     [_bridge stopProfiling];
   } else {
     [_bridge startProfiling];

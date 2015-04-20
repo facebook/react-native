@@ -98,6 +98,22 @@ void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
   [prefixStack removeLastObject];
 }
 
+NSString *RCTThreadName(NSThread *thread)
+{
+  NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
+  if (threadName.length == 0) {
+#if DEBUG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
+#pragma clang diagnostic pop
+#else
+    threadName = [NSString stringWithFormat:@"%p", thread];
+#endif
+  }
+  return threadName;
+}
+
 NSString *RCTFormatLog(
   NSDate *timestamp,
   NSThread *thread,
@@ -121,18 +137,7 @@ NSString *RCTFormatLog(
     [log appendFormat:@"[%s]", RCTLogLevels[level - 1]];
   }
   if (thread) {
-    NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
-    if (threadName.length == 0) {
-#if DEBUG
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
-#pragma clang diagnostic pop
-#else
-      threadName = [NSString stringWithFormat:@"%p", thread];
-#endif
-    }
-    [log appendFormat:@"[tid:%@]", threadName];
+    [log appendFormat:@"[tid:%@]", RCTThreadName(thread)];
   }
   if (fileName) {
     fileName = [fileName lastPathComponent];

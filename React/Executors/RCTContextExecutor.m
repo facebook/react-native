@@ -15,6 +15,7 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTUtils.h"
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -234,7 +235,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
   RCTAssert(onComplete != nil, @"onComplete block should not be nil");
   __weak RCTContextExecutor *weakSelf = self;
-  [self executeBlockOnJavaScriptQueue:^{
+  [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
     RCTContextExecutor *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.isValid || ![RCTGetExecutorID(strongSelf) isEqualToNumber:executorID]) {
       return;
@@ -275,7 +276,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     }
 
     onComplete(objcValue, nil);
-  }];
+  }), @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
 }
 
 - (void)executeApplicationScript:(NSString *)script
@@ -285,7 +286,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   RCTAssert(sourceURL != nil, @"url should not be nil");
 
   __weak RCTContextExecutor *weakSelf = self;
-  [self executeBlockOnJavaScriptQueue:^{
+  [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
     RCTContextExecutor *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.isValid) {
       return;
@@ -304,7 +305,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       }
       onComplete(error);
     }
-  }];
+  }), @"js_call", (@{ @"url": sourceURL }))];
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
@@ -327,7 +328,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 #endif
 
   __weak RCTContextExecutor *weakSelf = self;
-  [self executeBlockOnJavaScriptQueue:^{
+  [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
     RCTContextExecutor *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.isValid) {
       return;
@@ -354,7 +355,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     if (onComplete) {
       onComplete(nil);
     }
-  }];
+  }), @"js_call,json_call", (@{@"objectName": objectName}))];
 }
 
 @end
