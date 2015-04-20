@@ -136,6 +136,20 @@ var View = React.createClass({
      * (or one of its superviews).
      */
     removeClippedSubviews: PropTypes.bool,
+
+    /**
+     * Whether this view should render itself (and all of its children) into a
+     * single hardware texture on the GPU.
+     *
+     * On Android, this is useful for animations and interactions that only
+     * modify opacity, rotation, translation, and/or scale: in those cases, the
+     * view doesn't have to be redrawn and display lists don't need to be
+     * re-executed. The texture can just be re-used and re-composited with
+     * different parameters. The downside is that this can use up limited video
+     * memory, so this prop should be set back to false at the end of the
+     * interaction/animation.
+     */
+    renderToHardwareTextureAndroid: PropTypes.bool,
   },
 
   render: function() {
