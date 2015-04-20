@@ -138,7 +138,19 @@ If you want to pass error-like object to JavaScript, use `RCTMakeError` from [`R
 
 ## Implementing native module
 
-By default, native module methods will be called on the main thread, which is usually what you want for interacting with iOS APIs, as many are not safe to access from a background thread (check the Apple developer documentation for each API if you're unsure).
+The native module should not make any assumptions about what thread it is being called on. By default, the bridge invokes native module methods on a separate serial GCD queue, but this is an implementation detail and might change in future.  If the native module needs to call main-thread-only iOS API, it should schedule the operation on the main queue:
+
+```objective-c
+RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSenderBlock)callback)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Call iOS API on main thread
+    ...
+    // You can invoke callback from any thread/queue
+    callback(@[...]);
+  });
+}
+```
 
 For long-running operations, such as disk or network access, it is not a good idea to perform this work on the main thread as it can interupt animation or user interaction. For these methods, it is a good idea to use `dispatch_async` to schedule expensive work on a background queue:
 
@@ -154,16 +166,23 @@ RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSe
 }
 ```
 
-If all of the methods in your module should be run on a background thread, you can use the `-(dispatch_queue_t)methodQueue` of the `RCTBridgeModule` protocol to specify the queue that React Native should use to call your module methods, like this:
+If all of the methods in your module should be run on a particular queue, you can use the `-(dispatch_queue_t)methodQueue` of the `RCTBridgeModule` protocol to specify the queue that React Native should use to call your module methods, like this:
 
 ```objective-c
+// Call all module methods on the main queue
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
+// Call all module methods on a custom serial queue
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_queue_create("com.mydomain.FileQueue", DISPATCH_QUEUE_SERIAL);
 }
 ```
 
-The advantage of this approach is that there is no need to call `dispatch_async()` inside each and every exported method.
+This approach is cleaner, as there is no need to call `dispatch_async()` inside each and every exported method, but also more efficient, as the bridge can call your methods directly on the required queue instead of doing a double dispatch.
 
 ## Exporting constants
 
