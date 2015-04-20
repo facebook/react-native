@@ -16,7 +16,8 @@ var hasWarned = {};
 
 function getFlowTypeCheckMiddleware(options) {
   return function(req, res, next) {
-    if (options.skipflow) {
+    var isBundle = req.url.indexOf('.bundle') !== -1;
+    if (options.skipflow || !isBundle) {
       return next();
     }
     if (options.flowroot || options.projectRoots.length === 1) {
