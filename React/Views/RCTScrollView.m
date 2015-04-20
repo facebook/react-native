@@ -175,7 +175,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   scrollBounds.origin.y += self.contentInset.top;
 
   NSInteger i = 0;
-  for (UIView *subview in contentView.subviews) {
+  for (UIView *subview in contentView.reactSubviews) {
     CGRect rowFrame = [RCTCustomScrollView _calculateUntransformedFrame:subview];
     if (CGRectIntersectsRect(scrollBounds, rowFrame)) {
       firstIndexInView = i;
@@ -198,8 +198,8 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   NSInteger nextDockedIndex = (stickyHeaderii < _stickyHeaderIndices.count - 1) ?
     [_stickyHeaderIndices[stickyHeaderii + 1] integerValue] : -1;
 
-  UIView *currentHeader = contentView.subviews[currentlyDockedIndex];
-  UIView *previousHeader = previouslyDockedIndex >= 0 ? contentView.subviews[previouslyDockedIndex] : nil;
+  UIView *currentHeader = contentView.reactSubviews[currentlyDockedIndex];
+  UIView *previousHeader = previouslyDockedIndex >= 0 ? contentView.reactSubviews[previouslyDockedIndex] : nil;
   CGRect curFrame = [RCTCustomScrollView _calculateUntransformedFrame:currentHeader];
 
   if (previousHeader) {
@@ -210,7 +210,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
     previousHeader.transform = CGAffineTransformMakeTranslation(0, yOffset);
   }
 
-  UIView *nextHeader = nextDockedIndex >= 0 ? contentView.subviews[nextDockedIndex] : nil;
+  UIView *nextHeader = nextDockedIndex >= 0 ? contentView.reactSubviews[nextDockedIndex] : nil;
   CGRect nextFrame = [RCTCustomScrollView _calculateUntransformedFrame:nextHeader];
 
   if (curFrame.origin.y < scrollBounds.origin.y) {
