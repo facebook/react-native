@@ -136,7 +136,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (void)executeApplicationScript:(NSString *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  NSDictionary *message = @{@"method": NSStringFromSelector(_cmd), @"url": [URL absoluteString], @"inject": _injectedObjects};
+  NSDictionary *message = @{@"method": @"executeApplicationScript", @"url": [URL absoluteString], @"inject": _injectedObjects};
   [self sendMessage:message context:nil waitForReply:^(NSError *error, NSDictionary *reply) {
     onComplete(error);
   }];
@@ -146,7 +146,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 {
   RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
   NSDictionary *message = @{
-    @"method": NSStringFromSelector(_cmd),
+    @"method": @"executeJSCall",
     @"moduleName": name,
     @"moduleMethod": method,
     @"arguments": arguments
