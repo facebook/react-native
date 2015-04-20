@@ -47,9 +47,11 @@
 
 - (void)invalidate
 {
-  JSGlobalContextRelease(_ctx);
-  _ctx = NULL;
-  _self = nil;
+  if (self.isValid) {
+    JSGlobalContextRelease(_ctx);
+    _ctx = NULL;
+    _self = nil;
+  }
 }
 
 @end
@@ -216,10 +218,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (void)invalidate
 {
-  if (self.isValid) {
-    [_context performSelector:@selector(invalidate) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
-    _context = nil;
-  }
+  [_context performSelector:@selector(invalidate) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
 }
 
 - (void)dealloc
