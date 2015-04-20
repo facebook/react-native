@@ -140,6 +140,14 @@ describe('Packager', function() {
         expect(p.finalize.mock.calls[0]).toEqual([
           {runMainModule: true}
         ]);
+
+        expect(p.addAsset.mock.calls[0]).toEqual([
+          imgModule_DEPRECATED
+        ]);
+
+        expect(p.addAsset.mock.calls[1]).toEqual([
+          imgModule
+        ]);
       });
   });
 

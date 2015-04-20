@@ -100,9 +100,9 @@ Packager.prototype.kill = function() {
 };
 
 Packager.prototype.package = function(main, runModule, sourceMapUrl, isDev) {
-  var transformModule = this._transformModule.bind(this);
   var ppackage = new Package(sourceMapUrl);
 
+  var transformModule = this._transformModule.bind(this, ppackage);
   var findEventId = Activity.startEvent('find dependencies');
   var transformEventId;
 
@@ -140,16 +140,13 @@ Packager.prototype.getDependencies = function(main, isDev) {
   return this._resolver.getDependencies(main, { dev: isDev });
 };
 
-Packager.prototype._transformModule = function(module) {
+Packager.prototype._transformModule = function(ppackage, module) {
   var transform;
 
   if (module.isAsset_DEPRECATED) {
-    transform = generateAssetModule_DEPRECATED(module);
+    transform = this.generateAssetModule_DEPRECATED(ppackage, module);
   } else if (module.isAsset) {
-    transform = generateAssetModule(
-      module,
-      getPathRelativeToRoot(this._projectRoots, module.path)
-    );
+    transform = this.generateAssetModule(ppackage, module);
   } else {
     transform = this._transformer.loadFileAndTransform(
       path.resolve(module.path)
@@ -166,17 +163,11 @@ Packager.prototype._transformModule = function(module) {
   });
 };
 
-
-function verifyRootExists(root) {
-  // Verify that the root exists.
-  assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
-}
-
 Packager.prototype.getGraphDebugInfo = function() {
   return this._resolver.getDebugInfo();
 };
 
-function generateAssetModule_DEPRECATED(module) {
+Packager.prototype.generateAssetModule_DEPRECATED = function(ppackage, module) {
   return sizeOf(module.path).then(function(dimensions) {
     var img = {
       isStatic: true,
@@ -187,6 +178,7 @@ function generateAssetModule_DEPRECATED(module) {
       deprecated: true,
     };
 
+    ppackage.addAsset(img);
 
     var code = 'module.exports = ' + JSON.stringify(img) + ';';
 
@@ -196,9 +188,11 @@ function generateAssetModule_DEPRECATED(module) {
       sourcePath: module.path,
     };
   });
-}
+};
 
-function generateAssetModule(module, relPath) {
+Packager.prototype.generateAssetModule = function(ppackage, module) {
+  var relPath = getPathRelativeToRoot(this._projectRoots, module.path);
+
   return sizeOf(module.path).then(function(dimensions) {
     var img = {
       isStatic: true,
@@ -207,6 +201,8 @@ function generateAssetModule(module, relPath) {
       width: dimensions.width / module.resolution,
       height: dimensions.height / module.resolution,
     };
+
+    ppackage.addAsset(img);
 
     var code = 'module.exports = ' + JSON.stringify(img) + ';';
 
@@ -229,6 +225,11 @@ function getPathRelativeToRoot(roots, absPath) {
   throw new Error(
     'Expected root module to be relative to one of the project roots'
   );
+}
+
+function verifyRootExists(root) {
+  // Verify that the root exists.
+  assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
 }
 
 module.exports = Packager;

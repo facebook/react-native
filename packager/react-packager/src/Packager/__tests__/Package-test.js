@@ -76,6 +76,18 @@ describe('Package', function() {
       expect(s).toEqual(genSourceMap(p._modules));
     });
   });
+
+  describe('getAssets()', function() {
+    it('should save and return asset objects', function() {
+      var p = new Package('test_url');
+      var asset1 = {};
+      var asset2 = {};
+      p.addAsset(asset1);
+      p.addAsset(asset2);
+      p.finalize();
+      expect(p.getAssets()).toEqual([asset1, asset2]);
+    });
+  });
 });
 
  function genSourceMap(modules) {
