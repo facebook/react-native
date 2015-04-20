@@ -234,12 +234,13 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 
 - (void)_invokeAndProcessModule:(NSString *)module
                          method:(NSString *)method
-                      arguments:(NSArray *)args;
+                      arguments:(NSArray *)args
+                        context:(NSNumber *)context;
 
 - (void)_actuallyInvokeAndProcessModule:(NSString *)module
                                  method:(NSString *)method
-                              arguments:(NSArray *)args;
-
+                              arguments:(NSArray *)args
+                                context:(NSNumber *)context;
 @end
 
 /**
@@ -338,7 +339,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
     NSMutableArray *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
 
 #define RCT_ARG_BLOCK(_logic) \
-  [argumentBlocks addObject:^(RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) { \
+  [argumentBlocks addObject:^(RCTBridge *bridge, NSNumber *context, NSInvocation *invocation, NSUInteger index, id json) { \
     _logic \
     [invocation setArgument:&value atIndex:index]; \
   }]; \
@@ -355,7 +356,8 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
         __autoreleasing id value = (json ? ^(NSArray *args) {
           [bridge _invokeAndProcessModule:@"BatchedBridge"
                                    method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, args]];
+                                arguments:@[json, args]
+                                  context:context];
         } : ^(NSArray *unused) {});
       )
     };
@@ -477,6 +479,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 - (void)invokeWithBridge:(RCTBridge *)bridge
                   module:(id)module
                arguments:(NSArray *)arguments
+                 context:(NSNumber *)context
 {
 
 #if DEBUG
@@ -503,8 +506,8 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
   NSUInteger index = 0;
   for (id json in arguments) {
     id arg = (json == [NSNull null]) ? nil : json;
-    void (^block)(RCTBridge *, NSInvocation *, NSUInteger, id) = _argumentBlocks[index];
-    block(bridge, invocation, index + 2, arg);
+    void (^block)(RCTBridge *, NSNumber *, NSInvocation *, NSUInteger, id) = _argumentBlocks[index];
+    block(bridge, context, invocation, index + 2, arg);
     index++;
   }
 
@@ -653,7 +656,6 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
   return moduleConfig;
 }
 
-
 /**
  * As above, but for local modules/methods, which represent JS classes
  * and methods that will be called by the native code via the bridge.
@@ -801,7 +803,7 @@ static NSDictionary *RCTLocalModulesConfig()
   RCTDisplayLink *_displayLink;
   NSMutableSet *_frameUpdateObservers;
   NSMutableArray *_scheduledCalls;
-  NSMutableArray *_scheduledCallbacks;
+  RCTSparseArray *_scheduledCallbacks;
   BOOL _loading;
 
   NSUInteger _startingTime;
@@ -829,13 +831,13 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 - (void)setUp
 {
   Class executorClass = _executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class];
-  _javaScriptExecutor = [[executorClass alloc] init];
+  _javaScriptExecutor = RCTCreateExecutor(executorClass);
   _latestJSExecutor = _javaScriptExecutor;
   _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
   _displayLink = [[RCTDisplayLink alloc] initWithBridge:self];
   _frameUpdateObservers = [[NSMutableSet alloc] init];
   _scheduledCalls = [[NSMutableArray alloc] init];
-  _scheduledCallbacks = [[NSMutableArray alloc] init];
+  _scheduledCallbacks = [[RCTSparseArray alloc] init];
 
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
@@ -991,7 +993,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 }
 
-
 - (NSDictionary *)modules
 {
   RCTAssert(_modulesByName != nil, @"Bridge modules have not yet been initialized. "
@@ -1072,7 +1073,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   if (!_loading) {
     [self _invokeAndProcessModule:@"BatchedBridge"
                            method:@"callFunctionReturnFlushedQueue"
-                        arguments:@[moduleID, methodID, args ?: @[]]];
+                        arguments:@[moduleID, methodID, args ?: @[]]
+                          context:RCTGetExecutorID(_javaScriptExecutor)];
   }
 }
 
@@ -1093,13 +1095,15 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 #if BATCHED_BRIDGE
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"callFunctionReturnFlushedQueue"
-                                arguments:@[moduleID, methodID, @[@[timer]]]];
+                                arguments:@[moduleID, methodID, @[@[timer]]]
+                                  context:RCTGetExecutorID(_javaScriptExecutor)];
 
 #else
 
     [self _invokeAndProcessModule:@"BatchedBridge"
                            method:@"callFunctionReturnFlushedQueue"
-                        arguments:@[moduleID, methodID, @[@[timer]]]];
+                        arguments:@[moduleID, methodID, @[@[timer]]]
+                          context:RCTGetExecutorID(_javaScriptExecutor)];
 #endif
   }
 }
@@ -1108,6 +1112,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 {
   RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
   RCT_PROFILE_START();
+  NSNumber *context = RCTGetExecutorID(_javaScriptExecutor);
   [_javaScriptExecutor executeApplicationScript:script sourceURL:url onComplete:^(NSError *scriptLoadError) {
     RCT_PROFILE_END(js_call, scriptLoadError, @"initial_script");
     if (scriptLoadError) {
@@ -1119,10 +1124,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     [_javaScriptExecutor executeJSCall:@"BatchedBridge"
                                 method:@"flushedQueue"
                              arguments:@[]
+                               context:context
                               callback:^(id json, NSError *error) {
                                 RCT_PROFILE_END(js_call, error, @"initial_call", @"BatchedBridge.flushedQueue");
                                 RCT_PROFILE_START();
-                                [self _handleBuffer:json];
+                                [self _handleBuffer:json context:context];
                                 RCT_PROFILE_END(objc_call, json, @"batched_js_calls");
                                 onComplete(error);
                               }];
@@ -1131,7 +1137,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 #pragma mark - Payload Generation
 
-- (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
+- (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
 #if BATCHED_BRIDGE
   RCT_PROFILE_START();
@@ -1148,10 +1154,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     @"module": module,
     @"method": method,
     @"args": args,
+    @"context": context ?: @0,
   };
 
   if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
-    [_scheduledCallbacks addObject:call];
+    _scheduledCallbacks[args[0]] = call;
   } else {
     [_scheduledCalls addObject:call];
   }
@@ -1159,7 +1166,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   RCT_PROFILE_END(js_call, args, @"schedule", module, method);
 }
 
-- (void)_actuallyInvokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
+- (void)_actuallyInvokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
 #endif
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
@@ -1171,19 +1178,20 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     RCT_PROFILE_END(js_call, args, moduleDotMethod);
 
     RCT_PROFILE_START();
-    [self _handleBuffer:json];
+    [self _handleBuffer:json context:context];
     RCT_PROFILE_END(objc_call, json, @"batched_js_calls");
   };
 
   [_javaScriptExecutor executeJSCall:module
                               method:method
                            arguments:args
+                             context:context
                             callback:processResponse];
 }
 
 #pragma mark - Payload Processing
 
-- (void)_handleBuffer:(id)buffer
+- (void)_handleBuffer:(id)buffer context:(NSNumber *)context
 {
   if (buffer == nil || buffer == (id)kCFNull) {
     return;
@@ -1228,7 +1236,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       [self _handleRequestNumber:i
                         moduleID:[moduleIDs[i] integerValue]
                         methodID:[methodIDs[i] integerValue]
-                          params:paramsArrays[i]];
+                          params:paramsArrays[i]
+                         context:context];
     }
   }
 
@@ -1247,6 +1256,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                     moduleID:(NSUInteger)moduleID
                     methodID:(NSUInteger)methodID
                       params:(NSArray *)params
+                     context:(NSNumber *)context
 {
   if (![params isKindOfClass:[NSArray class]]) {
     RCTLogError(@"Invalid module/method/params tuple for request #%zd", i);
@@ -1280,7 +1290,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }
 
     @try {
-      [method invokeWithBridge:strongSelf module:module arguments:params];
+      [method invokeWithBridge:strongSelf module:module arguments:params context:context];
     }
     @catch (NSException *exception) {
       RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
@@ -1313,13 +1323,18 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 {
 #if BATCHED_BRIDGE
 
-  NSArray *calls = [_scheduledCallbacks arrayByAddingObjectsFromArray:_scheduledCalls];
+  NSArray *calls = [_scheduledCallbacks.allObjects arrayByAddingObjectsFromArray:_scheduledCalls];
+  NSNumber *currentExecutorID = RCTGetExecutorID(_javaScriptExecutor);
+  calls = [calls filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSDictionary *call, NSDictionary *bindings) {
+    return [call[@"context"] isEqualToNumber:currentExecutorID];
+  }]];
   if (calls.count > 0) {
     _scheduledCalls = [[NSMutableArray alloc] init];
-    _scheduledCallbacks = [[NSMutableArray alloc] init];
+    _scheduledCallbacks = [[RCTSparseArray alloc] init];
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
-                                         method:@"processBatch"
-                                      arguments:@[calls]];
+                                   method:@"processBatch"
+                                arguments:@[calls]
+                                  context:RCTGetExecutorID(_javaScriptExecutor)];
   }
 
 #endif
@@ -1357,6 +1372,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   [_latestJSExecutor executeJSCall:@"RCTLog"
                             method:@"logIfNoNativeHook"
                          arguments:@[level, message]
+                           context:RCTGetExecutorID(_latestJSExecutor)
                           callback:^(id json, NSError *error) {}];
 }
 

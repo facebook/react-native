@@ -140,9 +140,9 @@
                                   sourceCodeModule.scriptURL = scriptURL;
                                   sourceCodeModule.scriptText = rawText;
 
-                                  [_bridge enqueueApplicationScript:rawText url:scriptURL onComplete:^(NSError *_error) {
+                                  [_bridge enqueueApplicationScript:rawText url:scriptURL onComplete:^(NSError *scriptError) {
                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                      onComplete(_error);
+                                      onComplete(scriptError);
                                     });
                                   }];
                                 }];

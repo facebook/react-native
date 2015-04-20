@@ -229,13 +229,14 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
+              context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"onComplete block should not be nil");
   __weak RCTContextExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:^{
     RCTContextExecutor *strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.isValid) {
+    if (!strongSelf || !strongSelf.isValid || ![RCTGetExecutorID(strongSelf) isEqualToNumber:executorID]) {
       return;
     }
     NSError *error;

@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <objc/runtime.h>
+
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import "RCTInvalidating.h"
@@ -27,6 +29,7 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
+              context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete;
 
 /**
@@ -40,3 +43,17 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete;
 @end
+
+static const char *RCTJavaScriptExecutorID = "RCTJavaScriptExecutorID";
+__used static id<RCTJavaScriptExecutor> RCTCreateExecutor(Class executorClass)
+{
+  static NSUInteger executorID = 0;
+  id<RCTJavaScriptExecutor> executor = [[executorClass alloc] init];
+  objc_setAssociatedObject(executor, RCTJavaScriptExecutorID, @(++executorID), OBJC_ASSOCIATION_RETAIN);
+  return executor;
+}
+
+__used static NSNumber *RCTGetExecutorID(id<RCTJavaScriptExecutor> executor)
+{
+  return objc_getAssociatedObject(executor, RCTJavaScriptExecutorID);
+}
