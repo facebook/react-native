@@ -141,7 +141,7 @@ If you want to pass error-like object to JavaScript, use `RCTMakeError` from [`R
 The native module should not make any assumptions about what thread it is being called on. By default, the bridge invokes native module methods on a separate serial GCD queue, but this is an implementation detail and might change in future.  If the native module needs to call main-thread-only iOS API, it should schedule the operation on the main queue:
 
 ```objective-c
-RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSenderBlock)callback)
+-RCT_EXPORT_METHOD(interactWithUI:(NSString *)param callback:(RCTResponseSenderBlock)callback)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     // Call iOS API on main thread
@@ -152,7 +152,7 @@ RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSe
 }
 ```
 
-For long-running operations, such as disk or network access, it is not a good idea to perform this work on the main thread as it can interupt animation or user interaction. For these methods, it is a good idea to use `dispatch_async` to schedule expensive work on a background queue:
+For long-running operations, such as synchronous disk or network access, it is not a good idea to perform this work on the main thread as it can interupt animations or user interaction. For these methods, it is a good idea to use `dispatch_async` to schedule expensive work on a background queue:
 
 ```objective-c
 RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSenderBlock)callback)
@@ -183,6 +183,10 @@ If all of the methods in your module should be run on a particular queue, you ca
 ```
 
 This approach is cleaner, as there is no need to call `dispatch_async()` inside each and every exported method, but also more efficient, as the bridge can call your methods directly on the required queue instead of doing a double dispatch.
+
+> **NOTE**: JavaScript method names
+>
+> The `methodQueue` method will be called once when the module is initialized, and then retained by the bridge, so there is no need to retain the queue yourself, unless you wish to make use of it within your module. However, if you wish to share the same queue between multiple modules then you will need to ensure that you retain and return the same queue instance for each of them; merely returning a queue of the same name for each won't work.
 
 ## Exporting constants
 
