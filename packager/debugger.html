@@ -47,7 +47,7 @@ var messageHandlers = {
     }
     loadScript(message.url, sendReply.bind(null, null));
   },
-  'executeJSCall:method:arguments:callback:': function(message, sendReply) {
+  'executeJSCall:method:arguments:context:callback:': function(message, sendReply) {
     var returnValue = [[], [], [], [], []];
     try {
       if (window && window.require) {
