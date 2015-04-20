@@ -30,6 +30,11 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
                   failureCallback:(RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)

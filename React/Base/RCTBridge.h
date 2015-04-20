@@ -62,9 +62,9 @@ extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 /**
  * This method is used to call functions in the JavaScript application context.
  * It is primarily intended for use by modules that require two-way communication
- * with the JavaScript code. Method should be regsitered using the
+ * with the JavaScript code. Method should be registered using the
  * RCT_IMPORT_METHOD macro below. Attempting to call a method that has not been
- * registered will result in an error.
+ * registered will result in an error. Safe to call from any thread.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 
@@ -112,17 +112,17 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
 @property (nonatomic, readonly, getter=isLoading) BOOL loading;
 
 /**
- * Reload the bundle and reset executor and modules.
+ * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
 - (void)reload;
 
 /**
- * Add a new observer that will be called on every screen refresh
+ * Add a new observer that will be called on every screen refresh.
  */
 - (void)addFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
 
 /**
- * Stop receiving screen refresh updates for the given observer
+ * Stop receiving screen refresh updates for the given observer.
  */
 - (void)removeFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
 

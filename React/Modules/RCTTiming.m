@@ -108,6 +108,11 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 - (BOOL)isValid
 {
   return _bridge != nil;

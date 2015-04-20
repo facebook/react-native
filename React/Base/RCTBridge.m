@@ -228,6 +228,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
   NSMethodSignature *_methodSignature;
   NSArray *_argumentBlocks;
   NSString *_methodName;
+  dispatch_block_t _methodQueue;
 }
 
 static Class _globalExecutorClass;
@@ -762,6 +763,7 @@ static NSDictionary *RCTLocalModulesConfig()
 {
   RCTSparseArray *_modulesByID;
   RCTSparseArray *_queuesByID;
+  dispatch_queue_t _methodQueue;
   NSDictionary *_modulesByName;
   id<RCTJavaScriptExecutor> _javaScriptExecutor;
   Class _executorClass;
@@ -787,7 +789,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     [self setUp];
     [self bindKeys];
   }
-
   return self;
 }
 
@@ -797,6 +798,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   _javaScriptExecutor = RCTCreateExecutor(executorClass);
   _latestJSExecutor = _javaScriptExecutor;
   _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
+  _methodQueue = dispatch_queue_create("com.facebook.React.BridgeMethodQueue", DISPATCH_QUEUE_SERIAL);
   _displayLink = [[RCTDisplayLink alloc] initWithBridge:self];
   _frameUpdateObservers = [[NSMutableSet alloc] init];
   _scheduledCalls = [[NSMutableArray alloc] init];
@@ -850,11 +852,14 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }
   }
 
-  // Get method queue
+  // Get method queues
   _queuesByID = [[RCTSparseArray alloc] init];
   [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, BOOL *stop) {
     if ([module respondsToSelector:@selector(methodQueue)]) {
-      _queuesByID[moduleID] = [module methodQueue] ?: dispatch_get_main_queue();
+      dispatch_queue_t queue = [module methodQueue];
+      if (queue) {
+        _queuesByID[moduleID] = queue;
+      }
     }
   }];
 
@@ -895,11 +900,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       } else {
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                             object:self];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(reload)
-                                                     name:RCTReloadNotification
-                                                   object:nil];
       }
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(reload)
@@ -1205,7 +1205,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, BOOL *stop) {
     if ([module respondsToSelector:@selector(batchDidComplete)]) {
       dispatch_queue_t queue = _queuesByID[moduleID];
-      dispatch_async(queue ?: dispatch_get_main_queue(), ^{
+      dispatch_async(queue ?: _methodQueue, ^{
         [module batchDidComplete];
       });
     }
@@ -1240,7 +1240,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
   __weak RCTBridge *weakSelf = self;
   dispatch_queue_t queue = _queuesByID[moduleID];
-  dispatch_async(queue ?: dispatch_get_main_queue(), ^{
+  dispatch_async(queue ?: _methodQueue, ^{
     RCTProfileBeginEvent();
     __strong RCTBridge *strongSelf = weakSelf;
 
@@ -1320,13 +1320,15 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)reload
 {
-  if (!_loading) {
-    // If the bridge has not loaded yet, the context will be already invalid at
-    // the time the javascript gets executed.
-    // It will crash the javascript, and even the next `load` won't render.
-    [self invalidate];
-    [self setUp];
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!_loading) {
+      // If the bridge has not loaded yet, the context will be already invalid at
+      // the time the javascript gets executed.
+      // It will crash the javascript, and even the next `load` won't render.
+      [self invalidate];
+      [self setUp];
+    }
+  });
 }
 
 + (void)logMessage:(NSString *)message level:(NSString *)level

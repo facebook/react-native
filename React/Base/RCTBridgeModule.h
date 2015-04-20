@@ -91,18 +91,32 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
  * The queue that will be used to call all exported methods. If omitted, this
- * will default the main queue, which is recommended for any methods that
- * interact with UIKit. If your methods perform heavy work such as filesystem
- * or network access, you should return a custom serial queue. Example:
+ * will call on the default background queue, which is avoids blocking the main
+ * thread.
+ *
+ * If the methods in your module need to interact with UIKit methods, they will
+ * probably need to call those on the main thread, as most of UIKit is main-
+ * thread-only. You can tell React Native to call your module methods on the
+ * main thread by returning a reference to the main queue, like this:
+ *
+ * - (dispatch_queue_t)methodQueue
+ * {
+ *   return dispatch_get_main_queue();
+ * }
+ *
+ * If your methods perform heavy work such as synchronous filesystem or network
+ * access, you probably don't want to block the default background queue, as
+ * this will stall other methods. Instead, you should return a custom serial
+ * queue, like this:
  *
  * - (dispatch_queue_t)methodQueue
  * {
  *   return dispatch_queue_create("com.mydomain.FileQueue", DISPATCH_QUEUE_SERIAL);
  * }
  *
- * Alternatively, if only some methods on the module should be executed on a
- * background queue you can leave this method unimplemented, and simply
- * dispatch_async() within the method itself.
+ * Alternatively, if only some methods of the module should be executed on a
+ * particular queue you can leave this method unimplemented, and simply
+ * dispatch_async() to the required queue within the method itself.
  */
 - (dispatch_queue_t)methodQueue;
 

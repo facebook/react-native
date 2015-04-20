@@ -35,6 +35,11 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 /**
  * @param {NSDictionary} args Dictionary of the form
  *

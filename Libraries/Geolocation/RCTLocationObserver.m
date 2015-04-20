@@ -128,6 +128,11 @@ RCT_EXPORT_MODULE()
   _locationManager.delegate = nil;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 #pragma mark - Private API
 
 - (void)beginLocationUpdates
