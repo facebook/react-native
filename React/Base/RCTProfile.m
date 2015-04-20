@@ -16,6 +16,8 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+#if DEBUG
+
 #pragma mark - Prototypes
 
 NSNumber *RCTProfileTimestamp(NSTimeInterval);
@@ -147,3 +149,5 @@ void RCTProfileImmediateEvent(NSString *name, NSTimeInterval timestamp, NSString
     @"args": RCTProfileGetMemoryUsage(),
   );
 }
+
+#endif
