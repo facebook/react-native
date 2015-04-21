@@ -18,8 +18,17 @@ export REACT_PACKAGER_LOG="$TEMP/server.log"
 MARKER=$(mktemp $ROOT/Examples/SampleApp/XXXXXXXX)
 
 function cleanup {
+  EXIT_CODE=$?
   set +e
-  [ -f $REACT_PACKAGER_LOG ] && cat $REACT_PACKAGER_LOG
+
+  if [ $EXIT_CODE -ne 0 ];
+  then
+    WATCHMAN_LOGS=/usr/local/Cellar/watchman/3.1/var/run/watchman/$USER.log
+    [ -f $WATCHMAN_LOGS ] && cat $WATCHMAN_LOGS
+
+    [ -f $REACT_PACKAGER_LOG ] && cat $REACT_PACKAGER_LOG
+  fi
+
   rm $MARKER
   [ $SINOPIA_PID ] && kill -9 $SINOPIA_PID
   [ -f ~/.npmrc.bak ] && mv ~/.npmrc.bak ~/.npmrc
