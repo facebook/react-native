@@ -133,9 +133,11 @@ RCT_EXTERN BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
 RCT_EXTERN BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 
 /**
- * Underlying implementation of RCT_ENUM_CONVERTER macro. Ignore this.
+ * Underlying implementations of RCT_XXX_CONVERTER macros. Ignore these.
  */
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
+RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
+RCT_EXTERN void RCTLogConvertError(id, const char *);
 
 /**
  * This macro is used for creating simple converter functions that just call
@@ -150,18 +152,19 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
 #define RCT_CUSTOM_CONVERTER(type, name, code) \
 + (type)name:(id)json                          \
 {                                              \
-  if (json == [NSNull null]) {                 \
-    json = nil;                                \
-  }                                            \
-  @try {                                       \
+  json = (json == (id)kCFNull) ? nil : json;   \
+  if (!RCT_DEBUG) {                            \
     return code;                               \
+  } else {                                     \
+    @try {                                     \
+      return code;                             \
+    }                                          \
+    @catch (__unused NSException *e) {         \
+      RCTLogConvertError(json, #type);         \
+      json = nil;                              \
+      return code;                             \
+    }                                          \
   }                                            \
-  @catch (__unused NSException *e) {           \
-    RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
-    json, [json classForCoder], #type); \
-    json = nil; \
-    return code; \
-  } \
 }
 
 /**
@@ -190,15 +193,8 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
 /**
  * This macro is used for creating converter functions for typed arrays.
  */
-#define RCT_ARRAY_CONVERTER(type)                         \
-+ (type##Array *)type##Array:(id)json                     \
-{                                                         \
-  NSMutableArray *values = [[NSMutableArray alloc] init]; \
-  for (id jsonValue in [self NSArray:json]) {             \
-    id value = [self type:jsonValue];                     \
-    if (value) {                                          \
-      [values addObject:value];                           \
-    }                                                     \
-  }                                                       \
-  return values;                                          \
+#define RCT_ARRAY_CONVERTER(type)                      \
++ (NSArray *)type##Array:(id)json                      \
+{                                                      \
+  return RCTConvertArrayValue(@selector(type:), json); \
 }

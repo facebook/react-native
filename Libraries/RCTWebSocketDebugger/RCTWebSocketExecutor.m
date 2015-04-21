@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
+
 #import "RCTWebSocketExecutor.h"
 
 #import "RCTLog.h"
@@ -189,3 +193,5 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 }
 
 @end
+
+#endif

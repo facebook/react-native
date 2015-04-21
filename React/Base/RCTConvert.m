@@ -11,7 +11,15 @@
 
 #import <objc/message.h>
 
+#import "RCTDefines.h"
+
 @implementation RCTConvert
+
+void RCTLogConvertError(id json, const char *type)
+{
+  RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to %s",
+              json, [json classForCoder], type);
+}
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
 RCT_NUMBER_CONVERTER(double, doubleValue)
@@ -228,57 +236,52 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
 }), UIBarStyleDefault, integerValue)
 
 // TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
+static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDictionary *aliases, CGFloat *result, id json)
+{
+  NSUInteger count = fields.count;
+  if ([json isKindOfClass:[NSArray class]]) {
+    if (RCT_DEBUG && [json count] != count) {
+      RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json);
+    } else {
+      for (NSUInteger i = 0; i < count; i++) {
+        result[i] = [RCTConvert CGFloat:json[i]];
+      }
+    }
+  } else if ([json isKindOfClass:[NSDictionary class]]) {
+    if (aliases.count) {
+      json = [json mutableCopy];
+      for (NSString *alias in aliases) {
+        NSString *key = aliases[alias];
+        NSNumber *number = json[alias];
+        if (number) {
+          RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, type, key);
+          ((NSMutableDictionary *)json)[key] = number;
+        }
+      }
+    }
+    for (NSUInteger i = 0; i < count; i++) {
+      result[i] = [RCTConvert CGFloat:json[fields[i]]];
+    }
+  } else if (RCT_DEBUG && json && json != (id)kCFNull) {
+    RCTLogConvertError(json, type);
+  }
+}
+
 /**
  * This macro is used for creating converter functions for structs that consist
  * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
  */
-#define RCT_CGSTRUCT_CONVERTER(type, values, _aliases)   \
-+ (type)type:(id)json                                    \
-{                                                        \
-  @try {                                                 \
-    static NSArray *fields;                              \
-    static NSUInteger count;                             \
-    static dispatch_once_t onceToken;                    \
-    dispatch_once(&onceToken, ^{                         \
-      fields = values;                                   \
-      count = [fields count];                            \
-    });                                                  \
-    type result;                                         \
-    if ([json isKindOfClass:[NSArray class]]) {          \
-      if ([json count] != count) {                       \
-        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
-      } else {                                           \
-        for (NSUInteger i = 0; i < count; i++) {         \
-          ((CGFloat *)&result)[i] = [self CGFloat:json[i]]; \
-        }                                                \
-      }                                                  \
-    } else if ([json isKindOfClass:[NSDictionary class]]) { \
-      NSDictionary *aliases = _aliases;                  \
-      if (aliases.count) {                               \
-        json = [json mutableCopy];                       \
-        for (NSString *alias in aliases) {               \
-          NSString *key = aliases[alias];                \
-          NSNumber *number = json[alias];                \
-          if (number) {                                  \
-            RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, #type, key); \
-            ((NSMutableDictionary *)json)[key] = number; \
-          }                                              \
-        }                                                \
-      }                                                  \
-      for (NSUInteger i = 0; i < count; i++) {           \
-        ((CGFloat *)&result)[i] = [self CGFloat:json[fields[i]]]; \
-      }                                                  \
-    } else if (json && json != [NSNull null]) {          \
-      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", \
-                  #type, [json classForCoder], json);    \
-    }                                                    \
-    return result;                                       \
-  }                                                      \
-  @catch (__unused NSException *e) {                     \
-    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
-    type result; \
-    return result; \
-  } \
+#define RCT_CGSTRUCT_CONVERTER(type, values, aliases) \
++ (type)type:(id)json                                 \
+{                                                     \
+  static NSArray *fields;                             \
+  static dispatch_once_t onceToken;                   \
+  dispatch_once(&onceToken, ^{                        \
+    fields = values;                                  \
+  });                                                 \
+  type result;                                        \
+  RCTConvertCGStructValue(#type, fields, aliases, (CGFloat *)&result, json); \
+  return result;                                      \
 }
 
 RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
@@ -525,9 +528,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   } else if ([json isKindOfClass:[NSArray class]]) {
 
     if ([json count] < 3 || [json count] > 4) {
-
       RCTLogError(@"Expected array with count 3 or 4, but count is %zd: %@", [json count], json);
-
     } else {
 
       // Color array
@@ -545,10 +546,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
                              blue:[self double:json[@"b"]]
                             alpha:[self double:json[@"a"] ?: @1]];
 
-  } else if (json && ![json isKindOfClass:[NSNull class]]) {
-
-    RCTLogError(@"Expected NSArray, NSDictionary or NSString for UIColor, received %@: %@",
-                [json classForCoder], json);
+  }
+  else if (RCT_DEBUG && json && json != (id)kCFNull) {
+    RCTLogConvertError(json, "a color");
   }
 
   // Default color
@@ -573,8 +573,12 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   // TODO: we might as well cache the result of these checks (and possibly the
   // image itself) so as to reduce overhead on subsequent checks of the same input
 
-  if (![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSString for UIImage, received %@: %@", [json classForCoder], json);
+  if (!json || json == (id)kCFNull) {
+    return nil;
+  }
+
+  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]]) {
+    RCTLogConvertError(json, "an image");
     return nil;
   }
 
@@ -759,6 +763,29 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   }
 
   return bestMatch;
+}
+
+NSArray *RCTConvertArrayValue(SEL type, id json)
+{
+  __block BOOL copy = NO;
+  __block NSArray *values = json = [RCTConvert NSArray:json];
+  [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, BOOL *stop) {
+    id value = ((id(*)(Class, SEL, id))objc_msgSend)([RCTConvert class], type, jsonValue);
+    if (copy) {
+      if (value) {
+        [(NSMutableArray *)values addObject:value];
+      }
+    } else if (value != jsonValue) {
+      // Converted value is different, so we'll need to copy the array
+      values = [[NSMutableArray alloc] initWithCapacity:values.count];
+      for (NSInteger i = 0; i < idx; i++) {
+        [(NSMutableArray *)values addObject:json[i]];
+      }
+      [(NSMutableArray *)values addObject:value];
+      copy = YES;
+    }
+  }];
+  return values;
 }
 
 RCT_ARRAY_CONVERTER(NSString)

@@ -44,10 +44,11 @@ RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
     return;
   }
 
-  if (RCT_DEBUG) {
-    [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
-    return;
-  }
+#if RCT_DEBUG // Red box is only available in debug mode
+
+  [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
+
+#else
 
   static NSUInteger reloadRetries = 0;
   const NSUInteger maxMessageLength = 75;
@@ -76,14 +77,21 @@ RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
     NSString *name = [@"Unhandled JS Exception: " stringByAppendingString:sanitizedMessage];
     [NSException raise:name format:@"Message: %@, stack: %@", message, prettyStack];
   }
+
+#endif
+
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
                   stack:(NSArray *)stack)
 {
-  if (RCT_DEBUG) {
+
+#if RCT_DEBUG // Red box is only available in debug mode
+
     [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
-  }
+
+#endif
+
 }
 
 @end

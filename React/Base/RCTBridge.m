@@ -314,7 +314,8 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 
     void (^addBlockArgument)(void) = ^{
       RCT_ARG_BLOCK(
-        if (json && ![json isKindOfClass:[NSNumber class]]) {
+
+        if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
           RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
                       json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
           return;
@@ -391,7 +392,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 #define RCT_CASE(_value, _class, _logic) \
   case _value: {                   \
     RCT_ARG_BLOCK( \
-      if (json && ![json isKindOfClass:[_class class]]) { \
+      if (RCT_DEBUG && json && ![json isKindOfClass:[_class class]]) { \
         RCTLogError(@"Argument %tu (%@) of %@.%@ should be of type %@", index, \
           json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, [_class class]); \
         return; \
@@ -407,7 +408,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 #define RCT_SIMPLE_CASE(_value, _type, _selector) \
   case _value: {                              \
     RCT_ARG_BLOCK( \
-      if (json && ![json respondsToSelector:@selector(_selector)]) { \
+      if (RCT_DEBUG && json && ![json respondsToSelector:@selector(_selector)]) { \
         RCTLogError(@"Argument %tu (%@) of %@.%@ does not respond to selector: %@", \
           index, json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName, @#_selector); \
         return; \
@@ -888,6 +889,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     [loader loadBundleAtURL:_bundleURL onComplete:^(NSError *error) {
       _loading = NO;
       if (error != nil) {
+
+#if RCT_DEBUG // Red box is only available in debug mode
+
         NSArray *stack = [[error userInfo] objectForKey:@"stack"];
         if (stack) {
           [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
@@ -896,7 +900,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
           [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
                                            withDetails:[error localizedFailureReason]];
         }
+
+#endif
+
       } else {
+
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                             object:self];
       }
@@ -936,6 +944,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                                    strongSelf.executorClass = Nil;
                                    [strongSelf reload];
                                  }];
+
+#if RCT_DEV // Debug executors are only available in dev mode
+
   // reload in debug mode
   [commands registerKeyCommandWithInput:@"d"
                           modifierFlags:UIKeyModifierCommand
@@ -951,6 +962,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                                    }
                                    [strongSelf reload];
                                  }];
+#endif
 #endif
 
 }
@@ -1156,14 +1168,18 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     return;
   }
 
+  NSArray *requestsArray = [RCTConvert NSArray:buffer];
+
+#if RCT_DEBUG
+
   if (![buffer isKindOfClass:[NSArray class]]) {
     RCTLogError(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
     return;
   }
 
-  NSArray *requestsArray = (NSArray *)buffer;
   NSUInteger bufferRowCount = [requestsArray count];
   NSUInteger expectedFieldsCount = RCTBridgeFieldResponseReturnValues + 1;
+
   if (bufferRowCount != expectedFieldsCount) {
     RCTLogError(@"Must pass all fields to buffer - expected %zd, saw %zd", expectedFieldsCount, bufferRowCount);
     return;
@@ -1177,13 +1193,15 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }
   }
 
+#endif
+
   NSArray *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
   NSArray *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
   NSArray *paramsArrays = requestsArray[RCTBridgeFieldParamss];
 
   NSUInteger numRequests = [moduleIDs count];
-  BOOL allSame = numRequests == [methodIDs count] && numRequests == [paramsArrays count];
-  if (!allSame) {
+
+  if (RCT_DEBUG && (numRequests != methodIDs.count || numRequests != paramsArrays.count)) {
     RCTLogError(@"Invalid data message - all must be length: %zd", numRequests);
     return;
   }
@@ -1217,22 +1235,25 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                       params:(NSArray *)params
                      context:(NSNumber *)context
 {
-  if (![params isKindOfClass:[NSArray class]]) {
+
+  if (RCT_DEBUG && ![params isKindOfClass:[NSArray class]]) {
     RCTLogError(@"Invalid module/method/params tuple for request #%zd", i);
     return NO;
   }
 
   // Look up method
   NSArray *methods = RCTExportedMethodsByModuleID()[moduleID];
-  if (methodID >= methods.count) {
+
+  if (RCT_DEBUG && methodID >= methods.count) {
     RCTLogError(@"Unknown methodID: %zd for module: %zd (%@)", methodID, moduleID, RCTModuleNamesByID[moduleID]);
     return NO;
   }
+
   RCTModuleMethod *method = methods[methodID];
 
   // Look up module
   id module = self->_modulesByID[moduleID];
-  if (!module) {
+  if (RCT_DEBUG && !module) {
     RCTLogError(@"No module found for name '%@'", RCTModuleNamesByID[moduleID]);
     return NO;
   }
@@ -1249,13 +1270,17 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       return;
     }
 
-    @try {
+    if (!RCT_DEBUG) {
       [method invokeWithBridge:strongSelf module:module arguments:params context:context];
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
-      if ([exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
-        @throw;
+    } else {
+      @try {
+        [method invokeWithBridge:strongSelf module:module arguments:params context:context];
+      }
+      @catch (NSException *exception) {
+        RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
+        if ([exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
+          @throw;
+        }
       }
     }
 

@@ -184,7 +184,7 @@ void _RCTLogFormat(
       level, fileName ? @(fileName) : nil, (lineNumber >= 0) ? @(lineNumber) : nil, message
     );
 
-    if (RCT_DEBUG) {
+#if RCT_DEBUG // Red box is only available in debug mode
 
       // Log to red box
       if (level >= RCTLOG_REDBOX_LEVEL) {
@@ -193,6 +193,8 @@ void _RCTLogFormat(
 
       // Log to JS executor
       [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
-    }
+
+#endif
+
   }
 }

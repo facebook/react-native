@@ -51,7 +51,7 @@ RCT_EXTERN NSString *RCTThreadName(NSThread *);
  * A method to generate a string from a collection of log data. To omit any
  * particular data from the log, just pass nil or zero for the argument.
  */
-NSString *RCTFormatLog(
+RCT_EXTERN NSString *RCTFormatLog(
   NSDate *timestamp,
   NSThread *thread,
   RCTLogLevel level,

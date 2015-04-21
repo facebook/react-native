@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
+
 #import "RCTWebViewExecutor.h"
 
 #import <objc/runtime.h>
@@ -188,9 +192,14 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
 {
-  RCTAssert(!_objectsToInject[objectName],
-            @"already injected object named %@", _objectsToInject[objectName]);
+  if (RCT_DEBUG) {
+    RCTAssert(!_objectsToInject[objectName],
+              @"already injected object named %@", _objectsToInject[objectName]);
+  }
   _objectsToInject[objectName] = script;
   onComplete(nil);
 }
+
 @end
+
+#endif

@@ -19,6 +19,8 @@
 
 #import <Availability.h>
 
+#pragma clang diagnostic ignored "-Wshadow"
+
 //NOTE: libicucore ins't actually needed for the socket to function
 //and by commenting this out, we avoid the need to import it into every app.
 

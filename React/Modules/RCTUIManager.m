@@ -222,6 +222,7 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
   return name;
 }
 
+// TODO: only send name once instead of a dictionary of name and type keyed by name
 static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewName)
 {
   NSMutableDictionary *nativeProps = [[NSMutableDictionary alloc] init];
@@ -234,8 +235,13 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
     SEL getInfo = method_getName(method);
     const char *selName = sel_getName(getInfo);
     if (strlen(selName) > prefixLength && strncmp(selName, prefix, prefixLength) == 0) {
-      NSDictionary *info = ((NSDictionary *(*)(id, SEL))method_getImplementation(method))(managerClass, getInfo);
-      nativeProps[info[@"name"]] = info;
+      NSString *name = @(selName);
+      NSRange nameRange = [name rangeOfString:@"_"];
+      if (nameRange.length) {
+        name = [name substringFromIndex:nameRange.location + 1];
+        NSString *type = ((NSString *(*)(id, SEL))method_getImplementation(method))(managerClass, getInfo);
+        nativeProps[name] = @{@"name": name, @"type": type};
+      }
     }
   }
   return @{

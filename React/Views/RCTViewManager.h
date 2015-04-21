@@ -130,11 +130,11 @@ RCT_CUSTOM_SHADOW_PROPERTY(name, type, RCTShadowView) {                        \
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
-+ (NSDictionary *)getPropConfigView_##name { return @{@"name": @#name, @"type": @#type}; } \
++ (NSString *)getPropConfigView_##name { return @#type; } \
 - (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 #define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
-+ (NSDictionary *)getPropConfigShadow_##name { return @{@"name": @#name, @"type": @#type}; } \
++ (NSString *)getPropConfigShadow_##name { return @#type; } \
 - (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 /**

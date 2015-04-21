@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEBUG // Red box is only available in debug mode
+
 #import "RCTRedBox.h"
 
 #import "RCTBridge.h"
@@ -282,14 +286,12 @@
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
 {
-  if (RCT_DEBUG) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (!_window) {
-        _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-      }
-      [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
-    });
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!_window) {
+      _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    }
+    [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
+  });
 }
 
 - (NSString *)currentErrorMessage
@@ -307,3 +309,5 @@
 }
 
 @end
+
+#endif
