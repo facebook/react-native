@@ -21,6 +21,8 @@ function getNameFromPath(filepath) {
   }
   if (filepath === 'LayoutPropTypes') {
     return 'Flexbox';
+  } else if (filepath == 'TabBarItemIOS') {
+    return 'TabBarIOS.Item';
   }
   return filepath;
 }
@@ -116,6 +118,7 @@ var components = [
   '../Libraries/Components/SliderIOS/SliderIOS.js',
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
+  '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
   '../Libraries/Components/TextInput/TextInput.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
