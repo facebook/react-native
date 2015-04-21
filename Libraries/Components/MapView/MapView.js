@@ -23,6 +23,12 @@ var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
 
 type Event = Object;
+type MapRegion = {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+};
 
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
