@@ -28,12 +28,12 @@ You can also pack all the JavaScript code within the app itself. This way you ca
 1. Open `iOS/AppDelegate.m`
 2. Follow the instructions for "OPTION 2":
   * Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
-  * Run given `curl` command in terminal from the root directory of your app
+  * Run the `react-native bundle` command in terminal from the root directory of your app
 
-Packager supports a couple of options:
+The bundle script supports a couple of flags:
 
-* `dev` (true by default) - sets the value of `__DEV__` variable. When `true` it turns on a bunch of useful development warnings. For production it is recommended to use `dev=false`.
-* `minify` (false by default) - whether or not to pipe the JS code through UglifyJS.
+* `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
+* `--minify` - pipe the JS code through UglifyJS.
 
 ## Troubleshooting
 
