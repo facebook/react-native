@@ -21,6 +21,7 @@ var declareOpts = require('../lib/declareOpts');
 var imageSize = require('image-size');
 
 var sizeOf = Promise.promisify(imageSize);
+var readFile = Promise.promisify(fs.readFile);
 
 var validateOpts = declareOpts({
   projectRoots: {
@@ -147,6 +148,8 @@ Packager.prototype._transformModule = function(ppackage, module) {
     transform = this.generateAssetModule_DEPRECATED(ppackage, module);
   } else if (module.isAsset) {
     transform = this.generateAssetModule(ppackage, module);
+  } else if (module.isJSON) {
+    transform = generateJSONModule(module);
   } else {
     transform = this._transformer.loadFileAndTransform(
       path.resolve(module.path)
@@ -205,6 +208,18 @@ Packager.prototype.generateAssetModule = function(ppackage, module) {
     ppackage.addAsset(img);
 
     var code = 'module.exports = ' + JSON.stringify(img) + ';';
+
+    return {
+      code: code,
+      sourceCode: code,
+      sourcePath: module.path,
+    };
+  });
+};
+
+function generateJSONModule(module) {
+  return readFile(module.path).then(function(data) {
+    var code = 'module.exports = ' + data.toString('utf8') + ';';
 
     return {
       code: code,

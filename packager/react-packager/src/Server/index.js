@@ -80,7 +80,7 @@ function Server(options) {
       dir: dir,
       globs: [
         '**/*.js',
-        '**/package.json',
+        '**/*.json',
       ].concat(assetGlobs),
     };
   });

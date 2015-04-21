@@ -101,6 +101,46 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should get json dependencies', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'package.json': JSON.stringify({
+            name: 'package'
+          }),
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./a.json")'
+          ].join('\n'),
+          'a.json': JSON.stringify({}),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher
+      });
+      return dgraph.load().then(function() {
+        expect(dgraph.getOrderedDependencies('/root/index.js'))
+          .toEqual([
+            {
+              id: 'index',
+              altId: 'package/index',
+              path: '/root/index.js',
+              dependencies: ['./a.json']
+            },
+            {
+              id: 'package/a.json',
+              isJSON: true,
+              path: '/root/a.json',
+              dependencies: []
+            },
+          ]);
+      });
+    });
+
     pit('should get dependencies with deprecated assets', function() {
       var root = '/root';
       fs.__setMockFilesystem({

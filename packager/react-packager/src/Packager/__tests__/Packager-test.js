@@ -43,6 +43,10 @@ describe('Packager', function() {
       };
     });
 
+    require('fs').readFile.mockImpl(function(file, callback) {
+      callback(null, '{"json":true}');
+    });
+
     var packager = new Packager({projectRoots: ['/root']});
     var modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
@@ -60,7 +64,13 @@ describe('Packager', function() {
         isAsset: true,
         resolution: 2,
         dependencies: []
-      }
+      },
+      {
+        id: 'package/file.json',
+        path: '/root/file.json',
+        isJSON: true,
+        dependencies: [],
+      },
     ];
 
     getDependencies.mockImpl(function() {
@@ -135,6 +145,12 @@ describe('Packager', function() {
             JSON.stringify(imgModule) +
             ';',
           '/root/img/new_image.png'
+        ]);
+
+        expect(p.addModule.mock.calls[4]).toEqual([
+          'lol module.exports = {"json":true}; lol',
+          'module.exports = {"json":true};',
+          '/root/file.json'
         ]);
 
         expect(p.finalize.mock.calls[0]).toEqual([

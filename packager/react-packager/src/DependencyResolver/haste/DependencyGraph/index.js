@@ -66,7 +66,7 @@ function DependecyGraph(options) {
   this._debugUpdateEvents = [];
 
   this._moduleExtPattern = new RegExp(
-    '\.(' + ['js'].concat(this._assetExts).join('|') + ')$'
+    '\.(' + ['js', 'json'].concat(this._assetExts).join('|') + ')$'
   );
 
   // Kick off the search process to precompute the dependency graph.
@@ -259,7 +259,7 @@ DependecyGraph.prototype.resolveDependency = function(
     }
 
     // JS modules can be required without extensios.
-    if (!this._isFileAsset(modulePath)) {
+    if (!this._isFileAsset(modulePath) && !modulePath.match(/\.json$/)) {
       modulePath = withExtJs(modulePath);
     }
 
@@ -426,6 +426,15 @@ DependecyGraph.prototype._processModule = function(modulePath) {
     moduleData.id = assetData.assetName;
     moduleData.resolution = assetData.resolution;
     moduleData.isAsset = true;
+    moduleData.dependencies = [];
+    module = new ModuleDescriptor(moduleData);
+    this._updateGraphWithModule(module);
+    return Promise.resolve(module);
+  }
+
+  if (extname(modulePath) === 'json') {
+    moduleData.id = this._lookupName(modulePath);
+    moduleData.isJSON = true;
     moduleData.dependencies = [];
     module = new ModuleDescriptor(moduleData);
     this._updateGraphWithModule(module);
