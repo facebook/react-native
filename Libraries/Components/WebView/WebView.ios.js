@@ -87,6 +87,8 @@ var WebView = React.createClass({
     html: PropTypes.string,
     renderError: PropTypes.func, // view to show if there's an error
     renderLoading: PropTypes.func, // loading indicator to show
+    bounces: PropTypes.bool,
+    scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     shouldInjectAJAXHandler: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -131,7 +133,7 @@ var WebView = React.createClass({
       );
     }
 
-    var webViewStyles = [styles.container, this.props.style];
+    var webViewStyles = [styles.container, styles.webView, this.props.style];
     if (this.state.viewState === WebViewState.LOADING ||
       this.state.viewState === WebViewState.ERROR) {
       // if we're in either LOADING or ERROR states, don't show the webView
@@ -145,6 +147,8 @@ var WebView = React.createClass({
         style={webViewStyles}
         url={this.props.url}
         html={this.props.html}
+        bounces={this.props.bounces}
+        scrollEnabled={this.props.scrollEnabled}
         shouldInjectAJAXHandler={this.props.shouldInjectAJAXHandler}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
@@ -213,6 +217,8 @@ var RCTWebView = createReactIOSNativeComponentClass({
   validAttributes: merge(ReactIOSViewAttributes.UIView, {
     url: true,
     html: true,
+    bounces: true,
+    scrollEnabled: true,
     contentInset: {diff: insetsDiffer},
     automaticallyAdjustContentInsets: true,
     shouldInjectAJAXHandler: true
@@ -250,6 +256,9 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  webView: {
+    backgroundColor: '#ffffff',
+  }
 });
 
 module.exports = WebView;
