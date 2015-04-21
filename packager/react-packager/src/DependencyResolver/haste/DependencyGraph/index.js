@@ -18,6 +18,7 @@ var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
 var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
+var extractAssetResolution = require('../../../lib/extractAssetResolution');
 
 var readFile = Promise.promisify(fs.readFile);
 var readDir = Promise.promisify(fs.readdir);
@@ -421,7 +422,7 @@ DependecyGraph.prototype._processModule = function(modulePath) {
   var module;
 
   if (this._assetExts.indexOf(extname(modulePath)) > -1) {
-    var assetData = extractResolutionPostfix(this._lookupName(modulePath));
+    var assetData = extractAssetResolution(this._lookupName(modulePath));
     moduleData.id = assetData.assetName;
     moduleData.resolution = assetData.resolution;
     moduleData.isAsset = true;
@@ -770,28 +771,6 @@ function assetName(file, ext) {
 
 function extname(name) {
   return path.extname(name).replace(/^\./, '');
-}
-
-function extractResolutionPostfix(filename) {
-  var ext = extname(filename);
-  var re = new RegExp('@([\\d\\.]+)x\\.' + ext + '$');
-
-  var match = filename.match(re);
-  var resolution;
-
-  if (!(match && match[1])) {
-    resolution = 1;
-  } else {
-    resolution = parseFloat(match[1], 10);
-    if (isNaN(resolution)) {
-      resolution = 1;
-    }
-  }
-
-  return {
-    resolution: resolution,
-    assetName: match ? filename.replace(re, '.' + ext) : filename,
-  };
 }
 
 function NotFoundError() {

@@ -14,6 +14,15 @@
 #import "RCTSourceCode.h"
 #import "RCTWebViewExecutor.h"
 
+@interface RCTBridge (RCTDevMenu)
+
+@property (nonatomic, copy, readonly) NSArray *profile;
+
+- (void)startProfiling;
+- (void)stopProfiling;
+
+@end
+
 @interface RCTDevMenu () <UIActionSheetDelegate>
 
 @end
@@ -37,11 +46,12 @@
   NSString *debugTitleChrome = _bridge.executorClass != Nil && _bridge.executorClass == NSClassFromString(@"RCTWebSocketExecutor") ? @"Disable Chrome Debugging" : @"Enable Chrome Debugging";
   NSString *debugTitleSafari = _bridge.executorClass == [RCTWebViewExecutor class] ? @"Disable Safari Debugging" : @"Enable Safari Debugging";
   NSString *liveReloadTitle = _liveReload ? @"Disable Live Reload" : @"Enable Live Reload";
+  NSString *profilingTitle  = _bridge.profile ? @"Stop Profiling" : @"Start Profiling";
   UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"React Native: Development"
                                                            delegate:self
                                                   cancelButtonTitle:@"Cancel"
                                              destructiveButtonTitle:nil
-                                                  otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, liveReloadTitle, nil];
+                                                  otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, liveReloadTitle, profilingTitle, nil];
   actionSheet.actionSheetStyle = UIBarStyleBlack;
   [actionSheet showInView:[[[[UIApplication sharedApplication] keyWindow] rootViewController] view]];
 }
@@ -61,6 +71,12 @@
   } else if (buttonIndex == 3) {
     _liveReload = !_liveReload;
     [self _pollAndReload];
+  } else if (buttonIndex == 4) {
+    if (_bridge.profile) {
+      [_bridge stopProfiling];
+    } else {
+      [_bridge startProfiling];
+    }
   }
 }
 

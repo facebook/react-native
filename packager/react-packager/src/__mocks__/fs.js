@@ -42,6 +42,11 @@ fs.readdir.mockImpl(function(filepath, callback) {
 });
 
 fs.readFile.mockImpl(function(filepath, encoding, callback) {
+  if (arguments.length === 2) {
+    callback = encoding;
+    encoding = null;
+  }
+
   try {
     var node = getToNode(filepath);
     // dir check

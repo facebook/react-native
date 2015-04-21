@@ -14,8 +14,11 @@ var declareOpts = require('../lib/declareOpts');
 var FileWatcher = require('../FileWatcher');
 var Packager = require('../Packager');
 var Activity = require('../Activity');
+var AssetServer = require('../AssetServer');
 var Promise = require('bluebird');
 var _ = require('underscore');
+var exec = require('child_process').exec;
+var fs = require('fs');
 
 module.exports = Server;
 
@@ -98,6 +101,11 @@ function Server(options) {
   var packagerOpts = Object.create(opts);
   packagerOpts.fileWatcher = this._fileWatcher;
   this._packager = new Packager(packagerOpts);
+
+  this._assetServer = new AssetServer({
+    projectRoots: opts.projectRoots,
+    assetExts: opts.assetExts,
+  });
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);
@@ -230,6 +238,58 @@ Server.prototype._processOnChangeRequest = function(req, res) {
   });
 };
 
+Server.prototype._processAssetsRequest = function(req, res) {
+  var urlObj = url.parse(req.url, true);
+  var assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
+  this._assetServer.get(assetPath[1])
+    .then(
+      function(data) {
+        res.end(data);
+      },
+      function(error) {
+        console.error(error.stack);
+        res.writeHead('404');
+        res.end('Asset not found');
+      }
+    ).done();
+};
+
+Server.prototype._processProfile = function(req, res) {
+  console.log('Dumping profile information...');
+  var dumpName = '/tmp/dump_' + Date.now() + '.json';
+  var prefix = process.env.TRACE_VIEWER_PATH || '';
+  var cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
+  fs.writeFileSync(dumpName, req.rawBody);
+  exec(cmd, function (error) {
+    if (error) {
+      if (error.code === 127) {
+        console.error(
+          '\n** Failed executing `' + cmd + '` **\n\n' +
+          'Google trace-viewer is required to visualize the data, do you have it installled?\n\n' +
+          'You can get it at:\n\n' +
+          '  https://github.com/google/trace-viewer\n\n' +
+          'If it\'s not in your path,  you can set a custom path with:\n\n' +
+          '  TRACE_VIEWER_PATH=/path/to/trace-viewer\n\n' +
+          'NOTE: Your profile data was kept at:\n\n' +
+          '  ' + dumpName
+        );
+      } else {
+        console.error('Unknown error', error);
+      }
+      res.end();
+      return;
+    } else {
+      exec('rm ' + dumpName);
+      exec('open ' + dumpName.replace(/json$/, 'html'), function (error) {
+        if (error) {
+          console.error(error);
+        }
+        res.end();
+      });
+    }
+  });
+};
+
 Server.prototype.processRequest = function(req, res, next) {
   var urlObj = url.parse(req.url, true);
   var pathname = urlObj.pathname;
@@ -244,6 +304,12 @@ Server.prototype.processRequest = function(req, res, next) {
     return;
   } else if (pathname.match(/^\/onchange\/?$/)) {
     this._processOnChangeRequest(req, res);
+    return;
+  } else if (pathname.match(/^\/assets\//)) {
+    this._processAssetsRequest(req, res);
+    return;
+  } else if (pathname.match(/^\/profile\/?$/)) {
+    this._processProfile(req, res);
     return;
   } else {
     next();

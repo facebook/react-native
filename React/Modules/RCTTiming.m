@@ -15,6 +15,15 @@
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
 
+@interface RCTBridge (Private)
+
+/**
+ * Allow super fast, one time, timers to skip the queue and be directly executed
+ */
+- (void)_immediatelyCallTimer:(NSNumber *)timer;
+
+@end
+
 @interface RCTTimer : NSObject
 
 @property (nonatomic, strong, readonly) NSDate *target;
@@ -160,7 +169,7 @@ RCT_EXPORT_METHOD(createTimer:(NSNumber *)callbackID
 {
   if (jsDuration == 0 && repeats == NO) {
     // For super fast, one-off timers, just enqueue them immediately rather than waiting a frame.
-    [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[@[callbackID]]];
+    [_bridge _immediatelyCallTimer:callbackID];
     return;
   }
 

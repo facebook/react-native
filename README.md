@@ -138,6 +138,7 @@ RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlo
 {
   callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"]]);
 }
+
 @end
 ```
 
@@ -175,12 +176,13 @@ Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a 
 @end
 
 @implementation MyCustomViewManager
+
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 
 @end
 ```
