@@ -29,9 +29,10 @@
   jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/SampleApp/index.ios.bundle"];
 
   // OPTION 2
-  // Load from pre-bundled file on disk. To re-generate the static bundle, run
+  // Load from pre-bundled file on disk. To re-generate the static bundle,
+  // from the root of your project directory, run
   //
-  // $ curl 'http://localhost:8081/Examples/SampleApp/index.ios.bundle?dev=false&minify=true' -o iOS/main.jsbundle
+  // $ react-native bundle
   //
   // and uncomment the next following line
   // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
