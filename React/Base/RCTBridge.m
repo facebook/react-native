@@ -143,7 +143,8 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 
         // Get data entry
         NSString *entry = @(*(const char **)(mach_header + addr));
-        NSArray *parts = [[entry substringWithRange:(NSRange){2, entry.length - 3}] componentsSeparatedByString:@" "];
+        NSArray *parts = [[entry substringWithRange:(NSRange){2, entry.length - 3}]
+                          componentsSeparatedByString:@" "];
 
         // Parse class name
         NSString *moduleClassName = parts[0];
@@ -164,32 +165,31 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
       }
     }
 
-#if DEBUG
+    if (RCT_DEBUG) {
 
-    // We may be able to get rid of this check in future, once people
-    // get used to the new registration system. That would potentially
-    // allow you to create modules that are not automatically registered
+      // We may be able to get rid of this check in future, once people
+      // get used to the new registration system. That would potentially
+      // allow you to create modules that are not automatically registered
 
-    static unsigned int classCount;
-    Class *classes = objc_copyClassList(&classCount);
-    for (unsigned int i = 0; i < classCount; i++)
-    {
-      Class cls = classes[i];
-      Class superclass = cls;
-      while (superclass)
+      static unsigned int classCount;
+      Class *classes = objc_copyClassList(&classCount);
+      for (unsigned int i = 0; i < classCount; i++)
       {
-        if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
+        Class cls = classes[i];
+        Class superclass = cls;
+        while (superclass)
         {
-          if (![RCTModuleClassesByID containsObject:cls]) {
-            RCTLogError(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", NSStringFromClass(cls));
+          if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
+          {
+            if (![RCTModuleClassesByID containsObject:cls]) {
+              RCTLogError(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", NSStringFromClass(cls));
+            }
+            break;
           }
-          break;
+          superclass = class_getSuperclass(superclass);
         }
-        superclass = class_getSuperclass(superclass);
       }
     }
-
-#endif
 
   });
 
@@ -289,13 +289,13 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
     _isClassMethod = [reactMethodName characterAtIndex:0] == '+';
     _moduleClass = NSClassFromString(_moduleClassName);
 
-#if DEBUG
+    if (RCT_DEBUG) {
 
-    // Sanity check
-    RCTAssert([_moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
-              @"You are attempting to export the method %@, but %@ does not \
-              conform to the RCTBridgeModule Protocol", objCMethodName, _moduleClassName);
-#endif
+      // Sanity check
+      RCTAssert([_moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
+                @"You are attempting to export the method %@, but %@ does not \
+                conform to the RCTBridgeModule Protocol", objCMethodName, _moduleClassName);
+    }
 
     // Get method signature
     _methodSignature = _isClassMethod ?
@@ -449,20 +449,19 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
                arguments:(NSArray *)arguments
                  context:(NSNumber *)context
 {
+  if (RCT_DEBUG) {
 
-#if DEBUG
+    // Sanity check
+    RCTAssert([module class] == _moduleClass, @"Attempted to invoke method \
+              %@ on a module of class %@", _methodName, [module class]);
 
-  // Sanity check
-  RCTAssert([module class] == _moduleClass, @"Attempted to invoke method \
-            %@ on a module of class %@", _methodName, [module class]);
-#endif
-
-  // Safety check
-  if (arguments.count != _argumentBlocks.count) {
-    RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
-                RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
-                arguments.count, _argumentBlocks.count);
-    return;
+    // Safety check
+    if (arguments.count != _argumentBlocks.count) {
+      RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
+                  RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
+                  arguments.count, _argumentBlocks.count);
+      return;
+    }
   }
 
   // Create invocation (we can't re-use this as it wouldn't be thread-safe)

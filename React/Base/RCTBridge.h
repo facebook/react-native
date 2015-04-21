@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTDefines.h"
 #import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
@@ -40,7 +41,7 @@ typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
 /**
  * This function returns the module name for a given class.
  */
-extern NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
+RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.

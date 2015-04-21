@@ -16,6 +16,7 @@
 #import "../Views/RCTAnimationType.h"
 #import "../Views/RCTPointerEvents.h"
 
+#import "RCTDefines.h"
 #import "RCTLog.h"
 
 /**
@@ -116,33 +117,25 @@ typedef BOOL css_overflow;
 
 @end
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * This function will attempt to set a property using a json value by first
  * inferring the correct type from all available information, and then
  * applying an appropriate conversion method. If the property does not
  * exist, or the type cannot be inferred, the function will return NO.
  */
-BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
+RCT_EXTERN BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
 
 /**
  * This function attempts to copy a property from the source object to the
  * destination object using KVC. If the property does not exist, or cannot
  * be set, it will do nothing and return NO.
  */
-BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
+RCT_EXTERN BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
 
 /**
  * Underlying implementation of RCT_ENUM_CONVERTER macro. Ignore this.
  */
-NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
-
-#ifdef __cplusplus
-}
-#endif
+RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 
 /**
  * This macro is used for creating simple converter functions that just call

@@ -13,10 +13,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-#if DEBUG
+#if RCT_DEV
 
 #pragma mark - Prototypes
 

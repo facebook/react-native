@@ -282,23 +282,14 @@
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
 {
-
-#if DEBUG
-
-  dispatch_block_t block = ^{
-    if (!_window) {
-      _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    }
-    [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
-  };
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_async(dispatch_get_main_queue(), block);
+  if (RCT_DEBUG) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (!_window) {
+        _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+      }
+      [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
+    });
   }
-
-#endif
-
 }
 
 - (NSString *)currentErrorMessage

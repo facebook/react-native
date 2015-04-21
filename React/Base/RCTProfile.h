@@ -9,45 +9,47 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTDefines.h"
+
 /**
  * RCTProfile
  *
  * This file provides a set of functions and macros for performance profiling
  *
- * NOTE: This API is a work in a work in progress, please consider it before
- * before using.
+ * NOTE: This API is a work in a work in progress, please consider carefully
+ * before before using it.
  */
 
-#if DEBUG
+#if RCT_DEV
 
 /**
  * Returns YES if the profiling information is currently being collected
  */
-BOOL RCTProfileIsProfiling(void);
+RCT_EXTERN BOOL RCTProfileIsProfiling(void);
 
 /**
  * Start collecting profiling information
  */
-void RCTProfileInit(void);
+RCT_EXTERN void RCTProfileInit(void);
 
 /**
  * Stop profiling and return a JSON string of the collected data - The data
  * returned is compliant with google's trace event format - the format used
  * as input to trace-viewer
  */
-NSString *RCTProfileEnd(void);
+RCT_EXTERN NSString *RCTProfileEnd(void);
 
 /**
  * Collects the initial event information for the event and returns a reference ID
  */
-NSNumber *_RCTProfileBeginEvent(void);
+RCT_EXTERN NSNumber *_RCTProfileBeginEvent(void);
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
  * rest of the event information. Just at this point the event will actually be
  * registered
  */
-void _RCTProfileEndEvent(NSNumber *, NSString *, NSString *, id);
+RCT_EXTERN void _RCTProfileEndEvent(NSNumber *, NSString *, NSString *, id);
 
 /**
  * This pair of macros implicitly handle the event ID when beginning and ending
@@ -69,7 +71,7 @@ _RCTProfileEndEvent(__rct_profile_id, name, category, args)
 /**
  * An event that doesn't have a duration (i.e. Notification, VSync, etc)
  */
-void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *);
+RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *);
 
 /**
  * Helper to profile the duration of the execution of a block. This method uses

@@ -14,6 +14,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import "RCTAssert.h"
+#import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
@@ -321,10 +322,9 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
 {
-
-#if DEBUG
-  RCTAssert(RCTJSONParse(script, NULL) != nil, @"%@ wasn't valid JSON!", script);
-#endif
+  if (RCT_DEBUG) {
+    RCTAssert(RCTJSONParse(script, NULL) != nil, @"%@ wasn't valid JSON!", script);
+  }
 
   __weak RCTContextExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{

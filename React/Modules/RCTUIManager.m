@@ -18,6 +18,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
@@ -703,20 +704,16 @@ static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, 
       ((void (*)(id, SEL, id, id, id))objc_msgSend)(manager, setter, value, view, defaultView);
     };
 
-#if DEBUG
+    if (RCT_DEBUG) {
+      NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([manager class]));
+      NSString *logPrefix = [NSString stringWithFormat:
+                             @"Error setting property '%@' of %@ with tag #%@: ",
+                             key, viewName, [view reactTag]];
 
-    NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([manager class]));
-    NSString *logPrefix = [NSString stringWithFormat:
-                           @"Error setting property '%@' of %@ with tag #%@: ",
-                           key, viewName, [view reactTag]];
-
-    RCTPerformBlockWithLogPrefix(block, logPrefix);
-
-#else
-
-    block();
-
-#endif
+      RCTPerformBlockWithLogPrefix(block, logPrefix);
+    } else {
+      block();
+    }
 
     return YES;
   }
