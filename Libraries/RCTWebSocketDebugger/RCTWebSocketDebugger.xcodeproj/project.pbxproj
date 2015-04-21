@@ -8,8 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		00D277161AB8C32C00DC1E48 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */; };
-		00D277191AB8C35800DC1E48 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D277181AB8C35800DC1E48 /* SRWebSocket.m */; };
+		3C8FAB551AE61E3700CA70CA /* libSRWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C8FAB331AE61C8C00CA70CA /* libSRWebSocket.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3C8FAB321AE61C8C00CA70CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3C8FAB001AE6175200CA70CA;
+			remoteInfo = SRWebSocket;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		832C817E1AAF6DEF007FA2F7 /* CopyFiles */ = {
@@ -28,6 +38,7 @@
 		00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketExecutor.m; sourceTree = "<group>"; };
 		00D277171AB8C35800DC1E48 /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
 		00D277181AB8C35800DC1E48 /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
+		3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SRWebSocket.xcodeproj; path = ../SRWebSocket/SRWebSocket.xcodeproj; sourceTree = "<group>"; };
 		832C81801AAF6DEF007FA2F7 /* libRCTWebSocketDebugger.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocketDebugger.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -36,15 +47,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C8FAB551AE61E3700CA70CA /* libSRWebSocket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3C8FAB2F1AE61C8C00CA70CA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3C8FAB331AE61C8C00CA70CA /* libSRWebSocket.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		832C81771AAF6DEF007FA2F7 = {
 			isa = PBXGroup;
 			children = (
+				3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */,
 				00D277171AB8C35800DC1E48 /* SRWebSocket.h */,
 				00D277181AB8C35800DC1E48 /* SRWebSocket.m */,
 				00D277141AB8C32C00DC1E48 /* RCTWebSocketExecutor.h */,
@@ -107,6 +128,12 @@
 			mainGroup = 832C81771AAF6DEF007FA2F7;
 			productRefGroup = 832C81811AAF6DEF007FA2F7 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 3C8FAB2F1AE61C8C00CA70CA /* Products */;
+					ProjectRef = 3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				832C817F1AAF6DEF007FA2F7 /* RCTWebSocketDebugger */,
@@ -114,12 +141,21 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		3C8FAB331AE61C8C00CA70CA /* libSRWebSocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSRWebSocket.a;
+			remoteRef = 3C8FAB321AE61C8C00CA70CA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXSourcesBuildPhase section */
 		832C817C1AAF6DEF007FA2F7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00D277191AB8C35800DC1E48 /* SRWebSocket.m in Sources */,
 				00D277161AB8C32C00DC1E48 /* RCTWebSocketExecutor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -218,6 +254,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/../SRWebSocket/",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -235,6 +272,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/../SRWebSocket/",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
