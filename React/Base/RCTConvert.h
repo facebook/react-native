@@ -7,8 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <objc/message.h>
-
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
@@ -186,8 +184,7 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
   dispatch_once(&onceToken, ^{                            \
     mapping = values;                                     \
   });                                                     \
-  NSNumber *converted = RCTConvertEnumValue(#type, mapping, @(default), json); \
-  return ((type(*)(id, SEL))objc_msgSend)(converted, @selector(getter)); \
+  return [RCTConvertEnumValue(#type, mapping, @(default), json) getter]; \
 }
 
 /**
