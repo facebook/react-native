@@ -21,6 +21,7 @@ var UIExplorerList = require('./UIExplorerList');
 var {
   AppRegistry,
   NavigatorIOS,
+  StatusBarIOS,
   StyleSheet,
 } = React;
 
@@ -29,7 +30,28 @@ var UIExplorerApp = React.createClass({
   getInitialState: function() {
     return {
       openExternalExample: (null: ?React.Component),
+      tintColor: '#008888',
+      barTintColor: null,
+      titleTextColor: null,
     };
+  },
+
+  _customNavColors: function() {
+    this.setState({
+      tintColor: '#FFFFFF',
+      barTintColor: '#4F6BA5',
+      titleTextColor: '#FFFFFF',
+    });
+    StatusBarIOS.setStyle(StatusBarIOS.Style['lightContent']);
+  },
+
+  _resetNavColors: function() {
+    this.setState({
+      tintColor: "#008888",
+      barTintColor: "#F7F7F7",
+      titleTextColor: '#000000',
+    });
+    StatusBarIOS.setStyle(StatusBarIOS.Style['default']);
   },
 
   render: function() {
@@ -53,10 +75,14 @@ var UIExplorerApp = React.createClass({
             onExternalExampleRequested: (example) => {
               this.setState({ openExternalExample: example, });
             },
+            customNavBarColors: () => this._customNavColors(),
+            resetNavBarColors: () => this._resetNavColors(),
           }
         }}
         itemWrapperStyle={styles.itemWrapper}
-        tintColor='#008888'
+        tintColor={this.state.tintColor}
+        barTintColor={this.state.barTintColor}
+        titleTextColor={this.state.titleTextColor}
       />
     );
   }

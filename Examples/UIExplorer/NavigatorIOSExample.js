@@ -92,6 +92,22 @@ var NavigatorIOSExample = React.createClass({
               }
             });
           })}
+          {this._renderRow('Custom Nav Bar Colors', () => {
+            this.props.customNavBarColors();
+            this.props.navigator.push({
+              title: NavigatorIOSExample.title,
+              component: EmptyPage,
+              rightButtonTitle: 'Reset',
+              onRightButtonPress: () => {
+                var prevRoute = this.props.route;
+                this.props.resetNavBarColors();
+                this.props.navigator.replacePreviousAndPop(prevRoute);
+              },
+              passProps: {
+                text: 'This page has custom color for the nav bar',
+              }
+            });
+          })}
           {this._renderRow('Pop', () => {
             this.props.navigator.pop();
           })}
