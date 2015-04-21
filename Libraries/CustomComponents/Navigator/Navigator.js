@@ -494,6 +494,7 @@ var Navigator = React.createClass({
 
   _completeTransition: function() {
     if (this.spring.getCurrentValue() === 1) {
+      this._onAnimationEnd();
       var presentedIndex = this.state.toIndex;
       this.state.presentedIndex = presentedIndex;
       this.state.fromIndex = presentedIndex;
@@ -515,6 +516,7 @@ var Navigator = React.createClass({
       // For visual consistency, the from index is always used to configure the spring
       this.state.sceneConfigStack[this.state.fromIndex]
     );
+    this._onAnimationStart();
     this.state.isAnimating = true;
     this.spring.setVelocity(v);
     this.spring.setEndValue(1);
@@ -573,6 +575,34 @@ var Navigator = React.createClass({
     }
   },
 
+  _onAnimationStart: function() {
+    this._setRenderSceneToHarwareTextureAndroid(this.state.fromIndex, true);
+    this._setRenderSceneToHarwareTextureAndroid(this.state.toIndex, true);
+
+    var navBar = this._navBar;
+    if (navBar && navBar.onAnimationStart) {
+      navBar.onAnimationStart(this.state.fromIndex, this.state.toIndex);
+    }
+  },
+
+  _onAnimationEnd: function() {
+    this._setRenderSceneToHarwareTextureAndroid(this.state.fromIndex, false);
+    this._setRenderSceneToHarwareTextureAndroid(this.state.toIndex, false);
+
+    var navBar = this._navBar;
+    if (navBar && navBar.onAnimationEnd) {
+      navBar.onAnimationEnd(this.state.fromIndex, this.state.toIndex);
+    }
+  },
+
+  _setRenderSceneToHarwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
+    var viewAtIndex = this.refs['scene_' + sceneIndex];
+    if (viewAtIndex === null || viewAtIndex === undefined) {
+      return;
+    }
+    viewAtIndex.setNativeProps({renderToHardwareTextureAndroid: shouldRenderToHardwareTexture});
+  },
+
   /**
    * Becomes the responder on touch start (capture) while animating so that it
    * blocks all touch interactions inside of it. However, this responder lock
@@ -610,6 +640,7 @@ var Navigator = React.createClass({
       this.state.fromIndex = this.state.presentedIndex;
       var gestureSceneDelta = this._deltaForGestureAction(this._activeGestureAction);
       this.state.toIndex = this.state.presentedIndex + gestureSceneDelta;
+      this.onAnimationStart();
     }
   },
 
