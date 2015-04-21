@@ -640,7 +640,7 @@ var Navigator = React.createClass({
       this.state.fromIndex = this.state.presentedIndex;
       var gestureSceneDelta = this._deltaForGestureAction(this._activeGestureAction);
       this.state.toIndex = this.state.presentedIndex + gestureSceneDelta;
-      this.onAnimationStart();
+      this._onAnimationStart();
     }
   },
 
