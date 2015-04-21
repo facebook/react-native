@@ -12,11 +12,11 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var ImageResizeMode = require('ImageResizeMode');
+var ImageStylePropTypes = require('ImageStylePropTypes');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
-var ImageResizeMode = require('ImageResizeMode');
-var ImageStylePropTypes = require('ImageStylePropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -26,8 +26,9 @@ var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
-var warning = require('warning');
+var resolveAssetSource = require('resolveAssetSource');
 var verifyPropTypes = require('verifyPropTypes');
+var warning = require('warning');
 
 /**
  * A react component for displaying different types of images,
@@ -122,10 +123,15 @@ var Image = React.createClass({
           'not be set directly on Image.');
       }
     }
-    var style = flattenStyle([styles.base, this.props.style]);
-    invariant(style, "style must be initialized");
     var source = this.props.source;
-    invariant(source, "source must be initialized");
+    invariant(source, 'source must be initialized');
+
+    var {width, height} = source;
+    var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+    invariant(style, 'style must be initialized');
+
+    source = resolveAssetSource(source);
+
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     invariant(
       !(isNetwork && source.isStatic),
@@ -171,8 +177,8 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
 var RCTNetworkImage = requireNativeComponent('RCTNetworkImageView', null);
+var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
 
 var nativeOnlyProps = {
   src: true,
