@@ -165,7 +165,7 @@ var Message = React.createClass({
 });
 ```
 
-Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a `-view` method, and exporting properties with the `RCT_EXPORT_VIEW_PROPERTY` macro.  Then a simple JavaScript file connects the dots.
+Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a `-view` method, and exporting properties with the `RCT_EXPORT_VIEW_PROPERTY` macro.  Then use `requireNativeComponent` in JavaScript to use the component in your app.
 
 ```objc
 // Objective-C
@@ -190,10 +190,20 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 ```javascript
 // JavaScript
 
-var MyCustomView = createReactIOSNativeComponentClass({
-  validAttributes: { myCustomProperty: true },
-  uiViewClassName: 'MyCustomView',
-});
+var React = require('react-native');
+var { requireNativeComponent } = React;
+
+class MyCustomView extends React.Component {
+  render() {
+    return <NativeMyCustomView {...this.props} />;
+  }
+}
+MyCustomView.propTypes = {
+  myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
+};
+
+var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
+module.exports = MyCustomView;
 ```
 
 ## Running the Examples
