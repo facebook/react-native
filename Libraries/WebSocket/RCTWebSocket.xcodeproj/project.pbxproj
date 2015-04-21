@@ -17,8 +17,6 @@
 		3C86DF781ADF646A0047B81A /* WebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebSocket.m; sourceTree = "<group>"; };
 		3C86DF7A1ADF695F0047B81A /* WebSocketFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebSocketFactory.h; sourceTree = "<group>"; };
 		3C86DF7B1ADF695F0047B81A /* WebSocketFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = WebSocketFactory.m; sourceTree = "<group>"; tabWidth = 2; };
-		3CC421A21AE0684B00240844 /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
-		3CC421A31AE0684B00240844 /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,11 +37,11 @@
 				3C86DF7B1ADF695F0047B81A /* WebSocketFactory.m */,
 				3C86DF771ADF646A0047B81A /* WebSocket.h */,
 				3C86DF781ADF646A0047B81A /* WebSocket.m */,
-				3CC421A21AE0684B00240844 /* SRWebSocket.h */,
-				3CC421A31AE0684B00240844 /* SRWebSocket.m */,
 				3C86DF471ADF2C930047B81A /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		3C86DF471ADF2C930047B81A /* Products */ = {
 			isa = PBXGroup;

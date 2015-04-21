@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00D277161AB8C32C00DC1E48 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */; };
-		3C8FAB551AE61E3700CA70CA /* libSRWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C8FAB331AE61C8C00CA70CA /* libSRWebSocket.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,8 +35,6 @@
 /* Begin PBXFileReference section */
 		00D277141AB8C32C00DC1E48 /* RCTWebSocketExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketExecutor.h; sourceTree = "<group>"; };
 		00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketExecutor.m; sourceTree = "<group>"; };
-		00D277171AB8C35800DC1E48 /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
-		00D277181AB8C35800DC1E48 /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
 		3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SRWebSocket.xcodeproj; path = ../SRWebSocket/SRWebSocket.xcodeproj; sourceTree = "<group>"; };
 		832C81801AAF6DEF007FA2F7 /* libRCTWebSocketDebugger.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocketDebugger.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -47,7 +44,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3C8FAB551AE61E3700CA70CA /* libSRWebSocket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,8 +62,6 @@
 			isa = PBXGroup;
 			children = (
 				3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */,
-				00D277171AB8C35800DC1E48 /* SRWebSocket.h */,
-				00D277181AB8C35800DC1E48 /* SRWebSocket.m */,
 				00D277141AB8C32C00DC1E48 /* RCTWebSocketExecutor.h */,
 				00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */,
 				832C81811AAF6DEF007FA2F7 /* Products */,
