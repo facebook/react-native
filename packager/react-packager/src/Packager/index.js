@@ -67,6 +67,10 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  assetServer: {
+    type: 'object',
+    required: true,
+  }
 });
 
 function Packager(options) {
@@ -94,6 +98,7 @@ function Packager(options) {
   });
 
   this._projectRoots = opts.projectRoots;
+  this._assetServer = opts.assetServer;
 }
 
 Packager.prototype.kill = function() {
@@ -173,6 +178,7 @@ Packager.prototype.getGraphDebugInfo = function() {
 Packager.prototype.generateAssetModule_DEPRECATED = function(ppackage, module) {
   return sizeOf(module.path).then(function(dimensions) {
     var img = {
+      __packager_asset: true,
       isStatic: true,
       path: module.path,
       uri: module.id.replace(/^[^!]+!/, ''),
@@ -196,13 +202,20 @@ Packager.prototype.generateAssetModule_DEPRECATED = function(ppackage, module) {
 Packager.prototype.generateAssetModule = function(ppackage, module) {
   var relPath = getPathRelativeToRoot(this._projectRoots, module.path);
 
-  return sizeOf(module.path).then(function(dimensions) {
+  return Promise.all([
+    sizeOf(module.path),
+    this._assetServer.getAssetData(relPath),
+  ]).spread(function(dimensions, assetData) {
     var img = {
-      isStatic: true,
-      path: module.path, //TODO(amasad): this should be path inside tar file.
-      uri: path.join('assets', relPath),
+      __packager_asset: true,
+      fileSystemLocation: path.dirname(module.path),
+      httpServerLocation: path.join('/assets', path.dirname(relPath)),
       width: dimensions.width / module.resolution,
       height: dimensions.height / module.resolution,
+      scales: assetData.scales,
+      hash: assetData.hash,
+      name: assetData.name,
+      type: assetData.type,
     };
 
     ppackage.addAsset(img);

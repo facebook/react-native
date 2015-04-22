@@ -18,7 +18,7 @@ var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
 var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
-var extractAssetResolution = require('../../../lib/extractAssetResolution');
+var getAssetDataFromName = require('../../../lib/getAssetDataFromName');
 
 var readFile = Promise.promisify(fs.readFile);
 var readDir = Promise.promisify(fs.readdir);
@@ -422,7 +422,7 @@ DependecyGraph.prototype._processModule = function(modulePath) {
   var module;
 
   if (this._assetExts.indexOf(extname(modulePath)) > -1) {
-    var assetData = extractAssetResolution(this._lookupName(modulePath));
+    var assetData = getAssetDataFromName(this._lookupName(modulePath));
     moduleData.id = assetData.assetName;
     moduleData.resolution = assetData.resolution;
     moduleData.isAsset = true;
@@ -651,7 +651,7 @@ DependecyGraph.prototype._processAsset_DEPRECATED = function(file) {
       path: path.resolve(file),
       isAsset_DEPRECATED: true,
       dependencies: [],
-      resolution: extractAssetResolution(file).resolution,
+      resolution: getAssetDataFromName(file).resolution,
     });
   }
 };

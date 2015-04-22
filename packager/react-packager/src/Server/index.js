@@ -100,14 +100,15 @@ function Server(options) {
     ? FileWatcher.createDummyWatcher()
     : new FileWatcher(watchRootConfigs);
 
-  var packagerOpts = Object.create(opts);
-  packagerOpts.fileWatcher = this._fileWatcher;
-  this._packager = new Packager(packagerOpts);
-
   this._assetServer = new AssetServer({
     projectRoots: opts.projectRoots,
     assetExts: opts.assetExts,
   });
+
+  var packagerOpts = Object.create(opts);
+  packagerOpts.fileWatcher = this._fileWatcher;
+  packagerOpts.assetServer = this._assetServer;
+  this._packager = new Packager(packagerOpts);
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);

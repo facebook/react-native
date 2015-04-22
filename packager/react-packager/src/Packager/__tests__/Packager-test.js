@@ -43,11 +43,20 @@ describe('Packager', function() {
       };
     });
 
+
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, '{"json":true}');
     });
 
-    var packager = new Packager({projectRoots: ['/root']});
+    var assetServer = {
+      getAssetData: jest.genMockFn(),
+    };
+
+    var packager = new Packager({
+      projectRoots: ['/root'],
+      assetServer: assetServer,
+    });
+
     var modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
       {id: 'bar', path: '/root/bar.js', dependencies: []},
@@ -97,6 +106,15 @@ describe('Packager', function() {
       cb(null, { width: 50, height: 100 });
     });
 
+    assetServer.getAssetData.mockImpl(function() {
+      return {
+        scales: [1,2,3],
+        hash: 'i am a hash',
+        name: 'img',
+        type: 'png',
+      };
+    });
+
     return packager.package('/root/foo.js', true, 'source_map_url')
       .then(function(p) {
         expect(p.addModule.mock.calls[0]).toEqual([
@@ -111,6 +129,7 @@ describe('Packager', function() {
         ]);
 
         var imgModule_DEPRECATED = {
+          __packager_asset: true,
           isStatic: true,
           path: '/root/img/img.png',
           uri: 'img',
@@ -130,11 +149,15 @@ describe('Packager', function() {
         ]);
 
         var imgModule = {
-          isStatic: true,
-          path: '/root/img/new_image.png',
-          uri: 'assets/img/new_image.png',
+          __packager_asset: true,
+          fileSystemLocation: '/root/img',
+          httpServerLocation: '/assets/img',
           width: 25,
           height: 50,
+          scales: [1, 2, 3],
+          hash: 'i am a hash',
+          name: 'img',
+          type: 'png',
         };
 
         expect(p.addModule.mock.calls[3]).toEqual([
