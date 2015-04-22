@@ -13,6 +13,10 @@ jest.dontMock('../resolveAssetSource');
 var resolveAssetSource;
 var SourceCode;
 
+function expectResolvesAsset(input, expectedSource) {
+  expect(resolveAssetSource(input)).toEqual(expectedSource);
+}
+
 describe('resolveAssetSource', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
@@ -34,41 +38,66 @@ describe('resolveAssetSource', () => {
     });
 
     it('uses network image', () => {
-      var source = {
-        path: '/Users/react/project/logo.png',
-        uri: 'assets/logo.png',
-      };
-      expect(resolveAssetSource(source)).toEqual({
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/module/a',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: 'logo',
+        type: 'png',
+      }, {
         isStatic: false,
-        uri: 'http://10.0.0.1:8081/assets/logo.png',
+        width: 100,
+        height: 200,
+        uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?hash=5b6f00f',
       });
     });
 
     it('does not change deprecated assets', () => {
-      // Deprecated require('image!logo') should stay unchanged
-      var source = {
-        path: '/Users/react/project/logo.png',
-        uri: 'logo',
+      expectResolvesAsset({
+        __packager_asset: true,
         deprecated: true,
-      };
-      expect(resolveAssetSource(source)).toEqual({
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/module/a',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: 'logo',
+        type: 'png',
+      }, {
         isStatic: true,
+        width: 100,
+        height: 200,
         uri: 'logo',
       });
     });
   });
 
   describe('bundle was loaded from file', () => {
-    it('uses pre-packed image', () => {
+    beforeEach(() => {
       SourceCode.scriptURL = 'file:///Path/To/Simulator/main.bundle';
+    });
 
-      var source = {
-        path: '/Users/react/project/logo.png',
-        uri: 'assets/logo.png',
-      };
-      expect(resolveAssetSource(source)).toEqual({
+    it('uses pre-packed image', () => {
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/module/a',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: 'logo',
+        type: 'png',
+      }, {
         isStatic: true,
-        uri: 'assets/logo.png',
+        width: 100,
+        height: 200,
+        uri: 'assets/module/a/logo.png',
       });
     });
   });

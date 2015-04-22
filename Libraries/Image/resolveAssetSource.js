@@ -17,9 +17,9 @@ var _serverURL;
 function getServerURL() {
   if (_serverURL === undefined) {
     var scriptURL = SourceCode.scriptURL;
-    var serverURLMatch = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
-    if (serverURLMatch) {
-      _serverURL = serverURLMatch[0];
+    var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
+    if (match) {
+      _serverURL = match[0];
     } else {
       _serverURL = null;
     }
@@ -29,35 +29,50 @@ function getServerURL() {
 }
 
 // TODO(frantic):
-//   * Use something other than `path`/`isStatic` for asset identification, `__packager_asset`?
-//   * Add cache invalidating hashsum
-//   * Move code that selects scale to client
+//   * Pick best scale and append @Nx to file path
+//   * We are currently using httpServerLocation for both http and in-app bundle
 function resolveAssetSource(source) {
+  if (!source.__packager_asset) {
+    return source;
+  }
+
+  // Deprecated assets are managed by Xcode for now,
+  // just returning image name as `uri`
+  // Examples:
+  //   require('image!deprecatd_logo_example')
+  //   require('./new-hotness-logo-example.png')
   if (source.deprecated) {
     return {
-      ...source,
-      path: undefined,
+      width: source.width,
+      height: source.height,
       isStatic: true,
-      deprecated: undefined,
+      uri: source.name || source.uri, // TODO(frantic): remove uri
     };
   }
 
+  // TODO(frantic): currently httpServerLocation is used both as
+  // path in http URL and path within IPA. Should we have zipArchiveLocation?
+  var path = source.httpServerLocation;
+  if (path[0] === '/') {
+    path = path.substr(1);
+  }
+
   var serverURL = getServerURL();
-  if (source.path) {
-    if (serverURL) {
-      return {
-        ...source,
-        path: undefined,
-        uri: serverURL + source.uri,
-        isStatic: false,
-      };
-    } else {
-      return {
-        ...source,
-        path: undefined,
-        isStatic: true,
-      };
-    }
+  if (serverURL) {
+    return {
+      width: source.width,
+      height: source.height,
+      uri: serverURL + path + '/' + source.name + '.' + source.type +
+        '?hash=' + source.hash,
+      isStatic: false,
+    };
+  } else {
+    return {
+      width: source.width,
+      height: source.height,
+      uri: path + '/' + source.name + '.' + source.type,
+      isStatic: true,
+    };
   }
 
   return source;

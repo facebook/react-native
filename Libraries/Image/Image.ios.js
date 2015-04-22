@@ -123,14 +123,12 @@ var Image = React.createClass({
           'not be set directly on Image.');
       }
     }
-    var source = this.props.source;
+    var source = resolveAssetSource(this.props.source);
     invariant(source, 'source must be initialized');
 
     var {width, height} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]);
     invariant(style, 'style must be initialized');
-
-    source = resolveAssetSource(source);
 
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     invariant(
