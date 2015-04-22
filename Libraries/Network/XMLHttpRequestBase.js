@@ -60,6 +60,7 @@ class XMLHttpRequestBase {
       }
       return headers.join('\n');
     }
+    // according to the spec, return null <==> no response has been received
     return null;
   }
 
@@ -131,7 +132,7 @@ class XMLHttpRequestBase {
       return;
     }
     this.status = status;
-    this.responseHeaders = responseHeaders;
+    this.responseHeaders = responseHeaders || {};
     this.responseText = responseText;
     this._setReadyState(this.DONE);
     this._sendLoad();
