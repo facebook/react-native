@@ -92,7 +92,7 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
 /**
  * URL of the script that was loaded into the bridge.
  */
-@property (nonatomic, copy, readonly) NSURL *bundleURL;
+@property (nonatomic, copy) NSURL *bundleURL;
 
 @property (nonatomic, strong) Class executorClass;
 

@@ -85,8 +85,9 @@
                                   // Handle general request errors
                                   if (error) {
                                     if ([[error domain] isEqualToString:NSURLErrorDomain]) {
+                                      NSString *desc = [@"Could not connect to development server. Ensure node server is running and available on the same network - run 'npm start' from react-native root\n\nURL: " stringByAppendingString:[scriptURL absoluteString]];
                                       NSDictionary *userInfo = @{
-                                                                 NSLocalizedDescriptionKey: @"Could not connect to development server. Ensure node server is running - run 'npm start' from ReactKit root",
+                                                                 NSLocalizedDescriptionKey: desc,
                                                                  NSLocalizedFailureReasonErrorKey: [error localizedDescription],
                                                                  NSUnderlyingErrorKey: error,
                                                                  };
