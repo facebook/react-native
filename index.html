@@ -125,10 +125,20 @@
 <span class="token function">RCT_EXPORT_VIEW_PROPERTY<span class="token punctuation">(</span></span>myCustomProperty<span class="token punctuation">)</span><span class="token punctuation">;</span>
 @end</div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// JavaScript
 </span>
-module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token function">createReactIOSNativeComponentClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  validAttributes<span class="token punctuation">:</span> <span class="token punctuation">{</span> myCustomProperty<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  uiViewClassName<span class="token punctuation">:</span> <span class="token string">&#x27;MyCustomView&#x27;</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div></div><section class="home-bottom-section"><div class="buttons-unit"><a href="docs/getting-started.html#content" class="button">Get started with React Native</a></div></section></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> <span class="token punctuation">{</span> requireNativeComponent <span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
+
+class <span class="token class-name">MyCustomView</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> &lt;NativeMyCustomView <span class="token punctuation">{</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+MyCustomView<span class="token punctuation">.</span>propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+  myCustomProperty<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span><span class="token function">oneOf<span class="token punctuation">(</span></span><span class="token punctuation">[</span><span class="token string">&#x27;a&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;b&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> NativeMyCustomView <span class="token operator">=</span> <span class="token function">requireNativeComponent<span class="token punctuation">(</span></span><span class="token string">&#x27;MyCustomView&#x27;</span><span class="token punctuation">,</span> MyCustomView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> MyCustomView<span class="token punctuation">;</span></div></div><section class="home-bottom-section"><div class="buttons-unit"><a href="docs/getting-started.html#content" class="button">Get started with React Native</a></div></section></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
