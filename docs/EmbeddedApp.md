@@ -45,7 +45,7 @@ First, create a directory for your app’s React code and create a simple `index
 
 ```
 $ mkdir ReactComponent
-$ touch index.ios.js
+$ touch ReactComponent/index.ios.js
 ```
 
 Copy & paste following starter code for `index.ios.js` – it’s a barebones React Native app:
