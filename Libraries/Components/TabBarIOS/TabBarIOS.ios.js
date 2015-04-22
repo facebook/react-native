@@ -37,7 +37,9 @@ var TabBarIOS = React.createClass({
 
   render: function() {
     return (
-      <RCTTabBar style={[styles.tabGroup, this.props.style]} {...this.props}>
+      <RCTTabBar style={[styles.tabGroup, this.props.style]}
+        tintColor={this.props.tintColor}
+        barTintColor={this.props.barTintColor}>
         {this.props.children}
       </RCTTabBar>
     );
