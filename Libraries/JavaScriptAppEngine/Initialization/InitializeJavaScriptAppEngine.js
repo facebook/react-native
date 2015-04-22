@@ -77,6 +77,7 @@ function handleErrorWithRedBox(e) {
 function setupRedBoxErrorHandler() {
   var ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
+  GLOBAL.reportException = require('ExceptionsManager').reportException;
 }
 
 /**
@@ -134,8 +135,8 @@ function setupGeolocation() {
 }
 
 setupDocumentShim();
-setupRedBoxErrorHandler();
 setupTimers();
+setupRedBoxErrorHandler(); // needs to happen after setupTimers
 setupAlert();
 setupPromise();
 setupXHR();

@@ -74,12 +74,12 @@
 static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
 {
   if (argumentCount > 0) {
-    JSStringRef string = JSValueToStringCopy(context, arguments[0], exception);
-    if (!string) {
+    JSStringRef messageRef = JSValueToStringCopy(context, arguments[0], exception);
+    if (!messageRef) {
       return JSValueMakeUndefined(context);
     }
-    NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, string);
-    JSStringRelease(string);
+    NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, messageRef);
+    JSStringRelease(messageRef);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:
                                   @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/([a-z0-9_]+).includeRequire.runModule.bundle(:[0-9]+:[0-9]+)"
                                                                            options:NSRegularExpressionCaseInsensitive
@@ -89,14 +89,11 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object,
                                                 range:(NSRange){0, message.length}
                                          withTemplate:@"[$4$5]  \t$2"];
 
-    // TODO: it would be good if log level was sent as a param, instead of this hack
     RCTLogLevel level = RCTLogLevelInfo;
-    if ([message rangeOfString:@"error" options:NSCaseInsensitiveSearch].length) {
-      level = RCTLogLevelError;
-    } else if ([message rangeOfString:@"warning" options:NSCaseInsensitiveSearch].length) {
-      level = RCTLogLevelWarning;
+    if (argumentCount > 1) {
+      level = MAX(level, JSValueToNumber(context, arguments[1], exception) - 1);
     }
-    _RCTLogFormat(level, NULL, -1, @"%@", message);
+    RCTGetLogFunction()(level, nil, nil, message);
   }
 
   return JSValueMakeUndefined(context);

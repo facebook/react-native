@@ -23,7 +23,7 @@
     log: 1,
     info: 2,
     warn: 3,
-    error: 4
+    error: 4,
   };
 
   function setupConsole(global) {
@@ -35,8 +35,10 @@
     function getNativeLogFunction(level) {
       return function() {
         var str = Array.prototype.map.call(arguments, function(arg) {
-          if (arg == null) {
-            return arg === null ? 'null' : 'undefined';
+          if (arg === undefined) {
+            return 'undefined';
+          } else if (arg === null) {
+            return 'null';
           } else if (typeof arg === 'string') {
             return '"' + arg + '"';
           } else {
@@ -48,14 +50,18 @@
               if (typeof arg.toString === 'function') {
                 try {
                   return arg.toString();
-                } catch (E) {
-                  return 'unknown';
-                }
+                } catch (E) {}
               }
+              return '["' + typeof arg + '" failed to stringify]';
             }
           }
         }).join(', ');
         global.nativeLoggingHook(str, level);
+        if (global.reportException && level === LOG_LEVELS.error) {
+          var error = new Error(str);
+          error.framesToPop = 1;
+          global.reportException(error);
+        }
       };
     }
 

@@ -69,7 +69,7 @@ var AppRegistry = {
       'Running application "' + appKey + '" with appParams: ' +
       JSON.stringify(appParameters) + '. ' +
       '__DEV__ === ' + __DEV__ +
-      ', development-level warning are ' + (__DEV__ ? 'ON' : 'OFF') +
+      ', development-level warnings are ' + (__DEV__ ? 'ON' : 'OFF') +
       ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON')
     );
     invariant(
