@@ -149,7 +149,7 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
   [super layoutSubviews];
   if (_contentView) {
     _contentView.frame = self.bounds;
-    [_bridge.uiManager setFrame:self.frame forRootView:_contentView];
+    [_bridge.uiManager setFrame:self.bounds forRootView:_contentView];
   }
 }
 
