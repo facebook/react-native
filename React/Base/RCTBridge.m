@@ -375,10 +375,14 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
               RCT_CONVERT_CASE('B', BOOL)
               RCT_CONVERT_CASE('@', id)
               RCT_CONVERT_CASE('^', void *)
-
+            case '{':
+              RCTAssert(NO, @"Argument %zd of %C[%@ %@] is defined as %@, however RCT_EXPORT_METHOD() "
+                        "does not currently support struct-type arguments.", i - 2,
+                        [reactMethodName characterAtIndex:0], _moduleClassName,
+                        objCMethodName, argumentName);
+              break;
             default:
               defaultCase(argumentType);
-              break;
           }
         } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
           addBlockArgument();
@@ -434,7 +438,6 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 
           default:
             defaultCase(argumentType);
-            break;
         }
       }
     }
