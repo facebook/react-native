@@ -104,7 +104,7 @@ var NavigatorIOSExample = React.createClass({
                 this.props.navigator.replacePreviousAndPop(prevRoute);
               },
               passProps: {
-                text: 'This page has custom color for the nav bar',
+                text: 'This page has custom colors for the nav bar',
               }
             });
           })}
