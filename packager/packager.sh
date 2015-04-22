@@ -7,6 +7,12 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+if [ $REACT_PACKAGER_LOG ];
+then
+  echo "Logs will be redirected to $REACT_PACKAGER_LOG"
+  exec &> $REACT_PACKAGER_LOG
+fi
+
 ulimit -n 4096
 
 THIS_DIR=$(dirname "$0")
