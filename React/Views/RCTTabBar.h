@@ -13,6 +13,9 @@
 
 @interface RCTTabBar : UIView
 
+@property (nonatomic, copy) UIColor *tintColor;
+@property (nonatomic, copy) UIColor *barTintColor;
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 @end
