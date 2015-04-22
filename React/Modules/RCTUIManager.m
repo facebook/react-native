@@ -225,29 +225,23 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
 // TODO: only send name once instead of a dictionary of name and type keyed by name
 static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewName)
 {
-  NSMutableDictionary *nativeProps = [[NSMutableDictionary alloc] init];
-  static const char *prefix = "getPropConfig";
-  static const NSUInteger prefixLength = sizeof("getPropConfig") - 1;
-  unsigned int methodCount = 0;
-  Method *methods = class_copyMethodList(objc_getMetaClass(class_getName(managerClass)), &methodCount);
-  for (unsigned int i = 0; i < methodCount; i++) {
+  unsigned int count = 0;
+  Method *methods = class_copyMethodList(object_getClass(managerClass), &count);
+  NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithCapacity:count];
+  for (unsigned int i = 0; i < count; i++) {
     Method method = methods[i];
-    SEL getInfo = method_getName(method);
-    const char *selName = sel_getName(getInfo);
-    if (strlen(selName) > prefixLength && strncmp(selName, prefix, prefixLength) == 0) {
-      NSString *name = @(selName);
-      NSRange nameRange = [name rangeOfString:@"_"];
+    NSString *methodName = NSStringFromSelector(method_getName(method));
+    if ([methodName hasPrefix:@"getPropConfig"]) {
+      NSRange nameRange = [methodName rangeOfString:@"_"];
       if (nameRange.length) {
-        name = [name substringFromIndex:nameRange.location + 1];
-        NSString *type = ((NSString *(*)(id, SEL))method_getImplementation(method))(managerClass, getInfo);
-        nativeProps[name] = @{@"name": name, @"type": type};
+        NSString *name = [methodName substringFromIndex:nameRange.location + 1];
+        NSString *type = [managerClass valueForKey:methodName];
+        props[name] = type;
       }
     }
   }
-  return @{
-    @"uiViewClassName": viewName,
-    @"nativeProps": nativeProps
-  };
+  free(methods);
+  return props;
 }
 
 - (instancetype)init
@@ -1390,17 +1384,22 @@ RCT_EXPORT_METHOD(clearJSResponder)
   } mutableCopy];
 
   [_viewManagers enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTViewManager *manager, BOOL *stop) {
+    NSMutableDictionary *constantsNamespace = [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
+
+    // Add custom constants
     // TODO: should these be inherited?
     NSDictionary *constants = RCTClassOverridesInstanceMethod([manager class], @selector(constantsToExport)) ? [manager constantsToExport] : nil;
     if (constants.count) {
-      NSMutableDictionary *constantsNamespace = [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
       RCTAssert(constantsNamespace[@"Constants"] == nil , @"Cannot redefine Constants in namespace: %@", name);
       // add an additional 'Constants' namespace for each class
       constantsNamespace[@"Constants"] = constants;
-      allJSConstants[name] = [constantsNamespace copy];
     }
+
+    // Add native props
+    constantsNamespace[@"nativeProps"] = _viewConfigs[name];
+
+    allJSConstants[name] = [constantsNamespace copy];
   }];
-  allJSConstants[@"viewConfigs"] = _viewConfigs;
   return allJSConstants;
 }
 
@@ -1409,8 +1408,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
                   errorCallback:(RCTResponseSenderBlock)errorCallback)
 {
   if (_nextLayoutAnimation) {
-    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.",
-               _nextLayoutAnimation, config);
+    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.", _nextLayoutAnimation, config);
   }
   if (config[@"delete"] != nil) {
     RCTLogError(@"LayoutAnimation only supports create and update right now. Config: %@", config);
