@@ -13,11 +13,12 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
+var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
+var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
-
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 
@@ -157,17 +158,26 @@ var View = React.createClass({
   },
 });
 
-
 var RCTView = createReactIOSNativeComponentClass({
   validAttributes: ReactIOSViewAttributes.RCTView,
   uiViewClassName: 'RCTView',
 });
 RCTView.propTypes = View.propTypes;
+if (__DEV__) {
+  var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
+  for (var prop in viewConfig.nativeProps) {
+    var viewAny: any = View; // Appease flow
+    if (!viewAny.propTypes[prop] && !ReactIOSStyleAttributes[prop]) {
+      throw new Error(
+        'View is missing propType for native prop `' + prop + '`'
+      );
+    }
+  }
+}
 
 var ViewToExport = RCTView;
 if (__DEV__) {
   ViewToExport = View;
 }
-
 
 module.exports = ViewToExport;

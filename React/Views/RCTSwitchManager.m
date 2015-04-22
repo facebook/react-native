@@ -42,7 +42,14 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
-RCT_EXPORT_VIEW_PROPERTY(on, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL);
+RCT_REMAP_VIEW_PROPERTY(value, on, BOOL);
+RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSwitch)
+{
+  if (json) {
+    view.enabled = !([RCTConvert BOOL:json]);
+  } else {
+    view.enabled = defaultView.enabled;
+  }
+}
 
 @end

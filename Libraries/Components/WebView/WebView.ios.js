@@ -19,15 +19,12 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var invariant = require('invariant');
 var keyMirror = require('keyMirror');
-var insetsDiffer = require('insetsDiffer');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
-
-var invariant = require('invariant');
 
 var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';
@@ -213,18 +210,7 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
-    url: true,
-    html: true,
-    bounces: true,
-    scrollEnabled: true,
-    contentInset: {diff: insetsDiffer},
-    automaticallyAdjustContentInsets: true,
-    shouldInjectAJAXHandler: true
-  }),
-  uiViewClassName: 'RCTWebView',
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView);
 
 var styles = StyleSheet.create({
   container: {
