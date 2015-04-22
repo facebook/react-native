@@ -459,7 +459,7 @@ var Navigator = React.createClass({
   },
 
   _handleAndroidBackPress: function() {
-    var didPop = this.pop();
+    var didPop = this.requestPop();
     if (!didPop) {
       BackAndroid.exitApp();
     }
