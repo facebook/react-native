@@ -10,6 +10,7 @@
  */
 'use strict';
 
+var PixelRatio = require('PixelRatio');
 var SourceCode = require('NativeModules').SourceCode;
 
 var _serverURL;
@@ -26,6 +27,20 @@ function getServerURL() {
   }
 
   return _serverURL;
+}
+
+function pickScale(scales, deviceScale) {
+  // Packager guarantees that `scales` array is sorted
+  for (var i = 0; i < scales.length; i++) {
+    if (scales[i] >= deviceScale) {
+      return scales[i];
+    }
+  }
+
+  // If nothing matches, device scale is larger than any available
+  // scales, so we return the biggest one. Unless the array is empty,
+  // in which case we default to 1
+  return scales[scales.length - 1] || 1;
 }
 
 // TODO(frantic):
@@ -57,12 +72,16 @@ function resolveAssetSource(source) {
     path = path.substr(1);
   }
 
+  var scale = pickScale(source.scales, PixelRatio.get());
+  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+
+  var fileName = source.name + scaleSuffix + '.' + source.type;
   var serverURL = getServerURL();
   if (serverURL) {
     return {
       width: source.width,
       height: source.height,
-      uri: serverURL + path + '/' + source.name + '.' + source.type +
+      uri: serverURL + path + '/' + fileName +
         '?hash=' + source.hash,
       isStatic: false,
     };
@@ -70,7 +89,7 @@ function resolveAssetSource(source) {
     return {
       width: source.width,
       height: source.height,
-      uri: path + '/' + source.name + '.' + source.type,
+      uri: path + '/' + fileName,
       isStatic: true,
     };
   }
@@ -79,3 +98,4 @@ function resolveAssetSource(source) {
 }
 
 module.exports = resolveAssetSource;
+module.exports.pickScale = pickScale;

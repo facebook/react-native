@@ -56,6 +56,25 @@ describe('resolveAssetSource', () => {
       });
     });
 
+    it('picks matching scale', () => {
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/module/a',
+        width: 100,
+        height: 200,
+        scales: [1, 2, 3],
+        hash: '5b6f00f',
+        name: 'logo',
+        type: 'png',
+      }, {
+        isStatic: false,
+        width: 100,
+        height: 200,
+        uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?hash=5b6f00f',
+      });
+    });
+
     it('does not change deprecated assets', () => {
       expectResolvesAsset({
         __packager_asset: true,
@@ -102,4 +121,15 @@ describe('resolveAssetSource', () => {
     });
   });
 
+});
+
+describe('resolveAssetSource.pickScale', () => {
+  it('picks matching scale', () => {
+    expect(resolveAssetSource.pickScale([1], 2)).toBe(1);
+    expect(resolveAssetSource.pickScale([1, 2, 3], 2)).toBe(2);
+    expect(resolveAssetSource.pickScale([1, 2], 3)).toBe(2);
+    expect(resolveAssetSource.pickScale([1, 2, 3, 4], 3.5)).toBe(4);
+    expect(resolveAssetSource.pickScale([3, 4], 2)).toBe(3);
+    expect(resolveAssetSource.pickScale([], 2)).toBe(1);
+  });
 });
