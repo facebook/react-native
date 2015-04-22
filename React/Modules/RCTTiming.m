@@ -142,8 +142,6 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
 - (void)didUpdateFrame:(RCTFrameUpdate *)update
 {
-  RCTAssertMainThread();
-
   NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
   for (RCTTimer *timer in _timers.allObjects) {
     if ([timer updateFoundNeedsJSUpdate]) {

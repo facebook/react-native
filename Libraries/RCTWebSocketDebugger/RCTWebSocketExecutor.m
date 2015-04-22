@@ -175,6 +175,11 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
   });
 }
 
+- (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  dispatch_async(dispatch_get_main_queue(), block);
+}
+
 - (void)invalidate
 {
   _socket.delegate = nil;

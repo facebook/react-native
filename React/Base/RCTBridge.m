@@ -694,7 +694,7 @@ static NSDictionary *RCTLocalModulesConfig()
 
 @interface RCTDisplayLink : NSObject <RCTInvalidating>
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge selector:(SEL)selector NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -708,14 +708,16 @@ static NSDictionary *RCTLocalModulesConfig()
 {
   __weak RCTBridge *_bridge;
   CADisplayLink *_displayLink;
+  SEL _selector;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *)bridge selector:(SEL)selector
 {
   if ((self = [super init])) {
     _bridge = bridge;
+    _selector = selector;
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_update:)];
-    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
   }
   return self;
 }
@@ -735,7 +737,10 @@ static NSDictionary *RCTLocalModulesConfig()
 
 - (void)_update:(CADisplayLink *)displayLink
 {
-  [_bridge _update:displayLink];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  [_bridge performSelector:_selector withObject:displayLink];
+#pragma clang diagnostic pop
 }
 
 @end
@@ -770,6 +775,7 @@ static NSDictionary *RCTLocalModulesConfig()
   NSURL *_bundleURL;
   RCTBridgeModuleProviderBlock _moduleProvider;
   RCTDisplayLink *_displayLink;
+  RCTDisplayLink *_vsyncDisplayLink;
   NSMutableSet *_frameUpdateObservers;
   NSMutableArray *_scheduledCalls;
   RCTSparseArray *_scheduledCallbacks;
@@ -799,10 +805,14 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   _latestJSExecutor = _javaScriptExecutor;
   _eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
   _methodQueue = dispatch_queue_create("com.facebook.React.BridgeMethodQueue", DISPATCH_QUEUE_SERIAL);
-  _displayLink = [[RCTDisplayLink alloc] initWithBridge:self];
   _frameUpdateObservers = [[NSMutableSet alloc] init];
   _scheduledCalls = [[NSMutableArray alloc] init];
   _scheduledCallbacks = [[RCTSparseArray alloc] init];
+
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+    _displayLink = [[RCTDisplayLink alloc] initWithBridge:self selector:@selector(_jsThreadUpdate:)];
+  }];
+  _vsyncDisplayLink = [[RCTDisplayLink alloc] initWithBridge:self selector:@selector(_mainThreadUpdate:)];
 
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
@@ -1008,6 +1018,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   _javaScriptExecutor = nil;
 
   [_displayLink invalidate];
+  [_vsyncDisplayLink invalidate];
   _frameUpdateObservers = nil;
 
   // Invalidate modules
@@ -1294,9 +1305,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return YES;
 }
 
-- (void)_update:(CADisplayLink *)displayLink
+- (void)_jsThreadUpdate:(CADisplayLink *)displayLink
 {
-  RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
+  RCTProfileImmediateEvent(@"JS Thread Tick", displayLink.timestamp, @"g");
   RCTProfileBeginEvent();
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
@@ -1306,13 +1317,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     }
   }
 
-  [self _runScheduledCalls];
-
-  RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
-}
-
-- (void)_runScheduledCalls
-{
 #if BATCHED_BRIDGE
 
   NSArray *calls = [_scheduledCallbacks.allObjects arrayByAddingObjectsFromArray:_scheduledCalls];
@@ -1330,6 +1334,13 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
 
 #endif
+
+  RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
+}
+
+- (void)_mainThreadUpdate:(CADisplayLink *)displayLink
+{
+  RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
 }
 
 - (void)addFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer

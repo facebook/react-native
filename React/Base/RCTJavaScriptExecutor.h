@@ -42,6 +42,13 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 - (void)injectJSONText:(NSString *)script
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete;
+
+/**
+ * Enqueue a block to run in the executors JS thread. Fallback to `dispatch_async`
+ * on the main queue if the executor doesn't own a thread.
+ */
+- (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block;
+
 @end
 
 static const char *RCTJavaScriptExecutorID = "RCTJavaScriptExecutorID";
