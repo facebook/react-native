@@ -26,12 +26,13 @@
  */
 'use strict';
 
+var Dimensions = require('Dimensions');
 var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 var merge = require('merge');
 
-var SCREEN_WIDTH = NavigatorNavigationBarStyles.General.ScreenWidth;
+var SCREEN_WIDTH = Dimensions.get('window').width;
 var STATUS_BAR_HEIGHT = NavigatorNavigationBarStyles.General.StatusBarHeight;
 var NAV_BAR_HEIGHT = NavigatorNavigationBarStyles.General.NavBarHeight;
 
@@ -39,7 +40,6 @@ var SPACING = 4;
 var ICON_WIDTH = 40;
 var SEPARATOR_WIDTH = 9;
 var CRUMB_WIDTH = ICON_WIDTH + SEPARATOR_WIDTH;
-var RIGHT_BUTTON_WIDTH = 58;
 
 var OPACITY_RATIO = 100;
 var ICON_INACTIVE_OPACITY = 0.6;
@@ -74,18 +74,17 @@ var TITLE_BASE = {
 // For first title styles, make sure first title is centered
 var FIRST_TITLE_BASE = merge(TITLE_BASE, {
   left: 0,
+  right: 0,
   alignItems: 'center',
-  width: SCREEN_WIDTH,
   height: NAV_BAR_HEIGHT,
 });
 
 var RIGHT_BUTTON_BASE = {
   position: 'absolute',
   top: STATUS_BAR_HEIGHT,
-  left: SCREEN_WIDTH - SPACING - RIGHT_BUTTON_WIDTH,
+  right: SPACING,
   overflow: 'hidden',
   opacity: 1,
-  width: RIGHT_BUTTON_WIDTH,
   height: NAV_BAR_HEIGHT,
   backgroundColor: 'transparent',
 };

@@ -67,15 +67,13 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   [self _regionChanged:mapView];
 
-  if (animated) {
-    mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval
-                                                               target:self
-                                                             selector:@selector(_onTick:)
-                                                             userInfo:@{ RCTMapViewKey: mapView }
-                                                              repeats:YES];
+  mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval
+                                                             target:self
+                                                           selector:@selector(_onTick:)
+                                                           userInfo:@{ RCTMapViewKey: mapView }
+                                                            repeats:YES];
 
-    [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
-  }
+  [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(BOOL)animated

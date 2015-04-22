@@ -25,6 +25,8 @@ static NSString *const RCTReachabilityStateCell = @"cell";
 
 @synthesize bridge = _bridge;
 
+RCT_EXPORT_MODULE()
+
 static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
 {
   RCTReachability *self = (__bridge id)info;
@@ -53,8 +55,6 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 }
 
-RCT_EXPORT_MODULE()
-
 #pragma mark - Lifecycle
 
 - (instancetype)initWithHost:(NSString *)host
@@ -71,7 +71,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  return [self initWithHost:@"http://apple.com"];
+  return [self initWithHost:@"apple.com"];
 }
 
 - (void)dealloc

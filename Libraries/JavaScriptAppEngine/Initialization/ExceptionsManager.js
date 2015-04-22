@@ -28,7 +28,7 @@ type Exception = {
 function handleException(e: Exception) {
   var stack = parseErrorStack(e);
   console.error(
-    'Error: ' +
+    'Err0r: ' +
     '\n stack: \n' + stackToString(stack) +
     '\n URL: ' + e.sourceURL +
     '\n line: ' + e.line +

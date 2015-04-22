@@ -8,6 +8,8 @@
  */
 'use strict';
 
+var chalk = require('chalk');
+
 var COLLECTION_PERIOD = 1000;
 
 var _endedEvents = Object.create(null);
@@ -132,22 +134,22 @@ function _writeAction(action) {
 
   switch (action.action) {
     case 'startEvent':
-      console.log(
+      console.log(chalk.dim(
         '[' + fmtTime + '] ' +
         '<START> ' + action.eventName +
         data
-      );
+      ));
       break;
 
     case 'endEvent':
       var startAction = _eventStarts[action.eventId];
       var startData = startAction.data ? ': ' + JSON.stringify(startAction.data) : '';
-      console.log(
+      console.log(chalk.dim(
         '[' + fmtTime + '] ' +
         '<END>   ' + startAction.eventName +
-        '(' + (action.tstamp - startAction.tstamp) + 'ms)' +
+        ' (' + (action.tstamp - startAction.tstamp) + 'ms)' +
         startData
-      );
+      ));
       delete _eventStarts[action.eventId];
       break;
 

@@ -14,6 +14,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
+#import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 
@@ -22,6 +23,11 @@
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
+- (dispatch_queue_t)methodQueue
+{
+  return [_bridge.uiManager methodQueue];
+}
 
 - (UIView *)view
 {

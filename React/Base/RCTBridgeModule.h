@@ -90,6 +90,37 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
   static const char *__rct_export_entry__[] = { __func__, #js_name, NULL }
 
 /**
+ * The queue that will be used to call all exported methods. If omitted, this
+ * will call on the default background queue, which is avoids blocking the main
+ * thread.
+ *
+ * If the methods in your module need to interact with UIKit methods, they will
+ * probably need to call those on the main thread, as most of UIKit is main-
+ * thread-only. You can tell React Native to call your module methods on the
+ * main thread by returning a reference to the main queue, like this:
+ *
+ * - (dispatch_queue_t)methodQueue
+ * {
+ *   return dispatch_get_main_queue();
+ * }
+ *
+ * If your methods perform heavy work such as synchronous filesystem or network
+ * access, you probably don't want to block the default background queue, as
+ * this will stall other methods. Instead, you should return a custom serial
+ * queue, like this:
+ *
+ * - (dispatch_queue_t)methodQueue
+ * {
+ *   return dispatch_queue_create("com.mydomain.FileQueue", DISPATCH_QUEUE_SERIAL);
+ * }
+ *
+ * Alternatively, if only some methods of the module should be executed on a
+ * particular queue you can leave this method unimplemented, and simply
+ * dispatch_async() to the required queue within the method itself.
+ */
+- (dispatch_queue_t)methodQueue;
+
+/**
  * Injects constants into JS. These constants are made accessible via
  * NativeModules.ModuleName.X. This method is called when the module is
  * registered by the bridge. It is only called once for the lifetime of the

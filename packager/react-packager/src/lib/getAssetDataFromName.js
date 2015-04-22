@@ -2,7 +2,7 @@
 
 var path = require('path');
 
-function extractAssetResolution(filename) {
+function getAssetDataFromName(filename) {
   var ext = path.extname(filename);
 
   var re = new RegExp('@([\\d\\.]+)x\\' + ext + '$');
@@ -19,10 +19,13 @@ function extractAssetResolution(filename) {
     }
   }
 
+  var assetName = match ? filename.replace(re, ext) : filename;
   return {
     resolution: resolution,
-    assetName: match ? filename.replace(re, ext) : filename,
+    assetName: assetName,
+    type: ext.slice(1),
+    name: path.basename(assetName, ext)
   };
 }
 
-module.exports = extractAssetResolution;
+module.exports = getAssetDataFromName;

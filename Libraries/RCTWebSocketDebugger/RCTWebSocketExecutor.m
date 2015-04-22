@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
+
 #import "RCTWebSocketExecutor.h"
 
 #import "RCTLog.h"
@@ -82,7 +86,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 {
   __block NSError *initError;
   dispatch_semaphore_t s = dispatch_semaphore_create(0);
-  [self sendMessage:@{@"method": @"prepareJSRuntime"} waitForReply:^(NSError *error, NSDictionary *reply) {
+  [self sendMessage:@{@"method": @"prepareJSRuntime"} context:nil waitForReply:^(NSError *error, NSDictionary *reply) {
     initError = error;
     dispatch_semaphore_signal(s);
   }];
@@ -111,7 +115,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
   RCTLogError(@"WebSocket connection failed with error %@", error);
 }
 
-- (void)sendMessage:(NSDictionary *)message waitForReply:(WSMessageCallback)callback
+- (void)sendMessage:(NSDictionary *)message context:(NSNumber *)executorID waitForReply:(WSMessageCallback)callback
 {
   static NSUInteger lastID = 10000;
 
@@ -121,6 +125,8 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
         NSLocalizedDescriptionKey: @"socket closed"
       }];
       callback(error, nil);
+      return;
+    } else if (executorID && ![RCTGetExecutorID(self) isEqualToNumber:executorID]) {
       return;
     }
 
@@ -134,22 +140,22 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (void)executeApplicationScript:(NSString *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  NSDictionary *message = @{@"method": NSStringFromSelector(_cmd), @"url": [URL absoluteString], @"inject": _injectedObjects};
-  [self sendMessage:message waitForReply:^(NSError *error, NSDictionary *reply) {
+  NSDictionary *message = @{@"method": @"executeApplicationScript", @"url": [URL absoluteString], @"inject": _injectedObjects};
+  [self sendMessage:message context:nil waitForReply:^(NSError *error, NSDictionary *reply) {
     onComplete(error);
   }];
 }
 
-- (void)executeJSCall:(NSString *)name method:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
+- (void)executeJSCall:(NSString *)name method:(NSString *)method arguments:(NSArray *)arguments context:(NSNumber *)executorID callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
   NSDictionary *message = @{
-    @"method": NSStringFromSelector(_cmd),
+    @"method": @"executeJSCall",
     @"moduleName": name,
     @"moduleMethod": method,
     @"arguments": arguments
   };
-  [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary *reply) {
+  [self sendMessage:message context:executorID waitForReply:^(NSError *socketError, NSDictionary *reply) {
     if (socketError) {
       onComplete(nil, socketError);
       return;
@@ -167,6 +173,11 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
     _injectedObjects[objectName] = script;
     onComplete(nil);
   });
+}
+
+- (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  dispatch_async(dispatch_get_main_queue(), block);
 }
 
 - (void)invalidate
@@ -187,3 +198,5 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 }
 
 @end
+
+#endif
