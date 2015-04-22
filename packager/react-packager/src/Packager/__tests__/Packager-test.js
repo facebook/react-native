@@ -111,7 +111,7 @@ describe('Packager', function() {
         var imgModule = {
           isStatic: true,
           path: '/root/img/new_image.png',
-          uri: 'img/new_image.png',
+          uri: 'assets/img/new_image.png',
           width: 25,
           height: 50,
         };

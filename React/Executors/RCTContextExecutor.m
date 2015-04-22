@@ -218,7 +218,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (void)dealloc
 {
-  RCTAssert(!self.valid, @"must call -invalidate before -dealloc");
+  [self invalidate];
 }
 
 - (void)executeJSCall:(NSString *)name

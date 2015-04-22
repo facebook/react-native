@@ -80,6 +80,10 @@ var DEVICE_NOTIF_EVENT = 'openURL';
  *   }
  * });
  * ```
+ *
+ * _The iOS simulator does not support the `mailto:` and `tel:` schemas
+ * because the Mail and Phone apps are not installed - you will need to test
+ * them on a device._
  */
 class LinkingIOS {
   /**

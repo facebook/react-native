@@ -61,7 +61,6 @@ RCT_EXPORT_MODULE()
 #pragma mark - View properties
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
-RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)

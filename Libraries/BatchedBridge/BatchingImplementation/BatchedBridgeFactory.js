@@ -74,7 +74,8 @@ var BatchedBridgeFactory = {
       setLoggingEnabled: messageQueue.setLoggingEnabled.bind(messageQueue),
       getLoggedOutgoingItems: messageQueue.getLoggedOutgoingItems.bind(messageQueue),
       getLoggedIncomingItems: messageQueue.getLoggedIncomingItems.bind(messageQueue),
-      replayPreviousLog: messageQueue.replayPreviousLog.bind(messageQueue)
+      replayPreviousLog: messageQueue.replayPreviousLog.bind(messageQueue),
+      processBatch: messageQueue.processBatch.bind(messageQueue),
     };
   }
 };

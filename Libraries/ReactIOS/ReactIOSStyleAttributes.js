@@ -10,22 +10,23 @@
  * @flow
  */
 
-"use strict";
+'use strict';
 
+var ImageStylePropTypes = require('ImageStylePropTypes');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var deepDiffer = require('deepDiffer');
 var keyMirror = require('keyMirror');
 var matricesDiffer = require('matricesDiffer');
-var merge = require('merge');
+var sizesDiffer = require('sizesDiffer');
 
-var ReactIOSStyleAttributes = merge(
-  keyMirror(ViewStylePropTypes),
-  keyMirror(TextStylePropTypes)
-);
+var ReactIOSStyleAttributes = {
+  ...keyMirror(ViewStylePropTypes),
+  ...keyMirror(TextStylePropTypes),
+  ...keyMirror(ImageStylePropTypes),
+};
 
 ReactIOSStyleAttributes.transformMatrix = { diff: matricesDiffer };
-ReactIOSStyleAttributes.shadowOffset = { diff: deepDiffer };
+ReactIOSStyleAttributes.shadowOffset = { diff: sizesDiffer };
 
 module.exports = ReactIOSStyleAttributes;

@@ -41,9 +41,11 @@ RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
-RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
 RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
-
+RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
+{
+  [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
+}
 
 #pragma mark MKMapViewDelegate
 

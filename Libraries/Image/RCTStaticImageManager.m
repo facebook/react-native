@@ -26,7 +26,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(capInsets, UIEdgeInsets)
-RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
+RCT_EXPORT_VIEW_PROPERTY(contentMode, UIViewContentMode)
 RCT_CUSTOM_VIEW_PROPERTY(src, NSURL, RCTStaticImage)
 {
   if (json) {
