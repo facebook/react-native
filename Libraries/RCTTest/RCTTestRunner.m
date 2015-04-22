@@ -10,6 +10,7 @@
 #import "RCTTestRunner.h"
 
 #import "FBSnapshotTestController.h"
+#import "RCTDefines.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
@@ -19,7 +20,7 @@
 
 @implementation RCTTestRunner
 {
-  FBSnapshotTestController *_snapshotController;
+  FBSnapshotTestController *_testController;
 }
 
 - (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir
@@ -27,8 +28,8 @@
   if ((self = [super init])) {
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
-    _snapshotController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
-    _snapshotController.referenceImagesDirectory = referenceDir;
+    _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
+    _testController.referenceImagesDirectory = referenceDir;
     _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
   }
   return self;
@@ -36,12 +37,12 @@
 
 - (void)setRecordMode:(BOOL)recordMode
 {
-  _snapshotController.recordMode = recordMode;
+  _testController.recordMode = recordMode;
 }
 
 - (BOOL)recordMode
 {
-  return _snapshotController.recordMode;
+  return _testController.recordMode;
 }
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName
@@ -59,26 +60,23 @@
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
-  UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-  if ([vc.view isKindOfClass:[RCTRootView class]]) {
-    [(RCTRootView *)vc.view invalidate]; // Make sure the normal app view doesn't interfere
-  }
-  vc.view = [[UIView alloc] init];
-
-  RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
-  testModule.testSelector = test;
-  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
-                                            moduleProvider:^(){
-                                              return @[testModule];
-                                            }
-                                             launchOptions:nil];
-
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                                   moduleName:moduleName];
-  testModule.view = rootView;
-  [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:_scriptURL
+                                                      moduleName:moduleName
+                                                   launchOptions:nil];
   rootView.initialProperties = initialProps;
   rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
+
+  NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);
+  RCTTestModule *testModule = rootView.bridge.modules[testModuleName];
+  testModule.controller = _testController;
+  testModule.testSelector = test;
+  testModule.view = rootView;
+
+  UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+  vc.view = [[UIView alloc] init];
+  [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
+
+#if RCT_DEBUG // Prevents build errors, as RCTRedBox is underfined if RCT_DEBUG=0
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
@@ -100,6 +98,13 @@
   } else {
     RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
   }
+
+#else
+
+  expectErrorBlock(@"RCTRedBox unavailable. Set RCT_DEBUG=1 for testing.");
+
+#endif
+
 }
 
 @end

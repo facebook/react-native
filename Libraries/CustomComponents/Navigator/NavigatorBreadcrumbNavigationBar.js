@@ -138,6 +138,37 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     }
   },
 
+  onAnimationStart: function(fromIndex, toIndex) {
+    var max = Math.max(fromIndex, toIndex);
+    var min = Math.min(fromIndex, toIndex);
+    for (var index = min; index <= max; index++) {
+      this._setRenderViewsToHardwareTextureAndroid(index, true);
+    }
+  },
+
+  onAnimationEnd: function(fromIndex, toIndex) {
+    var max = Math.max(fromIndex, toIndex);
+    var min = Math.min(fromIndex, toIndex);
+    for (var index = min; index <= max; index++) {
+      this._setRenderViewsToHardwareTextureAndroid(index, false);
+    }
+  },
+
+  _setRenderViewsToHardwareTextureAndroid: function(index, renderToHardwareTexture) {
+    var props = {
+      renderToHardwareTextureAndroid: renderToHardwareTexture,
+    };
+
+    this.refs['crumb_' + index].setNativeProps(props);
+    this.refs['icon_' + index].setNativeProps(props);
+    this.refs['separator_' + index].setNativeProps(props);
+    this.refs['title_' + index].setNativeProps(props);
+    var right = this.refs['right_' + index];
+    if (right) {
+      right.setNativeProps(props);
+    }
+  },
+
   render: function() {
     var navState = this.props.navState;
     var icons = navState && navState.routeStack.map(this._renderOrReturnBreadcrumb);
@@ -260,7 +291,7 @@ var styles = StyleSheet.create({
     height: NavigatorNavigationBarStyles.General.TotalNavHeight,
     top: 0,
     left: 0,
-    width: NavigatorNavigationBarStyles.General.ScreenWidth,
+    right: 0,
   },
 });
 

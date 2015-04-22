@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTSlider.h"
 #import "UIView+React.h"
 
 @implementation RCTSliderManager
@@ -19,32 +20,31 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  UISlider *slider = [[UISlider alloc] init];
+  RCTSlider *slider = [[RCTSlider alloc] init];
   [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
   [slider addTarget:self action:@selector(sliderTouchEnd:) forControlEvents:UIControlEventTouchUpInside];
   return slider;
 }
 
-- (void)sliderValueChanged:(UISlider *)sender
+static void RCTSendSliderEvent(RCTSliderManager *self, UISlider *sender, BOOL continuous)
 {
   NSDictionary *event = @{
     @"target": sender.reactTag,
     @"value": @(sender.value),
-    @"continuous": @YES,
+    @"continuous": @(continuous),
   };
 
   [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
 }
 
+- (void)sliderValueChanged:(UISlider *)sender
+{
+  RCTSendSliderEvent(self, sender, YES);
+}
+
 - (void)sliderTouchEnd:(UISlider *)sender
 {
-  NSDictionary *event = @{
-    @"target": sender.reactTag,
-    @"value": @(sender.value),
-    @"continuous": @NO,
-  };
-
-  [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  RCTSendSliderEvent(self, sender, NO);
 }
 
 RCT_EXPORT_VIEW_PROPERTY(value, float);

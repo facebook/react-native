@@ -35,6 +35,11 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 /**
  * @param {NSDictionary} args Dictionary of the form
  *
@@ -64,37 +69,34 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     return;
   }
 
-  dispatch_async(dispatch_get_main_queue(), ^{
+  UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                      message:message
+                                                     delegate:self
+                                            cancelButtonTitle:nil
+                                            otherButtonTitles:nil];
 
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                        message:message
-                                                       delegate:self
-                                              cancelButtonTitle:nil
-                                              otherButtonTitles:nil];
+  NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
 
-    NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
-
-    NSInteger index = 0;
-    for (NSDictionary *button in buttons) {
-      if (button.count != 1) {
-        RCTLogError(@"Button definitions should have exactly one key.");
-      }
-      NSString *buttonKey = [button.allKeys firstObject];
-      NSString *buttonTitle = [button[buttonKey] description];
-      [alertView addButtonWithTitle:buttonTitle];
-      if ([buttonKey isEqualToString: @"cancel"]) {
-        alertView.cancelButtonIndex = index;
-      }
-      [buttonKeys addObject:buttonKey];
-      index ++;
+  NSInteger index = 0;
+  for (NSDictionary *button in buttons) {
+    if (button.count != 1) {
+      RCTLogError(@"Button definitions should have exactly one key.");
     }
+    NSString *buttonKey = [button.allKeys firstObject];
+    NSString *buttonTitle = [button[buttonKey] description];
+    [alertView addButtonWithTitle:buttonTitle];
+    if ([buttonKey isEqualToString: @"cancel"]) {
+      alertView.cancelButtonIndex = index;
+    }
+    [buttonKeys addObject:buttonKey];
+    index ++;
+  }
 
-    [_alerts addObject:alertView];
-    [_alertCallbacks addObject:callback ?: ^(id unused) {}];
-    [_alertButtonKeys addObject:buttonKeys];
+  [_alerts addObject:alertView];
+  [_alertCallbacks addObject:callback ?: ^(id unused) {}];
+  [_alertButtonKeys addObject:buttonKeys];
 
-    [alertView show];
-  });
+  [alertView show];
 }
 
 #pragma mark - UIAlertViewDelegate

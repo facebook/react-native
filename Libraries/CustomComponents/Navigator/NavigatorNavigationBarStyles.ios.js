@@ -169,7 +169,6 @@ module.exports = {
     NavBarHeight: NAV_BAR_HEIGHT,
     StatusBarHeight: STATUS_BAR_HEIGHT,
     TotalNavHeight: NAV_HEIGHT,
-    ScreenWidth: SCREEN_WIDTH,
   },
   Interpolators,
   Stages,

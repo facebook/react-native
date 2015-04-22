@@ -9,10 +9,11 @@
 'use strict';
 
 var declareOpts = require('../lib/declareOpts');
-var extractAssetResolution = require('../lib/extractAssetResolution');
+var getAssetDataFromName = require('../lib/getAssetDataFromName');
 var path = require('path');
 var Promise = require('bluebird');
 var fs = require('fs');
+var crypto = require('crypto');
 
 var lstat = Promise.promisify(fs.lstat);
 var readDir = Promise.promisify(fs.readdir);
@@ -44,11 +45,11 @@ function AssetServer(options) {
  *
  * 1. We first parse the directory of the asset
  * 2. We check to find a matching directory in one of the project roots
- * 3. We then build a map of all assets and their resolutions in this directory
+ * 3. We then build a map of all assets and their scales in this directory
  * 4. Then pick the closest resolution (rounding up) to the requested one
  */
 
-AssetServer.prototype.get = function(assetPath) {
+AssetServer.prototype._getAssetRecord = function(assetPath) {
   var filename = path.basename(assetPath);
 
   return findRoot(
@@ -60,13 +61,7 @@ AssetServer.prototype.get = function(assetPath) {
       readDir(dir),
     ];
   }).spread(function(dir, files) {
-    // Easy case. File exactly what the client requested.
-    var index = files.indexOf(filename);
-    if (index > -1) {
-      return readFile(path.join(dir, filename));
-    }
-
-    var assetData = extractAssetResolution(filename);
+    var assetData = getAssetDataFromName(filename);
     var map = buildAssetMap(dir, files);
     var record = map[assetData.assetName];
 
@@ -74,13 +69,47 @@ AssetServer.prototype.get = function(assetPath) {
       throw new Error('Asset not found');
     }
 
-    for (var i = 0; i < record.resolutions.length; i++) {
-      if (record.resolutions[i] >= assetData.resolution) {
+    return record;
+  });
+};
+
+AssetServer.prototype.get = function(assetPath) {
+  var assetData = getAssetDataFromName(assetPath);
+  return this._getAssetRecord(assetPath).then(function(record) {
+    for (var i = 0; i < record.scales.length; i++) {
+      if (record.scales[i] >= assetData.resolution) {
         return readFile(record.files[i]);
       }
     }
 
     return readFile(record.files[record.files.length - 1]);
+  });
+};
+
+AssetServer.prototype.getAssetData = function(assetPath) {
+  var nameData = getAssetDataFromName(assetPath);
+  var data = {
+    name: nameData.name,
+    type: 'png',
+  };
+
+  return this._getAssetRecord(assetPath).then(function(record) {
+    data.scales = record.scales;
+
+    return Promise.all(
+      record.files.map(function(file) {
+        return lstat(file);
+      })
+    );
+  }).then(function(stats) {
+    var hash = crypto.createHash('md5');
+
+    stats.forEach(function(stat) {
+      hash.update(stat.mtime.getTime().toString());
+    });
+
+    data.hash = hash.digest('hex');
+    return data;
   });
 };
 
@@ -105,26 +134,26 @@ function findRoot(roots, dir) {
 }
 
 function buildAssetMap(dir, files) {
-  var assets = files.map(extractAssetResolution);
+  var assets = files.map(getAssetDataFromName);
   var map = Object.create(null);
   assets.forEach(function(asset, i) {
     var file = files[i];
     var record = map[asset.assetName];
     if (!record) {
       record = map[asset.assetName] = {
-        resolutions: [],
+        scales: [],
         files: [],
       };
     }
 
     var insertIndex;
-    var length = record.resolutions.length;
+    var length = record.scales.length;
     for (insertIndex = 0; insertIndex < length; insertIndex++) {
-      if (asset.resolution <  record.resolutions[insertIndex]) {
+      if (asset.resolution <  record.scales[insertIndex]) {
         break;
       }
     }
-    record.resolutions.splice(insertIndex, 0, asset.resolution);
+    record.scales.splice(insertIndex, 0, asset.resolution);
     record.files.splice(insertIndex, 0, path.join(dir, file));
   });
 

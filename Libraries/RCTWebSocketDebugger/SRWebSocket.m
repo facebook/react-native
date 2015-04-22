@@ -19,6 +19,8 @@
 
 #import <Availability.h>
 
+#pragma clang diagnostic ignored "-Wshadow"
+
 //NOTE: libicucore ins't actually needed for the socket to function
 //and by commenting this out, we avoid the need to import it into every app.
 
@@ -1702,7 +1704,7 @@ static inline int32_t validate_dispatch_data_partial_string(NSData *data) {
     for (int i = 0; i < maxCodepointSize; i++) {
         NSString *str = [[NSString alloc] initWithBytesNoCopy:(char *)data.bytes length:data.length - i encoding:NSUTF8StringEncoding freeWhenDone:NO];
         if (str) {
-            return data.length - i;
+            return (int32_t)(data.length - i);
         }
     }
     

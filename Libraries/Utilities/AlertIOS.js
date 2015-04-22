@@ -37,7 +37,7 @@ var DEFAULT_BUTTON = {
  *     {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
  *     {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
  *   ]
- * )}
+ * )
  * ```
  */
 

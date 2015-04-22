@@ -131,12 +131,12 @@ exports.description = 'Monitor network status';
 exports.examples = [
   {
     title: 'NetInfo.isConnected',
-    description: 'Asyncronously load and observe connectivity',
+    description: 'Asynchronously load and observe connectivity',
     render(): ReactElement { return <IsConnected />; }
   },
   {
     title: 'NetInfo.reachabilityIOS',
-    description: 'Asyncronously load and observe iOS reachability',
+    description: 'Asynchronously load and observe iOS reachability',
     render(): ReactElement { return <ReachabilityCurrent />; }
   },
   {

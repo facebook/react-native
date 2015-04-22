@@ -26,7 +26,7 @@ var detectingWatcherClass = new Promise(function(resolve) {
 
 module.exports = FileWatcher;
 
-var MAX_WAIT_TIME = 3000;
+var MAX_WAIT_TIME = 10000;
 
 // Singleton
 var fileWatcher = null;
@@ -73,7 +73,7 @@ function createWatcher(rootConfig) {
       var rejectTimeout = setTimeout(function() {
         reject(new Error([
           'Watcher took too long to load',
-          'Try running `watchman` from your terminal',
+          'Try running `watchman version` from your terminal',
           'https://facebook.github.io/watchman/docs/troubleshooting.html',
         ].join('\n')));
       }, MAX_WAIT_TIME);

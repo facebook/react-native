@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEBUG // Red box is only available in debug mode
+
 #import <UIKit/UIKit.h>
 
 @interface RCTRedBox : NSObject
@@ -23,3 +27,5 @@
 - (void)dismiss;
 
 @end
+
+#endif

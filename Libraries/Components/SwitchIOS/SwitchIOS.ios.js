@@ -16,11 +16,9 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var SWITCH = 'switch';
 
@@ -88,20 +86,16 @@ var SwitchIOS = React.createClass({
 
     // The underlying switch might have changed, but we're controlled,
     // and so want to ensure it represents our value.
-    this.refs[SWITCH].setNativeProps({on: this.props.value});
+    this.refs[SWITCH].setNativeProps({value: this.props.value});
   },
 
   render: function() {
     return (
       <RCTSwitch
+        {...this.props}
         ref={SWITCH}
-        style={[styles.rkSwitch, this.props.style]}
-        enabled={!this.props.disabled}
-        on={this.props.value}
         onChange={this._onChange}
-        onTintColor={this.props.onTintColor}
-        thumbTintColor={this.props.thumbTintColor}
-        tintColor={this.props.tintColor}
+        style={[styles.rkSwitch, this.props.style]}
       />
     );
   }
@@ -114,17 +108,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var rkSwitchAttributes = merge(ReactIOSViewAttributes.UIView, {
-  onTintColor: true,
-  tintColor: true,
-  thumbTintColor: true,
-  on: true,
-  enabled: true,
-});
-
-var RCTSwitch = createReactIOSNativeComponentClass({
-  validAttributes: rkSwitchAttributes,
-  uiViewClassName: 'RCTSwitch',
-});
+var RCTSwitch = requireNativeComponent('RCTSwitch', SwitchIOS);
 
 module.exports = SwitchIOS;
