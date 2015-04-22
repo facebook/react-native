@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTDefines.h"
 
 @class FBSnapshotTestController;
 
