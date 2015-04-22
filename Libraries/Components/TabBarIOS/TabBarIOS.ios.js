@@ -25,7 +25,13 @@ var TabBarIOS = React.createClass({
 
   propTypes: {
     style: View.propTypes.style,
+    /**
+     * Color of the currently selected tab icon
+     */
     tintColor: React.PropTypes.string,
+    /**
+     * Background color of the tab bar
+     */
     barTintColor: React.PropTypes.string
   },
 
