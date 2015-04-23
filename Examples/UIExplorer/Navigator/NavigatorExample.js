@@ -175,4 +175,6 @@ var styles = StyleSheet.create({
   }
 });
 
+TabBarExample.external = true;
+
 module.exports = TabBarExample;
