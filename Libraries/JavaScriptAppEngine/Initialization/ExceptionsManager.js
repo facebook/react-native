@@ -25,11 +25,17 @@ type Exception = {
   message: string;
 }
 
-function reportException(e: Exception, stack?: any) {
+function handleException(e: Exception) {
+  var stack = parseErrorStack(e);
+  console.error(
+    'Err0r: ' +
+    '\n stack: \n' + stackToString(stack) +
+    '\n URL: ' + e.sourceURL +
+    '\n line: ' + e.line +
+    '\n message: ' + e.message
+  );
+
   if (RCTExceptionsManager) {
-    if (!stack) {
-      stack = parseErrorStack(e);
-    }
     RCTExceptionsManager.reportUnhandledException(e.message, stack);
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
@@ -42,18 +48,6 @@ function reportException(e: Exception, stack?: any) {
         });
     }
   }
-}
-
-function handleException(e: Exception) {
-  var stack = parseErrorStack(e);
-  console.log(
-    'Error: ' +
-    '\n stack: \n' + stackToString(stack) +
-    '\n URL: ' + e.sourceURL +
-    '\n line: ' + e.line +
-    '\n message: ' + e.message
-  );
-  reportException(e, stack);
 }
 
 function stackToString(stack) {
@@ -77,4 +71,4 @@ function fillSpaces(n) {
   return new Array(n + 1).join(' ');
 }
 
-module.exports = { handleException, reportException };
+module.exports = { handleException };

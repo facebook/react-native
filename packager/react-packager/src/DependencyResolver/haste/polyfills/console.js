@@ -23,7 +23,7 @@
     log: 1,
     info: 2,
     warn: 3,
-    error: 4,
+    error: 4
   };
 
   function setupConsole(global) {
@@ -35,10 +35,8 @@
     function getNativeLogFunction(level) {
       return function() {
         var str = Array.prototype.map.call(arguments, function(arg) {
-          if (arg === undefined) {
-            return 'undefined';
-          } else if (arg === null) {
-            return 'null';
+          if (arg == null) {
+            return arg === null ? 'null' : 'undefined';
           } else if (typeof arg === 'string') {
             return '"' + arg + '"';
           } else {
@@ -50,22 +48,14 @@
               if (typeof arg.toString === 'function') {
                 try {
                   return arg.toString();
-                } catch (E) {}
+                } catch (E) {
+                  return 'unknown';
+                }
               }
-              return '["' + typeof arg + '" failed to stringify]';
             }
           }
         }).join(', ');
         global.nativeLoggingHook(str, level);
-        if (global.reportException && level === LOG_LEVELS.error) {
-          var error = new Error(str);
-          error.framesToPop = 1;
-          // TODO(sahrens): re-enable this when we have a way to turn
-          // it off by default for MAdMan/Android, and/or all
-          // consumers of console.error() are fixed, including
-          // CatalystErrorHandlerModuleTestCase
-          // global.reportException(error);
-        }
       };
     }
 
