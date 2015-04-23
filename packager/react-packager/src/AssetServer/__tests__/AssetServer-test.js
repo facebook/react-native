@@ -1,16 +1,23 @@
 'use strict';
 
 jest
-  .autoMockOff()
-  .mock('../../lib/declareOpts')
-  .mock('crypto')
-  .mock('fs');
+  .dontMock('path')
+  .dontMock('../../lib/getAssetDataFromName')
+  .dontMock('../');
 
-var fs = require('fs');
-var AssetServer = require('../');
 var Promise = require('bluebird');
 
 describe('AssetServer', function() {
+  var AssetServer;
+  var crypto;
+  var fs;
+
+  beforeEach(function() {
+    AssetServer = require('../');
+    crypto = require('crypto');
+    fs = require('fs');
+  });
+
   describe('assetServer.get', function() {
     pit('should work for the simple case', function() {
       var server = new AssetServer({
@@ -96,7 +103,7 @@ describe('AssetServer', function() {
       hash.digest.mockImpl(function() {
         return 'wow such hash';
       });
-      require('crypto').createHash.mockImpl(function() {
+      crypto.createHash.mockImpl(function() {
         return hash;
       });
 
