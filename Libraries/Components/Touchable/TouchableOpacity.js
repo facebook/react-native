@@ -14,6 +14,7 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var POPAnimationMixin = require('POPAnimationMixin');
+var StyleSheetRegistry = require('StyleSheetRegistry');
 var React = require('React');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
@@ -105,12 +106,17 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableHandleActivePressOut: function() {
-    this.setOpacityTo(1.0);
+    var childStyle = this.refs[CHILD_REF].props.style;
+
+    if (typeof childStyle === 'number') {
+      childStyle = StyleSheetRegistry.getStyleByID(childStyle);
+    }
+
+    this.setOpacityTo(childStyle && childStyle.opacity || 1);
     this.props.onPressOut && this.props.onPressOut();
   },
 
   touchableHandlePress: function() {
-    this.setOpacityTo(1.0);
     this.props.onPress && this.props.onPress();
   },
 
