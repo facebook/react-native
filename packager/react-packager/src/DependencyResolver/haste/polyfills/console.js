@@ -60,7 +60,11 @@
         if (global.reportException && level === LOG_LEVELS.error) {
           var error = new Error(str);
           error.framesToPop = 1;
-          global.reportException(error);
+          // TODO(sahrens): re-enable this when we have a way to turn
+          // it off by default for MAdMan/Android, and/or all
+          // consumers of console.error() are fixed, including
+          // CatalystErrorHandlerModuleTestCase
+          // global.reportException(error);
         }
       };
     }
