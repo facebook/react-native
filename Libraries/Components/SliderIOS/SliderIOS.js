@@ -57,6 +57,11 @@ var SliderIOS = React.createClass({
     maximumValue: PropTypes.number,
 
     /**
+     * The color used for the thumb which you drag across the slider
+     */
+    thumbTintColor: PropTypes.string,
+
+    /**
      * Callback continuously called while the user is dragging the slider.
      */
     onValueChange: PropTypes.func,
@@ -86,6 +91,7 @@ var SliderIOS = React.createClass({
         value={this.props.value}
         maximumValue={this.props.maximumValue}
         minimumValue={this.props.minimumValue}
+        thumbTintColor={this.props.thumbTintColor}
         onChange={this._onValueChange}
       />
     );
@@ -106,6 +112,7 @@ if (Platform.OS === 'ios') {
     value: true,
     minimumValue: true,
     maximumValue: true,
+    thumbTintColor: true,
   };
 
   var RCTSlider = createReactIOSNativeComponentClass({
