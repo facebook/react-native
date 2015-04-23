@@ -50,5 +50,6 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(value, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
+RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
 
 @end
