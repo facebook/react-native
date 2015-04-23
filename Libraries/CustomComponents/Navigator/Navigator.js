@@ -1079,8 +1079,7 @@ var Navigator = React.createClass({
     // To avoid visual glitches, we never re-render scenes during a transition.
     // We assume that `state.updatingRangeLength` will have a length during the
     // initial render of any scene
-    var shouldRenderScenes = !this.state.isAnimating &&
-      this.state.updatingRangeLength !== 0;
+    var shouldRenderScenes = this.state.updatingRangeLength !== 0;
     if (shouldRenderScenes) {
       return (
         <StaticContainer shouldUpdate={true}>
