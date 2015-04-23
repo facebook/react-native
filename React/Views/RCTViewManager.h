@@ -9,9 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "../Base/RCTBridgeModule.h"
-#import "../Base/RCTConvert.h"
-#import "../Base/RCTLog.h"
+#import "RCTBridgeModule.h"
+#import "RCTConvert.h"
+#import "RCTLog.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
