@@ -69,7 +69,7 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
   @end \
   @interface objc_name (RCTExternModule) <RCTBridgeModule> \
   @end \
-  @implementation objc_name \
+  @implementation objc_name (RCTExternModule) \
   RCT_EXPORT_MODULE(js_name)
 
 /**
