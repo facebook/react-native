@@ -50,5 +50,7 @@ static void RCTSendSliderEvent(RCTSliderManager *self, UISlider *sender, BOOL co
 RCT_EXPORT_VIEW_PROPERTY(value, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
+RCT_EXPORT_VIEW_PROPERTY(minimumTrackTintColor, UIColor);
+RCT_EXPORT_VIEW_PROPERTY(maximumTrackTintColor, UIColor);
 
 @end
