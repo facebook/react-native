@@ -22,6 +22,10 @@ RCT_EXPORT_MODULE()
   UISlider *slider = [[UISlider alloc] init];
   [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
   [slider addTarget:self action:@selector(sliderTouchEnd:) forControlEvents:UIControlEventTouchUpInside];
+  // UIKit bug with slider means it has to be initialised with an image before thumbTintColor works
+  // See http://stackoverflow.com/questions/19061157/ios-7-uislider-thumbtintcolor-does-not-change
+  [slider setThumbImage:slider.currentThumbImage forState:UIControlStateNormal ];
+
   return slider;
 }
 
