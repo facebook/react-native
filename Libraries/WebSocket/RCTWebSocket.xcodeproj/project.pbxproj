@@ -7,40 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00D277161AB8C32C00DC1E48 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */; };
+		3C86DF791ADF646A0047B81A /* WebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF781ADF646A0047B81A /* WebSocket.m */; };
+		3C86DF7C1ADF695F0047B81A /* WebSocketFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* WebSocketFactory.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		3C8FAB321AE61C8C00CA70CA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3C8FAB001AE6175200CA70CA;
-			remoteInfo = SRWebSocket;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		832C817E1AAF6DEF007FA2F7 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		00D277141AB8C32C00DC1E48 /* RCTWebSocketExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketExecutor.h; sourceTree = "<group>"; };
-		00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketExecutor.m; sourceTree = "<group>"; };
-		3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SRWebSocket.xcodeproj; path = ../SRWebSocket/SRWebSocket.xcodeproj; sourceTree = "<group>"; };
-		832C81801AAF6DEF007FA2F7 /* libRCTWebSocketDebugger.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocketDebugger.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C86DF461ADF2C930047B81A /* libWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWebSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C86DF771ADF646A0047B81A /* WebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebSocket.h; sourceTree = "<group>"; };
+		3C86DF781ADF646A0047B81A /* WebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebSocket.m; sourceTree = "<group>"; };
+		3C86DF7A1ADF695F0047B81A /* WebSocketFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebSocketFactory.h; sourceTree = "<group>"; };
+		3C86DF7B1ADF695F0047B81A /* WebSocketFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = WebSocketFactory.m; sourceTree = "<group>"; tabWidth = 2; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		832C817D1AAF6DEF007FA2F7 /* Frameworks */ = {
+		3C86DF431ADF2C930047B81A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -50,30 +30,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3C8FAB2F1AE61C8C00CA70CA /* Products */ = {
+		3C86DF3D1ADF2C930047B81A = {
 			isa = PBXGroup;
 			children = (
-				3C8FAB331AE61C8C00CA70CA /* libSRWebSocket.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		832C81771AAF6DEF007FA2F7 = {
-			isa = PBXGroup;
-			children = (
-				3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */,
-				00D277141AB8C32C00DC1E48 /* RCTWebSocketExecutor.h */,
-				00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */,
-				832C81811AAF6DEF007FA2F7 /* Products */,
+				3C86DF7A1ADF695F0047B81A /* WebSocketFactory.h */,
+				3C86DF7B1ADF695F0047B81A /* WebSocketFactory.m */,
+				3C86DF771ADF646A0047B81A /* WebSocket.h */,
+				3C86DF781ADF646A0047B81A /* WebSocket.m */,
+				3C86DF471ADF2C930047B81A /* Products */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
 			tabWidth = 2;
 		};
-		832C81811AAF6DEF007FA2F7 /* Products */ = {
+		3C86DF471ADF2C930047B81A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				832C81801AAF6DEF007FA2F7 /* libRCTWebSocketDebugger.a */,
+				3C86DF461ADF2C930047B81A /* libWebSocket.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -81,83 +54,67 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		832C817F1AAF6DEF007FA2F7 /* RCTWebSocketDebugger */ = {
+		3C86DF451ADF2C930047B81A /* WebSocket */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 832C81941AAF6DF0007FA2F7 /* Build configuration list for PBXNativeTarget "RCTWebSocketDebugger" */;
+			buildConfigurationList = 3C86DF5A1ADF2C930047B81A /* Build configuration list for PBXNativeTarget "WebSocket" */;
 			buildPhases = (
-				832C817C1AAF6DEF007FA2F7 /* Sources */,
-				832C817D1AAF6DEF007FA2F7 /* Frameworks */,
-				832C817E1AAF6DEF007FA2F7 /* CopyFiles */,
+				3C86DF421ADF2C930047B81A /* Sources */,
+				3C86DF431ADF2C930047B81A /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = RCTWebSocketDebugger;
-			productName = RCTWebSocketDebugger;
-			productReference = 832C81801AAF6DEF007FA2F7 /* libRCTWebSocketDebugger.a */;
+			name = WebSocket;
+			productName = WebSocket;
+			productReference = 3C86DF461ADF2C930047B81A /* libWebSocket.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		832C81781AAF6DEF007FA2F7 /* Project object */ = {
+		3C86DF3E1ADF2C930047B81A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
-					832C817F1AAF6DEF007FA2F7 = {
-						CreatedOnToolsVersion = 6.2;
+					3C86DF451ADF2C930047B81A = {
+						CreatedOnToolsVersion = 6.3;
 					};
 				};
 			};
-			buildConfigurationList = 832C817B1AAF6DEF007FA2F7 /* Build configuration list for PBXProject "RCTWebSocketDebugger" */;
+			buildConfigurationList = 3C86DF411ADF2C930047B81A /* Build configuration list for PBXProject "RCTWebSocket" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 832C81771AAF6DEF007FA2F7;
-			productRefGroup = 832C81811AAF6DEF007FA2F7 /* Products */;
+			mainGroup = 3C86DF3D1ADF2C930047B81A;
+			productRefGroup = 3C86DF471ADF2C930047B81A /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 3C8FAB2F1AE61C8C00CA70CA /* Products */;
-					ProjectRef = 3C8FAB2E1AE61C8C00CA70CA /* SRWebSocket.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
-				832C817F1AAF6DEF007FA2F7 /* RCTWebSocketDebugger */,
+				3C86DF451ADF2C930047B81A /* WebSocket */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXReferenceProxy section */
-		3C8FAB331AE61C8C00CA70CA /* libSRWebSocket.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSRWebSocket.a;
-			remoteRef = 3C8FAB321AE61C8C00CA70CA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
-
 /* Begin PBXSourcesBuildPhase section */
-		832C817C1AAF6DEF007FA2F7 /* Sources */ = {
+		3C86DF421ADF2C930047B81A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00D277161AB8C32C00DC1E48 /* RCTWebSocketExecutor.m in Sources */,
+				3C86DF7C1ADF695F0047B81A /* WebSocketFactory.m in Sources */,
+				3C86DF791ADF646A0047B81A /* WebSocket.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		832C81921AAF6DF0007FA2F7 /* Debug */ = {
+		3C86DF581ADF2C930047B81A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -175,9 +132,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -190,19 +149,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
-		832C81931AAF6DF0007FA2F7 /* Release */ = {
+		3C86DF591ADF2C930047B81A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -220,28 +174,25 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		832C81951AAF6DF0007FA2F7 /* Debug */ = {
+		3C86DF5B1ADF2C930047B81A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
@@ -250,16 +201,13 @@
 					"$(SRCROOT)/../../React/**",
 					"$(SRCROOT)/../SRWebSocket/",
 				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-llibicucore",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
-		832C81961AAF6DF0007FA2F7 /* Release */ = {
+		3C86DF5C1ADF2C930047B81A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
@@ -268,10 +216,7 @@
 					"$(SRCROOT)/../../React/**",
 					"$(SRCROOT)/../SRWebSocket/",
 				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-llibicucore",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -280,25 +225,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		832C817B1AAF6DEF007FA2F7 /* Build configuration list for PBXProject "RCTWebSocketDebugger" */ = {
+		3C86DF411ADF2C930047B81A /* Build configuration list for PBXProject "RCTWebSocket" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				832C81921AAF6DF0007FA2F7 /* Debug */,
-				832C81931AAF6DF0007FA2F7 /* Release */,
+				3C86DF581ADF2C930047B81A /* Debug */,
+				3C86DF591ADF2C930047B81A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		832C81941AAF6DF0007FA2F7 /* Build configuration list for PBXNativeTarget "RCTWebSocketDebugger" */ = {
+		3C86DF5A1ADF2C930047B81A /* Build configuration list for PBXNativeTarget "WebSocket" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				832C81951AAF6DF0007FA2F7 /* Debug */,
-				832C81961AAF6DF0007FA2F7 /* Release */,
+				3C86DF5B1ADF2C930047B81A /* Debug */,
+				3C86DF5C1ADF2C930047B81A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 832C81781AAF6DEF007FA2F7 /* Project object */;
+	rootObject = 3C86DF3E1ADF2C930047B81A /* Project object */;
 }

@@ -80,6 +80,12 @@ Pod::Spec.new do |s|
     ss.source_files     = "Libraries/RCTWebSocketDebugger/*.{h,m}"
   end
 
+  s.subspec 'RCTWebSocket' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/WebSocket/*.{h,m}"
+    ss.preserve_paths   = "Libraries/WebSocket/*.js"
+  end
+
   s.subspec 'RCTText' do |ss|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Text/*.{h,m}"

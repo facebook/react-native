@@ -21,6 +21,7 @@
 		147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
 		14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
+		3C8FABF51AE6285B00CA70CA /* libSRWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C8FABE61AE627FC00CA70CA /* libSRWebSocket.a */; };
 		58005BF21ABA80A60062E044 /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58005BEE1ABA80530062E044 /* libRCTTest.a */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
 /* End PBXBuildFile section */
@@ -96,6 +97,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTPushNotification;
 		};
+		3C8FABE51AE627FC00CA70CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C8FABE11AE627FC00CA70CA /* SRWebSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3C8FAB001AE6175200CA70CA;
+			remoteInfo = SRWebSocket;
+		};
 		58005BED1ABA80530062E044 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 58005BE41ABA80530062E044 /* RCTTest.xcodeproj */;
@@ -132,6 +140,7 @@
 		14AADEFF1AC3DB95002390C9 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = ../../Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj; sourceTree = "<group>"; };
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
+		3C8FABE11AE627FC00CA70CA /* SRWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SRWebSocket.xcodeproj; path = ../../Libraries/SRWebSocket/SRWebSocket.xcodeproj; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -149,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */,
+				3C8FABF51AE6285B00CA70CA /* libSRWebSocket.a in Frameworks */,
 				00D2771A1AB8C3E100DC1E48 /* libRCTWebSocketDebugger.a in Frameworks */,
 				58005BF21ABA80A60062E044 /* libRCTTest.a in Frameworks */,
 				D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */,
@@ -202,6 +212,7 @@
 				134180261AA91779003F314A /* RCTNetwork.xcodeproj */,
 				58005BE41ABA80530062E044 /* RCTTest.xcodeproj */,
 				13417FEA1AA914B8003F314A /* RCTText.xcodeproj */,
+				3C8FABE11AE627FC00CA70CA /* SRWebSocket.xcodeproj */,
 				00D2770E1AB8C2C700DC1E48 /* RCTWebSocketDebugger.xcodeproj */,
 				D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */,
 			);
@@ -281,6 +292,14 @@
 			isa = PBXGroup;
 			children = (
 				14DC67F11AB71876001358AB /* libRCTPushNotification.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3C8FABE21AE627FC00CA70CA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3C8FABE61AE627FC00CA70CA /* libSRWebSocket.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -431,6 +450,10 @@
 					ProductGroup = 14AADF001AC3DB95002390C9 /* Products */;
 					ProjectRef = 14AADEFF1AC3DB95002390C9 /* React.xcodeproj */;
 				},
+				{
+					ProductGroup = 3C8FABE21AE627FC00CA70CA /* Products */;
+					ProjectRef = 3C8FABE11AE627FC00CA70CA /* SRWebSocket.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -502,6 +525,13 @@
 			fileType = archive.ar;
 			path = libRCTPushNotification.a;
 			remoteRef = 14DC67F01AB71876001358AB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3C8FABE61AE627FC00CA70CA /* libSRWebSocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSRWebSocket.a;
+			remoteRef = 3C8FABE51AE627FC00CA70CA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		58005BEE1ABA80530062E044 /* libRCTTest.a */ = {
