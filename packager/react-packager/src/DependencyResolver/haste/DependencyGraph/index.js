@@ -437,8 +437,9 @@ DependecyGraph.prototype._processModule = function(modulePath) {
     .then(function(content) {
       var moduleDocBlock = docblock.parseAsObject(content);
       if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
-        moduleData.id =
-          moduleDocBlock.providesModule || moduleDocBlock.provides;
+        moduleData.id = /^(\S*)/.exec(
+          moduleDocBlock.providesModule || moduleDocBlock.provides
+        )[1];
 
         // Incase someone wants to require this module via
         // packageName/path/to/module
