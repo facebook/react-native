@@ -154,7 +154,7 @@ var styles = [
 ];
 
 var polyfills = [
-  '../Libraries/GeoLocation/Geolocation.ios.js',
+  '../Libraries/GeoLocation/Geolocation.js',
 ];
 
 var all = components
