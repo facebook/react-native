@@ -13,11 +13,11 @@
 
 @interface RCTTextField : UITextField
 
-@property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, assign) BOOL autoCorrect;
-@property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) UIEdgeInsets contentInset;
-@property (nonatomic, strong) UIColor *placeholderTextColor;
+@property(nonatomic, assign) BOOL caretHidden;
+@property(nonatomic, assign) BOOL autoCorrect;
+@property(nonatomic, assign) BOOL selectTextOnFocus;
+@property(nonatomic, assign) UIEdgeInsets contentInset;
+@property(nonatomic, strong) UIColor *placeholderTextColor;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
