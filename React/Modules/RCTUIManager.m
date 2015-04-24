@@ -729,14 +729,12 @@ static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, 
 }
 
 static void RCTSetViewProps(NSDictionary *props, UIView *view,
-                            UIView *defaultView, RCTViewManager *manager)
-{
-  [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
+                            UIView *defaultView, RCTViewManager *manager) {
+    [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
+        SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forView:withDefaultView:", key]);
+        RCTCallPropertySetter(key, setter, obj, view, defaultView, manager);
 
-    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forView:withDefaultView:", key]);
-    RCTCallPropertySetter(key, setter, obj, view, defaultView, manager);
-
-  }];
+    }];
 }
 
 static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView,

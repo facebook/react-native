@@ -125,7 +125,8 @@ class UIExplorerList extends React.Component {
             autoCorrect={false}
             clearButtonMode="always"
             onChangeText={this._search.bind(this)}
-            placeholder="Search..."
+            placeholder="ПОИСКАТЬ ...."
+            placeholderTextColor="#ff0000"
             style={styles.searchTextInput}
           />
         </View>

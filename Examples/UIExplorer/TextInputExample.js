@@ -57,6 +57,7 @@ var TextEventsExample = React.createClass({
         <TextInput
           autoCapitalize="none"
           placeholder="Enter text to see events"
+          placeholderTextColor="yellow"
           autoCorrect={false}
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
