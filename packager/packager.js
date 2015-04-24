@@ -14,6 +14,12 @@ var exec = require('child_process').exec;
 var http = require('http');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
+var _ = require("underscore");
+
+var windowsPath = require("./react-packager/src/lib/windows");
+if (windowsPath.isWindows()) {
+    path=windowsPath.path;
+}
 
 if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   console.log(

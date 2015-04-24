@@ -20,6 +20,9 @@ var _ = require('underscore');
 var exec = require('child_process').exec;
 var fs = require('fs');
 
+var windowspath = require('../lib/windows');
+if (windowspath.isWindows()) path = windowspath.path;
+
 module.exports = Server;
 
 var validateOpts = declareOpts({
@@ -118,6 +121,10 @@ function Server(options) {
 }
 
 Server.prototype._onFileChange = function(type, filepath, root) {
+  if (windowsPath.isWindows()) {
+    root = windowspath.convertPath(root);
+    filepath = windowspath.convertPath(filepath);
+  }
   var absPath = path.join(root, filepath);
   this._packager.invalidateFile(absPath);
   // Make sure the file watcher event runs through the system before

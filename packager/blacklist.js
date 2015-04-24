@@ -9,11 +9,12 @@
 'use strict';
 
 var path = require("path"); // used for path separator
+var windowspath = require("./react-packager/src/lib/windows");
 
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  __dirname,
+  windowspath.isWindows() ? __dirname : windowspath.convertPath( __dirname),
   'website',
   '/.git',             // added because nodeWatcher does not ignore hidden files
   'node_modules/react-tools/src/utils/ImmutableObject.js',
@@ -43,9 +44,7 @@ var platformBlacklists = {
 };
 
 function escapeRegExp(str) {
-  var escaped = str.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-  // convert the '/' into an escaped local file separator
-  return escaped.replace(/\//g,"\\"+path.sep);
+  return str.replace(/[\/\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
 
 function blacklist(platform, additionalBlacklist) {

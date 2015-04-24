@@ -18,6 +18,9 @@ var lstat = Promise.promisify(fs.lstat);
 var readDir = Promise.promisify(fs.readdir);
 var readFile = Promise.promisify(fs.readFile);
 
+var windowspath = require("../lib/windows");
+if (windowspath.isWindows()) path = windowspath.path;
+
 module.exports = AssetServer;
 
 var validateOpts = declareOpts({
@@ -60,6 +63,10 @@ AssetServer.prototype.get = function(assetPath) {
       readDir(dir),
     ];
   }).spread(function(dir, files) {
+    if (windowspath.isWindows()) {
+      dir = windowspath.convertPath(dir);
+      files = files.map( function(file) { return windowspath.convertPath(file);});
+    }
     // Easy case. File exactly what the client requested.
     var index = files.indexOf(filename);
     if (index > -1) {

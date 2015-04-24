@@ -20,6 +20,10 @@ var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
 var extractAssetResolution = require('../../../lib/extractAssetResolution');
 
+var _ = require("underscore");
+var windowsPath = require("../../../lib/windows");
+if (windowsPath.isWindows()) path=windowsPath.path;
+
 var readFile = Promise.promisify(fs.readFile);
 var readDir = Promise.promisify(fs.readdir);
 var lstat = Promise.promisify(fs.lstat);
@@ -723,6 +727,7 @@ function readAndStatDir(dir) {
       files = files.filter(function(f) {
         return !!f;
       });
+      if (windowsPath.isWindows()) files = files.map(windowsPath.convertPath)
 
       var stats = files.map(function(filePath) {
         return lstat(filePath).catch(handleBrokenLink);

@@ -20,6 +20,9 @@ var Activity = require('../Activity');
 var declareOpts = require('../lib/declareOpts');
 var imageSize = require('image-size');
 
+var windowsPath = require("../lib/windows");
+if (windowsPath.isWindows()) path = windowsPath.path;
+
 var validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
