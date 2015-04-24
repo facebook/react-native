@@ -14,16 +14,15 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var POPAnimationMixin = require('POPAnimationMixin');
-var StyleSheetRegistry = require('StyleSheetRegistry');
 var React = require('React');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
+var flattenStyle = require('flattenStyle');
 var keyOf = require('keyOf');
 var onlyChild = require('onlyChild');
-var flattenStyle = require('flattenStyle');
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -107,7 +106,7 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableHandleActivePressOut: function() {
-    var childStyle = flattenStyle(this.refs[CHILD_REF].props.style || {});
+    var childStyle = flattenStyle(this.refs[CHILD_REF].props.style) || {};
     this.setOpacityTo(childStyle.opacity === undefined ? 1 : childStyle.opacity);
     this.props.onPressOut && this.props.onPressOut();
   },
