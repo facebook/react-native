@@ -214,6 +214,7 @@
 		832C81951AAF6DF0007FA2F7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -224,6 +225,7 @@
 					"-llibicucore",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -231,6 +233,7 @@
 		832C81961AAF6DF0007FA2F7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

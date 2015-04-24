@@ -14,7 +14,6 @@
 static CAKeyframeAnimation *RCTGIFImageWithImageSource(CGImageSourceRef imageSource)
 {
   if (!UTTypeConformsTo(CGImageSourceGetType(imageSource), kUTTypeGIF)) {
-    CFRelease(imageSource);
     return nil;
   }
 

@@ -625,6 +625,7 @@
 		83CBBA401A601D0F00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -636,6 +637,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -643,6 +645,7 @@
 		83CBBA411A601D0F00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -650,6 +653,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
