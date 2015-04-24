@@ -23,6 +23,7 @@ var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var keyOf = require('keyOf');
 var onlyChild = require('onlyChild');
+var flattenStyle = require('flattenStyle');
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -106,13 +107,8 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableHandleActivePressOut: function() {
-    var childStyle = this.refs[CHILD_REF].props.style;
-
-    if (typeof childStyle === 'number') {
-      childStyle = StyleSheetRegistry.getStyleByID(childStyle);
-    }
-
-    this.setOpacityTo(childStyle && childStyle.opacity || 1);
+    var childStyle = flattenStyle(this.refs[CHILD_REF].props.style || {});
+    this.setOpacityTo(childStyle.opacity === undefined ? 1 : childStyle.opacity);
     this.props.onPressOut && this.props.onPressOut();
   },
 
