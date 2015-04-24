@@ -4,6 +4,8 @@
 !**/*.xcworkspacedata
 !**/*.xcsettings
 !**/*.xcscheme
+Examples/UIExplorer/.idea/
+React/.idea/
 build/
 *.pbxuser
 !default.pbxuser

@@ -9,90 +9,102 @@
 
 #import "RCTTextField.h"
 
-#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
 #import "UIView+React.h"
 
-@implementation RCTTextField
-{
-  RCTEventDispatcher *_eventDispatcher;
-  NSMutableArray *_reactSubviews;
-  BOOL _jsRequestingFirstResponder;
+@implementation RCTTextField {
+    RCTEventDispatcher *_eventDispatcher;
+    NSMutableArray *_reactSubviews;
+    BOOL _jsRequestingFirstResponder;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
-{
-  if ((self = [super initWithFrame:CGRectZero])) {
+- (void)_setupPlaceholder {
+    NSAttributedString *placeholderAttributedString = nil;
+    if (self.placeholder && self.placeholder.length > 0) {
+        if (self.placeholderTextColor) {
+            placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder attributes:@{NSForegroundColorAttributeName : self.placeholderTextColor}];
+        }
+    }
 
-    _eventDispatcher = eventDispatcher;
-    [self addTarget:self action:@selector(_textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
-    [self addTarget:self action:@selector(_textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
-    [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
-    [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
-    _reactSubviews = [[NSMutableArray alloc] init];
-  }
-  return self;
+    if (placeholderAttributedString)
+        self.attributedPlaceholder = placeholderAttributedString;
+
 }
 
-- (void)setText:(NSString *)text
-{
-  if (![text isEqualToString:self.text]) {
-    [super setText:text];
-  }
+- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor {
+    _placeholderTextColor = placeholderTextColor;
+    [self _setupPlaceholder];
 }
 
-- (NSArray *)reactSubviews
-{
-  // TODO: do we support subviews of textfield in React?
-  // In any case, we should have a better approach than manually
-  // maintaining array in each view subclass like this
-  return _reactSubviews;
+- (void)setPlaceholder:(NSString *)placeholder {
+    [super setPlaceholder:[placeholder mutableCopy]];
+    [self _setupPlaceholder];
 }
 
-- (void)removeReactSubview:(UIView *)subview
-{
-  // TODO: this is a bit broken - if the TextField inserts any of
-  // its own views below or between React's, the indices won't match
-  [_reactSubviews removeObject:subview];
-  [subview removeFromSuperview];
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher {
+    if ((self = [super initWithFrame:CGRectZero])) {
+
+        _eventDispatcher = eventDispatcher;
+        [self addTarget:self action:@selector(_textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+        [self addTarget:self action:@selector(_textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
+        [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
+        [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
+        _reactSubviews = [[NSMutableArray alloc] init];
+    }
+    return self;
 }
 
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
-{
-  // TODO: this is a bit broken - if the TextField inserts any of
-  // its own views below or between React's, the indices won't match
-  [_reactSubviews insertObject:view atIndex:atIndex];
-  [super insertSubview:view atIndex:atIndex];
+- (void)setText:(NSString *)text {
+    if (![text isEqualToString:self.text]) {
+        [super setText:text];
+    }
 }
 
-- (CGRect)caretRectForPosition:(UITextPosition *)position
-{
-  if (_caretHidden) {
-    return CGRectZero;
-  }
-  return [super caretRectForPosition:position];
+- (NSArray *)reactSubviews {
+    // TODO: do we support subviews of textfield in React?
+    // In any case, we should have a better approach than manually
+    // maintaining array in each view subclass like this
+    return _reactSubviews;
 }
 
-- (CGRect)textRectForBounds:(CGRect)bounds
-{
-  CGRect rect = [super textRectForBounds:bounds];
-  return UIEdgeInsetsInsetRect(rect, _contentInset);
+- (void)removeReactSubview:(UIView *)subview {
+    // TODO: this is a bit broken - if the TextField inserts any of
+    // its own views below or between React's, the indices won't match
+    [_reactSubviews removeObject:subview];
+    [subview removeFromSuperview];
 }
 
-- (CGRect)editingRectForBounds:(CGRect)bounds
-{
-  return [self textRectForBounds:bounds];
+- (void)insertReactSubview:(UIView *)view
+                   atIndex:
+                           (NSInteger)atIndex {
+    // TODO: this is a bit broken - if the TextField inserts any of
+    // its own views below or between React's, the indices won't match
+    [_reactSubviews insertObject:view atIndex:atIndex];
+    [super insertSubview:view atIndex:atIndex];
 }
 
-- (void)setAutoCorrect:(BOOL)autoCorrect
-{
-  self.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
+- (CGRect)caretRectForPosition:(UITextPosition *)position {
+    if (_caretHidden) {
+        return CGRectZero;
+    }
+    return [super caretRectForPosition:position];
 }
 
-- (BOOL)autoCorrect
-{
-  return self.autocorrectionType == UITextAutocorrectionTypeYes;
+- (CGRect)textRectForBounds:(CGRect)bounds {
+    CGRect rect = [super textRectForBounds:bounds];
+    return UIEdgeInsetsInsetRect(rect, _contentInset);
+}
+
+- (CGRect)editingRectForBounds:(CGRect)bounds {
+    return [self textRectForBounds:bounds];
+}
+
+- (void)setAutoCorrect:(BOOL)autoCorrect {
+    self.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
+}
+
+- (BOOL)autoCorrect {
+    return self.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
 #define RCT_TEXT_EVENT_HANDLER(delegateMethod, eventName) \
@@ -104,46 +116,43 @@
 }
 
 RCT_TEXT_EVENT_HANDLER(_textFieldDidChange, RCTTextEventTypeChange)
+
 RCT_TEXT_EVENT_HANDLER(_textFieldEndEditing, RCTTextEventTypeEnd)
+
 RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
 
-- (void)_textFieldBeginEditing
-{
-  if (_selectTextOnFocus) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self selectAll:nil];
-    });
-  }
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
-                                 reactTag:self.reactTag
-                                     text:self.text];
+- (void)_textFieldBeginEditing {
+    if (_selectTextOnFocus) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self selectAll:nil];
+        });
+    }
+    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
+                                   reactTag:self.reactTag
+                                       text:self.text];
 }
 
 // TODO: we should support shouldChangeTextInRect (see UITextFieldDelegate)
 
-- (BOOL)becomeFirstResponder
-{
-  _jsRequestingFirstResponder = YES;
-  BOOL result = [super becomeFirstResponder];
-  _jsRequestingFirstResponder = NO;
-  return result;
+- (BOOL)becomeFirstResponder {
+    _jsRequestingFirstResponder = YES;
+    BOOL result = [super becomeFirstResponder];
+    _jsRequestingFirstResponder = NO;
+    return result;
 }
 
-- (BOOL)resignFirstResponder
-{
-  BOOL result = [super resignFirstResponder];
-  if (result)
-  {
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
-                                   reactTag:self.reactTag
-                                       text:self.text];
-  }
-  return result;
+- (BOOL)resignFirstResponder {
+    BOOL result = [super resignFirstResponder];
+    if (result) {
+        [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
+                                       reactTag:self.reactTag
+                                           text:self.text];
+    }
+    return result;
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
+- (BOOL)canBecomeFirstResponder {
+    return _jsRequestingFirstResponder;
 }
 
 @end
