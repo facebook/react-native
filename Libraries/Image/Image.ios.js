@@ -98,7 +98,7 @@ var Image = React.createClass({
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * A unique identifier for this element to be used in UI Automation
-     * testing scripts.
+     * testing scripts 2.
      */
     testID: PropTypes.string,
   },
