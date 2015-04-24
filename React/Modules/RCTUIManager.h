@@ -9,10 +9,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "../Base/RCTBridge.h"
-#import "../Base/RCTBridgeModule.h"
-#import "../Base/RCTInvalidating.h"
-#import "../Views/RCTViewManager.h"
+#import "RCTBridge.h"
+#import "RCTBridgeModule.h"
+#import "RCTInvalidating.h"
+#import "RCTViewManager.h"
 
 @protocol RCTScrollableProtocol;
 

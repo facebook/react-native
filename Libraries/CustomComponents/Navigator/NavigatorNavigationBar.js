@@ -192,7 +192,7 @@ var styles = StyleSheet.create({
     height: NavigatorNavigationBarStyles.General.TotalNavHeight,
     top: 0,
     left: 0,
-    width: NavigatorNavigationBarStyles.General.ScreenWidth,
+    right: 0,
     backgroundColor: 'transparent',
   },
 });

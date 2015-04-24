@@ -36,6 +36,11 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_queue_create("com.facebook.React.LinkingManager", DISPATCH_QUEUE_SERIAL);
+}
+
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
@@ -56,12 +61,14 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 {
+  // Doesn't really matter what thread we call this on since it exits the app
   [[UIApplication sharedApplication] openURL:URL];
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
                   callback:(RCTResponseSenderBlock)callback)
 {
+  // This can be expensive, so we deliberately don't call on main thread
   BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
   callback(@[@(canOpen)]);
 }

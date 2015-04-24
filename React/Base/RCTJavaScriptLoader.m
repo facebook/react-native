@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTJavaScriptLoader.h"
 
@@ -78,8 +85,9 @@
                                   // Handle general request errors
                                   if (error) {
                                     if ([[error domain] isEqualToString:NSURLErrorDomain]) {
+                                      NSString *desc = [@"Could not connect to development server. Ensure node server is running and available on the same network - run 'npm start' from react-native root\n\nURL: " stringByAppendingString:[scriptURL absoluteString]];
                                       NSDictionary *userInfo = @{
-                                                                 NSLocalizedDescriptionKey: @"Could not connect to development server. Ensure node server is running - run 'npm start' from ReactKit root",
+                                                                 NSLocalizedDescriptionKey: desc,
                                                                  NSLocalizedFailureReasonErrorKey: [error localizedDescription],
                                                                  NSUnderlyingErrorKey: error,
                                                                  };
@@ -133,9 +141,9 @@
                                   sourceCodeModule.scriptURL = scriptURL;
                                   sourceCodeModule.scriptText = rawText;
 
-                                  [_bridge enqueueApplicationScript:rawText url:scriptURL onComplete:^(NSError *_error) {
+                                  [_bridge enqueueApplicationScript:rawText url:scriptURL onComplete:^(NSError *scriptError) {
                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                      onComplete(_error);
+                                      onComplete(scriptError);
                                     });
                                   }];
                                 }];

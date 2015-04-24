@@ -371,10 +371,6 @@ if (Platform.OS === 'android') {
     uiViewClassName: 'AndroidHorizontalScrollView',
   });
 } else if (Platform.OS === 'ios') {
-  var RCTScrollView = createReactIOSNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'RCTScrollView',
-  });
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
 }
 

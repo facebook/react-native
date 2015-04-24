@@ -12,21 +12,25 @@
 #import "FBSnapshotTestController.h"
 #import "RCTAssert.h"
 #import "RCTLog.h"
+#import "RCTUIManager.h"
 
 @implementation RCTTestModule
 {
-  __weak FBSnapshotTestController *_snapshotController;
-  __weak UIView *_view;
   NSMutableDictionary *_snapshotCounter;
 }
 
+@synthesize bridge = _bridge;
+
 RCT_EXPORT_MODULE()
 
-- (instancetype)initWithSnapshotController:(FBSnapshotTestController *)controller view:(UIView *)view
+- (dispatch_queue_t)methodQueue
+{
+  return _bridge.uiManager.methodQueue;
+}
+
+- (instancetype)init
 {
   if ((self = [super init])) {
-    _snapshotController = controller;
-    _view = view;
     _snapshotCounter = [NSMutableDictionary new];
   }
   return self;
@@ -34,30 +38,29 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 {
-  if (!_snapshotController) {
-    RCTLogWarn(@"No snapshot controller configured.");
-    callback(@[]);
-    return;
-  }
+  RCTAssert(_controller != nil, @"No snapshot controller configured.");
 
-  dispatch_async(dispatch_get_main_queue(), ^{
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+
     NSString *testName = NSStringFromSelector(_testSelector);
-    _snapshotCounter[testName] = @([_snapshotCounter[testName] integerValue] + 1);
+    _snapshotCounter[testName] = [@([_snapshotCounter[testName] integerValue] + 1) stringValue];
+
     NSError *error = nil;
-    BOOL success = [_snapshotController compareSnapshotOfView:_view
-                                                     selector:_testSelector
-                                                   identifier:[_snapshotCounter[testName] stringValue]
-                                                        error:&error];
+    BOOL success = [_controller compareSnapshotOfView:_view
+                                             selector:_testSelector
+                                           identifier:_snapshotCounter[testName]
+                                                error:&error];
+
     RCTAssert(success, @"Snapshot comparison failed: %@", error);
     callback(@[]);
-  });
+  }];
 }
 
 RCT_EXPORT_METHOD(markTestCompleted)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     _done = YES;
-  });
+  }];
 }
 
 @end
