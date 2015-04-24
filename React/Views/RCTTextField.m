@@ -43,12 +43,12 @@
 }
 
 - (void)_setupPlaceholder {
-    if (self.placeholder.length > 0 && self.placeholderTextColor) {
-        self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                                     attributes:@{
-                                                                             NSForegroundColorAttributeName: self.placeholderTextColor
-                                                                     }];
-    }
+  if (self.placeholder.length > 0 && self.placeholderTextColor) {
+    self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
+                                                                 attributes:@{
+                                                                     NSForegroundColorAttributeName : self.placeholderTextColor
+                                                                 }];
+  }
 }
 
 - (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor {
