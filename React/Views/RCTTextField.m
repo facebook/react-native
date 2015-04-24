@@ -9,9 +9,7 @@
 
 #import "RCTTextField.h"
 
-#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
 #import "UIView+React.h"
 
 @implementation RCTTextField
@@ -33,6 +31,29 @@
     _reactSubviews = [[NSMutableArray alloc] init];
   }
   return self;
+}
+
+- (void)_setupPlaceholder {
+    NSAttributedString *placeholderAttributedString = nil;
+    if (self.placeholder && self.placeholder.length > 0) {
+        if (self.placeholderTextColor) {
+            placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder attributes:@{NSForegroundColorAttributeName : self.placeholderTextColor}];
+        }
+    }
+
+    if (placeholderAttributedString)
+        self.attributedPlaceholder = placeholderAttributedString;
+
+}
+
+- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor {
+    _placeholderTextColor = placeholderTextColor;
+    [self _setupPlaceholder];
+}
+
+- (void)setPlaceholder:(NSString *)placeholder {
+    [super setPlaceholder:[placeholder mutableCopy]];
+    [self _setupPlaceholder];
 }
 
 - (void)setText:(NSString *)text
