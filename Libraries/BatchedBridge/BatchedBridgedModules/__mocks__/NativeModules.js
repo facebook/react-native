@@ -29,6 +29,7 @@ var NativeModules = {
   UIManager: {
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
+    Dimensions: {},
   },
   AsyncLocalStorage: {
     getItem: jest.genMockFunction(),
