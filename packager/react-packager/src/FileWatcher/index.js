@@ -26,7 +26,7 @@ var detectingWatcherClass = new Promise(function(resolve) {
 
 module.exports = FileWatcher;
 
-var MAX_WAIT_TIME = 10000;
+var MAX_WAIT_TIME = 25000;
 
 // Singleton
 var fileWatcher = null;
