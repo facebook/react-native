@@ -13,6 +13,7 @@
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var View = require('View');
@@ -21,8 +22,15 @@ var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentC
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
+type MapRegion = {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+};
 
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -150,46 +158,30 @@ var MapView = React.createClass({
   },
 
   render: function() {
-    return (
-      <RCTMap
-        style={this.props.style}
-        showsUserLocation={this.props.showsUserLocation}
-        zoomEnabled={this.props.zoomEnabled}
-        rotateEnabled={this.props.rotateEnabled}
-        pitchEnabled={this.props.pitchEnabled}
-        scrollEnabled={this.props.scrollEnabled}
-        region={this.props.region}
-        annotations={this.props.annotations}
-        maxDelta={this.props.maxDelta}
-        minDelta={this.props.minDelta}
-        legalLabelInsets={this.props.legalLabelInsets}
-        onChange={this._onChange}
-        onTouchStart={this.props.onTouchStart}
-        onTouchMove={this.props.onTouchMove}
-        onTouchEnd={this.props.onTouchEnd}
-        onTouchCancel={this.props.onTouchCancel}
-      />
-    );
+    return <RCTMap {...this.props} onChange={this._onChange} />;
   },
-
 });
 
-var RCTMap = createReactIOSNativeComponentClass({
-  validAttributes: merge(
-    ReactIOSViewAttributes.UIView, {
-      showsUserLocation: true,
-      zoomEnabled: true,
-      rotateEnabled: true,
-      pitchEnabled: true,
-      scrollEnabled: true,
-      region: {diff: deepDiffer},
-      annotations: {diff: deepDiffer},
-      maxDelta: true,
-      minDelta: true,
-      legalLabelInsets: {diff: insetsDiffer},
-    }
-  ),
-  uiViewClassName: 'RCTMap',
-});
+if (Platform.OS === 'android') {
+  var RCTMap = createReactIOSNativeComponentClass({
+    validAttributes: merge(
+      ReactIOSViewAttributes.UIView, {
+        showsUserLocation: true,
+        zoomEnabled: true,
+        rotateEnabled: true,
+        pitchEnabled: true,
+        scrollEnabled: true,
+        region: {diff: deepDiffer},
+        annotations: {diff: deepDiffer},
+        maxDelta: true,
+        minDelta: true,
+        legalLabelInsets: {diff: insetsDiffer},
+      }
+    ),
+    uiViewClassName: 'RCTMap',
+  });
+} else {
+  var RCTMap = requireNativeComponent('RCTMap', MapView);
+}
 
 module.exports = MapView;

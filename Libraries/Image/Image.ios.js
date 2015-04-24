@@ -12,25 +12,23 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
-var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
+var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeModules = require('NativeModules');
+var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var flattenStyle = require('flattenStyle');
-var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
-var warning = require('warning');
+var resolveAssetSource = require('resolveAssetSource');
 var verifyPropTypes = require('verifyPropTypes');
+var warning = require('warning');
 
 /**
  * A react component for displaying different types of images,
@@ -125,10 +123,13 @@ var Image = React.createClass({
           'not be set directly on Image.');
       }
     }
-    var style = flattenStyle([styles.base, this.props.style]);
-    invariant(style, "style must be initialized");
-    var source = this.props.source;
-    invariant(source, "source must be initialized");
+    var source = resolveAssetSource(this.props.source);
+    invariant(source, 'source must be initialized');
+
+    var {width, height} = source;
+    var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+    invariant(style, 'style must be initialized');
+
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     invariant(
       !(isNetwork && source.isStatic),
@@ -156,12 +157,6 @@ var Image = React.createClass({
       contentMode,
       tintColor: style.tintColor,
     });
-    if (Platform.OS === 'android') {
-      // TODO: update android native code to not need this
-      nativeProps.resizeMode = contentMode;
-      delete nativeProps.contentMode;
-    }
-
     if (isStored) {
       nativeProps.imageTag = source.uri;
     } else {
@@ -180,30 +175,9 @@ var styles = StyleSheet.create({
   },
 });
 
-if (Platform.OS === 'android') {
-  var CommonImageViewAttributes = merge(ReactIOSViewAttributes.UIView, {
-    accessible: true,
-    accessibilityLabel: true,
-    capInsets: {diff: insetsDiffer}, // UIEdgeInsets=UIEdgeInsetsZero
-    imageTag: true,
-    resizeMode: true,
-    src: true,
-    testID: PropTypes.string,
-  });
+var RCTNetworkImage = requireNativeComponent('RCTNetworkImageView', null);
+var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
 
-  var RCTStaticImage = createReactIOSNativeComponentClass({
-    validAttributes: merge(CommonImageViewAttributes, { tintColor: true }),
-    uiViewClassName: 'RCTStaticImage',
-  });
-
-  var RCTNetworkImage = createReactIOSNativeComponentClass({
-    validAttributes: merge(CommonImageViewAttributes, { defaultImageSrc: true }),
-    uiViewClassName: 'RCTNetworkImageView',
-  });
-} else {
-  var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
-  var RCTNetworkImage = requireNativeComponent('RCTNetworkImageView', null);
-}
 var nativeOnlyProps = {
   src: true,
   defaultImageSrc: true,

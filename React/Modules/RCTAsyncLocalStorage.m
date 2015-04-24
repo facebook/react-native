@@ -61,20 +61,6 @@ static id RCTReadFile(NSString *filePath, NSString *key, NSDictionary **errorOut
   return nil;
 }
 
-static dispatch_queue_t RCTFileQueue(void)
-{
-  static dispatch_queue_t fileQueue = NULL;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // All JS is single threaded, so a serial queue is our only option.
-    fileQueue = dispatch_queue_create("com.facebook.rkFile", DISPATCH_QUEUE_SERIAL);
-    dispatch_set_target_queue(fileQueue,
-                              dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
-  });
-
-  return fileQueue;
-}
-
 #pragma mark - RCTAsyncLocalStorage
 
 @implementation RCTAsyncLocalStorage
@@ -89,6 +75,11 @@ static dispatch_queue_t RCTFileQueue(void)
 }
 
 RCT_EXPORT_MODULE()
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
+}
 
 - (NSString *)_filePathForKey:(NSString *)key
 {
@@ -196,99 +187,89 @@ RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
     return;
   }
 
-  dispatch_async(RCTFileQueue(), ^{
-    id errorOut = [self _ensureSetup];
-    if (errorOut) {
-      callback(@[@[errorOut], [NSNull null]]);
-      return;
-    }
-    NSMutableArray *errors;
-    NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:keys.count];
-    for (NSString *key in keys) {
-      id keyError = [self _appendItemForKey:key toArray:result];
-      RCTAppendError(keyError, &errors);
-    }
-    [self _writeManifest:&errors];
-    callback(@[errors ?: [NSNull null], result]);
-  });
+  id errorOut = [self _ensureSetup];
+  if (errorOut) {
+    callback(@[@[errorOut], [NSNull null]]);
+    return;
+  }
+  NSMutableArray *errors;
+  NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:keys.count];
+  for (NSString *key in keys) {
+    id keyError = [self _appendItemForKey:key toArray:result];
+    RCTAppendError(keyError, &errors);
+  }
+  [self _writeManifest:&errors];
+  callback(@[errors ?: [NSNull null], result]);
 }
 
 RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
                   callback:(RCTResponseSenderBlock)callback)
 {
-  dispatch_async(RCTFileQueue(), ^{
-    id errorOut = [self _ensureSetup];
-    if (errorOut) {
-      callback(@[@[errorOut]]);
-      return;
-    }
-    NSMutableArray *errors;
-    for (NSArray *entry in kvPairs) {
-      id keyError = [self _writeEntry:entry];
-      RCTAppendError(keyError, &errors);
-    }
-    [self _writeManifest:&errors];
-    if (callback) {
-      callback(@[errors ?: [NSNull null]]);
-    }
-  });
+  id errorOut = [self _ensureSetup];
+  if (errorOut) {
+    callback(@[@[errorOut]]);
+    return;
+  }
+  NSMutableArray *errors;
+  for (NSArray *entry in kvPairs) {
+    id keyError = [self _writeEntry:entry];
+    RCTAppendError(keyError, &errors);
+  }
+  [self _writeManifest:&errors];
+  if (callback) {
+    callback(@[errors ?: [NSNull null]]);
+  }
 }
 
 RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
                   callback:(RCTResponseSenderBlock)callback)
 {
-  dispatch_async(RCTFileQueue(), ^{
-    id errorOut = [self _ensureSetup];
-    if (errorOut) {
-      callback(@[@[errorOut]]);
-      return;
+  id errorOut = [self _ensureSetup];
+  if (errorOut) {
+    callback(@[@[errorOut]]);
+    return;
+  }
+  NSMutableArray *errors;
+  for (NSString *key in keys) {
+    id keyError = RCTErrorForKey(key);
+    if (!keyError) {
+      NSString *filePath = [self _filePathForKey:key];
+      [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+      [_manifest removeObjectForKey:key];
     }
-    NSMutableArray *errors;
-    for (NSString *key in keys) {
-      id keyError = RCTErrorForKey(key);
-      if (!keyError) {
-        NSString *filePath = [self _filePathForKey:key];
-        [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-        [_manifest removeObjectForKey:key];
-      }
-      RCTAppendError(keyError, &errors);
-    }
-    [self _writeManifest:&errors];
-    if (callback) {
-      callback(@[errors ?: [NSNull null]]);
-    }
-  });
+    RCTAppendError(keyError, &errors);
+  }
+  [self _writeManifest:&errors];
+  if (callback) {
+    callback(@[errors ?: [NSNull null]]);
+  }
 }
 
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
-  dispatch_async(RCTFileQueue(), ^{
-    id errorOut = [self _ensureSetup];
-    if (!errorOut) {
-      NSError *error;
-      for (NSString *key in _manifest) {
-        NSString *filePath = [self _filePathForKey:key];
-        [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-      }
-      [_manifest removeAllObjects];
-      errorOut = [self _writeManifest:nil];
+  id errorOut = [self _ensureSetup];
+  if (!errorOut) {
+    NSError *error;
+    for (NSString *key in _manifest) {
+      NSString *filePath = [self _filePathForKey:key];
+      [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
     }
-    if (callback) {
-      callback(@[errorOut ?: [NSNull null]]);
-    }
-  });
+    [_manifest removeAllObjects];
+    errorOut = [self _writeManifest:nil];
+  }
+  if (callback) {
+    callback(@[errorOut ?: [NSNull null]]);
+  }
 }
 
 RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 {
-  dispatch_async(RCTFileQueue(), ^{
-    id errorOut = [self _ensureSetup];
-    if (errorOut) {
-      callback(@[errorOut, [NSNull null]]);
-    } else {
-      callback(@[[NSNull null], [_manifest allKeys]]);
-    }
-  });
+  id errorOut = [self _ensureSetup];
+  if (errorOut) {
+    callback(@[errorOut, [NSNull null]]);
+  } else {
+    callback(@[[NSNull null], [_manifest allKeys]]);
+  }
 }
 
 @end

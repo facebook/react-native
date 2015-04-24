@@ -13,11 +13,12 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
+var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
+var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
-
 
 var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 
@@ -136,6 +137,20 @@ var View = React.createClass({
      * (or one of its superviews).
      */
     removeClippedSubviews: PropTypes.bool,
+
+    /**
+     * Whether this view should render itself (and all of its children) into a
+     * single hardware texture on the GPU.
+     *
+     * On Android, this is useful for animations and interactions that only
+     * modify opacity, rotation, translation, and/or scale: in those cases, the
+     * view doesn't have to be redrawn and display lists don't need to be
+     * re-executed. The texture can just be re-used and re-composited with
+     * different parameters. The downside is that this can use up limited video
+     * memory, so this prop should be set back to false at the end of the
+     * interaction/animation.
+     */
+    renderToHardwareTextureAndroid: PropTypes.bool,
   },
 
   render: function() {
@@ -143,17 +158,26 @@ var View = React.createClass({
   },
 });
 
-
 var RCTView = createReactIOSNativeComponentClass({
   validAttributes: ReactIOSViewAttributes.RCTView,
   uiViewClassName: 'RCTView',
 });
 RCTView.propTypes = View.propTypes;
+if (__DEV__) {
+  var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
+  for (var prop in viewConfig.nativeProps) {
+    var viewAny: any = View; // Appease flow
+    if (!viewAny.propTypes[prop] && !ReactIOSStyleAttributes[prop]) {
+      throw new Error(
+        'View is missing propType for native prop `' + prop + '`'
+      );
+    }
+  }
+}
 
 var ViewToExport = RCTView;
 if (__DEV__) {
   ViewToExport = View;
 }
-
 
 module.exports = ViewToExport;

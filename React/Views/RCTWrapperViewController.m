@@ -80,10 +80,7 @@
       bar.barTintColor = _navItem.barTintColor;
     }
     if (_navItem.tintColor) {
-      BOOL canSetTintColor = _navItem.barTintColor == nil;
-      if (canSetTintColor) {
-        bar.tintColor = _navItem.tintColor;
-      }
+      bar.tintColor = _navItem.tintColor;
     }
     if (_navItem.titleTextColor) {
       [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];

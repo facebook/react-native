@@ -18,7 +18,9 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTDefines.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
@@ -178,7 +180,7 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
 
 @implementation RCTUIManager
 {
-  __weak dispatch_queue_t _shadowQueue;
+  dispatch_queue_t _shadowQueue;
 
   // Root views are only mutated on the shadow queue
   NSMutableSet *_rootViewTags;
@@ -220,45 +222,33 @@ static NSString *RCTViewNameForModuleName(NSString *moduleName)
   return name;
 }
 
+// TODO: only send name once instead of a dictionary of name and type keyed by name
 static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewName)
 {
-  NSMutableDictionary *nativeProps = [[NSMutableDictionary alloc] init];
-  static const char *prefix = "getPropConfig";
-  static const NSUInteger prefixLength = sizeof("getPropConfig") - 1;
-  unsigned int methodCount = 0;
-  Method *methods = class_copyMethodList(objc_getMetaClass(class_getName(managerClass)), &methodCount);
-  for (unsigned int i = 0; i < methodCount; i++) {
+  unsigned int count = 0;
+  Method *methods = class_copyMethodList(object_getClass(managerClass), &count);
+  NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithCapacity:count];
+  for (unsigned int i = 0; i < count; i++) {
     Method method = methods[i];
-    SEL getInfo = method_getName(method);
-    const char *selName = sel_getName(getInfo);
-    if (strlen(selName) > prefixLength && strncmp(selName, prefix, prefixLength) == 0) {
-      NSDictionary *info = ((NSDictionary *(*)(id, SEL))method_getImplementation(method))(managerClass, getInfo);
-      nativeProps[info[@"name"]] = info;
+    NSString *methodName = NSStringFromSelector(method_getName(method));
+    if ([methodName hasPrefix:@"getPropConfig"]) {
+      NSRange nameRange = [methodName rangeOfString:@"_"];
+      if (nameRange.length) {
+        NSString *name = [methodName substringFromIndex:nameRange.location + 1];
+        NSString *type = [managerClass valueForKey:methodName];
+        props[name] = type;
+      }
     }
   }
-  return @{
-    @"uiViewClassName": viewName,
-    @"nativeProps": nativeProps
-  };
-}
-
-/**
- * This private constructor should only be called when creating
- * isolated UIImanager instances for testing. Normal initialization
- * is via -init:, which is called automatically by the bridge.
- */
-- (instancetype)initWithShadowQueue:(dispatch_queue_t)shadowQueue
-{
-  if ((self = [self init])) {
-    _shadowQueue = shadowQueue;
-    _viewManagers = [[NSMutableDictionary alloc] init];
-  }
-  return self;
+  free(methods);
+  return props;
 }
 
 - (instancetype)init
 {
   if ((self = [super init])) {
+
+    _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
 
     _pendingUIBlocksLock = [[NSLock alloc] init];
 
@@ -310,7 +300,6 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
 
   _bridge = bridge;
-  _shadowQueue = _bridge.shadowQueue;
   _shadowViewRegistry = [[RCTSparseArray alloc] init];
 
   // Get view managers from bridge
@@ -326,6 +315,11 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
   _viewManagers = [viewManagers copy];
   _viewConfigs = [viewConfigs copy];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return _shadowQueue;
 }
 
 - (void)registerRootView:(UIView *)rootView;
@@ -366,7 +360,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   NSNumber *reactTag = rootView.reactTag;
   RCTAssert(RCTIsReactRootView(reactTag), @"Specified view %@ is not a root view", reactTag);
 
-  dispatch_async(_bridge.shadowQueue, ^{
+  dispatch_async(_shadowQueue, ^{
     RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
     RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
     rootShadowView.frame = frame;
@@ -396,15 +390,15 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssert(![NSThread isMainThread], @"This method should only be called on the shadow thread");
+  if (!self.isValid) {
+    return;
+  }
 
   __weak RCTUIManager *weakViewManager = self;
-  __weak RCTSparseArray *weakViewRegistry = _viewRegistry;
   dispatch_block_t outerBlock = ^{
     RCTUIManager *strongViewManager = weakViewManager;
-    RCTSparseArray *strongViewRegistry = weakViewRegistry;
-    if (strongViewManager && strongViewRegistry) {
-      block(strongViewManager, strongViewRegistry);
+    if (strongViewManager && strongViewManager.isValid) {
+      block(strongViewManager, strongViewManager->_viewRegistry);
     }
   };
 
@@ -415,7 +409,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTShadowView *)rootShadowView
 {
-  RCTAssert(![NSThread isMainThread], @"This should never be executed on main thread.");
+  RCTAssert(![NSThread isMainThread], @"Should be called on shadow thread");
 
   NSMutableSet *viewsWithNewFrames = [NSMutableSet setWithCapacity:1];
 
@@ -677,6 +671,8 @@ RCT_EXPORT_METHOD(manageChildren:(NSNumber *)containerReactTag
 
   [self _purgeChildren:permanentlyRemovedChildren fromRegistry:registry];
 
+  // TODO (#5906496): optimize all these loops - constantly calling array.count is not efficient
+
   // Figure out what to insert - merge temporary inserts and adds
   NSMutableDictionary *destinationsToChildrenToAdd = [NSMutableDictionary dictionary];
   for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
@@ -708,20 +704,16 @@ static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, 
       ((void (*)(id, SEL, id, id, id))objc_msgSend)(manager, setter, value, view, defaultView);
     };
 
-#if DEBUG
+    if (RCT_DEBUG) {
+      NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([manager class]));
+      NSString *logPrefix = [NSString stringWithFormat:
+                             @"Error setting property '%@' of %@ with tag #%@: ",
+                             key, viewName, [view reactTag]];
 
-    NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([manager class]));
-    NSString *logPrefix = [NSString stringWithFormat:
-                           @"Error setting property '%@' of %@ with tag #%@: ",
-                           key, viewName, [view reactTag]];
-
-    RCTPerformBlockWithLogPrefix(block, logPrefix);
-
-#else
-
-    block();
-
-#endif
+      RCTPerformBlockWithLogPrefix(block, logPrefix);
+    } else {
+      block();
+    }
 
     return YES;
   }
@@ -884,8 +876,6 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
 
 - (void)flushUIBlocks
 {
-  RCTAssert(![NSThread isMainThread], @"Should be called on shadow thread");
-
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while
   // processing the pending blocks in another thread.
@@ -896,9 +886,13 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
 
   // Execute the previously queued UI blocks
   dispatch_async(dispatch_get_main_queue(), ^{
+    RCTProfileBeginEvent();
     for (dispatch_block_t block in previousPendingUIBlocks) {
       block();
     }
+    RCTProfileEndEvent(@"UIManager flushUIBlocks", @"objc_call", @{
+      @"count": @(previousPendingUIBlocks.count),
+    });
   });
 }
 
@@ -1007,11 +1001,12 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(NSNumber *)reactTag
  * Only layouts for views that are within the rect passed in are returned. Invokes the error callback if the
  * passed in parent view does not exist. Invokes the supplied callback with the array of computed layouts.
  */
-RCT_EXPORT_METHOD(measureViewsInRect:(NSDictionary *)rect
+RCT_EXPORT_METHOD(measureViewsInRect:(id)rectJSON
                   parentView:(NSNumber *)reactTag
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {
+  CGRect rect = [RCTConvert CGRect:rectJSON];
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   if (!shadowView) {
     RCTLogError(@"Attempting to measure view that does not exist (tag #%@)", reactTag);
@@ -1019,7 +1014,7 @@ RCT_EXPORT_METHOD(measureViewsInRect:(NSDictionary *)rect
   }
   NSArray *childShadowViews = [shadowView reactSubviews];
   NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:[childShadowViews count]];
-  CGRect layoutRect = [RCTConvert CGRect:rect];
+
 
   [childShadowViews enumerateObjectsUsingBlock:^(RCTShadowView *childShadowView, NSUInteger idx, BOOL *stop) {
     CGRect childLayout = [childShadowView measureLayoutRelativeToAncestor:shadowView];
@@ -1034,10 +1029,11 @@ RCT_EXPORT_METHOD(measureViewsInRect:(NSDictionary *)rect
     CGFloat width = childLayout.size.width;
     CGFloat height = childLayout.size.height;
 
-    if (leftOffset <= layoutRect.origin.x + layoutRect.size.width &&
-        leftOffset + width >= layoutRect.origin.x &&
-        topOffset <= layoutRect.origin.y + layoutRect.size.height &&
-        topOffset + height >= layoutRect.origin.y) {
+    if (leftOffset <= rect.origin.x + rect.size.width &&
+        leftOffset + width >= rect.origin.x &&
+        topOffset <= rect.origin.y + rect.size.height &&
+        topOffset + height >= rect.origin.y) {
+
       // This view is within the layout rect
       NSDictionary *result = @{@"index": @(idx),
                                @"left": @(leftOffset),
@@ -1106,8 +1102,9 @@ RCT_EXPORT_METHOD(scrollWithoutAnimationTo:(NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(zoomToRect:(NSNumber *)reactTag
-                  withRect:(CGRect)rect)
+                  withRect:(id)rectJSON)
 {
+  CGRect rect = [RCTConvert CGRect:rectJSON];
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     UIView *view = viewRegistry[reactTag];
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
@@ -1389,17 +1386,22 @@ RCT_EXPORT_METHOD(clearJSResponder)
   } mutableCopy];
 
   [_viewManagers enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTViewManager *manager, BOOL *stop) {
+    NSMutableDictionary *constantsNamespace = [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
+
+    // Add custom constants
     // TODO: should these be inherited?
     NSDictionary *constants = RCTClassOverridesInstanceMethod([manager class], @selector(constantsToExport)) ? [manager constantsToExport] : nil;
     if (constants.count) {
-      NSMutableDictionary *constantsNamespace = [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
       RCTAssert(constantsNamespace[@"Constants"] == nil , @"Cannot redefine Constants in namespace: %@", name);
       // add an additional 'Constants' namespace for each class
       constantsNamespace[@"Constants"] = constants;
-      allJSConstants[name] = [constantsNamespace copy];
     }
+
+    // Add native props
+    constantsNamespace[@"nativeProps"] = _viewConfigs[name];
+
+    allJSConstants[name] = [constantsNamespace copy];
   }];
-  allJSConstants[@"viewConfigs"] = _viewConfigs;
   return allJSConstants;
 }
 
@@ -1408,8 +1410,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
                   errorCallback:(RCTResponseSenderBlock)errorCallback)
 {
   if (_nextLayoutAnimation) {
-    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.",
-               _nextLayoutAnimation, config);
+    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.", _nextLayoutAnimation, config);
   }
   if (config[@"delete"] != nil) {
     RCTLogError(@"LayoutAnimation only supports create and update right now. Config: %@", config);

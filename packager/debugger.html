@@ -41,13 +41,13 @@ var messageHandlers = {
     window.localStorage.setItem('sessionID', message.id);
     window.location.reload();
   },
-  'executeApplicationScript:sourceURL:onComplete:': function(message, sendReply) {
+  'executeApplicationScript': function(message, sendReply) {
     for (var key in message.inject) {
       window[key] = JSON.parse(message.inject[key]);
     }
     loadScript(message.url, sendReply.bind(null, null));
   },
-  'executeJSCall:method:arguments:callback:': function(message, sendReply) {
+  'executeJSCall': function(message, sendReply) {
     var returnValue = [[], [], [], [], []];
     try {
       if (window && window.require) {

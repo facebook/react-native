@@ -45,6 +45,8 @@ function ModuleDescriptor(fields) {
 
   this.altId = fields.altId;
 
+  this.isJSON = fields.isJSON;
+
   this._fields = fields;
 }
 

@@ -135,11 +135,12 @@ var GESTURE_ACTIONS = [
  *   />
  * ```
  *
- * ### Navigation Methods
+ * ### Navigator Methods
  *
- * `Navigator` can be told to navigate in two ways. If you have a ref to
- * the element, you can invoke several methods on it to trigger navigation:
+ * If you have a ref to the Navigator element, you can invoke several methods
+ * on it to trigger navigation:
  *
+ *  - `getCurrentRoutes()` - returns the current list of routes
  *  - `jumpBack()` - Jump backward without unmounting the current scene
  *  - `jumpForward()` - Jump forward to the next scene in the route stack
  *  - `jumpTo(route)` - Transition to an existing scene without unmounting
@@ -156,18 +157,39 @@ var GESTURE_ACTIONS = [
  *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
  *     other scene
  *
- * ### Navigator Object
+ * ### Navigation Context
  *
- * The navigator object is made available to scenes through the `renderScene`
- * function. The object has all of the navigation methods on it, as well as a
- * few utilities:
+ * The navigator context object is made available to scenes through the
+ * `renderScene` function. Alternatively, any scene or component inside a
+ * Navigator can get the navigation context by calling
+ * `Navigator.getContext(this)`.
  *
- *  - `parentNavigator` - a refrence to the parent navigator object that was
- *     passed in through props.navigator
- *  - `onWillFocus` - used to pass a navigation focus event up to the parent
- *     navigator
- *  - `onDidFocus` - used to pass a navigation focus event up to the parent
- *     navigator
+ * Unlike the Navigator methods, the functions in navigation context do not
+ * directly control a specific navigator. Instead, the navigator context allows
+ * a scene to request navigation from its parents. Navigation requests will
+ * travel up through the hierarchy of Navigators, and will be resolved by the
+ * deepest active navigator.
+ *
+ * Navigation context objects contain the following:
+ *
+ *  - `getCurrentRoutes()` - returns the routes for the closest navigator
+ *  - `jumpBack()` - Jump backward without unmounting the current scene
+ *  - `jumpForward()` - Jump forward to the next scene in the route stack
+ *  - `jumpTo(route)` - Transition to an existing scene without unmounting
+ *  - `parentNavigator` - a refrence to the parent navigation context
+ *  - `push(route)` - Navigate forward to a new scene, squashing any scenes
+ *     that you could `jumpForward` to
+ *  - `pop()` - Transition back and unmount the current scene
+ *  - `replace(route)` - Replace the current scene with a new route
+ *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
+ *  - `replacePrevious(route)` - Replace the previous scene
+ *  - `route` - The route that was used to render the scene with this context
+ *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
+ *     array of routes
+ *  - `popToRoute(route)` - Pop to a particular scene, as specified by it's
+ *     route. All scenes after it will be unmounted
+ *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
+ *     other scene
  *
  */
 var Navigator = React.createClass({
@@ -306,25 +328,30 @@ var Navigator = React.createClass({
     this.parentNavigator = getNavigatorContext(this) || this.props.navigator;
     this._subRouteFocus = [];
     this.navigatorContext = {
+      // Actions for child navigators or interceptors:
       setHandlerForRoute: this.setHandlerForRoute,
       request: this.request,
 
+      // Contextual utilities
       parentNavigator: this.parentNavigator,
       getCurrentRoutes: this.getCurrentRoutes,
+      // `route` is injected by NavigatorStaticContextContainer
 
-      // Legacy, imperitive nav actions. Use request when possible.
+      // Contextual nav actions
+      pop: this.requestPop,
+      popToRoute: this.requestPopTo,
+
+      // Legacy, imperitive nav actions. Will transition these to contextual actions
       jumpBack: this.jumpBack,
       jumpForward: this.jumpForward,
       jumpTo: this.jumpTo,
       push: this.push,
-      pop: this.pop,
       replace: this.replace,
       replaceAtIndex: this.replaceAtIndex,
       replacePrevious: this.replacePrevious,
       replacePreviousAndPop: this.replacePreviousAndPop,
       immediatelyResetRouteStack: this.immediatelyResetRouteStack,
       resetTo: this.resetTo,
-      popToRoute: this.popToRoute,
       popToTop: this.popToTop,
     };
     this._handlers = {};
@@ -349,6 +376,14 @@ var Navigator = React.createClass({
     return this._handleRequest.apply(null, arguments);
   },
 
+  requestPop: function() {
+    return this.request('pop');
+  },
+
+  requestPopTo: function(route) {
+    return this.request('pop', route);
+  },
+
   _handleRequest: function(action, arg1, arg2) {
     var childHandler = this._handlers[this.state.presentedIndex];
     if (childHandler && childHandler(action, arg1, arg2)) {
@@ -356,7 +391,7 @@ var Navigator = React.createClass({
     }
     switch (action) {
       case 'pop':
-        return this._handlePop();
+        return this._handlePop(arg1);
       case 'push':
         return this._handlePush(arg1);
       default:
@@ -365,11 +400,20 @@ var Navigator = React.createClass({
     }
   },
 
-  _handlePop: function() {
+  _handlePop: function(route) {
+    if (route) {
+      var hasRoute = this.state.routeStack.indexOf(route) !== -1;
+      if (hasRoute) {
+        this.popToRoute(route);
+        return true;
+      } else {
+        return false;
+      }
+    }
     if (this.state.presentedIndex === 0) {
       return false;
     }
-    this._popN(1);
+    this.pop();
     return true;
   },
 
@@ -415,7 +459,7 @@ var Navigator = React.createClass({
   },
 
   _handleAndroidBackPress: function() {
-    var didPop = this.pop();
+    var didPop = this.requestPop();
     if (!didPop) {
       BackAndroid.exitApp();
     }
@@ -494,6 +538,7 @@ var Navigator = React.createClass({
 
   _completeTransition: function() {
     if (this.spring.getCurrentValue() === 1) {
+      this._onAnimationEnd();
       var presentedIndex = this.state.toIndex;
       this.state.presentedIndex = presentedIndex;
       this.state.fromIndex = presentedIndex;
@@ -515,6 +560,7 @@ var Navigator = React.createClass({
       // For visual consistency, the from index is always used to configure the spring
       this.state.sceneConfigStack[this.state.fromIndex]
     );
+    this._onAnimationStart();
     this.state.isAnimating = true;
     this.spring.setVelocity(v);
     this.spring.setEndValue(1);
@@ -573,6 +619,34 @@ var Navigator = React.createClass({
     }
   },
 
+  _onAnimationStart: function() {
+    this._setRenderSceneToHarwareTextureAndroid(this.state.fromIndex, true);
+    this._setRenderSceneToHarwareTextureAndroid(this.state.toIndex, true);
+
+    var navBar = this._navBar;
+    if (navBar && navBar.onAnimationStart) {
+      navBar.onAnimationStart(this.state.fromIndex, this.state.toIndex);
+    }
+  },
+
+  _onAnimationEnd: function() {
+    this._setRenderSceneToHarwareTextureAndroid(this.state.fromIndex, false);
+    this._setRenderSceneToHarwareTextureAndroid(this.state.toIndex, false);
+
+    var navBar = this._navBar;
+    if (navBar && navBar.onAnimationEnd) {
+      navBar.onAnimationEnd(this.state.fromIndex, this.state.toIndex);
+    }
+  },
+
+  _setRenderSceneToHarwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
+    var viewAtIndex = this.refs['scene_' + sceneIndex];
+    if (viewAtIndex === null || viewAtIndex === undefined) {
+      return;
+    }
+    viewAtIndex.setNativeProps({renderToHardwareTextureAndroid: shouldRenderToHardwareTexture});
+  },
+
   /**
    * Becomes the responder on touch start (capture) while animating so that it
    * blocks all touch interactions inside of it. However, this responder lock
@@ -610,6 +684,7 @@ var Navigator = React.createClass({
       this.state.fromIndex = this.state.presentedIndex;
       var gestureSceneDelta = this._deltaForGestureAction(this._activeGestureAction);
       this.state.toIndex = this.state.presentedIndex + gestureSceneDelta;
+      this._onAnimationStart();
     }
   },
 
@@ -873,7 +948,7 @@ var Navigator = React.createClass({
   },
 
   pop: function() {
-    return this.request('pop');
+    this._popN(1);
   },
 
   /**
@@ -1004,8 +1079,7 @@ var Navigator = React.createClass({
     // To avoid visual glitches, we never re-render scenes during a transition.
     // We assume that `state.updatingRangeLength` will have a length during the
     // initial render of any scene
-    var shouldRenderScenes = !this.state.isAnimating &&
-      this.state.updatingRangeLength !== 0;
+    var shouldRenderScenes = this.state.updatingRangeLength !== 0;
     if (shouldRenderScenes) {
       return (
         <StaticContainer shouldUpdate={true}>
