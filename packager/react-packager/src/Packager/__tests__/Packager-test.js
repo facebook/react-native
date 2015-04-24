@@ -132,7 +132,7 @@ describe('Packager', function() {
           __packager_asset: true,
           isStatic: true,
           path: '/root/img/img.png',
-          name: 'img',
+          uri: 'img',
           width: 25,
           height: 50,
           deprecated: true,

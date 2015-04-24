@@ -181,7 +181,7 @@ Packager.prototype.generateAssetModule_DEPRECATED = function(ppackage, module) {
       __packager_asset: true,
       isStatic: true,
       path: module.path,
-      name: module.id.replace(/^[^!]+!/, ''),
+      uri: module.id.replace(/^[^!]+!/, ''),
       width: dimensions.width / module.resolution,
       height: dimensions.height / module.resolution,
       deprecated: true,
