@@ -92,6 +92,10 @@ var WebView = React.createClass({
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+    /**
+     * Used for android only, JS is enabled by default for WebView on iOS
+     */
+    javaScriptEnabledAndroid: PropTypes.bool,
   },
 
   getInitialState: function() {
