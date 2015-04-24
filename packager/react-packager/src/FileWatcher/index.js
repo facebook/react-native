@@ -32,6 +32,7 @@ var detectingWatcherClass = new Promise(function(resolve) {
 module.exports = FileWatcher;
 
 var MAX_WAIT_TIME = 3000;
+if (windowsPath.isWindows)  MAX_WAIT_TIME = 30000;
 
 // Singleton
 var fileWatcher = null;

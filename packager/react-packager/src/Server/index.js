@@ -121,7 +121,7 @@ function Server(options) {
 }
 
 Server.prototype._onFileChange = function(type, filepath, root) {
-  if (windowsPath.isWindows()) {
+  if (windowspath.isWindows()) {
     root = windowspath.convertPath(root);
     filepath = windowspath.convertPath(filepath);
   }

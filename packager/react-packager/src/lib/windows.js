@@ -37,7 +37,6 @@ function join() {
 }
 
 if (WindowsPath.isWindows()) {
-    console.log("Is Windows");
     WindowsPath.path = _.extend(
         {},
         path,
