@@ -71,7 +71,8 @@
 
   if ([scriptURL isFileURL]) {
     NSString *bundlePath = [[NSBundle bundleForClass:[self class]] resourcePath];
-    NSString *localPath = [scriptURL.absoluteString substringFromIndex:@"file://".length];
+    NSString *decodedPath = [scriptURL.absoluteString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *localPath = [decodedPath substringFromIndex:@"file://".length];
 
     if (![localPath hasPrefix:bundlePath]) {
       NSString *absolutePath = [NSString stringWithFormat:@"%@/%@", bundlePath, localPath];
