@@ -16,17 +16,7 @@ script:
   if [ "$TEST_TYPE" = objc ]
   then
 
-    (npm start > packager.log 2>&1 &)
-    echo $! > packager.pid
-
-    xctool \
-      -project Examples/UIExplorer/UIExplorer.xcodeproj \
-      -scheme UIExplorer -sdk iphonesimulator8.1 \
-      test
-
-    pkill -9 -F packager.pid
-    cat packager.log
-    rm packager.log packager.pid
+    ./scripts/objc-test.sh
 
   elif [ "$TEST_TYPE" = js ]
   then
