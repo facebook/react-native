@@ -42,6 +42,29 @@
   }
 }
 
+- (void)_setupPlaceholder {
+    NSAttributedString *placeholderAttributedString = nil;
+    if (self.placeholder && self.placeholder.length > 0) {
+        if (self.placeholderTextColor) {
+            placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder attributes:@{NSForegroundColorAttributeName : self.placeholderTextColor}];
+        }
+    }
+
+    if (placeholderAttributedString)
+        self.attributedPlaceholder = placeholderAttributedString;
+
+}
+
+- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor {
+    _placeholderTextColor = placeholderTextColor;
+    [self _setupPlaceholder];
+}
+
+- (void)setPlaceholder:(NSString *)placeholder {
+    [super setPlaceholder:[placeholder mutableCopy]];
+    [self _setupPlaceholder];
+}
+
 - (NSArray *)reactSubviews
 {
   // TODO: do we support subviews of textfield in React?
