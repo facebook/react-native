@@ -49,11 +49,11 @@ RCT_CONVERTER(NSString *, NSString, description)
     });
     NSNumber *number = [formatter numberFromString:json];
     if (!number) {
-      RCTLogError(@"JSON String '%@' could not be interpreted as a number", json);
+      RCTLogConvertError(json, "a number");
     }
     return number;
   } else if (json && json != [NSNull null]) {
-    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a number", json, [json classForCoder]);
+    RCTLogConvertError(json, "a number");
   }
   return nil;
 }
@@ -66,30 +66,38 @@ RCT_CONVERTER(NSString *, NSString, description)
 
 + (NSURL *)NSURL:(id)json
 {
-  if (!json || json == (id)kCFNull) {
+  NSString *path = [self NSString:json];
+  if (!path.length) {
     return nil;
   }
 
-  if (![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSString for NSURL, received %@: %@", [json classForCoder], json);
-    return nil;
-  }
+  @try { // NSURL has a history of crashing with bad input, so let's be safe
 
-  NSString *path = json;
-  if ([path isAbsolutePath])
-  {
+    NSURL *URL = [NSURL URLWithString:path];
+    if (URL.scheme) { // Was a well-formed absolute URL
+      return URL;
+    }
+
+    // Check if it has a scheme
+    if ([path rangeOfString:@"[a-zA-Z][a-zA-Z._-]+:" options:NSRegularExpressionSearch].location == 0) {
+      path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      URL = [NSURL URLWithString:path];
+      if (URL) {
+        return URL;
+      }
+    }
+
+    // Assume that it's a local path
+    path = [path stringByRemovingPercentEncoding];
+    if (![path isAbsolutePath]) {
+      path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:path];
+    }
     return [NSURL fileURLWithPath:path];
   }
-  else if ([path length])
-  {
-    NSURL *URL = [NSURL URLWithString:path relativeToURL:[[NSBundle mainBundle] resourceURL]];
-    if ([URL isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[URL path]]) {
-      RCTLogWarn(@"The file '%@' does not exist", URL);
-      return nil;
-    }
-    return URL;
+  @catch (__unused NSException *e) {
+    RCTLogConvertError(json, "a valid URL");
+    return nil;
   }
-  return nil;
 }
 
 + (NSURLRequest *)NSURLRequest:(id)json
@@ -112,11 +120,12 @@ RCT_CONVERTER(NSString *, NSString, description)
     });
     NSDate *date = [formatter dateFromString:json];
     if (!date) {
-      RCTLogError(@"JSON String '%@' could not be interpreted as a date. Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
+      RCTLogError(@"JSON String '%@' could not be interpreted as a date. "
+                  "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
     }
     return date;
   } else if (json && json != [NSNull null]) {
-    RCTLogError(@"JSON value '%@' of class %@ could not be interpreted as a date", json, [json classForCoder]);
+    RCTLogConvertError(json, "a date");
   }
   return nil;
 }

@@ -23,16 +23,6 @@
 #import "RCTWebViewExecutor.h"
 #import "UIView+React.h"
 
-/**
- * HACK(t6568049) This should be removed soon, hiding to prevent people from
- * relying on it
- */
-@interface RCTBridge (RCTRootView)
-
-- (void)setJavaScriptExecutor:(id<RCTJavaScriptExecutor>)executor;
-
-@end
-
 @interface RCTUIManager (RCTRootView)
 
 - (NSNumber *)allocateRootTag;
