@@ -25,6 +25,7 @@
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
 
+    self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
 
@@ -94,21 +95,18 @@
   return UIEdgeInsetsInsetRect(self.bounds, _contentInset);
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-
-  // The header comment for `size` says that a height of 0.0 should be enough,
-  // but it isn't.
-  _textContainer.size = CGSizeMake([self textFrame].size.width, CGFLOAT_MAX);
-}
-
 - (void)drawRect:(CGRect)rect
 {
-  CGPoint origin = [self textFrame].origin;
+  CGRect textFrame = [self textFrame];
+
+  // We reset the text container size every time because RCTShadowText's
+  // RCTMeasure overrides it. The header comment for `size` says that a height
+  // of 0.0 should be enough, but it isn't.
+  _textContainer.size = CGSizeMake(textFrame.size.width, CGFLOAT_MAX);
+
   NSRange glyphRange = [_layoutManager glyphRangeForTextContainer:_textContainer];
-  [_layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:origin];
-  [_layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:origin];
+  [_layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:textFrame.origin];
+  [_layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
 }
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point

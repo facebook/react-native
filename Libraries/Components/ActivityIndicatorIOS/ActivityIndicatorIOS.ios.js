@@ -15,13 +15,12 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var keyMirror = require('keyMirror');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
+var verifyPropTypes = require('verifyPropTypes');
 
 var SpinnerSize = keyMirror({
   large: null,
@@ -100,14 +99,17 @@ var styles = StyleSheet.create({
   }
 });
 
-var UIActivityIndicatorView = createReactIOSNativeComponentClass({
-  validAttributes: merge(
-    ReactIOSViewAttributes.UIView, {
-    activityIndicatorViewStyle: true, // UIActivityIndicatorViewStyle=UIActivityIndicatorViewStyleWhite
-    animating: true,
-    color: true,
-  }),
-  uiViewClassName: 'UIActivityIndicatorView',
-});
+var UIActivityIndicatorView = requireNativeComponent(
+  'UIActivityIndicatorView',
+  null
+);
+if (__DEV__) {
+  var nativeOnlyProps = {activityIndicatorViewStyle: true};
+  verifyPropTypes(
+    ActivityIndicatorIOS,
+    UIActivityIndicatorView.viewConfig,
+    nativeOnlyProps
+  );
+}
 
 module.exports = ActivityIndicatorIOS;

@@ -17,6 +17,7 @@ module.exports = Package;
 function Package(sourceMapUrl) {
   this._finalized = false;
   this._modules = [];
+  this._assets = [];
   this._sourceMapUrl = sourceMapUrl;
 }
 
@@ -36,6 +37,10 @@ Package.prototype.addModule = function(
   });
 };
 
+Package.prototype.addAsset = function(asset) {
+  this._assets.push(asset);
+};
+
 Package.prototype.finalize = function(options) {
   options = options || {};
   if (options.runMainModule) {
@@ -49,6 +54,8 @@ Package.prototype.finalize = function(options) {
 
   Object.freeze(this._modules);
   Object.seal(this._modules);
+  Object.freeze(this._assets);
+  Object.seal(this._assets);
   this._finalized = true;
 };
 
@@ -144,6 +151,10 @@ Package.prototype.getSourceMap = function(options) {
       ? [] : _.pluck(this._modules, 'sourceCode')
   };
   return map;
+};
+
+Package.prototype.getAssets = function() {
+  return this._assets;
 };
 
 Package.prototype._getMappings = function() {

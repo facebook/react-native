@@ -10,12 +10,14 @@
 
 var chalk = require('chalk');
 var exec = require('child_process').exec;
+var Activity = require('./react-packager/src/Activity');
 
 var hasWarned = {};
 
 function getFlowTypeCheckMiddleware(options) {
   return function(req, res, next) {
-    if (options.skipflow) {
+    var isBundle = req.url.indexOf('.bundle') !== -1;
+    if (options.skipflow || !isBundle) {
       return next();
     }
     if (options.flowroot || options.projectRoots.length === 1) {
@@ -44,20 +46,10 @@ function getFlowTypeCheckMiddleware(options) {
 
 function doFlowTypecheck(res, flowroot, next) {
   var flowCmd = 'cd "' + flowroot + '" && flow --json --timeout 20';
-  var start = Date.now();
-  // Log start message if flow is slow to let user know something is happening.
-  var flowSlow = setTimeout(
-    function() {
-      console.log(chalk.gray('flow: Running static typechecks.'));
-    },
-    500
-  );
+  var eventId = Activity.startEvent('flow static typechecks');
   exec(flowCmd, function(flowError, stdout, stderr) {
-    clearTimeout(flowSlow);
+    Activity.endEvent(eventId);
     if (!flowError) {
-      console.log(chalk.gray(
-        'flow: Typechecks passed (' + (Date.now() - start) + 'ms).')
-      );
       return next();
     } else {
       try {

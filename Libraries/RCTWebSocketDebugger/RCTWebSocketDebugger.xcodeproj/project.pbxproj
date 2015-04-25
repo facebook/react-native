@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00D277161AB8C32C00DC1E48 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */; };
-		00D277191AB8C35800DC1E48 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D277181AB8C35800DC1E48 /* SRWebSocket.m */; };
+		13AF20421AE707C5005F5298 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 13AF20411AE707C5005F5298 /* SRWebSocket.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +26,8 @@
 /* Begin PBXFileReference section */
 		00D277141AB8C32C00DC1E48 /* RCTWebSocketExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketExecutor.h; sourceTree = "<group>"; };
 		00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketExecutor.m; sourceTree = "<group>"; };
-		00D277171AB8C35800DC1E48 /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
-		00D277181AB8C35800DC1E48 /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
+		13AF20401AE707C5005F5298 /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
+		13AF20411AE707C5005F5298 /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
 		832C81801AAF6DEF007FA2F7 /* libRCTWebSocketDebugger.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocketDebugger.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -45,8 +45,8 @@
 		832C81771AAF6DEF007FA2F7 = {
 			isa = PBXGroup;
 			children = (
-				00D277171AB8C35800DC1E48 /* SRWebSocket.h */,
-				00D277181AB8C35800DC1E48 /* SRWebSocket.m */,
+				13AF20401AE707C5005F5298 /* SRWebSocket.h */,
+				13AF20411AE707C5005F5298 /* SRWebSocket.m */,
 				00D277141AB8C32C00DC1E48 /* RCTWebSocketExecutor.h */,
 				00D277151AB8C32C00DC1E48 /* RCTWebSocketExecutor.m */,
 				832C81811AAF6DEF007FA2F7 /* Products */,
@@ -119,7 +119,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00D277191AB8C35800DC1E48 /* SRWebSocket.m in Sources */,
+				13AF20421AE707C5005F5298 /* SRWebSocket.m in Sources */,
 				00D277161AB8C32C00DC1E48 /* RCTWebSocketExecutor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -214,6 +214,7 @@
 		832C81951AAF6DF0007FA2F7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -224,6 +225,7 @@
 					"-llibicucore",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -231,6 +233,7 @@
 		832C81961AAF6DF0007FA2F7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

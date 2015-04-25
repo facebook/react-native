@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule loadSourceMap
- *
- * -- disabled flow due to mysterious validation errors --
+ * @flow
  */
 
 'use strict';
@@ -40,7 +39,10 @@ function fetchSourceMap(): Promise {
     .then(response => response.text())
 }
 
-function extractSourceMapURL({url, text}): string {
+function extractSourceMapURL({url, text, fullSourceMappingURL}): string {
+  if (fullSourceMappingURL) {
+    return fullSourceMappingURL;
+  }
   var mapURL = SourceMapURL.getFrom(text);
   var baseURL = url.match(/(.+:\/\/.*?)\//)[1];
   return baseURL + mapURL;

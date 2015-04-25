@@ -9,7 +9,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "../Base/RCTJavaScriptExecutor.h"
+#import "RCTJavaScriptExecutor.h"
 
 // TODO (#5906496): Might RCTJSCoreExecutor be a better name for this?
 

@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 
 #endif
 
-  NSUInteger types;
+  NSUInteger types = 0;
   if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
     types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
   } else {

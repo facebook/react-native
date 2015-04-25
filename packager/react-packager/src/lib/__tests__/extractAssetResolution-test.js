@@ -1,42 +1,52 @@
 'use strict';
 
 jest.autoMockOff();
-var extractAssetResolution = require('../extractAssetResolution');
+var getAssetDataFromName = require('../getAssetDataFromName');
 
-describe('extractAssetResolution', function() {
+describe('getAssetDataFromName', function() {
   it('should extract resolution simple case', function() {
-    var data = extractAssetResolution('test@2x.png');
+    var data = getAssetDataFromName('test@2x.png');
     expect(data).toEqual({
       assetName: 'test.png',
       resolution: 2,
+      type: 'png',
+      name: 'test',
     });
   });
 
   it('should default resolution to 1', function() {
-    var data = extractAssetResolution('test.png');
+    var data = getAssetDataFromName('test.png');
     expect(data).toEqual({
       assetName: 'test.png',
       resolution: 1,
+      type: 'png',
+      name: 'test',
     });
   });
 
   it('should support float', function() {
-    var data = extractAssetResolution('test@1.1x.png');
+    var data = getAssetDataFromName('test@1.1x.png');
     expect(data).toEqual({
       assetName: 'test.png',
       resolution: 1.1,
+      type: 'png',
+      name: 'test',
     });
 
-    data = extractAssetResolution('test@.1x.png');
+    data = getAssetDataFromName('test@.1x.png');
     expect(data).toEqual({
       assetName: 'test.png',
       resolution: 0.1,
+      type: 'png',
+      name: 'test',
     });
 
-    data = extractAssetResolution('test@0.2x.png');
+    data = getAssetDataFromName('test@0.2x.png');
     expect(data).toEqual({
       assetName: 'test.png',
       resolution: 0.2,
+      type: 'png',
+      name: 'test',
     });
   });
 });

@@ -208,6 +208,7 @@ function getAppMiddleware(options) {
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
     assetRoots: options.assetRoots,
+    assetExts: ['png', 'jpeg', 'jpg']
   });
 }
 

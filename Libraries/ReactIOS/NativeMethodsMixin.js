@@ -19,6 +19,7 @@ var TextInputState = require('TextInputState');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var mergeFast = require('mergeFast');
+var precomputeStyle = require('precomputeStyle');
 
 type MeasureOnSuccessCallback = (
   x: number,
@@ -93,7 +94,7 @@ var NativeMethodsMixin = {
         break;
       }
     }
-    var style = flattenStyle(nativeProps.style);
+    var style = precomputeStyle(flattenStyle(nativeProps.style));
 
     var props = null;
     if (hasOnlyStyle) {
