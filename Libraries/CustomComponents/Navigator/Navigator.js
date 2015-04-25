@@ -736,6 +736,7 @@ var Navigator = React.createClass({
     if (transitionVelocity < 0 || this._doesGestureOverswipe(releaseGestureAction)) {
       this._transitionToFromIndexWithVelocity(transitionVelocity);
     } else {
+      this._handlePop();
       this._transitionToToIndexWithVelocity(transitionVelocity);
     }
   },
