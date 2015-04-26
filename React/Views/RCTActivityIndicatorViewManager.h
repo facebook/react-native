@@ -9,6 +9,12 @@
 
 #import "RCTViewManager.h"
 
-@interface RCTUIActivityIndicatorViewManager : RCTViewManager
+@interface RCTConvert (UIActivityIndicatorView)
+
++ (UIActivityIndicatorViewStyle)UIActivityIndicatorViewStyle:(id)json;
+
+@end
+
+@interface RCTActivityIndicatorViewManager : RCTViewManager
 
 @end

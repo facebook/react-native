@@ -66,6 +66,9 @@ var TabBarItemIOS = React.createClass({
      * blank content, you probably forgot to add a selected one.
      */
     selected: React.PropTypes.bool,
+    /**
+     * React style object.
+     */
     style: View.propTypes.style,
     /**
      * Text that appears under the icon. It is ignored when a system icon
@@ -86,7 +89,7 @@ var TabBarItemIOS = React.createClass({
     }
   },
 
-  componentWillReceiveProps: function(nextProps: { selected: boolean }) {
+  componentWillReceiveProps: function(nextProps: { selected: any /* workaround for flow bug */ }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
