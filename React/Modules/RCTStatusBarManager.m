@@ -26,34 +26,33 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 
 RCT_EXPORT_MODULE()
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-
-    if (RCTViewControllerBasedStatusBarAppearance()) {
-      RCTLogError(@"RCTStatusBarManager module requires that the \
-                  UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-    } else {
-      [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle
-                                                  animated:animated];
-    }
-  });
+  if (RCTViewControllerBasedStatusBarAppearance()) {
+    RCTLogError(@"RCTStatusBarManager module requires that the \
+                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
+  } else {
+    [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle
+                                                animated:animated];
+  }
 }
 
 RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
                   withAnimation:(UIStatusBarAnimation)animation)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-
-    if (RCTViewControllerBasedStatusBarAppearance()) {
-      RCTLogError(@"RCTStatusBarManager module requires that the \
-                  UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-    } else {
-      [[UIApplication sharedApplication] setStatusBarHidden:hidden
-                                              withAnimation:animation];
-    }
-  });
+  if (RCTViewControllerBasedStatusBarAppearance()) {
+    RCTLogError(@"RCTStatusBarManager module requires that the \
+                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
+  } else {
+    [[UIApplication sharedApplication] setStatusBarHidden:hidden
+                                            withAnimation:animation];
+  }
 }
 
 - (NSDictionary *)constantsToExport

@@ -350,6 +350,9 @@ var TextInput = React.createClass({
 
   componentWillUnmount: function() {
     this._focusSubscription && this._focusSubscription.remove();
+    if (this.isFocused()) {
+      this.blur();
+    }
   },
 
   _bufferTimeout: (undefined: ?number),

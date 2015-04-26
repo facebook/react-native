@@ -30,96 +30,97 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
                   failureCallback:(RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
 
-    actionSheet.title = options[@"title"];
+  actionSheet.title = options[@"title"];
 
-    for (NSString *option in options[@"options"]) {
-      [actionSheet addButtonWithTitle:option];
-    }
+  for (NSString *option in options[@"options"]) {
+    [actionSheet addButtonWithTitle:option];
+  }
 
-    if (options[@"destructiveButtonIndex"]) {
-      actionSheet.destructiveButtonIndex = [options[@"destructiveButtonIndex"] integerValue];
-    }
-    if (options[@"cancelButtonIndex"]) {
-      actionSheet.cancelButtonIndex = [options[@"cancelButtonIndex"] integerValue];
-    }
+  if (options[@"destructiveButtonIndex"]) {
+    actionSheet.destructiveButtonIndex = [options[@"destructiveButtonIndex"] integerValue];
+  }
+  if (options[@"cancelButtonIndex"]) {
+    actionSheet.cancelButtonIndex = [options[@"cancelButtonIndex"] integerValue];
+  }
 
-    actionSheet.delegate = self;
+  actionSheet.delegate = self;
 
-    _callbacks[keyForInstance(actionSheet)] = successCallback;
+  _callbacks[RCTKeyForInstance(actionSheet)] = successCallback;
 
-    UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];
-    if (appWindow == nil) {
-      RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
-      return;
-    }
-    [actionSheet showInView:appWindow];
-  });
+  UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];
+  if (appWindow == nil) {
+    RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
+    return;
+  }
+  [actionSheet showInView:appWindow];
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
                   failureCallback:(RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    NSMutableArray *items = [NSMutableArray array];
-    id message = options[@"message"];
-    id url = options[@"url"];
-    if ([message isKindOfClass:[NSString class]]) {
-      [items addObject:message];
-    }
-    if ([url isKindOfClass:[NSString class]]) {
-      [items addObject:[NSURL URLWithString:url]];
-    }
-    if ([items count] == 0) {
-      failureCallback(@[@"No `url` or `message` to share"]);
-      return;
-    }
-    UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-    UIViewController *ctrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    if ([share respondsToSelector:@selector(setCompletionWithItemsHandler:)]) {
-      share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
-        if (activityError) {
-          failureCallback(@[[activityError localizedDescription]]);
-        } else {
-          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-        }
-      };
-    } else {
+  NSMutableArray *items = [NSMutableArray array];
+  id message = options[@"message"];
+  id url = options[@"url"];
+  if ([message isKindOfClass:[NSString class]]) {
+    [items addObject:message];
+  }
+  if ([url isKindOfClass:[NSString class]]) {
+    [items addObject:[NSURL URLWithString:url]];
+  }
+  if ([items count] == 0) {
+    failureCallback(@[@"No `url` or `message` to share"]);
+    return;
+  }
+  UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+  UIViewController *ctrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+  if ([share respondsToSelector:@selector(setCompletionWithItemsHandler:)]) {
+    share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+      if (activityError) {
+        failureCallback(@[[activityError localizedDescription]]);
+      } else {
+        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+      }
+    };
+  } else {
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
-      if (![UIActivityViewController instancesRespondToSelector:@selector(completionWithItemsHandler)]) {
-        // Legacy iOS 7 implementation
-        share.completionHandler = ^(NSString *activityType, BOOL completed) {
-          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-        };
-      } else
+    if (![UIActivityViewController instancesRespondToSelector:@selector(completionWithItemsHandler)]) {
+      // Legacy iOS 7 implementation
+      share.completionHandler = ^(NSString *activityType, BOOL completed) {
+        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+      };
+    } else
 
 #endif
 
-      {
-        // iOS 8 version
-        share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
-          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-        };
-      }
+    {
+      // iOS 8 version
+      share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+      };
     }
-    [ctrl presentViewController:share animated:YES completion:nil];
-  });
+  }
+  [ctrl presentViewController:share animated:YES completion:nil];
 }
 
 #pragma mark UIActionSheetDelegate Methods
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-  NSString *key = keyForInstance(actionSheet);
+  NSString *key = RCTKeyForInstance(actionSheet);
   RCTResponseSenderBlock callback = _callbacks[key];
   if (callback) {
     callback(@[@(buttonIndex)]);
@@ -133,7 +134,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
 
 #pragma mark Private
 
-NS_INLINE NSString *keyForInstance(id instance)
+static NSString *RCTKeyForInstance(id instance)
 {
   return [NSString stringWithFormat:@"%p", instance];
 }

@@ -11,6 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTDefines.h"
 #import "RCTRedBox.h"
 
 @interface RCTBridge (Logging)
@@ -31,12 +32,12 @@ const char *RCTLogLevels[] = {
 static RCTLogFunction RCTCurrentLogFunction;
 static RCTLogLevel RCTCurrentLogThreshold;
 
-void RCTLogSetup(void) __attribute__((constructor));
-void RCTLogSetup()
+__attribute__((constructor))
+static void RCTLogSetup()
 {
   RCTCurrentLogFunction = RCTDefaultLogFunction;
 
-#if DEBUG
+#if RCT_DEBUG
   RCTCurrentLogThreshold = RCTLogLevelInfo - 1;
 #else
   RCTCurrentLogThreshold = RCTLogLevelError;
@@ -98,6 +99,22 @@ void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
   [prefixStack removeLastObject];
 }
 
+NSString *RCTThreadName(NSThread *thread)
+{
+  NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
+  if (threadName.length == 0) {
+#if DEBUG // This is DEBUG not RCT_DEBUG because it *really* must not ship in RC
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
+#pragma clang diagnostic pop
+#else
+    threadName = [NSString stringWithFormat:@"%p", thread];
+#endif
+  }
+  return threadName;
+}
+
 NSString *RCTFormatLog(
   NSDate *timestamp,
   NSThread *thread,
@@ -121,18 +138,7 @@ NSString *RCTFormatLog(
     [log appendFormat:@"[%s]", RCTLogLevels[level - 1]];
   }
   if (thread) {
-    NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
-    if (threadName.length == 0) {
-#if DEBUG
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
-#pragma clang diagnostic pop
-#else
-      threadName = [NSString stringWithFormat:@"%p", thread];
-#endif
-    }
-    [log appendFormat:@"[tid:%@]", threadName];
+    [log appendFormat:@"[tid:%@]", RCTThreadName(thread)];
   }
   if (fileName) {
     fileName = [fileName lastPathComponent];
@@ -156,12 +162,7 @@ void _RCTLogFormat(
   NSString *format, ...)
 {
 
-#if DEBUG
-  BOOL log = YES;
-#else
-  BOOL log = (RCTCurrentLogFunction != nil);
-#endif
-
+  BOOL log = RCT_DEBUG || (RCTCurrentLogFunction != nil);
   if (log && level >= RCTCurrentLogThreshold) {
 
     // Get message
@@ -183,15 +184,15 @@ void _RCTLogFormat(
       level, fileName ? @(fileName) : nil, (lineNumber >= 0) ? @(lineNumber) : nil, message
     );
 
-#if DEBUG
+#if RCT_DEBUG // Red box is only available in debug mode
 
-    // Log to red box
-    if (level >= RCTLOG_REDBOX_LEVEL) {
-      [[RCTRedBox sharedInstance] showErrorMessage:message];
-    }
+      // Log to red box
+      if (level >= RCTLOG_REDBOX_LEVEL) {
+        [[RCTRedBox sharedInstance] showErrorMessage:message];
+      }
 
-    // Log to JS executor
-    [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
+      // Log to JS executor
+      [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
 
 #endif
 

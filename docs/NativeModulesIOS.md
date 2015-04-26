@@ -177,7 +177,6 @@ If you want to pass error-like objects to JavaScript, use `RCTMakeError` from [`
 
 The native module should not have any assumptions about what thread it is being called on. React Native invokes native modules methods on a separate serial GCD queue, but this is an implementation detail and might change.  The `- (dispatch_queue_t)methodQueue` method allows the native module to specify which queue its methods should be run on.  For example, if it needs to use a main-thread-only iOS API, it should specify this via:
 
-
 ```objective-c
 - (dispatch_queue_t)methodQueue
 {
@@ -193,6 +192,24 @@ Similarly, if an operation may take a long time to complete, the native module s
   return dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
 }
 ```
+
+The specified `methodQueue` will be shared by all of the methods in your module. If *just one* of your methods is long-running (or needs to be run on a different queue than the others for some reason), you can use `dispatch_async` inside the method to perform that particular method's code on another queue, without affecting the others:
+
+```objective-c
+RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSenderBlock)callback)
+{
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // Call long-running code on background thread
+    ...
+    // You can invoke callback from any thread/queue
+    callback(@[...]);
+  });
+}
+```
+
+> **NOTE**: Sharing dispatch queues between modules
+>
+> The `methodQueue` method will be called once when the module is initialized, and then retained by the bridge, so there is no need to retain the queue yourself, unless you wish to make use of it within your module. However, if you wish to share the same queue between multiple modules then you will need to ensure that you retain and return the same queue instance for each of them; merely returning a queue of the same name for each won't work.
 
 ## Exporting Constants
 

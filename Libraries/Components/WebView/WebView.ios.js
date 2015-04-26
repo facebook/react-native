@@ -19,15 +19,12 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var invariant = require('invariant');
 var keyMirror = require('keyMirror');
-var insetsDiffer = require('insetsDiffer');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
-
-var invariant = require('invariant');
 
 var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';
@@ -87,6 +84,8 @@ var WebView = React.createClass({
     html: PropTypes.string,
     renderError: PropTypes.func, // view to show if there's an error
     renderLoading: PropTypes.func, // loading indicator to show
+    bounces: PropTypes.bool,
+    scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     shouldInjectAJAXHandler: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -131,7 +130,7 @@ var WebView = React.createClass({
       );
     }
 
-    var webViewStyles = [styles.container, this.props.style];
+    var webViewStyles = [styles.container, styles.webView, this.props.style];
     if (this.state.viewState === WebViewState.LOADING ||
       this.state.viewState === WebViewState.ERROR) {
       // if we're in either LOADING or ERROR states, don't show the webView
@@ -145,6 +144,8 @@ var WebView = React.createClass({
         style={webViewStyles}
         url={this.props.url}
         html={this.props.html}
+        bounces={this.props.bounces}
+        scrollEnabled={this.props.scrollEnabled}
         shouldInjectAJAXHandler={this.props.shouldInjectAJAXHandler}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
@@ -209,16 +210,7 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
-    url: true,
-    html: true,
-    contentInset: {diff: insetsDiffer},
-    automaticallyAdjustContentInsets: true,
-    shouldInjectAJAXHandler: true
-  }),
-  uiViewClassName: 'RCTWebView',
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView);
 
 var styles = StyleSheet.create({
   container: {
@@ -250,6 +242,9 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  webView: {
+    backgroundColor: '#ffffff',
+  }
 });
 
 module.exports = WebView;

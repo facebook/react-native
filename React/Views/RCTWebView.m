@@ -31,6 +31,7 @@
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
+    super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
@@ -93,6 +94,18 @@
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_webView.scrollView
                       updateOffset:NO];
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
+  self.opaque = _webView.opaque = (alpha == 1.0);
+  _webView.backgroundColor = backgroundColor;
+}
+
+- (UIColor *)backgroundColor
+{
+  return _webView.backgroundColor;
 }
 
 - (NSMutableDictionary *)baseEvent

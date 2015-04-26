@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
+
 #import <UIKit/UIKit.h>
 
 #import "RCTJavaScriptExecutor.h"
@@ -40,3 +44,5 @@
 - (UIWebView *)invalidateAndReclaimWebView;
 
 @end
+
+#endif

@@ -13,7 +13,6 @@
 
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
-#import "RCTDevMenu.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -42,7 +41,6 @@
 
 @implementation RCTRootView
 {
-  RCTDevMenu *_devMenu;
   RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
   NSString *_moduleName;
@@ -59,12 +57,6 @@
   if ((self = [super init])) {
 
     self.backgroundColor = [UIColor whiteColor];
-
-#ifdef DEBUG
-
-    _enableDevMenu = YES;
-
-#endif
 
     _bridge = bridge;
     _moduleName = moduleName;
@@ -120,18 +112,6 @@
   return YES;
 }
 
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
-{
-  if (motion == UIEventSubtypeMotionShake && self.enableDevMenu) {
-    if (!_devMenu) {
-      _devMenu = [[RCTDevMenu alloc] initWithBridge:_bridge];
-    }
-    [_devMenu show];
-  } else {
-    [super motionEnded:motion withEvent:event];
-  }
-}
-
 RCT_IMPORT_METHOD(AppRegistry, runApplication)
 RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 
@@ -169,7 +149,7 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
   [super layoutSubviews];
   if (_contentView) {
     _contentView.frame = self.bounds;
-    [_bridge.uiManager setFrame:self.frame forRootView:_contentView];
+    [_bridge.uiManager setFrame:self.bounds forRootView:_contentView];
   }
 }
 

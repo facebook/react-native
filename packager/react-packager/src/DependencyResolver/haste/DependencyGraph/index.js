@@ -18,7 +18,7 @@ var isAbsolutePath = require('absolute-path');
 var debug = require('debug')('DependecyGraph');
 var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
-var extractAssetResolution = require('../../../lib/extractAssetResolution');
+var getAssetDataFromName = require('../../../lib/getAssetDataFromName');
 
 var readFile = Promise.promisify(fs.readFile);
 var readDir = Promise.promisify(fs.readdir);
@@ -66,7 +66,7 @@ function DependecyGraph(options) {
   this._debugUpdateEvents = [];
 
   this._moduleExtPattern = new RegExp(
-    '\.(' + ['js'].concat(this._assetExts).join('|') + ')$'
+    '\.(' + ['js', 'json'].concat(this._assetExts).join('|') + ')$'
   );
 
   // Kick off the search process to precompute the dependency graph.
@@ -259,7 +259,7 @@ DependecyGraph.prototype.resolveDependency = function(
     }
 
     // JS modules can be required without extensios.
-    if (!this._isFileAsset(modulePath)) {
+    if (!this._isFileAsset(modulePath) && !modulePath.match(/\.json$/)) {
       modulePath = withExtJs(modulePath);
     }
 
@@ -422,10 +422,19 @@ DependecyGraph.prototype._processModule = function(modulePath) {
   var module;
 
   if (this._assetExts.indexOf(extname(modulePath)) > -1) {
-    var assetData = extractAssetResolution(this._lookupName(modulePath));
+    var assetData = getAssetDataFromName(this._lookupName(modulePath));
     moduleData.id = assetData.assetName;
     moduleData.resolution = assetData.resolution;
     moduleData.isAsset = true;
+    moduleData.dependencies = [];
+    module = new ModuleDescriptor(moduleData);
+    this._updateGraphWithModule(module);
+    return Promise.resolve(module);
+  }
+
+  if (extname(modulePath) === 'json') {
+    moduleData.id = this._lookupName(modulePath);
+    moduleData.isJSON = true;
     moduleData.dependencies = [];
     module = new ModuleDescriptor(moduleData);
     this._updateGraphWithModule(module);
@@ -437,8 +446,9 @@ DependecyGraph.prototype._processModule = function(modulePath) {
     .then(function(content) {
       var moduleDocBlock = docblock.parseAsObject(content);
       if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
-        moduleData.id =
-          moduleDocBlock.providesModule || moduleDocBlock.provides;
+        moduleData.id = /^(\S*)/.exec(
+          moduleDocBlock.providesModule || moduleDocBlock.provides
+        )[1];
 
         // Incase someone wants to require this module via
         // packageName/path/to/module
@@ -641,6 +651,7 @@ DependecyGraph.prototype._processAsset_DEPRECATED = function(file) {
       path: path.resolve(file),
       isAsset_DEPRECATED: true,
       dependencies: [],
+      resolution: getAssetDataFromName(file).resolution,
     });
   }
 };

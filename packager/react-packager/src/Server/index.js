@@ -71,13 +71,17 @@ function Server(options) {
   this._packages = Object.create(null);
   this._changeWatchers = [];
 
+  var assetGlobs = opts.assetExts.map(function(ext) {
+    return '**/*.' + ext;
+  });
+
   var watchRootConfigs = opts.projectRoots.map(function(dir) {
     return {
       dir: dir,
       globs: [
         '**/*.js',
-        '**/package.json',
-      ]
+        '**/*.json',
+      ].concat(assetGlobs),
     };
   });
 
@@ -86,9 +90,7 @@ function Server(options) {
       opts.assetRoots.map(function(dir) {
         return {
           dir: dir,
-          globs: opts.assetExts.map(function(ext) {
-            return '**/*.' + ext;
-          }),
+          globs: assetGlobs,
         };
       })
     );
@@ -98,14 +100,15 @@ function Server(options) {
     ? FileWatcher.createDummyWatcher()
     : new FileWatcher(watchRootConfigs);
 
-  var packagerOpts = Object.create(opts);
-  packagerOpts.fileWatcher = this._fileWatcher;
-  this._packager = new Packager(packagerOpts);
-
   this._assetServer = new AssetServer({
     projectRoots: opts.projectRoots,
     assetExts: opts.assetExts,
   });
+
+  var packagerOpts = Object.create(opts);
+  packagerOpts.fileWatcher = this._fileWatcher;
+  packagerOpts.assetServer = this._assetServer;
+  this._packager = new Packager(packagerOpts);
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);

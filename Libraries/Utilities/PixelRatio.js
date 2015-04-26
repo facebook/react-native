@@ -36,8 +36,8 @@ var Dimensions = require('Dimensions');
  *
  * ```
  * var image = getImage({
- *   width: 200 * PixelRatio.get(),
- *   height: 100 * PixelRatio.get()
+ *   width: PixelRatio.getPixelSizeForLayoutSize(200),
+ *   height: PixelRatio.getPixelSizeForLayoutSize(100),
  * });
  * <Image source={image} style={{width: 200, height: 100}} />
  * ```
@@ -52,9 +52,20 @@ class PixelRatio {
    *     - iPhone 6
    *   - PixelRatio.get() === 3
    *     - iPhone 6 plus
+   *   - PixelRatio.get() === 3.5
+   *     - Nexus 6
    */
   static get(): number {
     return Dimensions.get('window').scale;
+  }
+
+  /**
+   * Converts a layout size (dp) to pixel size (px).
+   *
+   * Guaranteed to return an integer number.
+   */
+  static getPixelSizeForLayoutSize(layoutSize: number): number {
+    return Math.round(layoutSize * PixelRatio.get());
   }
 }
 

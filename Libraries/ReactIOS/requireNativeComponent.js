@@ -41,18 +41,19 @@ function requireNativeComponent(
   viewName: string,
   wrapperComponent: ?Function
 ): Function {
-  var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs[viewName];
-  if (!viewConfig) {
+  var viewConfig = RCTUIManager[viewName];
+  if (!viewConfig || !viewConfig.nativeProps) {
     return UnimplementedView;
   }
   var nativeProps = {
-    ...RCTUIManager.viewConfigs.RCTView.nativeProps,
+    ...RCTUIManager.RCTView.nativeProps,
     ...viewConfig.nativeProps,
   };
+  viewConfig.uiViewClassName = viewName;
   viewConfig.validAttributes = {};
   for (var key in nativeProps) {
     // TODO: deep diff by default in diffRawProperties instead of setting it here
-    var differ = TypeToDifferMap[nativeProps[key].type] || deepDiffer;
+    var differ = TypeToDifferMap[nativeProps[key]] || deepDiffer;
     viewConfig.validAttributes[key] = {diff: differ};
   }
   if (__DEV__) {

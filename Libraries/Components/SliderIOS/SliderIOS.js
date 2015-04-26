@@ -12,16 +12,11 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
-var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
@@ -57,6 +52,18 @@ var SliderIOS = React.createClass({
     maximumValue: PropTypes.number,
 
     /**
+     * The color used for the track to the left of the button. Overrides the
+     * default blue gradient image.
+     */
+    minimumTrackTintColor: PropTypes.string,
+
+    /**
+     * The color used for the track to the right of the button. Overrides the
+     * default blue gradient image.
+     */
+    maximumTrackTintColor: PropTypes.string,
+
+    /**
      * Callback continuously called while the user is dragging the slider.
      */
     onValueChange: PropTypes.func,
@@ -86,6 +93,8 @@ var SliderIOS = React.createClass({
         value={this.props.value}
         maximumValue={this.props.maximumValue}
         minimumValue={this.props.minimumValue}
+        minimumTrackTintColor={this.props.minimumTrackTintColor}
+        maximumTrackTintColor={this.props.maximumTrackTintColor}
         onChange={this._onValueChange}
       />
     );
@@ -98,20 +107,6 @@ var styles = StyleSheet.create({
   },
 });
 
-if (Platform.OS === 'ios') {
-  var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS);
-} else {
-  var validAttributes = {
-    ...ReactIOSViewAttributes.UIView,
-    value: true,
-    minimumValue: true,
-    maximumValue: true,
-  };
-
-  var RCTSlider = createReactIOSNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'RCTSlider',
-  });
-}
+var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS);
 
 module.exports = SliderIOS;
