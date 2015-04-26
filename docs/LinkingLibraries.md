@@ -54,10 +54,6 @@ JavaScript? If you are just using it in JavaScript, you are good to go!
 This step is not necessary for libraries that we ship with React Native with the
 exception of `PushNotificationIOS` and `LinkingIOS`.
 
-In the case of the `PushNotificationIOS` for example, you have to call a method
-on the library from your `AppDelegate` every time a new push notifiation is
-received.
-
 For that we need to know the library's headers. To achieve that you have to go
 to your project's file, select `Build Settings` and search for `Header Search
 Paths`. There you should include the path to you library (if it has relevant

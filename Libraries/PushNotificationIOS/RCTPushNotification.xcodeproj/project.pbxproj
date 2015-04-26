@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		148699CF1ABD045300480536 /* RCTPushNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 148699CE1ABD045300480536 /* RCTPushNotificationManager.m */; };
+		8374243B1AEC409600FD3AAF /* AppDelegate+notification.m in Sources */ = {isa = PBXBuildFile; fileRef = 837424391AEC409600FD3AAF /* AppDelegate+notification.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,8 @@
 		134814201AA4EA6300B7C361 /* libRCTPushNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTPushNotification.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		148699CD1ABD045300480536 /* RCTPushNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPushNotificationManager.h; sourceTree = "<group>"; };
 		148699CE1ABD045300480536 /* RCTPushNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPushNotificationManager.m; sourceTree = "<group>"; };
+		837424391AEC409600FD3AAF /* AppDelegate+notification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+notification.m"; sourceTree = "<group>"; };
+		8374243A1AEC409600FD3AAF /* AppDelegate+notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+notification.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +53,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				837424391AEC409600FD3AAF /* AppDelegate+notification.m */,
+				8374243A1AEC409600FD3AAF /* AppDelegate+notification.h */,
 				148699CD1ABD045300480536 /* RCTPushNotificationManager.h */,
 				148699CE1ABD045300480536 /* RCTPushNotificationManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -115,6 +120,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				148699CF1ABD045300480536 /* RCTPushNotificationManager.m in Sources */,
+				8374243B1AEC409600FD3AAF /* AppDelegate+notification.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

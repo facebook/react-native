@@ -13,6 +13,8 @@
 #import "RCTEventDispatcher.h"
 
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
+NSString *const RCTRemoteNotificationRegistered = @"RemoteNotificationRegistered";
+NSString *const RCTRemoteNotificationRegisteredError = @"RemoteNotificationRegisteredError";
 
 @implementation RCTPushNotificationManager
 {
@@ -36,6 +38,14 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(handleRemoteNotificationReceived:)
                                                  name:RCTRemoteNotificationReceived
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRemoteNotificationRegistred:)
+                                                 name:RCTRemoteNotificationRegistered
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRemoteNotificationRegistredError:)
+                                                 name:RCTRemoteNotificationRegisteredError
+                                               object:nil];                                               
   }
   return self;
 }
@@ -59,10 +69,43 @@ RCT_EXPORT_MODULE()
                                                     userInfo:notification];
 }
 
++ (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  NSDictionary *payload = @{@"deviceToken": deviceToken};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationRegistered
+                                                      object:self
+                                                    userInfo:payload];
+}
+
++ (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationRegisteredError
+                                                      object:self
+                                                      userInfo:error.userInfo];
+
+}
+
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
                                               body:[notification userInfo]];
+}
+
+- (void) handleRemoteNotificationRegistred:(NSNotification *) notification {
+  NSDictionary *userInfo = notification.userInfo;
+  NSData *deviceToken = [userInfo objectForKey:@"deviceToken"];
+  NSString *deviceTokenStr = [[[[deviceToken description]
+                                stringByReplacingOccurrencesOfString: @"<" withString: @""]
+                               stringByReplacingOccurrencesOfString: @">" withString: @""]
+                              stringByReplacingOccurrencesOfString: @" " withString: @""];
+  [self.bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationRegistered"
+                                                  body:deviceTokenStr];
+}
+
+- (void) handleRemoteNotificationRegistredError:(NSNotification *) notification {
+  NSDictionary *userInfo = notification.userInfo;
+  NSString *error = [userInfo objectForKey:@"NSLocalizedDescription"];
+  [self.bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationRegisteredError"
+                                                  body:error];
 }
 
 /**

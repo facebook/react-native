@@ -21,6 +21,8 @@ var _initialNotification = RCTPushNotificationManager &&
   RCTPushNotificationManager.initialNotification;
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
+var REGISTERED_FOR_REMOTE = 'remoteNotificationRegistered';
+var REGISTERED_FOR_REMOTE_ERROR = 'remoteNotificationRegisteredError';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -72,8 +74,20 @@ class PushNotificationIOS {
    * Requests all notification permissions from iOS, prompting the user's
    * dialog box.
    */
-  static requestPermissions() {
+  static requestPermissions(callback) {
     RCTPushNotificationManager.requestPermissions();
+    if (callback) {
+      RCTDeviceEventEmitter.addListener(
+          REGISTERED_FOR_REMOTE, function(token) {
+              callback(null, token);
+          }
+      );
+      RCTDeviceEventEmitter.addListener(
+          REGISTERED_FOR_REMOTE_ERROR, function(error) {
+              callback(error);
+          }
+      )
+    }
   }
 
   /**
