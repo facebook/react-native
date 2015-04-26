@@ -31,6 +31,8 @@
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 
+dispatch_queue_t const RCTJSThread = nil;
+
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
@@ -795,6 +797,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+
     [self setUp];
     [self bindKeys];
   }
@@ -872,6 +875,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       dispatch_queue_t queue = [module methodQueue];
       if (queue) {
         _queuesByID[moduleID] = queue;
+      } else {
+        _queuesByID[moduleID] = [NSNull null];
       }
     }
   }];
@@ -1128,6 +1133,16 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 #pragma mark - Payload Generation
 
+- (void)dispatchBlock:(dispatch_block_t)block forModule:(NSNumber *)moduleID
+{
+  id queue = _queuesByID[moduleID];
+  if (queue == [NSNull null]) {
+    [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
+  } else {
+    dispatch_async(queue ?: _methodQueue, block);
+  }
+}
+
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
 #if BATCHED_BRIDGE
@@ -1235,10 +1250,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   // TODO: batchDidComplete is only used by RCTUIManager - can we eliminate this special case?
   [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, BOOL *stop) {
     if ([module respondsToSelector:@selector(batchDidComplete)]) {
-      dispatch_queue_t queue = _queuesByID[moduleID];
-      dispatch_async(queue ?: _methodQueue, ^{
+      [self dispatchBlock:^{
         [module batchDidComplete];
-      });
+      } forModule:moduleID];
     }
   }];
 }
@@ -1273,8 +1287,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
 
   __weak RCTBridge *weakSelf = self;
-  dispatch_queue_t queue = _queuesByID[moduleID];
-  dispatch_async(queue ?: _methodQueue, ^{
+  [self dispatchBlock:^{
     RCTProfileBeginEvent();
     __strong RCTBridge *strongSelf = weakSelf;
 
@@ -1303,7 +1316,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       @"method": method.JSMethodName,
       @"selector": NSStringFromSelector(method.selector),
     });
-  });
+  } forModule:@(moduleID)];
 
   return YES;
 }
