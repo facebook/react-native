@@ -7,11 +7,11 @@ permalink: docs/nativemodulesios.html
 next: nativecomponentsios
 ---
 
-Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
+Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
 
 We designed React Native such that it is possible for you to write real native code and have access to the full power of the platform. This is a more advanced feature and we don't expect it to be part of the usual development process, however it is essential that it exists. If React Native doesn't support a native feature that you need, you should be able to build it yourself.
 
-This is a more advanced guide that shows how to build a native module. It assumes the reader knows Objective-C (Swift is not supported yet) and core libraries (Foundation, UIKit).
+This is a more advanced guide that shows how to build a native module. It assumes the reader knows Objective-C or Swift and core libraries (Foundation, UIKit).
 
 ## iOS Calendar Module Example
 
@@ -248,3 +248,39 @@ var subscription = DeviceEventEmitter.addListener(
 subscription.remove();
 ```
 For more examples of sending events to JavaScript, see [`RCTLocationObserver`](https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m).
+
+## Exporting Swift
+
+Swift doesn't have support for macros so exposing it to React Native requires a bit more setup but works relatively the same.
+
+Let's say we have the same `CalendarManager` but as a Swift class:
+
+```swift
+// CalendarManager.swift
+
+@objc(CalendarManager)
+class CalendarManager: NSObject {
+
+  @objc func addEvent(name: String, location: String, date: NSNumber) -> Void {
+    // Date is ready to use!
+  }
+  
+}
+```
+
+> **NOTE** It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.
+
+Then create a private implementation file that will register the required information with the React Native bridge:
+
+```objc
+// CalendarManagerBridge.m
+#import "RCTBridgeModule.h"
+
+@interface RCT_EXTERN_MODULE(CalendarManager, NSObject)
+
+RCT_EXTERN_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(NSNumber *)date)
+
+@end
+```
+
+You can also use `RCT_EXTERN_REMAP_MODULE` and `RCT_EXTERN_REMAP_METHOD` to alter the JavaScript name of the module or methods you are exporting. For more information see [`RCTBridgeModule`](https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h). 
