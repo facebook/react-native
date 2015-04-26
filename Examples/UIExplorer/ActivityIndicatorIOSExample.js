@@ -57,6 +57,7 @@ var ToggleAnimatingActivityIndicator = React.createClass({
   }
 });
 
+exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<ActivityIndicatorIOS>';
 exports.description = 'Animated loading indicators.';
