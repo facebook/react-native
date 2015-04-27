@@ -5,9 +5,9 @@
 
 var NativeModules = {
   I18n: {
-    translationsDictionary: {
+    translationsDictionary: JSON.stringify({
       'Good bye, {name}!|Bye message': '¡Adiós {name}!',
-    },
+    }),
   },
   Timing: {
     createTimer: jest.genMockFunction(),
