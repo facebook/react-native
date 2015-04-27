@@ -95,6 +95,40 @@ var SCROLLVIEW_REF = 'listviewscroll';
  *    event-loop (customizable with the `pageSize` prop).  This breaks up the
  *    work into smaller chunks to reduce the chance of dropping frames while
  *    rendering rows.
+ * 
+ * ## Why doesn't React Native have a UITableView?
+ * 
+ * React Native is using a different optimization strategy than iOS. Here's a summary
+ * 
+ * ## Load balancing
+ * 
+ * In UITableView, when an element comes on screen, you have to synchronously render it. This means that you've got less than 16ms to do it. If you don't, then you drop one or multiple frames. If you are rendering complex elements like newsfeed stories, it's basically impossible to meet this schedule so you're doomed to drop frames.
+ * 
+ * With ListView, when you reach the end of the current screen, you can prepare in advance more rows to be rendered. Those rows will be rendered in a different thread so won't freeze the UI thread while processing. The reason why it is working is that the load is not evenly spread. You don't need to render a new story on every single frame, most frames are just scrolling and don't need new stories to appear.
+ * 
+ * ListView will also render one element at a time, so if you are interacting with some element while rendering more rows, it won't block until all the rows have been pre-rendered, it will only block for one row.
+ * 
+ * ## Memory management
+ * 
+ * UITableView is very conservative memory-wise, it aggressively reuses cells. This decision was made back in the iPhone 1 where memory was extremely scarce. The problem with this is that reusing cell is extremely error prone for the developer. You are given a dirty object, from which you have no idea what mutations happened, and you need to reconfigure it to look like what you want. In our iOS app, this caused SOOO many bugs.
+ * 
+ * The problem of reusing cell is that some cells have internal state (video player running, text input, horizontal scroll position...) When you reuse them, you need to be able to serialize that state and put it back. This is not always possible nor easy, so you usually either loose this state or it propagates on the new row and causes bugs.
+ * 
+ * What we found out on React Native is that it is fast enough on iphone 4s to create new cells for every single row. So, we don't need to impose this very hard constraint on ourself. In your screenshot, you noticed that we don't remove rows after you scrolled for a while. That's not entirely correct, we don't remove the virtual dom representation on the React side (what you see in the chrome dev tools), but we do remove those elements from the "dom" and keep their reference.
+ * 
+ * When they are visible again, we put them back on the dom. In case we have low memory or the list is too big, we may destroy those and recreate them from scratch (loosing the state as mentioned above) in the future. We haven't done this performance optimization yet, but the user code wouldn't be impacted.
+ * 
+ * We tried to delete the iOS views aggressively but we found out that doing so was actually very expensive. It was better to leave them hanging than to remove them.
+ * 
+ * ## Change Detection
+ * 
+ * In ListView, we have a DataSource object that favors immutability. If you have a list of 1000 elements to render, you want to make those 1000 elements immutable, meaning that you can check the previous one === the next one and instantly know if something changed. This way, when anything change, the only thing you've got to do is to traverse those two lists and do those very fast equality checks and know what rows changed. And then update only those.
+ * 
+ * ## Layout
+ * 
+ * In UITableView, you've got to specify the layout of every single row even when they are not being displayed on screen. So, in cases where it's not a fixed size, you've got to basically render the element to know its size, and pay that high cost up front. It's also very annoying to do so manually.
+ * 
+ * In ListView, since React Native owns the layout system, you don't need to do all that painstaking manual computation yourself. When a row is rendered, it'll update the size. The only downside is that the scrollbar is a little funky, but I'm sure we'll be able to come up with heuristics to smooth it out in the future.
  */
 
 var ListView = React.createClass({
