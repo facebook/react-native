@@ -445,6 +445,7 @@ var TextInput = React.createClass({
           onSubmitEditing={this.props.onSubmitEditing}
           onSelectionChangeShouldSetResponder={() => true}
           placeholder={this.props.placeholder}
+          placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
