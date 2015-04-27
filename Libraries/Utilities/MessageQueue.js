@@ -263,7 +263,7 @@ var MessageQueueMixin = {
         'both the success callback and the error callback.',
          cbID
       );
-      cb.apply(scope, args);
+      if (cb) cb.apply(scope, args);
     } catch(ie_requires_catch) {
       throw ie_requires_catch;
     } finally {
