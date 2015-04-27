@@ -355,7 +355,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 
 #define RCT_CONVERT_CASE(_value, _type) \
   case _value: { \
-    _type (*convert)(id, SEL, id) = (typeof(convert))[RCTConvert methodForSelector:selector]; \
+    _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
     RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
     break; \
   }
@@ -377,12 +377,27 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
               RCT_CONVERT_CASE('B', BOOL)
               RCT_CONVERT_CASE('@', id)
               RCT_CONVERT_CASE('^', void *)
-            case '{':
-              RCTAssert(NO, @"Argument %zd of %C[%@ %@] is defined as %@, however RCT_EXPORT_METHOD() "
-                        "does not currently support struct-type arguments.", i - 2,
-                        [reactMethodName characterAtIndex:0], _moduleClassName,
-                        objCMethodName, argumentName);
-              break;
+
+              case '{': {
+                [argumentBlocks addObject:^(RCTBridge *bridge, NSNumber *context, NSInvocation *invocation, NSUInteger index, id json) {
+                  NSUInteger size;
+                  NSGetSizeAndAlignment(argumentType, &size, NULL);
+                  void *returnValue = malloc(size);
+                  NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
+                  NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+                  [_invocation setTarget:[RCTConvert class]];
+                  [_invocation setSelector:selector];
+                  [_invocation setArgument:&json atIndex:2];
+                  [_invocation invoke];
+                  [_invocation getReturnValue:returnValue];
+
+                  [invocation setArgument:returnValue atIndex:index];
+
+                  free(returnValue);
+                }];
+                break;
+              }
+
             default:
               defaultCase(argumentType);
           }
@@ -437,6 +452,10 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
             RCT_SIMPLE_CASE('f', float, floatValue)
             RCT_SIMPLE_CASE('d', double, doubleValue)
             RCT_SIMPLE_CASE('B', BOOL, boolValue)
+
+          case '{':
+            RCTLogMustFix(@"Cannot convert JSON to struct %s", argumentType);
+            break;
 
           default:
             defaultCase(argumentType);

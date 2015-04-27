@@ -1001,12 +1001,11 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(NSNumber *)reactTag
  * Only layouts for views that are within the rect passed in are returned. Invokes the error callback if the
  * passed in parent view does not exist. Invokes the supplied callback with the array of computed layouts.
  */
-RCT_EXPORT_METHOD(measureViewsInRect:(id)rectJSON
+RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
                   parentView:(NSNumber *)reactTag
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {
-  CGRect rect = [RCTConvert CGRect:rectJSON];
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   if (!shadowView) {
     RCTLogError(@"Attempting to measure view that does not exist (tag #%@)", reactTag);
@@ -1102,9 +1101,8 @@ RCT_EXPORT_METHOD(scrollWithoutAnimationTo:(NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(zoomToRect:(NSNumber *)reactTag
-                  withRect:(id)rectJSON)
+                  withRect:(CGRect)rect)
 {
-  CGRect rect = [RCTConvert CGRect:rectJSON];
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     UIView *view = viewRegistry[reactTag];
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
