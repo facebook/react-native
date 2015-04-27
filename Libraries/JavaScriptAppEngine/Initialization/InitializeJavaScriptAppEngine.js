@@ -144,3 +144,4 @@ setupAlert();
 setupPromise();
 setupXHR();
 setupGeolocation();
+setupNumberToLocaleString();
