@@ -57,6 +57,17 @@ var styles = StyleSheet.create({
     borderLeftWidth: 40,
     borderLeftColor: 'blue',
   },
+  border5: {
+    borderRadius: 50,
+    borderTopWidth: 10,
+    borderTopColor: 'red',
+    borderRightWidth: 20,
+    borderRightColor: 'yellow',
+    borderBottomWidth: 30,
+    borderBottomColor: 'green',
+    borderLeftWidth: 40,
+    borderLeftColor: 'blue',
+  },
 });
 
 exports.title = 'Border';
@@ -71,7 +82,7 @@ exports.examples = [
   },
   {
     title: 'Equal-Width / Same-Color',
-    description: 'borderWidth & borderColor',
+    description: 'borderWidth & borderColor & borderRadius',
     render() {
       return <View style={[styles.box, styles.borderRadius]} />;
     }
@@ -95,6 +106,13 @@ exports.examples = [
     description: 'border*Width & border*Color',
     render() {
       return <View style={[styles.box, styles.border4]} />;
+    }
+  },
+  {
+    title: 'Custom Borders',
+    description: 'border*Width & border*Color',
+    render() {
+      return <View style={[styles.box, styles.border5]} />;
     }
   },
 ];
