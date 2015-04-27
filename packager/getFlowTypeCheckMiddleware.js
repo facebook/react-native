@@ -13,11 +13,12 @@ var exec = require('child_process').exec;
 var Activity = require('./react-packager/src/Activity');
 
 var hasWarned = {};
+var DISABLE_FLOW_CHECK = true; // temporarily disable while we figure out versioning issues.
 
 function getFlowTypeCheckMiddleware(options) {
   return function(req, res, next) {
     var isBundle = req.url.indexOf('.bundle') !== -1;
-    if (options.skipflow || !isBundle) {
+    if (DISABLE_FLOW_CHECK || options.skipflow || !isBundle) {
       return next();
     }
     if (options.flowroot || options.projectRoots.length === 1) {
