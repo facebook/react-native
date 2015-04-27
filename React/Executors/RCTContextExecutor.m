@@ -277,13 +277,13 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
           
           // direct method invoke with no arguments
           if (arguments.count == 0) {
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, NULL, 0, NULL, &errorJSRef);
+            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
           }
           // direct method invoke with 1 argument
           else if(arguments.count == 1) {
             JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
             JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)methodJSRef, 1, &argsJSRef, &errorJSRef);
+            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
             JSStringRelease(argsJSStringRef);
           }
           // apply invoke with array of arguments
@@ -302,7 +302,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
               args[0] = JSValueMakeNull(contextJSRef);
               args[1] = argsJSRef;
               
-              resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
+              resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)moduleJSRef, 2, args, &errorJSRef);
               JSStringRelease(argsJSStringRef);
             }
           }
