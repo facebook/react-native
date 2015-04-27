@@ -46,7 +46,7 @@ var ReactInstanceMap = require('ReactInstanceMap');
  *
  * `mountImage`: A way to represent the potential to create lower level
  * resources whos `nodeHandle` can be discovered immediately by knowing the
- * `rootNodeID`. Today's web react represents this with `innerHTML` annotated
+ * `rootNodeID`. Today's web React represents this with `innerHTML` annotated
  * with DOM ids that match the `rootNodeID`.
  *
  * Opaque name      TodaysWebReact   FutureWebWorkerReact   ReactNative

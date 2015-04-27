@@ -110,11 +110,11 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
   dispatch_async(dispatch_get_main_queue(), ^{
 
     /**
-     * Every root view that is created must have a unique react tag.
+     * Every root view that is created must have a unique React tag.
      * Numbering of these tags goes from 1, 11, 21, 31, etc
      *
      * NOTE: Since the bridge persists, the RootViews might be reused, so now
-     * the react tag is assigned every time we load new content.
+     * the React tag is assigned every time we load new content.
      */
     [_contentView removeFromSuperview];
     _contentView = [[UIView alloc] initWithFrame:self.bounds];
