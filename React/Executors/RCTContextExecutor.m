@@ -55,6 +55,11 @@
   }
 }
 
+- (void)dealloc
+{
+  CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+}
+
 @end
 
 @implementation RCTContextExecutor
@@ -153,15 +158,12 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (instancetype)init
 {
-  static NSThread *javaScriptThread;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // All JS is single threaded, so a serial queue is our only option.
-    javaScriptThread = [[NSThread alloc] initWithTarget:[self class] selector:@selector(runRunLoopThread) object:nil];
-    [javaScriptThread setName:@"com.facebook.React.JavaScript"];
-    [javaScriptThread setThreadPriority:[[NSThread mainThread] threadPriority]];
-    [javaScriptThread start];
-  });
+  NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
+                                                       selector:@selector(runRunLoopThread)
+                                                         object:nil];
+  [javaScriptThread setName:@"com.facebook.React.JavaScript"];
+  [javaScriptThread setThreadPriority:[[NSThread mainThread] threadPriority]];
+  [javaScriptThread start];
 
   return [self initWithJavaScriptThread:javaScriptThread globalContextRef:NULL];
 }
@@ -169,6 +171,9 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 - (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
                         globalContextRef:(JSGlobalContextRef)context
 {
+  RCTAssert(javaScriptThread != nil,
+            @"Can't initialize RCTContextExecutor without a javaScriptThread");
+
   if ((self = [super init])) {
     _javaScriptThread = javaScriptThread;
     __weak RCTContextExecutor *weakSelf = self;
