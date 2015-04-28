@@ -100,6 +100,12 @@ var styles = StyleSheet.create({
     height: 50,
     padding: 4,
   },
+  multilineWithFontStyles: {
+    color: 'purple',
+    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: 'Cochin',
+  },
   eventLabel: {
     margin: 3,
     fontSize: 12,
@@ -347,6 +353,14 @@ exports.examples = [
               placeholder="mutliline text input"
               multiline={true}
               style={styles.multiline}
+            />
+          </WithLabel>
+          <WithLabel label="multilineStyled">
+            <TextInput
+              placeholder="mutliline text input with font styles"
+              multiline={true}
+              placeholderTextColor="red"
+              style={[styles.multiline, styles.multilineWithFontStyles]}
             />
           </WithLabel>
         </View>
