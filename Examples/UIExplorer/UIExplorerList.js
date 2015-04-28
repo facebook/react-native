@@ -185,10 +185,17 @@ class UIExplorerList extends React.Component {
       this.props.onExternalExampleRequested(example);
       return;
     }
+    if (example.displayName === "NavigatorIOSExample") {
+      var props = {
+        customNavBarColors: this.props.customNavBarColors,
+        resetNavBarColors: this.props.resetNavBarColors,
+      }
+    }
     var Component = makeRenderable(example);
     this.props.navigator.push({
       title: Component.title,
       component: Component,
+      passProps: props || {},
     });
   }
 }

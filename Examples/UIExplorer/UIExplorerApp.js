@@ -29,7 +29,26 @@ var UIExplorerApp = React.createClass({
   getInitialState: function() {
     return {
       openExternalExample: (null: ?React.Component),
+      tintColor: '#008888',
+      barTintColor: (null: ?string),
+      titleTextColor: (null: ?string),
     };
+  },
+
+  _customNavColors: function() {
+    this.setState({
+      tintColor: '#FFFFFF',
+      barTintColor: '#05A5D1',
+      titleTextColor: '#FFFFFF',
+    });
+  },
+
+  _resetNavColors: function() {
+    this.setState({
+      tintColor: "#008888",
+      barTintColor: "#F7F7F7",
+      titleTextColor: '#000000',
+    });
   },
 
   render: function() {
@@ -53,10 +72,14 @@ var UIExplorerApp = React.createClass({
             onExternalExampleRequested: (example) => {
               this.setState({ openExternalExample: example, });
             },
+            customNavBarColors: () => this._customNavColors(),
+            resetNavBarColors: () => this._resetNavColors(),
           }
         }}
         itemWrapperStyle={styles.itemWrapper}
-        tintColor='#008888'
+        tintColor={this.state.tintColor}
+        barTintColor={this.state.barTintColor}
+        titleTextColor={this.state.titleTextColor}
       />
     );
   }
