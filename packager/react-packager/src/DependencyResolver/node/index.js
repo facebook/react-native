@@ -14,7 +14,6 @@ var ModuleDescriptor = require('../ModuleDescriptor');
 var mdeps = require('module-deps');
 var path = require('path');
 
-var _ = require("underscore");
 var windowsPath = require('./../../lib/windows');
 // if running on windows use a special version of the path module that converts directory separators
 if (windowsPath.isWindows()) path=windowsPath.path;

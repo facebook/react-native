@@ -17,10 +17,8 @@ var exec = require('child_process').exec;
 var windowsPath = require('../lib/windows');
 
 var detectingWatcherClass = new Promise(function(resolve) {
-  if (windowsPath.isWindows()) {
-      MAX_WAIT_TIME=30000;
-      return resolve(sane.NodeWatcher);
-  }
+  // if running on Windows override the detection and use NodeWatcher
+  if (windowsPath.isWindows()) return resolve(sane.NodeWatcher);
   exec('which watchman', function(err, out) {
     if (err || out.length === 0) {
       resolve(sane.NodeWatcher);
@@ -33,6 +31,7 @@ var detectingWatcherClass = new Promise(function(resolve) {
 module.exports = FileWatcher;
 
 var MAX_WAIT_TIME = 10000;
+// Windows seems to need to more time
 if (windowsPath.isWindows)  MAX_WAIT_TIME = 30000;
 
 // Singleton

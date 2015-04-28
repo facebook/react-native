@@ -20,7 +20,6 @@ var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
 var getAssetDataFromName = require('../../../lib/getAssetDataFromName');
 
-var _ = require("underscore");
 var windowsPath = require('../../../lib/windows');
 // if running on windows use a special version of the path module that converts directory separators
 if (windowsPath.isWindows()) path = windowsPath.path;

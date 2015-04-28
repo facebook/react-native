@@ -14,7 +14,6 @@ var exec = require('child_process').exec;
 var http = require('http');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
-var _ = require('underscore');
 
 var windowsPath = require('./react-packager/src/lib/windows');
 // if running on windows use a special version of the path module that converts directory separators
