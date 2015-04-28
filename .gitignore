@@ -27,3 +27,15 @@ project.xcworkspace
 
 # Node
 node_modules
+
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion
+
+*.iml
+
+## Directory-based project format:
+.idea/
+# if you remove the above rule, at least ignore the following:
+
+## File-based project format:
+*.ipr
+*.iws
