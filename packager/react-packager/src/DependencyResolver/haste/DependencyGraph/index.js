@@ -21,8 +21,9 @@ var declareOpts = require('../../../lib/declareOpts');
 var getAssetDataFromName = require('../../../lib/getAssetDataFromName');
 
 var _ = require("underscore");
-var windowsPath = require("../../../lib/windows");
-if (windowsPath.isWindows()) path=windowsPath.path;
+var windowsPath = require('../../../lib/windows');
+// if running on windows use a special version of the path module that converts directory separators
+if (windowsPath.isWindows()) path = windowsPath.path;
 
 var readFile = Promise.promisify(fs.readFile);
 var readDir = Promise.promisify(fs.readdir);

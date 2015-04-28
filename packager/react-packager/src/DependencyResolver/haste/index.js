@@ -13,7 +13,6 @@ var DependencyGraph = require('./DependencyGraph');
 var replacePatterns = require('./replacePatterns');
 var ModuleDescriptor = require('../ModuleDescriptor');
 var declareOpts = require('../../lib/declareOpts');
-var os = require('os');
 
 var DEFINE_MODULE_CODE = [
   '__d(',
@@ -161,7 +160,7 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
       '_moduleName_': module.id,
       '_code_': code.replace(replacePatterns.IMPORT_RE, relativizeCode)
                     .replace(replacePatterns.REQUIRE_RE, relativizeCode),
-      '_deps_': JSON.stringify(resolvedDepsArr)
+      '_deps_': JSON.stringify(resolvedDepsArr),
     }[key];
   });
 };

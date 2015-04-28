@@ -8,13 +8,12 @@
  */
 'use strict';
 
-var path = require("path"); // used for path separator
-var windowspath = require("./react-packager/src/lib/windows");
+var windowsPath = require('./react-packager/src/lib/windows');
 
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  windowspath.isWindows() ? __dirname : windowspath.convertPath( __dirname),
+  windowsPath.isWindows() ? __dirname : windowsPath.convertPath( __dirname),
   'website',
   '/.git',             // added because nodeWatcher does not ignore hidden files
   'node_modules/react-tools/src/utils/ImmutableObject.js',

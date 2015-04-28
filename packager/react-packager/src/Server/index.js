@@ -20,8 +20,9 @@ var _ = require('underscore');
 var exec = require('child_process').exec;
 var fs = require('fs');
 
-var windowspath = require('../lib/windows');
-if (windowspath.isWindows()) path = windowspath.path;
+var windowsPath = require('../lib/windows');
+// if running on windows use a special version of the path module that converts directory separators
+if (windowsPath.isWindows()) path = windowsPath.path;
 
 module.exports = Server;
 
@@ -124,9 +125,9 @@ function Server(options) {
 }
 
 Server.prototype._onFileChange = function(type, filepath, root) {
-  if (windowspath.isWindows()) {
-    root = windowspath.convertPath(root);
-    filepath = windowspath.convertPath(filepath);
+  if (windowsPath.isWindows()) {
+    root = windowsPath.convertPath(root);
+    filepath = windowsPath.convertPath(filepath);
   }
   var absPath = path.join(root, filepath);
   this._packager.invalidateFile(absPath);
