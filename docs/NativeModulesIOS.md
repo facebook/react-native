@@ -285,7 +285,7 @@ class CalendarManager: NSObject {
 }
 ```
 
-> **NOTE** It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.
+> **NOTE**: It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.
 
 Then create a private implementation file that will register the required information with the React Native bridge:
 
