@@ -194,7 +194,7 @@ var ReactIOSMount = {
   unmountComponentAtNode: function(containerTag: number): bool {
     if (!ReactIOSTagHandles.reactTagIsNativeTopRootID(containerTag)) {
       console.error('You cannot render into anything but a top root');
-      return;
+      return false;
     }
 
     var containerID = ReactIOSTagHandles.tagToRootNodeID[containerTag];

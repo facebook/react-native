@@ -86,7 +86,7 @@ var TabBarItemIOS = React.createClass({
     }
   },
 
-  componentWillReceiveProps: function(nextProps: { selected: boolean }) {
+  componentWillReceiveProps: function(nextProps: { selected?: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
