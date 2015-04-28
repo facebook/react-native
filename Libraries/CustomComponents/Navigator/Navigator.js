@@ -957,7 +957,7 @@ var Navigator = React.createClass({
    * `index` specifies the route in the stack that should be replaced.
    * If it's negative, it counts from the back.
    */
-  replaceAtIndex: function(route, index) {
+  replaceAtIndex: function(route, index, cb) {
     invariant(!!route, 'Must supply route to replace');
     if (index < 0) {
       index += this.state.routeStack.length;
@@ -988,6 +988,7 @@ var Navigator = React.createClass({
         this._emitWillFocus(route);
         this._emitDidFocus(route);
       }
+      cb && cb();
     });
   },
 
@@ -1034,8 +1035,9 @@ var Navigator = React.createClass({
   resetTo: function(route) {
     invariant(!!route, 'Must supply route to push');
     if (this._canNavigate()) {
-      this.replaceAtIndex(route, 0);
-      this.popToRoute(route);
+      this.replaceAtIndex(route, 0, () => {
+        this.popToRoute(route);
+      });
     }
   },
 
