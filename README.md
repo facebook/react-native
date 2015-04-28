@@ -33,7 +33,7 @@ All operations between the JavaScript application code and the native platform a
 
 ## Touch Handling
 
-iOS has a very powerful system called the Responder Chain to negotiate touches in complex view hierarchies which does not have a universal analog on the web. React Native implements a similar responder system and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configuration.
+iOS has a very powerful system called the Responder Chain to negotiate touches in complex view hierarchies which do not have a universal analog on the web. React Native implements a similar responder system and provides high level components such as `TouchableHighlight`, which integrate properly with scroll views and other elements without any additional configuration.
 
 ```javascript
 var React = require('react-native');
@@ -54,7 +54,7 @@ var TouchDemo = React.createClass({
 
 
 ## Flexbox and Styling
-Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web styles, such as `fontWeight`, and the `StyleSheet` abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
+Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web styles, such as `fontWeight`, and the `StyleSheet` abstraction, which provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
 
 ```javascript
 var React = require('react-native');
@@ -119,7 +119,7 @@ var GeoInfo = React.createClass({
 
 ## Extensibility
 
-It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily extended with custom native views and modules - that means you can reuse anything you've already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the `RCTBridgeModule` protocol, and wrap the function that you want to make available to JavaScript in `RCT_EXPORT_METHOD`. Additionally, the class itself must be explicitly exported with `RCT_EXPORT_MODULE();`.
+It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily extended with custom native views and modules - that means you can reuse anything you've already built, and you can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the `RCTBridgeModule` protocol, and wrap the function that you want to make available to JavaScript in `RCT_EXPORT_METHOD`. Additionally, the class itself must be explicitly exported with `RCT_EXPORT_MODULE();`.
 
 ```objc
 // Objective-C
@@ -212,6 +212,6 @@ module.exports = MyCustomView;
 - `cd react-native && npm install`
 - `cd Examples`
 
-Now open any example and hit run in Xcode.
+Now open any example and click `run` in Xcode.
 
 Further documentation, tutorials, and more on the [React Native website](http://facebook.github.io/react-native/docs/getting-started.html).
