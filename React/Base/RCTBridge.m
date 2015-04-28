@@ -191,6 +191,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
           superclass = class_getSuperclass(superclass);
         }
       }
+      free(classes);
     }
 
   });
