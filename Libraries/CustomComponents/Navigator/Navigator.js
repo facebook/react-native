@@ -267,7 +267,8 @@ var Navigator = React.createClass({
   },
 
   contextTypes: {
-    navigator: PropTypes.object,
+    // TODO (t6707746) Re-enable this when owner context switches to parent context
+    // navigator: PropTypes.object,
   },
 
   statics: {
