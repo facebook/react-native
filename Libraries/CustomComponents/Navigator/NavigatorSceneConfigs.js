@@ -101,6 +101,30 @@ var FadeToTheLeft = {
   },
 };
 
+var FadeIn = {
+  opacity: {
+    from: 0,
+    to: 1,
+    min: 0.5,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+};
+
+var FadeOut = {
+  opacity: {
+    from: 1,
+    to: 0,
+    min: 0,
+    max: 0.5,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+};
+
 var ToTheLeft = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
@@ -236,6 +260,43 @@ var FromTheFront = {
   },
 };
 
+var ToTheBackAndroid = {
+  opacity: {
+    value: 1,
+    type: 'constant',
+  },
+};
+
+var FromTheFrontAndroid = {
+  opacity: {
+    from: 0,
+    to: 1,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+  transformTranslate: {
+    from: {x: 0, y: 50, z: 0},
+    to: {x: 0, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  translateY: {
+    from: 50,
+    to: 0,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+};
+
 var BaseOverswipeConfig = {
   frictionConstant: 1,
   frictionByDistance: 1.5,
@@ -317,6 +378,22 @@ var NavigatorSceneConfigs = {
     animationInterpolators: {
       into: buildStyleInterpolator(FromTheFront),
       out: buildStyleInterpolator(ToTheBack),
+    },
+  },
+  FloatFromBottomAndroid: {
+    ...BaseConfig,
+    gestures: null,
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheFrontAndroid),
+      out: buildStyleInterpolator(ToTheBackAndroid),
+    },
+  },
+  FadeAndroid: {
+    ...BaseConfig,
+    gestures: null,
+    animationInterpolators: {
+      into: buildStyleInterpolator(FadeIn),
+      out: buildStyleInterpolator(FadeOut),
     },
   },
   HorizontalSwipeJump: {
