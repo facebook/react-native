@@ -243,6 +243,9 @@ var BaseOverswipeConfig = {
 
 var BaseLeftToRightGesture = {
 
+  // If the gesture can end and restart during one continuous touch
+  isDetachable: false,
+
   // How far the swipe must drag to start transitioning
   gestureDetectMovement: 2,
 
@@ -323,11 +326,13 @@ var NavigatorSceneConfigs = {
         ...BaseLeftToRightGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
+        isDetachable: true,
       },
       jumpForward: {
         ...BaseRightToLeftGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
+        isDetachable: true,
       },
     },
     animationInterpolators: {
