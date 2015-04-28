@@ -43,10 +43,11 @@ function pickScale(scales, deviceScale) {
   return scales[scales.length - 1] || 1;
 }
 
-// TODO(frantic):
-//   * Pick best scale and append @Nx to file path
-//   * We are currently using httpServerLocation for both http and in-app bundle
 function resolveAssetSource(source) {
+  if (!source || typeof source !== 'object') {
+    return null;
+  }
+
   if (!source.__packager_asset) {
     return source;
   }

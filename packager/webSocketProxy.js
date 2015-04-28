@@ -34,7 +34,12 @@ function attachToServer(server, path) {
 
     ws.on('message', function(message) {
       allClientsExcept(ws).forEach(function(cn) {
-        cn.send(message);
+        try {
+          // Sometimes this call throws 'not opened'
+          cn.send(message);
+        } catch(e) {
+          console.warn('WARN: ' + e.message);
+        }
       });
     });
   });

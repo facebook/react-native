@@ -31,6 +31,8 @@
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 
+dispatch_queue_t const RCTJSThread = nil;
+
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
@@ -353,7 +355,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 
 #define RCT_CONVERT_CASE(_value, _type) \
   case _value: { \
-    _type (*convert)(id, SEL, id) = (typeof(convert))[RCTConvert methodForSelector:selector]; \
+    _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
     RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
     break; \
   }
@@ -375,12 +377,27 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
               RCT_CONVERT_CASE('B', BOOL)
               RCT_CONVERT_CASE('@', id)
               RCT_CONVERT_CASE('^', void *)
-            case '{':
-              RCTAssert(NO, @"Argument %zd of %C[%@ %@] is defined as %@, however RCT_EXPORT_METHOD() "
-                        "does not currently support struct-type arguments.", i - 2,
-                        [reactMethodName characterAtIndex:0], _moduleClassName,
-                        objCMethodName, argumentName);
-              break;
+
+              case '{': {
+                [argumentBlocks addObject:^(RCTBridge *bridge, NSNumber *context, NSInvocation *invocation, NSUInteger index, id json) {
+                  NSUInteger size;
+                  NSGetSizeAndAlignment(argumentType, &size, NULL);
+                  void *returnValue = malloc(size);
+                  NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
+                  NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+                  [_invocation setTarget:[RCTConvert class]];
+                  [_invocation setSelector:selector];
+                  [_invocation setArgument:&json atIndex:2];
+                  [_invocation invoke];
+                  [_invocation getReturnValue:returnValue];
+
+                  [invocation setArgument:returnValue atIndex:index];
+
+                  free(returnValue);
+                }];
+                break;
+              }
+
             default:
               defaultCase(argumentType);
           }
@@ -435,6 +452,10 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
             RCT_SIMPLE_CASE('f', float, floatValue)
             RCT_SIMPLE_CASE('d', double, doubleValue)
             RCT_SIMPLE_CASE('B', BOOL, boolValue)
+
+          case '{':
+            RCTLogMustFix(@"Cannot convert JSON to struct %s", argumentType);
+            break;
 
           default:
             defaultCase(argumentType);
@@ -795,6 +816,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+
     [self setUp];
     [self bindKeys];
   }
@@ -872,6 +894,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       dispatch_queue_t queue = [module methodQueue];
       if (queue) {
         _queuesByID[moduleID] = queue;
+      } else {
+        _queuesByID[moduleID] = [NSNull null];
       }
     }
   }];
@@ -1128,6 +1152,16 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 #pragma mark - Payload Generation
 
+- (void)dispatchBlock:(dispatch_block_t)block forModule:(NSNumber *)moduleID
+{
+  id queue = _queuesByID[moduleID];
+  if (queue == [NSNull null]) {
+    [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
+  } else {
+    dispatch_async(queue ?: _methodQueue, block);
+  }
+}
+
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
 #if BATCHED_BRIDGE
@@ -1235,10 +1269,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   // TODO: batchDidComplete is only used by RCTUIManager - can we eliminate this special case?
   [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, BOOL *stop) {
     if ([module respondsToSelector:@selector(batchDidComplete)]) {
-      dispatch_queue_t queue = _queuesByID[moduleID];
-      dispatch_async(queue ?: _methodQueue, ^{
+      [self dispatchBlock:^{
         [module batchDidComplete];
-      });
+      } forModule:moduleID];
     }
   }];
 }
@@ -1273,8 +1306,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
 
   __weak RCTBridge *weakSelf = self;
-  dispatch_queue_t queue = _queuesByID[moduleID];
-  dispatch_async(queue ?: _methodQueue, ^{
+  [self dispatchBlock:^{
     RCTProfileBeginEvent();
     __strong RCTBridge *strongSelf = weakSelf;
 
@@ -1303,7 +1335,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       @"method": method.JSMethodName,
       @"selector": NSStringFromSelector(method.selector),
     });
-  });
+  } forModule:@(moduleID)];
 
   return YES;
 }

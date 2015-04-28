@@ -44,7 +44,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
 {
   RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-    @"Event body dictionary must include a 'target' property containing a react tag");
+    @"Event body dictionary must include a 'target' property containing a React tag");
 
   [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
                     args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]];

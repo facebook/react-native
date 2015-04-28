@@ -46,3 +46,6 @@ RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 // TODO(#6472857): create NSErrors and automatically convert them over the bridge.
 RCT_EXTERN NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
 RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
+
+// Returns YES if React is running in a test environment
+RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
