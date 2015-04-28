@@ -13,13 +13,6 @@
 
 #import "RCTPointerEvents.h"
 
-typedef NS_ENUM(NSInteger, RCTBorderSide) {
-  RCTBorderSideTop,
-  RCTBorderSideRight,
-  RCTBorderSideBottom,
-  RCTBorderSideLeft
-};
-
 @protocol RCTAutoInsetsProtocol;
 
 @interface RCTView : UIView

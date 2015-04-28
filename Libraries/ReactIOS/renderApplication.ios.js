@@ -12,6 +12,9 @@
 'use strict';
 
 var React = require('React');
+var StyleSheet = require('StyleSheet');
+var View = require('View');
+var WarningBox = require('WarningBox');
 
 var invariant = require('invariant');
 
@@ -24,12 +27,27 @@ function renderApplication<D, P, S>(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
+  var shouldRenderWarningBox = __DEV__ && console.yellowBoxEnabled;
+  var warningBox = shouldRenderWarningBox ? <WarningBox /> : null;
   React.render(
-    <RootComponent
-      {...initialProps}
-    />,
+    <View style={styles.appContainer}>
+      <RootComponent
+        {...initialProps}
+      />
+      {warningBox}
+    </View>,
     rootTag
   );
 }
+
+var styles = StyleSheet.create({
+  appContainer: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  },
+});
 
 module.exports = renderApplication;

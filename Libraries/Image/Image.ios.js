@@ -31,7 +31,7 @@ var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
 
 /**
- * A react component for displaying different types of images,
+ * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *

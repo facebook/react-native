@@ -201,3 +201,13 @@ NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary
   RCTLogError(@"\nError: %@", error);
   return error;
 }
+
+BOOL RCTRunningInTestEnvironment(void)
+{
+  static BOOL _isTestEnvironment = NO;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    _isTestEnvironment = (NSClassFromString(@"SenTestCase") != nil || NSClassFromString(@"XCTest") != nil);
+  });
+  return _isTestEnvironment;
+}

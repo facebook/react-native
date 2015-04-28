@@ -42,6 +42,7 @@ var WebView = React.createClass({
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+    javaScriptEnabledAndroid: PropTypes.bool,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -90,6 +91,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        javaScriptEnabledAndroid={this.props.javaScriptEnabledAndroid}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
@@ -157,6 +159,7 @@ var WebView = React.createClass({
 var RCTWebView = createReactIOSNativeComponentClass({
   validAttributes: merge(ReactIOSViewAttributes.UIView, {
     url: true,
+    javaScriptEnabledAndroid: true,
   }),
   uiViewClassName: 'RCTWebView',
 });

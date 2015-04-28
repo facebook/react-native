@@ -50,7 +50,8 @@ var GeolocationExample = React.createClass({
   componentDidMount: function() {
     navigator.geolocation.getCurrentPosition(
       (initialPosition) => this.setState({initialPosition}),
-      (error) => console.error(error)
+      (error) => console.error(error),
+      {enableHighAccuracy: true, timeout: 100, maximumAge: 1000}
     );
     this.watchID = navigator.geolocation.watchPosition((lastPosition) => {
       this.setState({lastPosition});
