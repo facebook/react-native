@@ -48,8 +48,8 @@ script:
 
 env:
   matrix:
-    - TEST_TYPE=objc		
-    - TEST_TYPE=js		
+    - TEST_TYPE=objc
+    - TEST_TYPE=js
     - TEST_TYPE=build_website
     - TEST_TYPE=e2e
   global:
