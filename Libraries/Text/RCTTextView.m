@@ -32,29 +32,11 @@
 
     _textView = [[UITextView alloc] initWithFrame:self.bounds];
     _textView.backgroundColor = [UIColor clearColor];
+    _textView.delegate = self;
     [self addSubview:_textView];
-    [self subscribeToTextViewChanges];
   }
 
   return self;
-}
-
-- (void)subscribeToTextViewChanges
-{
-  [self.notificationCenter addObserver:self
-                              selector:@selector(_textViewBeginEditing)
-                                  name:UITextViewTextDidBeginEditingNotification
-                                object:_textView];
-
-  [self.notificationCenter addObserver:self
-                              selector:@selector(_textViewDidChange)
-                                 name:UITextViewTextDidChangeNotification
-                               object:_textView];
-
-  [self.notificationCenter addObserver:self
-                              selector:@selector(_textViewEndEditing)
-                                  name:UITextViewTextDidEndEditingNotification
-                                object:_textView];
 }
 
 - (void)updateFrames
@@ -147,27 +129,27 @@
   return _textView.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
-- (void)_textViewDidChange
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
+                                 reactTag:self.reactTag
+                                     text:textView.text];
+}
+
+- (void)textViewDidChange:(UITextView *)textView
 {
   [self _setPlaceholderVisibility];
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
-                                     text:_textView.text];
+                                     text:textView.text];
 
 }
 
-- (void)_textViewEndEditing
+- (void)textViewDidEndEditing:(UITextView *)textView
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
-                                     text:_textView.text];
-}
-
-- (void)_textViewBeginEditing
-{
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
-                                 reactTag:self.reactTag
-                                     text:_textView.text];
+                                     text:textView.text];
 }
 
 - (BOOL)becomeFirstResponder
@@ -202,11 +184,6 @@
   return _jsRequestingFirstResponder;
 }
 
-- (NSNotificationCenter *)notificationCenter
-{
-  return [NSNotificationCenter defaultCenter];
-}
-
 - (UIFont*)defaultPlaceholderFont
 {
   return [UIFont fontWithName:@"Helvetica" size:17];
@@ -215,11 +192,6 @@
 - (UIColor*)defaultPlaceholderTextColor
 {
   return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
-}
-
-- (void)dealloc
-{
-  [self.notificationCenter removeObserver:self];
 }
 
 @end

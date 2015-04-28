@@ -13,7 +13,7 @@
 
 @class RCTEventDispatcher;
 
-@interface RCTTextView : RCTView
+@interface RCTTextView : RCTView <UITextViewDelegate>
 
 @property (nonatomic, assign) BOOL autoCorrect;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
