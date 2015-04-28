@@ -685,6 +685,11 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return [self UIFont:font withFamily:nil size:nil weight:nil style:json];
 }
 
++ (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
+{
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil];
+}
+
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style
 {
