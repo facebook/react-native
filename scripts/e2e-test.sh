@@ -67,4 +67,8 @@ ls `basename $MARKER` > /dev/null
 
 flow
 
+ps aux
+
+pkill -9 watchman
+
 xctool -scheme EndToEndTest -sdk iphonesimulator test
