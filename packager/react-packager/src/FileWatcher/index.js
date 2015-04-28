@@ -7,22 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
- 
+
 var EventEmitter  = require('events').EventEmitter;
 var sane = require('sane');
 var Promise = require('bluebird');
 var util = require('util');
 var exec = require('child_process').exec;
-var os = require('os');
 
-// returns true if this is running on Windows
-function isWindows() { return !!os.type() && !!os.type().match(/Windows/);}
+var windowsPath = require('../lib/windows');
 
 var detectingWatcherClass = new Promise(function(resolve) {
-  // watchman is not available on Windows, just return NodeWatcher (even if it's installed)
-  if (isWindows()) {
-      process.nextTick( function() { resolve(sane.NodeWatcher); });
-      return;
+  if (windowsPath.isWindows()) {
+      MAX_WAIT_TIME=30000;
+      return resolve(sane.NodeWatcher);
   }
   exec('which watchman', function(err, out) {
     if (err || out.length === 0) {
@@ -35,8 +32,8 @@ var detectingWatcherClass = new Promise(function(resolve) {
 
 module.exports = FileWatcher;
 
-var MAX_WAIT_TIME = 3000;
-if (isWindows()) MAX_WAIT_TIME = 10000; // extend wait time if using NodeWatcher
+var MAX_WAIT_TIME = 10000;
+if (windowsPath.isWindows)  MAX_WAIT_TIME = 30000;
 
 // Singleton
 var fileWatcher = null;
@@ -54,6 +51,10 @@ function FileWatcher(rootConfigs) {
   ).then(function(watchers) {
     watchers.forEach(function(watcher) {
       watcher.on('all', function(type, filepath, root, stat) {
+        if (windowsPath.isWindows()) {
+          filepath = windowsPath.convertPath(filepath);
+          root = windowsPath.convertPath(root);
+        }
         fileWatcher.emit('all', type, filepath, root, stat);
       });
     });
@@ -83,7 +84,7 @@ function createWatcher(rootConfig) {
       var rejectTimeout = setTimeout(function() {
         reject(new Error([
           'Watcher took too long to load',
-          'Try running `watchman` from your terminal',
+          'Try running `watchman version` from your terminal',
           'https://facebook.github.io/watchman/docs/troubleshooting.html',
         ].join('\n')));
       }, MAX_WAIT_TIME);

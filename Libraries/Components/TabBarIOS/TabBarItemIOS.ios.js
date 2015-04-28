@@ -13,14 +13,11 @@
 
 var Image = require('Image');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var Dimensions = require('Dimensions');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var TabBarItemIOS = React.createClass({
   propTypes: {
@@ -122,7 +119,7 @@ var TabBarItemIOS = React.createClass({
         selectedIcon={this.props.selectedIcon && this.props.selectedIcon.uri}
         onPress={this.props.onPress}
         selected={this.props.selected}
-        badgeValue={badge}
+        badge={badge}
         title={this.props.title}
         style={[styles.tab, this.props.style]}>
         {tabContents}
@@ -134,20 +131,13 @@ var TabBarItemIOS = React.createClass({
 var styles = StyleSheet.create({
   tab: {
     position: 'absolute',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   }
 });
 
-var RCTTabBarItem = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
-    title: true,
-    icon: true,
-    selectedIcon: true,
-    selected: true,
-    badgeValue: true,
-  }),
-  uiViewClassName: 'RCTTabBarItem',
-});
+var RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);
 
 module.exports = TabBarItemIOS;

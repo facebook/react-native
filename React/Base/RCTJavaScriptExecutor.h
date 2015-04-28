@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <objc/runtime.h>
+
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import "RCTInvalidating.h"
@@ -27,6 +29,7 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
+              context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete;
 
 /**
@@ -39,4 +42,27 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 - (void)injectJSONText:(NSString *)script
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete;
+
+/**
+ * Enqueue a block to run in the executors JS thread. Fallback to `dispatch_async`
+ * on the main queue if the executor doesn't own a thread.
+ */
+- (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block;
+
 @end
+
+static const char *RCTJavaScriptExecutorID = "RCTJavaScriptExecutorID";
+__used static id<RCTJavaScriptExecutor> RCTCreateExecutor(Class executorClass)
+{
+  static NSUInteger executorID = 0;
+  id<RCTJavaScriptExecutor> executor = [[executorClass alloc] init];
+  if (executor) {
+    objc_setAssociatedObject(executor, RCTJavaScriptExecutorID, @(++executorID), OBJC_ASSOCIATION_RETAIN);
+  }
+  return executor;
+}
+
+__used static NSNumber *RCTGetExecutorID(id<RCTJavaScriptExecutor> executor)
+{
+  return executor ? objc_getAssociatedObject(executor, RCTJavaScriptExecutorID) : @0;
+}

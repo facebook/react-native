@@ -226,10 +226,8 @@ exports.examples = [
               Contain
             </Text>
             <Image
-              style={[
-                styles.resizeMode,
-                {resizeMode: Image.resizeMode.contain}
-              ]}
+              style={styles.resizeMode}
+              resizeMode={Image.resizeMode.contain}
               source={fullImage}
             />
           </View>
@@ -238,10 +236,8 @@ exports.examples = [
               Cover
             </Text>
             <Image
-              style={[
-                styles.resizeMode,
-                {resizeMode: Image.resizeMode.cover}
-              ]}
+              style={styles.resizeMode}
+              resizeMode={Image.resizeMode.cover}
               source={fullImage}
             />
           </View>
@@ -250,10 +246,8 @@ exports.examples = [
               Stretch
             </Text>
             <Image
-              style={[
-                styles.resizeMode,
-                {resizeMode: Image.resizeMode.stretch}
-              ]}
+              style={styles.resizeMode}
+              resizeMode={Image.resizeMode.stretch}
               source={fullImage}
             />
           </View>

@@ -12,21 +12,22 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var ImageResizeMode = require('ImageResizeMode');
+var ImageStylePropTypes = require('ImageStylePropTypes');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
-var ImageResizeMode = require('ImageResizeMode');
-var ImageStylePropTypes = require('ImageStylePropTypes');
 var React = require('React');
 var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var flattenStyle = require('flattenStyle');
-var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
+var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
 
 /**
@@ -65,6 +66,13 @@ var Image = React.createClass({
       uri: PropTypes.string,
     }),
     /**
+     * A static image to display while downloading the final image off the
+     * network.
+     */
+    defaultSource: PropTypes.shape({
+      uri: PropTypes.string,
+    }),
+    /**
      * Whether this element should be revealed as an accessible element.
      */
     accessible: PropTypes.bool,
@@ -80,6 +88,11 @@ var Image = React.createClass({
      * [Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets)
      */
     capInsets: EdgeInsetsPropType,
+    /**
+     * Determines how to resize the image when the frame doesn't match the raw
+     * image dimensions.
+     */
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * A unique identifier for this element to be used in UI Automation
@@ -104,10 +117,19 @@ var Image = React.createClass({
   },
 
   render: function() {
-    var style = flattenStyle([styles.base, this.props.style]);
-    invariant(style, "style must be initialized");
-    var source = this.props.source;
-    invariant(source, "source must be initialized");
+    for (var prop in nativeOnlyProps) {
+      if (this.props[prop] !== undefined) {
+        console.warn('Prop `' + prop + ' = ' + this.props[prop] + '` should ' +
+          'not be set directly on Image.');
+      }
+    }
+    var source = resolveAssetSource(this.props.source);
+    invariant(source, 'source must be initialized');
+
+    var {width, height} = source;
+    var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+    invariant(style, 'style must be initialized');
+
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     invariant(
       !(isNetwork && source.isStatic),
@@ -119,27 +141,29 @@ var Image = React.createClass({
     if (this.props.style && this.props.style.tintColor) {
       warning(RawImage === RCTStaticImage, 'tintColor style only supported on static images.');
     }
-
+    var resizeMode = this.props.resizeMode || style.resizeMode;
     var contentModes = NativeModules.UIManager.UIView.ContentMode;
-    var resizeMode;
-    if (style.resizeMode === ImageResizeMode.stretch) {
-      resizeMode = contentModes.ScaleToFill;
-    } else if (style.resizeMode === ImageResizeMode.contain) {
-      resizeMode = contentModes.ScaleAspectFit;
+    var contentMode;
+    if (resizeMode === ImageResizeMode.stretch) {
+      contentMode = contentModes.ScaleToFill;
+    } else if (resizeMode === ImageResizeMode.contain) {
+      contentMode = contentModes.ScaleAspectFit;
     } else { // ImageResizeMode.cover or undefined
-      resizeMode = contentModes.ScaleAspectFill;
+      contentMode = contentModes.ScaleAspectFill;
     }
 
     var nativeProps = merge(this.props, {
       style,
-      resizeMode,
+      contentMode,
       tintColor: style.tintColor,
     });
-
     if (isStored) {
       nativeProps.imageTag = source.uri;
     } else {
       nativeProps.src = source.uri;
+    }
+    if (this.props.defaultSource) {
+      nativeProps.defaultImageSrc = this.props.defaultSource.uri;
     }
     return <RawImage {...nativeProps} />;
   }
@@ -151,24 +175,18 @@ var styles = StyleSheet.create({
   },
 });
 
-var CommonImageViewAttributes = merge(ReactIOSViewAttributes.UIView, {
-  accessible: true,
-  accessibilityLabel: true,
-  capInsets: {diff: insetsDiffer}, // UIEdgeInsets=UIEdgeInsetsZero
-  imageTag: true,
-  resizeMode: true,
+var RCTNetworkImage = requireNativeComponent('RCTNetworkImageView', null);
+var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
+
+var nativeOnlyProps = {
   src: true,
-  testID: PropTypes.string,
-});
-
-var RCTStaticImage = createReactIOSNativeComponentClass({
-  validAttributes: merge(CommonImageViewAttributes, { tintColor: true }),
-  uiViewClassName: 'RCTStaticImage',
-});
-
-var RCTNetworkImage = createReactIOSNativeComponentClass({
-  validAttributes: merge(CommonImageViewAttributes, { defaultImageSrc: true }),
-  uiViewClassName: 'RCTNetworkImageView',
-});
+  defaultImageSrc: true,
+  imageTag: true,
+  contentMode: true,
+};
+if (__DEV__) {
+  verifyPropTypes(Image, RCTStaticImage.viewConfig, nativeOnlyProps);
+  verifyPropTypes(Image, RCTNetworkImage.viewConfig, nativeOnlyProps);
+}
 
 module.exports = Image;

@@ -23,7 +23,7 @@
           get: function() {
             console.error(
               'Your code is broken! Do not iterate over arrays with ' +
-              'for...in. See https://fburl.com/31944000 for more information.'
+              'for...in.'
             );
           }
         }
@@ -49,9 +49,6 @@
      *  - Use a regular for loop with index.
      *  - Use one of the array methods: a.forEach, a.map, etc.
      *  - Guard your body of your loop with a `arr.hasOwnProperty(key)` check.
-     *
-     * More info:
-     *  https://our.intern.facebook.com/intern/dex/qa/669736606441771/
      */
     if (this == null) {
       throw new TypeError(
@@ -92,9 +89,6 @@
        *  - Use a regular for loop with index.
        *  - Use one of the array methods: a.forEach, a.map, etc.
        *  - Guard your body of your loop with a `arr.hasOwnProperty(key)` check.
-       *
-       * More info:
-       *  https://our.intern.facebook.com/intern/dex/qa/669736606441771/
        */
       if (this == null) {
         throw new TypeError('Array.prototype.find called on null or undefined');

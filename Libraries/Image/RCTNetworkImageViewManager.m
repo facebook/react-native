@@ -29,6 +29,6 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_VIEW_PROPERTY(defaultImageSrc, defaultImage, UIImage)
 RCT_REMAP_VIEW_PROPERTY(src, imageURL, NSURL)
-RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
+RCT_EXPORT_VIEW_PROPERTY(contentMode, UIViewContentMode)
 
 @end

@@ -9,9 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "../Base/RCTBridgeModule.h"
-#import "../Base/RCTConvert.h"
-#import "../Base/RCTLog.h"
+#import "RCTBridgeModule.h"
+#import "RCTConvert.h"
+#import "RCTLog.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
@@ -109,7 +109,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * within the view or shadowView.
  */
 #define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)                           \
-- (void)set_##name:(id)json forView:(id)view withDefaultView:(id)defaultView { \
+RCT_CUSTOM_VIEW_PROPERTY(name, type, UIView) {                                 \
   if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
       (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
     RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
@@ -117,7 +117,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 }
 
 #define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                         \
-- (void)set_##name:(id)json forShadowView:(id)view withDefaultView:(id)defaultView { \
+RCT_CUSTOM_SHADOW_PROPERTY(name, type, RCTShadowView) {                        \
   if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
       (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
     RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
@@ -130,9 +130,11 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
++ (NSString *)getPropConfigView_##name { return @#type; } \
 - (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 #define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
++ (NSString *)getPropConfigShadow_##name { return @#type; } \
 - (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
 /**

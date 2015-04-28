@@ -42,6 +42,11 @@ fs.readdir.mockImpl(function(filepath, callback) {
 });
 
 fs.readFile.mockImpl(function(filepath, encoding, callback) {
+  if (arguments.length === 2) {
+    callback = encoding;
+    encoding = null;
+  }
+
   try {
     var node = getToNode(filepath);
     // dir check
@@ -62,6 +67,12 @@ fs.lstat.mockImpl(function(filepath, callback) {
     return callback(e);
   }
 
+  var mtime = {
+    getTime: function() {
+      return Math.ceil(Math.random() * 10000000);
+    }
+  };
+
   if (node && typeof node === 'object' && node.SYMLINK == null) {
     callback(null, {
       isDirectory: function() {
@@ -69,7 +80,8 @@ fs.lstat.mockImpl(function(filepath, callback) {
       },
       isSymbolicLink: function() {
         return false;
-      }
+      },
+      mtime: mtime,
     });
   } else {
     callback(null, {
@@ -81,7 +93,8 @@ fs.lstat.mockImpl(function(filepath, callback) {
           return true;
         }
         return false;
-      }
+      },
+      mtime: mtime,
     });
   }
 });

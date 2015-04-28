@@ -58,12 +58,6 @@
 @property (nonatomic, strong) Class executorClass;
 
 /**
- * If YES will watch for shake gestures and show development menu
- * with options like "Reload", "Enable Debugging", etc.
- */
-@property (nonatomic, assign) BOOL enableDevMenu;
-
-/**
  * The backing view controller of the root view.
  */
 @property (nonatomic, weak) UIViewController *backingViewController;

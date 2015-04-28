@@ -68,6 +68,11 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return _bridge.uiManager.methodQueue;
+}
+
 - (id (^)(CGFloat))interpolateFrom:(CGFloat[])fromArray to:(CGFloat[])toArray count:(NSUInteger)count typeName:(const char *)typeName
 {
   if (count == 1) {
@@ -259,7 +264,9 @@ RCT_EXPORT_METHOD(stopAnimation:(NSNumber *)animationTag)
     RCTAnimationExperimentalManager *strongSelf = weakSelf;
 
     NSNumber *reactTag = strongSelf->_animationRegistry[animationTag];
-    if (!reactTag) return;
+    if (!reactTag) {
+      return;
+    }
 
     UIView *view = viewRegistry[reactTag];
     for (NSString *animationKey in view.layer.animationKeys) {

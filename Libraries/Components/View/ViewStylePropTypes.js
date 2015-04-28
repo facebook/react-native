@@ -34,7 +34,10 @@ var ViewStylePropTypes = {
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
+  transform: ReactPropTypes.arrayOf(ReactPropTypes.object),
   transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
+
+  // DEPRECATED
   rotation: ReactPropTypes.number,
   scaleX: ReactPropTypes.number,
   scaleY: ReactPropTypes.number,

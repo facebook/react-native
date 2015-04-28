@@ -10,19 +10,30 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTDefines.h"
 
 @class FBSnapshotTestController;
 
 @interface RCTTestModule : NSObject <RCTBridgeModule>
 
-// This is typically polled while running the runloop until true
-@property (nonatomic, readonly, getter=isDone) BOOL done;
+/**
+ * The snapshot test controller for this module.
+ */
+@property (nonatomic, weak) FBSnapshotTestController *controller;
 
-// This is used to give meaningful names to snapshot image files.
-@property (nonatomic, assign) SEL testSelector;
-
+/**
+ * This is the view to be snapshotted.
+ */
 @property (nonatomic, weak) UIView *view;
 
-- (instancetype)initWithSnapshotController:(FBSnapshotTestController *)controller view:(UIView *)view;
+/**
+ * This is used to give meaningful names to snapshot image files.
+ */
+@property (nonatomic, assign) SEL testSelector;
+
+/**
+ * This is typically polled while running the runloop until true.
+ */
+@property (nonatomic, readonly, getter=isDone) BOOL done;
 
 @end

@@ -14,6 +14,12 @@ var exec = require('child_process').exec;
 var http = require('http');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
+var _ = require("underscore");
+
+var windowsPath = require("./react-packager/src/lib/windows");
+if (windowsPath.isWindows()) {
+    path=windowsPath.path;
+}
 
 if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   console.log(
@@ -56,8 +62,9 @@ if (options.projectRoots) {
     options.projectRoots = options.projectRoots.split(',');
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
-    // packager is running from node_modules of another project
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
+     // packager is running from node_modules of another project
     options.projectRoots = [path.resolve(__dirname, '../../..')];
   } else {
     options.projectRoots = [path.resolve(__dirname, '..')];
@@ -79,7 +86,8 @@ if (options.assetRoots) {
     options.assetRoots = options.assetRoots.split(',');
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];
   } else {
     options.assetRoots = [path.resolve(__dirname, '..')];
@@ -200,6 +208,7 @@ function getAppMiddleware(options) {
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
     assetRoots: options.assetRoots,
+    assetExts: ['png', 'jpeg', 'jpg']
   });
 }
 

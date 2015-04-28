@@ -10,10 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTAssert.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#import "RCTDefines.h"
 
 /**
  * Thresholds for logs to raise an assertion, or display redbox, respectively.
@@ -46,10 +43,15 @@ typedef void (^RCTLogFunction)(
 );
 
 /**
+ * Get a given thread's name (or the current queue, if in debug mode)
+ */
+RCT_EXTERN NSString *RCTThreadName(NSThread *);
+
+/**
  * A method to generate a string from a collection of log data. To omit any
  * particular data from the log, just pass nil or zero for the argument.
  */
-NSString *RCTFormatLog(
+RCT_EXTERN NSString *RCTFormatLog(
   NSDate *timestamp,
   NSThread *thread,
   RCTLogLevel level,
@@ -68,35 +70,35 @@ extern RCTLogFunction RCTDefaultLogFunction;
  * below which logs will be ignored. Default is RCTLogLevelInfo for debug and
  * RCTLogLevelError for production.
  */
-void RCTSetLogThreshold(RCTLogLevel threshold);
-RCTLogLevel RCTGetLogThreshold(void);
+RCT_EXTERN void RCTSetLogThreshold(RCTLogLevel threshold);
+RCT_EXTERN RCTLogLevel RCTGetLogThreshold(void);
 
 /**
  * These methods get and set the current logging function called by the RCTLogXX
  * macros. You can use these to replace the standard behavior with custom log
  * functionality.
  */
-void RCTSetLogFunction(RCTLogFunction logFunction);
-RCTLogFunction RCTGetLogFunction(void);
+RCT_EXTERN void RCTSetLogFunction(RCTLogFunction logFunction);
+RCT_EXTERN RCTLogFunction RCTGetLogFunction(void);
 
 /**
  * This appends additional code to the existing log function, without replacing
  * the existing functionality. Useful if you just want to forward logs to an
  * extra service without changing the default behavior.
  */
-void RCTAddLogFunction(RCTLogFunction logFunction);
+RCT_EXTERN void RCTAddLogFunction(RCTLogFunction logFunction);
 
 /**
  * This method adds a conditional prefix to any messages logged within the scope
  * of the passed block. This is useful for adding additional context to log
  * messages. The block will be performed synchronously on the current thread.
  */
-void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
+RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
 
 /**
  * Private logging functions - ignore these.
  */
-void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
+RCT_EXTERN void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
 #define _RCTLog(lvl, ...) do { \
   if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
   _RCTLogFormat(lvl, __FILE__, __LINE__, __VA_ARGS__); \
@@ -111,7 +113,3 @@ void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FU
 #define RCTLogWarn(...) _RCTLog(RCTLogLevelWarning, __VA_ARGS__)
 #define RCTLogError(...) _RCTLog(RCTLogLevelError, __VA_ARGS__)
 #define RCTLogMustFix(...) _RCTLog(RCTLogLevelMustFix, __VA_ARGS__)
-
-#ifdef __cplusplus
-}
-#endif

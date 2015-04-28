@@ -16,14 +16,11 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var RCTDatePickerIOSConsts = require('NativeModules').UIManager.RCTDatePicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var DATEPICKER = 'datepicker';
 
@@ -148,18 +145,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var rkDatePickerIOSAttributes = merge(ReactIOSViewAttributes.UIView, {
-  date: true,
-  maximumDate: true,
-  minimumDate: true,
-  mode: true,
-  minuteInterval: true,
-  timeZoneOffsetInMinutes: true,
-});
-
-var RCTDatePickerIOS = createReactIOSNativeComponentClass({
-  validAttributes: rkDatePickerIOSAttributes,
-  uiViewClassName: 'RCTDatePicker',
-});
+var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', DatePickerIOS);
 
 module.exports = DatePickerIOS;

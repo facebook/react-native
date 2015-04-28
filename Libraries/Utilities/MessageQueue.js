@@ -10,7 +10,9 @@
  * @flow
  */
 'use strict';
+
 var ErrorUtils = require('ErrorUtils');
+var ReactUpdates = require('ReactUpdates');
 
 var invariant = require('invariant');
 var warning = require('warning');
@@ -305,6 +307,27 @@ var MessageQueueMixin = {
       this._flushedQueueUnguarded,
       this
     );
+  },
+
+  processBatch: function(batch) {
+    var self = this;
+    ReactUpdates.batchedUpdates(function() {
+      batch.forEach(function(call) {
+        invariant(
+          call.module === 'BatchedBridge',
+          'All the calls should pass through the BatchedBridge module'
+        );
+        if (call.method === 'callFunctionReturnFlushedQueue') {
+          self.callFunction.apply(self, call.args);
+        } else if (call.method === 'invokeCallbackAndReturnFlushedQueue') {
+          self.invokeCallback.apply(self, call.args);
+        } else {
+          throw new Error(
+            'Unrecognized method called on BatchedBridge: ' + call.method);
+        }
+      });
+    });
+    return this.flushedQueue();
   },
 
   setLoggingEnabled: function(enabled) {

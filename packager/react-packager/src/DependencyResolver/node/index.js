@@ -14,6 +14,10 @@ var ModuleDescriptor = require('../ModuleDescriptor');
 var mdeps = require('module-deps');
 var path = require('path');
 
+var _ = require("underscore");
+var windowsPath = require("./../../lib/windows");
+if (windowsPath.isWindows()) path=windowsPath.path;
+
 exports.getRuntimeCode = function() {};
 
 exports.wrapModule = function(id, source) {
@@ -38,7 +42,7 @@ exports.getDependencies = function(root, fileEntryPath) {
         new ModuleDescriptor({
           id: data.id,
           deps: data.deps,
-          path: data.file,
+          path: windowsPath.isWindows() ? windowsPath.convertPath(data.file) : data.file,
           entry: data.entry
         })
       );
