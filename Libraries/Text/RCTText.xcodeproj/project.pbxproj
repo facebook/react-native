@@ -12,6 +12,8 @@
 		58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CB1A9E6C5C00147676 /* RCTShadowText.m */; };
 		58B511D11A9E6C5C00147676 /* RCTTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CD1A9E6C5C00147676 /* RCTTextManager.m */; };
 		58B512161A9E6EFF00147676 /* RCTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512141A9E6EFF00147676 /* RCTText.m */; };
+		BBD12D921AEF2D7900F7DEDD /* RCTTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD12D8F1AEF2D7900F7DEDD /* RCTTextView.m */; };
+		BBD12D931AEF2D7900F7DEDD /* RCTTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD12D911AEF2D7900F7DEDD /* RCTTextViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +40,10 @@
 		58B511CD1A9E6C5C00147676 /* RCTTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextManager.m; sourceTree = "<group>"; };
 		58B512141A9E6EFF00147676 /* RCTText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTText.m; sourceTree = "<group>"; };
 		58B512151A9E6EFF00147676 /* RCTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTText.h; sourceTree = "<group>"; };
+		BBD12D8E1AEF2D7900F7DEDD /* RCTTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextView.h; sourceTree = "<group>"; };
+		BBD12D8F1AEF2D7900F7DEDD /* RCTTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextView.m; sourceTree = "<group>"; };
+		BBD12D901AEF2D7900F7DEDD /* RCTTextViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextViewManager.h; sourceTree = "<group>"; };
+		BBD12D911AEF2D7900F7DEDD /* RCTTextViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +70,10 @@
 				58B512141A9E6EFF00147676 /* RCTText.m */,
 				58B511CC1A9E6C5C00147676 /* RCTTextManager.h */,
 				58B511CD1A9E6C5C00147676 /* RCTTextManager.m */,
+				BBD12D8E1AEF2D7900F7DEDD /* RCTTextView.h */,
+				BBD12D8F1AEF2D7900F7DEDD /* RCTTextView.m */,
+				BBD12D901AEF2D7900F7DEDD /* RCTTextViewManager.h */,
+				BBD12D911AEF2D7900F7DEDD /* RCTTextViewManager.m */,
 				58B5119C1A9E6C1200147676 /* Products */,
 			);
 			indentWidth = 2;
@@ -135,8 +145,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				58B511D11A9E6C5C00147676 /* RCTTextManager.m in Sources */,
+				BBD12D921AEF2D7900F7DEDD /* RCTTextView.m in Sources */,
 				58B511CE1A9E6C5C00147676 /* RCTRawTextManager.m in Sources */,
 				58B512161A9E6EFF00147676 /* RCTText.m in Sources */,
+				BBD12D931AEF2D7900F7DEDD /* RCTTextViewManager.m in Sources */,
 				58B511CF1A9E6C5C00147676 /* RCTShadowRawText.m in Sources */,
 				58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */,
 			);

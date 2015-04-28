@@ -11,9 +11,9 @@
 
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTTextView.h"
 #import "RCTShadowView.h"
 #import "RCTSparseArray.h"
-#import "RCTTextView.h"
 
 @implementation RCTTextViewManager
 
@@ -26,6 +26,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
+RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
 RCT_REMAP_VIEW_PROPERTY(clearTextOnFocus, clearsOnBeginEditing, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType, UIKeyboardType)

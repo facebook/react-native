@@ -685,11 +685,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return [self UIFont:font withFamily:nil size:nil weight:nil style:json];
 }
 
-+ (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
-{
-  return [self UIFont:font withFamily:json size:nil weight:nil style:nil];
-}
-
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style
 {
@@ -698,15 +693,43 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   const RCTFontWeight RCTDefaultFontWeight = UIFontWeightRegular;
   const CGFloat RCTDefaultFontSize = 14;
 
-  // Get existing properties
+  // Initialize properties to defaults
+  CGFloat fontSize = RCTDefaultFontSize;
+  RCTFontWeight fontWeight = RCTDefaultFontWeight;
+  NSString *fontFamily = RCTDefaultFontFamily;
   BOOL isItalic = NO;
   BOOL isCondensed = NO;
-  RCTFontWeight fontWeight = RCTDefaultFontWeight;
+
+  // Get existing properties from given font
   if (font) {
-    family = font.familyName;
+    fontFamily = font.familyName ?: RCTDefaultFontFamily;
+    fontSize = font.pointSize ?: RCTDefaultFontSize;
     fontWeight = RCTWeightOfFont(font);
     isItalic = RCTFontIsItalic(font);
     isCondensed = RCTFontIsCondensed(font);
+  }
+
+  // Get font family
+  if (family) {
+    fontFamily = [self NSString:family];
+  }
+
+  // Gracefully handle being given a font name rather than font family, for
+  // example: "Helvetica Light Oblique" rather than just "Helvetica".
+  if ([UIFont fontNamesForFamilyName:fontFamily].count == 0) {
+    font = [UIFont fontWithName:fontFamily size:fontSize];
+    if (font) {
+      // It's actually a font name, not a font family name,
+      // but we'll do what was meant, not what was said.
+      fontFamily = font.familyName;
+      fontWeight = RCTWeightOfFont(font);
+      isItalic = RCTFontIsItalic(font);
+      isCondensed = RCTFontIsCondensed(font);
+    } else {
+      // Not a valid font or family
+      RCTLogError(@"Unrecognized font family '%@'", fontFamily);
+      fontFamily = RCTDefaultFontFamily;
+    }
   }
 
   // Get font style
@@ -715,23 +738,8 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   }
 
   // Get font size
-  CGFloat fontSize = [self CGFloat:size] ?: RCTDefaultFontSize;
-
-  // Get font family
-  NSString *familyName = [self NSString:family] ?: RCTDefaultFontFamily;
-  if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
-    font = [UIFont fontWithName:familyName size:fontSize];
-    if (font) {
-      // It's actually a font name, not a font family name,
-      // but we'll do what was meant, not what was said.
-      familyName = font.familyName;
-      NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-      fontWeight = [traits[UIFontWeightTrait] doubleValue];
-    } else {
-      // Not a valid font or family
-      RCTLogError(@"Unrecognized font family '%@'", familyName);
-      familyName = RCTDefaultFontFamily;
-    }
+  if (size) {
+    fontSize = [self CGFloat:size];
   }
 
   // Get font weight
@@ -739,10 +747,17 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     fontWeight = [self RCTFontWeight:weight];
   }
 
-  // Get closest match
-  UIFont *bestMatch = font;
-  CGFloat closestWeight = font ? RCTWeightOfFont(font) : INFINITY;
-  for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
+  // Get the closest font that matches the given weight for the fontFamily
+  UIFont *bestMatch = [UIFont fontWithName:font.fontName size: fontSize];
+  CGFloat closestWeight;
+
+  if (font && [font.familyName isEqualToString: fontFamily]) {
+    closestWeight = RCTWeightOfFont(font);
+  } else {
+    closestWeight = INFINITY;
+  }
+
+  for (NSString *name in [UIFont fontNamesForFamilyName:fontFamily]) {
     UIFont *match = [UIFont fontWithName:name size:fontSize];
     if (isItalic == RCTFontIsItalic(match) &&
         isCondensed == RCTFontIsCondensed(match)) {
@@ -758,7 +773,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   if (!bestMatch) {
     RCTLogError(@"Could not find font with family: '%@', size: %@, \
                 weight: %@, style: %@", family, size, weight, style);
-    bestMatch = [UIFont fontWithName:[[UIFont fontNamesForFamilyName:familyName] firstObject]
+    bestMatch = [UIFont fontWithName:[[UIFont fontNamesForFamilyName:fontFamily] firstObject]
                                 size:fontSize];
   }
 
