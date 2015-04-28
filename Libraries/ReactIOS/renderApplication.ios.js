@@ -11,6 +11,8 @@
  */
 'use strict';
 
+require('ExceptionsManager').installConsoleErrorReporter();
+
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
