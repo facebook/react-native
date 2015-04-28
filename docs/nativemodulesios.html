@@ -87,7 +87,7 @@ class <span class="token class-name">CalendarManager</span><span class="token pu
    <span class="token comment" spellcheck="true"> // Date is ready to use!
 </span>  <span class="token punctuation">}</span>
 
-<span class="token punctuation">}</span></div><blockquote><p><strong>NOTE</strong> It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.</p></blockquote><p>Then create a private implementation file that will register the required information with the React Native bridge:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// CalendarManagerBridge.m
+<span class="token punctuation">}</span></div><blockquote><p><strong>NOTE</strong>: It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.</p></blockquote><p>Then create a private implementation file that will register the required information with the React Native bridge:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// CalendarManagerBridge.m
 </span>#import <span class="token string">&quot;RCTBridgeModule.h&quot;</span>
 
 @interface <span class="token class-name">RCT_EXTERN_MODULE</span><span class="token punctuation">(</span>CalendarManager<span class="token punctuation">,</span> NSObject<span class="token punctuation">)</span>
