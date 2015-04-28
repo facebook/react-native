@@ -19,7 +19,7 @@
   RCTEventDispatcher *_eventDispatcher;
   BOOL _jsRequestingFirstResponder;
   NSString *_placeholder;
-  UILabel *_placeholderView;
+  UITextView *_placeholderView;
   UITextView *_textView;
 }
 
@@ -32,7 +32,6 @@
 
     _textView = [[UITextView alloc] initWithFrame:self.bounds];
     _textView.backgroundColor = [UIColor clearColor];
-    [self updateBounds];
     [self addSubview:_textView];
     [self subscribeToTextViewChanges];
   }
@@ -58,14 +57,15 @@
                                 object:_textView];
 }
 
-- (void)updateBounds
+- (void)updateFrames
 {
-  // Add padding to top and left of placeholder label to make it match up with UITextView
-  UIEdgeInsets placeholderInset = UIEdgeInsetsMake(_contentInset.top + 7, _contentInset.left + 3, _contentInset.bottom, _contentInset.right);
-  [_textView setFrame:UIEdgeInsetsInsetRect(self.bounds, _contentInset)];
-  [_placeholderView setFrame:UIEdgeInsetsInsetRect(self.bounds, placeholderInset)];
-  // Bump the placeholder view up to the top
-  [_placeholderView sizeToFit];
+  // Adjust the insets so that they are as close as possible to single-line
+  // RCTTextField defaults
+  UIEdgeInsets adjustedInset = UIEdgeInsetsMake(_contentInset.top - 5, _contentInset.left - 4,
+                                                _contentInset.bottom, _contentInset.right);
+
+  [_textView setFrame:UIEdgeInsetsInsetRect(self.bounds, adjustedInset)];
+  [_placeholderView setFrame:UIEdgeInsetsInsetRect(self.bounds, adjustedInset)];
 }
 
 - (void)setFont:(UIFont *)font
@@ -103,8 +103,9 @@
   _placeholderView = nil;
 
   if (_placeholder) {
-    _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
+    _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
     _placeholderView.backgroundColor = [UIColor clearColor];
+    _placeholderView.scrollEnabled = false;
     _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder
       attributes:@{ NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),
                     NSForegroundColorAttributeName : _placeholderTextColor }];
@@ -116,7 +117,7 @@
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
   _contentInset = contentInset;
-  [self updateBounds];
+  [self updateFrames];
 }
 
 - (void)setText:(NSString *)text
@@ -192,7 +193,7 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  [self updateBounds];
+  [self updateFrames];
 }
 
 
