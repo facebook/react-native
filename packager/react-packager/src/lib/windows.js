@@ -24,6 +24,7 @@ var _ = require('underscore');
 
 var WindowsPath = {
     isWindows:  function() {
+        if (!os.type()) return false; // default if os.type() isn't returning
         return os.type().match(/Windows/);
     },
     convertPath: function(pathstr) {
