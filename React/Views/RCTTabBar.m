@@ -97,7 +97,7 @@
 
 - (void)layoutSubviews
 {
-  [super layoutSubviews];
+  // we're not calling [super layoutSubviews] to prevent improper resizing
   _tabController.view.frame = self.bounds;
 }
 
