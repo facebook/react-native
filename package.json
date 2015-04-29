@@ -23,6 +23,7 @@
   "main": "Libraries/react-native/react-native.js",
   "files": [
     "React",
+    "React.podspec",
     "Examples/SampleApp",
     "Libraries",
     "packager",
