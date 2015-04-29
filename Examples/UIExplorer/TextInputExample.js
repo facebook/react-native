@@ -105,6 +105,14 @@ var styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     fontFamily: 'Cochin',
+    height: 80,
+  },
+  multilineChild: {
+    width: 50,
+    height: 40,
+    position: 'absolute',
+    right: 5,
+    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
@@ -350,18 +358,41 @@ exports.examples = [
         <View>
           <WithLabel label="multiline">
             <TextInput
-              placeholder="mutliline text input"
+              value="plain multiline text input"
               multiline={true}
               style={styles.multiline}
             />
           </WithLabel>
           <WithLabel label="multilineStyled">
             <TextInput
-              placeholder="mutliline text input with font styles"
+              placeholder="mutliline text input with font styles and placeholder"
               multiline={true}
+              clearTextOnFocus={true}
+              autoCorrect={true}
+              autoCapitalize="words"
               placeholderTextColor="red"
+              keyboardType="url"
               style={[styles.multiline, styles.multilineWithFontStyles]}
             />
+          </WithLabel>
+          <WithLabel label="multilineDisabled">
+            <TextInput
+              placeholder="uneditable mutliline text input"
+              editable={false}
+              multiline={true}
+              style={styles.multiline}
+            />
+          </WithLabel>
+
+          <WithLabel label="multilineChildren">
+            <TextInput
+              placeholder="multiline with children"
+              multiline={true}
+              enablesReturnKeyAutomatically={true}
+              returnKeyType='go'
+              style={styles.multiline}>
+              <View style={styles.multilineChild} />
+            </TextInput>
           </WithLabel>
         </View>
       )

@@ -18,6 +18,8 @@
 {
   RCTEventDispatcher *_eventDispatcher;
   BOOL _jsRequestingFirstResponder;
+  BOOL _clearTextOnFocus;
+  BOOL _selectTextOnFocus;
   NSString *_placeholder;
   UITextView *_placeholderView;
   UITextView *_textView;
@@ -79,6 +81,11 @@
   [self _setupPlaceholder];
 }
 
+- (void)setClearTextOnFocus:(BOOL)clearTextOnFocus
+{
+  _clearTextOnFocus = clearTextOnFocus;
+}
+
 - (void)_setupPlaceholder
 {
   [_placeholderView removeFromSuperview];
@@ -124,13 +131,58 @@
   _textView.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
 }
 
+- (void)setEditable:(BOOL)editable
+{
+  _textView.editable = editable;
+}
+
 - (BOOL)autoCorrect
 {
   return _textView.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
+- (void)setKeyboardType:(UIKeyboardType)keyboardType
+{
+  _textView.keyboardType = keyboardType;
+}
+
+- (void)setReturnKeyType:(UIReturnKeyType)returnKeyType
+{
+  _textView.returnKeyType = returnKeyType;
+}
+
+- (void)setEnablesReturnKeyAutomatically:(BOOL)enablesReturnKeyAutomatically
+{
+  _textView.enablesReturnKeyAutomatically = enablesReturnKeyAutomatically;
+}
+
+- (void)setAutocapitalizationType:(BOOL)autocapitalizationType
+{
+  _textView.autocapitalizationType = autocapitalizationType;
+}
+
+- (void)setSelectTextOnFocus:(BOOL)selectTextOnFocus
+{
+  _selectTextOnFocus = selectTextOnFocus;
+}
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
+  if (_selectTextOnFocus) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [textView selectAll:nil];
+    });
+  }
+  return YES;
+}
+
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
+  if (_clearTextOnFocus) {
+    [_textView setText:@""];
+    _textView.text = @"";
+    [self _setPlaceholderVisibility];
+  }
+
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:textView.text];
@@ -155,14 +207,15 @@
 - (BOOL)becomeFirstResponder
 {
   _jsRequestingFirstResponder = YES;
-  BOOL result = [super becomeFirstResponder];
+  BOOL result = [_textView becomeFirstResponder];
   _jsRequestingFirstResponder = NO;
   return result;
 }
 
 - (BOOL)resignFirstResponder
 {
-  BOOL result = [super resignFirstResponder];
+  [super resignFirstResponder];
+  BOOL result = [_textView resignFirstResponder];
   if (result) {
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                    reactTag:self.reactTag
@@ -177,7 +230,6 @@
   [super layoutSubviews];
   [self updateFrames];
 }
-
 
 - (BOOL)canBecomeFirstResponder
 {
