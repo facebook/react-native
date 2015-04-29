@@ -716,6 +716,10 @@ var Navigator = React.createClass({
   _handlePanResponderRelease: function(e, gestureState) {
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     var releaseGestureAction = this.state.activeGesture;
+    if (!releaseGestureAction) {
+      // The gesture may have been detached while responder, so there is no action here
+      return;
+    }
     var releaseGesture = sceneConfig.gestures[releaseGestureAction];
     var destIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
     if (this.spring.getCurrentValue() === 0) {
