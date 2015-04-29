@@ -67,4 +67,8 @@ ls `basename $MARKER` > /dev/null
 
 flow
 
+ps x
+
+pkill -9 watchman || echo "No watchman running"
+
 xctool -scheme EndToEndTest -sdk iphonesimulator test
