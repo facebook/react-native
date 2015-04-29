@@ -139,8 +139,17 @@ var ToTheLeft = {
     value: 1.0,
     type: 'constant',
   },
-};
 
+  translateX: {
+    from: 0,
+    to: -Dimensions.get('window').width,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+};
 
 var FromTheRight = {
   opacity: {
