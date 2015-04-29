@@ -9,6 +9,6 @@
 
 #import "RCTViewManager.h"
 
-@interface RCTTextManager : RCTViewManager
+@interface RCTTextViewManager : RCTViewManager
 
 @end

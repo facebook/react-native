@@ -88,9 +88,9 @@ var styles = StyleSheet.create({
     height: 26,
     borderWidth: 0.5,
     borderColor: '#0f0f0f',
-    padding: 4,
     flex: 1,
     fontSize: 13,
+    padding: 4,
   },
   multiline: {
     borderWidth: 0.5,
@@ -98,6 +98,13 @@ var styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     height: 50,
+    padding: 4,
+  },
+  multilineWithFontStyles: {
+    color: 'blue',
+    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: 'Cochin',
   },
   eventLabel: {
     margin: 3,
@@ -118,7 +125,7 @@ var styles = StyleSheet.create({
 });
 
 exports.title = '<TextInput>';
-exports.description = 'Single-line text inputs.';
+exports.description = 'Single and multi-line text inputs.';
 exports.examples = [
   {
     title: 'Auto-focus',
@@ -313,7 +320,7 @@ exports.examples = [
   },
   {
     title: 'Clear and select',
-    render: function () {
+    render: function() {
       return (
         <View>
           <WithLabel label="clearTextOnFocus">
@@ -336,4 +343,24 @@ exports.examples = [
       );
     }
   },
+  {
+    title: 'Multiline',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            placeholder="multiline text input"
+            multiline={true}
+            style={[styles.multiline, {marginBottom: 4}]}
+          />
+          <TextInput
+            placeholder="multiline text input with font styles"
+            multiline={true}
+            placeholderTextColor="red"
+            style={[styles.multiline, styles.multilineWithFontStyles]}
+          />
+        </View>
+      )
+    }
+  }
 ];

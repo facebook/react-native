@@ -54,12 +54,14 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   }
 }
 
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor {
+- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
+{
   _placeholderTextColor = placeholderTextColor;
   RCTUpdatePlaceholder(self);
 }
 
-- (void)setPlaceholder:(NSString *)placeholder {
+- (void)setPlaceholder:(NSString *)placeholder
+{
   super.placeholder = placeholder;
   RCTUpdatePlaceholder(self);
 }
