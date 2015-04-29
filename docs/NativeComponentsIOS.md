@@ -58,7 +58,7 @@ This is now a fully-functioning native map view component in JavaScript, complet
 
 ## Properties
 
-The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control specify the visible region.  Disabling pitch is a simple boolean, so we just add this one line:
+The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control and specify the visible region.  Disabling pitch is a simple boolean, so we just add this one line:
 
 ```objective-c
 // RCTMapManager.m
