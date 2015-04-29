@@ -17,6 +17,8 @@
 @interface RCTTextView : RCTView <UITextViewDelegate>
 
 @property (nonatomic, assign) BOOL autoCorrect;
+@property (nonatomic, assign) BOOL clearTextOnFocus;
+@property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, strong) UIColor *placeholderTextColor;

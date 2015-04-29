@@ -133,8 +133,24 @@
   return _textView.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
+  if (_selectTextOnFocus) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [textView selectAll:nil];
+    });
+  }
+  return YES;
+}
+
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
+  if (_clearTextOnFocus) {
+    [_textView setText:@""];
+    _textView.text = @"";
+    [self _setPlaceholderVisibility];
+  }
+
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:textView.text];
@@ -159,14 +175,15 @@
 - (BOOL)becomeFirstResponder
 {
   _jsRequestingFirstResponder = YES;
-  BOOL result = [super becomeFirstResponder];
+  BOOL result = [_textView becomeFirstResponder];
   _jsRequestingFirstResponder = NO;
   return result;
 }
 
 - (BOOL)resignFirstResponder
 {
-  BOOL result = [super resignFirstResponder];
+  [super resignFirstResponder];
+  BOOL result = [_textView resignFirstResponder];
   if (result) {
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                    reactTag:self.reactTag

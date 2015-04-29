@@ -25,16 +25,17 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
+RCT_REMAP_VIEW_PROPERTY(editable, textView.editable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
-RCT_REMAP_VIEW_PROPERTY(clearTextOnFocus, clearsOnBeginEditing, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(keyboardType, UIKeyboardType)
-RCT_EXPORT_VIEW_PROPERTY(returnKeyType, UIReturnKeyType)
-RCT_EXPORT_VIEW_PROPERTY(enablesReturnKeyAutomatically, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(secureTextEntry, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
+RCT_REMAP_VIEW_PROPERTY(keyboardType, textView.keyboardType, UIKeyboardType)
+RCT_REMAP_VIEW_PROPERTY(returnKeyType, textView.returnKeyType, UIReturnKeyType)
+RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, textView.enablesReturnKeyAutomatically, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textColor, UIColor)
-RCT_REMAP_VIEW_PROPERTY(autoCapitalize, autocapitalizationType, UITextAutocapitalizationType)
+RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextView)
 {
   view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];

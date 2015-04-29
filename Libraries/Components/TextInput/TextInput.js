@@ -38,6 +38,7 @@ var returnKeyTypeConsts = RCTUIManager.UIReturnKeyType;
 var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   autoCorrect: true,
   autoCapitalize: true,
+  clearTextOnFocus: true,
   color: true,
   editable: true,
   fontFamily: true,
@@ -48,6 +49,7 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   returnKeyType: true,
   enablesReturnKeyAutomatically: true,
   secureTextEntry: true,
+  selectTextOnFocus: true,
   mostRecentEventCounter: true,
   placeholder: true,
   placeholderTextColor: true,
@@ -499,6 +501,8 @@ var TextInput = React.createClass({
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}
+          selectTextOnFocus={this.props.selectTextOnFocus}
+          clearTextOnFocus={this.props.clearTextOnFocus}
         />;
     }
 
