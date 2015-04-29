@@ -35,8 +35,7 @@ id RCTJSONParse(NSString *jsonString, NSError **error)
     if (jsonData) {
       RCTLogWarn(@"RCTJSONParse received the following string, which could not be losslessly converted to UTF8 data: '%@'", jsonString);
     } else {
-      // If our backup conversion fails, log the issue so we can see what strings are causing this (t6452813)
-      RCTLogError(@"RCTJSONParse received the following string, which could not be converted to UTF8 data: '%@'", jsonString);
+      RCTLogError(@"RCTJSONParse received invalid UTF8 data");
       return nil;
     }
   }
