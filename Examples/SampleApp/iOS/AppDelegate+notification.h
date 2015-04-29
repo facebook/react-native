@@ -7,9 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#if __has_include("../../../iOS/AppDelegate.h")
+#if __has_include("RCTPushNotificationManager.h")
 
-#import "../../../iOS/AppDelegate.h"
+#import "AppDelegate.h"
 
 @interface AppDelegate (notification)
 
