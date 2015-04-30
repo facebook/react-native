@@ -61,7 +61,7 @@ RCT_EXPORT_METHOD(queryData:(NSString *)queryType
         responseJSON = @{
           @"status": @0,
           @"responseHeaders": @{},
-          @"responseText": [connectionError localizedDescription]
+          @"responseText": [connectionError localizedDescription] ?: [NSNull null]
         };
       }
 

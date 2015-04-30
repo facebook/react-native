@@ -31,6 +31,8 @@
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 
+dispatch_queue_t const RCTJSThread = nil;
+
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
@@ -189,6 +191,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
           superclass = class_getSuperclass(superclass);
         }
       }
+      free(classes);
     }
 
   });
@@ -353,7 +356,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 
 #define RCT_CONVERT_CASE(_value, _type) \
   case _value: { \
-    _type (*convert)(id, SEL, id) = (typeof(convert))[RCTConvert methodForSelector:selector]; \
+    _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
     RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
     break; \
   }
@@ -375,12 +378,27 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
               RCT_CONVERT_CASE('B', BOOL)
               RCT_CONVERT_CASE('@', id)
               RCT_CONVERT_CASE('^', void *)
-            case '{':
-              RCTAssert(NO, @"Argument %zd of %C[%@ %@] is defined as %@, however RCT_EXPORT_METHOD() "
-                        "does not currently support struct-type arguments.", i - 2,
-                        [reactMethodName characterAtIndex:0], _moduleClassName,
-                        objCMethodName, argumentName);
-              break;
+
+              case '{': {
+                [argumentBlocks addObject:^(RCTBridge *bridge, NSNumber *context, NSInvocation *invocation, NSUInteger index, id json) {
+                  NSUInteger size;
+                  NSGetSizeAndAlignment(argumentType, &size, NULL);
+                  void *returnValue = malloc(size);
+                  NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
+                  NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+                  [_invocation setTarget:[RCTConvert class]];
+                  [_invocation setSelector:selector];
+                  [_invocation setArgument:&json atIndex:2];
+                  [_invocation invoke];
+                  [_invocation getReturnValue:returnValue];
+
+                  [invocation setArgument:returnValue atIndex:index];
+
+                  free(returnValue);
+                }];
+                break;
+              }
+
             default:
               defaultCase(argumentType);
           }
@@ -435,6 +453,10 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
             RCT_SIMPLE_CASE('f', float, floatValue)
             RCT_SIMPLE_CASE('d', double, doubleValue)
             RCT_SIMPLE_CASE('B', BOOL, boolValue)
+
+          case '{':
+            RCTLogMustFix(@"Cannot convert JSON to struct %s", argumentType);
+            break;
 
           default:
             defaultCase(argumentType);
@@ -650,6 +672,8 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
  */
 static NSMutableDictionary *RCTLocalModuleIDs;
 static NSMutableDictionary *RCTLocalMethodIDs;
+static NSMutableArray *RCTLocalModuleNames;
+static NSMutableArray *RCTLocalMethodNames;
 static NSDictionary *RCTLocalModulesConfig()
 {
   static NSMutableDictionary *localModules;
@@ -658,6 +682,8 @@ static NSDictionary *RCTLocalModulesConfig()
 
     RCTLocalModuleIDs = [[NSMutableDictionary alloc] init];
     RCTLocalMethodIDs = [[NSMutableDictionary alloc] init];
+    RCTLocalModuleNames = [[NSMutableArray alloc] init];
+    RCTLocalMethodNames = [[NSMutableArray alloc] init];
 
     localModules = [[NSMutableDictionary alloc] init];
     for (NSString *moduleDotMethod in RCTJSMethods()) {
@@ -689,6 +715,8 @@ static NSDictionary *RCTLocalModulesConfig()
       // Add module and method lookup
       RCTLocalModuleIDs[moduleDotMethod] = module[@"moduleID"];
       RCTLocalMethodIDs[moduleDotMethod] = methods[methodName][@"methodID"];
+      [RCTLocalModuleNames addObject:moduleName];
+      [RCTLocalMethodNames addObject:methodName];
     }
   });
 
@@ -795,6 +823,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+
     [self setUp];
     [self bindKeys];
   }
@@ -872,6 +901,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       dispatch_queue_t queue = [module methodQueue];
       if (queue) {
         _queuesByID[moduleID] = queue;
+      } else {
+        _queuesByID[moduleID] = [NSNull null];
       }
     }
   }];
@@ -1047,7 +1078,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 #pragma mark - RCTBridge methods
 
 /**
- * Like JS::call, for objective-c.
+ * Public. Can be invoked from any thread.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
@@ -1058,12 +1089,10 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
   RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
 
-  if (!_loading) {
-    [self _invokeAndProcessModule:@"BatchedBridge"
-                           method:@"callFunctionReturnFlushedQueue"
-                        arguments:@[moduleID, methodID, args ?: @[]]
-                          context:RCTGetExecutorID(_javaScriptExecutor)];
-  }
+  [self _invokeAndProcessModule:@"BatchedBridge"
+                         method:@"callFunctionReturnFlushedQueue"
+                      arguments:@[moduleID, methodID, args ?: @[]]
+                        context:RCTGetExecutorID(_javaScriptExecutor)];
 }
 
 /**
@@ -1081,10 +1110,17 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
   if (!_loading) {
 #if BATCHED_BRIDGE
-    [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
-                                   method:@"callFunctionReturnFlushedQueue"
-                                arguments:@[moduleID, methodID, @[@[timer]]]
-                                  context:RCTGetExecutorID(_javaScriptExecutor)];
+    dispatch_block_t block = ^{
+      [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
+                                     method:@"callFunctionReturnFlushedQueue"
+                                  arguments:@[moduleID, methodID, @[@[timer]]]
+                                    context:RCTGetExecutorID(_javaScriptExecutor)];
+    };
+    if ([_javaScriptExecutor respondsToSelector:@selector(executeAsyncBlockOnJavaScriptQueue:)]) {
+      [_javaScriptExecutor executeAsyncBlockOnJavaScriptQueue:block];
+    } else {
+      [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
+    }
 
 #else
 
@@ -1128,33 +1164,93 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 #pragma mark - Payload Generation
 
+- (void)dispatchBlock:(dispatch_block_t)block forModule:(NSNumber *)moduleID
+{
+  id queue = _queuesByID[moduleID];
+  if (queue == [NSNull null]) {
+    [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
+  } else {
+    dispatch_async(queue ?: _methodQueue, block);
+  }
+}
+
+/**
+ * Called by enqueueJSCall from any thread, or from _immediatelyCallTimer,
+ * on the JS thread, but only in non-batched mode.
+ */
 - (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
 #if BATCHED_BRIDGE
-  RCTProfileBeginEvent();
 
-  if ([module isEqualToString:@"RCTEventEmitter"]) {
-    for (NSDictionary *call in _scheduledCalls) {
-      if ([call[@"module"] isEqualToString:module] && [call[@"method"] isEqualToString:method] && [call[@"args"][0] isEqualToString:args[0]]) {
-        [_scheduledCalls removeObject:call];
+  __weak NSMutableArray *weakScheduledCalls = _scheduledCalls;
+  __weak RCTSparseArray *weakScheduledCallbacks = _scheduledCallbacks;
+
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+    RCTProfileBeginEvent();
+
+    NSMutableArray *scheduledCalls = weakScheduledCalls;
+    RCTSparseArray *scheduledCallbacks = weakScheduledCallbacks;
+    if (!scheduledCalls || !scheduledCallbacks) {
+      return;
+    }
+
+    /**
+     * Event deduping
+     *
+     * Right now we make a lot of assumptions about the arguments structure
+     * so just iterate if it's a `callFunctionReturnFlushedQueue()`
+     */
+    if ([method isEqualToString:@"callFunctionReturnFlushedQueue"]) {
+      NSString *moduleName = RCTLocalModuleNames[[args[0] integerValue]];
+      /**
+       * Keep going if it any event emmiter, e.g. RCT(Device|NativeApp)?EventEmitter
+       */
+      if ([moduleName hasSuffix:@"EventEmitter"]) {
+        for (NSDictionary *call in [scheduledCalls copy]) {
+          NSArray *callArgs = call[@"args"];
+          /**
+           * If it's the same module && method call on the bridge &&
+           * the same EventEmitter module && method
+           */
+          if (
+            [call[@"module"] isEqualToString:module] &&
+            [call[@"method"] isEqualToString:method] &&
+            [callArgs[0] isEqual:args[0]] &&
+            [callArgs[1] isEqual:args[1]]
+          ) {
+            /**
+             * args[2] contains the actual arguments for the event call, where
+             * args[2][0] is the target for RCTEventEmitter or the eventName
+             *   for the other EventEmitters
+             * if RCTEventEmitter we need to compare args[2][1] that will be
+             *   the eventName
+             */
+            if (
+              [args[2][0] isEqual:callArgs[2][0]] &&
+              ([moduleName isEqualToString:@"RCTEventEmitter"] ? [args[2][1] isEqual:callArgs[2][1]] : YES)
+            ) {
+              [scheduledCalls removeObject:call];
+            }
+          }
+        }
       }
     }
-  }
 
-  id call = @{
-    @"module": module,
-    @"method": method,
-    @"args": args,
-    @"context": context ?: @0,
-  };
+    id call = @{
+      @"module": module,
+      @"method": method,
+      @"args": args,
+      @"context": context ?: @0,
+    };
 
-  if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
-    _scheduledCallbacks[args[0]] = call;
-  } else {
-    [_scheduledCalls addObject:call];
-  }
+    if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
+      scheduledCallbacks[args[0]] = call;
+    } else {
+      [scheduledCalls addObject:call];
+    }
 
-  RCTProfileEndEvent(@"enqueue_call", @"objc_call", call);
+    RCTProfileEndEvent(@"enqueue_call", @"objc_call", call);
+  }];
 }
 
 - (void)_actuallyInvokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
@@ -1235,10 +1331,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   // TODO: batchDidComplete is only used by RCTUIManager - can we eliminate this special case?
   [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, BOOL *stop) {
     if ([module respondsToSelector:@selector(batchDidComplete)]) {
-      dispatch_queue_t queue = _queuesByID[moduleID];
-      dispatch_async(queue ?: _methodQueue, ^{
+      [self dispatchBlock:^{
         [module batchDidComplete];
-      });
+      } forModule:moduleID];
     }
   }];
 }
@@ -1273,8 +1368,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   }
 
   __weak RCTBridge *weakSelf = self;
-  dispatch_queue_t queue = _queuesByID[moduleID];
-  dispatch_async(queue ?: _methodQueue, ^{
+  [self dispatchBlock:^{
     RCTProfileBeginEvent();
     __strong RCTBridge *strongSelf = weakSelf;
 
@@ -1303,7 +1397,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       @"method": method.JSMethodName,
       @"selector": NSStringFromSelector(method.selector),
     });
-  });
+  } forModule:@(moduleID)];
 
   return YES;
 }

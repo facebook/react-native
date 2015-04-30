@@ -29,7 +29,7 @@ var stylePropType = StyleSheetPropType(ViewStylePropTypes);
  * container that supports layout with flexbox, style, some touch handling, and
  * accessibility controls, and is designed to be nested inside other views and
  * to have 0 to many children of any type. `View` maps directly to the native
- * view equivalent on whatever platform react is running on, whether that is a
+ * view equivalent on whatever platform React is running on, whether that is a
  * `UIView`, `<div>`, `android.view`, etc.  This example creates a `View` that
  * wraps two colored boxes and custom component in a row with padding.
  *

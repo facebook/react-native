@@ -661,7 +661,7 @@ RCT_EXPORT_METHOD(manageChildren:(NSNumber *)containerReactTag
 {
   id<RCTViewNodeProtocol> container = registry[containerReactTag];
   RCTAssert(moveFromIndices.count == moveToIndices.count, @"moveFromIndices had size %tu, moveToIndices had size %tu", moveFromIndices.count, moveToIndices.count);
-  RCTAssert(addChildReactTags.count == addAtIndices.count, @"there should be at least one react child to add");
+  RCTAssert(addChildReactTags.count == addAtIndices.count, @"there should be at least one React child to add");
 
   // Removes (both permanent and temporary moves) are using "before" indices
   NSArray *permanentlyRemovedChildren = [self _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
@@ -918,7 +918,7 @@ RCT_EXPORT_METHOD(measure:(NSNumber *)reactTag
     }
 
     // TODO: this doesn't work because sometimes view is inside a modal window
-    // RCTAssert([rootView isReactRootView], @"React view is not inside a react root view");
+    // RCTAssert([rootView isReactRootView], @"React view is not inside a React root view");
 
     // By convention, all coordinates, whether they be touch coordinates, or
     // measurement coordinates are with respect to the root view.
@@ -995,18 +995,17 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(NSNumber *)reactTag
 }
 
 /**
- * Returns an array of computed offset layouts in a dictionary form. The layouts are of any react subviews
+ * Returns an array of computed offset layouts in a dictionary form. The layouts are of any React subviews
  * that are immediate descendants to the parent view found within a specified rect. The dictionary result
  * contains left, top, width, height and an index. The index specifies the position among the other subviews.
  * Only layouts for views that are within the rect passed in are returned. Invokes the error callback if the
  * passed in parent view does not exist. Invokes the supplied callback with the array of computed layouts.
  */
-RCT_EXPORT_METHOD(measureViewsInRect:(id)rectJSON
+RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
                   parentView:(NSNumber *)reactTag
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {
-  CGRect rect = [RCTConvert CGRect:rectJSON];
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   if (!shadowView) {
     RCTLogError(@"Attempting to measure view that does not exist (tag #%@)", reactTag);
@@ -1102,9 +1101,8 @@ RCT_EXPORT_METHOD(scrollWithoutAnimationTo:(NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(zoomToRect:(NSNumber *)reactTag
-                  withRect:(id)rectJSON)
+                  withRect:(CGRect)rect)
 {
-  CGRect rect = [RCTConvert CGRect:rectJSON];
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     UIView *view = viewRegistry[reactTag];
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {

@@ -101,6 +101,30 @@ var FadeToTheLeft = {
   },
 };
 
+var FadeIn = {
+  opacity: {
+    from: 0,
+    to: 1,
+    min: 0.5,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+};
+
+var FadeOut = {
+  opacity: {
+    from: 1,
+    to: 0,
+    min: 0,
+    max: 0.5,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+};
+
 var ToTheLeft = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
@@ -115,8 +139,17 @@ var ToTheLeft = {
     value: 1.0,
     type: 'constant',
   },
-};
 
+  translateX: {
+    from: 0,
+    to: -Dimensions.get('window').width,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+};
 
 var FromTheRight = {
   opacity: {
@@ -236,12 +269,52 @@ var FromTheFront = {
   },
 };
 
+var ToTheBackAndroid = {
+  opacity: {
+    value: 1,
+    type: 'constant',
+  },
+};
+
+var FromTheFrontAndroid = {
+  opacity: {
+    from: 0,
+    to: 1,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+  transformTranslate: {
+    from: {x: 0, y: 50, z: 0},
+    to: {x: 0, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  translateY: {
+    from: 50,
+    to: 0,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+};
+
 var BaseOverswipeConfig = {
   frictionConstant: 1,
   frictionByDistance: 1.5,
 };
 
 var BaseLeftToRightGesture = {
+
+  // If the gesture can end and restart during one continuous touch
+  isDetachable: false,
 
   // How far the swipe must drag to start transitioning
   gestureDetectMovement: 2,
@@ -316,6 +389,22 @@ var NavigatorSceneConfigs = {
       out: buildStyleInterpolator(ToTheBack),
     },
   },
+  FloatFromBottomAndroid: {
+    ...BaseConfig,
+    gestures: null,
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheFrontAndroid),
+      out: buildStyleInterpolator(ToTheBackAndroid),
+    },
+  },
+  FadeAndroid: {
+    ...BaseConfig,
+    gestures: null,
+    animationInterpolators: {
+      into: buildStyleInterpolator(FadeIn),
+      out: buildStyleInterpolator(FadeOut),
+    },
+  },
   HorizontalSwipeJump: {
     ...BaseConfig,
     gestures: {
@@ -323,11 +412,13 @@ var NavigatorSceneConfigs = {
         ...BaseLeftToRightGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
+        isDetachable: true,
       },
       jumpForward: {
         ...BaseRightToLeftGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
+        isDetachable: true,
       },
     },
     animationInterpolators: {

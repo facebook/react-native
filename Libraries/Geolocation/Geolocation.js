@@ -22,6 +22,12 @@ var subscriptions = [];
 
 var updatesEnabled = false;
 
+type GeoOptions = {
+  timeout: number;
+  maximumAge: number;
+  enableHighAccuracy: bool;
+}
+
 /**
  * You need to include the `NSLocationWhenInUseUsageDescription` key
  * in Info.plist to enable geolocation. Geolocation is enabled by default
@@ -32,10 +38,14 @@ var updatesEnabled = false;
  */
 var Geolocation = {
 
+  /*
+   * Invokes the success callback once with the latest location info.  Supported
+   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
+   */
   getCurrentPosition: function(
     geo_success: Function,
     geo_error?: Function,
-    geo_options?: Object
+    geo_options?: GeoOptions
   ) {
     invariant(
       typeof geo_success === 'function',
@@ -48,7 +58,11 @@ var Geolocation = {
     );
   },
 
-  watchPosition: function(success: Function, error?: Function, options?: Object): number {
+  /*
+   * Invokes the success callback whenever the location changes.  Supported
+   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
+   */
+  watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
     if (!updatesEnabled) {
       RCTLocationObserver.startObserving(options || {});
       updatesEnabled = true;

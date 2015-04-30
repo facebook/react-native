@@ -20,7 +20,7 @@ var dimensions = NativeModules.UIManager.Dimensions;
 // We calculate the window dimensions in JS so that we don't encounter loss of
 // precision in transferring the dimensions (which could be non-integers) over
 // the bridge.
-if (dimensions.windowPhysicalPixels) {
+if (dimensions && dimensions.windowPhysicalPixels) {
   // parse/stringify => Clone hack
   dimensions = JSON.parse(JSON.stringify(dimensions));
 

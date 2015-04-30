@@ -164,7 +164,9 @@ RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(borderWidth, CGFloat);
+RCT_CUSTOM_SHADOW_PROPERTY(borderWidth, CGFloat, RCTShadowView) {
+  [view setBorderWidth:[RCTConvert CGFloat:json]];
+}
 
 RCT_EXPORT_SHADOW_PROPERTY(marginTop, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(marginRight, CGFloat);
