@@ -36,6 +36,44 @@ static NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification
 
 @end
 
+@implementation RCTDevMenuConfiguration
+
+static RCTDevMenuConfiguration *sharedObject;
++ (RCTDevMenuConfiguration *)sharedInstance
+{
+  if (sharedObject == nil) {
+    sharedObject = [[super alloc] init];
+  }
+
+  return sharedObject;
+}
+
++ (NSTimeInterval)getLiveReloadPeriod
+{
+  RCTDevMenuConfiguration *shared = [RCTDevMenuConfiguration sharedInstance];
+  return shared.liveReloadPeriod;
+}
+
++ (BOOL)getLiveReloadEnabled
+{
+  RCTDevMenuConfiguration *shared = [RCTDevMenuConfiguration sharedInstance];
+  return shared.liveReloadEnabled;
+}
+
++ (void)setLiveReloadPeriod:(NSTimeInterval)liveReloadPeriod
+{
+  RCTDevMenuConfiguration *shared = [RCTDevMenuConfiguration sharedInstance];
+  shared.liveReloadPeriod = liveReloadPeriod;
+}
+
++ (void)setLiveReloadEnabled:(BOOL)liveReloadEnabled
+{
+  RCTDevMenuConfiguration *shared = [RCTDevMenuConfiguration sharedInstance];
+  shared.liveReloadEnabled = liveReloadEnabled;
+}
+
+@end
+
 @interface RCTDevMenu () <UIActionSheetDelegate>
 
 @end
@@ -63,18 +101,14 @@ RCT_EXPORT_MODULE()
   if ((self = [super init])) {
 
     _shakeToShow = YES;
-    _liveReloadPeriod = 1.0; // 1 second
+    _liveReloadPeriod = [RCTDevMenuConfiguration getLiveReloadPeriod] ?: 1.0; // 1 second
+    self.liveReloadEnabled = [RCTDevMenuConfiguration getLiveReloadEnabled];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(showOnShake)
                                                  name:RCTShowDevMenuNotification
                                                object:nil];
   }
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)showOnShake
@@ -161,6 +195,7 @@ RCT_EXPORT_MODULE()
   }
 
   _liveReloadEnabled = enabled;
+  [RCTDevMenuConfiguration setLiveReloadEnabled:enabled];
   if (_liveReloadEnabled) {
 
     _updateTimer = [NSTimer scheduledTimerWithTimeInterval:_liveReloadPeriod
@@ -169,7 +204,6 @@ RCT_EXPORT_MODULE()
                                                   userInfo:nil
                                                    repeats:YES];
   } else {
-
     [_updateTimer invalidate];
     _updateTimer = nil;
   }
@@ -178,10 +212,12 @@ RCT_EXPORT_MODULE()
 - (void)setLiveReloadPeriod:(NSTimeInterval)liveReloadPeriod
 {
   _liveReloadPeriod = liveReloadPeriod;
-  if (_liveReloadEnabled) {
-    self.liveReloadEnabled = NO;
-    self.liveReloadEnabled = YES;
-  }
+  [RCTDevMenuConfiguration setLiveReloadPeriod:liveReloadPeriod];
+
+   if (_liveReloadEnabled) {
+     self.liveReloadEnabled = NO;
+     self.liveReloadEnabled = YES;
+   }
 }
 
 - (void)pollForUpdates
@@ -214,6 +250,7 @@ RCT_EXPORT_MODULE()
   [_actionSheet dismissWithClickedButtonIndex:_actionSheet.cancelButtonIndex animated:YES];
   [_updateTimer invalidate];
   _updateTimer = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
