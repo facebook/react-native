@@ -84,7 +84,7 @@ function setupRedBoxConsoleErrorHandler() {
   var ExceptionsManager = require('ExceptionsManager');
   var Platform = require('Platform');
   // TODO (#6925182): Enable console.error redbox on Android
-  if (Platform.OS === 'ios') {
+  if (__DEV__ && Platform.OS === 'ios') {
     ExceptionsManager.installConsoleErrorReporter();
   }
 }
