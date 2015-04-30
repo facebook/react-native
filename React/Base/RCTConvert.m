@@ -733,11 +733,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     isItalic = [self RCTFontStyle:style];
   }
 
-  // Get font weight
-  if (weight) {
-    fontWeight = [self RCTFontWeight:weight];
-  }
-
   // Gracefully handle being given a font name rather than font family, for
   // example: "Helvetica Light Oblique" rather than just "Helvetica".
   if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
@@ -754,6 +749,11 @@ static BOOL RCTFontIsCondensed(UIFont *font)
       RCTLogError(@"Unrecognized font family '%@'", familyName);
       familyName = RCTDefaultFontFamily;
     }
+  }
+
+  // Get font weight
+  if (weight) {
+    fontWeight = [self RCTFontWeight:weight];
   }
 
   // Get the closest font that matches the given weight for the fontFamily
