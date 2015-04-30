@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Platform = require('Platform');
 var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
 var loadSourceMap = require('loadSourceMap');
