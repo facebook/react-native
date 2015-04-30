@@ -52,14 +52,27 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 ### Code
 
-* Use semicolons;
+#### General
+
 * Add trailing commas,
 * 2 spaces for indentation (no tabs)
-* Prefer `'` over `"`
-* `'use strict';`
-* 80 character line length
 * "Attractive"
+
+#### JavaScript
+
+* Use semicolons;
+* `'use strict';`
+* Prefer `'` over `"`
 * Do not use the optional parameters of `setTimeout` and `setInterval`
+* 80 character line length
+
+#### Objective-C
+
+* Space after `@property` declarations
+* Brackets on *every* `if`, on the *same* line
+* `- method`, `@interface`, and `@implementation` brackets on the following line
+* *Try* to keep it around 80 characters line length (sometimes it's just not possible...)
+* `*` operator goes with the variable name (e.g. `NSObject *variableName;`)
 
 ### Documentation
 
