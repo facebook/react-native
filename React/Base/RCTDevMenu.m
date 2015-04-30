@@ -36,24 +36,6 @@ static NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification
 
 @end
 
-@interface RCTDevMenuConfiguration : NSObject {
-  NSTimeInterval liveReloadPeriod;
-  BOOL liveReloadEnabled;
-}
-
-@property (nonatomic, assign) NSTimeInterval liveReloadPeriod;
-@property (nonatomic, assign) BOOL liveReloadEnabled;
-
-+ (RCTDevMenuConfiguration *)sharedInstance;
-
-+ (NSTimeInterval)getLiveReloadPeriod;
-+ (BOOL)getLiveReloadEnabled;
-
-+ (void)setLiveReloadPeriod:(NSTimeInterval)liveReloadPeriod;
-+ (void)setLiveReloadEnabled:(BOOL)liveReloadEnabled;
-
-@end
-
 @implementation RCTDevMenuConfiguration
 
 @synthesize liveReloadPeriod;
@@ -130,11 +112,6 @@ RCT_EXPORT_MODULE()
                                                object:nil];
   }
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)showOnShake
@@ -276,6 +253,7 @@ RCT_EXPORT_MODULE()
   [_actionSheet dismissWithClickedButtonIndex:_actionSheet.cancelButtonIndex animated:YES];
   [_updateTimer invalidate];
   _updateTimer = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

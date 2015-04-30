@@ -47,6 +47,24 @@
 
 @end
 
+@interface RCTDevMenuConfiguration : NSObject {
+  NSTimeInterval liveReloadPeriod;
+  BOOL liveReloadEnabled;
+}
+
+@property (nonatomic, assign) NSTimeInterval liveReloadPeriod;
+@property (nonatomic, assign) BOOL liveReloadEnabled;
+
++ (RCTDevMenuConfiguration *)sharedInstance;
+
++ (NSTimeInterval)getLiveReloadPeriod;
++ (BOOL)getLiveReloadEnabled;
+
++ (void)setLiveReloadPeriod:(NSTimeInterval)liveReloadPeriod;
++ (void)setLiveReloadEnabled:(BOOL)liveReloadEnabled;
+
+@end
+
 /**
  * This category makes the developer menu instance available via the
  * RCTBridge, which is useful for any class that needs to access the menu.
