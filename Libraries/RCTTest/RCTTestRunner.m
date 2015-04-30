@@ -10,7 +10,6 @@
 #import "RCTTestRunner.h"
 
 #import "FBSnapshotTestController.h"
-#import "RCTDefines.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
@@ -76,8 +75,6 @@
   vc.view = [[UIView alloc] init];
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
-#if RCT_DEBUG // Prevents build errors, as RCTRedBox is underfined if RCT_DEBUG=0
-
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
   while ([date timeIntervalSinceNow] > 0 && ![testModule isDone] && error == nil) {
@@ -98,13 +95,6 @@
   } else {
     RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
   }
-
-#else
-
-  expectErrorBlock(@"RCTRedBox unavailable. Set RCT_DEBUG=1 for testing.");
-
-#endif
-
 }
 
 @end

@@ -16,10 +16,10 @@
 /**
  * Developer menu, useful for exposing extra functionality when debugging.
  */
-@interface RCTDevMenu : NSObject <RCTBridgeModule, RCTInvalidating>
+@interface RCTDevMenu : NSObject
 
 /**
- * Is the menu enabled. The menu is enabled by default in debug mode, but
+ * Is the menu enabled. The menu is enabled by default if RCT_DEV=1, but
  * you may wish to disable it so that you can provide your own shake handler.
  */
 @property (nonatomic, assign) BOOL shakeToShow;
@@ -41,7 +41,7 @@
 @property (nonatomic, assign) NSTimeInterval liveReloadPeriod;
 
 /**
- * Manually show the menu. This will.
+ * Manually show the dev menu.
  */
 - (void)show;
 

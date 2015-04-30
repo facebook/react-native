@@ -934,8 +934,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
       _loading = NO;
       if (error != nil) {
 
-#if RCT_DEBUG // Red box is only available in debug mode
-
         NSArray *stack = [[error userInfo] objectForKey:@"stack"];
         if (stack) {
           [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
@@ -944,8 +942,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
           [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
                                            withDetails:[error localizedFailureReason]];
         }
-
-#endif
 
       } else {
 
@@ -980,33 +976,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                                  action:^(UIKeyCommand *command) {
                                    [weakSelf reload];
                                  }];
-  // reset to normal mode
-  [commands registerKeyCommandWithInput:@"n"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(UIKeyCommand *command) {
-                                   __strong RCTBridge *strongSelf = weakSelf;
-                                   strongSelf.executorClass = Nil;
-                                   [strongSelf reload];
-                                 }];
-
-#if RCT_DEV // Debug executors are only available in dev mode
-
-  // reload in debug mode
-  [commands registerKeyCommandWithInput:@"d"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(UIKeyCommand *command) {
-                                   __strong RCTBridge *strongSelf = weakSelf;
-                                   strongSelf.executorClass = NSClassFromString(@"RCTWebSocketExecutor");
-                                   if (!strongSelf.executorClass) {
-                                     strongSelf.executorClass = NSClassFromString(@"RCTWebViewExecutor");
-                                   }
-                                   if (!strongSelf.executorClass) {
-                                     RCTLogError(@"WebSocket debugger is not available. "
-                                                 "Did you forget to include RCTWebSocketExecutor?");
-                                   }
-                                   [strongSelf reload];
-                                 }];
-#endif
 #endif
 
 }
@@ -1091,7 +1060,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
-                      arguments:@[moduleID, methodID, args ?: @[]]
+                      arguments:@[moduleID ?: @0, methodID ?: @0, args ?: @[]]
                         context:RCTGetExecutorID(_javaScriptExecutor)];
 }
 

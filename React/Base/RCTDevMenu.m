@@ -10,11 +10,15 @@
 #import "RCTDevMenu.h"
 
 #import "RCTBridge.h"
+#import "RCTDefines.h"
+#import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
+
+#if RCT_DEV
 
 @interface RCTBridge (Profiling)
 
@@ -36,7 +40,7 @@ static NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification
 
 @end
 
-@interface RCTDevMenu () <UIActionSheetDelegate>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, UIActionSheetDelegate>
 
 @end
 
@@ -68,6 +72,28 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(showOnShake)
                                                  name:RCTShowDevMenuNotification
                                                object:nil];
+
+#if TARGET_IPHONE_SIMULATOR
+
+    __weak RCTDevMenu *weakSelf = self;
+    RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+
+    // Workaround around the first cmd+D not working: http://openradar.appspot.com/19613391
+    // You can register just the cmd key and do nothing. This will trigger the bug and cmd+R
+    // will work like a charm!
+    [commands registerKeyCommandWithInput:@""
+                            modifierFlags:UIKeyModifierCommand
+                                   action:NULL];
+
+    // reload in debug mode
+    [commands registerKeyCommandWithInput:@"d"
+                            modifierFlags:UIKeyModifierCommand
+                                   action:^(UIKeyCommand *command) {
+                                     __strong RCTDevMenu *strongSelf = weakSelf;
+                                     [strongSelf show];
+                                   }];
+#endif
+
   }
   return self;
 }
@@ -104,6 +130,7 @@ RCT_EXPORT_MODULE()
 
   actionSheet.actionSheetStyle = UIBarStyleBlack;
   [actionSheet showInView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
+  _actionSheet = actionSheet;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -217,6 +244,16 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+#else // Unvailable
+
+@implementation RCTDevMenu
+
+- (void)show {}
+
+@end
+
+#endif
 
 @implementation  RCTBridge (RCTDevMenu)
 
