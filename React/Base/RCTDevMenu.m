@@ -38,14 +38,11 @@ static NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification
 
 @implementation RCTDevMenuConfiguration
 
-@synthesize liveReloadPeriod;
-@synthesize liveReloadEnabled;
-
 static RCTDevMenuConfiguration *sharedObject;
 + (RCTDevMenuConfiguration *)sharedInstance
 {
   if (sharedObject == nil) {
-    sharedObject = [[super allocWithZone:NULL] init];
+    sharedObject = [[super alloc] init];
   }
 
   return sharedObject;

@@ -47,10 +47,7 @@
 
 @end
 
-@interface RCTDevMenuConfiguration : NSObject {
-  NSTimeInterval liveReloadPeriod;
-  BOOL liveReloadEnabled;
-}
+@interface RCTDevMenuConfiguration : NSObject
 
 @property (nonatomic, assign) NSTimeInterval liveReloadPeriod;
 @property (nonatomic, assign) BOOL liveReloadEnabled;
@@ -64,6 +61,7 @@
 + (void)setLiveReloadEnabled:(BOOL)liveReloadEnabled;
 
 @end
+
 
 /**
  * This category makes the developer menu instance available via the
