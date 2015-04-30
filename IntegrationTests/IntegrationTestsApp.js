@@ -26,6 +26,7 @@ var TESTS = [
   require('./TimersTest'),
   require('./AsyncStorageTest'),
   require('./SimpleSnapshotTest'),
+  require('./SegmentedControlIOSSnapshotTest'),
 ];
 
 TESTS.forEach(

@@ -17,6 +17,7 @@
 //
 //   var ReactNative = {...require('React'), /* additions */}
 //
+
 var ReactNative = Object.assign(Object.create(require('React')), {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
@@ -28,6 +29,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   PickerIOS: require('PickerIOS'),
   Navigator: require('Navigator'),
   ScrollView: require('ScrollView'),
+  SegmentedControlIOS: require('SegmentedControlIOS'),
   SliderIOS: require('SliderIOS'),
   SwitchIOS: require('SwitchIOS'),
   TabBarIOS: require('TabBarIOS'),
