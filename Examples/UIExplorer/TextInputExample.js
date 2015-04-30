@@ -88,9 +88,9 @@ var styles = StyleSheet.create({
     height: 26,
     borderWidth: 0.5,
     borderColor: '#0f0f0f',
-    padding: 4,
     flex: 1,
     fontSize: 13,
+    padding: 4,
   },
   multiline: {
     borderWidth: 0.5,
@@ -98,6 +98,21 @@ var styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     height: 50,
+    padding: 4,
+  },
+  multilineWithFontStyles: {
+    color: 'purple',
+    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: 'Cochin',
+    height: 80,
+  },
+  multilineChild: {
+    width: 50,
+    height: 40,
+    position: 'absolute',
+    right: 5,
+    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
@@ -118,7 +133,7 @@ var styles = StyleSheet.create({
 });
 
 exports.title = '<TextInput>';
-exports.description = 'Single-line text inputs.';
+exports.description = 'Single and multi-line text inputs.';
 exports.examples = [
   {
     title: 'Auto-focus',
@@ -313,7 +328,7 @@ exports.examples = [
   },
   {
     title: 'Clear and select',
-    render: function () {
+    render: function() {
       return (
         <View>
           <WithLabel label="clearTextOnFocus">
@@ -336,4 +351,51 @@ exports.examples = [
       );
     }
   },
+  {
+    title: 'Multiline',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="multiline">
+            <TextInput
+              value="plain multiline text input"
+              multiline={true}
+              style={styles.multiline}
+            />
+          </WithLabel>
+          <WithLabel label="multilineStyled">
+            <TextInput
+              placeholder="mutliline text input with font styles and placeholder"
+              multiline={true}
+              clearTextOnFocus={true}
+              autoCorrect={true}
+              autoCapitalize="words"
+              placeholderTextColor="red"
+              keyboardType="url"
+              style={[styles.multiline, styles.multilineWithFontStyles]}
+            />
+          </WithLabel>
+          <WithLabel label="multilineDisabled">
+            <TextInput
+              placeholder="uneditable mutliline text input"
+              editable={false}
+              multiline={true}
+              style={styles.multiline}
+            />
+          </WithLabel>
+
+          <WithLabel label="multilineChildren">
+            <TextInput
+              placeholder="multiline with children"
+              multiline={true}
+              enablesReturnKeyAutomatically={true}
+              returnKeyType='go'
+              style={styles.multiline}>
+              <View style={styles.multilineChild} />
+            </TextInput>
+          </WithLabel>
+        </View>
+      )
+    }
+  }
 ];
