@@ -32,6 +32,12 @@ describe('resolveAssetSource', () => {
     expect(resolveAssetSource(source2)).toBe(source2);
   });
 
+  it('ignores any weird data', () => {
+    expect(resolveAssetSource(null)).toBe(null);
+    expect(resolveAssetSource(42)).toBe(null);
+    expect(resolveAssetSource('nonsense')).toBe(null);
+  });
+
   describe('bundle was loaded from network', () => {
     beforeEach(() => {
       SourceCode.scriptURL = 'http://10.0.0.1:8081/main.bundle';

@@ -110,7 +110,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
 - (dispatch_queue_t)methodQueue
 {
-  return dispatch_get_main_queue();
+  return RCTJSThread;
 }
 
 - (BOOL)isValid
@@ -131,8 +131,6 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
 - (void)startTimers
 {
-  RCTAssertMainThread();
-
   if (![self isValid] || _timers.count == 0) {
     return;
   }

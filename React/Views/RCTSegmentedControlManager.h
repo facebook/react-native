@@ -9,6 +9,6 @@
 
 #import "RCTViewManager.h"
 
-@interface RCTUIActivityIndicatorViewManager : RCTViewManager
+@interface RCTSegmentedControlManager : RCTViewManager
 
 @end

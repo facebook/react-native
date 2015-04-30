@@ -163,12 +163,12 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Public API
 
-RCT_EXPORT_METHOD(startObserving:(NSDictionary *)optionsJSON)
+RCT_EXPORT_METHOD(startObserving:(RCTLocationOptions)options)
 {
   [self checkLocationConfig];
 
   // Select best options
-  _observerOptions = [RCTConvert RCTLocationOptions:optionsJSON];
+  _observerOptions = options;
   for (RCTLocationRequest *request in _pendingRequests) {
     _observerOptions.accuracy = MIN(_observerOptions.accuracy, request.options.accuracy);
   }
@@ -189,7 +189,7 @@ RCT_EXPORT_METHOD(stopObserving)
   }
 }
 
-RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary *)optionsJSON
+RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
                   withSuccessCallback:(RCTResponseSenderBlock)successBlock
                   errorCallback:(RCTResponseSenderBlock)errorBlock)
 {
@@ -219,7 +219,6 @@ RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary *)optionsJSON
   }
 
   // Check if previous recorded location exists and is good enough
-  RCTLocationOptions options = [RCTConvert RCTLocationOptions:optionsJSON];
   if (_lastLocationEvent &&
       CFAbsoluteTimeGetCurrent() - [RCTConvert NSTimeInterval:_lastLocationEvent[@"timestamp"]] < options.maximumAge &&
       [_lastLocationEvent[@"coords"][@"accuracy"] doubleValue] >= options.accuracy) {

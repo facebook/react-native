@@ -66,6 +66,9 @@ var TabBarItemIOS = React.createClass({
      * blank content, you probably forgot to add a selected one.
      */
     selected: React.PropTypes.bool,
+    /**
+     * React style object.
+     */
     style: View.propTypes.style,
     /**
      * Text that appears under the icon. It is ignored when a system icon

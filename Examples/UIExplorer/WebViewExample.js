@@ -94,6 +94,7 @@ var WebViewExample = React.createClass({
           automaticallyAdjustContentInsets={false}
           style={styles.webView}
           url={this.state.url}
+          javaScriptEnabledAndroid={true}
           onNavigationStateChange={this.onNavigationStateChange}
           startInLoadingState={true}
         />

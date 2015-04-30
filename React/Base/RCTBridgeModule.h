@@ -18,6 +18,16 @@
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
+ * This constant can be returned from +methodQueue to force module
+ * methods to be called on the JavaScript thread. This can have serious
+ * implications for performance, so only use this if you're sure it's what
+ * you need.
+ *
+ * NOTE: RCTJSThread is not a real libdispatch queue
+ */
+extern const dispatch_queue_t RCTJSThread;
+
+/**
  * Provides the interface needed to register a bridge module.
  */
 @protocol RCTBridgeModule <NSObject>
