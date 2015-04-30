@@ -10,6 +10,10 @@ next: testing
 ## Debugging React Native Apps
 To access the in app developer menu, shake the iOS device or simulate a shake in the iOS Simulator by pressing ```Control + Command + Z```.
 
+> Hint
+>
+> To disable the in app developer menu for production builds of your application, open the project in Xcode and navigate to ```Product``` -> ```Scheme``` -> ```Edit Scheme...```(or press ```Command + <```), select Run from the menu on the left, and change the Build Configuration to Release.
+
 ### Reload
 Selecting Reload will reload the iOS application(this is the same as pressing ```Command + R``` in the iOS Simulator).
 
