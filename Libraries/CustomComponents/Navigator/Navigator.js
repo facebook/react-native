@@ -1176,12 +1176,18 @@ var Navigator = React.createClass({
     var scene = shouldRenderScene ?
       this._renderScene(route, i, sceneNavigatorContext) : null;
     return (
-      <NavigatorStaticContextContainer
-        navigatorContext={sceneNavigatorContext}
-        key={'nav' + i}
-        shouldUpdate={shouldRenderScene}>
-        {scene}
-      </NavigatorStaticContextContainer>
+      <View
+        style={styles.defaultSceneStyle}
+        onStartShouldSetResponder={() => (
+          i !== this.state.presentedIndex
+        )}>
+        <NavigatorStaticContextContainer
+          navigatorContext={sceneNavigatorContext}
+          key={'nav' + i}
+          shouldUpdate={shouldRenderScene}>
+          {scene}
+        </NavigatorStaticContextContainer>
+      </View>
     );
   },
 
