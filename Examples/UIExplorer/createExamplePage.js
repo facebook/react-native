@@ -17,6 +17,7 @@
 'use strict';
 
 var React = require('react-native');
+var ReactIOS = require('ReactIOS');
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
@@ -46,20 +47,28 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
     getBlock: function(example, i) {
       // Hack warning: This is a hack because the www UI explorer requires
       // renderComponent to be called.
-      var originalRenderComponent = React.renderComponent;
       var originalRender = React.render;
+      var originalRenderComponent = React.renderComponent;
+      var originalIOSRender = ReactIOS.render;
+      var originalIOSRenderComponent = ReactIOS.renderComponent;
       var renderedComponent;
       // TODO remove typecasts when Flow bug #6560135 is fixed
       // and workaround is removed from react-native.js
-      (React: Object).render = (React: Object).renderComponent = function(element, container) {
-        renderedComponent = element;
-      };
+      (React: Object).render =
+      (React: Object).renderComponent =
+      (ReactIOS: Object).render =
+      (ReactIOS: Object).renderComponent =
+        function(element, container) {
+          renderedComponent = element;
+        };
       var result = example.render(null);
       if (result) {
         renderedComponent = result;
       }
-      (React: Object).renderComponent = originalRenderComponent;
       (React: Object).render = originalRender;
+      (React: Object).renderComponent = originalRenderComponent;
+      (ReactIOS: Object).render = originalIOSRender;
+      (ReactIOS: Object).renderComponent = originalIOSRenderComponent;
       return (
         <UIExplorerBlock
           key={i}
