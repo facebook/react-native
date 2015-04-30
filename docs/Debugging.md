@@ -8,6 +8,8 @@ next: testing
 ---
 
 ## Debugging React Native Apps
+
+### Chrome Developer Tools
 To debug the JavaScript code of your React app do the following:
 
  1. Run your application in the iOS Simulator.
@@ -20,7 +22,7 @@ To debug the JavaScript code of your React app do the following:
 >
 > To debug on a real device: Open the file ```RCTWebSocketExecutor.m``` and change ```localhost``` to the IP address of your computer. Shake the device to open the development menu with the option to start debugging.
 
-### Optional
+#### React Developer Tools (optional)
 Install the [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) extension for Google Chrome. This will allow you to navigate the view hierarchy if you select the ```React``` tab when the developer tools are open.
 
 ## Live Reload
