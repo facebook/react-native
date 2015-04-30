@@ -27,13 +27,6 @@
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
 @synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
 
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  _currentTopLayoutGuide = self.topLayoutGuide;
-  _currentBottomLayoutGuide = self.bottomLayoutGuide;
-}
-
 @end
 
 @interface RCTTabBar() <UITabBarControllerDelegate>
@@ -97,7 +90,7 @@
 
 - (void)layoutSubviews
 {
-  // we're not calling [super layoutSubviews] to prevent improper resizing
+  [super layoutSubviews];
   _tabController.view.frame = self.bounds;
 }
 
