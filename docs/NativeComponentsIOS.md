@@ -87,7 +87,7 @@ class MapView extends React.Component {
   }
 }
 
-var RCTMap= requireNativeComponent('RCTMap', MapView);
+var RCTMap = requireNativeComponent('RCTMap', MapView);
 
 MapView.propTypes = {
   /**
@@ -97,7 +97,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled = React.PropTypes.bool,
+  pitchEnabled: React.PropTypes.bool,
 };
 
 module.exports = MapView;
@@ -171,7 +171,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled = React.PropTypes.bool,
+  pitchEnabled: React.PropTypes.bool,
 
   /**
    * The region to be displayed by the map.
@@ -246,7 +246,7 @@ RCT_EXPORT_MODULE()
 {
   MKCoordinateRegion region = mapView.region;
   NSDictionary *event = @{
-    @"target": [mapView reactTag],
+    @"target": mapView.reactTag,
     @"region": @{
       @"latitude": @(region.center.latitude),
       @"longitude": @(region.center.longitude),
