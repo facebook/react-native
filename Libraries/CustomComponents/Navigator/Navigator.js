@@ -1062,7 +1062,7 @@ var Navigator = React.createClass({
       indexOfRoute !== -1,
       'Calling pop to route for a route that doesn\'t exist!'
     );
-    return this.state.routeStack.length - indexOfRoute - 1;
+    return this.state.presentedIndex - indexOfRoute;
   },
 
   popToRoute: function(route) {
