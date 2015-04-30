@@ -82,7 +82,11 @@ function setupRedBoxErrorHandler() {
 function setupRedBoxConsoleErrorHandler() {
   // ExceptionsManager transitively requires Promise so we install it after
   var ExceptionsManager = require('ExceptionsManager');
-  ExceptionsManager.installConsoleErrorReporter();
+  var Platform = require('Platform');
+  // TODO (#6925182): Enable console.error redbox on Android
+  if (Platform.OS === 'ios') {
+    ExceptionsManager.installConsoleErrorReporter();
+  }
 }
 
 /**
