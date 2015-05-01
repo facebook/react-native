@@ -29,19 +29,4 @@ var ImageStylePropTypes = {
   opacity: ReactPropTypes.number,
 };
 
-// Image doesn't support padding correctly (#4841912)
-var unsupportedProps = Object.keys({
-  padding: null,
-  paddingTop: null,
-  paddingLeft: null,
-  paddingRight: null,
-  paddingBottom: null,
-  paddingVertical: null,
-  paddingHorizontal: null,
-});
-
-for (var i = 0; i < unsupportedProps.length; i++) {
-  delete ImageStylePropTypes[unsupportedProps[i]];
-}
-
 module.exports = ImageStylePropTypes;
