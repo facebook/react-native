@@ -964,18 +964,13 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   __weak RCTBridge *weakSelf = self;
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
-  // Workaround around the first cmd+R not working: http://openradar.appspot.com/19613391
-  // You can register just the cmd key and do nothing. This will trigger the bug and cmd+R
-  // will work like a charm!
-  [commands registerKeyCommandWithInput:@""
-                          modifierFlags:UIKeyModifierCommand
-                                 action:NULL];
   // reload in current mode
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
                                  action:^(UIKeyCommand *command) {
                                    [weakSelf reload];
                                  }];
+
 #endif
 
 }

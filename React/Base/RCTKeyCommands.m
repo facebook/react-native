@@ -90,6 +90,17 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
 {
   RCTAssertMainThread();
 
+  if (input.length && flags) {
+
+    // Workaround around the first cmd not working: http://openradar.appspot.com/19613391
+    // You can register just the cmd key and do nothing. This ensures that
+    // command-key modified commands will work first time.
+
+    [self registerKeyCommandWithInput:@""
+                        modifierFlags:flags
+                               action:nil];
+  }
+
   UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:input
                                               modifierFlags:flags
                                                      action:@selector(RCT_handleKeyCommand:)];

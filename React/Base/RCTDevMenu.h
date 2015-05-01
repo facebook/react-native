@@ -36,14 +36,15 @@
 @property (nonatomic, assign) BOOL liveReloadEnabled;
 
 /**
- * The time between checks for code changes. Defaults to 1 second.
- */
-@property (nonatomic, assign) NSTimeInterval liveReloadPeriod;
-
-/**
- * Manually show the dev menu.
+ * Manually show the dev menu (can be called from JS).
  */
 - (void)show;
+
+/**
+ * Manually reload the application. Equivalent to calling [bridge reload]
+ * directly, but can be called from JS.
+ */
+- (void)reload;
 
 @end
 
