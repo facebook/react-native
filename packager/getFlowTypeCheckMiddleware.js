@@ -13,12 +13,11 @@ var exec = require('child_process').exec;
 var Activity = require('./react-packager/src/Activity');
 
 var hasWarned = {};
-var DISABLE_FLOW_CHECK = true; // temporarily disable while we figure out versioning issues.
 
 function getFlowTypeCheckMiddleware(options) {
   return function(req, res, next) {
     var isBundle = req.url.indexOf('.bundle') !== -1;
-    if (DISABLE_FLOW_CHECK || options.skipflow || !isBundle) {
+    if (options.skipflow || !isBundle) {
       return next();
     }
     if (options.flowroot || options.projectRoots.length === 1) {
@@ -30,7 +29,17 @@ function getFlowTypeCheckMiddleware(options) {
       }
       return next();
     }
-    exec('command -v flow >/dev/null 2>&1', function(error, stdout) {
+
+    // If the flow-bin package is installed then use that. Otherwise use
+    // whatever is in the path
+    var flowbin;
+    try {
+      flowbin = require('flow-bin');
+    } catch (ex) {
+      flowbin = 'flow';
+    }
+
+    exec('command -v '+flowbin+' >/dev/null 2>&1', function(error, stdout) {
       if (error) {
         if (!hasWarned.noFlow) {
           hasWarned.noFlow = true;
@@ -39,14 +48,14 @@ function getFlowTypeCheckMiddleware(options) {
         }
         return next();
       } else {
-        return doFlowTypecheck(res, flowroot, next);
+        return doFlowTypecheck(res, flowbin, flowroot, next);
       }
     });
   };
 }
 
-function doFlowTypecheck(res, flowroot, next) {
-  var flowCmd = 'cd "' + flowroot + '" && flow --json --timeout 20';
+function doFlowTypecheck(res, flowbin, flowroot, next) {
+  var flowCmd = 'cd "' + flowroot + '" && ' + flowbin + ' --json --timeout 20';
   var eventId = Activity.startEvent('flow static typechecks');
   exec(flowCmd, function(flowError, stdout, stderr) {
     Activity.endEvent(eventId);

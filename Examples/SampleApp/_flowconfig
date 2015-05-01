@@ -15,6 +15,9 @@
 .*/node_modules/react-tools/src/core/ReactInstanceHandles.js
 .*/node_modules/react-tools/src/event/EventPropagators.js
 
+# Ignore flow-bin
+.*/node_modules/flow-bin/.*
+
 # Ignore commoner tests
 .*/node_modules/react-tools/node_modules/commoner/test/.*
 

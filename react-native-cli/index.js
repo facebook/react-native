@@ -94,8 +94,16 @@ function init(name) {
       process.exit(1);
     }
 
-    var cli = require(CLI_MODULE_PATH());
-    cli.init(root, projectName);
+    run('npm install --save flow-bin@0.10.0', function(e) {
+      if (e) {
+        console.error(
+          '`npm install --save flow-bin@0.10.0` failed. Continuing anyway.'
+        );
+      }
+
+      var cli = require(CLI_MODULE_PATH());
+      cli.init(root, projectName);
+    });
   });
 }
 
