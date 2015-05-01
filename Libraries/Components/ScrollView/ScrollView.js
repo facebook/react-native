@@ -364,7 +364,7 @@ var validAttributes = {
 if (Platform.OS === 'android') {
   var AndroidScrollView = createReactIOSNativeComponentClass({
     validAttributes: validAttributes,
-    uiViewClassName: 'AndroidScrollView',
+    uiViewClassName: 'RCTScrollView',
   });
   var AndroidHorizontalScrollView = createReactIOSNativeComponentClass({
     validAttributes: validAttributes,
