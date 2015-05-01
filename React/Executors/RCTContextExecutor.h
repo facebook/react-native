@@ -23,6 +23,6 @@
  * You probably don't want to use this; use -init instead.
  */
 - (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                        globalContextRef:(JSGlobalContextRef)context;
+                        globalContextRef:(JSGlobalContextRef)context NS_DESIGNATED_INITIALIZER;
 
 @end

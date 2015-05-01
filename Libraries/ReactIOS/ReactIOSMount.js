@@ -191,7 +191,7 @@ var ReactIOSMount = {
    * that has been rendered and unmounting it. There should just be one child
    * component at this time.
    */
-  unmountComponentAtNode: function(containerTag: number): bool {
+  unmountComponentAtNode: function(containerTag: number): boolean {
     if (!ReactIOSTagHandles.reactTagIsNativeTopRootID(containerTag)) {
       console.error('You cannot render into anything but a top root');
       return false;

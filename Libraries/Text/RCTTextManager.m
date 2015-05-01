@@ -123,7 +123,7 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
   UIEdgeInsets padding = shadowView.paddingAsInsets;
 
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    RCTText *text = (RCTText *)viewRegistry[reactTag];
+    RCTText *text = viewRegistry[reactTag];
     text.contentInset = padding;
     text.layoutManager = shadowView.layoutManager;
     text.textContainer = shadowView.textContainer;

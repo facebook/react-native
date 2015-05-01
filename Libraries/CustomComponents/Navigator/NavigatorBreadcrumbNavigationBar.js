@@ -33,6 +33,8 @@ var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
+var invariant = require('invariant');
+
 var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
 var PropTypes = React.PropTypes;
 
@@ -99,6 +101,10 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var oldDistToCenter = index - fromIndex;
     var newDistToCenter = index - toIndex;
     var interpolate;
+    invariant(
+      Interpolators[index],
+      'Cannot find breadcrumb interpolators for ' + index
+    );
     if (oldDistToCenter > 0 && newDistToCenter === 0 ||
         newDistToCenter > 0 && oldDistToCenter === 0) {
       interpolate = Interpolators[index].RightToCenter;
@@ -146,10 +152,9 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     }
   },
 
-  onAnimationEnd: function(fromIndex, toIndex) {
-    var max = Math.max(fromIndex, toIndex);
-    var min = Math.min(fromIndex, toIndex);
-    for (var index = min; index <= max; index++) {
+  onAnimationEnd: function() {
+    var max = this.props.navState.routeStack.length - 1;
+    for (var index = 0; index <= max; index++) {
       this._setRenderViewsToHardwareTextureAndroid(index, false);
     }
   },
