@@ -1176,18 +1176,12 @@ var Navigator = React.createClass({
     var scene = shouldRenderScene ?
       this._renderScene(route, i, sceneNavigatorContext) : null;
     return (
-      <View
-        style={styles.defaultSceneStyle}
-        onStartShouldSetResponder={() => (
-          i !== this.state.presentedIndex
-        )}>
-        <NavigatorStaticContextContainer
-          navigatorContext={sceneNavigatorContext}
-          key={'nav' + i}
-          shouldUpdate={shouldRenderScene}>
-          {scene}
-        </NavigatorStaticContextContainer>
-      </View>
+      <NavigatorStaticContextContainer
+        navigatorContext={sceneNavigatorContext}
+        key={'nav' + i}
+        shouldUpdate={shouldRenderScene}>
+        {scene}
+      </NavigatorStaticContextContainer>
     );
   },
 
@@ -1202,6 +1196,9 @@ var Navigator = React.createClass({
       <View
         key={this.state.idStack[i]}
         ref={'scene_' + i}
+        onStartShouldSetResponderCapture={() => {
+          return i !== this.state.presentedIndex;
+        }}
         style={[initialSceneStyle, this.props.sceneStyle]}>
         {React.cloneElement(child, {
           ref: this._handleItemRef.bind(null, this.state.idStack[i]),
