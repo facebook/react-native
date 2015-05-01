@@ -26,6 +26,7 @@
  */
 'use strict';
 
+var Dimensions = require('Dimensions');
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var BackAndroid = require('BackAndroid');
 var InteractionMixin = require('InteractionMixin');
@@ -51,6 +52,9 @@ var merge = require('merge');
 var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
+
+var SCREEN_WIDTH = Dimensions.get('window').width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
 
 var OFF_SCREEN = {style: {opacity: 0}};
 
@@ -847,13 +851,17 @@ var Navigator = React.createClass({
       var travelDist = isTravelVertical ? gestureState.dy : gestureState.dx;
       var oppositeAxisTravelDist =
         isTravelVertical ? gestureState.dx : gestureState.dy;
+      var edgeHitWidth = gesture.edgeHitWidth;
       if (isTravelInverted) {
         currentLoc = -currentLoc;
         travelDist = -travelDist;
         oppositeAxisTravelDist = -oppositeAxisTravelDist;
+        edgeHitWidth = isTravelVertical ?
+          -(SCREEN_HEIGHT - edgeHitWidth) :
+          -(SCREEN_WIDTH - edgeHitWidth);
       }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
-        currentLoc < gesture.edgeHitWidth;
+        currentLoc < edgeHitWidth;
       var moveTravelledFarEnough =
         travelDist >= gesture.gestureDetectMovement &&
         travelDist > oppositeAxisTravelDist * gesture.directionRatio;
