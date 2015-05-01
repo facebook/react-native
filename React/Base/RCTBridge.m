@@ -31,6 +31,7 @@
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
+NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 
 dispatch_queue_t const RCTJSThread = nil;
 
@@ -1090,6 +1091,10 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
       sourceCodeModule.scriptURL = bundleURL;
       sourceCodeModule.scriptText = script;
       if (error != nil) {
+        NSDictionary *userInfo = @{@"error": error};
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                            object:self
+                                                          userInfo:userInfo];
 
         NSArray *stack = [[error userInfo] objectForKey:@"stack"];
         if (stack) {
