@@ -30,7 +30,7 @@ var ViewStylePropTypes = {
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
   shadowColor: ReactPropTypes.string,
   shadowOffset: ReactPropTypes.shape(
-    {h: ReactPropTypes.number, w: ReactPropTypes.number}
+    {width: ReactPropTypes.number, height: ReactPropTypes.number}
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
