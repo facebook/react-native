@@ -231,16 +231,13 @@ var Navigator = React.createClass({
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
     /**
-     * Will emit the target route upon mounting and before each nav transition,
-     * overriding the handler in this.props.navigator. This overrides the onDidFocus
-     * handler that would be found in this.props.navigator
+     * Will emit the target route upon mounting and before each nav transition
      */
     onWillFocus: PropTypes.func,
 
     /**
      * Will be called with the new route of each scene after the transition is
-     * complete or after the initial mounting. This overrides the onDidFocus
-     * handler that would be found in this.props.navigator
+     * complete or after the initial mounting
      */
     onDidFocus: PropTypes.func,
 
@@ -601,7 +598,8 @@ var Navigator = React.createClass({
     this._lastDidFocus = route;
     if (this.props.onDidFocus) {
       this.props.onDidFocus(route);
-    } else if (this.parentNavigator && this.parentNavigator.onDidFocus) {
+    }
+    if (this.parentNavigator && this.parentNavigator.onDidFocus) {
       this.parentNavigator.onDidFocus(route);
     }
   },
@@ -617,7 +615,8 @@ var Navigator = React.createClass({
     }
     if (this.props.onWillFocus) {
       this.props.onWillFocus(route);
-    } else if (this.parentNavigator && this.parentNavigator.onWillFocus) {
+    }
+    if (this.parentNavigator && this.parentNavigator.onWillFocus) {
       this.parentNavigator.onWillFocus(route);
     }
   },
