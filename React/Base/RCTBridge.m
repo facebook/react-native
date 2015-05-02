@@ -1146,15 +1146,12 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 {
 #if BATCHED_BRIDGE
 
-  __weak NSMutableArray *weakScheduledCalls = _scheduledCalls;
-  __weak RCTSparseArray *weakScheduledCallbacks = _scheduledCallbacks;
-
+  __weak RCTBridge *weakSelf = self;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     RCTProfileBeginEvent();
 
-    NSMutableArray *scheduledCalls = weakScheduledCalls;
-    RCTSparseArray *scheduledCallbacks = weakScheduledCallbacks;
-    if (!scheduledCalls || !scheduledCallbacks) {
+    RCTBridge *strongSelf = weakSelf;
+    if (!strongSelf.isValid || !strongSelf->_scheduledCallbacks || !strongSelf->_scheduledCalls) {
       return;
     }
 
@@ -1170,7 +1167,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
        * Keep going if it any event emmiter, e.g. RCT(Device|NativeApp)?EventEmitter
        */
       if ([moduleName hasSuffix:@"EventEmitter"]) {
-        for (NSDictionary *call in [scheduledCalls copy]) {
+        for (NSDictionary *call in [strongSelf->_scheduledCalls copy]) {
           NSArray *callArgs = call[@"args"];
           /**
            * If it's the same module && method call on the bridge &&
@@ -1193,7 +1190,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
               [args[2][0] isEqual:callArgs[2][0]] &&
               ([moduleName isEqualToString:@"RCTEventEmitter"] ? [args[2][1] isEqual:callArgs[2][1]] : YES)
             ) {
-              [scheduledCalls removeObject:call];
+              [strongSelf->_scheduledCalls removeObject:call];
             }
           }
         }
@@ -1208,9 +1205,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     };
 
     if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
-      scheduledCallbacks[args[0]] = call;
+      strongSelf->_scheduledCallbacks[args[0]] = call;
     } else {
-      [scheduledCalls addObject:call];
+      [strongSelf->_scheduledCalls addObject:call];
     }
 
     RCTProfileEndEvent(@"enqueue_call", @"objc_call", call);
