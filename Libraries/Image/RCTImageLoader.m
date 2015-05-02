@@ -119,6 +119,12 @@ NSError *errorWithMessage(NSString *message)
         callback(nil, [UIImage imageWithData:data]);
       }
     }];
+  } else if ([imageTag hasPrefix:@"data:"]) {
+    NSURL *url = [NSURL URLWithString:imageTag];
+    NSData *imageData = [NSData dataWithContentsOfURL:url];
+    callback(nil, [UIImage imageWithData:imageData]);
+  } else if([imageTag isAbsolutePath]) {
+    callback(nil, [UIImage imageWithContentsOfFile:imageTag]);
   } else {
     NSString *errorMessage = [NSString stringWithFormat:@"Unrecognized tag protocol: %@", imageTag];
     NSError *error = errorWithMessage(errorMessage);
