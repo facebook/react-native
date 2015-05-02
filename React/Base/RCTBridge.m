@@ -381,10 +381,8 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 
               case '{': {
                 [argumentBlocks addObject:^(RCTBridge *bridge, NSNumber *context, NSInvocation *invocation, NSUInteger index, id json) {
-                  NSUInteger size;
-                  NSGetSizeAndAlignment(argumentType, &size, NULL);
-                  void *returnValue = malloc(size);
                   NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
+                  void *returnValue = malloc(methodSignature.methodReturnLength);
                   NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
                   [_invocation setTarget:[RCTConvert class]];
                   [_invocation setSelector:selector];
