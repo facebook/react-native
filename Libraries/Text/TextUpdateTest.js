@@ -24,8 +24,6 @@ var {
   Text,
 } = React;
 
-var MIX_TYPES = false; // TODO(#6916648): fix bug and set true
-
 var TestManager = NativeModules.TestManager || NativeModules.SnapshotTestManager;
 
 var TextUpdateTest = React.createClass({
@@ -42,13 +40,12 @@ var TextUpdateTest = React.createClass({
     );
   },
   render: function() {
-    var extraText = MIX_TYPES ? 'raw text' : <Text>wrapped text</Text>;
     return (
       <Text
         style={styles.container}
         onPress={() => this.setState({seeMore: !this.state.seeMore})}>
         <Text>Tap to see more (bugs)...</Text>
-        {this.state.seeMore && extraText}
+        {this.state.seeMore && 'raw text'}
       </Text>
     );
   },

@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return nil;
+  return [[UIView alloc] init]; // TODO(#1102) Remove useless views.
 }
 
 - (RCTShadowView *)shadowView
