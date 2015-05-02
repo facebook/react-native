@@ -387,12 +387,12 @@ var Navigator = React.createClass({
     return this._handleRequest.apply(null, arguments);
   },
 
-  requestPop: function() {
-    return this.request('pop');
+  requestPop: function(popToBeforeRoute) {
+    return this.request('pop', popToBeforeRoute);
   },
 
   requestPopTo: function(route) {
-    return this.request('pop', route);
+    return this.request('popTo', route);
   },
 
   _handleRequest: function(action, arg1, arg2) {
@@ -403,6 +403,8 @@ var Navigator = React.createClass({
     switch (action) {
       case 'pop':
         return this._handlePop(arg1);
+      case 'popTo':
+        return this._handlePopTo(arg1);
       case 'push':
         return this._handlePush(arg1);
       default:
@@ -411,11 +413,31 @@ var Navigator = React.createClass({
     }
   },
 
-  _handlePop: function(route) {
-    if (route) {
-      var hasRoute = this.state.routeStack.indexOf(route) !== -1;
+  _handlePop: function(popToBeforeRoute) {
+    if (popToBeforeRoute) {
+      var popToBeforeRouteIndex = this.state.routeStack.indexOf(popToBeforeRoute);
+      if (popToBeforeRouteIndex === -1) {
+        return false;
+      }
+      invariant(
+        popToBeforeRouteIndex <= this.state.presentedIndex,
+        'Cannot pop past a route that is forward in the navigator'
+      );
+      this._popN(this.state.presentedIndex - popToBeforeRouteIndex + 1);
+      return true;
+    }
+    if (this.state.presentedIndex === 0) {
+      return false;
+    }
+    this.pop();
+    return true;
+  },
+
+  _handlePopTo: function(destRoute) {
+    if (destRoute) {
+      var hasRoute = this.state.routeStack.indexOf(destRoute) !== -1;
       if (hasRoute) {
-        this.popToRoute(route);
+        this.popToRoute(destRoute);
         return true;
       } else {
         return false;
