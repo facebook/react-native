@@ -49,7 +49,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
  * Temporarily allow to turn on and off the call batching in case someone wants
  * to profile both
  */
-#define BATCHED_BRIDGE 1
+#define BATCHED_BRIDGE 0
 
 #ifdef __LP64__
 typedef uint64_t RCTHeaderValue;
@@ -206,10 +206,14 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
                       arguments:(NSArray *)args
                         context:(NSNumber *)context;
 
+#if BATCHED_BRIDGE
+
 - (void)_actuallyInvokeAndProcessModule:(NSString *)module
                                  method:(NSString *)method
                               arguments:(NSArray *)args
                                 context:(NSNumber *)context;
+#endif
+
 @end
 
 /**
