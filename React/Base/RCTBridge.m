@@ -1082,12 +1082,14 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
-  NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
-  RCTAssert(moduleID != nil, @"Module '%@' not registered.",
+  NSNumber *notFound = @-1;
+    
+  NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod] ?: notFound;
+  RCTAssert(moduleID != notFound, @"Module '%@' not registered.",
             [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
 
-  NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
-  RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
+  NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod] ?: notFound;
+  RCTAssert(methodID != notFound, @"Method '%@' not registered.", moduleDotMethod);
 
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
@@ -1100,13 +1102,15 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer
 {
+  NSNumber *notFound = @-1;
   NSString *moduleDotMethod = @"RCTJSTimers.callTimers";
-  NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
-  RCTAssert(moduleID != nil, @"Module '%@' not registered.",
+    
+  NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod] ?: notFound;
+  RCTAssert(moduleID != notFound, @"Module '%@' not registered.",
             [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
 
-  NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
-  RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
+  NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod] ?: notFound;
+  RCTAssert(methodID != notFound, @"Method '%@' not registered.", moduleDotMethod);
 
   if (!_loading) {
 #if BATCHED_BRIDGE
