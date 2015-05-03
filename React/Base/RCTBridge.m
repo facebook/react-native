@@ -842,6 +842,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     preregisteredModules[RCTBridgeModuleNameForClass([module class])] = module;
   }
 
+  _loading = YES;
+  
   // Instantiate modules
   _modulesByID = [[RCTSparseArray alloc] init];
   NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
@@ -887,7 +889,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                     dispatch_semaphore_signal(semaphore);
                   }];
 
-  _loading = YES;
   if (_javaScriptExecutor == nil) {
 
     /**
@@ -1044,6 +1045,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
+  if (_loading)
+    return;
+  
   NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
   RCTAssert(moduleID != nil, @"Module '%@' not registered.",
             [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
@@ -1051,11 +1055,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
   RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
 
-  if (!_loading) {
-    [self _invokeAndProcessModule:@"BatchedBridge"
-                           method:@"callFunctionReturnFlushedQueue"
-                        arguments:@[moduleID, methodID, args ?: @[]]];
-  }
+  [self _invokeAndProcessModule:@"BatchedBridge"
+                         method:@"callFunctionReturnFlushedQueue"
+                      arguments:@[moduleID, methodID, args ?: @[]]];
 }
 
 /**
