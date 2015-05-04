@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.3.7",
+  "version": "0.4.1",
   "description": "A framework for building native apps using React",
   "repository": {
     "type": "git",
@@ -57,7 +57,7 @@
     "react-timer-mixin": "^0.13.1",
     "react-tools": "0.13.2",
     "rebound": "^0.0.12",
-    "sane": "1.0.3",
+    "sane": "^1.1.1",
     "source-map": "0.1.31",
     "stacktrace-parser": "git://github.com/frantic/stacktrace-parser.git#493c5e5638",
     "uglify-js": "~2.4.16",
