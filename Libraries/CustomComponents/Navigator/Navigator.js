@@ -40,13 +40,13 @@ var Platform = require('Platform');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
-var StyleSheetRegistry = require('StyleSheetRegistry');
 var Subscribable = require('Subscribable');
 var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
-var getNavigatorContext = require('getNavigatorContext');
 var clamp = require('clamp');
+var flattenStyle = require('flattenStyle');
+var getNavigatorContext = require('getNavigatorContext');
 var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
@@ -65,24 +65,6 @@ var SCENE_DISABLED_NATIVE_PROPS = {
 var __uid = 0;
 function getuid() {
   return __uid++;
-}
-
-function resolveStyle(styles) {
-  // The styles for a scene are a prop in the style format, which can be an object,
-  // a number (which refers to the StyleSheetRegistry), or an arry of objects/numbers.
-  // This function resolves the actual style values so we can call setNativeProps with
-  // matching styles.
-  var resolvedStyle = {};
-  if (!Array.isArray(styles)) {
-    styles = [styles];
-  }
-  styles.forEach((style) => {
-    if (typeof style === 'number') {
-      style = StyleSheetRegistry.getStyleByID(style);
-    }
-    resolvedStyle = merge(resolvedStyle, style);
-  });
-  return resolvedStyle;
 }
 
 // styles moved to the top of the file so getDefaultProps can refer to it
@@ -698,7 +680,7 @@ var Navigator = React.createClass({
    */
   _enableScene: function(sceneIndex) {
     // First, determine what the defined styles are for scenes in this navigator
-    var sceneStyle = resolveStyle(this.props.sceneStyle);
+    var sceneStyle = flattenStyle(this.props.sceneStyle);
     // Then restore the left value for this scene
     var enabledSceneNativeProps = {
       left: sceneStyle.left,
