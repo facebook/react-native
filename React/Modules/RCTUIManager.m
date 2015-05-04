@@ -267,11 +267,6 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   return self;
 }
 
-- (void)dealloc
-{
-  RCTAssert(!self.valid, @"must call -invalidate before -dealloc");
-}
-
 - (BOOL)isValid
 {
   return _viewRegistry != nil;
@@ -279,20 +274,24 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (void)invalidate
 {
-  RCTAssertMainThread();
+  /**
+   * Called on the JS Thread since all modules are invalidated on the JS thread
+   */
 
-  for (NSNumber *rootViewTag in _rootViewTags) {
-    ((UIView *)_viewRegistry[rootViewTag]).userInteractionEnabled = NO;
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    for (NSNumber *rootViewTag in _rootViewTags) {
+      ((UIView *)_viewRegistry[rootViewTag]).userInteractionEnabled = NO;
+    }
 
-  _rootViewTags = nil;
-  _shadowViewRegistry = nil;
-  _viewRegistry = nil;
-  _bridge = nil;
+    _rootViewTags = nil;
+    _shadowViewRegistry = nil;
+    _viewRegistry = nil;
+    _bridge = nil;
 
-  [_pendingUIBlocksLock lock];
-  _pendingUIBlocks = nil;
-  [_pendingUIBlocksLock unlock];
+    [_pendingUIBlocksLock lock];
+    _pendingUIBlocks = nil;
+    [_pendingUIBlocksLock unlock];
+  });
 }
 
 - (void)setBridge:(RCTBridge *)bridge

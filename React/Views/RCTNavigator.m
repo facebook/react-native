@@ -264,9 +264,13 @@ NSInteger kNeverProgressed = -10000;
   NSInteger _numberOfViewControllerMovesToIgnore;
 }
 
+@synthesize paused = _paused;
+
 - (id)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super initWithFrame:CGRectZero])) {
+    _paused = YES;
+
     _bridge = bridge;
     _mostRecentProgress = kNeverProgressed;
     _dummyView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -341,14 +345,14 @@ NSInteger kNeverProgressed = -10000;
     _dummyView.frame = (CGRect){{destination}};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
-    [_bridge addFrameUpdateObserver:self];
+    _paused = NO;
   }
   completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
     _dummyView.frame = CGRectZero;
-    [_bridge removeFrameUpdateObserver:self];
+    _paused = YES;
     // Reset the parallel position tracker
   }];
 }

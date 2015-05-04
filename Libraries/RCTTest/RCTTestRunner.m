@@ -17,6 +17,12 @@
 
 #define TIMEOUT_SECONDS 240
 
+@interface RCTBridge (RCTTestRunner)
+
+@property (nonatomic, weak) RCTBridge *batchedBridge;
+
+@end
+
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_testController;
@@ -66,7 +72,7 @@
   rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
   NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);
-  RCTTestModule *testModule = rootView.bridge.modules[testModuleName];
+  RCTTestModule *testModule = rootView.bridge.batchedBridge.modules[testModuleName];
   testModule.controller = _testController;
   testModule.testSelector = test;
   testModule.view = rootView;
@@ -83,8 +89,6 @@
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
   [rootView removeFromSuperview];
-  [rootView.bridge invalidate];
-  [rootView invalidate];
   RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
   vc.view = nil;
   [[RCTRedBox sharedInstance] dismiss];

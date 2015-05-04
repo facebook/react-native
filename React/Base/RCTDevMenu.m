@@ -123,10 +123,12 @@ RCT_EXPORT_MODULE()
 {
   _settings = [NSMutableDictionary dictionaryWithDictionary:[_defaults objectForKey:RCTDevMenuSettingsKey]];
 
-  self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
-  self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
-  self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
-  self.executorClass = NSClassFromString(_settings[@"executorClass"]);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
+    self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
+    self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
+    self.executorClass = NSClassFromString(_settings[@"executorClass"]);
+  });
 }
 
 - (void)jsLoaded
@@ -147,10 +149,12 @@ RCT_EXPORT_MODULE()
     _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:sourceCodeModule.scriptURL];
   }
 
-  // Hit these setters again after bridge has finished loading
-  self.profilingEnabled = _profilingEnabled;
-  self.liveReloadEnabled = _liveReloadEnabled;
-  self.executorClass = _executorClass;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Hit these setters again after bridge has finished loading
+    self.profilingEnabled = _profilingEnabled;
+    self.liveReloadEnabled = _liveReloadEnabled;
+    self.executorClass = _executorClass;
+  });
 }
 
 - (void)dealloc
