@@ -133,11 +133,11 @@ class XMLHttpRequestBase {
     }
     this.status = status;
     // Headers should be case-insensitive
+    var lcResponseHeaders = {};
     for (var header in responseHeaders) {
-      responseHeaders[header.toLowerCase()] = responseHeaders[header];
-      delete responseHeaders[header];
+      lcResponseHeaders[header.toLowerCase()] = responseHeaders[header];
     }
-    this.responseHeaders = responseHeaders || {};
+    this.responseHeaders = lcResponseHeaders;
     this.responseText = responseText;
     this._setReadyState(this.DONE);
     this._sendLoad();
