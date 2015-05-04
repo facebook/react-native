@@ -21,6 +21,14 @@ function printUsage() {
   process.exit(1);
 }
 
+function printInitWarning() {
+  console.log([
+    'Looks like React Native project already exists in the current',
+    'folder. Run this command from a different folder or remove node_modules/react-native'
+  ].join('\n'));
+  process.exit(1);
+}
+
 function run() {
   var args = process.argv.slice(2);
   if (args.length === 0) {
@@ -40,6 +48,9 @@ function run() {
     break;
   case 'bundle':
     bundle.init(args);
+    break;
+  case 'init':
+    printInitWarning();
     break;
   default:
     console.error('Command `%s` unrecognized', args[0]);
