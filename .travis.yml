@@ -7,7 +7,7 @@ cache:
 before_install:
   - brew update
 install:
-  - brew reinstall flow watchman xctool
+  - brew reinstall flow xctool
   - npm config set spin=false
   - npm install
 
