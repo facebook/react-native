@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+'use strict';
+
 var docgen = require('react-docgen');
 var docgenHelpers = require('./docgenHelpers');
 var fs = require('fs');
