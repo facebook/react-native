@@ -18,6 +18,7 @@ Let's say we want to add an interactive Map to our app - might as well use [`MKM
 Native views are created and manipulated by subclasses of `RCTViewManager`.  These subclasses are similar in function to view controllers, but are essentially singletons - only one instance of each is created by the bridge.  They vend native views to the `RCTUIManager`, which delegates back to them to set and update the properties of the views as necessary.  The `RCTViewManager`s are also typically the delegates for the views, sending events back to JavaScript via the bridge.
 
 Vending a view is simple:
+
 - Create the basic subclass.
 - Add the `RCT_EXPORT_MODULE()` marker macro.
 - Implement the `-(UIView *)view` method
@@ -57,7 +58,7 @@ This is now a fully-functioning native map view component in JavaScript, complet
 
 ## Properties
 
-The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control specify the visible region.  Disabling pitch is a simple boolean, so we just add this one line:
+The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control and specify the visible region.  Disabling pitch is a simple boolean, so we just add this one line:
 
 ```objective-c
 // RCTMapManager.m
@@ -86,7 +87,7 @@ class MapView extends React.Component {
   }
 }
 
-var RCTMap= requireNativeComponent('RCTMap', MapView);
+var RCTMap = requireNativeComponent('RCTMap', MapView);
 
 MapView.propTypes = {
   /**
@@ -96,7 +97,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled = React.PropTypes.bool,
+  pitchEnabled: React.PropTypes.bool,
 };
 
 module.exports = MapView;
@@ -170,7 +171,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled = React.PropTypes.bool,
+  pitchEnabled: React.PropTypes.bool,
 
   /**
    * The region to be displayed by the map.
@@ -245,7 +246,7 @@ RCT_EXPORT_MODULE()
 {
   MKCoordinateRegion region = mapView.region;
   NSDictionary *event = @{
-    @"target": [mapView reactTag],
+    @"target": mapView.reactTag,
     @"region": @{
       @"latitude": @(region.center.latitude),
       @"longitude": @(region.center.longitude),

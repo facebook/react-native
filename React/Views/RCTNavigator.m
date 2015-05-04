@@ -60,7 +60,7 @@ NSInteger kNeverProgressed = -10000;
  * or tapping the back button. In both cases, the other system is initially
  * unaware. And in both cases, `RCTNavigator` helps the other side "catch up".
  *
- * If `RCTNavigator` sees the number of react children have changed, it
+ * If `RCTNavigator` sees the number of React children have changed, it
  * pushes/pops accordingly. If `RCTNavigator` sees a `UIKit` driven push/pop, it
  * notifies JavaScript that this has happened, and expects that JavaScript will
  * eventually render more children to match `UIKit`. There's no rush for
@@ -474,7 +474,7 @@ NSInteger kNeverProgressed = -10000;
     RCTLogError(@"Cannot adjust current top of stack beyond available views");
   }
 
-  // Views before the previous react count must not have changed. Views greater than previousReactCount
+  // Views before the previous React count must not have changed. Views greater than previousReactCount
   // up to currentReactCount may have changed.
   for (NSInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
     if (_currentViews[i] != _previousViews[i]) {

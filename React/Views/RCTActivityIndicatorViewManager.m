@@ -7,35 +7,37 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTUIActivityIndicatorViewManager.h"
+#import "RCTActivityIndicatorViewManager.h"
 
 #import "RCTConvert.h"
 
 @implementation RCTConvert (UIActivityIndicatorView)
 
+// NOTE: It's pointless to support UIActivityIndicatorViewStyleGray
+// as we can set the color to any arbitrary value that we want to
+
 RCT_ENUM_CONVERTER(UIActivityIndicatorViewStyle, (@{
-  @"white-large": @(UIActivityIndicatorViewStyleWhiteLarge),
-  @"large-white": @(UIActivityIndicatorViewStyleWhiteLarge),
-  @"white": @(UIActivityIndicatorViewStyleWhite),
-  @"gray": @(UIActivityIndicatorViewStyleGray),
+  @"large": @(UIActivityIndicatorViewStyleWhiteLarge),
+  @"small": @(UIActivityIndicatorViewStyleWhite),
 }), UIActivityIndicatorViewStyleWhiteLarge, integerValue)
 
 @end
 
-@implementation RCTUIActivityIndicatorViewManager
+@implementation RCTActivityIndicatorViewManager
 
-RCT_EXPORT_MODULE(UIActivityIndicatorViewManager)
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
   return [[UIActivityIndicatorView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(activityIndicatorViewStyle, UIActivityIndicatorViewStyle)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(hidesWhenStopped, BOOL)
+RCT_REMAP_VIEW_PROPERTY(size, activityIndicatorViewStyle, UIActivityIndicatorViewStyle)
 RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, UIActivityIndicatorView)
 {
-  BOOL animating = json ? [json boolValue] : [defaultView isAnimating];
+  BOOL animating = json ? [RCTConvert BOOL:json] : [defaultView isAnimating];
   if (animating != [view isAnimating]) {
     if (animating) {
       [view startAnimating];
@@ -43,16 +45,6 @@ RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, UIActivityIndicatorView)
       [view stopAnimating];
     }
   }
-}
-
-- (NSDictionary *)constantsToExport
-{
-  return
-  @{
-    @"StyleWhite": @(UIActivityIndicatorViewStyleWhite),
-    @"StyleWhiteLarge": @(UIActivityIndicatorViewStyleWhiteLarge),
-    @"StyleGray": @(UIActivityIndicatorViewStyleGray),
-  };
 }
 
 @end

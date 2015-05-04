@@ -55,6 +55,11 @@
   }
 }
 
+- (void)dealloc
+{
+  CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+}
+
 @end
 
 @implementation RCTContextExecutor
@@ -74,12 +79,12 @@
 static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
 {
   if (argumentCount > 0) {
-    JSStringRef string = JSValueToStringCopy(context, arguments[0], exception);
-    if (!string) {
+    JSStringRef messageRef = JSValueToStringCopy(context, arguments[0], exception);
+    if (!messageRef) {
       return JSValueMakeUndefined(context);
     }
-    NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, string);
-    JSStringRelease(string);
+    NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, messageRef);
+    JSStringRelease(messageRef);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:
                                   @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/([a-z0-9_]+).includeRequire.runModule.bundle(:[0-9]+:[0-9]+)"
                                                                            options:NSRegularExpressionCaseInsensitive
@@ -89,14 +94,11 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, JSObjectRef object,
                                                 range:(NSRange){0, message.length}
                                          withTemplate:@"[$4$5]  \t$2"];
 
-    // TODO: it would be good if log level was sent as a param, instead of this hack
     RCTLogLevel level = RCTLogLevelInfo;
-    if ([message rangeOfString:@"error" options:NSCaseInsensitiveSearch].length) {
-      level = RCTLogLevelError;
-    } else if ([message rangeOfString:@"warning" options:NSCaseInsensitiveSearch].length) {
-      level = RCTLogLevelWarning;
+    if (argumentCount > 1) {
+      level = MAX(level, JSValueToNumber(context, arguments[1], exception) - 1);
     }
-    _RCTLogFormat(level, NULL, -1, @"%@", message);
+    RCTGetLogFunction()(level, nil, nil, message);
   }
 
   return JSValueMakeUndefined(context);
@@ -156,15 +158,12 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (instancetype)init
 {
-  static NSThread *javaScriptThread;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // All JS is single threaded, so a serial queue is our only option.
-    javaScriptThread = [[NSThread alloc] initWithTarget:[self class] selector:@selector(runRunLoopThread) object:nil];
-    [javaScriptThread setName:@"com.facebook.React.JavaScript"];
-    [javaScriptThread setThreadPriority:[[NSThread mainThread] threadPriority]];
-    [javaScriptThread start];
-  });
+  NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
+                                                       selector:@selector(runRunLoopThread)
+                                                         object:nil];
+  [javaScriptThread setName:@"com.facebook.React.JavaScript"];
+  [javaScriptThread setThreadPriority:[[NSThread mainThread] threadPriority]];
+  [javaScriptThread start];
 
   return [self initWithJavaScriptThread:javaScriptThread globalContextRef:NULL];
 }
@@ -172,6 +171,9 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 - (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
                         globalContextRef:(JSGlobalContextRef)context
 {
+  RCTAssert(javaScriptThread != nil,
+            @"Can't initialize RCTContextExecutor without a javaScriptThread");
+
   if ((self = [super init])) {
     _javaScriptThread = javaScriptThread;
     __weak RCTContextExecutor *weakSelf = self;
@@ -305,17 +307,30 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       }
       onComplete(error);
     }
-  }), @"js_call", (@{ @"url": sourceURL }))];
+  }), @"js_call", (@{ @"url": sourceURL.absoluteString }))];
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  if ([NSThread currentThread] != _javaScriptThread) {
-    [self performSelector:@selector(executeBlockOnJavaScriptQueue:)
-                 onThread:_javaScriptThread withObject:block waitUntilDone:NO];
-  } else {
-    block();
-  }
+   if ([NSThread currentThread] != _javaScriptThread) {
+     [self performSelector:@selector(executeBlockOnJavaScriptQueue:)
+                  onThread:_javaScriptThread withObject:block waitUntilDone:NO];
+   } else {
+     block();
+   }
+}
+
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  [self performSelector:@selector(executeBlockOnJavaScriptQueue:)
+               onThread:_javaScriptThread
+             withObject:block
+          waitUntilDone:NO];
+}
+
+- (void)_runBlock:(dispatch_block_t)block
+{
+  block();
 }
 
 - (void)injectJSONText:(NSString *)script

@@ -213,7 +213,8 @@ function runServer(
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
     .use(statusPageMiddleware)
-    .use(getFlowTypeCheckMiddleware(options))
+    // Temporarily disable flow check until it's more stable
+    //.use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));
 
   options.projectRoots.forEach(function(root) {

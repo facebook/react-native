@@ -42,23 +42,28 @@
   }
 }
 
-- (void)_setupPlaceholder {
+static void RCTUpdatePlaceholder(RCTTextField *self)
+{
   if (self.placeholder.length > 0 && self.placeholderTextColor) {
     self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
                                                                  attributes:@{
-                                                                     NSForegroundColorAttributeName : self.placeholderTextColor
-                                                                 }];
+                                                                              NSForegroundColorAttributeName : self.placeholderTextColor
+                                                                              }];
+  } else if (self.placeholder.length) {
+    self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder];
   }
 }
 
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor {
-    _placeholderTextColor = placeholderTextColor;
-    [self _setupPlaceholder];
+- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
+{
+  _placeholderTextColor = placeholderTextColor;
+  RCTUpdatePlaceholder(self);
 }
 
-- (void)setPlaceholder:(NSString *)placeholder {
-    super.placeholder = placeholder;
-    [self _setupPlaceholder];
+- (void)setPlaceholder:(NSString *)placeholder
+{
+  super.placeholder = placeholder;
+  RCTUpdatePlaceholder(self);
 }
 
 - (NSArray *)reactSubviews

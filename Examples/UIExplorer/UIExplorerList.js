@@ -43,6 +43,7 @@ var COMPONENTS = [
   require('./NavigatorIOSExample'),
   require('./PickerIOSExample'),
   require('./ScrollViewExample'),
+  require('./SegmentedControlIOSExample'),
   require('./SliderIOSExample'),
   require('./SwitchIOSExample'),
   require('./TabBarIOSExample'),

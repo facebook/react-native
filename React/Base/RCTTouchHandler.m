@@ -26,7 +26,7 @@
 
   /**
    * Arrays managed in parallel tracking native touch object along with the
-   * native view that was touched, and the react touch data dictionary.
+   * native view that was touched, and the React touch data dictionary.
    * This must be kept track of because `UIKit` destroys the touch targets
    * if touches are canceled and we have no other way to recover this information.
    */

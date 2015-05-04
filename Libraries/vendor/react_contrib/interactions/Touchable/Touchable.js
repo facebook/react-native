@@ -436,6 +436,7 @@ var TouchableMixin = {
     if (isTouchWithinActive) {
       this._receiveSignal(Signals.ENTER_PRESS_RECT, e);
     } else {
+      this._cancelLongPressDelayTimeout();
       this._receiveSignal(Signals.LEAVE_PRESS_RECT, e);
     }
   },

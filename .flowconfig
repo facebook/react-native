@@ -29,3 +29,6 @@ Examples/UIExplorer/ImageMocks.js
 
 [options]
 module.system=haste
+
+[version]
+0.10.0
