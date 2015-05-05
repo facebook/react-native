@@ -26,8 +26,8 @@ var Settings = {
   },
 
   set(settings: Object) {
-    this._settings = merge(this._settings, settings);
-    RCTSettingsManager.set(settings);
+    this._settings = Object.assign(this._settings, settings);
+    RCTSettingsManager.setValues(settings);
   },
 
   watchKeys(keys: string | Array<string>, callback: Function): number {
@@ -52,11 +52,11 @@ var Settings = {
   },
 
   _sendObservations(body: Object) {
-    var $this = this;
+    var _this = this;
     Object.keys(body).forEach((key) => {
       var newValue = body[key];
-      var didChange = $this._settings[key] !== newValue;
-      $this._settings[key] = newValue;
+      var didChange = _this._settings[key] !== newValue;
+      _this._settings[key] = newValue;
 
       if (didChange) {
         subscriptions.forEach((sub) => {
@@ -71,7 +71,7 @@ var Settings = {
 
 RCTDeviceEventEmitter.addListener(
   'settingsUpdated',
-  Settings._sendObservations,
+  Settings._sendObservations.bind(Settings)
 );
 
 module.exports = Settings;
