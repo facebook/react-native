@@ -689,7 +689,8 @@ var Navigator = React.createClass({
     var enabledSceneNativeProps = {
       left: sceneStyle.left,
     };
-    if (sceneIndex !== this.state.transitionFromIndex) {
+    if (sceneIndex !== this.state.transitionFromIndex &&
+        sceneIndex !== this.state.presentedIndex) {
       // If we are not in a transition from this index, make sure opacity is 0
       // to prevent the enabled scene from flashing over the presented scene
       enabledSceneNativeProps.opacity = 0;
