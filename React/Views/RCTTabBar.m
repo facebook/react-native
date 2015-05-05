@@ -114,11 +114,13 @@
   }];
 }
 
-- (void)setBarTintColor:(UIColor *)barTintColor {
+- (void)setBarTintColor:(UIColor *)barTintColor 
+{
   _tabController.tabBar.barTintColor = barTintColor;
 }
 
-- (void)setTintColor:(UIColor *)tintColor {
+- (void)setTintColor:(UIColor *)tintColor 
+{
   _tabController.tabBar.tintColor = tintColor;
 }
 
