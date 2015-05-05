@@ -35,25 +35,34 @@
     function getNativeLogFunction(level) {
       return function() {
         var str = Array.prototype.map.call(arguments, function(arg) {
-          if (arg == null) {
-            return arg === null ? 'null' : 'undefined';
-          } else if (typeof arg === 'string') {
-            return '"' + arg + '"';
+          var ret;
+          var type = typeof arg;
+          if (arg === null) {
+            ret = 'null';
+          } else if (arg === undefined) {
+            ret = 'undefined';
+          } else if (type === 'string') {
+            ret = '"' + arg + '"';
+          } else if (type === 'function') {
+            try {
+              ret = arg.toString();
+            } catch (e) {
+              ret = '[function unknown]';
+            }
           } else {
             // Perform a try catch, just in case the object has a circular
             // reference or stringify throws for some other reason.
             try {
-              return JSON.stringify(arg);
+              ret = JSON.stringify(arg);
             } catch (e) {
               if (typeof arg.toString === 'function') {
                 try {
-                  return arg.toString();
-                } catch (E) {
-                  return 'unknown';
-                }
+                  ret = arg.toString();
+                } catch (E) {}
               }
             }
           }
+          return ret || '["' + type + '" failed to stringify]';
         }).join(', ');
         global.nativeLoggingHook(str, level);
       };
