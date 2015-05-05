@@ -27,13 +27,6 @@
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
 @synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
 
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  _currentTopLayoutGuide = self.topLayoutGuide;
-  _currentBottomLayoutGuide = self.bottomLayoutGuide;
-}
-
 @end
 
 @interface RCTTabBar() <UITabBarControllerDelegate>
