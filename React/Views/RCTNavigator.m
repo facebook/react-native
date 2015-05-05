@@ -461,6 +461,10 @@ NSInteger kNeverProgressed = -10000;
     //    --- previously caught up --------          ------- still caught up ----------
     viewControllerCount == previousReactCount && currentReactCount == previousReactCount;
 
+BOOL jsGettingtooSlow =
+  //    --- previously not caught up --------          ------- no longer caught up ----------
+  viewControllerCount < previousReactCount && currentReactCount < previousReactCount;
+  
   BOOL reactPushOne = jsGettingAhead && currentReactCount == previousReactCount + 1;
   BOOL reactPopN = jsGettingAhead && currentReactCount < previousReactCount;
 
@@ -471,7 +475,8 @@ NSInteger kNeverProgressed = -10000;
   if (!(jsGettingAhead ||
         jsCatchingUp ||
         jsMakingNoProgressButNeedsToCatchUp ||
-        jsMakingNoProgressAndDoesntNeedTo)) {
+        jsMakingNoProgressAndDoesntNeedTo ||
+        jsGettingtooSlow)) {
     RCTLogError(@"JS has only made partial progress to catch up to UIKit");
   }
   if (currentReactCount > _currentViews.count) {
