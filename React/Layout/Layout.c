@@ -702,19 +702,6 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth) {
       }
     }
 
-    float containerMainAxis = node->layout.dimensions[dim[mainAxis]];
-    // If the user didn't specify a width or height, and it has not been set
-    // by the container, then we set it via the children.
-    if (isUndefined(containerMainAxis)) {
-      containerMainAxis = fmaxf(
-        // We're missing the last padding at this point to get the final
-        // dimension
-        boundAxis(node, mainAxis, mainDim + getPaddingAndBorder(node, trailing[mainAxis])),
-        // We can never assign a width smaller than the padding and borders
-        getPaddingAndBorderAxis(node, mainAxis)
-      );
-    }
-
     float containerCrossAxis = node->layout.dimensions[dim[crossAxis]];
     if (isUndefined(node->layout.dimensions[dim[crossAxis]])) {
       containerCrossAxis = fmaxf(
