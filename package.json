@@ -48,6 +48,7 @@
     "chalk": "^1.0.0",
     "connect": "2.8.3",
     "debug": "~2.1.0",
+    "graceful-fs": "^3.0.6",
     "image-size": "0.3.5",
     "joi": "~5.1.0",
     "jstransform": "10.1.0",
