@@ -28,6 +28,7 @@ var {
 } = React;
 
 var { TestModule } = React.addons;
+var Settings = require('Settings');
 
 var createExamplePage = require('./createExamplePage');
 
@@ -114,7 +115,12 @@ class UIExplorerList extends React.Component {
         components: COMPONENTS,
         apis: APIS,
       }),
+      searchText: Settings.get('searchText'),
     };
+  }
+
+  componentDidMount() {
+    this._search(this.state.searchText);
   }
 
   render() {
@@ -128,6 +134,7 @@ class UIExplorerList extends React.Component {
             onChangeText={this._search.bind(this)}
             placeholder="Search..."
             style={styles.searchTextInput}
+            value={this.state.searchText}
           />
         </View>
         <ListView
@@ -177,8 +184,10 @@ class UIExplorerList extends React.Component {
       dataSource: ds.cloneWithRowsAndSections({
         components: COMPONENTS.filter(filter),
         apis: APIS.filter(filter),
-      })
+      }),
+      searchText: text,
     });
+    Settings.set({searchText: text});
   }
 
   _onPressRow(example) {

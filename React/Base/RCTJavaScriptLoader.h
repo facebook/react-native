@@ -22,6 +22,6 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (void)loadBundleAtURL:(NSURL *)moduleURL onComplete:(RCTJavaScriptCompleteBlock)onComplete;
+- (void)loadBundleAtURL:(NSURL *)moduleURL onComplete:(void (^)(NSError *, NSString *))onComplete;
 
 @end

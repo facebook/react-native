@@ -109,15 +109,27 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTUIManager.webViewGoForward(this.getWebWiewHandle());
+    RCTUIManager.dispatchViewManagerCommand(
+      this.getWebWiewHandle(),
+      RCTUIManager.RCTWebView.Commands.goForward,
+      null
+    );
   },
 
   goBack: function() {
-    RCTUIManager.webViewGoBack(this.getWebWiewHandle());
+    RCTUIManager.dispatchViewManagerCommand(
+      this.getWebWiewHandle(),
+      RCTUIManager.RCTWebView.Commands.goBack,
+      null
+    );
   },
 
   reload: function() {
-    RCTUIManager.webViewReload(this.getWebWiewHandle());
+    RCTUIManager.dispatchViewManagerCommand(
+      this.getWebWiewHandle(),
+      RCTUIManager.RCTWebView.Commands.reload,
+      null
+    );
   },
 
   /**

@@ -10,13 +10,18 @@
 #import "RCTTestRunner.h"
 
 #import "FBSnapshotTestController.h"
-#import "RCTDefines.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
 
 #define TIMEOUT_SECONDS 240
+
+@interface RCTBridge (RCTTestRunner)
+
+@property (nonatomic, weak) RCTBridge *batchedBridge;
+
+@end
 
 @implementation RCTTestRunner
 {
@@ -67,7 +72,7 @@
   rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
   NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);
-  RCTTestModule *testModule = rootView.bridge.modules[testModuleName];
+  RCTTestModule *testModule = rootView.bridge.batchedBridge.modules[testModuleName];
   testModule.controller = _testController;
   testModule.testSelector = test;
   testModule.view = rootView;
@@ -75,8 +80,6 @@
   UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
   vc.view = [[UIView alloc] init];
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
-
-#if RCT_DEBUG // Prevents build errors, as RCTRedBox is underfined if RCT_DEBUG=0
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
@@ -86,8 +89,6 @@
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
   [rootView removeFromSuperview];
-  [rootView.bridge invalidate];
-  [rootView invalidate];
   RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
   vc.view = nil;
   [[RCTRedBox sharedInstance] dismiss];
@@ -98,13 +99,6 @@
   } else {
     RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
   }
-
-#else
-
-  expectErrorBlock(@"RCTRedBox unavailable. Set RCT_DEBUG=1 for testing.");
-
-#endif
-
 }
 
 @end

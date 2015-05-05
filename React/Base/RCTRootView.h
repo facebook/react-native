@@ -11,7 +11,7 @@
 
 #import "RCTBridge.h"
 
-@interface RCTRootView : UIView <RCTInvalidating>
+@interface RCTRootView : UIView
 
 /**
  * - Designated initializer -

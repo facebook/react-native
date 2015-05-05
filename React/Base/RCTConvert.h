@@ -101,6 +101,12 @@ typedef NSArray UIColorArray;
 typedef NSArray CGColorArray;
 + (CGColorArray *)CGColorArray:(id)json;
 
+/**
+ * Convert a JSON object to a Plist-safe equivalent by stripping null values.
+ */
+typedef id NSPropertyList;
++ (NSPropertyList)NSPropertyList:(id)json;
+
 typedef BOOL css_overflow;
 + (css_overflow)css_overflow:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;

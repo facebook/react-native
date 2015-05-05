@@ -13,11 +13,13 @@ jest.autoMockOff();
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 
 describe('Package', function() {
+  var ModuleTransport;
   var Package;
   var ppackage;
 
   beforeEach(function() {
     Package = require('../Package');
+    ModuleTransport = require('../../lib/ModuleTransport');
     ppackage = new Package('test_url');
     ppackage.getSourceMap = jest.genMockFn().mockImpl(function() {
       return 'test-source-map';
@@ -26,8 +28,17 @@ describe('Package', function() {
 
   describe('source package', function() {
     it('should create a package and get the source', function() {
-      ppackage.addModule('transformed foo;', 'source foo', 'foo path');
-      ppackage.addModule('transformed bar;', 'source bar', 'bar path');
+      ppackage.addModule(new ModuleTransport({
+        code: 'transformed foo;',
+        sourceCode: 'source foo',
+        sourcePath: 'foo path',
+      }));
+      ppackage.addModule(new ModuleTransport({
+        code: 'transformed bar;',
+        sourceCode: 'source bar',
+        sourcePath: 'bar path',
+      }));
+
       ppackage.finalize({});
       expect(ppackage.getSource()).toBe([
         'transformed foo;',
@@ -37,8 +48,18 @@ describe('Package', function() {
     });
 
     it('should create a package and add run module code', function() {
-      ppackage.addModule('transformed foo;', 'source foo', 'foo path');
-      ppackage.addModule('transformed bar;', 'source bar', 'bar path');
+      ppackage.addModule(new ModuleTransport({
+        code: 'transformed foo;',
+        sourceCode: 'source foo',
+        sourcePath: 'foo path'
+      }));
+
+      ppackage.addModule(new ModuleTransport({
+        code: 'transformed bar;',
+        sourceCode: 'source bar',
+        sourcePath: 'bar path'
+      }));
+
       ppackage.setMainModuleId('foo');
       ppackage.finalize({runMainModule: true});
       expect(ppackage.getSource()).toBe([
@@ -59,7 +80,11 @@ describe('Package', function() {
         return minified;
       };
 
-      ppackage.addModule('transformed foo;', 'source foo', 'foo path');
+      ppackage.addModule(new ModuleTransport({
+        code: 'transformed foo;',
+        sourceCode: 'source foo',
+        sourcePath: 'foo path'
+      }));
       ppackage.finalize();
       expect(ppackage.getMinifiedSourceAndMap()).toBe(minified);
     });
@@ -68,12 +93,103 @@ describe('Package', function() {
   describe('sourcemap package', function() {
     it('should create sourcemap', function() {
       var p = new Package('test_url');
-      p.addModule('transformed foo;\n', 'source foo', 'foo path');
-      p.addModule('transformed bar;\n', 'source bar', 'bar path');
+      p.addModule(new ModuleTransport({
+        code: [
+          'transformed foo',
+          'transformed foo',
+          'transformed foo',
+        ].join('\n'),
+        sourceCode: [
+          'source foo',
+          'source foo',
+          'source foo',
+        ].join('\n'),
+        sourcePath: 'foo path',
+      }));
+      p.addModule(new ModuleTransport({
+        code: [
+          'transformed bar',
+          'transformed bar',
+          'transformed bar',
+        ].join('\n'),
+        sourceCode: [
+          'source bar',
+          'source bar',
+          'source bar',
+        ].join('\n'),
+        sourcePath: 'bar path',
+      }));
+
       p.setMainModuleId('foo');
       p.finalize({runMainModule: true});
       var s = p.getSourceMap();
       expect(s).toEqual(genSourceMap(p._modules));
+    });
+
+    it('should combine sourcemaps', function() {
+      var p = new Package('test_url');
+
+      p.addModule(new ModuleTransport({
+        code: 'transformed foo;\n',
+        map: {name: 'sourcemap foo'},
+        sourceCode: 'source foo',
+        sourcePath: 'foo path'
+      }));
+
+      p.addModule(new ModuleTransport({
+        code: 'transformed foo;\n',
+        map: {name: 'sourcemap bar'},
+        sourceCode: 'source foo',
+        sourcePath: 'foo path'
+      }));
+
+      p.addModule(new ModuleTransport({
+        code: 'image module;\nimage module;',
+        virtual: true,
+        sourceCode: 'image module;\nimage module;',
+        sourcePath: 'image.png',
+      }));
+
+      p.setMainModuleId('foo');
+      p.finalize({runMainModule: true});
+
+      var s = p.getSourceMap();
+      expect(s).toEqual({
+        file: 'bundle.js',
+        version: 3,
+        sections: [
+          { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
+          { offset: { line: 2, column: 0 }, map: { name: 'sourcemap bar' } },
+          {
+            offset: {
+              column: 0,
+              line: 4
+            },
+            map: {
+              file: 'image.png',
+              mappings: 'AAAA;AACA;',
+              names: {},
+              sources: [ 'image.png' ],
+              sourcesContent: ['image module;\nimage module;'],
+              version: 3,
+            }
+          },
+          {
+            offset: {
+              column: 0,
+              line: 6
+            },
+            map: {
+              file: 'RunMainModule.js',
+              mappings: 'AAAA;',
+              names: {},
+              sources: [ 'RunMainModule.js' ],
+              sourcesContent: [';require("foo");'],
+              version: 3,
+            }
+          }
+        ],
+      });
     });
   });
 
@@ -95,7 +211,7 @@ describe('Package', function() {
    var packageLineNo = 0;
    for (var i = 0; i < modules.length; i++) {
      var module = modules[i];
-     var transformedCode = module.transformedCode;
+     var transformedCode = module.code;
      var sourcePath = module.sourcePath;
      var sourceCode = module.sourceCode;
      var transformedLineCount = 0;

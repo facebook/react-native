@@ -11,14 +11,13 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var POPAnimation = require('POPAnimation');
 var AnimationExperimental = require('AnimationExperimental');
+var NativeMethodsMixin = require('NativeMethodsMixin');
+var POPAnimation = require('POPAnimation');
+var React = require('React');
 var Touchable = require('Touchable');
 
 var merge = require('merge');
-var copyProperties = require('copyProperties');
 var onlyChild = require('onlyChild');
 
 type State = {
@@ -123,9 +122,8 @@ var TouchableBounce = React.createClass({
   },
 
   render: function() {
-    // Note(vjeux): use cloneWithProps once React has been upgraded
     var child = onlyChild(this.props.children);
-    copyProperties(child.props, {
+    return React.cloneElement(child, {
       accessible: true,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
@@ -135,7 +133,6 @@ var TouchableBounce = React.createClass({
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate
     });
-    return child;
   }
 });
 

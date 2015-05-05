@@ -70,6 +70,7 @@
 }
 
 @synthesize bridge = _bridge;
+@synthesize paused = _paused;
 
 RCT_EXPORT_MODULE()
 
@@ -78,7 +79,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 - (instancetype)init
 {
   if ((self = [super init])) {
-
+    _paused = YES;
     _timers = [[RCTSparseArray alloc] init];
 
     for (NSString *name in @[UIApplicationWillResignActiveNotification,
@@ -126,7 +127,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
 - (void)stopTimers
 {
-  [_bridge removeFrameUpdateObserver:self];
+  _paused = YES;
 }
 
 - (void)startTimers
@@ -135,7 +136,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
     return;
   }
 
-  [_bridge addFrameUpdateObserver:self];
+  _paused = NO;
 }
 
 - (void)didUpdateFrame:(RCTFrameUpdate *)update

@@ -18,24 +18,6 @@
 #import "RCTWrapperViewController.h"
 #import "UIView+React.h"
 
-@interface RKCustomTabBarController : UITabBarController <RCTViewControllerProtocol>
-
-@end
-
-@implementation RKCustomTabBarController
-
-@synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
-@synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
-
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  _currentTopLayoutGuide = self.topLayoutGuide;
-  _currentBottomLayoutGuide = self.bottomLayoutGuide;
-}
-
-@end
-
 @interface RCTTabBar() <UITabBarControllerDelegate>
 
 @end
@@ -53,7 +35,7 @@
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
     _tabViews = [[NSMutableArray alloc] init];
-    _tabController = [[RKCustomTabBarController alloc] init];
+    _tabController = [[UITabBarController alloc] init];
     _tabController.delegate = self;
     [self addSubview:_tabController.view];
   }

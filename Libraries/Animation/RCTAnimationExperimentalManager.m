@@ -114,7 +114,7 @@ RCT_EXPORT_METHOD(startAnimation:(NSNumber *)reactTag
                   animationTag:(NSNumber *)animationTag
                   duration:(NSTimeInterval)duration
                   delay:(NSTimeInterval)delay
-                  easingSample:(NSArray *)easingSample
+                  easingSample:(NSNumberArray *)easingSample
                   properties:(NSDictionary *)properties
                   callback:(RCTResponseSenderBlock)callback)
 {

@@ -7,14 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDefines.h"
-
-#if RCT_DEBUG // Red box is only available in debug mode
-
 #import "RCTRedBox.h"
 
 #import "RCTBridge.h"
+#import "RCTDefines.h"
 #import "RCTUtils.h"
+
+#if RCT_DEBUG
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
 
@@ -92,7 +91,7 @@
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
   [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
 
-  [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:nil];
+  [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
@@ -307,6 +306,21 @@
 {
   [_window dismiss];
 }
+
+@end
+
+#else // Disabled
+
+@implementation RCTRedBox
+
++ (instancetype)sharedInstance { return nil; }
+- (void)showErrorMessage:(NSString *)message {}
+- (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow {}
+- (NSString *)currentErrorMessage { return nil; }
+- (void)dismiss {}
 
 @end
 

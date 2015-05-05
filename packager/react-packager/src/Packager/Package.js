@@ -11,6 +11,7 @@
 var _ = require('underscore');
 var base64VLQ = require('./base64-vlq');
 var UglifyJS = require('uglify-js');
+var ModuleTransport = require('../lib/ModuleTransport');
 
 module.exports = Package;
 
@@ -19,22 +20,25 @@ function Package(sourceMapUrl) {
   this._modules = [];
   this._assets = [];
   this._sourceMapUrl = sourceMapUrl;
+  this._shouldCombineSourceMaps = false;
 }
 
 Package.prototype.setMainModuleId = function(moduleId) {
   this._mainModuleId = moduleId;
 };
 
-Package.prototype.addModule = function(
-  transformedCode,
-  sourceCode,
-  sourcePath
-) {
-  this._modules.push({
-    transformedCode: transformedCode,
-    sourceCode: sourceCode,
-    sourcePath: sourcePath
-  });
+Package.prototype.addModule = function(module) {
+  if (!(module instanceof ModuleTransport)) {
+    throw new Error('Expeceted a ModuleTransport object');
+  }
+
+  // If we get a map from the transformer we'll switch to a mode
+  // were we're combining the source maps as opposed to
+  if (!this._shouldCombineSourceMaps && module.map != null) {
+    this._shouldCombineSourceMaps = true;
+  }
+
+  this._modules.push(module);
 };
 
 Package.prototype.addAsset = function(asset) {
@@ -45,11 +49,12 @@ Package.prototype.finalize = function(options) {
   options = options || {};
   if (options.runMainModule) {
     var runCode = ';require("' + this._mainModuleId + '");';
-    this.addModule(
-      runCode,
-      runCode,
-      'RunMainModule.js'
-    );
+    this.addModule(new ModuleTransport({
+      code: runCode,
+      virtual: true,
+      sourceCode: runCode,
+      sourcePath: 'RunMainModule.js'
+    }));
   }
 
   Object.freeze(this._modules);
@@ -67,7 +72,7 @@ Package.prototype._assertFinalized = function() {
 
 Package.prototype._getSource = function() {
   if (this._source == null) {
-    this._source = _.pluck(this._modules, 'transformedCode').join('\n');
+    this._source = _.pluck(this._modules, 'code').join('\n');
   }
   return this._source;
 };
@@ -136,10 +141,50 @@ Package.prototype.getMinifiedSourceAndMap = function() {
   }
 };
 
+/**
+ * I found a neat trick in the sourcemap spec that makes it easy
+ * to concat sourcemaps. The `sections` field allows us to combine
+ * the sourcemap easily by adding an offset. Tested on chrome.
+ * Seems like it's not yet in Firefox but that should be fine for
+ * now.
+ */
+Package.prototype._getCombinedSourceMaps = function(options) {
+  var result = {
+    version: 3,
+    file: 'bundle.js',
+    sections: [],
+  };
+
+  var line = 0;
+  this._modules.forEach(function(module) {
+    var map = module.map;
+    if (module.virtual) {
+      map = generateSourceMapForVirtualModule(module);
+    }
+
+    if (options.excludeSource) {
+      map = _.extend({}, map, {sourcesContent: []});
+    }
+
+    result.sections.push({
+      offset: { line: line, column: 0 },
+      map: map,
+    });
+    line += module.code.split('\n').length;
+  });
+
+  return result;
+};
+
 Package.prototype.getSourceMap = function(options) {
   this._assertFinalized();
 
   options = options || {};
+
+  if (this._shouldCombineSourceMaps) {
+    return this._getCombinedSourceMaps(options);
+  }
+
   var mappings = this._getMappings();
   var map = {
     file: 'bundle.js',
@@ -168,13 +213,14 @@ Package.prototype._getMappings = function() {
   // except for the lineno mappinp: curLineno - prevLineno = 1; Which is C.
   var line = 'AACA';
 
+  var moduleLines = Object.create(null);
   var mappings = '';
   for (var i = 0; i < modules.length; i++) {
     var module = modules[i];
-    var transformedCode = module.transformedCode;
+    var code = module.code;
     var lastCharNewLine  = false;
-    module.lines = 0;
-    for (var t = 0; t < transformedCode.length; t++) {
+    moduleLines[module.sourcePath] = 0;
+    for (var t = 0; t < code.length; t++) {
       if (t === 0 && i === 0) {
         mappings += firstLine;
       } else if (t === 0) {
@@ -183,13 +229,15 @@ Package.prototype._getMappings = function() {
         // This is the only place were we actually don't know the mapping ahead
         // of time. When it's a new module (and not the first) the lineno
         // mapping is 0 (current) - number of lines in prev module.
-        mappings += base64VLQ.encode(0 - modules[i - 1].lines);
+        mappings += base64VLQ.encode(
+          0 - moduleLines[modules[i - 1].sourcePath]
+        );
         mappings += 'A';
       } else if (lastCharNewLine) {
-        module.lines++;
+        moduleLines[module.sourcePath]++;
         mappings += line;
        }
-      lastCharNewLine = transformedCode[t] === '\n';
+      lastCharNewLine = code[t] === '\n';
       if (lastCharNewLine) {
         mappings += ';';
       }
@@ -218,7 +266,25 @@ Package.prototype.getDebugInfo = function() {
     this._modules.map(function(m) {
       return '<div> <h4> Path: </h4>' + m.sourcePath + '<br/> <h4> Source: </h4>' +
         '<code><pre class="collapsed" onclick="this.classList.remove(\'collapsed\')">' +
-        _.escape(m.transformedCode) + '</pre></code></div>';
+        _.escape(m.code) + '</pre></code></div>';
     }).join('\n'),
   ].join('\n');
 };
+
+function generateSourceMapForVirtualModule(module) {
+  // All lines map 1-to-1
+  var mappings = 'AAAA;';
+
+  for (var i = 1; i < module.code.split('\n').length; i++) {
+    mappings +=  'AACA;';
+  }
+
+  return {
+    version: 3,
+    sources: [ module.sourcePath ],
+    names: [],
+    mappings: mappings,
+    file: module.sourcePath,
+    sourcesContent: [ module.code ],
+  };
+}

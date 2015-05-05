@@ -55,8 +55,9 @@
     _pendingTouches = [[NSMutableArray alloc] init];
     _bridgeInteractionTiming = [[NSMutableArray alloc] init];
 
-    // `cancelsTouchesInView` is needed in order to be used as a top level event delegated recognizer. Otherwise, lower
-    // level components not build using RCT, will fail to recognize gestures.
+    // `cancelsTouchesInView` is needed in order to be used as a top level
+    // event delegated recognizer. Otherwise, lower-level components not built
+    // using RCT, will fail to recognize gestures.
     self.cancelsTouchesInView = NO;
   }
   return self;
@@ -165,7 +166,9 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
  * (start/end/move/cancel) and the indices that represent "changed" `Touch`es
  * from that array.
  */
-- (void)_updateAndDispatchTouches:(NSSet *)touches eventName:(NSString *)eventName originatingTime:(CFTimeInterval)originatingTime
+- (void)_updateAndDispatchTouches:(NSSet *)touches
+                        eventName:(NSString *)eventName
+                  originatingTime:(CFTimeInterval)originatingTime
 {
   // Update touches
   NSMutableArray *changedIndexes = [[NSMutableArray alloc] init];
@@ -196,15 +199,39 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
 
 #pragma mark - Gesture Recognizer Delegate Callbacks
 
+static BOOL RCTAllTouchesAreCancelldOrEnded(NSSet *touches)
+{
+  for (UITouch *touch in touches) {
+    if (touch.phase == UITouchPhaseBegan ||
+        touch.phase == UITouchPhaseMoved ||
+        touch.phase == UITouchPhaseStationary) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
+static BOOL RCTAnyTouchesChanged(NSSet *touches)
+{
+  for (UITouch *touch in touches) {
+    if (touch.phase == UITouchPhaseBegan ||
+        touch.phase == UITouchPhaseMoved) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
-  self.state = UIGestureRecognizerStateBegan;
 
   // "start" has to record new touches before extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
   [self _updateAndDispatchTouches:touches eventName:@"topTouchStart" originatingTime:event.timestamp];
+
+  self.state = UIGestureRecognizerStateBegan;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -213,7 +240,12 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
   if (self.state == UIGestureRecognizerStateFailed) {
     return;
   }
+
   [self _updateAndDispatchTouches:touches eventName:@"topTouchMove" originatingTime:event.timestamp];
+
+  if (self.state == UIGestureRecognizerStateBegan) {
+    self.state = UIGestureRecognizerStateChanged;
+  }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -221,6 +253,12 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
   [super touchesEnded:touches withEvent:event];
   [self _updateAndDispatchTouches:touches eventName:@"topTouchEnd" originatingTime:event.timestamp];
   [self _recordRemovedTouches:touches];
+
+  if (RCTAllTouchesAreCancelldOrEnded(event.allTouches)) {
+    self.state = UIGestureRecognizerStateEnded;
+  } else if (RCTAnyTouchesChanged(event.allTouches)) {
+    self.state = UIGestureRecognizerStateChanged;
+  }
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
@@ -228,6 +266,12 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
   [super touchesCancelled:touches withEvent:event];
   [self _updateAndDispatchTouches:touches eventName:@"topTouchCancel" originatingTime:event.timestamp];
   [self _recordRemovedTouches:touches];
+
+  if (RCTAllTouchesAreCancelldOrEnded(event.allTouches)) {
+    self.state = UIGestureRecognizerStateCancelled;
+  } else if (RCTAnyTouchesChanged(event.allTouches)) {
+    self.state = UIGestureRecognizerStateChanged;
+  }
 }
 
 - (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
