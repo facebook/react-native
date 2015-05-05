@@ -941,6 +941,11 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
   return self;
 }
 
+- (NSURL *)bundleURL
+{
+  return _parentBridge.bundleURL;
+}
+
 - (NSDictionary *)launchOptions
 {
   return _parentBridge.launchOptions;
