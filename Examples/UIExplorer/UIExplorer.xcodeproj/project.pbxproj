@@ -103,6 +103,13 @@
 			remoteGlobalIDString = 580C376F1AB104AF0015E709;
 			remoteInfo = RCTTest;
 		};
+		834C36D11AF8DA610019C93C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTSettings;
+		};
 		D85B829B1AB6D5CE003F4FE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */;
@@ -129,6 +136,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = UIExplorer/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = UIExplorer/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = UIExplorer/main.m; sourceTree = "<group>"; };
+		13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = ../../Libraries/Settings/RCTSettings.xcodeproj; sourceTree = "<group>"; };
 		14AADEFF1AC3DB95002390C9 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = ../../Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj; sourceTree = "<group>"; };
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
@@ -200,6 +208,7 @@
 				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
 				13417FE31AA91428003F314A /* RCTImage.xcodeproj */,
 				134180261AA91779003F314A /* RCTNetwork.xcodeproj */,
+				13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */,
 				58005BE41ABA80530062E044 /* RCTTest.xcodeproj */,
 				13417FEA1AA914B8003F314A /* RCTText.xcodeproj */,
 				00D2770E1AB8C2C700DC1E48 /* RCTWebSocketDebugger.xcodeproj */,
@@ -289,6 +298,14 @@
 			isa = PBXGroup;
 			children = (
 				58005BEE1ABA80530062E044 /* libRCTTest.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		834C36CE1AF8DA610019C93C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				834C36D21AF8DA610019C93C /* libRCTSettings.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -412,6 +429,10 @@
 					ProjectRef = 14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */;
 				},
 				{
+					ProductGroup = 834C36CE1AF8DA610019C93C /* Products */;
+					ProjectRef = 13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */;
+				},
+				{
 					ProductGroup = 58005BE51ABA80530062E044 /* Products */;
 					ProjectRef = 58005BE41ABA80530062E044 /* RCTTest.xcodeproj */;
 				},
@@ -509,6 +530,13 @@
 			fileType = archive.ar;
 			path = libRCTTest.a;
 			remoteRef = 58005BED1ABA80530062E044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		834C36D21AF8DA610019C93C /* libRCTSettings.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTSettings.a;
+			remoteRef = 834C36D11AF8DA610019C93C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */ = {
