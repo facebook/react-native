@@ -123,11 +123,17 @@ RCT_EXPORT_MODULE()
 {
   _settings = [NSMutableDictionary dictionaryWithDictionary:[_defaults objectForKey:RCTDevMenuSettingsKey]];
 
+  __weak RCTDevMenu *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
-    self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
-    self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
-    self.executorClass = NSClassFromString(_settings[@"executorClass"]);
+    RCTDevMenu *strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    strongSelf.shakeToShow = [strongSelf->_settings[@"shakeToShow"] ?: @YES boolValue];
+    strongSelf.profilingEnabled = [strongSelf->_settings[@"profilingEnabled"] ?: @NO boolValue];
+    strongSelf.liveReloadEnabled = [strongSelf->_settings[@"liveReloadEnabled"] ?: @NO boolValue];
+    strongSelf.executorClass = NSClassFromString(strongSelf->_settings[@"executorClass"]);
   });
 }
 
