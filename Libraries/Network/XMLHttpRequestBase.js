@@ -66,7 +66,7 @@ class XMLHttpRequestBase {
 
   getResponseHeader(header: string): ?string {
     if (this.responseHeaders) {
-      var value = this.responseHeaders[header];
+      var value = this.responseHeaders[header.toLowerCase()];
       return value !== undefined ? value : null;
     }
     return null;
@@ -132,7 +132,12 @@ class XMLHttpRequestBase {
       return;
     }
     this.status = status;
-    this.responseHeaders = responseHeaders || {};
+    // Headers should be case-insensitive
+    var lcResponseHeaders = {};
+    for (var header in responseHeaders) {
+      lcResponseHeaders[header.toLowerCase()] = responseHeaders[header];
+    }
+    this.responseHeaders = lcResponseHeaders;
     this.responseText = responseText;
     this._setReadyState(this.DONE);
     this._sendLoad();
