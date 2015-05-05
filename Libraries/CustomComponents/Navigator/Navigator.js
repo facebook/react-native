@@ -54,7 +54,11 @@ var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
 
+// TODO: this is not ideal because there is no guarantee that the navigator
+// is full screen, hwoever we don't have a good way to measure the actual
+// size of the navigator right now, so this is the next best thing.
 var SCREEN_WIDTH = Dimensions.get('window').width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
 var SCENE_DISABLED_NATIVE_PROPS = {
   style: {
     left: SCREEN_WIDTH,
@@ -905,13 +909,17 @@ var Navigator = React.createClass({
       var travelDist = isTravelVertical ? gestureState.dy : gestureState.dx;
       var oppositeAxisTravelDist =
         isTravelVertical ? gestureState.dx : gestureState.dy;
+      var edgeHitWidth = gesture.edgeHitWidth;
       if (isTravelInverted) {
         currentLoc = -currentLoc;
         travelDist = -travelDist;
         oppositeAxisTravelDist = -oppositeAxisTravelDist;
+        edgeHitWidth = isTravelVertical ?
+          -(SCREEN_HEIGHT - edgeHitWidth) :
+          -(SCREEN_WIDTH - edgeHitWidth);
       }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
-        currentLoc < gesture.edgeHitWidth;
+        currentLoc < edgeHitWidth;
       var moveTravelledFarEnough =
         travelDist >= gesture.gestureDetectMovement &&
         travelDist > oppositeAxisTravelDist * gesture.directionRatio;
