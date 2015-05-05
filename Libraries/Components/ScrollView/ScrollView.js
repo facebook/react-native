@@ -211,11 +211,19 @@ var ScrollView = React.createClass({
   },
 
   scrollTo: function(destY?: number, destX?: number) {
-    RCTUIManager.scrollTo(
-      this.getNodeHandle(),
-      destX || 0,
-      destY || 0
-    );
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        this.getNodeHandle(),
+        RCTUIManager.RCTScrollView.Commands.scrollTo,
+        [destX || 0, destY || 0]
+      );
+    } else {
+      RCTUIManager.scrollTo(
+        this.getNodeHandle(),
+        destX || 0,
+        destY || 0
+      );
+    }
   },
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
