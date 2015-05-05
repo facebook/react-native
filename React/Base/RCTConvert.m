@@ -805,7 +805,9 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
       for (NSInteger i = 0; i < idx; i++) {
         [(NSMutableArray *)values addObject:json[i]];
       }
-      [(NSMutableArray *)values addObject:value];
+      if (value) {
+        [(NSMutableArray *)values addObject:value];
+      }
       copy = YES;
     }
   }];
