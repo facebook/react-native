@@ -169,6 +169,14 @@ var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
       docgenHelpers.findExportedObject,
       [docgen.handlers.propTypeHandler]
     );
+
+  // Remove deprecated style props
+  if (docs['ViewStylePropTypes']) {
+    ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
+      delete docs['ViewStylePropTypes']['props'][key];
+    });
+  }
+
   return docs;
 }, {});
 
