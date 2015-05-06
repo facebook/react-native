@@ -838,7 +838,9 @@ static id RCTConvertPropertyListValue(id json)
 {
   if (!json || json == (id)kCFNull) {
     return nil;
-  } else if ([json isKindOfClass:[NSDictionary class]]) {
+  }
+
+  if ([json isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
     NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[json count]];
     [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, id jsonValue, BOOL *stop) {
@@ -849,7 +851,9 @@ static id RCTConvertPropertyListValue(id json)
       copy |= value != jsonValue;
     }];
     return copy ? values : json;
-  } else if ([json isKindOfClass:[NSArray class]]) {
+  }
+
+  if ([json isKindOfClass:[NSArray class]]) {
     __block BOOL copy = NO;
     __block NSArray *values = json;
     [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, BOOL *stop) {
@@ -864,15 +868,17 @@ static id RCTConvertPropertyListValue(id json)
         for (NSInteger i = 0; i < idx; i++) {
           [(NSMutableArray *)values addObject:json[i]];
         }
-        [(NSMutableArray *)values addObject:value];
+        if (value) {
+          [(NSMutableArray *)values addObject:value];
+        }
         copy = YES;
       }
     }];
     return values;
-  } else {
-    // All other JSON types are supported by property lists
-    return json;
   }
+
+  // All other JSON types are supported by property lists
+  return json;
 }
 
 + (NSPropertyList)NSPropertyList:(id)json

@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 
 @implementation RCTSettingsManager
 {
@@ -53,13 +54,15 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"settingsUpdated" body:[_defaults dictionaryRepresentation]];
+  [_bridge.eventDispatcher
+   sendDeviceEventWithName:@"settingsUpdated"
+   body:RCTJSONClean([_defaults dictionaryRepresentation])];
 }
 
 - (NSDictionary *)constantsToExport
 {
   return @{
-    @"settings": [_defaults dictionaryRepresentation]
+    @"settings": RCTJSONClean([_defaults dictionaryRepresentation])
   };
 }
 
