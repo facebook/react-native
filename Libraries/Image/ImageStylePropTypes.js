@@ -14,9 +14,11 @@
 var ImageResizeMode = require('ImageResizeMode');
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
+var TransformPropTypes = require('TransformPropTypes');
 
 var ImageStylePropTypes = {
   ...LayoutPropTypes,
+  ...TransformPropTypes,
   resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
   backgroundColor: ReactPropTypes.string,
   borderColor: ReactPropTypes.string,
