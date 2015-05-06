@@ -84,8 +84,8 @@
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
   while ([date timeIntervalSinceNow] > 0 && ![testModule isDone] && error == nil) {
-    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:date];
-    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:date];
+    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
   [rootView removeFromSuperview];
