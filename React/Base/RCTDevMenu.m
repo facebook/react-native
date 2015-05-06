@@ -66,9 +66,7 @@ RCT_EXPORT_MODULE()
   // We're swizzling here because it's poor form to override methods in a category,
   // however UIWindow doesn't actually implement motionEnded:withEvent:, so there's
   // no need to call the original implementation.
-#if RCT_DEV
   RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:));
-#endif
 }
 
 - (instancetype)init

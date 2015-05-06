@@ -76,6 +76,7 @@
 + (UIImage *)UIImage:(id)json;
 + (CGImageRef)CGImage:(id)json;
 
++ (UIFont *)UIFont:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;

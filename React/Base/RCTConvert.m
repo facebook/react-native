@@ -679,6 +679,16 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
 }
 
++ (UIFont *)UIFont:(id)json
+{
+  json = [self NSDictionary:json];
+  return [self UIFont:nil
+           withFamily:json[@"fontFamily"]
+                 size:json[@"fontSize"]
+               weight:json[@"fontWeight"]
+                style:json[@"fontStyle"]];
+}
+
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
   return [self UIFont:font withFamily:nil size:json weight:nil style:nil];
@@ -728,11 +738,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   // Get font family
   familyName = [self NSString:family] ?: familyName;
 
-  // Get font style
-  if (style) {
-    isItalic = [self RCTFontStyle:style];
-  }
-
   // Gracefully handle being given a font name rather than font family, for
   // example: "Helvetica Light Oblique" rather than just "Helvetica".
   if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
@@ -751,6 +756,11 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     }
   }
 
+  // Get font style
+  if (style) {
+    isItalic = [self RCTFontStyle:style];
+  }
+
   // Get font weight
   if (weight) {
     fontWeight = [self RCTFontWeight:weight];
@@ -758,13 +768,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
   // Get the closest font that matches the given weight for the fontFamily
   UIFont *bestMatch = [UIFont fontWithName:font.fontName size: fontSize];
-  CGFloat closestWeight;
-
-  if (font && [font.familyName isEqualToString: familyName]) {
-    closestWeight = RCTWeightOfFont(font);
-  } else {
-    closestWeight = INFINITY;
-  }
+  CGFloat closestWeight = INFINITY;
 
   for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
     UIFont *match = [UIFont fontWithName:name size:fontSize];
