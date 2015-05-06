@@ -76,7 +76,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTWebSocketDebugger' do |ss|
     ss.dependency         'React/Core'
-    ss.dependency         'SocketRocket', '0.3.1-beta2'
+    ss.dependency         'SocketRocket', '>=0.3.1-beta2'
     ss.libraries        = 'icucore'
     ss.source_files     = "Libraries/RCTWebSocketDebugger/*.{h,m}"
     ss.exclude_files    = "Libraries/RCTWebSocketDebugger/SRWebSocket.*"
