@@ -11,7 +11,10 @@
 
 #import "RCTJavaScriptExecutor.h"
 
+NSString *const RCTJavaScriptDidDownLoadedNotification = @"RCTJavaScriptDidDownLoadedNotification";
+
 @class RCTBridge;
+
 
 /**
  * Class that allows easy embedding, loading, life-cycle management of a
