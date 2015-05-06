@@ -20,7 +20,7 @@
 
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObject options:0 error:error];
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObject options:(NSJSONWritingOptions)NSJSONReadingAllowFragments error:error];
   return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : nil;
 }
 
