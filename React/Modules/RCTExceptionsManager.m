@@ -61,12 +61,8 @@ RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
 
   } else {
 
-    // Filter out numbers so the same base errors are mapped to the same categories independent of incorrect values.
-    NSString *pattern = @"[+-]?\\d+[,.]?\\d*";
-    NSString *sanitizedMessage = [message stringByReplacingOccurrencesOfString:pattern withString:@"<num>" options:NSRegularExpressionSearch range:(NSRange){0, message.length}];
-
-    if (sanitizedMessage.length > maxMessageLength) {
-      sanitizedMessage = [[sanitizedMessage substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
+    if (message.length > maxMessageLength) {
+      message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
     }
 
     NSMutableString *prettyStack = [NSMutableString stringWithString:@"\n"];
@@ -74,7 +70,7 @@ RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
       [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
     }
 
-    NSString *name = [@"Unhandled JS Exception: " stringByAppendingString:sanitizedMessage];
+    NSString *name = [@"Unhandled JS Exception: " stringByAppendingString:message];
     [NSException raise:name format:@"Message: %@, stack: %@", message, prettyStack];
   }
 

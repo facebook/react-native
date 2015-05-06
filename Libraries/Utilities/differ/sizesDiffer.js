@@ -5,14 +5,14 @@
  */
 'use strict';
 
-var dummySize = {w: undefined, h: undefined};
+var dummySize = {width: undefined, height: undefined};
 
 var sizesDiffer = function(one, two) {
   one = one || dummySize;
   two = two || dummySize;
   return one !== two && (
-    one.w !== two.w ||
-    one.h !== two.h
+    one.width !== two.width ||
+    one.height !== two.height
   );
 };
 

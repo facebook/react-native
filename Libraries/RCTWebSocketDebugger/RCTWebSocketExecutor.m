@@ -66,7 +66,8 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
       retries--;
     }
     if (!runtimeIsReady) {
-      RCTLogError(@"Runtime is not ready. Do you have Chrome open?");
+      RCTLogError(@"Runtime is not ready. Make sure Chrome is running and not "
+        "paused on a breakpoint or exception and try reloading again.");
       [self invalidate];
       return nil;
     }

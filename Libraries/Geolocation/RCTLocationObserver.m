@@ -28,9 +28,9 @@ typedef NS_ENUM(NSInteger, RCTPositionErrorCode) {
 #define RCT_DEFAULT_LOCATION_ACCURACY kCLLocationAccuracyHundredMeters
 
 typedef struct {
-  NSTimeInterval timeout;
-  NSTimeInterval maximumAge;
-  CLLocationAccuracy accuracy;
+  double timeout;
+  double maximumAge;
+  double accuracy;
 } RCTLocationOptions;
 
 @implementation RCTConvert (RCTLocationOptions)

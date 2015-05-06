@@ -1,21 +1,15 @@
 /**
- * @generated SignedSource<<58298c7a8815a8675e970b0347dedfed>>
- *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in from github!                       !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Go to https://github.com/facebook/css-layout            !!
- * !! 2) Make a pull request and get it merged                   !!
- * !! 3) Execute ./import.sh to pull in the latest version       !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- *
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * WARNING: You should not modify this file directly. Instead:
+ * 1) Go to https://github.com/facebook/css-layout
+ * 2) Make a pull request and get it merged
+ * 3) Run import.sh to copy Layout.* to react-native-github
  */
 
 #ifndef __LAYOUT_H
@@ -113,6 +107,8 @@ typedef struct {
   float padding[4];
   float border[4];
   float dimensions[2];
+  float minDimensions[2];
+  float maxDimensions[2];
 } css_style_t;
 
 typedef struct css_node {

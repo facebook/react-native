@@ -355,7 +355,7 @@ var ScrollResponderMixin = {
 
   /**
    * A helper function to zoom to a specific rect in the scrollview.
-   * @param {object} rect Should have shape {x, y, w, h}
+   * @param {object} rect Should have shape {x, y, width, height}
    */
   scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
     RCTUIManagerDeprecated.zoomToRect(this.getNodeHandle(), rect);

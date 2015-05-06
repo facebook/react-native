@@ -81,15 +81,6 @@ __attribute__((used, section("__DATA,RCTImport"))) \
 static const char *__rct_import_##module##_##method##__ = #module"."#method;
 
 /**
- * This method is used to execute a new application script. It is called
- * internally whenever a JS application bundle is loaded/reloaded, but should
- * probably not be used at any other time.
- */
-- (void)enqueueApplicationScript:(NSString *)script
-                             url:(NSURL *)url
-                      onComplete:(RCTJavaScriptCompleteBlock)onComplete;
-
-/**
  * URL of the script that was loaded into the bridge.
  */
 @property (nonatomic, copy) NSURL *bundleURL;
@@ -121,15 +112,5 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
 - (void)reload;
-
-/**
- * Add a new observer that will be called on every screen refresh.
- */
-- (void)addFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
-
-/**
- * Stop receiving screen refresh updates for the given observer.
- */
-- (void)removeFrameUpdateObserver:(id<RCTFrameUpdateObserver>)observer;
 
 @end

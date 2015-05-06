@@ -79,6 +79,16 @@ function setupRedBoxErrorHandler() {
   ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
 }
 
+function setupRedBoxConsoleErrorHandler() {
+  // ExceptionsManager transitively requires Promise so we install it after
+  var ExceptionsManager = require('ExceptionsManager');
+  var Platform = require('Platform');
+  // TODO (#6925182): Enable console.error redbox on Android
+  if (__DEV__ && Platform.OS === 'ios') {
+    ExceptionsManager.installConsoleErrorReporter();
+  }
+}
+
 /**
  * Sets up a set of window environment wrappers that ensure that the
  * BatchedBridge is flushed after each tick. In both the case of the
@@ -139,4 +149,5 @@ setupTimers();
 setupAlert();
 setupPromise();
 setupXHR();
+setupRedBoxConsoleErrorHandler();
 setupGeolocation();

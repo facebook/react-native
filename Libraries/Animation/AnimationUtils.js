@@ -231,8 +231,10 @@ module.exports = {
 
     var tickCount = Math.round(duration * ticksPerSecond / 1000);
     var samples = [];
-    for (var i = 0; i <= tickCount; i++) {
-      samples.push(easing.call(defaults, i / tickCount));
+    if (tickCount > 0) {
+      for (var i = 0; i <= tickCount; i++) {
+        samples.push(easing.call(defaults, i / tickCount));
+      }
     }
 
     return samples;

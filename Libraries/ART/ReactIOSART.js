@@ -50,18 +50,11 @@ function fontAndLinesDiffer(a, b) {
       return true;
     }
 
-    var aTraits = a.font.NSCTFontTraitsAttribute;
-    var bTraits = b.font.NSCTFontTraitsAttribute;
-
     if (
       a.font.fontFamily !== b.font.fontFamily ||
       a.font.fontSize !== b.font.fontSize ||
       a.font.fontWeight !== b.font.fontWeight ||
-      a.font.fontStyle !== b.font.fontStyle ||
-      // TODO(6364240): remove iOS-specific attrs
-      a.font.NSFontFamilyAttribute !== b.font.NSFontFamilyAttribute ||
-      a.font.NSFontSizeAttribute !== b.font.NSFontSizeAttribute ||
-      aTraits.NSCTFontSymbolicTrait !== bTraits.NSCTFontSymbolicTrait
+      a.font.fontStyle !== b.font.fontStyle
     ) {
       return true;
     }
@@ -418,14 +411,6 @@ var Shape = React.createClass({
 
 var cachedFontObjectsFromString = {};
 
-function extractFontTraits(isBold, isItalic) {
-  var italic = isItalic ? 1 : 0;
-  var bold = isBold ? 2 : 0;
-  return {
-    NSCTFontSymbolicTrait: italic | bold
-  };
-}
-
 var fontFamilyPrefix = /^[\s"']*/;
 var fontFamilySuffix = /[\s"']*$/;
 
@@ -456,10 +441,6 @@ function parseFontString(font) {
     fontSize: fontSize,
     fontWeight: isBold ? 'bold' : 'normal',
     fontStyle: isItalic ? 'italic' : 'normal',
-    // TODO(6364240): remove iOS-specific attrs
-    NSFontFamilyAttribute: fontFamily,
-    NSFontSizeAttribute: fontSize,
-    NSCTFontTraitsAttribute: extractFontTraits(isBold, isItalic)
   };
   return cachedFontObjectsFromString[font];
 }
@@ -479,13 +460,6 @@ function extractFont(font) {
     fontSize: fontSize,
     fontWeight: font.fontWeight,
     fontStyle: font.fontStyle,
-    // TODO(6364240): remove iOS-specific attrs
-    NSFontFamilyAttribute: fontFamily,
-    NSFontSizeAttribute: fontSize,
-    NSCTFontTraitsAttribute: extractFontTraits(
-      font.fontWeight === 'bold',
-      font.fontStyle === 'italic'
-    )
   };
 }
 

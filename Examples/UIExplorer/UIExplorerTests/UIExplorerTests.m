@@ -69,8 +69,9 @@
   NSString *redboxError = nil;
 
   while ([date timeIntervalSinceNow] > 0 && !foundElement && !redboxError) {
-    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:date];
-    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:date];
+    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
     redboxError = [[RCTRedBox sharedInstance] currentErrorMessage];
     foundElement = [self findSubviewInView:vc.view matching:^(UIView *view) {
       if ([view respondsToSelector:@selector(attributedText)]) {

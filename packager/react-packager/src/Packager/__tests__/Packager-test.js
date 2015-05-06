@@ -13,6 +13,7 @@ jest
   .dontMock('path')
   .dontMock('os')
   .dontMock('underscore')
+  .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
   .dontMock('../');
 
@@ -93,6 +94,7 @@ describe('Packager', function() {
       .mockImpl(function(path) {
         return Promise.resolve({
           code: 'transformed ' + path,
+          map: 'sourcemap ' + path,
           sourceCode: 'source ' + path,
           sourcePath: path
         });
@@ -117,16 +119,19 @@ describe('Packager', function() {
 
     return packager.package('/root/foo.js', true, 'source_map_url')
       .then(function(p) {
-        expect(p.addModule.mock.calls[0]).toEqual([
-          'lol transformed /root/foo.js lol',
-          'source /root/foo.js',
-          '/root/foo.js'
-        ]);
-        expect(p.addModule.mock.calls[1]).toEqual([
-          'lol transformed /root/bar.js lol',
-          'source /root/bar.js',
-          '/root/bar.js'
-        ]);
+        expect(p.addModule.mock.calls[0][0]).toEqual({
+          code: 'lol transformed /root/foo.js lol',
+          map: 'sourcemap /root/foo.js',
+          sourceCode: 'source /root/foo.js',
+          sourcePath: '/root/foo.js',
+        });
+
+        expect(p.addModule.mock.calls[1][0]).toEqual({
+          code: 'lol transformed /root/bar.js lol',
+          map: 'sourcemap /root/bar.js',
+          sourceCode: 'source /root/bar.js',
+          sourcePath: '/root/bar.js'
+        });
 
         var imgModule_DEPRECATED = {
           __packager_asset: true,
@@ -138,15 +143,15 @@ describe('Packager', function() {
           deprecated: true,
         };
 
-        expect(p.addModule.mock.calls[2]).toEqual([
-          'lol module.exports = ' +
+        expect(p.addModule.mock.calls[2][0]).toEqual({
+          code: 'lol module.exports = ' +
             JSON.stringify(imgModule_DEPRECATED) +
             '; lol',
-          'module.exports = ' +
+          sourceCode: 'module.exports = ' +
             JSON.stringify(imgModule_DEPRECATED) +
             ';',
-          '/root/img/img.png'
-        ]);
+          sourcePath: '/root/img/img.png'
+        });
 
         var imgModule = {
           __packager_asset: true,
@@ -160,21 +165,21 @@ describe('Packager', function() {
           type: 'png',
         };
 
-        expect(p.addModule.mock.calls[3]).toEqual([
-          'lol module.exports = ' +
+        expect(p.addModule.mock.calls[3][0]).toEqual({
+          code: 'lol module.exports = ' +
             JSON.stringify(imgModule) +
             '; lol',
-          'module.exports = ' +
+          sourceCode: 'module.exports = ' +
             JSON.stringify(imgModule) +
             ';',
-          '/root/img/new_image.png'
-        ]);
+          sourcePath: '/root/img/new_image.png'
+        });
 
-        expect(p.addModule.mock.calls[4]).toEqual([
-          'lol module.exports = {"json":true}; lol',
-          'module.exports = {"json":true};',
-          '/root/file.json'
-        ]);
+        expect(p.addModule.mock.calls[4][0]).toEqual({
+          code: 'lol module.exports = {"json":true}; lol',
+          sourceCode: 'module.exports = {"json":true};',
+          sourcePath: '/root/file.json'
+        });
 
         expect(p.finalize.mock.calls[0]).toEqual([
           {runMainModule: true}
@@ -189,5 +194,4 @@ describe('Packager', function() {
         ]);
       });
   });
-
 });

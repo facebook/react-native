@@ -582,7 +582,7 @@ var TextInput = React.createClass({
     var counter = event.nativeEvent.eventCounter;
     if (counter > this.state.mostRecentEventCounter) {
       this.setState({mostRecentEventCounter: counter});
-    }
+    } 
   },
 });
 
