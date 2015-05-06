@@ -61,9 +61,7 @@ function Transformer(options) {
       projectRoots: options.projectRoots,
     });
 
-  if (options.transformModulePath == null) {
-    this._failedToStart = Promise.reject(new Error('No transfrom module'));
-  } else {
+  if (options.transformModulePath != null) {
     this._workers = workerFarm(
       {autoStart: true, maxConcurrentCallsPerWorker: 1},
       options.transformModulePath
@@ -83,8 +81,8 @@ Transformer.prototype.invalidateFile = function(filePath) {
 };
 
 Transformer.prototype.loadFileAndTransform = function(filePath) {
-  if (this._failedToStart) {
-    return this._failedToStart;
+  if (this._transform == null) {
+    return Promise.reject(new Error('No transfrom module'));
   }
 
   var transform = this._transform;
@@ -127,7 +125,7 @@ function formatError(err, filename, source) {
 function formatGenericError(err, filename) {
   var msg = 'TransformError: ' + filename + ': ' + err.message;
   var error = new TransformError();
-  var stack = err.stack.split('\n').slice(0, -1);
+  var stack = (err.stack || '').split('\n').slice(0, -1);
   stack.push(msg);
   error.stack = stack.join('\n');
   error.message = msg;

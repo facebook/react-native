@@ -23,7 +23,7 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, copy) NSString *fontStyle;
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, assign) CGFloat lineHeight;
-@property (nonatomic, assign) NSInteger maxNumberOfLines;
+@property (nonatomic, assign) NSUInteger maximumNumberOfLines;
 @property (nonatomic, assign) CGSize shadowOffset;
 @property (nonatomic, assign) NSTextAlignment textAlign;
 
@@ -31,6 +31,8 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSLineBreakMode truncationMode;
 
-- (NSAttributedString *)attributedString;
+@property (nonatomic, copy, readonly) NSAttributedString *attributedString;
+@property (nonatomic, strong, readonly) NSLayoutManager *layoutManager;
+@property (nonatomic, strong, readonly) NSTextContainer *textContainer;
 
 @end

@@ -16,6 +16,8 @@
 
 @implementation RCTWebViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[RCTWebView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
@@ -23,6 +25,8 @@
 
 RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL);
 RCT_REMAP_VIEW_PROPERTY(html, HTML, NSString);
+RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL);
+RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
@@ -41,10 +45,8 @@ RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
   };
 }
 
-- (void)goBack:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(goBack:(NSNumber *)reactTag)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
@@ -54,10 +56,8 @@ RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
   }];
 }
 
-- (void)goForward:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(goForward:(NSNumber *)reactTag)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     id view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
@@ -68,10 +68,8 @@ RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
 }
 
 
-- (void)reload:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(reload:(NSNumber *)reactTag)
 {
-  RCT_EXPORT();
-
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {

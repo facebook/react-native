@@ -357,17 +357,23 @@ var ScrollResponderMixin = {
    * A helper function to zoom to a specific rect in the scrollview.
    * @param {object} rect Should have shape {x, y, w, h}
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; w: number; h: number; }) {
+  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
     RCTUIManagerDeprecated.zoomToRect(this.getNodeHandle(), rect);
   },
 
   /**
    * This method should be used as the callback to onFocus in a TextInputs'
    * parent view. Note that any module using this mixin needs to return
-   * the parent view's ref in getScrollViewRef() in order to use this method
+   * the parent view's ref in getScrollViewRef() in order to use this method.
+   * @param {any} nodeHandle The TextInput node handle
+   * @param {number} additionalOffset The scroll view's top "contentInset".
+   *        Default is 0.
+   * @param {bool} preventNegativeScrolling Whether to allow pulling the content
+   *        down to make it meet the keyboard's top. Default is false.
    */
-    scrollResponderScrollNativeHandleToKeyboard: function(nodeHandle: any, additionalOffset?: number) {
+  scrollResponderScrollNativeHandleToKeyboard: function(nodeHandle: any, additionalOffset?: number, preventNegativeScrollOffset?: bool) {
     this.additionalScrollOffset = additionalOffset || 0;
+    this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
     RCTUIManager.measureLayout(
       nodeHandle,
       this.getNodeHandle(),
@@ -386,14 +392,23 @@ var ScrollResponderMixin = {
    * @param {number} width Width of the text input.
    * @param {number} height Height of the text input.
    */
-    scrollResponderInputMeasureAndScrollToKeyboard: function(left: number, top: number, width: number, height: number) {
+  scrollResponderInputMeasureAndScrollToKeyboard: function(left: number, top: number, width: number, height: number) {
     if (this.keyboardWillOpenTo) {
       var scrollOffsetY =
         top - this.keyboardWillOpenTo.endCoordinates.screenY + height +
         this.additionalScrollOffset;
+
+      // By default, this can scroll with negative offset, pulling the content
+      // down so that the target component's bottom meets the keyboard's top.
+      // If requested otherwise, cap the offset at 0 minimum to avoid content
+      // shifting down.
+      if (this.preventNegativeScrollOffset) {
+        scrollOffsetY = Math.max(0, scrollOffsetY);
+      }
       this.scrollResponderScrollTo(0, scrollOffsetY);
     }
     this.additionalOffset = 0;
+    this.preventNegativeScrollOffset = false;
   },
 
   scrollResponderTextInputFocusError: function(e: Event) {

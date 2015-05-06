@@ -10,7 +10,7 @@
 
 var path = require('path');
 var DependencyGraph = require('./DependencyGraph');
-var requirePattern = require('./requirePattern');
+var replacePatterns = require('./replacePatterns');
 var ModuleDescriptor = require('../ModuleDescriptor');
 var declareOpts = require('../../lib/declareOpts');
 
@@ -61,7 +61,7 @@ function HasteDependencyResolver(options) {
 
   this._depGraph = new DependencyGraph({
     roots: opts.projectRoots,
-    assetRoots: opts.assetRoots,
+    assetRoots_DEPRECATED: opts.assetRoots,
     ignoreFilePath: function(filepath) {
       return filepath.indexOf('__tests__') !== -1 ||
         (opts.blacklistRE && opts.blacklistRE.test(filepath));
@@ -112,6 +112,8 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
     path.join(__dirname, 'polyfills/polyfills.js'),
     path.join(__dirname, 'polyfills/console.js'),
     path.join(__dirname, 'polyfills/error-guard.js'),
+    path.join(__dirname, 'polyfills/String.prototype.es6.js'),
+    path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
   ].concat(this._polyfillModuleNames);
 
   var polyfillModules = polyfillModuleNames.map(
@@ -144,20 +146,20 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
     }
   }
 
-  var relativizedCode =
-    code.replace(requirePattern, function(codeMatch, _, depName) {
-      var depId = resolvedDeps[depName];
-      if (depId != null) {
-        return 'require(\'' + depId + '\')';
-      } else {
-        return codeMatch.replace(/\s+/g, '');
-      }
-    });
+  var relativizeCode = function(codeMatch, pre, quot, depName, post) {
+    var depId = resolvedDeps[depName];
+    if (depId) {
+      return pre + quot + depId + post;
+    } else {
+      return codeMatch;
+    }
+  };
 
   return DEFINE_MODULE_CODE.replace(DEFINE_MODULE_REPLACE_RE, function(key) {
     return {
       '_moduleName_': module.id,
-      '_code_': relativizedCode,
+      '_code_': code.replace(replacePatterns.IMPORT_RE, relativizeCode)
+                    .replace(replacePatterns.REQUIRE_RE, relativizeCode),
       '_deps_': JSON.stringify(resolvedDepsArr),
     }[key];
   });

@@ -14,6 +14,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
+#import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 
@@ -21,17 +22,11 @@
 
 @synthesize bridge = _bridge;
 
-+ (NSString *)moduleName
+RCT_EXPORT_MODULE()
+
+- (dispatch_queue_t)methodQueue
 {
-  // Default implementation, works in most cases
-  NSString *name = NSStringFromClass(self);
-  if ([name hasPrefix:@"RK"]) {
-    name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
-  }
-  if ([name hasPrefix:@"RCTUI"]) {
-    name = [name substringFromIndex:@"RCT".length];
-  }
-  return name;
+  return [_bridge.uiManager methodQueue];
 }
 
 - (UIView *)view
@@ -72,7 +67,6 @@
 #pragma mark - View properties
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
-RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
@@ -170,7 +164,9 @@ RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(borderWidth, CGFloat);
+RCT_CUSTOM_SHADOW_PROPERTY(borderWidth, CGFloat, RCTShadowView) {
+  [view setBorderWidth:[RCTConvert CGFloat:json]];
+}
 
 RCT_EXPORT_SHADOW_PROPERTY(marginTop, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(marginRight, CGFloat);

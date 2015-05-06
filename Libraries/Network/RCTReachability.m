@@ -25,6 +25,8 @@ static NSString *const RCTReachabilityStateCell = @"cell";
 
 @synthesize bridge = _bridge;
 
+RCT_EXPORT_MODULE()
+
 static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
 {
   RCTReachability *self = (__bridge id)info;
@@ -69,7 +71,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
 - (instancetype)init
 {
-  return [self initWithHost:@"http://apple.com"];
+  return [self initWithHost:@"apple.com"];
 }
 
 - (void)dealloc
@@ -81,11 +83,9 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 #pragma mark - Public API
 
 // TODO: remove error callback - not needed except by Subscribable interface
-- (void)getCurrentReachability:(RCTResponseSenderBlock)getSuccess
-             withErrorCallback:(__unused RCTResponseSenderBlock)getError
+RCT_EXPORT_METHOD(getCurrentReachability:(RCTResponseSenderBlock)getSuccess
+                  withErrorCallback:(__unused RCTResponseSenderBlock)getError)
 {
-  RCT_EXPORT();
-
   getSuccess(@[@{@"network_reachability": _status}]);
 }
 

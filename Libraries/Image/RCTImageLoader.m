@@ -19,6 +19,19 @@
 #import "RCTImageDownloader.h"
 #import "RCTLog.h"
 
+static dispatch_queue_t RCTImageLoaderQueue(void)
+{
+  static dispatch_queue_t queue = NULL;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("com.facebook.rctImageLoader", DISPATCH_QUEUE_SERIAL);
+    dispatch_set_target_queue(queue,
+                              dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
+  });
+
+  return queue;
+}
+
 NSError *errorWithMessage(NSString *message)
 {
   NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
@@ -43,10 +56,20 @@ NSError *errorWithMessage(NSString *message)
   if ([imageTag hasPrefix:@"assets-library"]) {
     [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
       if (asset) {
-        ALAssetRepresentation *representation = [asset defaultRepresentation];
-        ALAssetOrientation orientation = [representation orientation];
-        UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
-        callback(nil, image);
+        // ALAssetLibrary API is async and will be multi-threaded. Loading a few full
+        // resolution images at once will spike the memory up to store the image data,
+        // and might trigger memory warnings and/or OOM crashes.
+        // To improve this, process the loaded asset in a serial queue.
+        dispatch_async(RCTImageLoaderQueue(), ^{
+          // Also make sure the image is released immediately after it's used so it
+          // doesn't spike the memory up during the process.
+          @autoreleasepool {
+            ALAssetRepresentation *representation = [asset defaultRepresentation];
+            ALAssetOrientation orientation = [representation orientation];
+            UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
+            callback(nil, image);
+          }
+        });
       } else {
         NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@ with no error message.", imageTag];
         NSError *error = errorWithMessage(errorText);

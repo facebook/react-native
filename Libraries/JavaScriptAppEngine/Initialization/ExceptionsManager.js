@@ -16,6 +16,7 @@ var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
 var loadSourceMap = require('loadSourceMap');
 var parseErrorStack = require('parseErrorStack');
+var stringifySafe = require('stringifySafe');
 
 var sourceMapPromise;
 
@@ -25,28 +26,63 @@ type Exception = {
   message: string;
 }
 
-function handleException(e: Exception) {
-  var stack = parseErrorStack(e);
-  console.error(
-    'Error: ' +
-    '\n stack: \n' + stackToString(stack) +
-    '\n URL: ' + e.sourceURL +
-    '\n line: ' + e.line +
-    '\n message: ' + e.message
-  );
-
+function reportException(e: Exception, stack?: any) {
   if (RCTExceptionsManager) {
-    RCTExceptionsManager.reportUnhandledException(e.message, format(stack));
+    if (!stack) {
+      stack = parseErrorStack(e);
+    }
+    RCTExceptionsManager.reportUnhandledException(e.message, stack);
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, format(prettyStack));
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
         })
         .then(null, error => {
           console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
         });
     }
+  }
+}
+
+function handleException(e: Exception) {
+  var stack = parseErrorStack(e);
+  var msg =
+    'Error: ' + e.message +
+    '\n stack: \n' + stackToString(stack) +
+    '\n URL: ' + e.sourceURL +
+    '\n line: ' + e.line +
+    '\n message: ' + e.message;
+  if (console.errorOriginal) {
+    console.errorOriginal(msg);
+  } else {
+    console.error(msg);
+  }
+  reportException(e, stack);
+}
+
+/**
+ * Shows a redbox with stacktrace for all console.error messages.  Disable by
+ * setting `console.reportErrorsAsExceptions = false;` in your app.
+ */
+function installConsoleErrorReporter() {
+  if (console.reportException) {
+    return; // already installed
+  }
+  console.reportException = reportException;
+  console.errorOriginal = console.error.bind(console);
+  console.error = function reactConsoleError() {
+    console.errorOriginal.apply(null, arguments);
+    if (!console.reportErrorsAsExceptions) {
+      return;
+    }
+    var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+    var error: any = new Error('console.error: ' + str);
+    error.framesToPop = 1;
+    reportException(error);
+  };
+  if (console.reportErrorsAsExceptions === undefined) {
+    console.reportErrorsAsExceptions = true; // Individual apps can disable this
   }
 }
 
@@ -71,13 +107,4 @@ function fillSpaces(n) {
   return new Array(n + 1).join(' ');
 }
 
-// HACK(frantic) Android currently expects stack trace to be a string #5920439
-function format(stack) {
-  if (Platform.OS === 'android') {
-    return stackToString(stack);
-  } else {
-    return stack;
-  }
-}
-
-module.exports = { handleException };
+module.exports = { handleException, installConsoleErrorReporter };

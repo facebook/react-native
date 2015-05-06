@@ -14,13 +14,10 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
@@ -40,7 +37,7 @@ var SliderIOS = React.createClass({
      * Default value is 0.
      *
      * *This is not a controlled component*, e.g. if you don't update
-     * the value, the component won't be reset to it's inital value.
+     * the value, the component won't be reset to its inital value.
      */
     value: PropTypes.number,
 
@@ -53,6 +50,18 @@ var SliderIOS = React.createClass({
      * Initial maximum value of the slider. Default value is 1.
      */
     maximumValue: PropTypes.number,
+
+    /**
+     * The color used for the track to the left of the button. Overrides the
+     * default blue gradient image.
+     */
+    minimumTrackTintColor: PropTypes.string,
+
+    /**
+     * The color used for the track to the right of the button. Overrides the
+     * default blue gradient image.
+     */
+    maximumTrackTintColor: PropTypes.string,
 
     /**
      * Callback continuously called while the user is dragging the slider.
@@ -82,6 +91,10 @@ var SliderIOS = React.createClass({
       <RCTSlider
         style={[styles.slider, this.props.style]}
         value={this.props.value}
+        maximumValue={this.props.maximumValue}
+        minimumValue={this.props.minimumValue}
+        minimumTrackTintColor={this.props.minimumTrackTintColor}
+        maximumTrackTintColor={this.props.maximumTrackTintColor}
         onChange={this._onValueChange}
       />
     );
@@ -94,9 +107,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTSlider = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {value: true}),
-  uiViewClassName: 'RCTSlider',
-});
+var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS);
 
 module.exports = SliderIOS;

@@ -18,6 +18,8 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 @synthesize bridge = _bridge;
 
+RCT_EXPORT_MODULE()
+
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -34,12 +36,17 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_queue_create("com.facebook.React.LinkingManager", DISPATCH_QUEUE_SERIAL);
+}
+
 + (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
+            openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary *payload = @{@"url": [url absoluteString]};
+  NSDictionary *payload = @{@"url": [URL absoluteString]};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
                                                       object:self
                                                     userInfo:payload];
@@ -52,27 +59,24 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
                                               body:[notification userInfo]];
 }
 
-- (void)openURL:(NSString *)url
+RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 {
-  RCT_EXPORT();
-
-  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+  // Doesn't really matter what thread we call this on since it exits the app
+  [[UIApplication sharedApplication] openURL:URL];
 }
 
-- (void)canOpenURL:(NSString *)url
-          callback:(RCTResponseSenderBlock)callback
+RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT();
-
-  BOOL supported = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]];
-  callback(@[@(supported)]);
+  // This can be expensive, so we deliberately don't call on main thread
+  BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
+  callback(@[@(canOpen)]);
 }
 
 - (NSDictionary *)constantsToExport
 {
-  return @{
-    @"initialURL": [[_bridge.launchOptions objectForKey:UIApplicationLaunchOptionsURLKey] absoluteString] ?: [NSNull null]
-  };
+  NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+  return @{@"initialURL": [initialURL absoluteString] ?: [NSNull null]};
 }
 
 @end

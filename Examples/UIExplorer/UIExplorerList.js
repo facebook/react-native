@@ -26,7 +26,6 @@ var {
   TouchableHighlight,
   View,
 } = React;
-var NavigatorExample = require('./Navigator/NavigatorExample');
 
 var { TestModule } = React.addons;
 
@@ -39,10 +38,12 @@ var COMPONENTS = [
   require('./ListViewExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
+  require('./Navigator/NavigatorExample'),
+  require('./NavigatorIOSColorsExample'),
   require('./NavigatorIOSExample'),
-  NavigatorExample,
   require('./PickerIOSExample'),
   require('./ScrollViewExample'),
+  require('./SegmentedControlIOSExample'),
   require('./SliderIOSExample'),
   require('./SwitchIOSExample'),
   require('./TabBarIOSExample'),
@@ -64,10 +65,10 @@ var APIS = [
   require('./GeolocationExample'),
   require('./LayoutExample'),
   require('./NetInfoExample'),
+  require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./PushNotificationIOSExample'),
   require('./StatusBarIOSExample'),
-  require('./ResponderExample'),
   require('./TimerExample'),
   require('./VibrationIOSExample'),
 ];
@@ -181,10 +182,8 @@ class UIExplorerList extends React.Component {
   }
 
   _onPressRow(example) {
-    if (example === NavigatorExample) {
-      this.props.onExternalExampleRequested(
-        NavigatorExample
-      );
+    if (example.external) {
+      this.props.onExternalExampleRequested(example);
       return;
     }
     var Component = makeRenderable(example);

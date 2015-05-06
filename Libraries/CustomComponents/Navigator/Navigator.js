@@ -27,13 +27,15 @@
 'use strict';
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
-var Backstack = require('Backstack');
-var Dimensions = require('Dimensions');
+var BackAndroid = require('BackAndroid');
 var InteractionMixin = require('InteractionMixin');
-var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
-var NavigatorNavigationBar = require('NavigatorNavigationBar');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
+var NavigatorInterceptor = require('NavigatorInterceptor');
+var NavigatorNavigationBar = require('NavigatorNavigationBar');
+var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
+var NavigatorStaticContextContainer = require('NavigatorStaticContextContainer');
 var PanResponder = require('PanResponder');
+var Platform = require('Platform');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
@@ -41,6 +43,7 @@ var Subscribable = require('Subscribable');
 var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
+var getNavigatorContext = require('getNavigatorContext');
 var clamp = require('clamp');
 var invariant = require('invariant');
 var keyMirror = require('keyMirror');
@@ -49,19 +52,12 @@ var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
 
-var SCREEN_WIDTH = Dimensions.get('window').width;
-var SCREEN_HEIGHT = Dimensions.get('window').height;
-
 var OFF_SCREEN = {style: {opacity: 0}};
-
-var NAVIGATION_BAR_REF = 'navigationBar_ref';
 
 var __uid = 0;
 function getuid() {
   return __uid++;
 }
-
-var nextComponentUid = 0;
 
 // styles moved to the top of the file so getDefaultProps can refer to it
 var styles = StyleSheet.create({
@@ -70,10 +66,13 @@ var styles = StyleSheet.create({
     overflow: 'hidden',
   },
   defaultSceneStyle: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
   },
-  presentNavItem: {
+  currentScene: {
     position: 'absolute',
     overflow: 'hidden',
     left: 0,
@@ -81,7 +80,7 @@ var styles = StyleSheet.create({
     bottom: 0,
     top: 0,
   },
-  futureNavItem: {
+  futureScene: {
     overflow: 'hidden',
     position: 'absolute',
     left: 0,
@@ -89,10 +88,16 @@ var styles = StyleSheet.create({
   },
   transitioner: {
     flex: 1,
-    backgroundColor: '#555555',
+    backgroundColor: 'transparent',
     overflow: 'hidden',
   }
 });
+
+var GESTURE_ACTIONS = [
+  'pop',
+  'jumpBack',
+  'jumpForward',
+];
 
 /**
  * Use `Navigator` to transition between different scenes in your app. To
@@ -130,11 +135,12 @@ var styles = StyleSheet.create({
  *   />
  * ```
  *
- * ### Navigation Methods
+ * ### Navigator Methods
  *
- * `Navigator` can be told to navigate in two ways. If you have a ref to
- * the element, you can invoke several methods on it to trigger navigation:
+ * If you have a ref to the Navigator element, you can invoke several methods
+ * on it to trigger navigation:
  *
+ *  - `getCurrentRoutes()` - returns the current list of routes
  *  - `jumpBack()` - Jump backward without unmounting the current scene
  *  - `jumpForward()` - Jump forward to the next scene in the route stack
  *  - `jumpTo(route)` - Transition to an existing scene without unmounting
@@ -151,18 +157,39 @@ var styles = StyleSheet.create({
  *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
  *     other scene
  *
- * ### Navigator Object
+ * ### Navigation Context
  *
- * The navigator object is made available to scenes through the `renderScene`
- * function. The object has all of the navigation methods on it, as well as a
- * few utilities:
+ * The navigator context object is made available to scenes through the
+ * `renderScene` function. Alternatively, any scene or component inside a
+ * Navigator can get the navigation context by calling
+ * `Navigator.getContext(this)`.
  *
- *  - `parentNavigator` - a refrence to the parent navigator object that was
- *     passed in through props.navigator
- *  - `onWillFocus` - used to pass a navigation focus event up to the parent
- *     navigator
- *  - `onDidFocus` - used to pass a navigation focus event up to the parent
- *     navigator
+ * Unlike the Navigator methods, the functions in navigation context do not
+ * directly control a specific navigator. Instead, the navigator context allows
+ * a scene to request navigation from its parents. Navigation requests will
+ * travel up through the hierarchy of Navigators, and will be resolved by the
+ * deepest active navigator.
+ *
+ * Navigation context objects contain the following:
+ *
+ *  - `getCurrentRoutes()` - returns the routes for the closest navigator
+ *  - `jumpBack()` - Jump backward without unmounting the current scene
+ *  - `jumpForward()` - Jump forward to the next scene in the route stack
+ *  - `jumpTo(route)` - Transition to an existing scene without unmounting
+ *  - `parentNavigator` - a refrence to the parent navigation context
+ *  - `push(route)` - Navigate forward to a new scene, squashing any scenes
+ *     that you could `jumpForward` to
+ *  - `pop()` - Transition back and unmount the current scene
+ *  - `replace(route)` - Replace the current scene with a new route
+ *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
+ *  - `replacePrevious(route)` - Replace the previous scene
+ *  - `route` - The route that was used to render the scene with this context
+ *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
+ *     array of routes
+ *  - `popToRoute(route)` - Pop to a particular scene, as specified by it's
+ *     route. All scenes after it will be unmounted
+ *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
+ *     other scene
  *
  */
 var Navigator = React.createClass({
@@ -181,12 +208,11 @@ var Navigator = React.createClass({
 
     /**
      * Required function which renders the scene for a given route. Will be
-     * invoked with the route, the navigator object, and a ref handler that
-     * will allow a ref to your scene to be provided by props.onItemRef
+     * invoked with the route and the navigator object
      *
      * ```
-     * (route, navigator, onRef) =>
-     *   <MySceneComponent title={route.title} ref={onRef} />
+     * (route, navigator) =>
+     *   <MySceneComponent title={route.title} />
      * ```
      */
     renderScene: PropTypes.func.isRequired,
@@ -238,19 +264,19 @@ var Navigator = React.createClass({
      * Styles to apply to the container of each scene
      */
     sceneStyle: View.propTypes.style,
+  },
 
-    /**
-     * Should the backstack back button "jump" back instead of pop? Set to true
-     * if a jump forward might happen after the android back button is pressed,
-     * so the scenes will remain mounted
-     */
-    shouldJumpOnBackstackPop: PropTypes.bool,
+  contextTypes: {
+    // TODO (t6707746) Re-enable this when owner context switches to parent context
+    // navigator: PropTypes.object,
   },
 
   statics: {
     BreadcrumbNavigationBar: NavigatorBreadcrumbNavigationBar,
     NavigationBar: NavigatorNavigationBar,
     SceneConfigs: NavigatorSceneConfigs,
+    Interceptor: NavigatorInterceptor,
+    getContext: getNavigatorContext,
   },
 
   mixins: [TimerMixin, InteractionMixin, Subscribable.Mixin],
@@ -285,44 +311,67 @@ var Navigator = React.createClass({
       ),
       idStack: routeStack.map(() => getuid()),
       routeStack,
-      // These are tracked to avoid rendering everything all the time.
-      updatingRangeStart: initialRouteIndex,
-      updatingRangeLength: initialRouteIndex + 1,
-      // Either animating or gesturing.
-      isAnimating: false,
-      jumpToIndex: routeStack.length - 1,
+      // `updatingRange*` allows us to only render the visible or staged scenes
+      // On first render, we will render every scene in the initialRouteStack
+      updatingRangeStart: 0,
+      updatingRangeLength: routeStack.length,
       presentedIndex: initialRouteIndex,
-      isResponderOnlyToBlockTouches: false,
-      fromIndex: initialRouteIndex,
-      toIndex: initialRouteIndex,
+      transitionFromIndex: null,
+      activeGesture: null,
+      pendingGestureProgress: null,
+      transitionQueue: [],
     };
   },
 
   componentWillMount: function() {
-    this.navigatorActions = {
+    this.parentNavigator = getNavigatorContext(this) || this.props.navigator;
+    this._subRouteFocus = [];
+    this.navigatorContext = {
+      // Actions for child navigators or interceptors:
+      setHandlerForRoute: this.setHandlerForRoute,
+      request: this.request,
+
+      // Contextual utilities
+      parentNavigator: this.parentNavigator,
+      getCurrentRoutes: this.getCurrentRoutes,
+      // `route` is injected by NavigatorStaticContextContainer
+
+      // Contextual nav actions
+      pop: this.requestPop,
+      popToRoute: this.requestPopTo,
+
+      // Legacy, imperitive nav actions. Will transition these to contextual actions
       jumpBack: this.jumpBack,
       jumpForward: this.jumpForward,
       jumpTo: this.jumpTo,
       push: this.push,
-      pop: this.pop,
       replace: this.replace,
       replaceAtIndex: this.replaceAtIndex,
       replacePrevious: this.replacePrevious,
       replacePreviousAndPop: this.replacePreviousAndPop,
       immediatelyResetRouteStack: this.immediatelyResetRouteStack,
       resetTo: this.resetTo,
-      popToRoute: this.popToRoute,
       popToTop: this.popToTop,
-      parentNavigator: this.props.navigator,
-      // We want to bubble focused routes to the top navigation stack. If we
-      // are a child navigator, this allows us to call props.navigator.on*Focus
-      // of the topmost Navigator
-      onWillFocus: this.props.onWillFocus,
-      onDidFocus: this.props.onDidFocus,
     };
-
+    this._handlers = {};
+    this.springSystem = new rebound.SpringSystem();
+    this.spring = this.springSystem.createSpring();
+    this.spring.setRestSpeedThreshold(0.05);
+    this.spring.setCurrentValue(0).setAtRest();
+    this.spring.addListener({
+      onSpringEndStateChange: () => {
+        if (!this._interactionHandle) {
+          this._interactionHandle = this.createInteractionHandle();
+        }
+      },
+      onSpringUpdate: () => {
+        this._handleSpringUpdate();
+      },
+      onSpringAtRest: () => {
+        this._completeTransition();
+      },
+    });
     this.panGesture = PanResponder.create({
-      onStartShouldSetPanResponderCapture: this._handleStartShouldSetPanResponderCapture,
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
       onPanResponderGrant: this._handlePanResponderGrant,
       onPanResponderRelease: this._handlePanResponderRelease,
@@ -331,55 +380,90 @@ var Navigator = React.createClass({
     });
     this._itemRefs = {};
     this._interactionHandle = null;
-    this._backstackComponentKey = 'jsnavstack' + nextComponentUid;
-    nextComponentUid++;
-
-    Backstack.eventEmitter && this.addListenerOn(
-      Backstack.eventEmitter,
-      'popNavigation',
-      this._onBackstackPopState);
-
-    this._emitWillFocus(this.state.presentedIndex);
+    this._emitWillFocus(this.state.routeStack[this.state.presentedIndex]);
   },
 
-  _configureSpring: function(animationConfig) {
-    var config = this.spring.getSpringConfig();
-    config.friction = animationConfig.springFriction;
-    config.tension = animationConfig.springTension;
+  request: function(action, arg1, arg2) {
+    if (this.parentNavigator) {
+      return this.parentNavigator.request.apply(null, arguments);
+    }
+    return this._handleRequest.apply(null, arguments);
+  },
+
+  requestPop: function() {
+    return this.request('pop');
+  },
+
+  requestPopTo: function(route) {
+    return this.request('pop', route);
+  },
+
+  _handleRequest: function(action, arg1, arg2) {
+    var childHandler = this._handlers[this.state.presentedIndex];
+    if (childHandler && childHandler(action, arg1, arg2)) {
+      return true;
+    }
+    switch (action) {
+      case 'pop':
+        return this._handlePop(arg1);
+      case 'push':
+        return this._handlePush(arg1);
+      default:
+        invariant(false, 'Unsupported request type ' + action);
+        return false;
+    }
+  },
+
+  _handlePop: function(route) {
+    if (route) {
+      var hasRoute = this.state.routeStack.indexOf(route) !== -1;
+      if (hasRoute) {
+        this.popToRoute(route);
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (this.state.presentedIndex === 0) {
+      return false;
+    }
+    this.pop();
+    return true;
+  },
+
+  _handlePush: function(route) {
+    this.push(route);
+    return true;
+  },
+
+  setHandlerForRoute: function(route, handler) {
+    this._handlers[this.state.routeStack.indexOf(route)] = handler;
   },
 
   componentDidMount: function() {
-    this.springSystem = new rebound.SpringSystem();
-    this.spring = this.springSystem.createSpring();
-    this.spring.setRestSpeedThreshold(0.05);
-    var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
-    animationConfig && this._configureSpring(animationConfig);
-    this.spring.addListener(this);
-    this.onSpringUpdate();
-
-    // Fill up the Backstack with routes that have been provided in
-    // initialRouteStack
-    this._fillBackstackRange(0, this.state.routeStack.indexOf(this.props.initialRoute));
-    this._emitDidFocus(this.state.presentedIndex);
+    this._handleSpringUpdate();
+    this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
+    if (this.parentNavigator) {
+      this.parentNavigator.setHandler(this._handleRequest);
+    } else if (Platform.OS === 'android') {
+      // There is no navigator in our props or context, so this is the
+      // top-level navigator. We will handle back button presses here
+      BackAndroid.addEventListener('hardwareBackPress', this._handleAndroidBackPress);
+    }
   },
 
   componentWillUnmount: function() {
-    Backstack.removeComponentHistory(this._backstackComponentKey);
+    if (this.parentNavigator) {
+      this.parentNavigator.setHandler(null);
+    } else if (Platform.OS === 'android') {
+      BackAndroid.removeEventListener('hardwareBackPress', this._handleAndroidBackPress);
+    }
   },
 
-  _onBackstackPopState: function(componentKey, stateKey, state) {
-    if (componentKey !== this._backstackComponentKey) {
-      return;
-    }
-    if (!this._canNavigate()) {
-      // A bit hacky: if we can't actually handle the pop, just push it back on the stack
-      Backstack.pushNavigation(componentKey, stateKey, state);
-    } else {
-      if (this.props.shouldJumpOnBackstackPop) {
-        this._jumpToWithoutBackstack(state.fromRoute);
-      } else {
-        this._popToRouteWithoutBackstack(state.fromRoute);
-      }
+  _handleAndroidBackPress: function() {
+    var didPop = this.requestPop();
+    if (!didPop) {
+      BackAndroid.exitApp();
     }
   },
 
@@ -401,117 +485,151 @@ var Navigator = React.createClass({
       updatingRangeStart: 0,
       updatingRangeLength: nextRouteStack.length,
       presentedIndex: destIndex,
-      jumpToIndex: destIndex,
-      toIndex: destIndex,
-      fromIndex: destIndex,
+      activeGesture: null,
+      transitionFromIndex: null,
+      transitionQueue: [],
     }, () => {
-      this.onSpringUpdate();
+      this._handleSpringUpdate();
     });
   },
 
+  _transitionTo: function(destIndex, velocity, jumpSpringTo, cb) {
+    if (destIndex === this.state.presentedIndex) {
+      return;
+    }
+    if (this.state.transitionFromIndex !== null) {
+      this.state.transitionQueue.push({
+        destIndex,
+        velocity,
+        cb,
+      });
+      return;
+    }
+    this.state.transitionFromIndex = this.state.presentedIndex;
+    this.state.presentedIndex = destIndex;
+    this.state.transitionCb = cb;
+    this._onAnimationStart();
+    if (AnimationsDebugModule) {
+      AnimationsDebugModule.startRecordingFps();
+    }
+    var sceneConfig = this.state.sceneConfigStack[this.state.transitionFromIndex] ||
+      this.state.sceneConfigStack[this.state.presentedIndex];
+    invariant(
+      sceneConfig,
+      'Cannot configure scene at index ' + this.state.transitionFromIndex
+    );
+    if (jumpSpringTo != null) {
+      this.spring.setCurrentValue(jumpSpringTo);
+    }
+    this.spring.setOvershootClampingEnabled(true);
+    this.spring.getSpringConfig().friction = sceneConfig.springFriction;
+    this.spring.getSpringConfig().tension = sceneConfig.springTension;
+    this.spring.setVelocity(velocity || sceneConfig.defaultTransitionVelocity);
+    this.spring.setEndValue(1);
+    var willFocusRoute = this._subRouteFocus[this.state.presentedIndex] || this.state.routeStack[this.state.presentedIndex];
+    this._emitWillFocus(willFocusRoute);
+  },
+
   /**
-   * TODO: Accept callback for spring completion.
+   * This happens for each frame of either a gesture or a transition. If both are
+   * happening, we only set values for the transition and the gesture will catch up later
    */
-  _requestTransitionTo: function(topOfStack) {
-    if (topOfStack !== this.state.presentedIndex) {
-      invariant(!this.state.isAnimating, 'Cannot navigate while transitioning');
-      this.state.fromIndex = this.state.presentedIndex;
-      this.state.toIndex = topOfStack;
-      this.spring.setOvershootClampingEnabled(false);
-      if (AnimationsDebugModule) {
-        AnimationsDebugModule.startRecordingFps();
-      }
-      this._transitionToToIndexWithVelocity(
-        this.state.sceneConfigStack[this.state.fromIndex].defaultTransitionVelocity
+  _handleSpringUpdate: function() {
+    // Prioritize handling transition in progress over a gesture:
+    if (this.state.transitionFromIndex != null) {
+      this._transitionBetween(
+        this.state.transitionFromIndex,
+        this.state.presentedIndex,
+        this.spring.getCurrentValue()
+      );
+    } else if (this.state.activeGesture != null) {
+      this._transitionBetween(
+        this.state.presentedIndex,
+        this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture),
+        this.spring.getCurrentValue()
       );
     }
   },
 
   /**
-   * `onSpring*` spring delegate. Wired up via `spring.addListener(this)`
+   * This happens at the end of a transition started by transitionTo
    */
-  onSpringEndStateChange: function() {
-    if (!this._interactionHandle) {
-      this._interactionHandle = this.createInteractionHandle();
+  _completeTransition: function() {
+    if (this.spring.getCurrentValue() !== 1) {
+      if (this.state.pendingGestureProgress) {
+        this.state.pendingGestureProgress = null;
+      }
+      return;
     }
-  },
-
-  onSpringUpdate: function() {
-    this._transitionBetween(
-      this.state.fromIndex,
-      this.state.toIndex,
-      this.spring.getCurrentValue()
-    );
-  },
-
-  onSpringAtRest: function() {
-    this.state.isAnimating = false;
-    this._completeTransition();
+    this._onAnimationEnd();
+    var presentedIndex = this.state.presentedIndex;
+    var didFocusRoute = this._subRouteFocus[presentedIndex] || this.state.routeStack[presentedIndex];
+    this._emitDidFocus(didFocusRoute);
+    if (AnimationsDebugModule) {
+      AnimationsDebugModule.stopRecordingFps(Date.now());
+    }
+    this.state.transitionFromIndex = null;
     this.spring.setCurrentValue(0).setAtRest();
+    this._hideScenes();
+    if (this.state.transitionCb) {
+      this.state.transitionCb();
+      this.state.transitionCb = null;
+    }
     if (this._interactionHandle) {
       this.clearInteractionHandle(this._interactionHandle);
       this._interactionHandle = null;
     }
-  },
-
-  _completeTransition: function() {
-    if (this.spring.getCurrentValue() === 1) {
-      var presentedIndex = this.state.toIndex;
-      this.state.fromIndex = presentedIndex;
-      this.state.presentedIndex = presentedIndex;
-      this._emitDidFocus(presentedIndex);
-      this._removePoppedRoutes();
-      if (AnimationsDebugModule) {
-        AnimationsDebugModule.stopRecordingFps();
-      }
-      this._hideOtherScenes(presentedIndex);
+    if (this.state.pendingGestureProgress) {
+      this.spring.setEndValue(this.state.pendingGestureProgress);
+      return;
+    }
+    if (this.state.transitionQueue.length) {
+      var queuedTransition = this.state.transitionQueue.shift();
+      this._transitionTo(
+        queuedTransition.destIndex,
+        queuedTransition.velocity,
+        null,
+        queuedTransition.cb
+      );
     }
   },
 
-  _transitionToToIndexWithVelocity: function(v) {
-    this._configureSpring(
-      // For visual consistency, the from index is always used to configure the spring
-      this.state.sceneConfigStack[this.state.fromIndex]
-    );
-    this.state.isAnimating = true;
-    this.spring.setVelocity(v);
-    this.spring.setEndValue(1);
-    this._emitWillFocus(this.state.toIndex);
-  },
-
-  _transitionToFromIndexWithVelocity: function(v) {
-    this._configureSpring(
-      this.state.sceneConfigStack[this.state.fromIndex]
-    );
-    this.state.isAnimating = true;
-    this.spring.setVelocity(v);
-    this.spring.setEndValue(0);
-  },
-
-  _emitDidFocus: function(index) {
-    var route = this.state.routeStack[index];
+  _emitDidFocus: function(route) {
+    if (this._lastDidFocus === route) {
+      return;
+    }
+    this._lastDidFocus = route;
     if (this.props.onDidFocus) {
       this.props.onDidFocus(route);
-    } else if (this.props.navigator && this.props.navigator.onDidFocus) {
-      this.props.navigator.onDidFocus(route);
+    } else if (this.parentNavigator && this.parentNavigator.onDidFocus) {
+      this.parentNavigator.onDidFocus(route);
     }
   },
 
-  _emitWillFocus: function(index) {
-    var route = this.state.routeStack[index];
+  _emitWillFocus: function(route) {
+    if (this._lastWillFocus === route) {
+      return;
+    }
+    this._lastWillFocus = route;
+    var navBar = this._navBar;
+    if (navBar && navBar.handleWillFocus) {
+      navBar.handleWillFocus(route);
+    }
     if (this.props.onWillFocus) {
       this.props.onWillFocus(route);
-    } else if (this.props.navigator && this.props.navigator.onWillFocus) {
-      this.props.navigator.onWillFocus(route);
+    } else if (this.parentNavigator && this.parentNavigator.onWillFocus) {
+      this.parentNavigator.onWillFocus(route);
     }
   },
 
   /**
    * Does not delete the scenes - merely hides them.
    */
-  _hideOtherScenes: function(activeIndex) {
+  _hideScenes: function() {
     for (var i = 0; i < this.state.routeStack.length; i++) {
-      if (i === activeIndex) {
+      // This gets called when we detach a gesture, so there will not be a
+      // current gesture, but there might be a transition in progress
+      if (i === this.state.presentedIndex || i === this.state.transitionFromIndex) {
         continue;
       }
       var sceneRef = 'scene_' + i;
@@ -520,93 +638,231 @@ var Navigator = React.createClass({
     }
   },
 
-  /**
-   * Becomes the responder on touch start (capture) while animating so that it
-   * blocks all touch interactions inside of it. However, this responder lock
-   * means nothing more than that. We record if the sole reason for being
-   * responder is to block interactions (`isResponderOnlyToBlockTouches`).
-   */
-  _handleStartShouldSetPanResponderCapture: function(e, gestureState) {
-    return this.state.isAnimating;
+  _onAnimationStart: function() {
+    var fromIndex = this.state.presentedIndex;
+    var toIndex = this.state.presentedIndex;
+    if (this.state.transitionFromIndex != null) {
+      fromIndex = this.state.transitionFromIndex;
+    } else if (this.state.activeGesture) {
+      toIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
+    }
+    this._setRenderSceneToHarwareTextureAndroid(fromIndex, true);
+    this._setRenderSceneToHarwareTextureAndroid(toIndex, true);
+
+    var navBar = this._navBar;
+    if (navBar && navBar.onAnimationStart) {
+      navBar.onAnimationStart(fromIndex, toIndex);
+    }
+  },
+
+  _onAnimationEnd: function() {
+    var max = this.state.routeStack.length - 1;
+    for (var index = 0; index <= max; index++) {
+      this._setRenderSceneToHarwareTextureAndroid(index, false);
+    }
+
+    var navBar = this._navBar;
+    if (navBar && navBar.onAnimationEnd) {
+      navBar.onAnimationEnd();
+    }
+  },
+
+  _setRenderSceneToHarwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
+    var viewAtIndex = this.refs['scene_' + sceneIndex];
+    if (viewAtIndex === null || viewAtIndex === undefined) {
+      return;
+    }
+    viewAtIndex.setNativeProps({renderToHardwareTextureAndroid: shouldRenderToHardwareTexture});
   },
 
   _handleMoveShouldSetPanResponder: function(e, gestureState) {
     var currentRoute = this.state.routeStack[this.state.presentedIndex];
-    var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
-    if (!animationConfig.enableGestures) {
-      return false;
-    }
-    var currentLoc = animationConfig.isVertical ? gestureState.moveY : gestureState.moveX;
-    var travelDist = animationConfig.isVertical ? gestureState.dy : gestureState.dx;
-    var oppositeAxisTravelDist =
-      animationConfig.isVertical ? gestureState.dx : gestureState.dy;
-    var moveStartedInRegion = currentLoc < animationConfig.edgeHitWidth;
-    var moveTravelledFarEnough =
-      travelDist >= animationConfig.gestureDetectMovement &&
-      travelDist > oppositeAxisTravelDist * animationConfig.directionRatio;
-    return (
-      !this.state.isResponderOnlyToBlockTouches &&
-      moveStartedInRegion &&
-      !this.state.isAnimating &&
-      this.state.presentedIndex > 0 &&
-      moveTravelledFarEnough
-    );
+    var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
+    this._expectingGestureGrant = this._matchGestureAction(sceneConfig.gestures, gestureState);
+    return !! this._expectingGestureGrant;
+  },
+
+  _doesGestureOverswipe: function(gestureName) {
+    var wouldOverswipeBack = this.state.presentedIndex <= 0 &&
+      (gestureName === 'pop' || gestureName === 'jumpBack');
+    var wouldOverswipeForward = this.state.presentedIndex >= this.state.routeStack.length - 1 &&
+      gestureName === 'jumpForward';
+    return wouldOverswipeForward || wouldOverswipeBack;
   },
 
   _handlePanResponderGrant: function(e, gestureState) {
-    this.state.isResponderOnlyToBlockTouches = this.state.isAnimating;
-    if (!this.state.isAnimating) {
-      this.state.fromIndex = this.state.presentedIndex;
-      this.state.toIndex = this.state.presentedIndex - 1;
+    invariant(
+      this._expectingGestureGrant,
+      'Responder granted unexpectedly.'
+    );
+    this._attachGesture(this._expectingGestureGrant);
+    this._onAnimationStart();
+    this._expectingGestureGrant = null;
+  },
+
+  _deltaForGestureAction: function(gestureAction) {
+    switch (gestureAction) {
+      case 'pop':
+      case 'jumpBack':
+        return -1;
+      case 'jumpForward':
+        return 1;
+      default:
+        invariant(false, 'Unsupported gesture action ' + gestureAction);
+        return;
     }
   },
 
   _handlePanResponderRelease: function(e, gestureState) {
-    if (this.state.isResponderOnlyToBlockTouches) {
-      this.state.isResponderOnlyToBlockTouches = false;
+    var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
+    var releaseGestureAction = this.state.activeGesture;
+    if (!releaseGestureAction) {
+      // The gesture may have been detached while responder, so there is no action here
       return;
     }
-    var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
-    var velocity = animationConfig.isVertical ? gestureState.vy : gestureState.vx;
-    // It's not the real location. There is no *real* location - that's the
-    // point of the pan gesture.
-    var pseudoLocation = animationConfig.isVertical ?
-      gestureState.y0 + gestureState.dy :
-      gestureState.x0 + gestureState.dx;
-    var still = Math.abs(velocity) < animationConfig.notMoving;
+    var releaseGesture = sceneConfig.gestures[releaseGestureAction];
+    var destIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
     if (this.spring.getCurrentValue() === 0) {
+      // The spring is at zero, so the gesture is already complete
       this.spring.setCurrentValue(0).setAtRest();
       this._completeTransition();
       return;
     }
-    var transitionVelocity =
-      still && animationConfig.pastPointOfNoReturn(pseudoLocation) ? animationConfig.snapVelocity :
-      still && !animationConfig.pastPointOfNoReturn(pseudoLocation) ? -animationConfig.snapVelocity :
-      clamp(-10, velocity, 10);  // What are Rebound UoM?
-
-    this.spring.setOvershootClampingEnabled(true);
-    if (transitionVelocity < 0) {
-      this._transitionToFromIndexWithVelocity(transitionVelocity);
+    var isTravelVertical = releaseGesture.direction === 'top-to-bottom' || releaseGesture.direction === 'bottom-to-top';
+    var isTravelInverted = releaseGesture.direction === 'right-to-left' || releaseGesture.direction === 'bottom-to-top';
+    var velocity, gestureDistance;
+    if (isTravelVertical) {
+      velocity = isTravelInverted ? -gestureState.vy : gestureState.vy;
+      gestureDistance = isTravelInverted ? -gestureState.dy : gestureState.dy;
     } else {
-      this._manuallyPopBackstack(1);
-      this._transitionToToIndexWithVelocity(transitionVelocity);
+      velocity = isTravelInverted ? -gestureState.vx : gestureState.vx;
+      gestureDistance = isTravelInverted ? -gestureState.dx : gestureState.dx;
     }
+    var transitionVelocity = clamp(-10, velocity, 10);
+    if (Math.abs(velocity) < releaseGesture.notMoving) {
+      // The gesture velocity is so slow, is "not moving"
+      var hasGesturedEnoughToComplete = gestureDistance > releaseGesture.fullDistance * releaseGesture.stillCompletionRatio;
+      transitionVelocity = hasGesturedEnoughToComplete ? releaseGesture.snapVelocity : -releaseGesture.snapVelocity;
+    }
+    if (transitionVelocity < 0 || this._doesGestureOverswipe(releaseGestureAction)) {
+      // This gesture is to an overswiped region or does not have enough velocity to complete
+      // If we are currently mid-transition, then this gesture was a pending gesture. Because this gesture takes no action, we can stop here
+      if (this.state.transitionFromIndex == null) {
+        // There is no current transition, so we need to transition back to the presented index
+        var transitionBackToPresentedIndex = this.state.presentedIndex;
+        // slight hack: change the presented index for a moment in order to transitionTo correctly
+        this.state.presentedIndex = destIndex;
+        this._transitionTo(
+          transitionBackToPresentedIndex,
+          - transitionVelocity,
+          1 - this.spring.getCurrentValue()
+        );
+      }
+    } else {
+      // The gesture has enough velocity to complete, so we transition to the gesture's destination
+      this._transitionTo(destIndex, transitionVelocity);
+    }
+    this._detachGesture();
   },
 
   _handlePanResponderTerminate: function(e, gestureState) {
-    this.state.isResponderOnlyToBlockTouches = false;
-    this._transitionToFromIndexWithVelocity(0);
+    var destIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
+    this._detachGesture();
+    var transitionBackToPresentedIndex = this.state.presentedIndex;
+    // slight hack: change the presented index for a moment in order to transitionTo correctly
+    this.state.presentedIndex = destIndex;
+    this._transitionTo(
+      transitionBackToPresentedIndex,
+      null,
+      1 - this.spring.getCurrentValue()
+    );
+  },
+
+  _attachGesture: function(gestureId) {
+    this.state.activeGesture = gestureId;
+  },
+
+  _detachGesture: function() {
+    this.state.activeGesture = null;
+    this.state.pendingGestureProgress = null;
+    this._hideScenes();
   },
 
   _handlePanResponderMove: function(e, gestureState) {
-    if (!this.state.isResponderOnlyToBlockTouches) {
-      var animationConfig = this.state.sceneConfigStack[this.state.presentedIndex];
-      var distance = animationConfig.isVertical ? gestureState.dy : gestureState.dx;
-      var gestureDetectMovement = animationConfig.gestureDetectMovement;
-      var nextProgress = (distance - gestureDetectMovement) /
-        (animationConfig.screenDimension - gestureDetectMovement);
-      this.spring.setCurrentValue(clamp(0, nextProgress, 1));
+    var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
+    if (this.state.activeGesture) {
+      var gesture = sceneConfig.gestures[this.state.activeGesture];
+      return this._moveAttachedGesture(gesture, gestureState);
     }
+    var matchedGesture = this._matchGestureAction(sceneConfig.gestures, gestureState);
+    if (matchedGesture) {
+      this._attachGesture(matchedGesture);
+    }
+  },
+
+  _moveAttachedGesture: function(gesture, gestureState) {
+    var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
+    var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
+    var distance = isTravelVertical ? gestureState.dy : gestureState.dx;
+    distance = isTravelInverted ? - distance : distance;
+    var gestureDetectMovement = gesture.gestureDetectMovement;
+    var nextProgress = (distance - gestureDetectMovement) /
+      (gesture.fullDistance - gestureDetectMovement);
+    if (nextProgress < 0 && gesture.isDetachable) {
+      this._detachGesture();
+    }
+    if (this._doesGestureOverswipe(this.state.activeGesture)) {
+      var frictionConstant = gesture.overswipe.frictionConstant;
+      var frictionByDistance = gesture.overswipe.frictionByDistance;
+      var frictionRatio = 1 / ((frictionConstant) + (Math.abs(nextProgress) * frictionByDistance));
+      nextProgress *= frictionRatio;
+    }
+    nextProgress = clamp(0, nextProgress, 1);
+    if (this.state.transitionFromIndex != null) {
+      this.state.pendingGestureProgress = nextProgress;
+    } else if (this.state.pendingGestureProgress) {
+      this.spring.setEndValue(nextProgress);
+    } else {
+      this.spring.setCurrentValue(nextProgress);
+    }
+  },
+
+  _matchGestureAction: function(gestures, gestureState) {
+    if (!gestures) {
+      return null;
+    }
+    var matchedGesture = null;
+    GESTURE_ACTIONS.some((gestureName) => {
+      var gesture = gestures[gestureName];
+      if (!gesture) {
+        return;
+      }
+      if (gesture.overswipe == null && this._doesGestureOverswipe(gestureName)) {
+        // cannot swipe past first or last scene without overswiping
+        return false;
+      }
+      var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
+      var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
+      var currentLoc = isTravelVertical ? gestureState.moveY : gestureState.moveX;
+      var travelDist = isTravelVertical ? gestureState.dy : gestureState.dx;
+      var oppositeAxisTravelDist =
+        isTravelVertical ? gestureState.dx : gestureState.dy;
+      if (isTravelInverted) {
+        currentLoc = -currentLoc;
+        travelDist = -travelDist;
+        oppositeAxisTravelDist = -oppositeAxisTravelDist;
+      }
+      var moveStartedInRegion = gesture.edgeHitWidth == null ||
+        currentLoc < gesture.edgeHitWidth;
+      var moveTravelledFarEnough =
+        travelDist >= gesture.gestureDetectMovement &&
+        travelDist > oppositeAxisTravelDist * gesture.directionRatio;
+      if (moveStartedInRegion && moveTravelledFarEnough) {
+        matchedGesture = gestureName;
+        return true;
+      }
+    });
+    return matchedGesture;
   },
 
   _transitionSceneStyle: function(fromIndex, toIndex, progress, index) {
@@ -615,12 +871,16 @@ var Navigator = React.createClass({
       return;
     }
     // Use toIndex animation when we move forwards. Use fromIndex when we move back
-    var animationIndex = this.state.presentedIndex < toIndex ? toIndex : fromIndex;
-    var animationConfig = this.state.sceneConfigStack[animationIndex];
+    var sceneConfigIndex = fromIndex < toIndex ? toIndex : fromIndex;
+    var sceneConfig = this.state.sceneConfigStack[sceneConfigIndex];
+    // this happens for overswiping when there is no scene at toIndex
+    if (!sceneConfig) {
+      sceneConfig = this.state.sceneConfigStack[sceneConfigIndex - 1];
+    }
     var styleToUse = {};
     var useFn = index < fromIndex || index < toIndex ?
-      animationConfig.interpolators.out :
-      animationConfig.interpolators.into;
+      sceneConfig.animationInterpolators.out :
+      sceneConfig.animationInterpolators.into;
     var directionAdjustedProgress = fromIndex < toIndex ? progress : 1 - progress;
     var didChange = useFn(styleToUse, directionAdjustedProgress);
     if (didChange) {
@@ -631,7 +891,7 @@ var Navigator = React.createClass({
   _transitionBetween: function(fromIndex, toIndex, progress) {
     this._transitionSceneStyle(fromIndex, toIndex, progress, fromIndex);
     this._transitionSceneStyle(fromIndex, toIndex, progress, toIndex);
-    var navBar = this.refs[NAVIGATION_BAR_REF];
+    var navBar = this._navBar;
     if (navBar && navBar.updateProgress) {
       navBar.updateProgress(progress, fromIndex, toIndex);
     }
@@ -644,45 +904,6 @@ var Navigator = React.createClass({
   _resetUpdatingRange: function() {
     this.state.updatingRangeStart = 0;
     this.state.updatingRangeLength = this.state.routeStack.length;
-  },
-
-  _canNavigate: function() {
-    return !this.state.isAnimating;
-  },
-
-  _jumpNWithoutBackstack: function(n) {
-    var destIndex = this._getDestIndexWithinBounds(n);
-    if (!this._canNavigate()) {
-      return; // It's busy animating or transitioning.
-    }
-    var requestTransitionAndResetUpdatingRange = () => {
-      this._requestTransitionTo(destIndex);
-      this._resetUpdatingRange();
-    };
-    this.setState({
-      updatingRangeStart: destIndex,
-      updatingRangeLength: 1,
-      toIndex: destIndex,
-    }, requestTransitionAndResetUpdatingRange);
-  },
-
-  _fillBackstackRange: function(start, end) {
-    invariant(
-      start <= end,
-      'Can only fill the backstack forward. Provide end index greater than start'
-    );
-    for (var i = 0; i < (end - start); i++) {
-      var fromIndex = start + i;
-      var toIndex = start + i + 1;
-      Backstack.pushNavigation(
-        this._backstackComponentKey,
-        toIndex,
-        {
-          fromRoute: this.state.routeStack[fromIndex],
-          toRoute: this.state.routeStack[toIndex],
-        }
-      );
-    }
   },
 
   _getDestIndexWithinBounds: function(n) {
@@ -701,20 +922,15 @@ var Navigator = React.createClass({
   },
 
   _jumpN: function(n) {
-    var currentIndex = this.state.presentedIndex;
-    if (!this._canNavigate()) {
-      return; // It's busy animating or transitioning.
-    }
-    if (n > 0) {
-      this._fillBackstackRange(currentIndex, currentIndex + n);
-    } else {
-      var landingBeforeIndex = currentIndex + n + 1;
-      Backstack.resetToBefore(
-        this._backstackComponentKey,
-        landingBeforeIndex
-      );
-    }
-    this._jumpNWithoutBackstack(n);
+    var destIndex = this._getDestIndexWithinBounds(n);
+    var requestTransitionAndResetUpdatingRange = () => {
+      this._transitionTo(destIndex);
+      this._resetUpdatingRange();
+    };
+    this.setState({
+      updatingRangeStart: destIndex,
+      updatingRangeLength: 1,
+    }, requestTransitionAndResetUpdatingRange);
   },
 
   jumpTo: function(route) {
@@ -724,15 +940,6 @@ var Navigator = React.createClass({
       'Cannot jump to route that is not in the route stack'
     );
     this._jumpN(destIndex - this.state.presentedIndex);
-  },
-
-  _jumpToWithoutBackstack: function(route) {
-    var destIndex = this.state.routeStack.indexOf(route);
-    invariant(
-      destIndex !== -1,
-      'Cannot jump to route that is not in the route stack'
-    );
-    this._jumpNWithoutBackstack(destIndex - this.state.presentedIndex);
   },
 
   jumpForward: function() {
@@ -745,9 +952,6 @@ var Navigator = React.createClass({
 
   push: function(route) {
     invariant(!!route, 'Must supply route to push');
-    if (!this._canNavigate()) {
-      return; // It's busy animating or transitioning.
-    }
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
     var activeIDStack = this.state.idStack.slice(0, activeLength);
@@ -758,62 +962,39 @@ var Navigator = React.createClass({
       this.props.configureScene(route),
     ]);
     var requestTransitionAndResetUpdatingRange = () => {
-      this._requestTransitionTo(nextStack.length - 1);
+      this._transitionTo(nextStack.length - 1);
       this._resetUpdatingRange();
     };
-    var navigationState = {
-      toRoute: route,
-      fromRoute: this.state.routeStack[this.state.routeStack.length - 1],
-    };
-    Backstack.pushNavigation(
-      this._backstackComponentKey,
-      this.state.routeStack.length,
-      navigationState);
-
     this.setState({
       idStack: nextIDStack,
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
-      jumpToIndex: nextStack.length - 1,
       updatingRangeStart: nextStack.length - 1,
       updatingRangeLength: 1,
     }, requestTransitionAndResetUpdatingRange);
   },
 
-   _manuallyPopBackstack: function(n) {
-    Backstack.resetToBefore(this._backstackComponentKey, this.state.routeStack.length - n);
-  },
-
-  /**
-   * Like popN, but doesn't also update the Backstack.
-   */
-  _popNWithoutBackstack: function(n) {
-    if (n === 0 || !this._canNavigate()) {
+  _popN: function(n) {
+    if (n === 0) {
       return;
     }
     invariant(
       this.state.presentedIndex - n >= 0,
       'Cannot pop below zero'
     );
-    this.state.jumpToIndex = this.state.presentedIndex - n;
-    this._requestTransitionTo(
-      this.state.presentedIndex - n
+    var popIndex = this.state.presentedIndex - n;
+    this._transitionTo(
+      popIndex,
+      null, // default velocity
+      null, // no spring jumping
+      () => {
+        this._cleanScenesPastIndex(popIndex);
+      }
     );
   },
 
-  popN: function(n) {
-    if (n === 0 || !this._canNavigate()) {
-      return;
-    }
-    this._popNWithoutBackstack(n);
-    this._manuallyPopBackstack(n);
-  },
-
   pop: function() {
-    if (this.props.navigator && this.state.routeStack.length === 1) {
-      return this.props.navigator.pop();
-    }
-    this.popN(1);
+    this._popN(1);
   },
 
   /**
@@ -822,7 +1003,7 @@ var Navigator = React.createClass({
    * `index` specifies the route in the stack that should be replaced.
    * If it's negative, it counts from the back.
    */
-  replaceAtIndex: function(route, index) {
+  replaceAtIndex: function(route, index, cb) {
     invariant(!!route, 'Must supply route to replace');
     if (index < 0) {
       index += this.state.routeStack.length;
@@ -850,9 +1031,10 @@ var Navigator = React.createClass({
     }, () => {
       this._resetUpdatingRange();
       if (index === this.state.presentedIndex) {
-        this._emitWillFocus(this.state.presentedIndex);
-        this._emitDidFocus(this.state.presentedIndex);
+        this._emitWillFocus(route);
+        this._emitDidFocus(route);
       }
+      cb && cb();
     });
   },
 
@@ -883,21 +1065,13 @@ var Navigator = React.createClass({
     return this.state.routeStack.length - indexOfRoute - 1;
   },
 
-  /**
-   * Like popToRoute, but doesn't update the Backstack, presumably because it's already up to date.
-   */
-  _popToRouteWithoutBackstack: function(route) {
-    var numToPop = this._getNumToPopForRoute(route);
-    this._popNWithoutBackstack(numToPop);
-  },
-
   popToRoute: function(route) {
     var numToPop = this._getNumToPopForRoute(route);
-    this.popN(numToPop);
+    this._popN(numToPop);
   },
 
   replacePreviousAndPop: function(route) {
-    if (this.state.routeStack.length < 2 || !this._canNavigate()) {
+    if (this.state.routeStack.length < 2) {
       return;
     }
     this.replacePrevious(route);
@@ -906,13 +1080,16 @@ var Navigator = React.createClass({
 
   resetTo: function(route) {
     invariant(!!route, 'Must supply route to push');
-    if (this._canNavigate()) {
-      this.replaceAtIndex(route, 0);
+    this.replaceAtIndex(route, 0, () => {
       this.popToRoute(route);
-    }
+    });
   },
 
-  _onItemRef: function(itemId, ref) {
+  getCurrentRoutes: function() {
+    return this.state.routeStack;
+  },
+
+  _handleItemRef: function(itemId, ref) {
     this._itemRefs[itemId] = ref;
     var itemIndex = this.state.idStack.indexOf(itemId);
     if (itemIndex === -1) {
@@ -921,8 +1098,8 @@ var Navigator = React.createClass({
     this.props.onItemRef && this.props.onItemRef(ref, itemIndex);
   },
 
-  _removePoppedRoutes: function() {
-    var newStackLength = this.state.jumpToIndex + 1;
+  _cleanScenesPastIndex: function(index) {
+    var newStackLength = index + 1;
     // Remove any unneeded rendered routes.
     if (newStackLength < this.state.routeStack.length) {
       var updatingRangeStart = newStackLength; // One past the top
@@ -940,57 +1117,100 @@ var Navigator = React.createClass({
     }
   },
 
-  _routeToOptimizedStackItem: function(route, i) {
-    var shouldUpdateChild =
-      this.state.updatingRangeLength !== 0 &&
+  _renderOptimizedScenes: function() {
+    // To avoid rendering scenes that are not visible, we use
+    // updatingRangeStart and updatingRangeLength to track the scenes that need
+    // to be updated.
+
+    // To avoid visual glitches, we never re-render scenes during a transition.
+    // We assume that `state.updatingRangeLength` will have a length during the
+    // initial render of any scene
+    var shouldRenderScenes = this.state.updatingRangeLength !== 0;
+    if (shouldRenderScenes) {
+      return (
+        <StaticContainer shouldUpdate={true}>
+          <View
+            style={styles.transitioner}
+            {...this.panGesture.panHandlers}
+            onResponderTerminationRequest={
+              this._handleResponderTerminationRequest
+            }>
+            {this.state.routeStack.map(this._renderOptimizedScene)}
+          </View>
+        </StaticContainer>
+      );
+    }
+    // If no scenes are changing, we can save render time. React will notice
+    // that we are rendering a StaticContainer in the same place, so the
+    // existing element will be updated. When React asks the element
+    // shouldComponentUpdate, the StaticContainer will return false, and the
+    // children from the previous reconciliation will remain.
+    return (
+      <StaticContainer shouldUpdate={false} />
+    );
+  },
+
+  _renderOptimizedScene: function(route, i) {
+    var shouldRenderScene =
       i >= this.state.updatingRangeStart &&
       i <= this.state.updatingRangeStart + this.state.updatingRangeLength;
+    var sceneNavigatorContext = {
+      ...this.navigatorContext,
+      route,
+      setHandler: (handler) => {
+        this.navigatorContext.setHandlerForRoute(route, handler);
+      },
+      onWillFocus: (childRoute) => {
+        this._subRouteFocus[i] = childRoute;
+        if (this.state.presentedIndex === i) {
+          this._emitWillFocus(childRoute);
+        }
+      },
+      onDidFocus: (childRoute) => {
+        this._subRouteFocus[i] = childRoute;
+        if (this.state.presentedIndex === i) {
+          this._emitDidFocus(childRoute);
+        }
+      },
+    };
+    var scene = shouldRenderScene ?
+      this._renderScene(route, i, sceneNavigatorContext) : null;
+    return (
+      <NavigatorStaticContextContainer
+        navigatorContext={sceneNavigatorContext}
+        key={'nav' + i}
+        shouldUpdate={shouldRenderScene}>
+        {scene}
+      </NavigatorStaticContextContainer>
+    );
+  },
+
+  _renderScene: function(route, i, sceneNavigatorContext) {
     var child = this.props.renderScene(
       route,
-      this.navigatorActions,
-      this._onItemRef.bind(null, this.state.idStack[i])
+      sceneNavigatorContext
     );
-
-    var initialSceneStyle =
-      i === this.state.presentedIndex ? styles.presentNavItem : styles.futureNavItem;
+    var initialSceneStyle = i === this.state.presentedIndex ?
+      styles.currentScene : styles.futureScene;
     return (
-      <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
-        <View
-          key={this.state.idStack[i]}
-          ref={'scene_' + i}
-          style={[initialSceneStyle, this.props.sceneStyle]}>
-          {child}
-        </View>
-      </StaticContainer>
+      <View
+        key={this.state.idStack[i]}
+        ref={'scene_' + i}
+        style={[initialSceneStyle, this.props.sceneStyle]}>
+        {React.cloneElement(child, {
+          ref: this._handleItemRef.bind(null, this.state.idStack[i]),
+        })}
+      </View>
     );
   },
 
-  renderNavigationStackItems: function() {
-    var shouldRecurseToNavigator = this.state.updatingRangeLength !== 0;
-    // If not recursing update to navigator at all, may as well avoid
-    // computation of navigator children.
-    var items = shouldRecurseToNavigator ?
-      this.state.routeStack.map(this._routeToOptimizedStackItem) : null;
-
-    return (
-      <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
-        <View
-          style={styles.transitioner}
-          {...this.panGesture.panHandlers}
-          onResponderTerminationRequest={this._handleResponderTerminationRequest}>
-          {items}
-        </View>
-      </StaticContainer>
-    );
-  },
-
-  renderNavigationStackBar: function() {
+  _renderNavigationBar: function() {
     if (!this.props.navigationBar) {
       return null;
     }
     return React.cloneElement(this.props.navigationBar, {
-      ref: NAVIGATION_BAR_REF,
-      navigator: this.navigatorActions,
+      ref: (navBar) => { this._navBar = navBar; },
+      navigator: this.navigatorContext,
       navState: this.state,
     });
   },
@@ -998,8 +1218,8 @@ var Navigator = React.createClass({
   render: function() {
     return (
       <View style={[styles.container, this.props.style]}>
-        {this.renderNavigationStackItems()}
-        {this.renderNavigationStackBar()}
+        {this._renderOptimizedScenes()}
+        {this._renderNavigationBar()}
       </View>
     );
   },

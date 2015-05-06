@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
+
 #import "RCTWebViewExecutor.h"
 
 #import <objc/runtime.h>
@@ -42,12 +46,9 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
 
 - (instancetype)initWithWebView:(UIWebView *)webView
 {
-  if (!webView) {
-    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Can't init with a nil webview" userInfo:nil];
-  }
   if ((self = [super init])) {
     _objectsToInject = [[NSMutableDictionary alloc] init];
-    _webView = webView;
+    _webView = webView ?: [[UIWebView alloc] init];
     _webView.delegate = self;
   }
   return self;
@@ -55,7 +56,7 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
 
 - (id)init
 {
-  return [self initWithWebView:[[UIWebView alloc] init]];
+  return [self initWithWebView:nil];
 }
 
 - (BOOL)isValid
@@ -79,10 +80,15 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
+              context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"");
   [self executeBlockOnJavaScriptQueue:^{
+    if (!self.isValid || ![RCTGetExecutorID(self) isEqualToNumber:executorID]) {
+      return;
+    }
+
     NSError *error;
     NSString *argsString = RCTJSONStringify(arguments, &error);
     if (!argsString) {
@@ -125,6 +131,8 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   RCTAssert(onComplete != nil, @"");
   _onApplicationScriptLoaded = onComplete;
 
+  script = [script stringByReplacingOccurrencesOfString:@"<script>" withString:@""];
+  script = [script stringByReplacingOccurrencesOfString:@"</script>" withString:@""];
   if (_objectsToInject.count > 0) {
     NSMutableString *scriptWithInjections = [[NSMutableString alloc] initWithString:@"/* BEGIN NATIVELY INJECTED OBJECTS */\n"];
     [_objectsToInject enumerateKeysAndObjectsUsingBlock:^(NSString *objectName, NSString *blockScript, BOOL *stop) {
@@ -184,9 +192,14 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
 {
-  RCTAssert(!_objectsToInject[objectName],
-            @"already injected object named %@", _objectsToInject[objectName]);
+  if (RCT_DEBUG) {
+    RCTAssert(!_objectsToInject[objectName],
+              @"already injected object named %@", _objectsToInject[objectName]);
+  }
   _objectsToInject[objectName] = script;
   onComplete(nil);
 }
+
 @end
+
+#endif

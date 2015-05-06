@@ -17,6 +17,7 @@
 
 var React = require('react-native');
 var ViewExample = require('./ViewExample');
+var createExamplePage = require('./createExamplePage');
 var {
   PixelRatio,
   ScrollView,
@@ -77,7 +78,7 @@ var NavigatorIOSExample = React.createClass({
           {this._renderRow('Push View Example', () => {
             this.props.navigator.push({
               title: 'Very Long Custom View Example Title',
-              component: ViewExample,
+              component: createExamplePage(null, ViewExample),
             });
           })}
           {this._renderRow('Custom Right Button', () => {

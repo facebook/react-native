@@ -7,10 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
+
 #import "RCTJavaScriptExecutor.h"
 
 @interface RCTWebSocketExecutor : NSObject <RCTJavaScriptExecutor>
 
-- (instancetype)initWithURL:(NSURL *)url;
+- (instancetype)initWithURL:(NSURL *)URL;
 
 @end
+
+#endif

@@ -17,18 +17,20 @@ var RCTUIManager = require('NativeModules').UIManager;
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var keyMirror = require('keyMirror');
 
-var Types = keyMirror({
+var TypesEnum = {
   spring: true,
   linear: true,
   easeInEaseOut: true,
   easeIn: true,
   easeOut: true,
-});
+};
+var Types = keyMirror(TypesEnum);
 
-var Properties = keyMirror({
+var PropertiesEnum = {
   opacity: true,
   scaleXY: true,
-});
+};
+var Properties = keyMirror(PropertiesEnum);
 
 var animChecker = createStrictShapeTypeChecker({
   duration: PropTypes.number,
@@ -48,8 +50,8 @@ type Anim = {
   delay?: number;
   springDamping?: number;
   initialVelocity?: number;
-  type?: $Enum<typeof Types>;
-  property?: $Enum<typeof Properties>;
+  type?: $Enum<typeof TypesEnum>;
+  property?: $Enum<typeof PropertiesEnum>;
 }
 
 var configChecker = createStrictShapeTypeChecker({

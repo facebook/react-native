@@ -10,6 +10,7 @@
 #import "RCTTestRunner.h"
 
 #import "FBSnapshotTestController.h"
+#import "RCTDefines.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
@@ -17,18 +18,9 @@
 
 #define TIMEOUT_SECONDS 240
 
-@interface RCTRootView (Testing)
-
-- (instancetype)_initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                    launchOptions:(NSDictionary *)launchOptions
-                   moduleProvider:(RCTBridgeModuleProviderBlock)moduleProvider;
-
-@end
-
 @implementation RCTTestRunner
 {
-  FBSnapshotTestController *_snapshotController;
+  FBSnapshotTestController *_testController;
 }
 
 - (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir
@@ -36,21 +28,21 @@
   if ((self = [super init])) {
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
-    _snapshotController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
-    _snapshotController.referenceImagesDirectory = referenceDir;
-    _script = [NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app];
+    _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
+    _testController.referenceImagesDirectory = referenceDir;
+    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
   }
   return self;
 }
 
 - (void)setRecordMode:(BOOL)recordMode
 {
-  _snapshotController.recordMode = recordMode;
+  _testController.recordMode = recordMode;
 }
 
 - (BOOL)recordMode
 {
-  return _snapshotController.recordMode;
+  return _testController.recordMode;
 }
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName
@@ -58,34 +50,33 @@
   [self runTest:test module:moduleName initialProps:nil expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSRegularExpression *)errorRegex
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)errorRegex
 {
   [self runTest:test module:moduleName initialProps:initialProps expectErrorBlock:^BOOL(NSString *error){
-    return [errorRegex numberOfMatchesInString:error options:0 range:NSMakeRange(0, [error length])] > 0;
+    return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;
   }];
 }
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
-  UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-  if ([vc.view isKindOfClass:[RCTRootView class]]) {
-    [(RCTRootView *)vc.view invalidate]; // Make sure the normal app view doesn't interfere
-  }
-  vc.view = [[UIView alloc] init];
-
-  RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
-  testModule.testSelector = test;
-
-  RCTRootView *rootView = [[RCTRootView alloc] _initWithBundleURL:[NSURL URLWithString:_script]
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:_scriptURL
                                                       moduleName:moduleName
-                                                   launchOptions:nil
-                                                   moduleProvider:^{
-                                                     return @[testModule];
-                                                   }];
-  [testModule setValue:rootView forKey:@"_view"];
-  rootView.frame = CGRectMake(0, 0, 320, 2000);
-  [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
+                                                   launchOptions:nil];
   rootView.initialProperties = initialProps;
+  rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
+
+  NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);
+  RCTTestModule *testModule = rootView.bridge.modules[testModuleName];
+  testModule.controller = _testController;
+  testModule.testSelector = test;
+  testModule.view = rootView;
+
+  UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+  vc.view = [[UIView alloc] init];
+  [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
+
+#if RCT_DEBUG // Prevents build errors, as RCTRedBox is underfined if RCT_DEBUG=0
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
@@ -94,8 +85,9 @@
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:date];
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
-  [rootView invalidate];
   [rootView removeFromSuperview];
+  [rootView.bridge invalidate];
+  [rootView invalidate];
   RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
   vc.view = nil;
   [[RCTRedBox sharedInstance] dismiss];
@@ -106,6 +98,13 @@
   } else {
     RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
   }
+
+#else
+
+  expectErrorBlock(@"RCTRedBox unavailable. Set RCT_DEBUG=1 for testing.");
+
+#endif
+
 }
 
 @end

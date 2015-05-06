@@ -9,10 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "../../React/Base/RCTBridgeModule.h"
+#import "RCTBridgeModule.h"
 
 @interface RCTLinkingManager : NSObject <RCTBridgeModule>
 
-+ (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
++ (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)URL
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation;
 
 @end

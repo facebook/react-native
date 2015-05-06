@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEBUG // Red box is only available in debug mode
+
 #import "RCTRedBox.h"
 
+#import "RCTBridge.h"
 #import "RCTUtils.h"
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
@@ -120,7 +125,7 @@
 
 - (void)reload
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTReloadNotification" object:nil userInfo:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
   [self dismiss];
 }
 
@@ -172,6 +177,7 @@
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     cell.textLabel.textColor = [[UIColor whiteColor] colorWithAlphaComponent:0.9];
     cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
+    cell.textLabel.numberOfLines = 2;
     cell.detailTextLabel.textColor = [[UIColor whiteColor] colorWithAlphaComponent:0.7];
     cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
     cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
@@ -196,7 +202,7 @@
     CGRect boundingRect = [_lastErrorMessage boundingRectWithSize:CGSizeMake(tableView.frame.size.width - 30, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     return ceil(boundingRect.size.height) + 40;
   } else {
-    return 44;
+    return 50;
   }
 }
 
@@ -280,23 +286,12 @@
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
 {
-
-#if DEBUG
-
-  dispatch_block_t block = ^{
+  dispatch_async(dispatch_get_main_queue(), ^{
     if (!_window) {
       _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     }
     [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
-  };
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_async(dispatch_get_main_queue(), block);
-  }
-
-#endif
-
+  });
 }
 
 - (NSString *)currentErrorMessage
@@ -314,3 +309,5 @@
 }
 
 @end
+
+#endif

@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
 
 /**
  * Send a user input event. The body dictionary must contain a "target"
- * parameter, representing the react tag of the view sending the event
+ * parameter, representing the React tag of the view sending the event
  */
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body;
 

@@ -39,7 +39,10 @@ function fetchSourceMap(): Promise {
     .then(response => response.text())
 }
 
-function extractSourceMapURL({url, text}): string {
+function extractSourceMapURL({url, text, fullSourceMappingURL}): string {
+  if (fullSourceMappingURL) {
+    return fullSourceMappingURL;
+  }
   var mapURL = SourceMapURL.getFrom(text);
   var baseURL = url.match(/(.+:\/\/.*?)\//)[1];
   return baseURL + mapURL;

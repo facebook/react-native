@@ -37,7 +37,7 @@
   "rules": {
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
-    "no-constant-condition": 1,      // disallow use of constant expressions in conditions
+    "no-constant-condition": 0,      // disallow use of constant expressions in conditions
     "no-comma-dangle": 0,            // disallow trailing commas in object literals
     "no-control-regex": 1,           // disallow control characters in regular expressions
     "no-debugger": 1,                // disallow use of debugger

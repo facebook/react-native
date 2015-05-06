@@ -34,14 +34,15 @@ var WebViewState = keyMirror({
 var WebView = React.createClass({
 
   propTypes: {
-    renderError: PropTypes.func.isRequired, // view to show if there's an error
-    renderLoading: PropTypes.func.isRequired, // loading indicator to show
+    renderError: PropTypes.func, // view to show if there's an error
+    renderLoading: PropTypes.func, // loading indicator to show
     url: PropTypes.string.isRequired,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+    javaScriptEnabledAndroid: PropTypes.bool,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -66,10 +67,10 @@ var WebView = React.createClass({
     var otherView = null;
 
    if (this.state.viewState === WebViewState.LOADING) {
-      otherView = this.props.renderLoading();
+      otherView = this.props.renderLoading && this.props.renderLoading();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
-      otherView = this.props.renderError(
+      otherView = this.props.renderError && this.props.renderError(
         errorEvent.domain,
         errorEvent.code,
         errorEvent.description);
@@ -90,6 +91,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        javaScriptEnabledAndroid={this.props.javaScriptEnabledAndroid}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
@@ -157,6 +159,7 @@ var WebView = React.createClass({
 var RCTWebView = createReactIOSNativeComponentClass({
   validAttributes: merge(ReactIOSViewAttributes.UIView, {
     url: true,
+    javaScriptEnabledAndroid: true,
   }),
   uiViewClassName: 'RCTWebView',
 });

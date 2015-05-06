@@ -18,6 +18,10 @@ var _ = require('underscore');
 var Package = require('./Package');
 var Activity = require('../Activity');
 var declareOpts = require('../lib/declareOpts');
+var imageSize = require('image-size');
+
+var sizeOf = Promise.promisify(imageSize);
+var readFile = Promise.promisify(fs.readFile);
 
 var validateOpts = declareOpts({
   projectRoots: {
@@ -63,6 +67,10 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  assetServer: {
+    type: 'object',
+    required: true,
+  }
 });
 
 function Packager(options) {
@@ -88,6 +96,9 @@ function Packager(options) {
     transformModulePath: opts.transformModulePath,
     nonPersistent: opts.nonPersistent,
   });
+
+  this._projectRoots = opts.projectRoots;
+  this._assetServer = opts.assetServer;
 }
 
 Packager.prototype.kill = function() {
@@ -95,9 +106,9 @@ Packager.prototype.kill = function() {
 };
 
 Packager.prototype.package = function(main, runModule, sourceMapUrl, isDev) {
-  var transformModule = this._transformModule.bind(this);
   var ppackage = new Package(sourceMapUrl);
 
+  var transformModule = this._transformModule.bind(this, ppackage);
   var findEventId = Activity.startEvent('find dependencies');
   var transformEventId;
 
@@ -135,11 +146,15 @@ Packager.prototype.getDependencies = function(main, isDev) {
   return this._resolver.getDependencies(main, { dev: isDev });
 };
 
-Packager.prototype._transformModule = function(module) {
+Packager.prototype._transformModule = function(ppackage, module) {
   var transform;
 
-  if (module.isAsset) {
-    transform = Promise.resolve(generateAssetModule(module));
+  if (module.isAsset_DEPRECATED) {
+    transform = this.generateAssetModule_DEPRECATED(ppackage, module);
+  } else if (module.isAsset) {
+    transform = this.generateAssetModule(ppackage, module);
+  } else if (module.isJSON) {
+    transform = generateJSONModule(module);
   } else {
     transform = this._transformer.loadFileAndTransform(
       path.resolve(module.path)
@@ -156,27 +171,93 @@ Packager.prototype._transformModule = function(module) {
   });
 };
 
-
-function verifyRootExists(root) {
-  // Verify that the root exists.
-  assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
-}
-
 Packager.prototype.getGraphDebugInfo = function() {
   return this._resolver.getDebugInfo();
 };
 
-function generateAssetModule(module) {
-  var code = 'module.exports = ' + JSON.stringify({
-    uri: module.id.replace(/^[^!]+!/, ''),
-    isStatic: true,
-  }) + ';';
+Packager.prototype.generateAssetModule_DEPRECATED = function(ppackage, module) {
+  return sizeOf(module.path).then(function(dimensions) {
+    var img = {
+      __packager_asset: true,
+      isStatic: true,
+      path: module.path,
+      uri: module.id.replace(/^[^!]+!/, ''),
+      width: dimensions.width / module.resolution,
+      height: dimensions.height / module.resolution,
+      deprecated: true,
+    };
 
-  return {
-    code: code,
-    sourceCode: code,
-    sourcePath: module.path,
-  };
+    ppackage.addAsset(img);
+
+    var code = 'module.exports = ' + JSON.stringify(img) + ';';
+
+    return {
+      code: code,
+      sourceCode: code,
+      sourcePath: module.path,
+    };
+  });
+};
+
+Packager.prototype.generateAssetModule = function(ppackage, module) {
+  var relPath = getPathRelativeToRoot(this._projectRoots, module.path);
+
+  return Promise.all([
+    sizeOf(module.path),
+    this._assetServer.getAssetData(relPath),
+  ]).spread(function(dimensions, assetData) {
+    var img = {
+      __packager_asset: true,
+      fileSystemLocation: path.dirname(module.path),
+      httpServerLocation: path.join('/assets', path.dirname(relPath)),
+      width: dimensions.width / module.resolution,
+      height: dimensions.height / module.resolution,
+      scales: assetData.scales,
+      hash: assetData.hash,
+      name: assetData.name,
+      type: assetData.type,
+    };
+
+    ppackage.addAsset(img);
+
+    var code = 'module.exports = ' + JSON.stringify(img) + ';';
+
+    return {
+      code: code,
+      sourceCode: code,
+      sourcePath: module.path,
+    };
+  });
+};
+
+function generateJSONModule(module) {
+  return readFile(module.path).then(function(data) {
+    var code = 'module.exports = ' + data.toString('utf8') + ';';
+
+    return {
+      code: code,
+      sourceCode: code,
+      sourcePath: module.path,
+    };
+  });
+}
+
+function getPathRelativeToRoot(roots, absPath) {
+  for (var i = 0; i < roots.length; i++) {
+    var relPath = path.relative(roots[i], absPath);
+    if (relPath[0] !== '.') {
+      return relPath;
+    }
+  }
+
+  throw new Error(
+    'Expected root module to be relative to one of the project roots'
+  );
+}
+
+function verifyRootExists(root) {
+  // Verify that the root exists.
+  assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
 }
 
 module.exports = Packager;

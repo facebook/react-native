@@ -43,15 +43,43 @@ describe('Packager', function() {
       };
     });
 
-    var packager = new Packager({projectRoots: []});
+
+    require('fs').readFile.mockImpl(function(file, callback) {
+      callback(null, '{"json":true}');
+    });
+
+    var assetServer = {
+      getAssetData: jest.genMockFn(),
+    };
+
+    var packager = new Packager({
+      projectRoots: ['/root'],
+      assetServer: assetServer,
+    });
+
     var modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
       {id: 'bar', path: '/root/bar.js', dependencies: []},
-      { id: 'image!img',
+      {
+        id: 'image!img',
         path: '/root/img/img.png',
-        isAsset: true,
+        isAsset_DEPRECATED: true,
         dependencies: [],
-      }
+        resolution: 2,
+      },
+      {
+        id: 'new_image.png',
+        path: '/root/img/new_image.png',
+        isAsset: true,
+        resolution: 2,
+        dependencies: []
+      },
+      {
+        id: 'package/file.json',
+        path: '/root/file.json',
+        isJSON: true,
+        dependencies: [],
+      },
     ];
 
     getDependencies.mockImpl(function() {
@@ -74,6 +102,19 @@ describe('Packager', function() {
       return 'lol ' + code + ' lol';
     });
 
+    require('image-size').mockImpl(function(path, cb) {
+      cb(null, { width: 50, height: 100 });
+    });
+
+    assetServer.getAssetData.mockImpl(function() {
+      return {
+        scales: [1,2,3],
+        hash: 'i am a hash',
+        name: 'img',
+        type: 'png',
+      };
+    });
+
     return packager.package('/root/foo.js', true, 'source_map_url')
       .then(function(p) {
         expect(p.addModule.mock.calls[0]).toEqual([
@@ -86,18 +127,65 @@ describe('Packager', function() {
           'source /root/bar.js',
           '/root/bar.js'
         ]);
+
+        var imgModule_DEPRECATED = {
+          __packager_asset: true,
+          isStatic: true,
+          path: '/root/img/img.png',
+          uri: 'img',
+          width: 25,
+          height: 50,
+          deprecated: true,
+        };
+
         expect(p.addModule.mock.calls[2]).toEqual([
           'lol module.exports = ' +
-            JSON.stringify({ uri: 'img', isStatic: true}) +
+            JSON.stringify(imgModule_DEPRECATED) +
             '; lol',
           'module.exports = ' +
-            JSON.stringify({ uri: 'img', isStatic: true}) +
+            JSON.stringify(imgModule_DEPRECATED) +
             ';',
           '/root/img/img.png'
         ]);
 
+        var imgModule = {
+          __packager_asset: true,
+          fileSystemLocation: '/root/img',
+          httpServerLocation: '/assets/img',
+          width: 25,
+          height: 50,
+          scales: [1, 2, 3],
+          hash: 'i am a hash',
+          name: 'img',
+          type: 'png',
+        };
+
+        expect(p.addModule.mock.calls[3]).toEqual([
+          'lol module.exports = ' +
+            JSON.stringify(imgModule) +
+            '; lol',
+          'module.exports = ' +
+            JSON.stringify(imgModule) +
+            ';',
+          '/root/img/new_image.png'
+        ]);
+
+        expect(p.addModule.mock.calls[4]).toEqual([
+          'lol module.exports = {"json":true}; lol',
+          'module.exports = {"json":true};',
+          '/root/file.json'
+        ]);
+
         expect(p.finalize.mock.calls[0]).toEqual([
           {runMainModule: true}
+        ]);
+
+        expect(p.addAsset.mock.calls[0]).toEqual([
+          imgModule_DEPRECATED
+        ]);
+
+        expect(p.addAsset.mock.calls[1]).toEqual([
+          imgModule
         ]);
       });
   });

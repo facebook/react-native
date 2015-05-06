@@ -10,12 +10,13 @@
 #import "RCTTextFieldManager.h"
 
 #import "RCTBridge.h"
-#import "RCTConvert.h"
 #import "RCTShadowView.h"
 #import "RCTSparseArray.h"
 #import "RCTTextField.h"
 
 @implementation RCTTextFieldManager
+
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
@@ -26,8 +27,11 @@ RCT_EXPORT_VIEW_PROPERTY(caretHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
+RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
 RCT_EXPORT_VIEW_PROPERTY(clearButtonMode, UITextFieldViewMode)
+RCT_REMAP_VIEW_PROPERTY(clearTextOnFocus, clearsOnBeginEditing, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType, UIKeyboardType)
 RCT_EXPORT_VIEW_PROPERTY(returnKeyType, UIReturnKeyType)
 RCT_EXPORT_VIEW_PROPERTY(enablesReturnKeyAutomatically, BOOL)

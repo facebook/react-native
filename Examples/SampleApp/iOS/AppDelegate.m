@@ -17,24 +17,33 @@
 {
   NSURL *jsCodeLocation;
 
-  // Loading JavaScript code - uncomment the one you want.
+  /**
+   * Loading JavaScript code - uncomment the one you want.
+   *
+   * OPTION 1
+   * Load from development server. Start the server from the repository root:
+   *
+   * $ npm start
+   *
+   * To run on device, change `localhost` to the IP address of your computer
+   * (you can get this by typing `ifconfig` into the terminal and selecting the
+   * `inet` value under `en0:`) and make sure your computer and iOS device are
+   * on the same Wi-Fi network.
+   */
 
-  // OPTION 1
-  // Load from development server. Start the server from the repository root:
-  //
-  // $ npm start
-  //
-  // To run on device, change `localhost` to the IP address of your computer, and make sure your computer and
-  // iOS device are on the same Wi-Fi network.
   jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/SampleApp/index.ios.bundle"];
 
-  // OPTION 2
-  // Load from pre-bundled file on disk. To re-generate the static bundle, run
-  //
-  // $ curl 'http://localhost:8081/Examples/SampleApp/index.ios.bundle?dev=false&minify=true' -o iOS/main.jsbundle
-  //
-  // and uncomment the next following line
-  // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  /**
+   * OPTION 2
+   * Load from pre-bundled file on disk. To re-generate the static bundle
+   * from the root of your project directory, run
+   *
+   * $ react-native bundle --minify
+   *
+   * see http://facebook.github.io/react-native/docs/runningondevice.html
+   */
+
+//   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"SampleApp"

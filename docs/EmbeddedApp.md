@@ -3,8 +3,8 @@ id: embedded-app
 title: Integration with Existing App
 layout: docs
 category: Guides
-permalink: docs/embeded-app.html
-next: activityindicatorios
+permalink: docs/embedded-app.html
+next: javascript-environment
 ---
 
 Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [CocoaPods](http://cocoapods.org/).
@@ -45,7 +45,7 @@ First, create a directory for your app’s React code and create a simple `index
 
 ```
 $ mkdir ReactComponent
-$ touch index.ios.js
+$ touch ReactComponent/index.ios.js
 ```
 
 Copy & paste following starter code for `index.ios.js` – it’s a barebones React Native app:

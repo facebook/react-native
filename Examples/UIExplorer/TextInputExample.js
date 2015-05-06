@@ -88,9 +88,9 @@ var styles = StyleSheet.create({
     height: 26,
     borderWidth: 0.5,
     borderColor: '#0f0f0f',
-    padding: 4,
     flex: 1,
     fontSize: 13,
+    padding: 4,
   },
   multiline: {
     borderWidth: 0.5,
@@ -98,6 +98,22 @@ var styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     height: 50,
+    padding: 4,
+    marginBottom: 4,
+  },
+  multilineWithFontStyles: {
+    color: 'blue',
+    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: 'Cochin',
+    height: 60,
+  },
+  multilineChild: {
+    width: 50,
+    height: 40,
+    position: 'absolute',
+    right: 5,
+    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
@@ -109,7 +125,7 @@ var styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    width: 80,
+    width: 120,
     justifyContent: 'flex-end',
     flexDirection: 'row',
     marginRight: 10,
@@ -118,7 +134,7 @@ var styles = StyleSheet.create({
 });
 
 exports.title = '<TextInput>';
-exports.description = 'Single-line text inputs.';
+exports.description = 'Single and multi-line text inputs.';
 exports.examples = [
   {
     title: 'Auto-focus',
@@ -251,7 +267,7 @@ exports.examples = [
       return (
         <View>
           <WithLabel label="true">
-            <TextInput secureTextEntry={true} style={styles.default} value="abc" />
+            <TextInput password={true} style={styles.default} value="abc" />
           </WithLabel>
         </View>
       );
@@ -311,4 +327,67 @@ exports.examples = [
       );
     }
   },
+  {
+    title: 'Clear and select',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="clearTextOnFocus">
+            <TextInput
+              placeholder="text is cleared on focus"
+              value="text is cleared on focus"
+              style={styles.default}
+              clearTextOnFocus={true}
+            />
+          </WithLabel>
+          <WithLabel label="selectTextOnFocus">
+            <TextInput
+              placeholder="text is selected on focus"
+              value="text is selected on focus"
+              style={styles.default}
+              selectTextOnFocus={true}
+            />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Multiline',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            placeholder="multiline text input"
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
+            placeholder="mutliline text input with font styles and placeholder"
+            multiline={true}
+            clearTextOnFocus={true}
+            autoCorrect={true}
+            autoCapitalize="words"
+            placeholderTextColor="red"
+            keyboardType="url"
+            style={[styles.multiline, styles.multilineWithFontStyles]}
+          />
+          <TextInput
+            placeholder="uneditable mutliline text input"
+            editable={false}
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
+            placeholder="multiline with children"
+            multiline={true}
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="go"
+            style={styles.multiline}>
+            <View style={styles.multilineChild}/>
+          </TextInput>
+        </View>
+      )
+    }
+  }
 ];

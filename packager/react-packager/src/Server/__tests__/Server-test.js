@@ -229,4 +229,32 @@ describe('processRequest', function() {
       expect(res.end).not.toBeCalled();
     });
   });
+
+  describe.only('/assets endpoint', function() {
+    var AssetServer;
+    beforeEach(function() {
+      AssetServer = require('../../AssetServer');
+    });
+
+    it('should serve simple case', function() {
+      var req = {
+        url: '/assets/imgs/a.png',
+      };
+      var res = {
+        end: jest.genMockFn(),
+      };
+
+      AssetServer.prototype.get.mockImpl(function() {
+        return Promise.resolve('i am image');
+      });
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(res.end).toBeCalledWith('i am image');
+    });
+
+    it('should return 404', function() {
+
+    });
+  });
 });

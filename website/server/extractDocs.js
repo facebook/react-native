@@ -21,6 +21,8 @@ function getNameFromPath(filepath) {
   }
   if (filepath === 'LayoutPropTypes') {
     return 'Flexbox';
+  } else if (filepath == 'TabBarItemIOS') {
+    return 'TabBarIOS.Item';
   }
   return filepath;
 }
@@ -116,6 +118,7 @@ var components = [
   '../Libraries/Components/SliderIOS/SliderIOS.js',
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
+  '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
   '../Libraries/Components/TextInput/TextInput.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
@@ -127,7 +130,6 @@ var components = [
 
 var apis = [
   '../Libraries/Utilities/AlertIOS.js',
-  '../Libraries/Animation/Animation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',
@@ -152,7 +154,7 @@ var styles = [
 ];
 
 var polyfills = [
-  '../Libraries/GeoLocation/Geolocation.ios.js',
+  '../Libraries/GeoLocation/Geolocation.js',
 ];
 
 var all = components
@@ -167,6 +169,14 @@ var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
       docgenHelpers.findExportedObject,
       [docgen.handlers.propTypeHandler]
     );
+
+  // Remove deprecated style props
+  if (docs['ViewStylePropTypes']) {
+    ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
+      delete docs['ViewStylePropTypes']['props'][key];
+    });
+  }
+
   return docs;
 }, {});
 

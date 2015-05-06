@@ -12,16 +12,21 @@
 'use strict';
 
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var TabBarItemIOS = require('TabBarItemIOS');
 var StyleSheet = require('StyleSheet');
+var TabBarItemIOS = require('TabBarItemIOS');
+var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 
 var TabBarIOS = React.createClass({
   statics: {
     Item: TabBarItemIOS,
   },
+
+  propTypes: {
+    style: View.propTypes.style,
+  },
+
   render: function() {
     return (
       <RCTTabBar style={[styles.tabGroup, this.props.style]}>
@@ -37,10 +42,6 @@ var styles = StyleSheet.create({
   }
 });
 
-var config = {
-  validAttributes: ReactIOSViewAttributes.UIView,
-  uiViewClassName: 'RCTTabBar',
-};
-var RCTTabBar = createReactIOSNativeComponentClass(config);
+var RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
 
 module.exports = TabBarIOS;

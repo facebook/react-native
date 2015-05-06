@@ -33,6 +33,8 @@ var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
+var invariant = require('invariant');
+
 var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
 var PropTypes = React.PropTypes;
 
@@ -77,7 +79,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       popToRoute: PropTypes.func,
       popToTop: PropTypes.func,
     }),
-    navigationBarRouteMapper: PropTypes.shape({
+    routeMapper: PropTypes.shape({
       rightContentForRoute: PropTypes.func,
       titleContentForRoute: PropTypes.func,
       iconForRoute: PropTypes.func,
@@ -87,7 +89,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       idStack: React.PropTypes.arrayOf(React.PropTypes.number),
       presentedIndex: React.PropTypes.number,
     }),
-    navigationBarStyles: View.propTypes.style,
+    style: View.propTypes.style,
   },
 
   statics: {
@@ -99,6 +101,10 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var oldDistToCenter = index - fromIndex;
     var newDistToCenter = index - toIndex;
     var interpolate;
+    invariant(
+      Interpolators[index],
+      'Cannot find breadcrumb interpolators for ' + index
+    );
     if (oldDistToCenter > 0 && newDistToCenter === 0 ||
         newDistToCenter > 0 && oldDistToCenter === 0) {
       interpolate = Interpolators[index].RightToCenter;
@@ -138,13 +144,43 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     }
   },
 
+  onAnimationStart: function(fromIndex, toIndex) {
+    var max = Math.max(fromIndex, toIndex);
+    var min = Math.min(fromIndex, toIndex);
+    for (var index = min; index <= max; index++) {
+      this._setRenderViewsToHardwareTextureAndroid(index, true);
+    }
+  },
+
+  onAnimationEnd: function() {
+    var max = this.props.navState.routeStack.length - 1;
+    for (var index = 0; index <= max; index++) {
+      this._setRenderViewsToHardwareTextureAndroid(index, false);
+    }
+  },
+
+  _setRenderViewsToHardwareTextureAndroid: function(index, renderToHardwareTexture) {
+    var props = {
+      renderToHardwareTextureAndroid: renderToHardwareTexture,
+    };
+
+    this.refs['crumb_' + index].setNativeProps(props);
+    this.refs['icon_' + index].setNativeProps(props);
+    this.refs['separator_' + index].setNativeProps(props);
+    this.refs['title_' + index].setNativeProps(props);
+    var right = this.refs['right_' + index];
+    if (right) {
+      right.setNativeProps(props);
+    }
+  },
+
   render: function() {
     var navState = this.props.navState;
     var icons = navState && navState.routeStack.map(this._renderOrReturnBreadcrumb);
     var titles = navState.routeStack.map(this._renderOrReturnTitle);
     var buttons = navState.routeStack.map(this._renderOrReturnRightButton);
     return (
-      <View style={[styles.breadCrumbContainer, this.props.navigationBarStyles]}>
+      <View style={[styles.breadCrumbContainer, this.props.style]}>
         {titles}
         {icons}
         {buttons}
@@ -154,7 +190,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
 
   _renderOrReturnBreadcrumb: function(route, index) {
     var uid = this.props.navState.idStack[index];
-    var navBarRouteMapper = this.props.navigationBarRouteMapper;
+    var navBarRouteMapper = this.props.routeMapper;
     var navOps = this.props.navigator;
     var alreadyRendered = this.refs['crumbContainer' + uid];
     if (alreadyRendered) {
@@ -199,7 +235,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
         />
       );
     }
-    var navBarRouteMapper = this.props.navigationBarRouteMapper;
+    var navBarRouteMapper = this.props.routeMapper;
     var titleContent = navBarRouteMapper.titleContentForRoute(
       navState.routeStack[index],
       this.props.navigator
@@ -219,7 +255,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
 
   _renderOrReturnRightButton: function(route, index) {
     var navState = this.props.navState;
-    var navBarRouteMapper = this.props.navigationBarRouteMapper;
+    var navBarRouteMapper = this.props.routeMapper;
     var uid = navState.idStack[index];
     var alreadyRendered = this.refs['rightContainer' + uid];
     if (alreadyRendered) {
@@ -260,7 +296,7 @@ var styles = StyleSheet.create({
     height: NavigatorNavigationBarStyles.General.TotalNavHeight,
     top: 0,
     left: 0,
-    width: NavigatorNavigationBarStyles.General.ScreenWidth,
+    right: 0,
   },
 });
 

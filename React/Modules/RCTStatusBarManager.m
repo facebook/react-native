@@ -24,36 +24,35 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   return value;
 }
 
-- (void)setStyle:(UIStatusBarStyle)statusBarStyle animated:(BOOL)animated
+RCT_EXPORT_MODULE()
+
+- (dispatch_queue_t)methodQueue
 {
-  RCT_EXPORT();
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-
-    if (RCTViewControllerBasedStatusBarAppearance()) {
-      RCTLogError(@"RCTStatusBarManager module requires that the \
-                  UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-    } else {
-      [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle
-                                                  animated:animated];
-    }
-  });
+  return dispatch_get_main_queue();
 }
 
-- (void)setHidden:(BOOL)hidden withAnimation:(UIStatusBarAnimation)animation
+RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
+                  animated:(BOOL)animated)
 {
-  RCT_EXPORT();
+  if (RCTViewControllerBasedStatusBarAppearance()) {
+    RCTLogError(@"RCTStatusBarManager module requires that the \
+                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
+  } else {
+    [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle
+                                                animated:animated];
+  }
+}
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-
-    if (RCTViewControllerBasedStatusBarAppearance()) {
-      RCTLogError(@"RCTStatusBarManager module requires that the \
-                  UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-    } else {
-      [[UIApplication sharedApplication] setStatusBarHidden:hidden
-                                              withAnimation:animation];
-    }
-  });
+RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
+                  withAnimation:(UIStatusBarAnimation)animation)
+{
+  if (RCTViewControllerBasedStatusBarAppearance()) {
+    RCTLogError(@"RCTStatusBarManager module requires that the \
+                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
+  } else {
+    [[UIApplication sharedApplication] setStatusBarHidden:hidden
+                                            withAnimation:animation];
+  }
 }
 
 - (NSDictionary *)constantsToExport

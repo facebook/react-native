@@ -35,6 +35,37 @@
   return self;
 }
 
+- (void)setText:(NSString *)text
+{
+  if (![text isEqualToString:self.text]) {
+    [super setText:text];
+  }
+}
+
+static void RCTUpdatePlaceholder(RCTTextField *self)
+{
+  if (self.placeholder.length > 0 && self.placeholderTextColor) {
+    self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
+                                                                 attributes:@{
+                                                                              NSForegroundColorAttributeName : self.placeholderTextColor
+                                                                              }];
+  } else if (self.placeholder.length) {
+    self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder];
+  }
+}
+
+- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
+{
+  _placeholderTextColor = placeholderTextColor;
+  RCTUpdatePlaceholder(self);
+}
+
+- (void)setPlaceholder:(NSString *)placeholder
+{
+  super.placeholder = placeholder;
+  RCTUpdatePlaceholder(self);
+}
+
 - (NSArray *)reactSubviews
 {
   // TODO: do we support subviews of textfield in React?
@@ -97,15 +128,26 @@
 }
 
 RCT_TEXT_EVENT_HANDLER(_textFieldDidChange, RCTTextEventTypeChange)
-RCT_TEXT_EVENT_HANDLER(_textFieldBeginEditing, RCTTextEventTypeFocus)
 RCT_TEXT_EVENT_HANDLER(_textFieldEndEditing, RCTTextEventTypeEnd)
 RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
+
+- (void)_textFieldBeginEditing
+{
+  if (_selectTextOnFocus) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self selectAll:nil];
+    });
+  }
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
+                                 reactTag:self.reactTag
+                                     text:self.text];
+}
 
 // TODO: we should support shouldChangeTextInRect (see UITextFieldDelegate)
 
 - (BOOL)becomeFirstResponder
 {
-  _jsRequestingFirstResponder = YES; // TODO: is this still needed?
+  _jsRequestingFirstResponder = YES;
   BOOL result = [super becomeFirstResponder];
   _jsRequestingFirstResponder = NO;
   return result;

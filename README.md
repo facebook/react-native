@@ -119,7 +119,7 @@ var GeoInfo = React.createClass({
 
 ## Extensibility
 
-It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily extended with custom native views and modules - that means you can reuse anything you've already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the `RCTBridgeModule` protocol, and add `RCT_EXPORT` to the function you want to make available in JavaScript.
+It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily extended with custom native views and modules - that means you can reuse anything you've already built, and can import and use your favorite native libraries.  To create a simple module in iOS, create a new class that implements the `RCTBridgeModule` protocol, and wrap the function that you want to make available to JavaScript in `RCT_EXPORT_METHOD`. Additionally, the class itself must be explicitly exported with `RCT_EXPORT_MODULE();`.
 
 ```objc
 // Objective-C
@@ -130,11 +130,15 @@ It is certainly possible to create a great app using React Native without writin
 @end
 
 @implementation MyCustomModule
-- (void)processString:(NSString *)input callback:(RCTResponseSenderBlock)callback
+
+RCT_EXPORT_MODULE();
+
+// Available as NativeModules.MyCustomModule.processString
+RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
 {
-  RCT_EXPORT(); // available as NativeModules.MyCustomModule.processString
   callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"]]);
 }
+
 @end
 ```
 
@@ -161,7 +165,7 @@ var Message = React.createClass({
 });
 ```
 
-Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a `-view` method, and exporting properties with the `RCT_EXPORT_VIEW_PROPERTY` macro.  Then a simple JavaScript file connects the dots.
+Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a `-view` method, and exporting properties with the `RCT_EXPORT_VIEW_PROPERTY` macro.  Then use `requireNativeComponent` in JavaScript to use the component in your app.
 
 ```objc
 // Objective-C
@@ -172,12 +176,13 @@ Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a 
 @end
 
 @implementation MyCustomViewManager
+
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 
 @end
 ```
@@ -185,15 +190,25 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
 ```javascript
 // JavaScript
 
-var MyCustomView = createReactIOSNativeComponentClass({
-  validAttributes: { myCustomProperty: true },
-  uiViewClassName: 'MyCustomView',
-});
+var React = require('react-native');
+var { requireNativeComponent } = React;
+
+class MyCustomView extends React.Component {
+  render() {
+    return <NativeMyCustomView {...this.props} />;
+  }
+}
+MyCustomView.propTypes = {
+  myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
+};
+
+var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
+module.exports = MyCustomView;
 ```
 
 ## Running the Examples
 
-- `git clone git@github.com:facebook/react-native.git`
+- `git clone https://github.com/facebook/react-native.git`
 - `cd react-native && npm install`
 - `cd Examples`
 

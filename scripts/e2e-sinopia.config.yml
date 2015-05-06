@@ -1,0 +1,21 @@
+storage: /tmp/sinopia-package-cache
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+
+packages:
+  'react-native':
+    allow_access: $all
+    allow_publish: $all
+
+  'react-native-cli':
+    allow_access: $all
+    allow_publish: $all
+
+  '*':
+    allow_access: $all
+    proxy: npmjs
+
+logs:
+  - {type: file, path: sinopia.log, format: pretty, level: http}

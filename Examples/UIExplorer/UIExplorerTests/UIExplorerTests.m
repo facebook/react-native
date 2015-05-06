@@ -39,9 +39,10 @@
 #endif
   NSString *version = [[UIDevice currentDevice] systemVersion];
   RCTAssert([version isEqualToString:@"8.1"], @"Snapshot tests should be run on iOS 8.1, found %@", version);
-  _runner = initRunnerForApp(@"Examples/UIExplorer/UIExplorerApp");
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp");
 
-  // If tests have changes, set recordMode = YES below and run the affected tests on an iPhone5, iOS 8.1 simulator.
+  // If tests have changes, set recordMode = YES below and run the affected
+  // tests on an iPhone5, iOS 8.1 simulator.
   _runner.recordMode = NO;
 }
 
@@ -58,9 +59,10 @@
   return NO;
 }
 
-// Make sure this test runs first (underscores sort early) otherwise the other tests will tear out the rootView
-- (void)test__RootViewLoadsAndRenders {
-  UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+// Make sure this test runs first because the other tests will tear out the rootView
+- (void)testAAA_RootViewLoadsAndRenders
+{
+  UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
   RCTAssert([vc.view isKindOfClass:[RCTRootView class]], @"This test must run first.");
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   BOOL foundElement = NO;
@@ -69,10 +71,8 @@
   while ([date timeIntervalSinceNow] > 0 && !foundElement && !redboxError) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:date];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:date];
-
     redboxError = [[RCTRedBox sharedInstance] currentErrorMessage];
-
-    foundElement = [self findSubviewInView:vc.view matching:^BOOL(UIView *view) {
+    foundElement = [self findSubviewInView:vc.view matching:^(UIView *view) {
       if ([view respondsToSelector:@selector(attributedText)]) {
         NSString *text = [(id)view attributedText].string;
         if ([text isEqualToString:@"<View>"]) {
@@ -117,6 +117,7 @@
   [_runner runTest:_cmd module:@"TabBarExample"];
 }
 
+// Make sure this test runs last
 - (void)testZZZ_NotInRecordMode
 {
   RCTAssert(_runner.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");

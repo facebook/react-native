@@ -30,12 +30,11 @@ var Dimensions = require('Dimensions');
 var PixelRatio = require('PixelRatio');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
-var merge = require('merge');
 
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
 
-var ToTheLeft = {
+var FadeToTheLeft = {
   // Rotate *requires* you to break out each individual component of
   // rotation (x, y, z, w)
   transformTranslate: {
@@ -99,6 +98,56 @@ var ToTheLeft = {
     max: 1,
     type: 'linear',
     extrapolate: true
+  },
+};
+
+var FadeIn = {
+  opacity: {
+    from: 0,
+    to: 1,
+    min: 0.5,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+};
+
+var FadeOut = {
+  opacity: {
+    from: 1,
+    to: 0,
+    min: 0,
+    max: 0.5,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+};
+
+var ToTheLeft = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: -Dimensions.get('window').width, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  opacity: {
+    value: 1.0,
+    type: 'constant',
+  },
+
+  translateX: {
+    from: 0,
+    to: -Dimensions.get('window').width,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
   },
 };
 
@@ -220,32 +269,52 @@ var FromTheFront = {
   },
 };
 
-
-var Interpolators = {
-  Vertical: {
-    into: buildStyleInterpolator(FromTheFront),
-    out: buildStyleInterpolator(ToTheBack),
-  },
-  Horizontal: {
-    into: buildStyleInterpolator(FromTheRight),
-    out: buildStyleInterpolator(ToTheLeft),
+var ToTheBackAndroid = {
+  opacity: {
+    value: 1,
+    type: 'constant',
   },
 };
 
-
-// These are meant to mimic iOS default behavior
-var PastPointOfNoReturn = {
-  horizontal: function(location) {
-    return location > SCREEN_WIDTH * 3 / 5;
+var FromTheFrontAndroid = {
+  opacity: {
+    from: 0,
+    to: 1,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
   },
-  vertical: function(location) {
-    return location > SCREEN_HEIGHT * 3 / 5;
+  transformTranslate: {
+    from: {x: 0, y: 50, z: 0},
+    to: {x: 0, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  translateY: {
+    from: 50,
+    to: 0,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
   },
 };
 
-var BaseConfig = {
-  // When false, all gestures are ignored for this scene
-  enableGestures: true,
+var BaseOverswipeConfig = {
+  frictionConstant: 1,
+  frictionByDistance: 1.5,
+};
+
+var BaseLeftToRightGesture = {
+
+  // If the gesture can end and restart during one continuous touch
+  isDetachable: false,
 
   // How far the swipe must drag to start transitioning
   gestureDetectMovement: 2,
@@ -253,48 +322,110 @@ var BaseConfig = {
   // Amplitude of release velocity that is considered still
   notMoving: 0.3,
 
-  // Velocity to start at when transitioning without gesture
-  defaultTransitionVelocity: 1.5,
-
   // Fraction of directional move required.
   directionRatio: 0.66,
 
   // Velocity to transition with when the gesture release was "not moving"
   snapVelocity: 2,
 
+  // Region that can trigger swipe. iOS default is 30px from the left edge
+  edgeHitWidth: 30,
+
+  // Ratio of gesture completion when non-velocity release will cause action
+  stillCompletionRatio: 3 / 5,
+
+  fullDistance: SCREEN_WIDTH,
+
+  direction: 'left-to-right',
+
+};
+
+var BaseRightToLeftGesture = {
+  ...BaseLeftToRightGesture,
+  direction: 'right-to-left',
+};
+
+var BaseConfig = {
+  // A list of all gestures that are enabled on this scene
+  gestures: {
+    pop: BaseLeftToRightGesture,
+  },
+
   // Rebound spring parameters when transitioning FROM this scene
   springFriction: 26,
   springTension: 200,
 
-  // Defaults for horizontal transitioning:
+  // Velocity to start at when transitioning without gesture
+  defaultTransitionVelocity: 1.5,
 
-  isVertical: false,
-  screenDimension: SCREEN_WIDTH,
-
-  // Region that can trigger swipe. iOS default is 30px from the left edge
-  edgeHitWidth: 30,
-
-  // Point at which a non-velocity release will cause nav pop
-  pastPointOfNoReturn: PastPointOfNoReturn.horizontal,
-
-  // Animation interpolators for this transition
-  interpolators: Interpolators.Horizontal,
+  // Animation interpolators for horizontal transitioning:
+  animationInterpolators: {
+    into: buildStyleInterpolator(FromTheRight),
+    out: buildStyleInterpolator(FadeToTheLeft),
+  },
 };
 
 var NavigatorSceneConfigs = {
-  PushFromRight: merge(BaseConfig, {
+  PushFromRight: {
+    ...BaseConfig,
     // We will want to customize this soon
-  }),
-  FloatFromRight: merge(BaseConfig, {
+  },
+  FloatFromRight: {
+    ...BaseConfig,
     // We will want to customize this soon
-  }),
-  FloatFromBottom: merge(BaseConfig, {
-    edgeHitWidth: 150,
-    interpolators: Interpolators.Vertical,
-    isVertical: true,
-    pastPointOfNoReturn: PastPointOfNoReturn.vertical,
-    screenDimension: SCREEN_HEIGHT,
-  }),
+  },
+  FloatFromBottom: {
+    ...BaseConfig,
+    gestures: {
+      pop: {
+        ...BaseLeftToRightGesture,
+        edgeHitWidth: 150,
+        direction: 'top-to-bottom',
+        fullDistance: SCREEN_HEIGHT,
+      }
+    },
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheFront),
+      out: buildStyleInterpolator(ToTheBack),
+    },
+  },
+  FloatFromBottomAndroid: {
+    ...BaseConfig,
+    gestures: null,
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheFrontAndroid),
+      out: buildStyleInterpolator(ToTheBackAndroid),
+    },
+  },
+  FadeAndroid: {
+    ...BaseConfig,
+    gestures: null,
+    animationInterpolators: {
+      into: buildStyleInterpolator(FadeIn),
+      out: buildStyleInterpolator(FadeOut),
+    },
+  },
+  HorizontalSwipeJump: {
+    ...BaseConfig,
+    gestures: {
+      jumpBack: {
+        ...BaseLeftToRightGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+      jumpForward: {
+        ...BaseRightToLeftGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+    },
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheRight),
+      out: buildStyleInterpolator(ToTheLeft),
+    },
+  },
 };
 
 module.exports = NavigatorSceneConfigs;

@@ -13,7 +13,6 @@
 
 var React = require('React');
 var Touchable = require('Touchable');
-
 var onlyChild = require('onlyChild');
 
 /**
@@ -78,10 +77,8 @@ var TouchableWithoutFeedback = React.createClass({
   },
 
   render: function(): ReactElement {
-    // Note(vjeux): use cloneWithProps once React has been upgraded
-    var child = onlyChild(this.props.children);
     // Note(avik): remove dynamic typecast once Flow has been upgraded
-    return (React: any).cloneElement(child, {
+    return (React: any).cloneElement(onlyChild(this.props.children), {
       accessible: true,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,

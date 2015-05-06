@@ -50,6 +50,7 @@ var RCTNavigatorItem = createReactIOSNativeComponentClass({
     rightButtonTitle: true,
     onNavRightButtonTap: true,
     tintColor: true,
+    navigationBarHidden: true,
     backButtonTitle: true,
     titleTextColor: true,
     style: true,
@@ -236,6 +237,11 @@ var NavigatorIOS = React.createClass({
     }).isRequired,
 
     /**
+     * A Boolean value that indicates whether the navigation bar is hidden
+     */
+    navigationBarHidden: PropTypes.bool,
+
+    /**
      * The default wrapper style for components in the navigator.
      * A common use case is to set the backgroundColor for every page
      */
@@ -245,6 +251,16 @@ var NavigatorIOS = React.createClass({
      * The color used for buttons in the navigation bar
      */
     tintColor: PropTypes.string,
+
+    /**
+     * The background color of the navigation bar
+     */
+    barTintColor: PropTypes.string,
+
+    /**
+     * The text color of the navigation bar title
+     */
+    titleTextColor: PropTypes.string,
 
   },
 
@@ -547,7 +563,10 @@ var NavigatorIOS = React.createClass({
           backButtonTitle={route.backButtonTitle}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
-          tintColor={this.props.tintColor}>
+          navigationBarHidden={this.props.navigationBarHidden}
+          tintColor={this.props.tintColor}
+          barTintColor={this.props.barTintColor}
+          titleTextColor={this.props.titleTextColor}>
           <Component
             navigator={this.navigator}
             route={route}
