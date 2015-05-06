@@ -20,7 +20,6 @@ var slugify = require('slugify');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
-
 var ComponentDoc = React.createClass({
   renderType: function(type) {
     if (type.name === 'enum') {
