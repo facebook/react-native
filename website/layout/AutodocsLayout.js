@@ -20,6 +20,7 @@ var slugify = require('slugify');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
+
 var ComponentDoc = React.createClass({
   renderType: function(type) {
     if (type.name === 'enum') {
@@ -31,6 +32,10 @@ var ComponentDoc = React.createClass({
 
     if (type.name === 'shape') {
       return '{' + Object.keys(type.value).map((key => key + ': ' + this.renderType(type.value[key]))).join(', ') + '}';
+    }
+
+    if (type.name == 'union') {
+      return type.value.map(this.renderType).join(', ');
     }
 
     if (type.name === 'arrayOf') {
