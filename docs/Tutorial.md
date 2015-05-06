@@ -287,7 +287,7 @@ Let's now modify this application to render all of this data in a `ListView` com
 
 Why is a `ListView` better than just rendering all of these elements or putting them in a `ScrollView`? Despite React being fast, rendering a possibly infinite list of elements could be slow. `ListView` schedules rendering of views so that you only display the ones on screen and those already rendered but off screen are removed from the native view hierarchy.
 
-First thing's first: add the `ListView` require to the top of the file.
+First things first: add the `ListView` require to the top of the file.
 
 ```javascript
 var {
