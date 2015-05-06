@@ -22,6 +22,15 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
  */
 @protocol RCTJavaScriptExecutor <RCTInvalidating>
 
+
+/**
+ * Executes given string on JS thread and calls the given callback
+ * with JSValue and JSContext as a result of the JS module call.
+ */
+- (void)executeJSString:(NSString*)execString
+                context:(NSNumber *)executorID
+               callback:(RCTJavaScriptCallback)onComplete;
+
 /**
  * Executes given method with arguments on JS thread and calls the given callback
  * with JSValue and JSContext as a result of the JS module call.

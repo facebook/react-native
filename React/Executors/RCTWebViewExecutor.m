@@ -77,18 +77,38 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   return webView;
 }
 
+- (void)executeJSString:(NSString *)execString
+                context:(NSNumber *)executorID
+               callback:(RCTJavaScriptCallback)onComplete
+{
+    RCTAssert(onComplete != nil, @"");
+    [self executeBlockOnJavaScriptQueue:^{
+        if (!self.isValid || ![RCTGetExecutorID(self) isEqualToNumber:executorID]) {
+            return;
+        }
+        
+        NSString *ret = [_webView stringByEvaluatingJavaScriptFromString:execString];
+        if (ret.length == 0) {
+            RCTReportError(onComplete, @"Empty return string: JavaScript error running script: %@", execString);
+            return;
+        }
+        
+        NSError *error;
+        id objcValue = RCTJSONParse(ret, &error);
+        if (!objcValue) {
+            RCTReportError(onComplete, @"Cannot parse json response: %@", error);
+            return;
+        }
+        onComplete(objcValue, nil);
+    }];
+}
+
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
               context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
-  RCTAssert(onComplete != nil, @"");
-  [self executeBlockOnJavaScriptQueue:^{
-    if (!self.isValid || ![RCTGetExecutorID(self) isEqualToNumber:executorID]) {
-      return;
-    }
-
     NSError *error;
     NSString *argsString = RCTJSONStringify(arguments, &error);
     if (!argsString) {
@@ -97,19 +117,7 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
     }
     NSString *execString = [NSString stringWithFormat:@"JSON.stringify(require('%@').%@.apply(null, %@));", name, method, argsString];
 
-    NSString *ret = [_webView stringByEvaluatingJavaScriptFromString:execString];
-    if (ret.length == 0) {
-      RCTReportError(onComplete, @"Empty return string: JavaScript error running script: %@", execString);
-      return;
-    }
-
-    id objcValue = RCTJSONParse(ret, &error);
-    if (!objcValue) {
-      RCTReportError(onComplete, @"Cannot parse json response: %@", error);
-      return;
-    }
-    onComplete(objcValue, nil);
-  }];
+    [self executeJSString:execString context:executorID callback:onComplete];
 }
 
 /**

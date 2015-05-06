@@ -229,19 +229,54 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   [self invalidate];
 }
 
+- (void)executeJSString:(NSString*)execString
+                context:(NSNumber *)executorID
+               callback:(RCTJavaScriptCallback)onComplete
+{
+    RCTAssert(onComplete != nil, @"onComplete block should not be nil");
+    __weak RCTContextExecutor *weakSelf = self;
+    [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
+        RCTContextExecutor *strongSelf = weakSelf;
+        if (!strongSelf || !strongSelf.isValid || ![RCTGetExecutorID(strongSelf) isEqualToNumber:executorID]) {
+            return;
+        }
+        
+        JSValueRef jsError = NULL;
+        JSStringRef execJSString = JSStringCreateWithCFString((__bridge CFStringRef)execString);
+        JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, NULL, 0, &jsError);
+        JSStringRelease(execJSString);
+        
+        if (!result) {
+            onComplete(nil, RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError));
+            return;
+        }
+        
+        // Looks like making lots of JSC API calls is slower than communicating by using a JSON
+        // string. Also it ensures that data stuctures don't have cycles and non-serializable fields.
+        // see [RCTContextExecutorTests testDeserializationPerf]
+        id objcValue;
+        // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
+        // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
+        if (!JSValueIsNull(strongSelf->_context.ctx, result)) {
+            JSStringRef jsJSONString = JSValueCreateJSONString(strongSelf->_context.ctx, result, 0, nil);
+            if (jsJSONString) {
+                NSString *objcJSONString = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, jsJSONString);
+                JSStringRelease(jsJSONString);
+                
+                objcValue = RCTJSONParse(objcJSONString, NULL);
+            }
+        }
+        
+        onComplete(objcValue, nil);
+    }), @"js_call", (@{@"exec_string":execString}))];
+}
+
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
               context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
-  RCTAssert(onComplete != nil, @"onComplete block should not be nil");
-  __weak RCTContextExecutor *weakSelf = self;
-  [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
-    RCTContextExecutor *strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.isValid || ![RCTGetExecutorID(strongSelf) isEqualToNumber:executorID]) {
-      return;
-    }
     NSError *error;
     NSString *argsString = RCTJSONStringify(arguments, &error);
     if (!argsString) {
@@ -250,35 +285,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       return;
     }
     NSString *execString = [NSString stringWithFormat:@"require('%@').%@.apply(null, %@);", name, method, argsString];
-
-    JSValueRef jsError = NULL;
-    JSStringRef execJSString = JSStringCreateWithCFString((__bridge CFStringRef)execString);
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, NULL, 0, &jsError);
-    JSStringRelease(execJSString);
-
-    if (!result) {
-      onComplete(nil, RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError));
-      return;
-    }
-
-    // Looks like making lots of JSC API calls is slower than communicating by using a JSON
-    // string. Also it ensures that data stuctures don't have cycles and non-serializable fields.
-    // see [RCTContextExecutorTests testDeserializationPerf]
-    id objcValue;
-    // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
-    // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
-    if (!JSValueIsNull(strongSelf->_context.ctx, result)) {
-      JSStringRef jsJSONString = JSValueCreateJSONString(strongSelf->_context.ctx, result, 0, nil);
-      if (jsJSONString) {
-        NSString *objcJSONString = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, jsJSONString);
-        JSStringRelease(jsJSONString);
-
-        objcValue = RCTJSONParse(objcJSONString, NULL);
-      }
-    }
-
-    onComplete(objcValue, nil);
-  }), @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
+    [self executeJSString:execString context:executorID callback:onComplete];
 }
 
 - (void)executeApplicationScript:(NSString *)script
