@@ -108,6 +108,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, assign) css_justify_t justifyContent;
 @property (nonatomic, assign) css_align_t alignSelf;
 @property (nonatomic, assign) css_align_t alignItems;
+@property (nonatomic, assign) css_align_t alignContent;
 @property (nonatomic, assign) css_position_type_t positionType;
 @property (nonatomic, assign) css_wrap_type_t flexWrap;
 @property (nonatomic, assign) CGFloat flex;

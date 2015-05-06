@@ -91,6 +91,15 @@ var LayoutPropTypes = {
     'stretch'
   ]),
 
+  // How to align children in the cross direction
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/align-content
+  alignContent: ReactPropTypes.oneOf([
+    'flex-start',
+    'flex-end',
+    'center',
+    'stretch'
+  ]),
+
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex
   flex: ReactPropTypes.number,
 };
