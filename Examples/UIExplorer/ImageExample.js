@@ -23,6 +23,7 @@ var {
   View,
 } = React;
 
+var AnimationExperimental = require('AnimationExperimental');
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 
 exports.framework = 'React';
@@ -36,10 +37,25 @@ exports.examples = [
     '"http", then it will be downloaded from the network.',
     render: function() {
       return (
-        <Image
-          source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
-          style={styles.base}
-        />
+        <View style={styles.horizontal}>
+          <Image
+            source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+            style={styles.base}
+          />
+          <Image
+            source={{uri: 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851549_767334479959628_274486868_n.png'}}
+            style={[styles.base, styles.hidden]}
+            onLoadStart={(event) => console.log('onLoadStart: ' + event.uri)}
+            onError={(event) => console.error('onError: ' + event.uri)}
+            onLoad={(event) => {
+              console.log('onLoad: ' + event.uri);
+              // Timeout to simulate image load latency
+              setTimeout(() => {
+                AnimationExperimental.startAnimation(event.target, 250, 0, 'linear', { opacity: 1 });
+              }, 1000);
+            }}
+          />
+        </View>
       );
     },
   },
@@ -275,6 +291,9 @@ var styles = StyleSheet.create({
   base: {
     width: 38,
     height: 38,
+  },
+  hidden: {
+    opacity: 0,
   },
   leftMargin: {
     marginLeft: 10,

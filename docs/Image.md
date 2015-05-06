@@ -56,3 +56,36 @@ In React Native, one interesting decision is that the `src` attribute is named `
 On the infrastructure side, the reason is that it allows to attach metadata to this object. For example if you are using `require('image!icon')`, then we add an `isStatic` attribute to flag it as a local file (don't rely on this fact, it's likely to change in the future!). This is also future proofing, for example we may want to support sprites at some point, instead of outputting `{uri: ...}`, we can output `{uri: ..., crop: {left: 10, top: 50, width: 20, height: 40}}` and transparently support spriting on all the existing call sites.
 
 On the user side, this lets you annotate the object with useful attributes such as the dimension of the image in order to compute the size it's going to be displayed in. Feel free to use it as your data structure to store more information about your image.
+
+## Load State of Network Assets
+
+Images that specify a remote `uri` for `source` can use same HTML event-handler attributes to receive load state notifications: [onLoadStart](http://www.w3schools.com/jsref/event_onloadstart.asp), [onLoad](http://www.w3schools.com/jsref/event_onload.asp), [onError](http://www.w3schools.com/jsref/event_onerror.asp). Note that once a remote image is downloaded successfully, it is cached on the device's file system. When rendering an already cached image, the load state event-handlers are invoked in the same asynchronous manner.
+
+```javascript
+// Simple fade-in using Animation API
+fadeInImage: function(event) {
+  Animation.startAnimation(event.target, 250, 0, 'linear', { opacity: 1 });
+},
+render: function() {
+  return (
+    <Image style={[styles.logo, styles.hidden]}
+           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+           onLoad={this.fadeInImage} />
+  );
+},
+```
+
+```javascript
+// Render a loading indicator
+render: function() {
+  return (
+    <View style={styles.container}>
+      {this.state.loading && <ActivityIndicatorIOS />}
+      <Image source={{uri: 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xpa1/t39.2365-6/11057099_886670958021382_1730701085_n.png'}}
+             style={this.state.loading ? styles.hidden : styles.image}
+             onLoadStart={() => this.setState({ loading: true })}
+             onLoad={() => this.setState({ loading: false })} />
+    </View>
+  );
+},
+```

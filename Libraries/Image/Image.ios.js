@@ -30,6 +30,8 @@ var resolveAssetSource = require('resolveAssetSource');
 var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
 
+type Event = Object;
+
 /**
  * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
@@ -99,6 +101,33 @@ var Image = React.createClass({
      * testing scripts.
      */
     testID: PropTypes.string,
+    /**
+     * Event callback function to invoke when image load begins.
+     * Includes the following event arguments:
+     *
+     * - target: Image component instance,
+     * - uri: Network image source
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Event callback function to invoke when image load completes.
+     * Includes the following event arguments:
+     *
+     * - target: Image component instance,
+     * - uri: Network image source
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Event callback function to invoke when image load fails.
+     * Includes the following event arguments:
+     *
+     * - target: Image component instance,
+     * - uri: Network image source,
+     * - domain: In which error occurred,
+     * - code: Error code,
+     * - description: Error description
+     */
+    onError: PropTypes.func,
   },
 
   statics: {
@@ -114,6 +143,24 @@ var Image = React.createClass({
   viewConfig: {
     uiViewClassName: 'UIView',
     validAttributes: ReactIOSViewAttributes.UIView
+  },
+
+  onLoadingStart: function(event: Event) {
+    if (this.props.onLoadStart) {
+      this.props.onLoadStart({...event.nativeEvent, target: this});
+    }
+  },
+
+  onLoadingFinish: function(event: Event) {
+    if (this.props.onLoad) {
+      this.props.onLoad({...event.nativeEvent, target: this});
+    }
+  },
+
+  onLoadingError: function(event: Event) {
+    if (this.props.onError) {
+      this.props.onError({...event.nativeEvent, target: this});
+    }
   },
 
   render: function() {
@@ -156,6 +203,9 @@ var Image = React.createClass({
       style,
       contentMode,
       tintColor: style.tintColor,
+      onLoadingStart: this.onLoadingStart,
+      onLoadingFinish: this.onLoadingFinish,
+      onLoadingError: this.onLoadingError,
     });
     if (isStored) {
       nativeProps.imageTag = source.uri;

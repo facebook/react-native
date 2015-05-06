@@ -11,6 +11,7 @@
 
 #import "RCTNetworkImageView.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTUtils.h"
 
@@ -22,7 +23,9 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTNetworkImageView *view = [[RCTNetworkImageView alloc] initWithFrame:CGRectZero imageDownloader:[RCTImageDownloader sharedInstance]];
+  RCTNetworkImageView *view = [[RCTNetworkImageView alloc] initWithFrame:CGRectZero
+                                                           imageDownloader:[RCTImageDownloader sharedInstance]
+                                                           eventDispatcher:self.bridge.eventDispatcher];
   view.contentMode = UIViewContentModeScaleAspectFill;
   return view;
 }
