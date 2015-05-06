@@ -1,5 +1,4 @@
 /**
- * @generated SignedSource<<58298c7a8815a8675e970b0347dedfed>>
  *
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * !! This file is a check-in from github!                       !!
@@ -22,7 +21,16 @@
 #define __LAYOUT_H
 
 #include <math.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
+
+// Not defined in MSVC++
+#ifndef NAN
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const float *)__nan)
+#endif
+
 #define CSS_UNDEFINED NAN
 
 typedef enum {
@@ -84,6 +92,7 @@ typedef struct {
   float last_parent_max_width;
   float last_dimensions[2];
   float last_position[2];
+
 } css_layout_t;
 
 typedef struct {
@@ -93,6 +102,7 @@ typedef struct {
 typedef struct {
   css_flex_direction_t flex_direction;
   css_justify_t justify_content;
+  css_align_t align_content;
   css_align_t align_items;
   css_align_t align_self;
   css_position_type_t position_type;
@@ -113,12 +123,15 @@ typedef struct {
   float padding[4];
   float border[4];
   float dimensions[2];
+  float minDimensions[2];
+  float maxDimensions[2];
 } css_style_t;
 
 typedef struct css_node {
   css_style_t style;
   css_layout_t layout;
   int children_count;
+  int line_index;
 
   css_dim_t (*measure)(void *context, float width);
   void (*print)(void *context);
