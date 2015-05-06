@@ -60,6 +60,9 @@
       onComplete(error);
       return;
     }
+                                  
+   
+                                  
 
     // Parse response as text
     NSStringEncoding encoding = NSUTF8StringEncoding;
@@ -103,6 +106,9 @@
     sourceCodeModule.scriptURL = scriptURL;
     sourceCodeModule.scriptText = rawText;
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidDownLoadedNotification
+                                                        object:self];
+                                  
     [_bridge enqueueApplicationScript:rawText url:scriptURL onComplete:^(NSError *scriptError) {
       dispatch_async(dispatch_get_main_queue(), ^{
         onComplete(scriptError);
