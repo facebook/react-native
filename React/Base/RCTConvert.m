@@ -64,6 +64,20 @@ RCT_CONVERTER(NSString *, NSString, description)
   return [[self NSString:json] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
++ (NSIndexSet *)NSIndexSet:(id)json
+{
+  json = [self NSNumberArray:json];
+  NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
+  for (NSNumber *number in json) {
+    NSInteger index = number.integerValue;
+    if (RCT_DEBUG && index < 0) {
+      RCTLogError(@"Invalid index value %zd. Indices must be positive.", index);
+    }
+    [indexSet addIndex:index];
+  }
+  return indexSet;
+}
+
 + (NSURL *)NSURL:(id)json
 {
   NSString *path = [self NSString:json];

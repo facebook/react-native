@@ -119,14 +119,14 @@ RCT_EXPORT_MODULE()
 
 - (void)updateSettings
 {
-  _settings = [NSMutableDictionary dictionaryWithDictionary:[_defaults objectForKey:RCTDevMenuSettingsKey]];
-
   __weak RCTDevMenu *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTDevMenu *strongSelf = weakSelf;
     if (!strongSelf) {
       return;
     }
+
+    strongSelf->_settings = [NSMutableDictionary dictionaryWithDictionary:[strongSelf->_defaults objectForKey:RCTDevMenuSettingsKey]];
 
     strongSelf.shakeToShow = [strongSelf->_settings[@"shakeToShow"] ?: @YES boolValue];
     strongSelf.profilingEnabled = [strongSelf->_settings[@"profilingEnabled"] ?: @NO boolValue];
