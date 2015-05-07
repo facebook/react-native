@@ -1495,17 +1495,13 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
       return;
     }
 
-    if (!RCT_DEBUG) {
+    @try {
       [method invokeWithBridge:strongSelf module:module arguments:params context:context];
-    } else {
-      @try {
-        [method invokeWithBridge:strongSelf module:module arguments:params context:context];
-      }
-      @catch (NSException *exception) {
-        RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
-        if ([exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
-          @throw;
-        }
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
+      if (!RCT_DEBUG && [exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
+        @throw exception;
       }
     }
 
