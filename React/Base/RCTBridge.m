@@ -31,6 +31,7 @@
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
+NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 
 dispatch_queue_t const RCTJSThread = nil;
 
@@ -1082,16 +1083,18 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
 
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
+
       _loading = NO;
       if (!self.isValid) {
         return;
       }
+
       RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
       sourceCodeModule.scriptURL = bundleURL;
       sourceCodeModule.scriptText = script;
-      if (error != nil) {
+      if (error) {
 
-        NSArray *stack = [[error userInfo] objectForKey:@"stack"];
+        NSArray *stack = [error userInfo][@"stack"];
         if (stack) {
           [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
                                              withStack:stack];
@@ -1100,10 +1103,17 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
                                            withDetails:[error localizedFailureReason]];
         }
 
+        NSDictionary *userInfo = @{@"error": error};
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                            object:self
+                                                          userInfo:userInfo];
+
       } else {
+
         [self enqueueApplicationScript:script url:bundleURL onComplete:^(NSError *loadError) {
 
           if (!loadError) {
+
             /**
              * Register the display link to start sending js calls after everything
              * is setup
