@@ -135,7 +135,12 @@ function setupXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
   GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
-  GLOBAL.fetch = require('fetch');
+
+  var fetchPolyfill = require('fetch');
+  GLOBAL.fetch = fetchPolyfill.fetch;
+  GLOBAL.Headers = fetchPolyfill.Headers;
+  GLOBAL.Request = fetchPolyfill.Request;
+  GLOBAL.Response = fetchPolyfill.Response;
 }
 
 function setupGeolocation() {
