@@ -83,6 +83,7 @@ function renderComponent(filepath) {
     docgenHelpers.findExportedOrFirst,
     docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
   );
+
   return componentsToMarkdown('component', json, filepath, n++, styleDocs);
 }
 
@@ -105,6 +106,17 @@ function renderStyle(filepath) {
     docgenHelpers.findExportedObject,
     [docgen.handlers.propTypeHandler]
   );
+
+  // Remove deprecated style props
+  if (filepath === "../Libraries/StyleSheet/TransformPropTypes.js") {
+    ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
+      delete json['props'][key];
+    });
+  }
+
+
+  // console.log(json);
+
   return componentsToMarkdown('style', json, filepath, n++);
 }
 
@@ -173,13 +185,6 @@ var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
       docgenHelpers.findExportedObject,
       [docgen.handlers.propTypeHandler]
     );
-
-  // Remove deprecated style props
-  if (docs['TransformPropTypes']) {
-    ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
-      delete docs['TransformPropTypes']['props'][key];
-    });
-  }
 
   return docs;
 }, {});
