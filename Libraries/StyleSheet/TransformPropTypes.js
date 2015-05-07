@@ -14,7 +14,15 @@
 var ReactPropTypes = require('ReactPropTypes');
 
 var TransformPropTypes = {
-  transform: ReactPropTypes.arrayOf(ReactPropTypes.object),
+  transform: ReactPropTypes.arrayOf(
+    ReactPropTypes.oneOfType([
+      ReactPropTypes.shape({rotate: ReactPropTypes.string}),
+      ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
+      ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
+      ReactPropTypes.shape({translateX: ReactPropTypes.number}),
+      ReactPropTypes.shape({translateY: ReactPropTypes.number})
+    ])
+  ),
   transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
 
   // DEPRECATED

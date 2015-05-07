@@ -36,23 +36,6 @@ var ViewStylePropTypes = {
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
-  transform: ReactPropTypes.arrayOf(
-    ReactPropTypes.oneOfType([
-      ReactPropTypes.shape({rotate: ReactPropTypes.string}),
-      ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
-      ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
-      ReactPropTypes.shape({translateX: ReactPropTypes.number}),
-      ReactPropTypes.shape({translateY: ReactPropTypes.number})
-    ])
-  ),
-  transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
-
-  // DEPRECATED
-  rotation: ReactPropTypes.number,
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
 };
 
 module.exports = ViewStylePropTypes;
