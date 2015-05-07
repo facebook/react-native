@@ -1144,18 +1144,11 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
     _latestJSExecutor = nil;
   }
 
-  /**
-   * Main Thread deallocations
-   */
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_mainDisplayLink invalidate];
+  void (^mainThreadInvalidate)(void) = ^{
 
-  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    /**
-     * JS Thread deallocations
-     */
-    [_javaScriptExecutor invalidate];
-    [_jsDisplayLink invalidate];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_mainDisplayLink invalidate];
+    _mainDisplayLink = nil;
 
     // Invalidate modules
     for (id target in _modulesByID.allObjects) {
@@ -1165,11 +1158,35 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
     }
 
     // Release modules (breaks retain cycle if module has strong bridge reference)
-    _javaScriptExecutor = nil;
     _frameUpdateObservers = nil;
     _modulesByID = nil;
     _queuesByID = nil;
     _modulesByName = nil;
+  };
+
+  if (!_javaScriptExecutor) {
+
+    // No JS thread running
+    mainThreadInvalidate();
+    return;
+  }
+
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+
+    /**
+     * JS Thread deallocations
+     */
+    [_javaScriptExecutor invalidate];
+    _javaScriptExecutor = nil;
+
+    [_jsDisplayLink invalidate];
+    _jsDisplayLink = nil;
+
+    /**
+     * Main Thread deallocations
+     */
+    mainThreadInvalidate();
+
   }];
 }
 

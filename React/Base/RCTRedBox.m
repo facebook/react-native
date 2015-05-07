@@ -76,8 +76,25 @@
     reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     [_rootView addSubview:dismissButton];
     [_rootView addSubview:reloadButton];
+
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+
+    [notificationCenter addObserver:self
+                           selector:@selector(dismiss)
+                               name:RCTReloadNotification
+                             object:nil];
+
+    [notificationCenter addObserver:self
+                           selector:@selector(dismiss)
+                               name:RCTJavaScriptDidLoadNotification
+                             object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)openStackFrameInEditor:(NSDictionary *)stackFrame
@@ -125,7 +142,6 @@
 - (void)reload
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
-  [self dismiss];
 }
 
 #pragma mark - TableView
