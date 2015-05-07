@@ -21,12 +21,20 @@ RCT_EXPORT_MODULE()
   return [[RCTNavItem alloc] init];
 }
 
+RCT_EXPORT_VIEW_PROPERTY(navigationBarHidden, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
+
 RCT_EXPORT_VIEW_PROPERTY(title, NSString)
-RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString);
-RCT_EXPORT_VIEW_PROPERTY(backButtonTitle, NSString);
-RCT_EXPORT_VIEW_PROPERTY(navigationBarHidden, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
-RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor);
-RCT_EXPORT_VIEW_PROPERTY(titleTextColor, UIColor);
+RCT_EXPORT_VIEW_PROPERTY(titleTextColor, UIColor)
+
+RCT_EXPORT_VIEW_PROPERTY(backButtonIcon, UIImage)
+RCT_EXPORT_VIEW_PROPERTY(backButtonTitle, NSString)
+
+RCT_EXPORT_VIEW_PROPERTY(leftButtonTitle, NSString)
+RCT_EXPORT_VIEW_PROPERTY(leftButtonIcon, UIImage)
+
+RCT_EXPORT_VIEW_PROPERTY(rightButtonIcon, UIImage)
+RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString)
 
 @end

@@ -64,7 +64,6 @@
   // TODO: find a way to make this less-tightly coupled to navigation controller
   if ([self.parentViewController isKindOfClass:[UINavigationController class]])
   {
-
     [self.navigationController
       setNavigationBarHidden:_navItem.navigationBarHidden
       animated:animated];
@@ -73,33 +72,23 @@
       return;
     }
 
-    self.navigationItem.title = _navItem.title;
-
     UINavigationBar *bar = self.navigationController.navigationBar;
-    if (_navItem.barTintColor) {
-      bar.barTintColor = _navItem.barTintColor;
-    }
-    if (_navItem.tintColor) {
-      bar.tintColor = _navItem.tintColor;
-    }
+    bar.barTintColor = _navItem.barTintColor;
+    bar.tintColor = _navItem.tintColor;
     if (_navItem.titleTextColor) {
       [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
     }
 
-    if (_navItem.rightButtonTitle.length > 0) {
-      self.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc] initWithTitle:_navItem.rightButtonTitle
-                                       style:UIBarButtonItemStyleDone
-                                      target:self
-                                      action:@selector(handleNavRightButtonTapped)];
+    UINavigationItem *item = self.navigationItem;
+    item.title = _navItem.title;
+    item.backBarButtonItem = _navItem.backButtonItem;
+    if ((item.leftBarButtonItem = _navItem.leftButtonItem)) {
+      item.leftBarButtonItem.target = self;
+      item.leftBarButtonItem.action = @selector(handleNavLeftButtonTapped);
     }
-
-    if (_navItem.backButtonTitle.length > 0) {
-      self.navigationItem.backBarButtonItem =
-      [[UIBarButtonItem alloc] initWithTitle:_navItem.backButtonTitle
-                                       style:UIBarButtonItemStylePlain
-                                      target:nil
-                                      action:nil];
+    if ((item.rightBarButtonItem = _navItem.rightButtonItem)) {
+      item.rightBarButtonItem.target = self;
+      item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
     }
   }
 }
@@ -112,6 +101,12 @@
   _wrapperView = [[UIView alloc] initWithFrame:_contentView.bounds];
   [_wrapperView addSubview:_contentView];
   self.view = _wrapperView;
+}
+
+- (void)handleNavLeftButtonTapped
+{
+  [_eventDispatcher sendInputEventWithName:@"topNavLeftButtonTap"
+                                      body:@{@"target":_navItem.reactTag}];
 }
 
 - (void)handleNavRightButtonTapped
