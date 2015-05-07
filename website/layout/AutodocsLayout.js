@@ -100,14 +100,18 @@ var ComponentDoc = React.createClass({
       <div className="compactProps">
         {(style.composes || []).map((name) => {
           var link;
-          if (name !== 'LayoutPropTypes') {
-            name = name.replace('StylePropTypes', '');
-            link =
-              <a href={slugify(name) + '.html#style'}>{name}#style...</a>;
-          } else {
+          if (name === 'LayoutPropTypes') {
             name = 'Flexbox';
             link =
               <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+          } else if (name === 'TransformPropTypes') {
+            name = 'Transforms';
+            link =
+              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+          } else {
+            name = name.replace('StylePropTypes', '');
+            link =
+              <a href={slugify(name) + '.html#style'}>{name}#style...</a>;
           }
           return (
             <div className="prop" key={name}>

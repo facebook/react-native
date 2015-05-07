@@ -19,9 +19,12 @@ function getNameFromPath(filepath) {
   while (ext = path.extname(filepath)) {
     filepath = path.basename(filepath, ext);
   }
+
   if (filepath === 'LayoutPropTypes') {
     return 'Flexbox';
-  } else if (filepath == 'TabBarItemIOS') {
+  } else if (filepath === 'TransformPropTypes') {
+    return 'Transforms';
+  } else if (filepath === 'TabBarItemIOS') {
     return 'TabBarIOS.Item';
   }
   return filepath;
@@ -148,6 +151,7 @@ var apis = [
 
 var styles = [
   '../Libraries/StyleSheet/LayoutPropTypes.js',
+  '../Libraries/StyleSheet/TransformPropTypes.js',
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
@@ -159,10 +163,10 @@ var polyfills = [
 
 var all = components
   .concat(apis)
-  .concat(styles.slice(0, 1))
+  .concat(styles.slice(0, 2))
   .concat(polyfills);
 
-var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
+var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
       fs.readFileSync(filepath),
@@ -171,9 +175,9 @@ var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
     );
 
   // Remove deprecated style props
-  if (docs['ViewStylePropTypes']) {
+  if (docs['TransformPropTypes']) {
     ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
-      delete docs['ViewStylePropTypes']['props'][key];
+      delete docs['TransformPropTypes']['props'][key];
     });
   }
 
@@ -185,7 +189,7 @@ module.exports = function() {
   return [].concat(
     components.map(renderComponent),
     apis.map(renderAPI('api')),
-    styles.slice(0, 1).map(renderStyle),
+    styles.slice(0, 2).map(renderStyle),
     polyfills.map(renderAPI('Polyfill'))
   );
 };
