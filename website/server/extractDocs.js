@@ -44,6 +44,33 @@ function getExample(componentName) {
   };
 }
 
+// Hide a component from the sidebar by making it return false from
+// this function
+function shouldDisplayInSidebar(componentName) {
+  if (componentName === 'Transforms') {
+    return false;
+  }
+
+  return true;
+}
+
+function getNextComponent(i) {
+  var next;
+  var filepath = all[i];
+
+  if (all[i + 1]) {
+    var nextComponentName = getNameFromPath(all[i + 1]);
+
+    if (shouldDisplayInSidebar(nextComponentName)) {
+      return slugify(nextComponentName);
+    } else {
+      return getNextComponent(i + 1);
+    }
+  } else {
+    return 'network';
+  }
+}
+
 function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
 
@@ -59,16 +86,19 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   }
   json.example = getExample(componentName);
 
+  // Put Flexbox into the Polyfills category
+  var category = (type === 'style' ? 'Polyfills' : type + 's');
+  var next = getNextComponent(i);
+
   var res = [
     '---',
     'id: ' + slugify(componentName),
     'title: ' + componentName,
     'layout: autodocs',
-    'category: ' + (type === 'style' ? 'Polyfills' : type + 's'),
+    'category: ' + category,
     'permalink: docs/' + slugify(componentName) + '.html',
-    'next: ' + (all[i + 1] ?
-      slugify(getNameFromPath(all[i + 1])) :
-      'network'),
+    'next: ' + next,
+    'sidebar: ' + shouldDisplayInSidebar(componentName),
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
@@ -107,15 +137,12 @@ function renderStyle(filepath) {
     [docgen.handlers.propTypeHandler]
   );
 
-  // Remove deprecated style props
+  // Remove deprecated transform props from docs
   if (filepath === "../Libraries/StyleSheet/TransformPropTypes.js") {
     ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
       delete json['props'][key];
     });
   }
-
-
-  // console.log(json);
 
   return componentsToMarkdown('style', json, filepath, n++);
 }
