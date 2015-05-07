@@ -178,6 +178,28 @@ var WebView = React.createClass({
     );
   },
 
+  evaluateJavaScript: function(
+    script: string,
+    callback?: ?(error: ?Error, result: ?string) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), script, function(err, value) {
+        // iOS returns a string for the result of stringByEvaluatingJavaScriptFromString.
+        // --> attempt to JSON.parse value, if we fail, just return as a string value.
+        try {
+          value = JSON.parse(value);
+        } catch(e) { }
+
+        callback && callback(err, value);
+        if (err) {
+          reject(err);
+        } else {
+          resolve(value);
+        }
+      });
+    });
+  },
+
   goForward: function() {
     RCTWebViewManager.goForward(this.getWebViewHandle());
   },
