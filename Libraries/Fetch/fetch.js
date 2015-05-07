@@ -377,4 +377,4 @@ var self = {};
 
 /** End of the third-party code */
 
-module.exports = self.fetch;
+module.exports = self;
