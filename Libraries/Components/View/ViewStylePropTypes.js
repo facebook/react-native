@@ -38,7 +38,7 @@ var ViewStylePropTypes = {
   shadowRadius: ReactPropTypes.number,
   transform: ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
-      ReactPropTypes.shape({rotation: ReactPropTypes.number}),
+      ReactPropTypes.shape({rotate: ReactPropTypes.string}),
       ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
       ReactPropTypes.shape({translateX: ReactPropTypes.number}),
