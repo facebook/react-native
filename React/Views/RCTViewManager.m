@@ -198,4 +198,6 @@ RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, UIColor, RCTShadowView)
   view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
 }
 
+RCT_REMAP_SHADOW_PROPERTY(onLayout, hasOnLayout, BOOL)
+
 @end
