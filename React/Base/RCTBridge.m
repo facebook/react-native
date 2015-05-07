@@ -868,6 +868,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return _batchedBridge.modules;
 }
 
+- (RCTEventDispatcher *)eventDispatcher
+{
+  return _eventDispatcher ?: _batchedBridge.eventDispatcher;
+}
+
 #define RCT_BRIDGE_WARN(...) \
 - (void)__VA_ARGS__ \
 { \
