@@ -39,6 +39,7 @@
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;
 + (NSData *)NSData:(id)json;
++ (NSIndexSet *)NSIndexSet:(id)json;
 
 + (NSURL *)NSURL:(id)json;
 + (NSURLRequest *)NSURLRequest:(id)json;
@@ -76,6 +77,7 @@
 + (UIImage *)UIImage:(id)json;
 + (CGImageRef)CGImage:(id)json;
 
++ (UIFont *)UIFont:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;

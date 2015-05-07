@@ -227,15 +227,17 @@ var Navigator = React.createClass({
     renderScene: PropTypes.func.isRequired,
 
     /**
-     * Provide a single "route" to start on. A route is an arbitrary object
-     * that the navigator will use to identify each scene before rendering.
-     * Either initialRoute or initialRouteStack is required.
+     * Specify a route to start on. A route is an object that the navigator
+     * will use to identify each scene to render. `initialRoute` must be
+     * a route in the `initialRouteStack` if both props are provided. The
+     * `initialRoute` will default to the last item in the `initialRouteStack`.
      */
     initialRoute: PropTypes.object,
 
     /**
-     * Provide a set of routes to initially mount the scenes for. Required if no
-     * initialRoute is provided
+     * Provide a set of routes to initially mount. Required if no initialRoute
+     * is provided. Otherwise, it will default to an array containing only the
+     * `initialRoute`
      */
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
@@ -295,20 +297,17 @@ var Navigator = React.createClass({
   },
 
   getInitialState: function() {
-    var routeStack = this.props.initialRouteStack || [];
-    var initialRouteIndex = 0;
-    if (this.props.initialRoute && routeStack.length) {
+    var routeStack = this.props.initialRouteStack || [this.props.initialRoute];
+    invariant(
+      routeStack.length >= 1,
+      'Navigator requires props.initialRoute or props.initialRouteStack.'
+    );
+    var initialRouteIndex = routeStack.length - 1;
+    if (this.props.initialRoute) {
       initialRouteIndex = routeStack.indexOf(this.props.initialRoute);
       invariant(
         initialRouteIndex !== -1,
         'initialRoute is not in initialRouteStack.'
-      );
-    } else if (this.props.initialRoute) {
-      routeStack = [this.props.initialRoute];
-    } else {
-      invariant(
-        routeStack.length >= 1,
-        'Navigator requires props.initialRoute or props.initialRouteStack.'
       );
     }
     return {
@@ -689,7 +688,8 @@ var Navigator = React.createClass({
     var enabledSceneNativeProps = {
       left: sceneStyle.left,
     };
-    if (sceneIndex !== this.state.transitionFromIndex) {
+    if (sceneIndex !== this.state.transitionFromIndex &&
+        sceneIndex !== this.state.presentedIndex) {
       // If we are not in a transition from this index, make sure opacity is 0
       // to prevent the enabled scene from flashing over the presented scene
       enabledSceneNativeProps.opacity = 0;

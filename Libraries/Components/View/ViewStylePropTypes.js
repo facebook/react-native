@@ -13,12 +13,14 @@
 
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
+var TransformPropTypes = require('TransformPropTypes');
 
 /**
  * Warning: Some of these properties may not be supported in all releases.
  */
 var ViewStylePropTypes = {
   ...LayoutPropTypes,
+  ...TransformPropTypes,
   backgroundColor: ReactPropTypes.string,
   borderColor: ReactPropTypes.string,
   borderTopColor: ReactPropTypes.string,
@@ -34,15 +36,6 @@ var ViewStylePropTypes = {
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
-  transform: ReactPropTypes.arrayOf(ReactPropTypes.object),
-  transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
-
-  // DEPRECATED
-  rotation: ReactPropTypes.number,
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
 };
 
 module.exports = ViewStylePropTypes;

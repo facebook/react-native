@@ -20,7 +20,7 @@
 
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObject options:0 error:error];
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObject options:(NSJSONWritingOptions)NSJSONReadingAllowFragments error:error];
   return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : nil;
 }
 
@@ -40,6 +40,57 @@ id RCTJSONParse(NSString *jsonString, NSError **error)
     }
   }
   return [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:error];
+}
+
+id RCTJSONClean(id object)
+{
+  static dispatch_once_t onceToken;
+  static NSSet *validLeafTypes;
+  dispatch_once(&onceToken, ^{
+    validLeafTypes = [[NSSet alloc] initWithArray:@[
+      [NSString class],
+      [NSMutableString class],
+      [NSNumber class],
+      [NSNull class],
+    ]];
+  });
+
+  if ([validLeafTypes containsObject:[object classForCoder]]) {
+    return object;
+  }
+
+  if ([object isKindOfClass:[NSDictionary class]]) {
+    __block BOOL copy = NO;
+    NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
+    [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, BOOL *stop) {
+      id value = RCTJSONClean(item);
+      values[key] = value;
+      copy |= value != item;
+    }];
+    return copy ? values : object;
+  }
+
+  if ([object isKindOfClass:[NSArray class]]) {
+    __block BOOL copy = NO;
+    __block NSArray *values = object;
+    [object enumerateObjectsUsingBlock:^(id item, NSUInteger idx, BOOL *stop) {
+      id value = RCTJSONClean(item);
+      if (copy) {
+        [(NSMutableArray *)values addObject:value];
+      } else if (value != item) {
+        // Converted value is different, so we'll need to copy the array
+        values = [[NSMutableArray alloc] initWithCapacity:values.count];
+        for (NSInteger i = 0; i < idx; i++) {
+          [(NSMutableArray *)values addObject:object[i]];
+        }
+        [(NSMutableArray *)values addObject:value];
+        copy = YES;
+      }
+    }];
+    return values;
+  }
+
+  return (id)kCFNull;
 }
 
 NSString *RCTMD5Hash(NSString *string)
