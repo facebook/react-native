@@ -91,6 +91,11 @@ var View = React.createClass({
     onStartShouldSetResponderCapture: PropTypes.func,
 
     /**
+     * Invoked on mount and layout changes with {x, y, width, height}.
+     */
+    onLayout: PropTypes.func,
+
+    /**
      * In the absence of `auto` property, `none` is much like `CSS`'s `none`
      * value. `box-none` is as if you had applied the `CSS` class:
      *

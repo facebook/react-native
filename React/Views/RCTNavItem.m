@@ -11,5 +11,104 @@
 
 @implementation RCTNavItem
 
-@end
+@synthesize backButtonItem = _backButtonItem;
+@synthesize leftButtonItem = _leftButtonItem;
+@synthesize rightButtonItem = _rightButtonItem;
 
+- (void)setBackButtonTitle:(NSString *)backButtonTitle
+{
+  _backButtonTitle = backButtonTitle;
+  _backButtonItem = nil;
+}
+
+- (void)setBackButtonIcon:(UIImage *)backButtonIcon
+{
+  _backButtonIcon = backButtonIcon;
+  _backButtonItem = nil;
+}
+
+- (UIBarButtonItem *)backButtonItem
+{
+  if (!_backButtonItem) {
+    if (_backButtonIcon) {
+      _backButtonItem = [[UIBarButtonItem alloc] initWithImage:_backButtonIcon
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:nil
+                                                        action:nil];
+    } else if (_backButtonTitle.length) {
+      _backButtonItem = [[UIBarButtonItem alloc] initWithTitle:_backButtonTitle
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:nil
+                                                        action:nil];
+    } else {
+      _backButtonItem = nil;
+    }
+  }
+  return _backButtonItem;
+}
+
+- (void)setLeftButtonTitle:(NSString *)leftButtonTitle
+{
+  _leftButtonTitle = leftButtonTitle;
+  _leftButtonItem = nil;
+}
+
+- (void)setLeftButtonIcon:(UIImage *)leftButtonIcon
+{
+  _leftButtonIcon = leftButtonIcon;
+  _leftButtonIcon = nil;
+}
+
+- (UIBarButtonItem *)leftButtonItem
+{
+  if (!_leftButtonItem) {
+    if (_leftButtonIcon) {
+      _leftButtonItem = [[UIBarButtonItem alloc] initWithImage:_leftButtonIcon
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:nil
+                                                        action:nil];
+    } else if (_leftButtonTitle.length) {
+      _leftButtonItem = [[UIBarButtonItem alloc] initWithTitle:_leftButtonTitle
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:nil
+                                                        action:nil];
+    } else {
+      _leftButtonItem = nil;
+    }
+  }
+  return _leftButtonItem;
+}
+
+- (void)setRightButtonTitle:(NSString *)rightButtonTitle
+{
+  _rightButtonTitle = rightButtonTitle;
+  _rightButtonItem = nil;
+}
+
+- (void)setRightButtonIcon:(UIImage *)rightButtonIcon
+{
+  _rightButtonIcon = rightButtonIcon;
+  _rightButtonItem = nil;
+}
+
+- (UIBarButtonItem *)rightButtonItem
+{
+  if (!_rightButtonItem) {
+    if (_rightButtonIcon) {
+      _rightButtonItem = [[UIBarButtonItem alloc] initWithImage:_rightButtonIcon
+                                                          style:UIBarButtonItemStylePlain
+                                                         target:nil
+                                                         action:nil];
+    } else if (_rightButtonTitle.length) {
+      _rightButtonItem = [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
+                                                          style:UIBarButtonItemStylePlain
+                                                         target:nil
+                                                         action:nil];
+    } else {
+      _rightButtonItem = nil;
+    }
+  }
+  return _rightButtonItem;
+}
+
+@end

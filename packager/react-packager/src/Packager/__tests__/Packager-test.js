@@ -166,12 +166,12 @@ describe('Packager', function() {
         };
 
         expect(p.addModule.mock.calls[3][0]).toEqual({
-          code: 'lol module.exports = ' +
+          code: 'lol module.exports = require("AssetRegistry").registerAsset(' +
             JSON.stringify(imgModule) +
-            '; lol',
-          sourceCode: 'module.exports = ' +
+            '); lol',
+          sourceCode: 'module.exports = require("AssetRegistry").registerAsset(' +
             JSON.stringify(imgModule) +
-            ';',
+            ');',
           sourcePath: '/root/img/new_image.png'
         });
 

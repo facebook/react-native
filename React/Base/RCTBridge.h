@@ -29,6 +29,11 @@ extern NSString *const RCTReloadNotification;
 extern NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
+ * This notification fires when the bridge failed to load.
+ */
+extern NSString *const RCTJavaScriptDidFailToLoadNotification;
+
+/**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
  * The bridge will call this block to instatiate the modules, and will

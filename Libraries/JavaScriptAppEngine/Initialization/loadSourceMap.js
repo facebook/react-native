@@ -17,8 +17,6 @@ var RCTSourceCode = require('NativeModules').SourceCode;
 var SourceMapConsumer = require('SourceMap').SourceMapConsumer;
 var SourceMapURL = require('./source-map-url');
 
-var fetch = require('fetch');
-
 function loadSourceMap(): Promise {
   return fetchSourceMap()
     .then(map => new SourceMapConsumer(map));

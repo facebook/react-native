@@ -25,6 +25,7 @@ var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
   require('./AsyncStorageTest'),
+  require('./LayoutEventsTest'),
   require('./SimpleSnapshotTest'),
 ];
 

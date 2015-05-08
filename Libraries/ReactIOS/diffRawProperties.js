@@ -42,6 +42,16 @@ function diffRawProperties(
       }
       prevProp = prevProps && prevProps[propKey];
       nextProp = nextProps[propKey];
+
+      // functions are converted to booleans as markers that the associated
+      // events should be sent from native.
+      if (typeof prevProp === 'function') {
+        prevProp = true;
+      }
+      if (typeof nextProp === 'function') {
+        nextProp = true;
+      }
+
       if (prevProp !== nextProp) {
         // If you want a property's diff to be detected, you must configure it
         // to be so - *or* it must be a scalar property. For now, we'll allow
@@ -75,6 +85,16 @@ function diffRawProperties(
       }
       prevProp = prevProps[propKey];
       nextProp = nextProps && nextProps[propKey];
+
+      // functions are converted to booleans as markers that the associated
+      // events should be sent from native.
+      if (typeof prevProp === 'function') {
+        prevProp = true;
+      }
+      if (typeof nextProp === 'function') {
+        nextProp = true;
+      }
+
       if (prevProp !== nextProp) {
         if (nextProp === undefined) {
           nextProp = null; // null is a sentinel we explicitly send to native

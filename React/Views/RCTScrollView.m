@@ -315,8 +315,14 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
+  CGPoint contentOffset = _scrollView.contentOffset;
+
   _contentInset = contentInset;
-  [self setNeedsLayout];
+  [RCTView autoAdjustInsetsForView:self
+                    withScrollView:_scrollView
+                      updateOffset:NO];
+
+  _scrollView.contentOffset = contentOffset;
 }
 
 - (void)scrollToOffset:(CGPoint)offset
