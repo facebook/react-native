@@ -1332,48 +1332,6 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
       return;
     }
 
-    /**
-     * Event deduping
-     *
-     * Right now we make a lot of assumptions about the arguments structure
-     * so just iterate if it's a `callFunctionReturnFlushedQueue()`
-     */
-    if ([method isEqualToString:@"callFunctionReturnFlushedQueue"]) {
-      NSString *moduleName = RCTLocalModuleNames[[args[0] integerValue]];
-      /**
-       * Keep going if it any event emmiter, e.g. RCT(Device|NativeApp)?EventEmitter
-       */
-      if ([moduleName hasSuffix:@"EventEmitter"]) {
-        for (NSDictionary *call in [strongSelf->_scheduledCalls copy]) {
-          NSArray *callArgs = call[@"args"];
-          /**
-           * If it's the same module && method call on the bridge &&
-           * the same EventEmitter module && method
-           */
-          if (
-            [call[@"module"] isEqualToString:module] &&
-            [call[@"method"] isEqualToString:method] &&
-            [callArgs[0] isEqual:args[0]] &&
-            [callArgs[1] isEqual:args[1]]
-          ) {
-            /**
-             * args[2] contains the actual arguments for the event call, where
-             * args[2][0] is the target for RCTEventEmitter or the eventName
-             *   for the other EventEmitters
-             * if RCTEventEmitter we need to compare args[2][1] that will be
-             *   the eventName
-             */
-            if (
-              [args[2][0] isEqual:callArgs[2][0]] &&
-              (![moduleName isEqualToString:@"RCTEventEmitter"] || [args[2][1] isEqual:callArgs[2][1]])
-            ) {
-              [strongSelf->_scheduledCalls removeObject:call];
-            }
-          }
-        }
-      }
-    }
-
     id call = @{
       @"module": module,
       @"method": method,
