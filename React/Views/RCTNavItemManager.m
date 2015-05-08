@@ -22,11 +22,24 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(title, NSString)
+RCT_EXPORT_VIEW_PROPERTY(leftButtonTitle, NSString);
 RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString);
 RCT_EXPORT_VIEW_PROPERTY(backButtonTitle, NSString);
 RCT_EXPORT_VIEW_PROPERTY(navigationBarHidden, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(titleTextColor, UIColor);
+RCT_CUSTOM_VIEW_PROPERTY(leftButtonImageName, UIImage, RCTNavItem)
+{
+  view.leftButtonImage = json ? [RCTConvert UIImage:json] : defaultView.leftButtonImage;
+}
+RCT_CUSTOM_VIEW_PROPERTY(rightButtonImageName, UIImage, RCTNavItem)
+{
+  view.rightButtonImage = json ? [RCTConvert UIImage:json] : defaultView.rightButtonImage;
+}
+RCT_CUSTOM_VIEW_PROPERTY(backButtonImageName, UIImage, RCTNavItem)
+{
+  view.backButtonImage = json ? [RCTConvert UIImage:json] : defaultView.backButtonImage;
+}
 
 @end

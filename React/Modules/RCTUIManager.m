@@ -1159,6 +1159,12 @@ RCT_EXPORT_METHOD(clearJSResponder)
         @"captured": @"onNavigationCompleteCapture"
       }
     },
+    @"topNavLeftButtonTap": @{
+      @"phasedRegistrationNames": @{
+        @"bubbled": @"onNavLeftButtonTap",
+        @"captured": @"onNavLefttButtonTapCapture"
+      }
+    },
     @"topNavRightButtonTap": @{
       @"phasedRegistrationNames": @{
         @"bubbled": @"onNavRightButtonTap",

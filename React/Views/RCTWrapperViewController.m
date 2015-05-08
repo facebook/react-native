@@ -86,17 +86,43 @@
       [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
     }
 
-    if (_navItem.rightButtonTitle.length > 0) {
-      self.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc] initWithTitle:_navItem.rightButtonTitle
-                                       style:UIBarButtonItemStyleDone
-                                      target:self
-                                      action:@selector(handleNavRightButtonTapped)];
+    if (_navItem.leftButtonImage) {
+      self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithImage:_navItem.leftButtonImage
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(handleNavLeftButtonTapped)];
+    } else if (_navItem.leftButtonTitle.length > 0) {
+      self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:_navItem.leftButtonTitle
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(handleNavLeftButtonTapped)];
     }
 
-    if (_navItem.backButtonTitle.length > 0) {
+    if (_navItem.rightButtonImage) {
+      self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithImage:_navItem.rightButtonImage
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(handleNavRightButtonTapped)];
+    } else if (_navItem.rightButtonTitle.length > 0) {
+      self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:_navItem.rightButtonTitle
+                                         style:UIBarButtonItemStyleDone
+                                        target:self
+                                        action:@selector(handleNavRightButtonTapped)];
+    }
+
+    if (_navItem.backButtonImage) {
       self.navigationItem.backBarButtonItem =
-      [[UIBarButtonItem alloc] initWithTitle:_navItem.backButtonTitle
+        [[UIBarButtonItem alloc] initWithImage:_navItem.backButtonImage
+                                         style:UIBarButtonItemStylePlain
+                                        target:nil
+                                        action:nil];
+    } else if (_navItem.backButtonTitle.length > 0) {
+      self.navigationItem.backBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:_navItem.backButtonTitle
                                        style:UIBarButtonItemStylePlain
                                       target:nil
                                       action:nil];
@@ -112,6 +138,12 @@
   _wrapperView = [[UIView alloc] initWithFrame:_contentView.bounds];
   [_wrapperView addSubview:_contentView];
   self.view = _wrapperView;
+}
+
+- (void)handleNavLeftButtonTapped
+{
+  [_eventDispatcher sendInputEventWithName:@"topNavLeftButtonTap"
+                                      body:@{@"target":_navItem.reactTag}];
 }
 
 - (void)handleNavRightButtonTapped

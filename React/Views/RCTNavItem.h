@@ -12,7 +12,11 @@
 @interface RCTNavItem : UIView
 
 @property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) UIImage *leftButtonImage;
+@property (nonatomic, copy) NSString *leftButtonTitle;
+@property (nonatomic, copy) UIImage *rightButtonImage;
 @property (nonatomic, copy) NSString *rightButtonTitle;
+@property (nonatomic, copy) UIImage *backButtonImage;
 @property (nonatomic, copy) NSString *backButtonTitle;
 @property (nonatomic, assign) BOOL navigationBarHidden;
 @property (nonatomic, copy) UIColor *tintColor;
