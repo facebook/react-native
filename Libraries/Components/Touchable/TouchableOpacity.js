@@ -106,7 +106,10 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableHandleActivePressOut: function() {
-    var childStyle = flattenStyle(this.refs[CHILD_REF].props.style) || {};
+    var childStyle = (
+      this.refs[CHILD_REF].props &&
+      flattenStyle(this.refs[CHILD_REF].props.style)
+    ) || {};
     this.setOpacityTo(childStyle.opacity === undefined ? 1 : childStyle.opacity);
     this.props.onPressOut && this.props.onPressOut();
   },
