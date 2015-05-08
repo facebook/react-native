@@ -10,6 +10,7 @@
  */
 'use strict';
 
+var AssetRegistry = require('AssetRegistry');
 var PixelRatio = require('PixelRatio');
 var SourceCode = require('NativeModules').SourceCode;
 
@@ -44,58 +45,47 @@ function pickScale(scales, deviceScale) {
 }
 
 function resolveAssetSource(source) {
-  if (!source || typeof source !== 'object') {
-    return null;
-  }
-
-  if (!source.__packager_asset) {
+  if (typeof source === 'object') {
     return source;
   }
 
-  // Deprecated assets are managed by Xcode for now,
-  // just returning image name as `uri`
-  // Examples:
-  //   require('image!deprecatd_logo_example')
-  //   require('./new-hotness-logo-example.png')
-  if (source.deprecated) {
-    return {
-      width: source.width,
-      height: source.height,
-      isStatic: true,
-      uri: source.name || source.uri, // TODO(frantic): remove uri
-    };
+  var asset = AssetRegistry.getAssetByID(source);
+  if (asset) {
+    return assetToImageSource(asset);
   }
 
+  return null;
+}
+
+function assetToImageSource(asset) {
   // TODO(frantic): currently httpServerLocation is used both as
   // path in http URL and path within IPA. Should we have zipArchiveLocation?
-  var path = source.httpServerLocation;
+  var path = asset.httpServerLocation;
   if (path[0] === '/') {
     path = path.substr(1);
   }
 
-  var scale = pickScale(source.scales, PixelRatio.get());
+  var scale = pickScale(asset.scales, PixelRatio.get());
   var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
 
-  var fileName = source.name + scaleSuffix + '.' + source.type;
+  var fileName = asset.name + scaleSuffix + '.' + asset.type;
   var serverURL = getServerURL();
   if (serverURL) {
     return {
-      width: source.width,
-      height: source.height,
+      width: asset.width,
+      height: asset.height,
       uri: serverURL + path + '/' + fileName +
-        '?hash=' + source.hash,
+        '?hash=' + asset.hash,
       isStatic: false,
     };
   } else {
     return {
-      width: source.width,
-      height: source.height,
+      width: asset.width,
+      height: asset.height,
       uri: path + '/' + fileName,
       isStatic: true,
     };
   }
-
-  return source;
 }
 
 module.exports = resolveAssetSource;

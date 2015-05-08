@@ -9,8 +9,7 @@
  * @providesModule ReactIOSViewAttributes
  * @flow
  */
-
-"use strict";
+'use strict';
 
 var merge = require('merge');
 
@@ -21,6 +20,7 @@ ReactIOSViewAttributes.UIView = {
   accessible: true,
   accessibilityLabel: true,
   testID: true,
+  onLayout: true,
 };
 
 ReactIOSViewAttributes.RCTView = merge(
@@ -31,7 +31,7 @@ ReactIOSViewAttributes.RCTView = merge(
   // For this property to be effective, it must be applied to a view that contains
   // many subviews that extend outside its bound. The subviews must also have
   // overflow: hidden, as should the containing view (or one of its superviews).
-  removeClippedSubviews: true
+  removeClippedSubviews: true,
 });
 
 module.exports = ReactIOSViewAttributes;

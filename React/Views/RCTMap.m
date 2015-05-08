@@ -27,7 +27,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   if ((self = [super init])) {
 
-    _hasStartedLoading = NO;
+    _hasStartedRendering = NO;
 
     // Find Apple link label
     for (UIView *subview in self.subviews) {

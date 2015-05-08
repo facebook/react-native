@@ -123,8 +123,7 @@ var Image = React.createClass({
           'not be set directly on Image.');
       }
     }
-    var source = resolveAssetSource(this.props.source);
-    invariant(source, 'source must be initialized');
+    var source = resolveAssetSource(this.props.source) || {};
 
     var {width, height} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]);

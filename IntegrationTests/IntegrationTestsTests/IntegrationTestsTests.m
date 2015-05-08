@@ -71,6 +71,11 @@
   [_runner runTest:_cmd module:@"AsyncStorageTest"];
 }
 
+- (void)testLayoutEvents
+{
+  [_runner runTest:_cmd module:@"LayoutEventsTest"];
+}
+
 #pragma mark Snapshot Tests
 
 - (void)testSimpleSnapshot

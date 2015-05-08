@@ -73,9 +73,6 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
 
-    _defaults = [NSUserDefaults standardUserDefaults];
-    [self updateSettings];
-
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
 
     [notificationCenter addObserver:self
@@ -93,19 +90,27 @@ RCT_EXPORT_MODULE()
                                name:RCTJavaScriptDidLoadNotification
                              object:nil];
 
+    _defaults = [NSUserDefaults standardUserDefaults];
+    _settings = [[NSMutableDictionary alloc] init];
+
+    // Delay setup until after Bridge init
+    __weak RCTDevMenu *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf updateSettings];
+    });
+
 #if TARGET_IPHONE_SIMULATOR
 
-    __weak RCTDevMenu *weakSelf = self;
     RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
-    // toggle debug menu
+    // Toggle debug menu
     [commands registerKeyCommandWithInput:@"d"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(UIKeyCommand *command) {
                                      [weakSelf toggle];
                                    }];
 
-    // reload in normal mode
+    // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(UIKeyCommand *command) {
@@ -117,22 +122,23 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 - (void)updateSettings
 {
-  __weak RCTDevMenu *weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    RCTDevMenu *strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
+  NSDictionary *settings = [_defaults objectForKey:RCTDevMenuSettingsKey];
+  if ([settings isEqualToDictionary:_settings]) {
+    return;
+  }
 
-    strongSelf->_settings = [NSMutableDictionary dictionaryWithDictionary:[strongSelf->_defaults objectForKey:RCTDevMenuSettingsKey]];
-
-    strongSelf.shakeToShow = [strongSelf->_settings[@"shakeToShow"] ?: @YES boolValue];
-    strongSelf.profilingEnabled = [strongSelf->_settings[@"profilingEnabled"] ?: @NO boolValue];
-    strongSelf.liveReloadEnabled = [strongSelf->_settings[@"liveReloadEnabled"] ?: @NO boolValue];
-    strongSelf.executorClass = NSClassFromString(strongSelf->_settings[@"executorClass"]);
-  });
+  [_settings setDictionary:settings];
+  self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
+  self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
+  self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
+  self.executorClass = NSClassFromString(_settings[@"executorClass"]);
 }
 
 - (void)jsLoaded
@@ -161,6 +167,11 @@ RCT_EXPORT_MODULE()
   });
 }
 
+- (BOOL)isValid
+{
+  return NO;
+}
+
 - (void)dealloc
 {
   [_updateTask cancel];
@@ -170,6 +181,10 @@ RCT_EXPORT_MODULE()
 
 - (void)updateSetting:(NSString *)name value:(id)value
 {
+  id currentValue = _settings[name];
+  if (currentValue == value || [currentValue isEqual:value]) {
+    return;
+  }
   if (value) {
     _settings[name] = value;
   } else {
@@ -239,6 +254,9 @@ RCT_EXPORT_METHOD(reload)
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
   _actionSheet = nil;
+  if (buttonIndex == actionSheet.cancelButtonIndex) {
+    return;
+  }
 
   switch (buttonIndex) {
     case 0: {

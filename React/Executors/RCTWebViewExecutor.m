@@ -43,6 +43,7 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   UIWebView *_webView;
   NSMutableDictionary *_objectsToInject;
   NSRegularExpression *_commentsRegex;
+  NSRegularExpression *_scriptTagsRegex;
 }
 
 @synthesize valid = _valid;
@@ -52,7 +53,8 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   if ((self = [super init])) {
     _objectsToInject = [[NSMutableDictionary alloc] init];
     _webView = webView ?: [[UIWebView alloc] init];
-    _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]+?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL];
+    _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL],
+    _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL],
     _webView.delegate = self;
   }
   return self;
@@ -139,11 +141,6 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
     onComplete(error);
   };
 
-  script = [_commentsRegex stringByReplacingMatchesInString:script
-                                                    options:0
-                                                      range:NSMakeRange(0, script.length)
-                                               withTemplate:@""];
-
   if (_objectsToInject.count > 0) {
     NSMutableString *scriptWithInjections = [[NSMutableString alloc] initWithString:@"/* BEGIN NATIVELY INJECTED OBJECTS */\n"];
     [_objectsToInject enumerateKeysAndObjectsUsingBlock:^(NSString *objectName, NSString *blockScript, BOOL *stop) {
@@ -157,6 +154,15 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
     [scriptWithInjections appendString:script];
     script = scriptWithInjections;
   }
+
+  script = [_commentsRegex stringByReplacingMatchesInString:script
+                                                    options:0
+                                                      range:NSMakeRange(0, script.length)
+                                               withTemplate:@""];
+  script = [_scriptTagsRegex stringByReplacingMatchesInString:script
+                                                      options:0
+                                                        range:NSMakeRange(0, script.length)
+                                                 withTemplate:@"\\\\<$1\\\\>"];
 
   NSString *runScript =
     [NSString

@@ -31,6 +31,7 @@
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
+NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 
 dispatch_queue_t const RCTJSThread = nil;
 
@@ -867,6 +868,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return _batchedBridge.modules;
 }
 
+- (RCTEventDispatcher *)eventDispatcher
+{
+  return _eventDispatcher ?: _batchedBridge.eventDispatcher;
+}
+
 #define RCT_BRIDGE_WARN(...) \
 - (void)__VA_ARGS__ \
 { \
@@ -1082,16 +1088,18 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
 
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
+
       _loading = NO;
       if (!self.isValid) {
         return;
       }
+
       RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
       sourceCodeModule.scriptURL = bundleURL;
       sourceCodeModule.scriptText = script;
-      if (error != nil) {
+      if (error) {
 
-        NSArray *stack = [[error userInfo] objectForKey:@"stack"];
+        NSArray *stack = [error userInfo][@"stack"];
         if (stack) {
           [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
                                              withStack:stack];
@@ -1100,10 +1108,17 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
                                            withDetails:[error localizedFailureReason]];
         }
 
+        NSDictionary *userInfo = @{@"error": error};
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                            object:self
+                                                          userInfo:userInfo];
+
       } else {
+
         [self enqueueApplicationScript:script url:bundleURL onComplete:^(NSError *loadError) {
 
           if (!loadError) {
+
             /**
              * Register the display link to start sending js calls after everything
              * is setup
@@ -1144,18 +1159,11 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
     _latestJSExecutor = nil;
   }
 
-  /**
-   * Main Thread deallocations
-   */
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_mainDisplayLink invalidate];
+  void (^mainThreadInvalidate)(void) = ^{
 
-  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    /**
-     * JS Thread deallocations
-     */
-    [_javaScriptExecutor invalidate];
-    [_jsDisplayLink invalidate];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_mainDisplayLink invalidate];
+    _mainDisplayLink = nil;
 
     // Invalidate modules
     for (id target in _modulesByID.allObjects) {
@@ -1165,11 +1173,35 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
     }
 
     // Release modules (breaks retain cycle if module has strong bridge reference)
-    _javaScriptExecutor = nil;
     _frameUpdateObservers = nil;
     _modulesByID = nil;
     _queuesByID = nil;
     _modulesByName = nil;
+  };
+
+  if (!_javaScriptExecutor) {
+
+    // No JS thread running
+    mainThreadInvalidate();
+    return;
+  }
+
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+
+    /**
+     * JS Thread deallocations
+     */
+    [_javaScriptExecutor invalidate];
+    _javaScriptExecutor = nil;
+
+    [_jsDisplayLink invalidate];
+    _jsDisplayLink = nil;
+
+    /**
+     * Main Thread deallocations
+     */
+    mainThreadInvalidate();
+
   }];
 }
 
@@ -1298,48 +1330,6 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
     RCTBatchedBridge *strongSelf = weakSelf;
     if (!strongSelf.isValid || !strongSelf->_scheduledCallbacks || !strongSelf->_scheduledCalls) {
       return;
-    }
-
-    /**
-     * Event deduping
-     *
-     * Right now we make a lot of assumptions about the arguments structure
-     * so just iterate if it's a `callFunctionReturnFlushedQueue()`
-     */
-    if ([method isEqualToString:@"callFunctionReturnFlushedQueue"]) {
-      NSString *moduleName = RCTLocalModuleNames[[args[0] integerValue]];
-      /**
-       * Keep going if it any event emmiter, e.g. RCT(Device|NativeApp)?EventEmitter
-       */
-      if ([moduleName hasSuffix:@"EventEmitter"]) {
-        for (NSDictionary *call in [strongSelf->_scheduledCalls copy]) {
-          NSArray *callArgs = call[@"args"];
-          /**
-           * If it's the same module && method call on the bridge &&
-           * the same EventEmitter module && method
-           */
-          if (
-            [call[@"module"] isEqualToString:module] &&
-            [call[@"method"] isEqualToString:method] &&
-            [callArgs[0] isEqual:args[0]] &&
-            [callArgs[1] isEqual:args[1]]
-          ) {
-            /**
-             * args[2] contains the actual arguments for the event call, where
-             * args[2][0] is the target for RCTEventEmitter or the eventName
-             *   for the other EventEmitters
-             * if RCTEventEmitter we need to compare args[2][1] that will be
-             *   the eventName
-             */
-            if (
-              [args[2][0] isEqual:callArgs[2][0]] &&
-              (![moduleName isEqualToString:@"RCTEventEmitter"] || [args[2][1] isEqual:callArgs[2][1]])
-            ) {
-              [strongSelf->_scheduledCalls removeObject:call];
-            }
-          }
-        }
-      }
     }
 
     id call = @{
@@ -1495,17 +1485,13 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
       return;
     }
 
-    if (!RCT_DEBUG) {
+    @try {
       [method invokeWithBridge:strongSelf module:module arguments:params context:context];
-    } else {
-      @try {
-        [method invokeWithBridge:strongSelf module:module arguments:params context:context];
-      }
-      @catch (NSException *exception) {
-        RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
-        if ([exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
-          @throw;
-        }
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
+      if (!RCT_DEBUG && [exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
+        @throw exception;
       }
     }
 
