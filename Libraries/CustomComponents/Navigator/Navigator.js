@@ -734,10 +734,14 @@ var Navigator = React.createClass({
     viewAtIndex.setNativeProps({renderToHardwareTextureAndroid: shouldRenderToHardwareTexture});
   },
 
+  _handleTouchStart: function() {
+    this._eligibleGestures = GESTURE_ACTIONS;
+  },
+
   _handleMoveShouldSetPanResponder: function(e, gestureState) {
     var currentRoute = this.state.routeStack[this.state.presentedIndex];
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
-    this._expectingGestureGrant = this._matchGestureAction(sceneConfig.gestures, gestureState);
+    this._expectingGestureGrant = this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
     return !! this._expectingGestureGrant;
   },
 
@@ -855,7 +859,7 @@ var Navigator = React.createClass({
       var gesture = sceneConfig.gestures[this.state.activeGesture];
       return this._moveAttachedGesture(gesture, gestureState);
     }
-    var matchedGesture = this._matchGestureAction(sceneConfig.gestures, gestureState);
+    var matchedGesture = this._matchGestureAction(GESTURE_ACTIONS, sceneConfig.gestures, gestureState);
     if (matchedGesture) {
       this._attachGesture(matchedGesture);
     }
@@ -889,12 +893,12 @@ var Navigator = React.createClass({
     }
   },
 
-  _matchGestureAction: function(gestures, gestureState) {
+  _matchGestureAction: function(eligibleGestures, gestures, gestureState) {
     if (!gestures) {
       return null;
     }
     var matchedGesture = null;
-    GESTURE_ACTIONS.some((gestureName) => {
+    eligibleGestures.some((gestureName, gestureIndex) => {
       var gesture = gestures[gestureName];
       if (!gesture) {
         return;
@@ -920,12 +924,19 @@ var Navigator = React.createClass({
       }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
         currentLoc < edgeHitWidth;
-      var moveTravelledFarEnough =
-        travelDist >= gesture.gestureDetectMovement &&
-        travelDist > oppositeAxisTravelDist * gesture.directionRatio;
-      if (moveStartedInRegion && moveTravelledFarEnough) {
+      if (!moveStartedInRegion) {
+        return false;
+      }
+      var moveTravelledFarEnough = travelDist >= gesture.gestureDetectMovement;
+      if (!moveTravelledFarEnough) {
+        return false;
+      }
+      var directionIsCorrect = Math.abs(travelDist) > Math.abs(oppositeAxisTravelDist) * gesture.directionRatio;
+      if (directionIsCorrect) {
         matchedGesture = gestureName;
         return true;
+      } else {
+        this._eligibleGestures = this._eligibleGestures.slice().splice(gestureIndex, 1);
       }
     });
     return matchedGesture;
@@ -1202,6 +1213,7 @@ var Navigator = React.createClass({
           <View
             style={styles.transitioner}
             {...this.panGesture.panHandlers}
+            onTouchStart={this._handleTouchStart}
             onResponderTerminationRequest={
               this._handleResponderTerminationRequest
             }>
