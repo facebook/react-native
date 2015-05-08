@@ -6,19 +6,19 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSComponentEnvironment
+ * @providesModule ReactNativeComponentEnvironment
  * @flow
  */
 'use strict';
 
-var ReactIOSDOMIDOperations = require('ReactIOSDOMIDOperations');
-var ReactIOSReconcileTransaction = require('ReactIOSReconcileTransaction');
+var ReactNativeDOMIDOperations = require('ReactNativeDOMIDOperations');
+var ReactNativeReconcileTransaction = require('ReactNativeReconcileTransaction');
 
-var ReactIOSComponentEnvironment = {
+var ReactNativeComponentEnvironment = {
 
-  processChildrenUpdates: ReactIOSDOMIDOperations.dangerouslyProcessChildrenUpdates,
+  processChildrenUpdates: ReactNativeDOMIDOperations.dangerouslyProcessChildrenUpdates,
 
-  replaceNodeWithMarkupByID: ReactIOSDOMIDOperations.dangerouslyReplaceNodeWithMarkupByID,
+  replaceNodeWithMarkupByID: ReactNativeDOMIDOperations.dangerouslyReplaceNodeWithMarkupByID,
 
   /**
    * Nothing to do for UIKit bridge.
@@ -36,7 +36,7 @@ var ReactIOSComponentEnvironment = {
 
   },
 
-  ReactReconcileTransaction: ReactIOSReconcileTransaction,
+  ReactReconcileTransaction: ReactNativeReconcileTransaction,
 };
 
-module.exports = ReactIOSComponentEnvironment;
+module.exports = ReactNativeComponentEnvironment;

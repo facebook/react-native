@@ -14,7 +14,7 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -120,7 +120,7 @@ var TouchableHighlight = React.createClass({
 
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactIOSViewAttributes.RCTView
+    validAttributes: ReactNativeViewAttributes.RCTView
   },
 
   /**

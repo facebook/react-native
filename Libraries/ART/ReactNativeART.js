@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSART
+ * @providesModule ReactNativeART
  */
 
 "use strict";
@@ -16,9 +16,9 @@ var Path = require('ARTSerializablePath');
 var Transform = require('art/core/transform');
 
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var merge = require('merge');
 
 // Diff Helpers
@@ -64,7 +64,7 @@ function fontAndLinesDiffer(a, b) {
 
 // Native Attributes
 
-var SurfaceViewAttributes = merge(ReactIOSViewAttributes.UIView, {
+var SurfaceViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   // This should contain pixel information such as width, height and
   // resolution to know what kind of buffer needs to be allocated.
   // Currently we rely on UIViews and style to figure that out.
@@ -100,22 +100,22 @@ var TextAttributes = merge(RenderableAttributes, {
 
 // Native Components
 
-var NativeSurfaceView = createReactIOSNativeComponentClass({
+var NativeSurfaceView = createReactNativeComponentClass({
   validAttributes: SurfaceViewAttributes,
   uiViewClassName: 'ARTSurfaceView',
 });
 
-var NativeGroup = createReactIOSNativeComponentClass({
+var NativeGroup = createReactNativeComponentClass({
   validAttributes: GroupAttributes,
   uiViewClassName: 'ARTGroup',
 });
 
-var NativeShape = createReactIOSNativeComponentClass({
+var NativeShape = createReactNativeComponentClass({
   validAttributes: ShapeAttributes,
   uiViewClassName: 'ARTShape',
 });
 
-var NativeText = createReactIOSNativeComponentClass({
+var NativeText = createReactNativeComponentClass({
   validAttributes: TextAttributes,
   uiViewClassName: 'ARTText',
 });

@@ -6,13 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSDOMIDOperations
+ * @providesModule ReactNativeDOMIDOperations
  * @flow
  */
 
 "use strict";
 
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChildUpdateTypes = require('ReactMultiChildUpdateTypes');
 var RCTUIManager = require('NativeModules').UIManager;
 var ReactPerf = require('ReactPerf');
@@ -38,7 +38,7 @@ var dangerouslyProcessChildrenUpdates = function(childrenUpdates, markupList) {
   // containerID.
   for (var i = 0; i < childrenUpdates.length; i++) {
     var update = childrenUpdates[i];
-    var containerTag = ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(update.parentID);
+    var containerTag = ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(update.parentID);
     var updates = byContainerTag[containerTag] || (byContainerTag[containerTag] = {});
     if (update.type === ReactMultiChildUpdateTypes.MOVE_EXISTING) {
       (updates.moveFromIndices || (updates.moveFromIndices = [])).push(update.fromIndex);
@@ -49,7 +49,7 @@ var dangerouslyProcessChildrenUpdates = function(childrenUpdates, markupList) {
       var mountImage = markupList[update.markupIndex];
       var tag = mountImage.tag;
       var rootNodeID = mountImage.rootNodeID;
-      ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(rootNodeID, tag);
+      ReactNativeTagHandles.associateRootNodeIDWithMountedNodeHandle(rootNodeID, tag);
       (updates.addAtIndices || (updates.addAtIndices = [])).push(update.toIndex);
       (updates.addChildTags || (updates.addChildTags = [])).push(tag);
     }
@@ -75,7 +75,7 @@ var dangerouslyProcessChildrenUpdates = function(childrenUpdates, markupList) {
  * Operations used to process updates to DOM nodes. This is made injectable via
  * `ReactComponent.DOMIDOperations`.
  */
-var ReactIOSDOMIDOperations = {
+var ReactNativeDOMIDOperations = {
   dangerouslyProcessChildrenUpdates: ReactPerf.measure(
     // FIXME(frantic): #4441289 Hack to avoid modifying react-tools
     'ReactDOMIDOperations',
@@ -93,11 +93,11 @@ var ReactIOSDOMIDOperations = {
     'ReactDOMIDOperations',
     'dangerouslyReplaceNodeWithMarkupByID',
     function(id, mountImage) {
-      var oldTag = ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(id);
+      var oldTag = ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(id);
       RCTUIManager.replaceExistingNonRootView(oldTag, mountImage.tag);
-      ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(id, mountImage.tag);
+      ReactNativeTagHandles.associateRootNodeIDWithMountedNodeHandle(id, mountImage.tag);
     }
   ),
 };
 
-module.exports = ReactIOSDOMIDOperations;
+module.exports = ReactNativeDOMIDOperations;

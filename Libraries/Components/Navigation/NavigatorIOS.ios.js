@@ -14,14 +14,14 @@
 var EventEmitter = require('EventEmitter');
 var Image = require('Image');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass =
+  require('createReactNativeComponentClass');
 var invariant = require('invariant');
 var logError = require('logError');
 var merge = require('merge');
@@ -35,14 +35,14 @@ function getuid() {
   return __uid++;
 }
 
-var RCTNavigator = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
+var RCTNavigator = createReactNativeComponentClass({
+  validAttributes: merge(ReactNativeViewAttributes.UIView, {
     requestedTopOfStack: true
   }),
   uiViewClassName: 'RCTNavigator',
 });
 
-var RCTNavigatorItem = createReactIOSNativeComponentClass({
+var RCTNavigatorItem = createReactNativeComponentClass({
   validAttributes: {
     // TODO: Remove or fix the attributes that are not fully functional.
     //  NavigatorIOS does not use them all, because some are problematic

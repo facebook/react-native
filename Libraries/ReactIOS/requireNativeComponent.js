@@ -14,7 +14,7 @@
 var RCTUIManager = require('NativeModules').UIManager;
 var UnimplementedView = require('UnimplementedView');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');
@@ -59,7 +59,7 @@ function requireNativeComponent(
   if (__DEV__) {
     wrapperComponent && verifyPropTypes(wrapperComponent, viewConfig);
   }
-  return createReactIOSNativeComponentClass(viewConfig);
+  return createReactNativeComponentClass(viewConfig);
 }
 
 var TypeToDifferMap = {

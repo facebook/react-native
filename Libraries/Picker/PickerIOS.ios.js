@@ -15,13 +15,13 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass =
+  require('createReactNativeComponentClass');
 var merge = require('merge');
 
 var PICKER = 'picker';
@@ -112,12 +112,12 @@ var styles = StyleSheet.create({
   },
 });
 
-var rkPickerIOSAttributes = merge(ReactIOSViewAttributes.UIView, {
+var rkPickerIOSAttributes = merge(ReactNativeViewAttributes.UIView, {
   items: true,
   selectedIndex: true,
 });
 
-var RCTPickerIOS = createReactIOSNativeComponentClass({
+var RCTPickerIOS = createReactNativeComponentClass({
   validAttributes: rkPickerIOSAttributes,
   uiViewClassName: 'RCTPicker',
 });

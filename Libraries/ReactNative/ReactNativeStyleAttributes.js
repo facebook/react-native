@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSStyleAttributes
+ * @providesModule ReactNativeStyleAttributes
  * @flow
  */
 
@@ -20,13 +20,13 @@ var keyMirror = require('keyMirror');
 var matricesDiffer = require('matricesDiffer');
 var sizesDiffer = require('sizesDiffer');
 
-var ReactIOSStyleAttributes = {
+var ReactNativeStyleAttributes = {
   ...keyMirror(ViewStylePropTypes),
   ...keyMirror(TextStylePropTypes),
   ...keyMirror(ImageStylePropTypes),
 };
 
-ReactIOSStyleAttributes.transformMatrix = { diff: matricesDiffer };
-ReactIOSStyleAttributes.shadowOffset = { diff: sizesDiffer };
+ReactNativeStyleAttributes.transformMatrix = { diff: matricesDiffer };
+ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
 
-module.exports = ReactIOSStyleAttributes;
+module.exports = ReactNativeStyleAttributes;

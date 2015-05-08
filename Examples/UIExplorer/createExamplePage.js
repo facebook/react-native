@@ -17,7 +17,7 @@
 'use strict';
 
 var React = require('react-native');
-var ReactIOS = require('ReactIOS');
+var ReactNative = require('ReactNative');
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
@@ -49,15 +49,15 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
       // renderComponent to be called.
       var originalRender = React.render;
       var originalRenderComponent = React.renderComponent;
-      var originalIOSRender = ReactIOS.render;
-      var originalIOSRenderComponent = ReactIOS.renderComponent;
+      var originalIOSRender = ReactNative.render;
+      var originalIOSRenderComponent = ReactNative.renderComponent;
       var renderedComponent;
       // TODO remove typecasts when Flow bug #6560135 is fixed
       // and workaround is removed from react-native.js
       (React: Object).render =
       (React: Object).renderComponent =
-      (ReactIOS: Object).render =
-      (ReactIOS: Object).renderComponent =
+      (ReactNative: Object).render =
+      (ReactNative: Object).renderComponent =
         function(element, container) {
           renderedComponent = element;
         };
@@ -67,8 +67,8 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
       }
       (React: Object).render = originalRender;
       (React: Object).renderComponent = originalRenderComponent;
-      (ReactIOS: Object).render = originalIOSRender;
-      (ReactIOS: Object).renderComponent = originalIOSRenderComponent;
+      (ReactNative: Object).render = originalIOSRender;
+      (ReactNative: Object).renderComponent = originalIOSRenderComponent;
       return (
         <UIExplorerBlock
           key={i}

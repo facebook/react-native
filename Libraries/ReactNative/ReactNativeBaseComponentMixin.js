@@ -6,12 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSComponentMixin
+ * @providesModule ReactNativeComponentMixin
  * @flow
  */
 'use strict';
 
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactInstanceMap = require('ReactInstanceMap');
 
 /**
@@ -23,7 +23,7 @@ var ReactInstanceMap = require('ReactInstanceMap');
  * making assumptions about the nature of those resources, and this allows that
  * infra to be shared across multiple platforms, where the resources are very
  * different. General infra (such as `ReactMultiChild`) reasons opaquely about
- * the data, but platform specific code (such as `ReactIOSNativeComponent`) can
+ * the data, but platform specific code (such as `ReactNativeBaseComponent`) can
  * make assumptions about the data.
  *
  *
@@ -54,9 +54,9 @@ var ReactInstanceMap = require('ReactInstanceMap');
  * mountImage       innerHTML        innerHTML              {rootNodeID, tag}
  *
  */
-var ReactIOSComponentMixin = {
+var ReactNativeComponentMixin = {
   /**
-   * This has no particular meaning in ReactIOS. If this were in the DOM, this
+   * This has no particular meaning in ReactNative. If this were in the DOM, this
    * would return the DOM node. There should be nothing that invokes this
    * method. Any current callers of this are mistaken - they should be invoking
    * `getNodeHandle`.
@@ -64,16 +64,16 @@ var ReactIOSComponentMixin = {
   getNativeNode: function() {
     // TODO (balpert): Wrap iOS native components in a composite wrapper, then
     // ReactInstanceMap.get here will always succeed
-    return ReactIOSTagHandles.rootNodeIDToTag[
+    return ReactNativeTagHandles.rootNodeIDToTag[
       (ReactInstanceMap.get(this) || this)._rootNodeID
     ];
   },
 
   getNodeHandle: function() {
-    return ReactIOSTagHandles.rootNodeIDToTag[
+    return ReactNativeTagHandles.rootNodeIDToTag[
       (ReactInstanceMap.get(this) || this)._rootNodeID
     ];
   }
 };
 
-module.exports = ReactIOSComponentMixin;
+module.exports = ReactNativeComponentMixin;

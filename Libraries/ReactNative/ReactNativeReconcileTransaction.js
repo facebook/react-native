@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSReconcileTransaction
+ * @providesModule ReactNativeReconcileTransaction
  * @flow
  */
 
@@ -55,9 +55,9 @@ var TRANSACTION_WRAPPERS = [ON_DOM_READY_QUEUEING];
  * - Implement/integrate with customized constraint based layout system and keep
  *   track of which dimensions must be remeasured.
  *
- * @class ReactIOSReconcileTransaction
+ * @class ReactNativeReconcileTransaction
  */
-function ReactIOSReconcileTransaction() {
+function ReactNativeReconcileTransaction() {
   this.reinitializeTransaction();
   this.reactMountReady = CallbackQueue.getPooled(null);
 }
@@ -93,12 +93,12 @@ var Mixin = {
 };
 
 Object.assign(
-  ReactIOSReconcileTransaction.prototype,
+  ReactNativeReconcileTransaction.prototype,
   Transaction.Mixin,
-  ReactIOSReconcileTransaction,
+  ReactNativeReconcileTransaction,
   Mixin
 );
 
-PooledClass.addPoolingTo(ReactIOSReconcileTransaction);
+PooledClass.addPoolingTo(ReactNativeReconcileTransaction);
 
-module.exports = ReactIOSReconcileTransaction;
+module.exports = ReactNativeReconcileTransaction;

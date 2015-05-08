@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var RCTUIManager = require('NativeModules').UIManager;
 
 type OnSuccessCallback = (
@@ -52,7 +52,7 @@ var queryLayoutByID = function(
 ): void {
   // Native bridge doesn't *yet* surface errors.
   RCTUIManager.measure(
-    ReactIOSTagHandles.rootNodeIDToTag[rootNodeID],
+    ReactNativeTagHandles.rootNodeIDToTag[rootNodeID],
     onSuccess
   );
 };

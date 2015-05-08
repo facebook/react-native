@@ -17,7 +17,7 @@ var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
 var ScrollResponder = require('ScrollResponder');
 var StyleSheet = require('StyleSheet');
@@ -25,7 +25,7 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
@@ -343,7 +343,7 @@ var styles = StyleSheet.create({
 });
 
 var validAttributes = {
-  ...ReactIOSViewAttributes.UIView,
+  ...ReactNativeViewAttributes.UIView,
   alwaysBounceHorizontal: true,
   alwaysBounceVertical: true,
   automaticallyAdjustContentInsets: true,
@@ -370,11 +370,11 @@ var validAttributes = {
 };
 
 if (Platform.OS === 'android') {
-  var AndroidScrollView = createReactIOSNativeComponentClass({
+  var AndroidScrollView = createReactNativeComponentClass({
     validAttributes: validAttributes,
     uiViewClassName: 'RCTScrollView',
   });
-  var AndroidHorizontalScrollView = createReactIOSNativeComponentClass({
+  var AndroidHorizontalScrollView = createReactNativeComponentClass({
     validAttributes: validAttributes,
     uiViewClassName: 'AndroidHorizontalScrollView',
   });

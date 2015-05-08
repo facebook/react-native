@@ -6,19 +6,19 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSGlobalResponderHandler
+ * @providesModule ReactNativeGlobalResponderHandler
  * @flow
  */
 'use strict';
 
 var RCTUIManager = require('NativeModules').UIManager;
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 
-var ReactIOSGlobalResponderHandler = {
+var ReactNativeGlobalResponderHandler = {
   onChange: function(from: string, to: string) {
     if (to !== null) {
       RCTUIManager.setJSResponder(
-        ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(to)
+        ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(to)
       );
     } else {
       RCTUIManager.clearJSResponder();
@@ -26,4 +26,4 @@ var ReactIOSGlobalResponderHandler = {
   }
 };
 
-module.exports = ReactIOSGlobalResponderHandler;
+module.exports = ReactNativeGlobalResponderHandler;
