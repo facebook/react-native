@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSTagHandles
+ * @providesModule ReactNativeTagHandles
  * @flow
  */
 'use strict';
@@ -28,17 +28,17 @@ var warning = require('warning');
  * unmount a component with a `rootNodeID`, then mount a new one in its place,
  */
 var INITIAL_TAG_COUNT = 1;
-var ReactIOSTagHandles = {
+var ReactNativeTagHandles = {
   tagsStartAt: INITIAL_TAG_COUNT,
   tagCount: INITIAL_TAG_COUNT,
 
   allocateTag: function(): number {
     // Skip over root IDs as those are reserved for native
-    while (this.reactTagIsNativeTopRootID(ReactIOSTagHandles.tagCount)) {
-      ReactIOSTagHandles.tagCount++;
+    while (this.reactTagIsNativeTopRootID(ReactNativeTagHandles.tagCount)) {
+      ReactNativeTagHandles.tagCount++;
     }
-    var tag = ReactIOSTagHandles.tagCount;
-    ReactIOSTagHandles.tagCount++;
+    var tag = ReactNativeTagHandles.tagCount;
+    ReactNativeTagHandles.tagCount++;
     return tag;
   },
 
@@ -57,8 +57,8 @@ var ReactIOSTagHandles = {
   ) {
     warning(rootNodeID && tag, 'Root node or tag is null when associating');
     if (rootNodeID && tag) {
-      ReactIOSTagHandles.tagToRootNodeID[tag] = rootNodeID;
-      ReactIOSTagHandles.rootNodeIDToTag[rootNodeID] = tag;
+      ReactNativeTagHandles.tagToRootNodeID[tag] = rootNodeID;
+      ReactNativeTagHandles.rootNodeIDToTag[rootNodeID] = tag;
     }
   },
 
@@ -90,7 +90,7 @@ var ReactIOSTagHandles = {
   mostRecentMountedNodeHandleForRootNodeID: function(
     rootNodeID: string
   ): number {
-    return ReactIOSTagHandles.rootNodeIDToTag[rootNodeID];
+    return ReactNativeTagHandles.rootNodeIDToTag[rootNodeID];
   },
 
   tagToRootNodeID: ([] : Array<string>),
@@ -98,4 +98,4 @@ var ReactIOSTagHandles = {
   rootNodeIDToTag: ({} : {[key: string]: number})
 };
 
-module.exports = ReactIOSTagHandles;
+module.exports = ReactNativeTagHandles;

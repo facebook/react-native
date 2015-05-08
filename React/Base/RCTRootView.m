@@ -96,7 +96,7 @@
 }
 
 RCT_IMPORT_METHOD(AppRegistry, runApplication)
-RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
+RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
 
 
 - (void)javaScriptDidLoad:(NSNotification *)notification
@@ -217,7 +217,7 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 
 - (void)dealloc
 {
-  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
+  [_bridge enqueueJSCall:@"ReactNative.unmountComponentAtNodeAndRemoveContainer"
                     args:@[self.reactTag]];
 }
 

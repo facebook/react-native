@@ -12,11 +12,11 @@
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
 
@@ -168,8 +168,8 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
+var RCTWebView = createReactNativeComponentClass({
+  validAttributes: merge(ReactNativeViewAttributes.UIView, {
     url: true,
     javaScriptEnabledAndroid: true,
   }),

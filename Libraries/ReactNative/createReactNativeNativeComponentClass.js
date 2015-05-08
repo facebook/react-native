@@ -6,17 +6,17 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule createReactIOSNativeComponentClass
+ * @providesModule createReactNativeComponentClass
  * @flow
  */
 
 "use strict";
 
 var ReactElement = require('ReactElement');
-var ReactIOSNativeComponent = require('ReactIOSNativeComponent');
+var ReactNativeBaseComponent = require('ReactNativeBaseComponent');
 
-// See also ReactIOSNativeComponent
-type ReactIOSNativeComponentViewConfig = {
+// See also ReactNativeBaseComponent
+type ReactNativeBaseComponentViewConfig = {
   validAttributes: Object;
   uiViewClassName: string;
 }
@@ -25,8 +25,8 @@ type ReactIOSNativeComponentViewConfig = {
  * @param {string} config iOS View configuration.
  * @private
  */
-var createReactIOSNativeComponentClass = function(
-  viewConfig: ReactIOSNativeComponentViewConfig
+var createReactNativeComponentClass = function(
+  viewConfig: ReactNativeBaseComponentViewConfig
 ): Function { // returning Function is lossy :/
   var Constructor = function(element) {
     this._currentElement = element;
@@ -36,9 +36,9 @@ var createReactIOSNativeComponentClass = function(
     this.previousFlattenedStyle = null;
   };
   Constructor.displayName = viewConfig.uiViewClassName;
-  Constructor.prototype = new ReactIOSNativeComponent(viewConfig);
+  Constructor.prototype = new ReactNativeBaseComponent(viewConfig);
 
   return Constructor;
 };
 
-module.exports = createReactIOSNativeComponentClass;
+module.exports = createReactNativeComponentClass;

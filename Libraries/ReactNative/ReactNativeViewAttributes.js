@@ -6,16 +6,16 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSViewAttributes
+ * @providesModule ReactNativeViewAttributes
  * @flow
  */
 'use strict';
 
 var merge = require('merge');
 
-var ReactIOSViewAttributes = {};
+var ReactNativeViewAttributes = {};
 
-ReactIOSViewAttributes.UIView = {
+ReactNativeViewAttributes.UIView = {
   pointerEvents: true,
   accessible: true,
   accessibilityLabel: true,
@@ -23,8 +23,8 @@ ReactIOSViewAttributes.UIView = {
   onLayout: true,
 };
 
-ReactIOSViewAttributes.RCTView = merge(
-  ReactIOSViewAttributes.UIView, {
+ReactNativeViewAttributes.RCTView = merge(
+  ReactNativeViewAttributes.UIView, {
 
   // This is a special performance property exposed by RCTView and useful for
   // scrolling content when there are many subviews, most of which are offscreen.
@@ -34,4 +34,4 @@ ReactIOSViewAttributes.RCTView = merge(
   removeClippedSubviews: true,
 });
 
-module.exports = ReactIOSViewAttributes;
+module.exports = ReactNativeViewAttributes;

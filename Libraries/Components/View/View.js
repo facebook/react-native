@@ -15,12 +15,12 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
-var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 
 var stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -53,7 +53,7 @@ var View = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactIOSViewAttributes.RCTView
+    validAttributes: ReactNativeViewAttributes.RCTView
   },
 
   propTypes: {
@@ -163,8 +163,8 @@ var View = React.createClass({
   },
 });
 
-var RCTView = createReactIOSNativeComponentClass({
-  validAttributes: ReactIOSViewAttributes.RCTView,
+var RCTView = createReactNativeComponentClass({
+  validAttributes: ReactNativeViewAttributes.RCTView,
   uiViewClassName: 'RCTView',
 });
 RCTView.propTypes = View.propTypes;
@@ -172,7 +172,7 @@ if (__DEV__) {
   var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
   for (var prop in viewConfig.nativeProps) {
     var viewAny: any = View; // Appease flow
-    if (!viewAny.propTypes[prop] && !ReactIOSStyleAttributes[prop]) {
+    if (!viewAny.propTypes[prop] && !ReactNativeStyleAttributes[prop]) {
       throw new Error(
         'View is missing propType for native prop `' + prop + '`'
       );

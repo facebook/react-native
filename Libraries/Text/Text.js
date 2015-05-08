@@ -13,19 +13,19 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
 var Touchable = require('Touchable');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass =
+  require('createReactNativeComponentClass');
 var merge = require('merge');
 
 var stylePropType = StyleSheetPropType(TextStylePropTypes);
 
 var viewConfig = {
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
+  validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
   }),
@@ -202,6 +202,6 @@ type RectOffset = {
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
-var RCTText = createReactIOSNativeComponentClass(viewConfig);
+var RCTText = createReactNativeComponentClass(viewConfig);
 
 module.exports = Text;

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSDefaultInjection
+ * @providesModule ReactNativeDefaultInjection
  * @flow
  */
 
@@ -26,18 +26,18 @@ var ReactComponentEnvironment = require('ReactComponentEnvironment');
 var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
 var ReactEmptyComponent = require('ReactEmptyComponent');
 var ReactInstanceHandles = require('ReactInstanceHandles');
-var ReactIOSComponentEnvironment = require('ReactIOSComponentEnvironment');
-var ReactIOSComponentMixin = require('ReactIOSComponentMixin');
-var ReactIOSGlobalInteractionHandler = require('ReactIOSGlobalInteractionHandler');
-var ReactIOSGlobalResponderHandler = require('ReactIOSGlobalResponderHandler');
-var ReactIOSMount = require('ReactIOSMount');
-var ReactIOSTextComponent = require('ReactIOSTextComponent');
+var ReactNativeComponentEnvironment = require('ReactNativeComponentEnvironment');
+var ReactNativeComponentMixin = require('ReactNativeComponentMixin');
+var ReactNativeGlobalInteractionHandler = require('ReactNativeGlobalInteractionHandler');
+var ReactNativeGlobalResponderHandler = require('ReactNativeGlobalResponderHandler');
+var ReactNativeMount = require('ReactNativeMount');
+var ReactNativeTextComponent = require('ReactNativeTextComponent');
 var ReactNativeComponent = require('ReactNativeComponent');
 var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var invariant = require('invariant');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
@@ -53,11 +53,11 @@ function inject() {
   EventPluginHub.injection.injectInstanceHandle(ReactInstanceHandles);
 
   ResponderEventPlugin.injection.injectGlobalResponderHandler(
-    ReactIOSGlobalResponderHandler
+    ReactNativeGlobalResponderHandler
   );
 
   ResponderEventPlugin.injection.injectGlobalInteractionHandler(
-    ReactIOSGlobalInteractionHandler
+    ReactNativeGlobalInteractionHandler
   );
 
   /**
@@ -70,7 +70,7 @@ function inject() {
   });
 
   ReactUpdates.injection.injectReconcileTransaction(
-    ReactIOSComponentEnvironment.ReactReconcileTransaction
+    ReactNativeComponentEnvironment.ReactReconcileTransaction
   );
 
   ReactUpdates.injection.injectBatchingStrategy(
@@ -78,22 +78,22 @@ function inject() {
   );
 
   ReactComponentEnvironment.injection.injectEnvironment(
-    ReactIOSComponentEnvironment
+    ReactNativeComponentEnvironment
   );
 
   // Can't import View here because it depends on React to make its composite
-  var RCTView = createReactIOSNativeComponentClass({
+  var RCTView = createReactNativeComponentClass({
     validAttributes: {},
     uiViewClassName: 'RCTView',
   });
   ReactEmptyComponent.injection.injectEmptyComponent(RCTView);
 
-  EventPluginUtils.injection.injectMount(ReactIOSMount);
+  EventPluginUtils.injection.injectMount(ReactNativeMount);
 
-  ReactClass.injection.injectMixin(ReactIOSComponentMixin);
+  ReactClass.injection.injectMixin(ReactNativeComponentMixin);
 
   ReactNativeComponent.injection.injectTextComponentClass(
-    ReactIOSTextComponent
+    ReactNativeTextComponent
   );
   ReactNativeComponent.injection.injectAutoWrapper(function(tag) {
     // Show a nicer error message for non-function tags

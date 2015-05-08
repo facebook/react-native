@@ -18,7 +18,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
@@ -113,7 +113,7 @@ var Image = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'UIView',
-    validAttributes: ReactIOSViewAttributes.UIView
+    validAttributes: ReactNativeViewAttributes.UIView
   },
 
   render: function() {

@@ -19,14 +19,14 @@ var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
 var merge = require('merge');
@@ -35,7 +35,7 @@ var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
 var keyboardTypeConsts = RCTUIManager.UIKeyboardType;
 var returnKeyTypeConsts = RCTUIManager.UIReturnKeyType;
 
-var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
+var RCTTextViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   autoCorrect: true,
   autoCapitalize: true,
   clearTextOnFocus: true,
@@ -582,7 +582,7 @@ var TextInput = React.createClass({
     var counter = event.nativeEvent.eventCounter;
     if (counter > this.state.mostRecentEventCounter) {
       this.setState({mostRecentEventCounter: counter});
-    } 
+    }
   },
 });
 
@@ -592,17 +592,17 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTTextView = createReactIOSNativeComponentClass({
+var RCTTextView = createReactNativeComponentClass({
   validAttributes: RCTTextViewAttributes,
   uiViewClassName: 'RCTTextView',
 });
 
-var RCTTextField = createReactIOSNativeComponentClass({
+var RCTTextField = createReactNativeComponentClass({
   validAttributes: RCTTextFieldAttributes,
   uiViewClassName: 'RCTTextField',
 });
 
-var AndroidTextInput = createReactIOSNativeComponentClass({
+var AndroidTextInput = createReactNativeComponentClass({
   validAttributes: AndroidTextInputAttributes,
   uiViewClassName: 'AndroidTextInput',
 });

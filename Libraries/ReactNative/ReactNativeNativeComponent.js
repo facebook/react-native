@@ -6,16 +6,16 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSNativeComponent
+ * @providesModule ReactNativeBaseComponent
  * @flow
  */
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var ReactIOSComponentMixin = require('ReactIOSComponentMixin');
-var ReactIOSEventEmitter = require('ReactIOSEventEmitter');
-var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeComponentMixin = require('ReactNativeComponentMixin');
+var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
 var RCTUIManager = require('NativeModules').UIManager;
 
@@ -26,23 +26,23 @@ var flattenStyle = require('flattenStyle');
 var precomputeStyle = require('precomputeStyle');
 var warning = require('warning');
 
-var registrationNames = ReactIOSEventEmitter.registrationNames;
-var putListener = ReactIOSEventEmitter.putListener;
-var deleteAllListeners = ReactIOSEventEmitter.deleteAllListeners;
+var registrationNames = ReactNativeEventEmitter.registrationNames;
+var putListener = ReactNativeEventEmitter.putListener;
+var deleteAllListeners = ReactNativeEventEmitter.deleteAllListeners;
 
-type ReactIOSNativeComponentViewConfig = {
+type ReactNativeBaseComponentViewConfig = {
   validAttributes: Object;
   uiViewClassName: string;
 }
 
 /**
- * @constructor ReactIOSNativeComponent
+ * @constructor ReactNativeBaseComponent
  * @extends ReactComponent
  * @extends ReactMultiChild
  * @param {!object} UIKit View Configuration.
  */
-var ReactIOSNativeComponent = function(
-  viewConfig: ReactIOSNativeComponentViewConfig
+var ReactNativeBaseComponent = function(
+  viewConfig: ReactNativeBaseComponentViewConfig
 ) {
   this.viewConfig = viewConfig;
 };
@@ -75,7 +75,7 @@ cachedIndexArray._cache = {};
  * Mixin for containers that contain UIViews. NOTE: markup is rendered markup
  * which is a `viewID` ... see the return value for `mountComponent` !
  */
-ReactIOSNativeComponent.Mixin = {
+ReactNativeBaseComponent.Mixin = {
   getPublicInstance: function() {
     // TODO: This should probably use a composite wrapper
     return this;
@@ -97,7 +97,7 @@ ReactIOSNativeComponent.Mixin = {
    * recording the fact that its own `rootNodeID` is associated with a
    * `nodeHandle`. Only the code that actually adds its `nodeHandle` (`tag`) as
    * a child of a container can confidently record that in
-   * `ReactIOSTagHandles`.
+   * `ReactNativeTagHandles`.
    */
   initializeChildren: function(children, containerTag, transaction, context) {
     var mountImages = this.mountChildren(children, transaction, context);
@@ -117,7 +117,7 @@ ReactIOSNativeComponent.Mixin = {
           mountImage && mountImage.rootNodeID && mountImage.tag,
           'Mount image returned does not have required data'
         );
-        ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(
+        ReactNativeTagHandles.associateRootNodeIDWithMountedNodeHandle(
           childID,
           childTag
         );
@@ -166,7 +166,7 @@ ReactIOSNativeComponent.Mixin = {
         updatePayload,
         this.previousFlattenedStyle,
         nextFlattenedStyle,
-        ReactIOSStyleAttributes
+        ReactNativeStyleAttributes
       );
       this.previousFlattenedStyle = nextFlattenedStyle;
     }
@@ -195,7 +195,7 @@ ReactIOSNativeComponent.Mixin = {
 
     if (updatePayload) {
       RCTUIManager.updateView(
-        ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
+        ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
         this.viewConfig.uiViewClassName,
         updatePayload
       );
@@ -243,7 +243,7 @@ ReactIOSNativeComponent.Mixin = {
   mountComponent: function(rootID, transaction, context) {
     this._rootNodeID = rootID;
 
-    var tag = ReactIOSTagHandles.allocateTag();
+    var tag = ReactNativeTagHandles.allocateTag();
 
     this.previousFlattenedStyle = {};
     var updatePayload = this.computeUpdatedProperties(
@@ -268,15 +268,15 @@ ReactIOSNativeComponent.Mixin = {
 };
 
 /**
- * Order of mixins is important. ReactIOSNativeComponent overrides methods in
+ * Order of mixins is important. ReactNativeBaseComponent overrides methods in
  * ReactMultiChild.
  */
 Object.assign(
-  ReactIOSNativeComponent.prototype,
+  ReactNativeBaseComponent.prototype,
   ReactMultiChild.Mixin,
-  ReactIOSNativeComponent.Mixin,
+  ReactNativeBaseComponent.Mixin,
   NativeMethodsMixin,
-  ReactIOSComponentMixin
+  ReactNativeComponentMixin
 );
 
-module.exports = ReactIOSNativeComponent;
+module.exports = ReactNativeBaseComponent;

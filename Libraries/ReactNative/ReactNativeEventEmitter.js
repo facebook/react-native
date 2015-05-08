@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSEventEmitter
+ * @providesModule ReactNativeEventEmitter
  * @flow
  */
 
@@ -14,7 +14,7 @@
 
 var EventPluginHub = require('EventPluginHub');
 var ReactEventEmitterMixin = require('ReactEventEmitterMixin');
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var NodeHandle = require('NodeHandle');
 var EventConstants = require('EventConstants');
 
@@ -82,15 +82,15 @@ var removeTouchesAtIndices = function(
 };
 
 /**
- * `ReactIOSEventEmitter` is used to attach top-level event listeners. For example:
+ * `ReactNativeEventEmitter` is used to attach top-level event listeners. For example:
  *
- *   ReactIOSEventEmitter.putListener('myID', 'onClick', myFunction);
+ *   ReactNativeEventEmitter.putListener('myID', 'onClick', myFunction);
  *
  * This would allocate a "registration" of `('onClick', myFunction)` on 'myID'.
  *
  * @internal
  */
-var ReactIOSEventEmitter = merge(ReactEventEmitterMixin, {
+var ReactNativeEventEmitter = merge(ReactEventEmitterMixin, {
 
   registrationNames: EventPluginHub.registrationNameModules,
 
@@ -118,7 +118,7 @@ var ReactIOSEventEmitter = merge(ReactEventEmitterMixin, {
     nativeEventParam: Object
   ) {
     var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT;
-    ReactIOSEventEmitter.handleTopLevel(
+    ReactNativeEventEmitter.handleTopLevel(
       topLevelType,
       rootNodeID,
       rootNodeID,
@@ -138,8 +138,8 @@ var ReactIOSEventEmitter = merge(ReactEventEmitterMixin, {
     topLevelType: string,
     nativeEventParam: Object
   ) {
-    var rootNodeID = ReactIOSTagHandles.tagToRootNodeID[tag];
-    ReactIOSEventEmitter._receiveRootNodeIDEvent(
+    var rootNodeID = ReactNativeTagHandles.tagToRootNodeID[tag];
+    ReactNativeEventEmitter._receiveRootNodeIDEvent(
       rootNodeID,
       topLevelType,
       nativeEventParam
@@ -191,7 +191,7 @@ var ReactIOSEventEmitter = merge(ReactEventEmitterMixin, {
       var rootNodeID = null;
       var target = nativeEvent.target;
       if (target !== null && target !== undefined) {
-        if (target < ReactIOSTagHandles.tagsStartAt) {
+        if (target < ReactNativeTagHandles.tagsStartAt) {
           if (__DEV__) {
             warning(
               false,
@@ -202,7 +202,7 @@ var ReactIOSEventEmitter = merge(ReactEventEmitterMixin, {
           rootNodeID = NodeHandle.getRootNodeID(target);
         }
       }
-      ReactIOSEventEmitter._receiveRootNodeIDEvent(
+      ReactNativeEventEmitter._receiveRootNodeIDEvent(
         rootNodeID,
         eventTopLevelType,
         nativeEvent
@@ -211,4 +211,4 @@ var ReactIOSEventEmitter = merge(ReactEventEmitterMixin, {
   }
 });
 
-module.exports = ReactIOSEventEmitter;
+module.exports = ReactNativeEventEmitter;
