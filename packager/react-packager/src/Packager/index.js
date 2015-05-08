@@ -219,7 +219,8 @@ Packager.prototype.generateAssetModule = function(ppackage, module) {
 
     ppackage.addAsset(img);
 
-    var code = 'module.exports = ' + JSON.stringify(img) + ';';
+    var ASSET_TEMPLATE = 'module.exports = require("AssetRegistry").registerAsset(%json);';
+    var code = ASSET_TEMPLATE.replace('%json', JSON.stringify(img));
 
     return new ModuleTransport({
       code: code,
