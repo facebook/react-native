@@ -110,7 +110,7 @@ var WebView = React.createClass({
 
   goForward: function() {
     RCTUIManager.dispatchViewManagerCommand(
-      this.getWebWiewHandle(),
+      this.getWebViewHandle(),
       RCTUIManager.RCTWebView.Commands.goForward,
       null
     );
@@ -118,7 +118,7 @@ var WebView = React.createClass({
 
   goBack: function() {
     RCTUIManager.dispatchViewManagerCommand(
-      this.getWebWiewHandle(),
+      this.getWebViewHandle(),
       RCTUIManager.RCTWebView.Commands.goBack,
       null
     );
@@ -126,7 +126,7 @@ var WebView = React.createClass({
 
   reload: function() {
     RCTUIManager.dispatchViewManagerCommand(
-      this.getWebWiewHandle(),
+      this.getWebViewHandle(),
       RCTUIManager.RCTWebView.Commands.reload,
       null
     );
@@ -142,7 +142,7 @@ var WebView = React.createClass({
     }
   },
 
-  getWebWiewHandle: function() {
+  getWebViewHandle: function() {
     return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
   },
 

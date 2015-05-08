@@ -167,15 +167,15 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTWebViewManager.goForward(this.getWebWiewHandle());
+    RCTWebViewManager.goForward(this.getWebViewHandle());
   },
 
   goBack: function() {
-    RCTWebViewManager.goBack(this.getWebWiewHandle());
+    RCTWebViewManager.goBack(this.getWebViewHandle());
   },
 
   reload: function() {
-    RCTWebViewManager.reload(this.getWebWiewHandle());
+    RCTWebViewManager.reload(this.getWebViewHandle());
   },
 
   /**
@@ -188,7 +188,7 @@ var WebView = React.createClass({
     }
   },
 
-  getWebWiewHandle: function(): any {
+  getWebViewHandle: function(): any {
     return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
   },
 
