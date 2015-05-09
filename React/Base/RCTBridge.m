@@ -789,6 +789,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainThread();
    */
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self invalidate];
 }
 
@@ -1161,7 +1162,6 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
 
   void (^mainThreadInvalidate)(void) = ^{
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_mainDisplayLink invalidate];
     _mainDisplayLink = nil;
 
