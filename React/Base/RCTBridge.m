@@ -47,6 +47,11 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldFlushDateMillis
 };
 
+typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
+  RCTJavaScriptFunctionKindNormal,
+  RCTJavaScriptFunctionKindAsync,
+};
+
 #ifdef __LP64__
 typedef uint64_t RCTHeaderValue;
 typedef struct section_64 RCTHeaderSection;
@@ -239,6 +244,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 @property (nonatomic, copy, readonly) NSString *moduleClassName;
 @property (nonatomic, copy, readonly) NSString *JSMethodName;
 @property (nonatomic, assign, readonly) SEL selector;
+@property (nonatomic, assign, readonly) RCTJavaScriptFunctionKind functionKind;
 
 @end
 
@@ -420,6 +426,51 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
         } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
           addBlockArgument();
           useFallback = NO;
+        } else if ([argumentName isEqualToString:@"RCTPromiseResolveBlock"]) {
+          RCTAssert(i == numberOfArguments - 2,
+                    @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
+                    _moduleClassName, objCMethodName);
+          RCT_ARG_BLOCK(
+            if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+              RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise resolver ID", index,
+                          json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+              return;
+            }
+
+            // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+            __autoreleasing RCTPromiseResolveBlock value = (^(id result) {
+              NSArray *arguments = result ? @[result] : @[];
+              [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                       method:@"invokeCallbackAndReturnFlushedQueue"
+                                    arguments:@[json, arguments]
+                                      context:context];
+            });
+          )
+          useFallback = NO;
+          _functionKind = RCTJavaScriptFunctionKindAsync;
+        } else if ([argumentName isEqualToString:@"RCTPromiseRejectBlock"]) {
+          RCTAssert(i == numberOfArguments - 1,
+                    @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
+                    _moduleClassName, objCMethodName);
+          RCT_ARG_BLOCK(
+            if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+              RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise rejecter ID", index,
+                          json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+              return;
+            }
+
+            // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+            __autoreleasing RCTPromiseRejectBlock value = (^(NSError *error) {
+              NSDictionary *errorData = [RCTModuleMethod dictionaryFromError:error
+                                                                  stackTrace:[NSThread callStackSymbols]];
+              [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                       method:@"invokeCallbackAndReturnFlushedQueue"
+                                    arguments:@[json, @[errorData]]
+                                      context:context];
+            });
+          )
+          useFallback = NO;
+          _functionKind = RCTJavaScriptFunctionKindAsync;
         }
       }
 
@@ -498,9 +549,18 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 
     // Safety check
     if (arguments.count != _argumentBlocks.count) {
+      NSInteger actualCount = arguments.count;
+      NSInteger expectedCount = _argumentBlocks.count;
+
+      // Subtract the implicit Promise resolver and rejecter functions for implementations of async functions
+      if (_functionKind == RCTJavaScriptFunctionKindAsync) {
+        actualCount -= 2;
+        expectedCount -= 2;
+      }
+
       RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
                   RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
-                  arguments.count, _argumentBlocks.count);
+                  actualCount, expectedCount);
       return;
     }
   }
@@ -526,6 +586,26 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p; exports %@ as %@;>", NSStringFromClass(self.class), self, _methodName, _JSMethodName];
+}
+
++ (NSDictionary *)dictionaryFromError:(NSError *)error stackTrace:(NSArray *)stackTrace
+{
+  NSString *errorMessage;
+  NSMutableDictionary *errorInfo = [NSMutableDictionary dictionaryWithDictionary:@{
+    @"nativeStackIOS": stackTrace,
+  }];
+
+  if (error) {
+    errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
+    errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    errorInfo[@"code"] = @(error.code);
+  } else {
+    errorMessage = @"Unknown error from a native module";
+    errorInfo[@"domain"] = RCTErrorDomain;
+    errorInfo[@"code"] = @(-1);
+  }
+
+  return RCTMakeError(errorMessage, nil, errorInfo);
 }
 
 @end
@@ -606,7 +686,7 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
  *     },
  *     "methodName2": {
  *       "methodID": 1,
- *       "type": "remote"
+ *       "type": "remoteAsync"
  *     },
  *     etc...
  *   },
@@ -630,7 +710,7 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
       [methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger methodID, BOOL *_stop) {
         methodsByName[method.JSMethodName] = @{
           @"methodID": @(methodID),
-          @"type": @"remote",
+          @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
         };
       }];
 
