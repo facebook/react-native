@@ -16,6 +16,8 @@
 #import "RCTShadowText.h"
 #import "RCTSparseArray.h"
 #import "RCTText.h"
+#import "RCTShadowTextView.h"
+#import "RCTTextView.h"
 #import "UIView+React.h"
 
 @implementation RCTTextManager
@@ -81,26 +83,7 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
     }
 
     RCTSparseArray *reactTaggedAttributedStrings = [[RCTSparseArray alloc] init];
-    NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
-    for (NSInteger i = 0; i < [queue count]; i++) {
-      RCTShadowView *shadowView = queue[i];
-      RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
-
-      if ([shadowView isKindOfClass:[RCTShadowText class]]) {
-        RCTShadowText *shadowText = (RCTShadowText *)shadowView;
-        reactTaggedAttributedStrings[shadowText.reactTag] = [shadowText attributedString];
-      } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
-        RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'", [(RCTShadowRawText *)shadowView text]);
-      } else {
-        for (RCTShadowView *child in [shadowView reactSubviews]) {
-          if ([child isTextDirty]) {
-            [queue addObject:child];
-          }
-        }
-      }
-
-      [shadowView setTextComputed];
-    }
+    [self _processReactSubview:rootView toTaggedAttributedStrings:reactTaggedAttributedStrings];
 
     [uiBlocks addObject:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
       [reactTaggedAttributedStrings enumerateObjectsUsingBlock:^(NSAttributedString *attributedString, NSNumber *reactTag, BOOL *stop) {
@@ -115,6 +98,36 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
       shadowBlock(uiManager, viewRegistry);
     }
   };
+}
+
+- (BOOL)_processReactSubview:(RCTShadowView *)shadowView toTaggedAttributedStrings:(RCTSparseArray *)reactTaggedAttributedStrings
+{
+  BOOL textComputed = true;
+  RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
+  
+  if ([shadowView isKindOfClass:[RCTShadowText class]]) {
+    RCTShadowText *shadowText = (RCTShadowText *)shadowView;
+    reactTaggedAttributedStrings[shadowText.reactTag] = [shadowText attributedString];
+  } else if ([shadowView isKindOfClass:[RCTShadowTextView class]]) {
+    // not all text has been computed because RCTSahdowTextView has not been handled yet.
+    textComputed = false;
+  } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
+    RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'", [(RCTShadowRawText *)shadowView text]);
+  } else {
+    for (RCTShadowView *child in [shadowView reactSubviews]) {
+      if ([child isTextDirty]) {
+        BOOL textComputedResult = [self _processReactSubview:child toTaggedAttributedStrings:reactTaggedAttributedStrings];
+        if( !textComputedResult ) {
+          textComputed = false;
+        }
+      }
+    }
+  }
+  if (textComputed) {
+    [shadowView setTextComputed];
+  }
+  
+  return textComputed;
 }
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowText *)shadowView

@@ -41,6 +41,7 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   clearTextOnFocus: true,
   color: true,
   editable: true,
+  scrollEnabled: true,
   fontFamily: true,
   fontSize: true,
   fontStyle: true,
@@ -167,6 +168,12 @@ var TextInput = React.createClass({
      * If false, text is not editable. Default value is true.
      */
     editable: PropTypes.bool,
+    /**
+     * If false, text view is not scrollable. Default value is true.
+     * Please set to false if your're using the auto height calculation of
+     * TextView.
+     */
+    scrollEnabled: PropTypes.bool,
     /**
      * Determines which keyboard to open, e.g.`numeric`.
      */
@@ -484,6 +491,7 @@ var TextInput = React.createClass({
           children={children}
           mostRecentEventCounter={this.state.mostRecentEventCounter}
           editable={this.props.editable}
+          scrollEnabled={this.props.scrollEnabled}
           keyboardType={keyboardType}
           returnKeyType={returnKeyType}
           enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
@@ -557,6 +565,10 @@ var TextInput = React.createClass({
   _onChange: function(event: Event) {
     if (this.props.controlled && event.nativeEvent.text !== this.props.value) {
       this.refs.input.setNativeProps({text: this.props.value});
+    } else {
+      if (this.props.multiline) {
+        this.refs.input.setNativeProps({textUpdate: {text: event.nativeEvent.text}});
+      }
     }
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(event.nativeEvent.text);

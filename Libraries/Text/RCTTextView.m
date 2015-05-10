@@ -18,7 +18,7 @@
 {
   RCTEventDispatcher *_eventDispatcher;
   BOOL _jsRequestingFirstResponder;
-  NSString *_placeholder;
+  NSAttributedString *_attributedPlacerholderText;
   UITextView *_placeholderView;
   UITextView *_textView;
 }
@@ -28,9 +28,10 @@
   if ((self = [super initWithFrame:CGRectZero])) {
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
-    _placeholderTextColor = [self defaultPlaceholderTextColor];
 
     _textView = [[UITextView alloc] initWithFrame:self.bounds];
+    _textView.textContainer.lineFragmentPadding = 0.0;
+    _textView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0 );
     _textView.backgroundColor = [UIColor clearColor];
     _textView.delegate = self;
     [self addSubview:_textView];
@@ -39,15 +40,48 @@
   return self;
 }
 
+- (NSAttributedString *)attributedText
+{
+  return [_textView.attributedText copy];
+}
+
+- (NSAttributedString *)attributedPlaceholderText
+{
+  return _attributedPlacerholderText;
+}
+
+- (void)setAttributedText:(NSAttributedString *)attributedText
+{
+  // save the cursors current location and disable scrolling -> otherwise UITextView will jump around.
+  BOOL oldScrollEnabled = _textView.scrollEnabled;
+  _textView.scrollEnabled = NO;
+  UITextRange *range = _textView.selectedTextRange;
+  
+  _textView.attributedText = attributedText;
+  
+  _textView.scrollEnabled = oldScrollEnabled;
+  _textView.selectedTextRange = range;//you keep before
+
+  [self updatePlaceholder];
+  [self setNeedsDisplay];
+}
+
+- (void)setAttributedPlaceholderText:(NSAttributedString *)attributedPlaceholderText
+{
+  _attributedPlacerholderText = attributedPlaceholderText;
+  [self updatePlaceholder];
+  [self setNeedsDisplay];
+}
+
 - (void)updateFrames
 {
   // Adjust the insets so that they are as close as possible to single-line
   // RCTTextField defaults
   UIEdgeInsets adjustedInset = (UIEdgeInsets){
-    _contentInset.top - 5, _contentInset.left - 4,
+    _contentInset.top, _contentInset.left,
     _contentInset.bottom, _contentInset.right
   };
-
+  
   [_textView setFrame:UIEdgeInsetsInsetRect(self.bounds, adjustedInset)];
   [_placeholderView setFrame:UIEdgeInsetsInsetRect(self.bounds, adjustedInset)];
 }
@@ -57,48 +91,19 @@
   [_placeholderView removeFromSuperview];
   _placeholderView = nil;
 
-  if (_placeholder) {
+  if (_attributedPlacerholderText) {
     _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
+    _placeholderView.textContainer.lineFragmentPadding = 0.0;
+    _placeholderView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0 );
     _placeholderView.backgroundColor = [UIColor clearColor];
     _placeholderView.scrollEnabled = false;
-    _placeholderView.attributedText =
-    [[NSAttributedString alloc] initWithString:_placeholder attributes:@{
-      NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),
-      NSForegroundColorAttributeName : _placeholderTextColor
-    }];
-
+    _placeholderView.attributedText = [self attributedPlaceholderText];
+    
     [self insertSubview:_placeholderView belowSubview:_textView];
     [self _setPlaceholderVisibility];
   }
 }
 
-- (void)setFont:(UIFont *)font
-{
-  _font = font;
-  _textView.font = _font;
-  [self updatePlaceholder];
-}
-
-- (void)setTextColor:(UIColor *)textColor
-{
-  _textView.textColor = textColor;
-}
-
-- (void)setPlaceholder:(NSString *)placeholder
-{
-  _placeholder = placeholder;
-  [self updatePlaceholder];
-}
-
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
-{
-  if (placeholderTextColor) {
-    _placeholderTextColor = placeholderTextColor;
-  } else {
-    _placeholderTextColor = [self defaultPlaceholderTextColor];
-  }
-  [self updatePlaceholder];
-}
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
@@ -106,20 +111,17 @@
   [self updateFrames];
 }
 
-- (void)setText:(NSString *)text
-{
-  if (![text isEqualToString:_textView.text]) {
-    [_textView setText:text];
-    [self _setPlaceholderVisibility];
-  }
-}
-
 - (void)_setPlaceholderVisibility
 {
-  if (_textView.text.length > 0) {
+  BOOL _placeholderViewWasHidden = _placeholderView.isHidden;
+  if (_textView.attributedText.length > 0) {
     [_placeholderView setHidden:YES];
   } else {
     [_placeholderView setHidden:NO];
+  }
+  
+  if (_placeholderViewWasHidden != _placeholderView.isHidden) {
+    [self setNeedsDisplay];
   }
 }
 
@@ -146,8 +148,7 @@
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
   if (_clearTextOnFocus) {
-    [_textView setText:@""];
-    _textView.text = @"";
+    _textView.attributedText = [_textView.attributedText attributedSubstringFromRange:NSMakeRange(0, 0)];
     [self _setPlaceholderVisibility];
   }
 
@@ -203,14 +204,5 @@
   return _jsRequestingFirstResponder;
 }
 
-- (UIFont *)defaultPlaceholderFont
-{
-  return [UIFont fontWithName:@"Helvetica" size:17];
-}
-
-- (UIColor *)defaultPlaceholderTextColor
-{
-  return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
-}
 
 @end
