@@ -108,6 +108,14 @@ var styles = StyleSheet.create({
     fontFamily: 'Cochin',
     height: 60,
   },
+  multielineWithoutHeight: {
+    borderWidth: 0.5,
+    borderColor: '#0f0f0f',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
+    marginBottom: 4,
+  },
   multilineChild: {
     width: 50,
     height: 40,
@@ -385,6 +393,14 @@ exports.examples = [
             returnKeyType="go"
             style={styles.multiline}>
             <View style={styles.multilineChild}/>
+          </TextInput>
+          <TextInput
+            placeholder="multiline with height scaling"
+            multiline={true}
+            scrollEnabled={false}
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="go"
+            style={styles.multielineWithoutHeight}>
           </TextInput>
         </View>
       )
