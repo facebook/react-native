@@ -88,7 +88,7 @@ var ComponentDoc = React.createClass({
     return (
       <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
-          <a href={slugify(name) + '.html#proptypes'}>{name} props...</a>
+          <a href={slugify(name) + '.html#props'}>{name} props...</a>
         </Header>
       </div>
     );
