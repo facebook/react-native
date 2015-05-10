@@ -8,19 +8,24 @@
  */
 'use strict';
 
-jest.dontMock('../resolveAssetSource');
+jest
+  .dontMock('AssetRegistry')
+  .dontMock('../resolveAssetSource');
 
 var resolveAssetSource;
 var SourceCode;
+var AssetRegistry;
 
 function expectResolvesAsset(input, expectedSource) {
-  expect(resolveAssetSource(input)).toEqual(expectedSource);
+  var assetId = AssetRegistry.registerAsset(input);
+  expect(resolveAssetSource(assetId)).toEqual(expectedSource);
 }
 
 describe('resolveAssetSource', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
     SourceCode = require('NativeModules').SourceCode;
+    AssetRegistry = require('AssetRegistry');
     resolveAssetSource = require('../resolveAssetSource');
   });
 
@@ -30,6 +35,22 @@ describe('resolveAssetSource', () => {
 
     var source2 = {isStatic: true, uri: 'logo'};
     expect(resolveAssetSource(source2)).toBe(source2);
+  });
+
+  it('does not change deprecated assets', () => {
+    expect(resolveAssetSource({
+      isStatic: true,
+      deprecated: true,
+      width: 100,
+      height: 200,
+      uri: 'logo',
+    })).toEqual({
+      isStatic: true,
+      deprecated: true,
+      width: 100,
+      height: 200,
+      uri: 'logo',
+    });
   });
 
   it('ignores any weird data', () => {
@@ -81,25 +102,6 @@ describe('resolveAssetSource', () => {
       });
     });
 
-    it('does not change deprecated assets', () => {
-      expectResolvesAsset({
-        __packager_asset: true,
-        deprecated: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/module/a',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: 'logo',
-        type: 'png',
-      }, {
-        isStatic: true,
-        width: 100,
-        height: 200,
-        uri: 'logo',
-      });
-    });
   });
 
   describe('bundle was loaded from file', () => {

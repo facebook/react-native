@@ -64,6 +64,20 @@ RCT_CONVERTER(NSString *, NSString, description)
   return [[self NSString:json] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
++ (NSIndexSet *)NSIndexSet:(id)json
+{
+  json = [self NSNumberArray:json];
+  NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
+  for (NSNumber *number in json) {
+    NSInteger index = number.integerValue;
+    if (RCT_DEBUG && index < 0) {
+      RCTLogError(@"Invalid index value %zd. Indices must be positive.", index);
+    }
+    [indexSet addIndex:index];
+  }
+  return indexSet;
+}
+
 + (NSURL *)NSURL:(id)json
 {
   NSString *path = [self NSString:json];
@@ -679,6 +693,16 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
 }
 
++ (UIFont *)UIFont:(id)json
+{
+  json = [self NSDictionary:json];
+  return [self UIFont:nil
+           withFamily:json[@"fontFamily"]
+                 size:json[@"fontSize"]
+               weight:json[@"fontWeight"]
+                style:json[@"fontStyle"]];
+}
+
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
   return [self UIFont:font withFamily:nil size:json weight:nil style:nil];
@@ -728,16 +752,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   // Get font family
   familyName = [self NSString:family] ?: familyName;
 
-  // Get font style
-  if (style) {
-    isItalic = [self RCTFontStyle:style];
-  }
-
-  // Get font weight
-  if (weight) {
-    fontWeight = [self RCTFontWeight:weight];
-  }
-
   // Gracefully handle being given a font name rather than font family, for
   // example: "Helvetica Light Oblique" rather than just "Helvetica".
   if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
@@ -756,15 +770,19 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     }
   }
 
+  // Get font style
+  if (style) {
+    isItalic = [self RCTFontStyle:style];
+  }
+
+  // Get font weight
+  if (weight) {
+    fontWeight = [self RCTFontWeight:weight];
+  }
+
   // Get the closest font that matches the given weight for the fontFamily
   UIFont *bestMatch = [UIFont fontWithName:font.fontName size: fontSize];
-  CGFloat closestWeight;
-
-  if (font && [font.familyName isEqualToString: familyName]) {
-    closestWeight = RCTWeightOfFont(font);
-  } else {
-    closestWeight = INFINITY;
-  }
+  CGFloat closestWeight = INFINITY;
 
   for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
     UIFont *match = [UIFont fontWithName:name size:fontSize];
@@ -805,7 +823,9 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
       for (NSInteger i = 0; i < idx; i++) {
         [(NSMutableArray *)values addObject:json[i]];
       }
-      [(NSMutableArray *)values addObject:value];
+      if (value) {
+        [(NSMutableArray *)values addObject:value];
+      }
       copy = YES;
     }
   }];
@@ -826,6 +846,58 @@ RCT_ARRAY_CONVERTER(UIColor)
     [colors addObject:(__bridge id)[self CGColor:value]];
   }
   return colors;
+}
+
+static id RCTConvertPropertyListValue(id json)
+{
+  if (!json || json == (id)kCFNull) {
+    return nil;
+  }
+
+  if ([json isKindOfClass:[NSDictionary class]]) {
+    __block BOOL copy = NO;
+    NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[json count]];
+    [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, id jsonValue, BOOL *stop) {
+      id value = RCTConvertPropertyListValue(jsonValue);
+      if (value) {
+        values[key] = value;
+      }
+      copy |= value != jsonValue;
+    }];
+    return copy ? values : json;
+  }
+
+  if ([json isKindOfClass:[NSArray class]]) {
+    __block BOOL copy = NO;
+    __block NSArray *values = json;
+    [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, BOOL *stop) {
+      id value = RCTConvertPropertyListValue(jsonValue);
+      if (copy) {
+        if (value) {
+          [(NSMutableArray *)values addObject:value];
+        }
+      } else if (value != jsonValue) {
+        // Converted value is different, so we'll need to copy the array
+        values = [[NSMutableArray alloc] initWithCapacity:values.count];
+        for (NSInteger i = 0; i < idx; i++) {
+          [(NSMutableArray *)values addObject:json[i]];
+        }
+        if (value) {
+          [(NSMutableArray *)values addObject:value];
+        }
+        copy = YES;
+      }
+    }];
+    return values;
+  }
+
+  // All other JSON types are supported by property lists
+  return json;
+}
+
++ (NSPropertyList)NSPropertyList:(id)json
+{
+  return RCTConvertPropertyListValue(json);
 }
 
 RCT_ENUM_CONVERTER(css_overflow, (@{

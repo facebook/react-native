@@ -19,6 +19,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
@@ -267,11 +268,6 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   return self;
 }
 
-- (void)dealloc
-{
-  RCTAssert(!self.valid, @"must call -invalidate before -dealloc");
-}
-
 - (BOOL)isValid
 {
   return _viewRegistry != nil;
@@ -279,20 +275,24 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (void)invalidate
 {
-  RCTAssertMainThread();
+  /**
+   * Called on the JS Thread since all modules are invalidated on the JS thread
+   */
 
-  for (NSNumber *rootViewTag in _rootViewTags) {
-    ((UIView *)_viewRegistry[rootViewTag]).userInteractionEnabled = NO;
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    for (NSNumber *rootViewTag in _rootViewTags) {
+      ((UIView *)_viewRegistry[rootViewTag]).userInteractionEnabled = NO;
+    }
 
-  _rootViewTags = nil;
-  _shadowViewRegistry = nil;
-  _viewRegistry = nil;
-  _bridge = nil;
+    _rootViewTags = nil;
+    _shadowViewRegistry = nil;
+    _viewRegistry = nil;
+    _bridge = nil;
 
-  [_pendingUIBlocksLock lock];
-  _pendingUIBlocks = nil;
-  [_pendingUIBlocksLock unlock];
+    [_pendingUIBlocksLock lock];
+    _pendingUIBlocks = nil;
+    [_pendingUIBlocksLock unlock];
+  });
 }
 
 - (void)setBridge:(RCTBridge *)bridge
@@ -421,17 +421,31 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   [rootShadowView collectRootUpdatedFrames:viewsWithNewFrames
                           parentConstraint:(CGSize){CSS_UNDEFINED, CSS_UNDEFINED}];
 
-  // Parallel arrays
+  // Parallel arrays are built and then handed off to main thread
   NSMutableArray *frameReactTags = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableArray *frames = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableArray *areNew = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableArray *parentsAreNew = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
+  NSMutableArray *onLayoutEvents = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     [frameReactTags addObject:shadowView.reactTag];
     [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
     [areNew addObject:@(shadowView.isNewView)];
     [parentsAreNew addObject:@(shadowView.superview.isNewView)];
+    id event = [NSNull null];
+    if (shadowView.hasOnLayout) {
+      event = @{
+        @"target": shadowView.reactTag,
+        @"layout": @{
+          @"x": @(shadowView.frame.origin.x),
+          @"y": @(shadowView.frame.origin.y),
+          @"width": @(shadowView.frame.size.width),
+          @"height": @(shadowView.frame.size.height),
+        },
+      };
+    }
+    [onLayoutEvents addObject:event];
   }
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
@@ -449,20 +463,30 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   // Perform layout (possibly animated)
   NSNumber *rootViewTag = rootShadowView.reactTag;
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    RCTResponseSenderBlock callback = self->_layoutAnimation.callback;
+    __block NSInteger completionsCalled = 0;
     for (NSUInteger ii = 0; ii < frames.count; ii++) {
       NSNumber *reactTag = frameReactTags[ii];
       UIView *view = viewRegistry[reactTag];
       CGRect frame = [frames[ii] CGRectValue];
+      id event = onLayoutEvents[ii];
+
+      BOOL isNew = [areNew[ii] boolValue];
+      RCTAnimation *updateAnimation = isNew ? nil : _layoutAnimation.updateAnimation;
+      BOOL shouldAnimateCreation = isNew && ![parentsAreNew[ii] boolValue];
+      RCTAnimation *createAnimation = shouldAnimateCreation ? _layoutAnimation.createAnimation : nil;
 
       void (^completion)(BOOL finished) = ^(BOOL finished) {
-        if (self->_layoutAnimation.callback) {
-          self->_layoutAnimation.callback(@[@(finished)]);
+        completionsCalled++;
+        if (event != [NSNull null]) {
+          [self.bridge.eventDispatcher sendInputEventWithName:@"topLayout" body:event];
+        }
+        if (callback && completionsCalled == frames.count - 1) {
+          callback(@[@(finished)]);
         }
       };
 
       // Animate view update
-      BOOL isNew = [areNew[ii] boolValue];
-      RCTAnimation *updateAnimation = isNew ? nil: _layoutAnimation.updateAnimation;
       if (updateAnimation) {
         [updateAnimation performAnimations:^{
           [view reactSetFrame:frame];
@@ -479,9 +503,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
       }
 
       // Animate view creation
-      BOOL shouldAnimateCreation = isNew && ![parentsAreNew[ii] boolValue];
-      RCTAnimation *createAnimation = _layoutAnimation.createAnimation;
-      if (shouldAnimateCreation && createAnimation) {
+      if (createAnimation) {
         if ([createAnimation.property isEqualToString:@"scaleXY"]) {
           view.layer.transform = CATransform3DMakeScale(0, 0, 0);
         } else if ([createAnimation.property isEqualToString:@"opacity"]) {
@@ -1160,6 +1182,12 @@ RCT_EXPORT_METHOD(clearJSResponder)
         @"captured": @"onNavigationCompleteCapture"
       }
     },
+    @"topNavLeftButtonTap": @{
+      @"phasedRegistrationNames": @{
+        @"bubbled": @"onNavLeftButtonTap",
+        @"captured": @"onNavLefttButtonTapCapture"
+      }
+    },
     @"topNavRightButtonTap": @{
       @"phasedRegistrationNames": @{
         @"bubbled": @"onNavRightButtonTap",
@@ -1256,6 +1284,9 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
     @"topScrollAnimationEnd": @{
       @"registrationName": @"onScrollAnimationEnd"
+    },
+    @"topLayout": @{
+      @"registrationName": @"onLayout"
     },
     @"topSelectionChange": @{
       @"registrationName": @"onSelectionChange"

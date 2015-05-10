@@ -21,7 +21,7 @@ extern const CGFloat RCTMapZoomBoundBuffer;
 @interface RCTMap: MKMapView
 
 @property (nonatomic, assign) BOOL followUserLocation;
-@property (nonatomic, assign) BOOL hasStartedLoading;
+@property (nonatomic, assign) BOOL hasStartedRendering;
 @property (nonatomic, assign) CGFloat minDelta;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;

@@ -20,8 +20,15 @@
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
+#import "RCTView.h"
 #import "RCTWebViewExecutor.h"
 #import "UIView+React.h"
+
+@interface RCTBridge (RCTRootView)
+
+@property (nonatomic, weak, readonly) RCTBridge *batchedBridge;
+
+@end
 
 @interface RCTUIManager (RCTRootView)
 
@@ -29,16 +36,21 @@
 
 @end
 
+@interface RCTRootContentView : RCTView <RCTInvalidating>
+
+- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
+
+@end
+
 @implementation RCTRootView
 {
   RCTBridge *_bridge;
-  RCTTouchHandler *_touchHandler;
   NSString *_moduleName;
   NSDictionary *_launchOptions;
-  UIView *_contentView;
+  RCTRootContentView *_contentView;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+  - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
 {
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
@@ -52,11 +64,11 @@
     _moduleName = moduleName;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bundleFinishedLoading)
+                                             selector:@selector(javaScriptDidLoad:)
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:_bridge];
-    if (!_bridge.loading) {
-      [self bundleFinishedLoading];
+    if (!_bridge.batchedBridge.isLoading) {
+      [self bundleFinishedLoading:_bridge.batchedBridge];
     }
   }
   return self;
@@ -73,25 +85,6 @@
   return [self initWithBridge:bridge moduleName:moduleName];
 }
 
-- (BOOL)isValid
-{
-  return _contentView.userInteractionEnabled;
-}
-
-- (void)invalidate
-{
-  _contentView.userInteractionEnabled = NO;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  if (_contentView) {
-    [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-                      args:@[_contentView.reactTag]];
-  }
-}
-
 - (UIViewController *)backingViewController
 {
   return _backingViewController ?: [super backingViewController];
@@ -105,9 +98,19 @@
 RCT_IMPORT_METHOD(AppRegistry, runApplication)
 RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 
-- (void)bundleFinishedLoading
+
+- (void)javaScriptDidLoad:(NSNotification *)notification
+{
+  RCTBridge *bridge = notification.userInfo[@"bridge"];
+  [self bundleFinishedLoading:bridge];
+}
+
+- (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
   dispatch_async(dispatch_get_main_queue(), ^{
+    if (!bridge.isValid) {
+      return;
+    }
 
     /**
      * Every root view that is created must have a unique React tag.
@@ -117,19 +120,16 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
      * the React tag is assigned every time we load new content.
      */
     [_contentView removeFromSuperview];
-    _contentView = [[UIView alloc] initWithFrame:self.bounds];
-    _contentView.reactTag = [_bridge.uiManager allocateRootTag];
-    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-    [_contentView addGestureRecognizer:_touchHandler];
+    _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
+                                                      bridge:bridge];
     [self addSubview:_contentView];
 
     NSString *moduleName = _moduleName ?: @"";
     NSDictionary *appParameters = @{
       @"rootTag": _contentView.reactTag,
-      @"initialProps": self.initialProperties ?: @{},
+      @"initialProps": _initialProperties ?: @{},
     };
-    [_bridge.uiManager registerRootView:_contentView];
-    [_bridge enqueueJSCall:@"AppRegistry.runApplication"
+    [bridge enqueueJSCall:@"AppRegistry.runApplication"
                       args:@[moduleName, appParameters]];
   });
 }
@@ -139,13 +139,18 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
   [super layoutSubviews];
   if (_contentView) {
     _contentView.frame = self.bounds;
-    [_bridge.uiManager setFrame:self.bounds forRootView:_contentView];
   }
 }
 
 - (NSNumber *)reactTag
 {
   return _contentView.reactTag;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_contentView removeFromSuperview];
 }
 
 @end
@@ -157,6 +162,63 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
   NSNumber *rootTag = objc_getAssociatedObject(self, _cmd) ?: @1;
   objc_setAssociatedObject(self, _cmd, @(rootTag.integerValue + 10), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   return rootTag;
+}
+
+@end
+
+@implementation RCTRootContentView
+{
+  __weak RCTBridge *_bridge;
+  RCTTouchHandler *_touchHandler;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+{
+  if ((self = [super init])) {
+    _bridge = bridge;
+    [self setUp];
+    self.frame = frame;
+  }
+  return self;
+}
+
+- (void)setFrame:(CGRect)frame
+{
+  [super setFrame:frame];
+  if (self.reactTag && _bridge.isValid) {
+    [_bridge.uiManager setFrame:self.bounds forRootView:self];
+  }
+}
+
+- (void)setUp
+{
+  /**
+   * Every root view that is created must have a unique react tag.
+   * Numbering of these tags goes from 1, 11, 21, 31, etc
+   *
+   * NOTE: Since the bridge persists, the RootViews might be reused, so now
+   * the react tag is assigned every time we load new content.
+   */
+  self.reactTag = [_bridge.uiManager allocateRootTag];
+  [self addGestureRecognizer:[[RCTTouchHandler alloc] initWithBridge:_bridge]];
+  [_bridge.uiManager registerRootView:self];
+}
+
+- (BOOL)isValid
+{
+  return self.userInteractionEnabled;
+}
+
+- (void)invalidate
+{
+  self.userInteractionEnabled = NO;
+}
+
+- (void)dealloc
+{
+  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
+                    args:@[self.reactTag]];
 }
 
 @end

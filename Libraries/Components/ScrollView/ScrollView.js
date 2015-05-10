@@ -186,7 +186,7 @@ var ScrollView = React.createClass({
     /**
      * Experimental: When true, offscreen child views (whose `overflow` value is
      * `hidden`) are removed from their native backing superview when offscreen.
-     * This canimprove scrolling performance on long lists. The default value is
+     * This can improve scrolling performance on long lists. The default value is
      * false.
      */
     removeClippedSubviews: PropTypes.bool,
@@ -211,11 +211,19 @@ var ScrollView = React.createClass({
   },
 
   scrollTo: function(destY?: number, destX?: number) {
-    RCTUIManager.scrollTo(
-      this.getNodeHandle(),
-      destX || 0,
-      destY || 0
-    );
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        this.getNodeHandle(),
+        RCTUIManager.RCTScrollView.Commands.scrollTo,
+        [destX || 0, destY || 0]
+      );
+    } else {
+      RCTUIManager.scrollTo(
+        this.getNodeHandle(),
+        destX || 0,
+        destY || 0
+      );
+    }
   },
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
@@ -364,7 +372,7 @@ var validAttributes = {
 if (Platform.OS === 'android') {
   var AndroidScrollView = createReactIOSNativeComponentClass({
     validAttributes: validAttributes,
-    uiViewClassName: 'AndroidScrollView',
+    uiViewClassName: 'RCTScrollView',
   });
   var AndroidHorizontalScrollView = createReactIOSNativeComponentClass({
     validAttributes: validAttributes,

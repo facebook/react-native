@@ -47,6 +47,23 @@ var self = {};
     return
   }
 
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = name.toString();
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = value.toString();
+    }
+    return value
+  }
+
   function Headers(headers) {
     this.map = {}
 
@@ -66,7 +83,8 @@ var self = {};
   }
 
   Headers.prototype.append = function(name, value) {
-    name = name.toLowerCase()
+    name = normalizeName(name)
+    value = normalizeValue(value)
     var list = this.map[name]
     if (!list) {
       list = []
@@ -76,24 +94,24 @@ var self = {};
   }
 
   Headers.prototype['delete'] = function(name) {
-    delete this.map[name.toLowerCase()]
+    delete this.map[normalizeName(name)]
   }
 
   Headers.prototype.get = function(name) {
-    var values = this.map[name.toLowerCase()]
+    var values = this.map[normalizeName(name)]
     return values ? values[0] : null
   }
 
   Headers.prototype.getAll = function(name) {
-    return this.map[name.toLowerCase()] || []
+    return this.map[normalizeName(name)] || []
   }
 
   Headers.prototype.has = function(name) {
-    return this.map.hasOwnProperty(name.toLowerCase())
+    return this.map.hasOwnProperty(normalizeName(name))
   }
 
   Headers.prototype.set = function(name, value) {
-    this.map[name.toLowerCase()] = [value]
+    this.map[normalizeName(name)] = [normalizeValue(value)]
   }
 
   // Instead of iterable for now.
@@ -134,22 +152,51 @@ var self = {};
     return fileReaderReady(reader)
   }
 
-  var blobSupport = 'FileReader' in self && 'Blob' in self && (function() {
-    try {
-      new Blob();
-      return true
-    } catch(e) {
-      return false
-    }
-  })();
+  var support = {
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob();
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self
+  }
 
   function Body() {
     this.bodyUsed = false
 
-    if (blobSupport) {
+
+    this._initBody = function(body) {
+      this._bodyInit = body
+      if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (!body) {
+        this._bodyText = ''
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+    }
+
+    if (support.blob) {
       this.blob = function() {
         var rejected = consumed(this)
-        return rejected ? rejected : Promise.resolve(this._bodyBlob)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
       }
 
       this.arrayBuffer = function() {
@@ -157,7 +204,18 @@ var self = {};
       }
 
       this.text = function() {
-        return this.blob().then(readBlobAsText)
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return readBlobAsText(this._bodyBlob)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as text')
+        } else {
+          return Promise.resolve(this._bodyText)
+        }
       }
     } else {
       this.text = function() {
@@ -166,7 +224,7 @@ var self = {};
       }
     }
 
-    if ('FormData' in self) {
+    if (support.formData) {
       this.formData = function() {
         return this.text().then(decode)
       }
@@ -190,12 +248,17 @@ var self = {};
   function Request(url, options) {
     options = options || {}
     this.url = url
-    this._body = options.body
+
     this.credentials = options.credentials || 'omit'
     this.headers = new Headers(options.headers)
     this.method = normalizeMethod(options.method || 'GET')
     this.mode = options.mode || null
     this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && options.body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(options.body)
   }
 
   function decode(body) {
@@ -223,11 +286,43 @@ var self = {};
     return head
   }
 
-  Request.prototype.fetch = function() {
-    var self = this
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this._initBody(bodyInit)
+    this.type = 'default'
+    this.url = null
+    this.status = options.status
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = options.statusText
+    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
+    this.url = options.url || ''
+  }
+
+  Body.call(Response.prototype)
+
+  self.Headers = Headers;
+  self.Request = Request;
+  self.Response = Response;
+
+  self.fetch = function(input, init) {
+    // TODO: Request constructor should accept input, init
+    var request
+    if (Request.prototype.isPrototypeOf(input) && !init) {
+      request = input
+    } else {
+      request = new Request(input, init)
+    }
 
     return new Promise(function(resolve, reject) {
       var xhr = new XMLHttpRequest()
+      if (request.credentials === 'cors') {
+        xhr.withCredentials = true;
+      }
 
       function responseURL() {
         if ('responseURL' in xhr) {
@@ -262,57 +357,24 @@ var self = {};
         reject(new TypeError('Network request failed'))
       }
 
-      xhr.open(self.method, self.url)
-      if ('responseType' in xhr && blobSupport) {
+      xhr.open(request.method, request.url, true)
+
+      if ('responseType' in xhr && support.blob) {
         xhr.responseType = 'blob'
       }
 
-      self.headers.forEach(function(name, values) {
+      request.headers.forEach(function(name, values) {
         values.forEach(function(value) {
           xhr.setRequestHeader(name, value)
         })
       })
 
-      xhr.send((self._body === undefined) ? null : self._body)
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
     })
-  }
-
-  Body.call(Request.prototype)
-
-  function Response(bodyInit, options) {
-    if (!options) {
-      options = {}
-    }
-
-    if (blobSupport) {
-      if (typeof bodyInit === 'string') {
-        this._bodyBlob = new Blob([bodyInit])
-      } else {
-        this._bodyBlob = bodyInit
-      }
-    } else {
-      this._bodyText = bodyInit
-    }
-    this.type = 'default'
-    this.url = null
-    this.status = options.status
-    this.statusText = options.statusText
-    this.headers = options.headers
-    this.url = options.url || ''
-  }
-
-  Body.call(Response.prototype)
-
-  self.Headers = Headers;
-  self.Request = Request;
-  self.Response = Response;
-
-  self.fetch = function (url, options) {
-    return new Request(url, options).fetch()
   }
   self.fetch.polyfill = true
 })();
 
 /** End of the third-party code */
 
-module.exports = self.fetch;
+module.exports = self;

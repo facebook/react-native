@@ -84,15 +84,15 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   [self _regionChanged:mapView];
 
   // Don't send region did change events until map has
-  // started loading, as these won't represent the final location
-  if (mapView.hasStartedLoading) {
+  // started rendering, as these won't represent the final location
+  if (mapView.hasStartedRendering) {
     [self _emitRegionChangeEvent:mapView continuous:NO];
   };
 }
 
-- (void)mapViewWillStartLoadingMap:(RCTMap *)mapView
+- (void)mapViewWillStartRenderingMap:(RCTMap *)mapView
 {
-  mapView.hasStartedLoading = YES;
+  mapView.hasStartedRendering = YES;
   [self _emitRegionChangeEvent:mapView continuous:NO];
 }
 

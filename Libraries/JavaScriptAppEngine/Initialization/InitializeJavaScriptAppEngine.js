@@ -79,6 +79,16 @@ function setupRedBoxErrorHandler() {
   ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
 }
 
+function setupRedBoxConsoleErrorHandler() {
+  // ExceptionsManager transitively requires Promise so we install it after
+  var ExceptionsManager = require('ExceptionsManager');
+  var Platform = require('Platform');
+  // TODO (#6925182): Enable console.error redbox on Android
+  if (__DEV__ && Platform.OS === 'ios') {
+    ExceptionsManager.installConsoleErrorReporter();
+  }
+}
+
 /**
  * Sets up a set of window environment wrappers that ensure that the
  * BatchedBridge is flushed after each tick. In both the case of the
@@ -125,7 +135,12 @@ function setupXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
   GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
-  GLOBAL.fetch = require('fetch');
+
+  var fetchPolyfill = require('fetch');
+  GLOBAL.fetch = fetchPolyfill.fetch;
+  GLOBAL.Headers = fetchPolyfill.Headers;
+  GLOBAL.Request = fetchPolyfill.Request;
+  GLOBAL.Response = fetchPolyfill.Response;
 }
 
 function setupGeolocation() {
@@ -139,4 +154,5 @@ setupTimers();
 setupAlert();
 setupPromise();
 setupXHR();
+setupRedBoxConsoleErrorHandler();
 setupGeolocation();

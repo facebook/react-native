@@ -36,7 +36,7 @@ glob('src/**/*.*', function(er, files) {
               return;
             }
             if (response.statusCode != 200) {
-              reject(new Error('Status ' + response.statusCode + ':\n' + body)); 
+              reject(new Error('Status ' + response.statusCode + ':\n' + body));
               return;
             }
             mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));

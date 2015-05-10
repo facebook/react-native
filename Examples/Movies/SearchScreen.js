@@ -29,8 +29,6 @@ var TimerMixin = require('react-timer-mixin');
 var MovieCell = require('./MovieCell');
 var MovieScreen = require('./MovieScreen');
 
-var fetch = require('fetch');
-
 /**
  * This is for demo purposes only, and rate limited.
  * In case you want to use the Rotten Tomatoes' API on a real app you should

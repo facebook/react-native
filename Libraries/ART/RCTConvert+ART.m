@@ -64,18 +64,6 @@
   return (CGPathRef)CFAutorelease(path);
 }
 
-+ (CTFontRef)CTFont:(id)json
-{
-  NSDictionary *dict = [self NSDictionary:json];
-  if (!dict) {
-    return nil;
-  }
-  CTFontDescriptorRef fontDescriptor = CTFontDescriptorCreateWithAttributes((__bridge CFDictionaryRef)dict);
-  CTFontRef font = CTFontCreateWithFontDescriptor(fontDescriptor, 0.0, NULL);
-  CFRelease(fontDescriptor);
-  return (CTFontRef)CFAutorelease(font);
-}
-
 RCT_ENUM_CONVERTER(CTTextAlignment, (@{
   @"auto": @(kCTTextAlignmentNatural),
   @"left": @(kCTTextAlignmentLeft),
@@ -98,7 +86,8 @@ RCT_ENUM_CONVERTER(CTTextAlignment, (@{
     return frame;
   }
 
-  CTFontRef font = [self CTFont:dict[@"font"]];
+  NSDictionary *fontDict = dict[@"font"];
+  CTFontRef font = (__bridge CTFontRef)[self UIFont:nil withFamily:fontDict[@"fontFamily"] size:fontDict[@"fontSize"] weight:fontDict[@"fontWeight"] style:fontDict[@"fontStyle"]];
   if (!font) {
     return frame;
   }

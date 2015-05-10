@@ -19,6 +19,9 @@
 RCT_EXTERN NSString *RCTJSONStringify(id jsonObject, NSError **error);
 RCT_EXTERN id RCTJSONParse(NSString *jsonString, NSError **error);
 
+// Strip non JSON-safe values from an object graph
+RCT_EXTERN id RCTJSONClean(id object);
+
 // Get MD5 hash of a string (TODO: currently unused. Remove?)
 RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 

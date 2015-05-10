@@ -176,7 +176,7 @@ RCT_EXPORT_MODULE();
 // Available as NativeModules.MyCustomModule.processString
 RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
 {
-  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"];]]);
+  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"]]);
 }
 @end`}
           </Prism>

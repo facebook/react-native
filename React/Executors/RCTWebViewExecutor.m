@@ -42,13 +42,19 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
 {
   UIWebView *_webView;
   NSMutableDictionary *_objectsToInject;
+  NSRegularExpression *_commentsRegex;
+  NSRegularExpression *_scriptTagsRegex;
 }
+
+@synthesize valid = _valid;
 
 - (instancetype)initWithWebView:(UIWebView *)webView
 {
   if ((self = [super init])) {
     _objectsToInject = [[NSMutableDictionary alloc] init];
     _webView = webView ?: [[UIWebView alloc] init];
+    _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL],
+    _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL],
     _webView.delegate = self;
   }
   return self;
@@ -59,13 +65,9 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   return [self initWithWebView:nil];
 }
 
-- (BOOL)isValid
-{
-  return _webView != nil;
-}
-
 - (void)invalidate
 {
+  _valid = NO;
   _webView.delegate = nil;
   _webView = nil;
 }
@@ -129,10 +131,16 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   }
 
   RCTAssert(onComplete != nil, @"");
-  _onApplicationScriptLoaded = onComplete;
+  __weak RCTWebViewExecutor *weakSelf = self;
+  _onApplicationScriptLoaded = ^(NSError *error){
+    RCTWebViewExecutor *strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    strongSelf->_valid = error == nil;
+    onComplete(error);
+  };
 
-  script = [script stringByReplacingOccurrencesOfString:@"<script>" withString:@""];
-  script = [script stringByReplacingOccurrencesOfString:@"</script>" withString:@""];
   if (_objectsToInject.count > 0) {
     NSMutableString *scriptWithInjections = [[NSMutableString alloc] initWithString:@"/* BEGIN NATIVELY INJECTED OBJECTS */\n"];
     [_objectsToInject enumerateKeysAndObjectsUsingBlock:^(NSString *objectName, NSString *blockScript, BOOL *stop) {
@@ -146,6 +154,15 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
     [scriptWithInjections appendString:script];
     script = scriptWithInjections;
   }
+
+  script = [_commentsRegex stringByReplacingMatchesInString:script
+                                                    options:0
+                                                      range:NSMakeRange(0, script.length)
+                                               withTemplate:@""];
+  script = [_scriptTagsRegex stringByReplacingMatchesInString:script
+                                                      options:0
+                                                        range:NSMakeRange(0, script.length)
+                                                 withTemplate:@"\\\\<$1\\\\>"];
 
   NSString *runScript =
     [NSString

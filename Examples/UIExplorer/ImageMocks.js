@@ -39,3 +39,8 @@ declare module 'image!uie_thumb_selected' {
   declare var uri: string;
   declare var isStatic: boolean;
 }
+
+declare module 'image!NavBarButtonPlus' {
+  declare var uri: string;
+  declare var isStatic: boolean;
+}

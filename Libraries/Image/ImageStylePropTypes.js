@@ -14,9 +14,11 @@
 var ImageResizeMode = require('ImageResizeMode');
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
+var TransformPropTypes = require('TransformPropTypes');
 
 var ImageStylePropTypes = {
   ...LayoutPropTypes,
+  ...TransformPropTypes,
   resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
   backgroundColor: ReactPropTypes.string,
   borderColor: ReactPropTypes.string,
@@ -28,20 +30,5 @@ var ImageStylePropTypes = {
   tintColor: ReactPropTypes.string,
   opacity: ReactPropTypes.number,
 };
-
-// Image doesn't support padding correctly (#4841912)
-var unsupportedProps = Object.keys({
-  padding: null,
-  paddingTop: null,
-  paddingLeft: null,
-  paddingRight: null,
-  paddingBottom: null,
-  paddingVertical: null,
-  paddingHorizontal: null,
-});
-
-for (var i = 0; i < unsupportedProps.length; i++) {
-  delete ImageStylePropTypes[unsupportedProps[i]];
-}
 
 module.exports = ImageStylePropTypes;
