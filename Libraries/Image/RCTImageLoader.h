@@ -15,6 +15,11 @@
 @interface RCTImageLoader : NSObject
 
 + (ALAssetsLibrary *)assetsLibrary;
+
+/**
+ * Can be called from any thread.
+ * Will always call callback on main thread.
+ */
 + (void)loadImageWithTag:(NSString *)tag
                 callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback;
 
