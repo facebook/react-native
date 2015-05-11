@@ -16,6 +16,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
+#import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTLog.h"
 
@@ -51,7 +52,7 @@ NSError *errorWithMessage(NSString *message)
   return assetsLibrary;
 }
 
-+ (void)loadImageWithTag:(NSString *)imageTag callback:(void (^)(NSError *error, UIImage *image))callback
++ (void)loadImageWithTag:(NSString *)imageTag callback:(void (^)(NSError *error, id image))callback
 {
   if ([imageTag hasPrefix:@"assets-library"]) {
     [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
@@ -119,10 +120,24 @@ NSError *errorWithMessage(NSString *message)
         callback(nil, [UIImage imageWithData:data]);
       }
     }];
+  } else if ([[imageTag pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
+    id image = RCTGIFImageWithFileURL([RCTConvert NSURL:imageTag]);
+    if (image) {
+      callback(nil, image);
+    } else {
+      NSString *errorMessage = [NSString stringWithFormat:@"Unable to load GIF image: %@", imageTag];
+      NSError *error = errorWithMessage(errorMessage);
+      callback(error, nil);
+    }
   } else {
-    NSString *errorMessage = [NSString stringWithFormat:@"Unrecognized tag protocol: %@", imageTag];
-    NSError *error = errorWithMessage(errorMessage);
-    callback(error, nil);
+    UIImage *image = [RCTConvert UIImage:imageTag];
+    if (image) {
+      callback(nil, image);
+    } else {
+      NSString *errorMessage = [NSString stringWithFormat:@"Unrecognized tag protocol: %@", imageTag];
+      NSError *error = errorWithMessage(errorMessage);
+      callback(error, nil);
+    }
   }
 }
 

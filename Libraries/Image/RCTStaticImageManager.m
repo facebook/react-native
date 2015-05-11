@@ -33,9 +33,11 @@ RCT_CUSTOM_VIEW_PROPERTY(src, NSURL, RCTStaticImage)
     if ([[[json description] pathExtension] caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
       [view.layer addAnimation:RCTGIFImageWithFileURL([RCTConvert NSURL:json]) forKey:@"contents"];
     } else {
+      [view.layer removeAnimationForKey:@"contents"];
       view.image = [RCTConvert UIImage:json];
     }
   } else {
+    [view.layer removeAnimationForKey:@"contents"];
     view.image = defaultView.image;
   }
 }
@@ -52,13 +54,19 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTStaticImage)
 RCT_CUSTOM_VIEW_PROPERTY(imageTag, NSString, RCTStaticImage)
 {
   if (json) {
-    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] callback:^(NSError *error, UIImage *image) {
+    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] callback:^(NSError *error, id image) {
       if (error) {
         RCTLogWarn(@"%@", error.localizedDescription);
       }
-      view.image = image;
+      if ([image isKindOfClass:[CAAnimation class]]) {
+        [view.layer addAnimation:image forKey:@"contents"];
+      } else {
+        [view.layer removeAnimationForKey:@"contents"];
+        view.image = image;
+      }
     }];
   } else {
+    [view.layer removeAnimationForKey:@"contents"];
     view.image = defaultView.image;
   }
 }
