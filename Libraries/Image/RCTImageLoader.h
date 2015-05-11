@@ -15,6 +15,7 @@
 @interface RCTImageLoader : NSObject
 
 + (ALAssetsLibrary *)assetsLibrary;
-+ (void)loadImageWithTag:(NSString *)tag callback:(void (^)(NSError *error, UIImage *image))callback;
++ (void)loadImageWithTag:(NSString *)tag
+                callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback;
 
 @end
