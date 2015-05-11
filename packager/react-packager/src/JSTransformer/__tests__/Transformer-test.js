@@ -10,9 +10,10 @@
 
 jest
   .dontMock('worker-farm')
-  .dontMock('os')
   .dontMock('../../lib/ModuleTransport')
   .dontMock('../index');
+
+jest.mock('fs');
 
 var OPTIONS = {
   transformModulePath: '/foo/bar'
