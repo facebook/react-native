@@ -40,6 +40,11 @@ static css_dim_t RCTMeasure(void *context, float width)
 
   css_dim_t result;
   result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
+
+  if (shadowText.effectiveLetterSpacing < 0) {
+    result.dimensions[CSS_WIDTH] -= shadowText.effectiveLetterSpacing;
+  }
+
   result.dimensions[CSS_HEIGHT] = RCTCeilPixelValue(computedSize.height);
   return result;
 }
@@ -55,6 +60,7 @@ static css_dim_t RCTMeasure(void *context, float width)
 {
   if ((self = [super init])) {
     _fontSize = NAN;
+    _letterSpacing = NAN;
     _isHighlighted = NO;
 
     _textContainer = [[NSTextContainer alloc] init];
@@ -73,13 +79,15 @@ static css_dim_t RCTMeasure(void *context, float width)
   return [self _attributedStringWithFontFamily:nil
                                       fontSize:0
                                     fontWeight:nil
-                                     fontStyle:nil];
+                                     fontStyle:nil
+                                 letterSpacing:0];
 }
 
 - (NSAttributedString *)_attributedStringWithFontFamily:(NSString *)fontFamily
                                                fontSize:(CGFloat)fontSize
                                              fontWeight:(NSString *)fontWeight
                                               fontStyle:(NSString *)fontStyle
+                                          letterSpacing:(CGFloat)letterSpacing
 {
   if (![self isTextDirty] && _cachedAttributedString) {
     return _cachedAttributedString;
@@ -97,12 +105,17 @@ static css_dim_t RCTMeasure(void *context, float width)
   if (_fontFamily) {
     fontFamily = _fontFamily;
   }
+  if (!isnan(_letterSpacing)) {
+    letterSpacing = _letterSpacing;
+  }
+
+  _effectiveLetterSpacing = letterSpacing;
 
   NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] init];
   for (RCTShadowView *child in [self reactSubviews]) {
     if ([child isKindOfClass:[RCTShadowText class]]) {
       RCTShadowText *shadowText = (RCTShadowText *)child;
-      [attributedString appendAttributedString:[shadowText _attributedStringWithFontFamily:fontFamily fontSize:fontSize fontWeight:fontWeight fontStyle:fontStyle]];
+      [attributedString appendAttributedString:[shadowText _attributedStringWithFontFamily:fontFamily fontSize:fontSize fontWeight:fontWeight fontStyle:fontStyle letterSpacing:letterSpacing]];
     } else if ([child isKindOfClass:[RCTShadowRawText class]]) {
       RCTShadowRawText *shadowRawText = (RCTShadowRawText *)child;
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[shadowRawText text] ?: @""]];
@@ -125,6 +138,7 @@ static css_dim_t RCTMeasure(void *context, float width)
 
   _font = [RCTConvert UIFont:nil withFamily:fontFamily size:@(fontSize) weight:fontWeight style:fontStyle];
   [self _addAttribute:NSFontAttributeName withValue:_font toAttributedString:attributedString];
+  [self _addAttribute:NSKernAttributeName withValue:@(letterSpacing) toAttributedString:attributedString];
   [self _addAttribute:RCTReactTagAttributeName withValue:self.reactTag toAttributedString:attributedString];
   [self _setParagraphStyleOnAttributedString:attributedString];
 
@@ -223,6 +237,7 @@ RCT_TEXT_PROPERTY(Color, _color, UIColor *);
 RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *);
 RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat);
 RCT_TEXT_PROPERTY(FontWeight, _fontWeight, NSString *);
+RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat);
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat);
 RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize);
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment);
