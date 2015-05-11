@@ -14,6 +14,7 @@ function printUsage() {
     'Usage: react-native <command>',
     '',
     'Commands:',
+    '  init: initialize a new project', // handled by init.sh, called directly from global cli
     '  start: starts the webserver',
     '  install: installs npm react components',
     '  bundle: builds the javascript bundle for offline use'
