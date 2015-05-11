@@ -10,12 +10,12 @@
 
 jest
   .setMock('worker-farm', function() { return function() {};})
-  .dontMock('path')
-  .dontMock('os')
   .dontMock('underscore')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
   .dontMock('../');
+
+jest.mock('fs');
 
 var Promise = require('bluebird');
 
