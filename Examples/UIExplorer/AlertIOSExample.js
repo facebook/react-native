@@ -95,8 +95,97 @@ exports.examples = [{
         </TouchableHighlight>
       </View>
     );
-  },
+  }
+},
+{
+  title: 'Prompt',
+  render(): React.Component {
+    return <PromptExample />
+  }
 }];
+
+class PromptExample extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.promptResponse = this.promptResponse.bind(this);
+    this.state = {
+      promptValue: undefined,
+    };
+
+    this.title = 'Type a value';
+    this.defaultValue = 'Default value';
+    this.buttons = [{
+      text: 'Custom cancel',
+    }, {
+      text: 'Custom OK',
+      onPress: this.promptResponse
+    }];
+  }
+
+  render() {
+    return (
+      <View>
+        <Text style={{marginBottom: 10}}>
+          <Text style={{fontWeight: 'bold'}}>Prompt value:</Text> {this.state.promptValue}
+        </Text>
+
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this.prompt.bind(this, this.title, this.promptResponse)}>
+
+          <View style={styles.button}>
+            <Text>
+              prompt with title & callback
+            </Text>
+          </View>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this.prompt.bind(this, this.title, this.buttons)}>
+
+          <View style={styles.button}>
+            <Text>
+              prompt with title & custom buttons
+            </Text>
+          </View>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this.prompt.bind(this, this.title, this.defaultValue, this.promptResponse)}>
+
+          <View style={styles.button}>
+            <Text>
+              prompt with title, default value & callback
+            </Text>
+          </View>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this.prompt.bind(this, this.title, this.defaultValue, this.buttons)}>
+
+          <View style={styles.button}>
+            <Text>
+              prompt with title, default value & custom buttons
+            </Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    );
+  }
+
+  prompt() {
+    // Flow's apply support is broken: #7035621
+    ((AlertIOS.prompt: any).apply: any)(AlertIOS, arguments);
+  }
+
+  promptResponse(promptValue) {
+    this.setState({ promptValue });
+  }
+}
 
 var styles = StyleSheet.create({
   wrapper: {
