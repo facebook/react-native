@@ -15,6 +15,9 @@
  */
 'use strict';
 
+//suppress JSHint 'fetch is not defined' error
+/*global fetch*/
+
 var React = require('react-native');
 var {
   ActivityIndicatorIOS,
