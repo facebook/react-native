@@ -819,9 +819,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)reload
 {
-/**
- * AnyThread
- */
+  /**
+   * AnyThread
+   */
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
     [self setUp];
@@ -1088,7 +1088,16 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
      */
     _loading = NO;
 
-  } else if (bundleURL) { // Allow testing without a script
+  } else if (!bundleURL) {
+
+    // Allow testing without a script
+    dispatch_async(dispatch_get_main_queue(), ^{
+      _loading = NO;
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                          object:_parentBridge
+                                                        userInfo:@{ @"bridge": self }];
+    });
+  } else {
 
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
