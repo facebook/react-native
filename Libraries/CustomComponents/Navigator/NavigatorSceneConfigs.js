@@ -361,7 +361,7 @@ var BaseConfig = {
   // Animation interpolators for horizontal transitioning:
   animationInterpolators: {
     into: buildStyleInterpolator(FromTheRight),
-    out: buildStyleInterpolator(FadeToTheLeft),
+    out: buildStyleInterpolator(ToTheLeft),
   },
 };
 
