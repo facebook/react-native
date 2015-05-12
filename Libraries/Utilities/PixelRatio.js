@@ -67,9 +67,9 @@ class PixelRatio {
   static getPixelSizeForLayoutSize(layoutSize: number): number {
     return Math.round(layoutSize * PixelRatio.get());
   }
-}
 
-// No-op for iOS, but used on the web. Should not be documented.
-PixelRatio.startDetecting = function() {};
+  // No-op for iOS, but used on the web. Should not be documented.
+  static startDetecting() {}
+}
 
 module.exports = PixelRatio;

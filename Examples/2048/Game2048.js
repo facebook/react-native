@@ -150,7 +150,7 @@ class Game2048 extends React.Component {
   startX: number;
   startY: number;
 
-  constructor(props) {
+  constructor(props: {}) {
     super(props);
     this.state = {
       board: new GameBoard(),
