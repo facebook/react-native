@@ -873,15 +873,19 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return _eventDispatcher ?: _batchedBridge.eventDispatcher;
 }
 
-#define RCT_BRIDGE_WARN(...) \
+#define RCT_INNER_BRIDGE_ONLY(...) \
 - (void)__VA_ARGS__ \
 { \
   RCTLogMustFix(@"Called method \"%@\" on top level bridge. This method should \
               only be called from bridge instance in a bridge module", @(__func__)); \
 }
 
-RCT_BRIDGE_WARN(enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args)
-RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context)
+- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
+{
+  [self.batchedBridge enqueueJSCall:moduleDotMethod args:args];
+}
+
+RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context)
 
 @end
 
@@ -1499,6 +1503,7 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
       @"module": method.moduleClassName,
       @"method": method.JSMethodName,
       @"selector": NSStringFromSelector(method.selector),
+      @"args": RCTJSONStringify(params ?: [NSNull null], NULL),
     });
   } forModule:@(moduleID)];
 
