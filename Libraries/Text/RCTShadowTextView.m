@@ -54,6 +54,7 @@ static css_dim_t RCTMeasure(void *context, float width)
 
   RCTAttributedStringHandler *_stringHandler;
   RCTAttributedStringHandler *_placeholderStringHandler;
+  BOOL _textHasBeenSetOnce;
 }
 
 
@@ -70,6 +71,7 @@ static css_dim_t RCTMeasure(void *context, float width)
     _stringHandler = [[RCTAttributedStringHandler alloc] initWithShadowView:self];
     _placeholderStringHandler = [[RCTAttributedStringHandler alloc] initWithShadowView:self];
     _placeholderStringHandler.textColor = [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
+    _textHasBeenSetOnce = false;
   }
   
   return self;
@@ -167,8 +169,9 @@ RCT_ATTR_STRING_PROPERTY(WritingDirection, writingDirection, NSWritingDirection)
 
 - (void)setText:(NSString *)text updateTextView:(BOOL)updateTextView
 {
-  if (!_text){
+  if (!_textHasBeenSetOnce) {
     updateTextView = true;
+    _textHasBeenSetOnce = true;
   }
   if (![_text isEqualToString:text ]) {
     _text = [text copy];
