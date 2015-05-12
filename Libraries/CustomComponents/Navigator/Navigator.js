@@ -582,7 +582,7 @@ var Navigator = React.createClass({
    * This happens at the end of a transition started by transitionTo, and when the spring catches up to a pending gesture
    */
   _completeTransition: function() {
-    if (this.spring.getCurrentValue() !== 1) {
+    if (this.spring.getCurrentValue() !== 1 && this.spring.getCurrentValue() !== 0) {
       // The spring has finished catching up to a gesture in progress. Remove the pending progress
       // and we will be in a normal activeGesture state
       if (this.state.pendingGestureProgress) {
@@ -883,7 +883,10 @@ var Navigator = React.createClass({
       var gesturingToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
       this._transitionBetween(this.state.presentedIndex, gesturingToIndex, 0);
       this._detachGesture();
-      this.spring.setCurrentValue(0);
+      if (this.state.pendingGestureProgress != null) {
+        this.spring.setCurrentValue(0);
+      }
+      return;
     }
     if (this._doesGestureOverswipe(this.state.activeGesture)) {
       var frictionConstant = gesture.overswipe.frictionConstant;
