@@ -253,7 +253,7 @@ var Navigator = React.createClass({
     onDidFocus: PropTypes.func,
 
     /**
-     * Will be called with (ref, indexInStack) when the scene ref changes
+     * Will be called with (ref, indexInStack, route) when the scene ref changes
      */
     onItemRef: PropTypes.func,
 
@@ -1181,13 +1181,13 @@ var Navigator = React.createClass({
     return this.state.routeStack;
   },
 
-  _handleItemRef: function(itemId, ref) {
+  _handleItemRef: function(itemId, route, ref) {
     this._itemRefs[itemId] = ref;
     var itemIndex = this.state.idStack.indexOf(itemId);
     if (itemIndex === -1) {
       return;
     }
-    this.props.onItemRef && this.props.onItemRef(ref, itemIndex);
+    this.props.onItemRef && this.props.onItemRef(ref, itemIndex, route);
   },
 
   _cleanScenesPastIndex: function(index) {
@@ -1296,7 +1296,7 @@ var Navigator = React.createClass({
         }}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
         {React.cloneElement(child, {
-          ref: this._handleItemRef.bind(null, this.state.idStack[i]),
+          ref: this._handleItemRef.bind(null, this.state.idStack[i], route),
         })}
       </View>
     );
