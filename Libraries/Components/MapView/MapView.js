@@ -35,6 +35,41 @@ type MapRegion = {
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
 
+  checkAnnotationIds: function (annotations: Array<Object>) {
+
+    var newAnnotations = annotations.map(function (annotation) {
+      // If no ID has been set, generate a unique one to make sure annotation
+      // events are being dispatched correctly
+      // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+      if (!annotation['id']) {
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+          return v.toString(16);
+        });
+
+        annotation['id'] = uuid;
+      }
+
+      return annotation;
+    });
+
+    this.setState({
+      annotations: newAnnotations
+    });
+  },
+
+  componentWillMount: function() {
+    if (this.props.annotations) {
+      this.checkAnnotationIds(this.props.annotations);
+    }
+  },
+
+  componentWillReceiveProps: function(nextProps: Object) {
+    if (nextProps.annotations) {
+      this.checkAnnotationIds(nextProps.annotations);
+    }
+  },
+
   propTypes: {
     /**
      * Used to style and layout the `MapView`.  See `StyleSheet.js` and
@@ -127,10 +162,33 @@ var MapView = React.createClass({
       longitude: React.PropTypes.number.isRequired,
 
       /**
+       * Whether the pin drop should be animated or not
+       */
+      animateDrop: React.PropTypes.bool,
+
+      /**
        * Annotation title/subtile.
        */
       title: React.PropTypes.string,
       subtitle: React.PropTypes.string,
+
+      /**
+       * Whether the Annotation has callout buttons.
+       */
+      hasLeftCallout: React.PropTypes.bool,
+      hasRightCallout: React.PropTypes.bool,
+
+      /**
+       * Event handlers for callout buttons.
+       */
+      onLeftCalloutPress: React.PropTypes.func,
+      onRightCalloutPress: React.PropTypes.func,
+
+      /**
+       * annotation id
+       */
+      id: React.PropTypes.string
+
     })),
 
     /**
@@ -158,6 +216,11 @@ var MapView = React.createClass({
      * Callback that is called once, when the user is done moving the map.
      */
     onRegionChangeComplete: React.PropTypes.func,
+
+    /**
+     * Callback that is called once, when the user is clicked on a annotation.
+     */
+    onAnnotationPress: React.PropTypes.func,
   },
 
   _onChange: function(event: Event) {
@@ -170,8 +233,33 @@ var MapView = React.createClass({
     }
   },
 
+  _onPress: function(event: Event) {
+    if (event.nativeEvent.action === "annotation-click")
+      this.props.onAnnotationPress && this.props.onAnnotationPress(event.nativeEvent.annotation);
+
+    if (event.nativeEvent.action === "callout-click") {
+      if (!this.props.annotations) {
+        return;
+      }
+
+      // Find the annotation with the id of what has been pressed
+      for (var i = 0; i < this.props.annotations.length; i++) {
+        var annotation = this.props.annotations[i];
+        if (annotation['id'] === event.nativeEvent.annotationId) {
+          // Pass the right function
+          if (event.nativeEvent.side === "left")
+            annotation.onLeftCalloutPress && annotation.onLeftCalloutPress(event.nativeEvent);
+
+          if (event.nativeEvent.side === "right")
+            annotation.onRightCalloutPress && annotation.onRightCalloutPress(event.nativeEvent);
+        }
+      }
+
+    }
+  },
+
   render: function() {
-    return <RCTMap {...this.props} onChange={this._onChange} />;
+    return <RCTMap {...this.props} onPress={this._onPress} onChange={this._onChange} />;
   },
 });
 

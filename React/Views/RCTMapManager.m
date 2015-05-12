@@ -15,6 +15,9 @@
 #import "RCTEventDispatcher.h"
 #import "RCTMap.h"
 #import "UIView+React.h"
+#import "RCTPointAnnotation.h"
+
+@import MapKit;
 
 static NSString *const RCTMapViewKey = @"MapView";
 
@@ -42,13 +45,97 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
-RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
+RCT_EXPORT_VIEW_PROPERTY(annotations, RCTPointAnnotationArray)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
 
 #pragma mark MKMapViewDelegate
+
+
+
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
+  if (![view.annotation isKindOfClass:[MKUserLocation class]]) {
+    
+    RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
+    
+    NSString *title;
+    if (view.annotation.title == nil) {
+      title = @"";
+    } else {
+      title = annotation.title;
+    }
+    
+    NSString *subtitle;
+    if (view.annotation.subtitle == nil) {
+      subtitle = @"";
+    } else {
+      subtitle = annotation.subtitle;
+    }
+    
+    NSDictionary *event = @{
+                            @"target": [mapView reactTag],
+                            @"action": @"annotation-click",
+                            @"annotation": @{
+                                @"id": annotation.identifier,
+                                @"title": title,
+                                @"subtitle": subtitle,
+                                @"latitude": [NSNumber numberWithDouble: annotation.coordinate.latitude],
+                                @"longitude": [NSNumber numberWithDouble: annotation.coordinate.longitude]
+                                }
+                            };
+    
+    [self.bridge.eventDispatcher sendInputEventWithName:@"topTap" body:event];
+  }
+}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
+{
+  if ([annotation isKindOfClass:[MKUserLocation class]])
+    return nil;
+
+  MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"RCTAnnotation"];
+  
+  annotationView.canShowCallout = true;
+  
+  if (annotation.animateDrop) {
+    annotationView.animatesDrop = true;
+  }
+
+  if (annotation.hasLeftCallout) {
+    annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  }
+
+  if (annotation.hasRightCallout) {
+    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  }
+
+  return annotationView;
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+  // Pass to js
+  RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
+  NSString *side;
+  if (control == view.leftCalloutAccessoryView) {
+    side = @"left";
+  }
+  else if (control == view.rightCalloutAccessoryView) {
+    side = @"right";
+  }
+
+  NSDictionary *event = @{
+      @"target": [mapView reactTag],
+      @"side": side,
+      @"action": @"callout-click",
+      @"annotationId": annotation.identifier
+    };
+
+  [self.bridge.eventDispatcher sendInputEventWithName:@"topTap" body:event];
+}
+
 
 - (void)mapView:(RCTMap *)mapView didUpdateUserLocation:(MKUserLocation *)location
 {

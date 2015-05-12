@@ -112,7 +112,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [super setRegion:region animated:animated];
 }
 
-- (void)setAnnotations:(MKShapeArray *)annotations
+- (void)setAnnotations:(RCTPointAnnotationArray *)annotations
 {
   [self removeAnnotations:self.annotations];
   if (annotations.count) {

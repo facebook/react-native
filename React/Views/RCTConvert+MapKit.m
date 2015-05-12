@@ -7,8 +7,8 @@
 //
 
 #import "RCTConvert+MapKit.h"
-
 #import "RCTConvert+CoreLocation.h"
+#import "RCTPointAnnotation.h"
 
 @implementation RCTConvert(MapKit)
 
@@ -48,5 +48,21 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
   @"satellite": @(MKMapTypeSatellite),
   @"hybrid": @(MKMapTypeHybrid),
 }), MKMapTypeStandard, integerValue)
+
++ (RCTPointAnnotation *)RCTPointAnnotation:(id)json
+{
+  json = [self NSDictionary:json];
+  RCTPointAnnotation *shape = [[RCTPointAnnotation alloc] init];
+  shape.coordinate = [self CLLocationCoordinate2D:json];
+  shape.title = [RCTConvert NSString:json[@"title"]];
+  shape.subtitle = [RCTConvert NSString:json[@"subtitle"]];
+  shape.identifier = [RCTConvert NSString:json[@"id"]];
+  shape.hasLeftCallout = [RCTConvert BOOL:json[@"hasLeftCallout"]];
+  shape.hasRightCallout = [RCTConvert BOOL:json[@"hasRightCallout"]];
+  shape.animateDrop = [RCTConvert BOOL:json[@"animateDrop"]];
+  return shape;
+}
+
+RCT_ARRAY_CONVERTER(RCTPointAnnotation)
 
 @end

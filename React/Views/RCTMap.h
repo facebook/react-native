@@ -27,6 +27,6 @@ extern const CGFloat RCTMapZoomBoundBuffer;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
 
-- (void)setAnnotations:(MKShapeArray *)annotations;
+- (void)setAnnotations:(RCTPointAnnotationArray *)annotations;
 
 @end
