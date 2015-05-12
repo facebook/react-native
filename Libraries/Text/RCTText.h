@@ -14,7 +14,6 @@
 @property (nonatomic, strong) NSLayoutManager *layoutManager;
 @property (nonatomic, strong) NSTextContainer *textContainer;
 @property (nonatomic, copy) NSAttributedString *attributedText;
-
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 
 @end
