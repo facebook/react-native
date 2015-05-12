@@ -659,11 +659,17 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Hides scenes that we are not currently on or transitioning from
+   * Hides all scenes that we are not currently on, gesturing to, or transitioning from
    */
   _hideScenes: function() {
+    var gesturingToIndex = null;
+    if (this.state.activeGesture) {
+      gesturingToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
+    }
     for (var i = 0; i < this.state.routeStack.length; i++) {
-      if (i === this.state.presentedIndex || i === this.state.transitionFromIndex) {
+      if (i === this.state.presentedIndex ||
+          i === this.state.transitionFromIndex ||
+          i === gesturingToIndex) {
         continue;
       }
       this._disableScene(i);
