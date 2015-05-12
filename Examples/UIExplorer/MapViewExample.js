@@ -168,7 +168,7 @@ var MapViewExample = React.createClass({
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}
-          region={this.state.mapRegionInput}
+          region={this.state.mapRegionInput || undefined}
         />
       </View>
     );

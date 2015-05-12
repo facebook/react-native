@@ -23,16 +23,7 @@ var UIExplorerPage = require('./UIExplorerPage');
 
 var invariant = require('invariant');
 
-class Example extends React.Component {
-  title: string;
-  description: string;
-}
-
-type ExampleModule = {
-  title: string;
-  description: string;
-  examples: Array<Example>;
-};
+import type { Example, ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
   : ReactClass<any, any, any> {
@@ -44,7 +35,7 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
       description: exampleModule.description,
     },
 
-    getBlock: function(example, i) {
+    getBlock: function(example: Example, i) {
       // Hack warning: This is a hack because the www UI explorer requires
       // renderComponent to be called.
       var originalRender = React.render;
