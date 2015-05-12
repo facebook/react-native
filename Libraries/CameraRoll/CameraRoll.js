@@ -95,10 +95,12 @@ class CameraRoll {
   /**
    * Saves the image with tag `tag` to the camera roll.
    *
-   * @param {string} tag - Can be any of the three kinds of tags we accept:
+   * @param {string} tag - Can be any of the five kinds of tags we accept:
    *                       1. URL
    *                       2. assets-library tag
    *                       3. tag returned from storing an image in memory
+   *                       4. data URI
+   *                       5. absolute file path
    */
   static saveImageWithTag(tag, successCallback, errorCallback) {
     invariant(
