@@ -1108,9 +1108,9 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
                                            withDetails:[error localizedFailureReason]];
         }
 
-        NSDictionary *userInfo = @{@"error": error};
+        NSDictionary *userInfo = @{@"bridge": self, @"error": error};
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
-                                                            object:self
+                                                            object:_parentBridge
                                                           userInfo:userInfo];
 
       } else {
