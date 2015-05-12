@@ -1,5 +1,4 @@
 /**
- * @generated SignedSource<<24fa633b4dd81b7fb40c2b2b0b7c97d0>>
  *
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * !! This file is a check-in from github!                       !!
@@ -514,6 +513,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth) {
       if (isFlexWrap(node) &&
           !isUndefined(node->layout.dimensions[dim[mainAxis]]) &&
           mainContentDim + nextContentDim > definedMainDim) {
+        nonFlexibleChildrenCount--;
         nextLine = i + 1;
         break;
       }
