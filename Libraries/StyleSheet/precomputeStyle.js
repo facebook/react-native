@@ -12,6 +12,7 @@
 'use strict';
 
 var MatrixMath = require('MatrixMath');
+var Platform = require('Platform');
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var invariant = require('invariant');
 
@@ -36,8 +37,9 @@ function precomputeStyle(style: ?Object): ?Object {
  * Generate a transform matrix based on the provided transforms, and use that
  * within the style object instead.
  *
- * This allows us to provide an API that is similar to CSS and to have a
- * universal, singular interface to native code.
+ * This allows us to provide an API that is similar to CSS, where transforms may
+ * be applied in an arbitrary order, and yet have a universal, singular
+ * interface to native code.
  */
 function _precomputeTransforms(style: Object): Object {
   var {transform} = style;
@@ -80,6 +82,17 @@ function _precomputeTransforms(style: Object): Object {
     }
   });
 
+  // Android does not support the direct application of a transform matrix to
+  // a view, so we need to decompose the result matrix into transforms that can
+  // get applied in the specific order of (1) translate (2) scale (3) rotate.
+  // Once we can directly apply a matrix, we can remove this decomposition.
+  if (Platform.OS === 'android') {
+    return {
+      ...style,
+      transformMatrix: result,
+      decomposedMatrix: MatrixMath.decomposeMatrix(result),
+    };
+  }
   return {
     ...style,
     transformMatrix: result,
