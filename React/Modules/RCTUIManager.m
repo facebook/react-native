@@ -281,7 +281,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
   dispatch_async(dispatch_get_main_queue(), ^{
     for (NSNumber *rootViewTag in _rootViewTags) {
-      ((UIView *)_viewRegistry[rootViewTag]).userInteractionEnabled = NO;
+      [_viewRegistry[rootViewTag] invalidate];
     }
 
     _rootViewTags = nil;
