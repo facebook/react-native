@@ -101,6 +101,18 @@ var FadeToTheLeft = {
   },
 };
 
+var FadeToTheRight = {
+  ...FadeToTheLeft,
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: Math.round(SCREEN_WIDTH * 0.3), y: 0, z: 0},
+  },
+  translateX: {
+    from: 0,
+    to: Math.round(SCREEN_WIDTH * 0.3),
+  }
+};
+
 var FadeIn = {
   opacity: {
     from: 0,
@@ -187,6 +199,27 @@ var FromTheRight = {
   },
 };
 
+var FromTheLeft = {
+  ...FromTheRight,
+  transformTranslate: {
+    from: {x: -SCREEN_WIDTH, y: 0, z: 0},
+    to: {x: 0, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  translateX: {
+    from: -SCREEN_WIDTH,
+    to: 0,
+    min: 0, 
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+};
 
 var ToTheBack = {
   // Rotate *requires* you to break out each individual component of
@@ -373,6 +406,13 @@ var NavigatorSceneConfigs = {
   FloatFromRight: {
     ...BaseConfig,
     // We will want to customize this soon
+  },
+  FloatFromLeft: {
+    ...BaseConfig,
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheLeft),
+      out: buildStyleInterpolator(FadeToTheRight),
+    },
   },
   FloatFromBottom: {
     ...BaseConfig,
