@@ -16,6 +16,7 @@ var RCTPOPAnimationManager = NativeModules.POPAnimationManager;
 var RCTUIManager = NativeModules.UIManager;
 var TextInputState = require('TextInputState');
 
+var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var mergeFast = require('mergeFast');
@@ -51,16 +52,16 @@ var animationIDInvariant = function(
 var NativeMethodsMixin = {
   addAnimation: function(anim: number, callback?: (finished: bool) => void) {
     animationIDInvariant('addAnimation', anim);
-    RCTPOPAnimationManager.addAnimation(this.getNodeHandle(), anim, callback);
+    RCTPOPAnimationManager.addAnimation(findNodeHandle(this), anim, callback);
   },
 
   removeAnimation: function(anim: number) {
     animationIDInvariant('removeAnimation', anim);
-    RCTPOPAnimationManager.removeAnimation(this.getNodeHandle(), anim);
+    RCTPOPAnimationManager.removeAnimation(findNodeHandle(this), anim);
   },
 
   measure: function(callback: MeasureOnSuccessCallback) {
-    RCTUIManager.measure(this.getNodeHandle(), callback);
+    RCTUIManager.measure(findNodeHandle(this), callback);
   },
 
   measureLayout: function(
@@ -69,7 +70,7 @@ var NativeMethodsMixin = {
     onFail: () => void /* currently unused */
   ) {
     RCTUIManager.measureLayout(
-      this.getNodeHandle(),
+      findNodeHandle(this),
       relativeToNativeNode,
       onFail,
       onSuccess
@@ -106,18 +107,18 @@ var NativeMethodsMixin = {
     }
 
     RCTUIManager.updateView(
-      this.getNodeHandle(),
+      findNodeHandle(this),
       this.viewConfig.uiViewClassName,
       props
     );
   },
 
   focus: function() {
-    TextInputState.focusTextInput(this.getNodeHandle());
+    TextInputState.focusTextInput(findNodeHandle(this));
   },
 
   blur: function() {
-    TextInputState.blurTextInput(this.getNodeHandle());
+    TextInputState.blurTextInput(findNodeHandle(this));
   }
 };
 

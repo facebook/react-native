@@ -305,7 +305,7 @@ var TextInput = React.createClass({
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
-      this.refs.input.getNativeNode();
+      React.findNodeHandle(this.refs.input);
   },
 
   getDefaultProps: function(): DefaultProps {
