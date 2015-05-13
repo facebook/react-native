@@ -176,7 +176,6 @@ var Text = React.createClass({
     for (var key in this.props) {
       props[key] = this.props[key];
     }
-    props.ref = this.getNodeHandle();
     // Text is accessible by default
     if (props.accessible !== false) {
       props.accessible = true;
