@@ -169,7 +169,7 @@ Default <code>value</code> is true.</p></div></div></div></div><div><h3><a class
         <span class="token operator">/</span><span class="token operator">&gt;</span>
         &lt;MapRegionInput
           onChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onRegionInputChanged<span class="token punctuation">}</span>
-          region<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>mapRegionInput<span class="token punctuation">}</span>
+          region<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>mapRegionInput <span class="token operator">||</span> undefined<span class="token punctuation">}</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
