@@ -67,7 +67,9 @@ NSError *errorWithMessage(NSString *message)
             ALAssetRepresentation *representation = [asset defaultRepresentation];
             ALAssetOrientation orientation = [representation orientation];
             UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
-            callback(nil, image);
+            dispatch_async(dispatch_get_main_queue(), ^{
+              callback(nil, image);
+            });
           }
         });
       } else {
