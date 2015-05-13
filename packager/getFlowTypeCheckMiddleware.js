@@ -36,12 +36,12 @@ function getFlowTypeCheckMiddleware(options) {
     try {
       // Quote the path to the binary in case of spaces. Also need to escape
       // the single quotes with '\''. So 'Bob's path' becomes 'Bob'\''s path'
-      flowbin = "'"+require('flow-bin').replace(/'/g, "'\\''")+"'";
+      flowbin = "'" + require('flow-bin').replace(/'/g, "'\\''") + "'";
     } catch (ex) {
       flowbin = 'flow';
     }
 
-    exec('command -v '+flowbin+' >/dev/null 2>&1', function(error, stdout) {
+    exec('command -v ' + flowbin + ' >/dev/null 2>&1', function(error, stdout) {
       if (error) {
         if (!hasWarned.noFlow) {
           hasWarned.noFlow = true;
