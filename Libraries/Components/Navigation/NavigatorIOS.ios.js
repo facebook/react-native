@@ -67,7 +67,7 @@ var RCTNavigatorItem = createReactNativeComponentClass({
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
-      (this: any).getNodeHandle(),
+      React.findNodeHandle(this),
       logError,
       cb
     );

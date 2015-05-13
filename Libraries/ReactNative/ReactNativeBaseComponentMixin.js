@@ -15,15 +15,15 @@ var findNodeHandle = require('findNodeHandle');
 
 var ReactNativeComponentMixin = {
   /**
-   * This has no particular meaning in ReactNative. If this were in the DOM, this
-   * would return the DOM node. There should be nothing that invokes this
-   * method. Any current callers of this are mistaken - they should be invoking
-   * `getNodeHandle`.
+   * This method is deprecated; use `React.findNodeHandle` instead.
    */
   getNativeNode: function() {
     return findNodeHandle(this);
   },
 
+  /**
+   * This method is deprecated; use `React.findNodeHandle` instead.
+   */
   getNodeHandle: function() {
     return findNodeHandle(this);
   }
