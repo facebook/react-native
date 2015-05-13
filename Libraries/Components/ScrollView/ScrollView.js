@@ -207,19 +207,19 @@ var ScrollView = React.createClass({
   },
 
   getInnerViewNode: function(): any {
-    return this.refs[INNERVIEW].getNodeHandle();
+    return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
   scrollTo: function(destY?: number, destX?: number) {
     if (Platform.OS === 'android') {
       RCTUIManager.dispatchViewManagerCommand(
-        this.getNodeHandle(),
+        React.findNodeHandle(this),
         RCTUIManager.RCTScrollView.Commands.scrollTo,
         [destX || 0, destY || 0]
       );
     } else {
       RCTUIManager.scrollTo(
-        this.getNodeHandle(),
+        React.findNodeHandle(this),
         destX || 0,
         destY || 0
       );
@@ -228,7 +228,7 @@ var ScrollView = React.createClass({
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
     RCTUIManager.scrollWithoutAnimationTo(
-      this.getNodeHandle(),
+      React.findNodeHandle(this),
       destX || 0,
       destY || 0
     );

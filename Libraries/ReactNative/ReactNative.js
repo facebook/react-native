@@ -24,6 +24,7 @@ var ReactNativeMount = require('ReactNativeMount');
 var ReactPropTypes = require('ReactPropTypes');
 
 var deprecated = require('deprecated');
+var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
 var onlyChild = require('onlyChild');
 
@@ -90,6 +91,7 @@ var ReactNative = {
   createFactory: createFactory,
   cloneElement: cloneElement,
   _augmentElement: augmentElement,
+  findNodeHandle: findNodeHandle,
   render: render,
   unmountComponentAtNode: ReactNativeMount.unmountComponentAtNode,
 
