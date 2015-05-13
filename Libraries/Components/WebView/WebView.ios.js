@@ -14,7 +14,7 @@
 var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
@@ -189,7 +189,7 @@ var WebView = React.createClass({
   },
 
   getWebWiewHandle: function(): any {
-    return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
+    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
   onLoadingStart: function(event: Event) {

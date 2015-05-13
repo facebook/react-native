@@ -86,7 +86,7 @@ RCT_EXPORT_MODULE()
                              object:nil];
 
     [notificationCenter addObserver:self
-                           selector:@selector(jsLoaded)
+                           selector:@selector(jsLoaded:)
                                name:RCTJavaScriptDidLoadNotification
                              object:nil];
 
@@ -141,8 +141,12 @@ RCT_EXPORT_MODULE()
   self.executorClass = NSClassFromString(_settings[@"executorClass"]);
 }
 
-- (void)jsLoaded
+- (void)jsLoaded:(NSNotification *)notification
 {
+  if (notification.userInfo[@"bridge"] != _bridge) {
+    return;
+  }
+
   _jsLoaded = YES;
 
   // Check if live reloading is available

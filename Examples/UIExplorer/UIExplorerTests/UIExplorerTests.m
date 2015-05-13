@@ -88,35 +88,19 @@
   XCTAssertTrue(foundElement, @"Cound't find element with '<View>' text in %d seconds", TIMEOUT_SECONDS);
 }
 
-- (void)testViewExampleSnapshot
-{
-  [_runner runTest:_cmd module:@"ViewExample"];
+#define RCT_SNAPSHOT_TEST(name, reRecord) \
+- (void)test##name##Snapshot              \
+{                                         \
+  _runner.recordMode |= reRecord;         \
+  [_runner runTest:_cmd module:@#name];   \
 }
 
-- (void)testLayoutExampleSnapshot
-{
-  [_runner runTest:_cmd module:@"LayoutExample"];
-}
-
-- (void)testTextExampleSnapshot
-{
-  [_runner runTest:_cmd module:@"TextExample"];
-}
-
-- (void)testSwitchExampleSnapshot
-{
-  [_runner runTest:_cmd module:@"SwitchExample"];
-}
-
-- (void)testSliderExampleSnapshot
-{
-  [_runner runTest:_cmd module:@"SliderExample"];
-}
-
-- (void)testTabBarExampleSnapshot
-{
-  [_runner runTest:_cmd module:@"TabBarExample"];
-}
+RCT_SNAPSHOT_TEST(ViewExample, NO)
+RCT_SNAPSHOT_TEST(LayoutExample, NO)
+RCT_SNAPSHOT_TEST(TextExample, NO)
+RCT_SNAPSHOT_TEST(SwitchExample, NO)
+RCT_SNAPSHOT_TEST(SliderExample, NO)
+RCT_SNAPSHOT_TEST(TabBarExample, NO)
 
 // Make sure this test runs last
 - (void)testZZZ_NotInRecordMode

@@ -6,21 +6,21 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSTextComponent
+ * @providesModule ReactNativeTextComponent
  */
 
 'use strict';
 
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var RCTUIManager = require('NativeModules').UIManager;
 
 var assign = require('Object.assign');
 
-var ReactIOSTextComponent = function(props) {
+var ReactNativeTextComponent = function(props) {
   // This constructor and its argument is currently used by mocks.
 };
 
-assign(ReactIOSTextComponent.prototype, {
+assign(ReactNativeTextComponent.prototype, {
 
   construct: function(text) {
     // This is really a ReactText (ReactNode), not a ReactElement
@@ -31,7 +31,7 @@ assign(ReactIOSTextComponent.prototype, {
 
   mountComponent: function(rootID, transaction, context) {
     this._rootNodeID = rootID;
-    var tag = ReactIOSTagHandles.allocateTag();
+    var tag = ReactNativeTagHandles.allocateTag();
     RCTUIManager.createView(tag, 'RCTRawText', {text: this._stringText});
     return {
       rootNodeID: rootID,
@@ -46,7 +46,7 @@ assign(ReactIOSTextComponent.prototype, {
       if (nextStringText !== this._stringText) {
         this._stringText = nextStringText;
         RCTUIManager.updateView(
-          ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(
+          ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(
             this._rootNodeID
           ),
           'RCTRawText',
@@ -64,4 +64,4 @@ assign(ReactIOSTextComponent.prototype, {
 
 });
 
-module.exports = ReactIOSTextComponent;
+module.exports = ReactNativeTextComponent;

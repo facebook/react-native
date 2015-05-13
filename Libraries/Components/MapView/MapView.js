@@ -15,10 +15,10 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
@@ -163,9 +163,9 @@ var MapView = React.createClass({
 });
 
 if (Platform.OS === 'android') {
-  var RCTMap = createReactIOSNativeComponentClass({
+  var RCTMap = createReactNativeComponentClass({
     validAttributes: merge(
-      ReactIOSViewAttributes.UIView, {
+      ReactNativeViewAttributes.UIView, {
         showsUserLocation: true,
         zoomEnabled: true,
         rotateEnabled: true,

@@ -10,10 +10,12 @@
 
 jest
   .dontMock('underscore')
-  .dontMock('path')
   .dontMock('absolute-path')
-  .dontMock('crypto')
   .dontMock('../Cache');
+
+jest
+  .mock('os')
+  .mock('fs');
 
 var Promise = require('bluebird');
 

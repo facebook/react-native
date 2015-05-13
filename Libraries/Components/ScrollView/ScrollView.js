@@ -17,7 +17,7 @@ var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
 var ScrollResponder = require('ScrollResponder');
 var StyleSheet = require('StyleSheet');
@@ -25,7 +25,7 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
@@ -207,19 +207,19 @@ var ScrollView = React.createClass({
   },
 
   getInnerViewNode: function(): any {
-    return this.refs[INNERVIEW].getNodeHandle();
+    return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
   scrollTo: function(destY?: number, destX?: number) {
     if (Platform.OS === 'android') {
       RCTUIManager.dispatchViewManagerCommand(
-        this.getNodeHandle(),
+        React.findNodeHandle(this),
         RCTUIManager.RCTScrollView.Commands.scrollTo,
         [destX || 0, destY || 0]
       );
     } else {
       RCTUIManager.scrollTo(
-        this.getNodeHandle(),
+        React.findNodeHandle(this),
         destX || 0,
         destY || 0
       );
@@ -228,7 +228,7 @@ var ScrollView = React.createClass({
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
     RCTUIManager.scrollWithoutAnimationTo(
-      this.getNodeHandle(),
+      React.findNodeHandle(this),
       destX || 0,
       destY || 0
     );
@@ -343,7 +343,7 @@ var styles = StyleSheet.create({
 });
 
 var validAttributes = {
-  ...ReactIOSViewAttributes.UIView,
+  ...ReactNativeViewAttributes.UIView,
   alwaysBounceHorizontal: true,
   alwaysBounceVertical: true,
   automaticallyAdjustContentInsets: true,
@@ -370,11 +370,11 @@ var validAttributes = {
 };
 
 if (Platform.OS === 'android') {
-  var AndroidScrollView = createReactIOSNativeComponentClass({
+  var AndroidScrollView = createReactNativeComponentClass({
     validAttributes: validAttributes,
     uiViewClassName: 'RCTScrollView',
   });
-  var AndroidHorizontalScrollView = createReactIOSNativeComponentClass({
+  var AndroidHorizontalScrollView = createReactNativeComponentClass({
     validAttributes: validAttributes,
     uiViewClassName: 'AndroidHorizontalScrollView',
   });

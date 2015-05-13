@@ -346,12 +346,12 @@ var ListView = React.createClass({
   _measureAndUpdateScrollProps: function() {
     RCTUIManager.measureLayout(
       this.refs[SCROLLVIEW_REF].getInnerViewNode(),
-      this.refs[SCROLLVIEW_REF].getNodeHandle(),
+      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
       logError,
       this._setScrollContentHeight
     );
     RCTUIManager.measureLayoutRelativeToParent(
-      this.refs[SCROLLVIEW_REF].getNodeHandle(),
+      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
       logError,
       this._setScrollVisibleHeight
     );

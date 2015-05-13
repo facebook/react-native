@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOS
+ * @providesModule ReactNative
  * @flow
  */
 "use strict";
@@ -19,15 +19,16 @@ var ReactCurrentOwner = require('ReactCurrentOwner');
 var ReactElement = require('ReactElement');
 var ReactElementValidator = require('ReactElementValidator');
 var ReactInstanceHandles = require('ReactInstanceHandles');
-var ReactIOSDefaultInjection = require('ReactIOSDefaultInjection');
-var ReactIOSMount = require('ReactIOSMount');
+var ReactNativeDefaultInjection = require('ReactNativeDefaultInjection');
+var ReactNativeMount = require('ReactNativeMount');
 var ReactPropTypes = require('ReactPropTypes');
 
 var deprecated = require('deprecated');
+var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
 var onlyChild = require('onlyChild');
 
-ReactIOSDefaultInjection.inject();
+ReactNativeDefaultInjection.inject();
 
 var createElement = ReactElement.createElement;
 var createFactory = ReactElement.createFactory;
@@ -72,11 +73,11 @@ var render = function(
   mountInto: number,
   callback?: ?(() => void)
 ): ?ReactComponent {
-  return ReactIOSMount.renderComponent(element, mountInto, callback);
+  return ReactNativeMount.renderComponent(element, mountInto, callback);
 };
 
-var ReactIOS = {
-  hasReactIOSInitialized: false,
+var ReactNative = {
+  hasReactNativeInitialized: false,
   Children: {
     map: ReactChildren.map,
     forEach: ReactChildren.forEach,
@@ -90,13 +91,14 @@ var ReactIOS = {
   createFactory: createFactory,
   cloneElement: cloneElement,
   _augmentElement: augmentElement,
+  findNodeHandle: findNodeHandle,
   render: render,
-  unmountComponentAtNode: ReactIOSMount.unmountComponentAtNode,
+  unmountComponentAtNode: ReactNativeMount.unmountComponentAtNode,
 
  // Hook for JSX spread, don't use this for anything else.
   __spread: Object.assign,
 
-  unmountComponentAtNodeAndRemoveContainer: ReactIOSMount.unmountComponentAtNodeAndRemoveContainer,
+  unmountComponentAtNodeAndRemoveContainer: ReactNativeMount.unmountComponentAtNodeAndRemoveContainer,
   isValidClass: ReactElement.isValidFactory,
   isValidElement: ReactElement.isValidElement,
 
@@ -126,10 +128,10 @@ if (
   __REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
     CurrentOwner: ReactCurrentOwner,
     InstanceHandles: ReactInstanceHandles,
-    Mount: ReactIOSMount,
+    Mount: ReactNativeMount,
     Reconciler: require('ReactReconciler'),
-    TextComponent: require('ReactIOSTextComponent'),
+    TextComponent: require('ReactNativeTextComponent'),
   });
 }
 
-module.exports = ReactIOS;
+module.exports = ReactNative;

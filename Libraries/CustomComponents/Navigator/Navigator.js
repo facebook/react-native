@@ -253,7 +253,7 @@ var Navigator = React.createClass({
     onDidFocus: PropTypes.func,
 
     /**
-     * Will be called with (ref, indexInStack) when the scene ref changes
+     * Will be called with (ref, indexInStack, route) when the scene ref changes
      */
     onItemRef: PropTypes.func,
 
@@ -582,7 +582,7 @@ var Navigator = React.createClass({
    * This happens at the end of a transition started by transitionTo, and when the spring catches up to a pending gesture
    */
   _completeTransition: function() {
-    if (this.spring.getCurrentValue() !== 1) {
+    if (this.spring.getCurrentValue() !== 1 && this.spring.getCurrentValue() !== 0) {
       // The spring has finished catching up to a gesture in progress. Remove the pending progress
       // and we will be in a normal activeGesture state
       if (this.state.pendingGestureProgress) {
@@ -659,11 +659,17 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Hides scenes that we are not currently on or transitioning from
+   * Hides all scenes that we are not currently on, gesturing to, or transitioning from
    */
   _hideScenes: function() {
+    var gesturingToIndex = null;
+    if (this.state.activeGesture) {
+      gesturingToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
+    }
     for (var i = 0; i < this.state.routeStack.length; i++) {
-      if (i === this.state.presentedIndex || i === this.state.transitionFromIndex) {
+      if (i === this.state.presentedIndex ||
+          i === this.state.transitionFromIndex ||
+          i === gesturingToIndex) {
         continue;
       }
       this._disableScene(i);
@@ -734,10 +740,14 @@ var Navigator = React.createClass({
     viewAtIndex.setNativeProps({renderToHardwareTextureAndroid: shouldRenderToHardwareTexture});
   },
 
+  _handleTouchStart: function() {
+    this._eligibleGestures = GESTURE_ACTIONS;
+  },
+
   _handleMoveShouldSetPanResponder: function(e, gestureState) {
     var currentRoute = this.state.routeStack[this.state.presentedIndex];
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
-    this._expectingGestureGrant = this._matchGestureAction(sceneConfig.gestures, gestureState);
+    this._expectingGestureGrant = this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
     return !! this._expectingGestureGrant;
   },
 
@@ -855,7 +865,7 @@ var Navigator = React.createClass({
       var gesture = sceneConfig.gestures[this.state.activeGesture];
       return this._moveAttachedGesture(gesture, gestureState);
     }
-    var matchedGesture = this._matchGestureAction(sceneConfig.gestures, gestureState);
+    var matchedGesture = this._matchGestureAction(GESTURE_ACTIONS, sceneConfig.gestures, gestureState);
     if (matchedGesture) {
       this._attachGesture(matchedGesture);
     }
@@ -870,8 +880,13 @@ var Navigator = React.createClass({
     var nextProgress = (distance - gestureDetectMovement) /
       (gesture.fullDistance - gestureDetectMovement);
     if (nextProgress < 0 && gesture.isDetachable) {
+      var gesturingToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
+      this._transitionBetween(this.state.presentedIndex, gesturingToIndex, 0);
       this._detachGesture();
-      this.spring.setCurrentValue(0);
+      if (this.state.pendingGestureProgress != null) {
+        this.spring.setCurrentValue(0);
+      }
+      return;
     }
     if (this._doesGestureOverswipe(this.state.activeGesture)) {
       var frictionConstant = gesture.overswipe.frictionConstant;
@@ -889,12 +904,12 @@ var Navigator = React.createClass({
     }
   },
 
-  _matchGestureAction: function(gestures, gestureState) {
+  _matchGestureAction: function(eligibleGestures, gestures, gestureState) {
     if (!gestures) {
       return null;
     }
     var matchedGesture = null;
-    GESTURE_ACTIONS.some((gestureName) => {
+    eligibleGestures.some((gestureName, gestureIndex) => {
       var gesture = gestures[gestureName];
       if (!gesture) {
         return;
@@ -920,12 +935,19 @@ var Navigator = React.createClass({
       }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
         currentLoc < edgeHitWidth;
-      var moveTravelledFarEnough =
-        travelDist >= gesture.gestureDetectMovement &&
-        travelDist > oppositeAxisTravelDist * gesture.directionRatio;
-      if (moveStartedInRegion && moveTravelledFarEnough) {
+      if (!moveStartedInRegion) {
+        return false;
+      }
+      var moveTravelledFarEnough = travelDist >= gesture.gestureDetectMovement;
+      if (!moveTravelledFarEnough) {
+        return false;
+      }
+      var directionIsCorrect = Math.abs(travelDist) > Math.abs(oppositeAxisTravelDist) * gesture.directionRatio;
+      if (directionIsCorrect) {
         matchedGesture = gestureName;
         return true;
+      } else {
+        this._eligibleGestures = this._eligibleGestures.slice().splice(gestureIndex, 1);
       }
     });
     return matchedGesture;
@@ -1159,13 +1181,13 @@ var Navigator = React.createClass({
     return this.state.routeStack;
   },
 
-  _handleItemRef: function(itemId, ref) {
+  _handleItemRef: function(itemId, route, ref) {
     this._itemRefs[itemId] = ref;
     var itemIndex = this.state.idStack.indexOf(itemId);
     if (itemIndex === -1) {
       return;
     }
-    this.props.onItemRef && this.props.onItemRef(ref, itemIndex);
+    this.props.onItemRef && this.props.onItemRef(ref, itemIndex, route);
   },
 
   _cleanScenesPastIndex: function(index) {
@@ -1202,6 +1224,7 @@ var Navigator = React.createClass({
           <View
             style={styles.transitioner}
             {...this.panGesture.panHandlers}
+            onTouchStart={this._handleTouchStart}
             onResponderTerminationRequest={
               this._handleResponderTerminationRequest
             }>
@@ -1273,7 +1296,7 @@ var Navigator = React.createClass({
         }}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
         {React.cloneElement(child, {
-          ref: this._handleItemRef.bind(null, this.state.idStack[i]),
+          ref: this._handleItemRef.bind(null, this.state.idStack[i], route),
         })}
       </View>
     );

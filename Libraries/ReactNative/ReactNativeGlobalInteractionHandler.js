@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSGlobalInteractionHandler
+ * @providesModule ReactNativeGlobalInteractionHandler
  * @flow
  */
 'use strict';
@@ -17,7 +17,7 @@ var InteractionManager = require('InteractionManager');
 // released/terminated.
 var interactionHandle = null;
 
-var ReactIOSGlobalInteractionHandler = {
+var ReactNativeGlobalInteractionHandler = {
   onChange: function(numberActiveTouches: number) {
     if (numberActiveTouches === 0) {
       if (interactionHandle) {
@@ -30,4 +30,4 @@ var ReactIOSGlobalInteractionHandler = {
   }
 };
 
-module.exports = ReactIOSGlobalInteractionHandler;
+module.exports = ReactNativeGlobalInteractionHandler;

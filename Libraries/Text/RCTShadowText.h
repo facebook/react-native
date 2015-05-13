@@ -22,6 +22,7 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, copy) NSString *fontWeight;
 @property (nonatomic, copy) NSString *fontStyle;
 @property (nonatomic, assign) BOOL isHighlighted;
+@property (nonatomic, assign) CGFloat letterSpacing;
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSUInteger maximumNumberOfLines;
 @property (nonatomic, assign) CGSize shadowOffset;
@@ -30,6 +31,7 @@ extern NSString *const RCTReactTagAttributeName;
 // Not exposed to JS
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSLineBreakMode truncationMode;
+@property (nonatomic, assign) CGFloat effectiveLetterSpacing;
 
 @property (nonatomic, copy, readonly) NSAttributedString *attributedString;
 @property (nonatomic, strong, readonly) NSLayoutManager *layoutManager;

@@ -7,27 +7,85 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule resolveAssetSource
+ *
+ * Resolves an asset into a `source` for `Image`.
  */
 'use strict';
 
 var AssetRegistry = require('AssetRegistry');
 var PixelRatio = require('PixelRatio');
+var Platform = require('Platform');
 var SourceCode = require('NativeModules').SourceCode;
 
 var _serverURL;
 
-function getServerURL() {
+function getDevServerURL() {
+  if (!__DEV__) {
+    // In prod we want assets to be loaded from the archive
+    return null;
+  }
   if (_serverURL === undefined) {
     var scriptURL = SourceCode.scriptURL;
     var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
     if (match) {
+      // Bundle was loaded from network
       _serverURL = match[0];
     } else {
+      // Bundle was loaded from file
       _serverURL = null;
     }
   }
 
   return _serverURL;
+}
+
+/**
+ * Returns the path at which the asset can be found in the archive
+ */
+function getPathInArchive(asset) {
+  if (Platform.OS === 'android') {
+    var assetDir = getBasePath(asset);
+    // E.g. 'assets_awesomemodule_icon'
+    // The Android resource system picks the correct scale.
+    return (assetDir + '/' + asset.name)
+      .toLowerCase()
+      .replace(/\//g, '_')           // Encode folder structure in file name
+      .replace(/([^a-z0-9_])/g, ''); // Remove illegal chars
+  } else {
+    // E.g. 'assets/AwesomeModule/icon@2x.png'
+    return getScaledAssetPath(asset);
+  }
+}
+
+/**
+ * Returns an absolute URL which can be used to fetch the asset
+ * from the devserver
+ */
+function getPathOnDevserver(devServerUrl, asset) {
+  return devServerUrl + getScaledAssetPath(asset) + '?hash=' + asset.hash;
+}
+
+/**
+ * Returns a path like 'assets/AwesomeModule'
+ */
+function getBasePath(asset) {
+  // TODO(frantic): currently httpServerLocation is used both as
+  // path in http URL and path within IPA. Should we have zipArchiveLocation?
+  var path = asset.httpServerLocation;
+  if (path[0] === '/') {
+    path = path.substr(1);
+  }
+  return path;
+}
+
+/**
+ * Returns a path like 'assets/AwesomeModule/icon@2x.png'
+ */
+function getScaledAssetPath(asset) {
+  var scale = pickScale(asset.scales, PixelRatio.get());
+  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+  var assetDir = getBasePath(asset);
+  return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
 
 function pickScale(scales, deviceScale) {
@@ -58,31 +116,19 @@ function resolveAssetSource(source) {
 }
 
 function assetToImageSource(asset) {
-  // TODO(frantic): currently httpServerLocation is used both as
-  // path in http URL and path within IPA. Should we have zipArchiveLocation?
-  var path = asset.httpServerLocation;
-  if (path[0] === '/') {
-    path = path.substr(1);
-  }
-
-  var scale = pickScale(asset.scales, PixelRatio.get());
-  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-
-  var fileName = asset.name + scaleSuffix + '.' + asset.type;
-  var serverURL = getServerURL();
-  if (serverURL) {
+  var devServerURL = getDevServerURL();
+  if (devServerURL) {
     return {
       width: asset.width,
       height: asset.height,
-      uri: serverURL + path + '/' + fileName +
-        '?hash=' + asset.hash,
+      uri: getPathOnDevserver(devServerURL, asset),
       isStatic: false,
     };
   } else {
     return {
       width: asset.width,
       height: asset.height,
-      uri: path + '/' + fileName,
+      uri: getPathInArchive(asset),
       isStatic: true,
     };
   }

@@ -49,6 +49,15 @@
 - (void)updateClippedSubviews;
 
 /**
+ * Border radii.
+ */
+@property (nonatomic, assign) CGFloat borderRadius;
+@property (nonatomic, assign) CGFloat borderTopLeftRadius;
+@property (nonatomic, assign) CGFloat borderTopRightRadius;
+@property (nonatomic, assign) CGFloat borderBottomLeftRadius;
+@property (nonatomic, assign) CGFloat borderBottomRightRadius;
+
+/**
  * Border colors.
  */
 @property (nonatomic, assign) CGColorRef borderTopColor;

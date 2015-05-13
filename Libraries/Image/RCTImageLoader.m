@@ -16,6 +16,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
+#import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTLog.h"
 
@@ -32,11 +33,22 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
   return queue;
 }
 
-NSError *errorWithMessage(NSString *message)
+static NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
   NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
   return error;
+}
+
+static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSError *error, UIImage *image)
+{
+  if ([NSThread isMainThread]) {
+    callback(error, image);
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      callback(error, image);
+    });
+  }
 }
 
 @implementation RCTImageLoader
@@ -51,7 +63,11 @@ NSError *errorWithMessage(NSString *message)
   return assetsLibrary;
 }
 
-+ (void)loadImageWithTag:(NSString *)imageTag callback:(void (^)(NSError *error, UIImage *image))callback
+/**
+ * Can be called from any thread.
+ * Will always call callback on main thread.
+ */
++ (void)loadImageWithTag:(NSString *)imageTag callback:(void (^)(NSError *error, id image))callback
 {
   if ([imageTag hasPrefix:@"assets-library"]) {
     [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
@@ -67,18 +83,18 @@ NSError *errorWithMessage(NSString *message)
             ALAssetRepresentation *representation = [asset defaultRepresentation];
             ALAssetOrientation orientation = [representation orientation];
             UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
-            callback(nil, image);
+            RCTDispatchCallbackOnMainQueue(callback, nil, image);
           }
         });
       } else {
         NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@ with no error message.", imageTag];
-        NSError *error = errorWithMessage(errorText);
-        callback(error, nil);
+        NSError *error = RCTErrorWithMessage(errorText);
+        RCTDispatchCallbackOnMainQueue(callback, error, nil);
       }
     } failureBlock:^(NSError *loadError) {
       NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@.\niOS Error: %@", imageTag, loadError];
-      NSError *error = errorWithMessage(errorText);
-      callback(error, nil);
+      NSError *error = RCTErrorWithMessage(errorText);
+      RCTDispatchCallbackOnMainQueue(callback, error, nil);
     }];
   } else if ([imageTag hasPrefix:@"ph://"]) {
     // Using PhotoKit for iOS 8+
@@ -89,19 +105,19 @@ NSError *errorWithMessage(NSString *message)
     PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[phAssetID] options:nil];
     if (results.count == 0) {
       NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", phAssetID];
-      NSError *error = errorWithMessage(errorText);
-      callback(error, nil);
+      NSError *error = RCTErrorWithMessage(errorText);
+      RCTDispatchCallbackOnMainQueue(callback, error, nil);
       return;
     }
 
     PHAsset *asset = [results firstObject];
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
       if (result) {
-        callback(nil, result);
+        RCTDispatchCallbackOnMainQueue(callback, nil, result);
       } else {
         NSString *errorText = [NSString stringWithFormat:@"Failed to load PHAsset with local identifier %@ with no error message.", phAssetID];
-        NSError *error = errorWithMessage(errorText);
-        callback(error, nil);
+        NSError *error = RCTErrorWithMessage(errorText);
+        RCTDispatchCallbackOnMainQueue(callback, error, nil);
         return;
       }
     }];
@@ -109,20 +125,34 @@ NSError *errorWithMessage(NSString *message)
     NSURL *url = [NSURL URLWithString:imageTag];
     if (!url) {
       NSString *errorMessage = [NSString stringWithFormat:@"Invalid URL: %@", imageTag];
-      callback(errorWithMessage(errorMessage), nil);
+      RCTDispatchCallbackOnMainQueue(callback, RCTErrorWithMessage(errorMessage), nil);
       return;
     }
     [[RCTImageDownloader sharedInstance] downloadDataForURL:url block:^(NSData *data, NSError *error) {
       if (error) {
-        callback(error, nil);
+        RCTDispatchCallbackOnMainQueue(callback, error, nil);
       } else {
-        callback(nil, [UIImage imageWithData:data]);
+        RCTDispatchCallbackOnMainQueue(callback, nil, [UIImage imageWithData:data]);
       }
     }];
+  } else if ([[imageTag lowercaseString] hasSuffix:@".gif"]) {
+    id image = RCTGIFImageWithFileURL([RCTConvert NSURL:imageTag]);
+    if (image) {
+      RCTDispatchCallbackOnMainQueue(callback, nil, image);
+    } else {
+      NSString *errorMessage = [NSString stringWithFormat:@"Unable to load GIF image: %@", imageTag];
+      NSError *error = RCTErrorWithMessage(errorMessage);
+      RCTDispatchCallbackOnMainQueue(callback, error, nil);
+    }
   } else {
-    NSString *errorMessage = [NSString stringWithFormat:@"Unrecognized tag protocol: %@", imageTag];
-    NSError *error = errorWithMessage(errorMessage);
-    callback(error, nil);
+    UIImage *image = [RCTConvert UIImage:imageTag];
+    if (image) {
+      RCTDispatchCallbackOnMainQueue(callback, nil, image);
+    } else {
+      NSString *errorMessage = [NSString stringWithFormat:@"Unrecognized tag protocol: %@", imageTag];
+      NSError *error = RCTErrorWithMessage(errorMessage);
+      RCTDispatchCallbackOnMainQueue(callback, error, nil);
+    }
   }
 }
 

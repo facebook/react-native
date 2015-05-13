@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactIOSMount
+ * @providesModule ReactNativeMount
  * @flow
  */
 'use strict';
 
 var RCTUIManager = require('NativeModules').UIManager;
 
-var ReactIOSTagHandles = require('ReactIOSTagHandles');
+var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactPerf = require('ReactPerf');
 var ReactReconciler = require('ReactReconciler');
 var ReactUpdateQueue = require('ReactUpdateQueue');
@@ -45,7 +45,7 @@ function mountComponentIntoNode(
     componentInstance, rootID, transaction, emptyObject
   );
   componentInstance._isTopLevel = true;
-  ReactIOSMount._mountImageIntoNode(markup, container);
+  ReactNativeMount._mountImageIntoNode(markup, container);
 }
 
 /**
@@ -75,7 +75,7 @@ function batchedMountComponentIntoNode(
  * As soon as `ReactMount` is refactored to not rely on the DOM, we can share
  * code between the two. For now, we'll hard code the ID logic.
  */
-var ReactIOSMount = {
+var ReactNativeMount = {
   instanceCount: 0,
 
   _instancesByContainerID: {},
@@ -89,9 +89,9 @@ var ReactIOSMount = {
     containerTag: number,
     callback?: ?(() => void)
   ): ?ReactComponent {
-    var topRootNodeID = ReactIOSTagHandles.tagToRootNodeID[containerTag];
+    var topRootNodeID = ReactNativeTagHandles.tagToRootNodeID[containerTag];
     if (topRootNodeID) {
-      var prevComponent = ReactIOSMount._instancesByContainerID[topRootNodeID];
+      var prevComponent = ReactNativeMount._instancesByContainerID[topRootNodeID];
       if (prevComponent) {
         var prevElement = prevComponent._currentElement;
         if (shouldUpdateReactComponent(prevElement, nextElement)) {
@@ -101,28 +101,28 @@ var ReactIOSMount = {
           }
           return prevComponent;
         } else {
-          ReactIOSMount.unmountComponentAtNode(containerTag);
+          ReactNativeMount.unmountComponentAtNode(containerTag);
         }
       }
     }
 
-    if (!ReactIOSTagHandles.reactTagIsNativeTopRootID(containerTag)) {
+    if (!ReactNativeTagHandles.reactTagIsNativeTopRootID(containerTag)) {
       console.error('You cannot render into anything but a top root');
       return;
     }
 
-    var topRootNodeID = ReactIOSTagHandles.allocateRootNodeIDForTag(containerTag);
-    ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(
+    var topRootNodeID = ReactNativeTagHandles.allocateRootNodeIDForTag(containerTag);
+    ReactNativeTagHandles.associateRootNodeIDWithMountedNodeHandle(
       topRootNodeID,
       containerTag
     );
 
     var instance = instantiateReactComponent(nextElement);
-    ReactIOSMount._instancesByContainerID[topRootNodeID] = instance;
+    ReactNativeMount._instancesByContainerID[topRootNodeID] = instance;
 
     var childRootNodeID = instanceNumberToChildRootID(
       topRootNodeID,
-      ReactIOSMount.instanceCount++
+      ReactNativeMount.instanceCount++
     );
 
     // The initial render is synchronous but any updates that happen during
@@ -153,14 +153,14 @@ var ReactIOSMount = {
     function(mountImage, containerID) {
       // Since we now know that the `mountImage` has been mounted, we can
       // mark it as such.
-      ReactIOSTagHandles.associateRootNodeIDWithMountedNodeHandle(
+      ReactNativeTagHandles.associateRootNodeIDWithMountedNodeHandle(
         mountImage.rootNodeID,
         mountImage.tag
       );
       var addChildTags = [mountImage.tag];
       var addAtIndices = [0];
       RCTUIManager.manageChildren(
-        ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
+        ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
         null,         // moveFromIndices
         null,         // moveToIndices
         addChildTags,
@@ -181,7 +181,7 @@ var ReactIOSMount = {
   unmountComponentAtNodeAndRemoveContainer: function(
     containerTag: number
   ) {
-    ReactIOSMount.unmountComponentAtNode(containerTag);
+    ReactNativeMount.unmountComponentAtNode(containerTag);
     // call back into native to remove all of the subviews from this container
     RCTUIManager.removeRootView(containerTag);
   },
@@ -192,18 +192,18 @@ var ReactIOSMount = {
    * component at this time.
    */
   unmountComponentAtNode: function(containerTag: number): boolean {
-    if (!ReactIOSTagHandles.reactTagIsNativeTopRootID(containerTag)) {
+    if (!ReactNativeTagHandles.reactTagIsNativeTopRootID(containerTag)) {
       console.error('You cannot render into anything but a top root');
       return false;
     }
 
-    var containerID = ReactIOSTagHandles.tagToRootNodeID[containerTag];
-    var instance = ReactIOSMount._instancesByContainerID[containerID];
+    var containerID = ReactNativeTagHandles.tagToRootNodeID[containerTag];
+    var instance = ReactNativeMount._instancesByContainerID[containerID];
     if (!instance) {
       return false;
     }
-    ReactIOSMount.unmountComponentFromNode(instance, containerID);
-    delete ReactIOSMount._instancesByContainerID[containerID];
+    ReactNativeMount.unmountComponentFromNode(instance, containerID);
+    delete ReactNativeMount._instancesByContainerID[containerID];
     return true;
   },
 
@@ -214,7 +214,7 @@ var ReactIOSMount = {
    * @param {string} containerID ID of container we're removing from.
    * @final
    * @internal
-   * @see {ReactIOSMount.unmountComponentAtNode}
+   * @see {ReactNativeMount.unmountComponentAtNode}
    */
   unmountComponentFromNode: function(
     instance: ReactComponent,
@@ -223,7 +223,7 @@ var ReactIOSMount = {
     // Call back into native to remove all of the subviews from this container
     ReactReconciler.unmountComponent(instance);
     var containerTag =
-      ReactIOSTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID);
+      ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID);
     RCTUIManager.removeSubviewsFromContainerWithID(containerTag);
   },
 
@@ -232,10 +232,10 @@ var ReactIOSMount = {
   }
 };
 
-ReactIOSMount.renderComponent = ReactPerf.measure(
+ReactNativeMount.renderComponent = ReactPerf.measure(
   'ReactMount',
   '_renderNewRootComponent',
-  ReactIOSMount.renderComponent
+  ReactNativeMount.renderComponent
 );
 
-module.exports = ReactIOSMount;
+module.exports = ReactNativeMount;

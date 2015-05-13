@@ -1,9 +1,12 @@
 'use strict';
 
 jest
-  .dontMock('path')
   .dontMock('../../lib/getAssetDataFromName')
   .dontMock('../');
+
+jest
+  .mock('crypto')
+  .mock('fs');
 
 var Promise = require('bluebird');
 

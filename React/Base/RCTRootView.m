@@ -11,6 +11,7 @@
 
 #import <objc/runtime.h>
 
+#import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
 #import "RCTEventDispatcher.h"
@@ -53,6 +54,7 @@
   - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
 {
+  RCTAssertMainThread();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
@@ -96,7 +98,7 @@
 }
 
 RCT_IMPORT_METHOD(AppRegistry, runApplication)
-RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
+RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
 
 
 - (void)javaScriptDidLoad:(NSNotification *)notification
@@ -150,7 +152,7 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_contentView removeFromSuperview];
+  [_contentView invalidate];
 }
 
 @end
@@ -212,13 +214,12 @@ RCT_IMPORT_METHOD(ReactIOS, unmountComponentAtNodeAndRemoveContainer)
 
 - (void)invalidate
 {
-  self.userInteractionEnabled = NO;
-}
-
-- (void)dealloc
-{
-  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-                    args:@[self.reactTag]];
+  if (self.isValid) {
+    self.userInteractionEnabled = NO;
+    [self removeFromSuperview];
+    [_bridge enqueueJSCall:@"ReactNative.unmountComponentAtNodeAndRemoveContainer"
+                      args:@[self.reactTag]];
+  }
 }
 
 @end

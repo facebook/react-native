@@ -12,6 +12,7 @@
 'use strict';
 
 var RCTAnimationManager = require('NativeModules').AnimationExperimentalManager;
+var React = require('React');
 var AnimationUtils = require('AnimationUtils');
 
 type EasingFunction = (t: number) => number;
@@ -47,7 +48,7 @@ var AnimationExperimental = {
     },
     callback?: ?(finished: bool) => void
   ): number {
-    var nodeHandle = anim.node.getNodeHandle();
+    var nodeHandle = React.findNodeHandle(anim.node);
     var easingSample = AnimationUtils.evaluateEasingFunction(
       anim.duration,
       anim.easing

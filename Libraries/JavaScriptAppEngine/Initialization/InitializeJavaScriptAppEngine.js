@@ -66,9 +66,9 @@ function setupDocumentShim() {
   GLOBAL.MutationObserver = undefined;
 }
 
-function handleErrorWithRedBox(e) {
+function handleErrorWithRedBox(e, isFatal) {
   try {
-    require('ExceptionsManager').handleException(e);
+    require('ExceptionsManager').handleException(e, isFatal);
   } catch(ee) {
     console.log('Failed to print error: ', ee.message);
   }

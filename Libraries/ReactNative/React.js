@@ -12,4 +12,4 @@
 
 "use strict";
 
-module.exports = require('ReactIOS');
+module.exports = require('ReactNative');
