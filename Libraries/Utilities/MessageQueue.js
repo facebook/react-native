@@ -81,6 +81,14 @@ var REQUEST_PARAMSS = 2;
 var RESPONSE_CBIDS = 3;
 var RESPONSE_RETURN_VALUES = 4;
 
+var applyWithErrorReporter = function(fun: Function, context: ?any, args: ?any) {
+  try {
+    return fun.apply(context, args);
+  } catch (e) {
+    ErrorUtils.reportFatalError(e);
+  }
+};
+
 /**
  * Utility to catch errors and prevent having to bind, or execute a bound
  * function, while catching errors in a process and returning a resulting
@@ -97,10 +105,10 @@ var RESPONSE_RETURN_VALUES = 4;
  */
 var guardReturn = function(operation, operationArguments, getReturnValue, context) {
   if (operation) {
-    ErrorUtils.applyWithGuard(operation, context, operationArguments);
+    applyWithErrorReporter(operation, context, operationArguments);
   }
   if (getReturnValue) {
-    return ErrorUtils.applyWithGuard(getReturnValue, context, null);
+    return applyWithErrorReporter(getReturnValue, context, null);
   }
   return null;
 };

@@ -36,11 +36,23 @@ RCT_EXPORT_MODULE()
   return [self initWithDelegate:nil];
 }
 
-RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
+RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
+                  stack:(NSArray *)stack)
+{
+  // TODO(#7070533): report a soft error to the server
+  if (_delegate) {
+    [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
+    return;
+  }
+
+  [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
+}
+
+RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray *)stack)
 {
   if (_delegate) {
-    [_delegate unhandledJSExceptionWithMessage:message stack:stack];
+    [_delegate handleFatalJSExceptionWithMessage:message stack:stack];
     return;
   }
 
@@ -78,11 +90,17 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
                   stack:(NSArray *)stack)
 {
   if (_delegate) {
-    [_delegate unhandledJSExceptionWithMessage:message stack:stack];
+    [_delegate updateJSExceptionWithMessage:message stack:stack];
     return;
   }
 
   [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
 }
 
+// Deprecated.  Use reportFatalException directly instead.
+RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
+                  stack:(NSArray *)stack)
+{
+  [self reportFatalException:message stack:stack];
+}
 @end

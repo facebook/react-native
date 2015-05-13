@@ -22,14 +22,17 @@
       ErrorUtils._globalHandler = fun;
     },
     reportError: function(error) {
-      Error._globalHandler && ErrorUtils._globalHandler(error);
+      ErrorUtils._globalHandler && ErrorUtils._globalHandler(error);
+    },
+    reportFatalError: function(error) {
+      ErrorUtils._globalHandler && ErrorUtils._globalHandler(error, true);
     },
     applyWithGuard: function(fun, context, args) {
       try {
         ErrorUtils._inGuard++;
         return fun.apply(context, args);
       } catch (e) {
-        ErrorUtils._globalHandler && ErrorUtils._globalHandler(e);
+        ErrorUtils.reportError(e);
       } finally {
         ErrorUtils._inGuard--;
       }
