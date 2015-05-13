@@ -24,7 +24,8 @@ function verifyPropTypes(
   }
   var nativeProps = viewConfig.nativeProps;
   for (var prop in nativeProps) {
-    if (!component.propTypes[prop] &&
+    if (component.propTypes != undefined && 
+        !component.propTypes[prop] &&
         !View.propTypes[prop] &&
         !ReactIOSStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
