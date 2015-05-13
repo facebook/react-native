@@ -60,5 +60,4 @@ branches:
     - master
 
 xcode_sdk:
-  - iphonesimulator
   - iphonesimulator8.3
