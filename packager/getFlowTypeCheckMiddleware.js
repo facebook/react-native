@@ -34,7 +34,9 @@ function getFlowTypeCheckMiddleware(options) {
     // whatever is in the path
     var flowbin;
     try {
-      flowbin = require('flow-bin');
+      // Quote the path to the binary in case of spaces. Also need to escape
+      // the single quotes with '\''. So 'Bob's path' becomes 'Bob'\''s path'
+      flowbin = "'"+require('flow-bin').replace(/'/g, "'\\''")+"'";
     } catch (ex) {
       flowbin = 'flow';
     }
