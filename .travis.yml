@@ -58,6 +58,3 @@ env:
 branches:
   only:
     - master
-
-xcode_sdk:
-  - iphonesimulator8.3
