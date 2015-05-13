@@ -194,11 +194,28 @@ void RCTRegisterModuleProvider(void) {
 }
 
 /**
+ * This function registers the mach binary containing the `main()` function as a provider
+ * of ReactNative modules.  This guards against the case where the user statically links
+ * a library containing modules into their app, but doesn't define any modules in the
+ * app itself, or explicitly call RCTRegisterModuleProvider.
+ */
+void RCTRegisterMainAppModuleProvider(void) {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    const void *mainAddr = dlsym(RTLD_DEFAULT, "main");
+    if (mainAddr != NULL) {
+      RCTRegisterModuleProviderContainingAddress(mainAddr);
+    }
+  });
+}
+
+/**
  * This function enumerates the RCTHeaderStringExtractors for the registered
  * native module providers and extracts all strings from the given named section.
  * Returns the set of strings from all providers, with duplicates removed.
  */
 NSArray *RCTStringsFromSection(NSString *sectionName) {
+  RCTRegisterMainAppModuleProvider();
   NSMutableArray *allStrings = [NSMutableArray array];
   dispatch_sync(RCTHeaderStringExtratorQueue, ^{
     for (RCTHeaderStringExtractor *extractor in RCTHeaderStringExtractors) {
@@ -214,6 +231,7 @@ NSArray *RCTStringsFromSection(NSString *sectionName) {
  * array whose inner arrays are of a maximum size `stringsPerArray`
  */
 NSArray *RCTStringArraysFromSection(NSString *sectionName, NSUInteger stringsPerArray) {
+  RCTRegisterMainAppModuleProvider();
   NSMutableArray *results = [NSMutableArray array];
   dispatch_sync(RCTHeaderStringExtratorQueue, ^{
     for (RCTHeaderStringExtractor *extractor in RCTHeaderStringExtractors) {
