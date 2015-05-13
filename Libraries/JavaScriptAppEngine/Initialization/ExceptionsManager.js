@@ -25,12 +25,23 @@ type Exception = {
   message: string;
 }
 
-function reportException(e: Exception, stack?: any) {
+function reportException(e: Exception, isFatal: bool, stack?: any) {
   if (RCTExceptionsManager) {
     if (!stack) {
       stack = parseErrorStack(e);
     }
-    RCTExceptionsManager.reportUnhandledException(e.message, stack);
+    if (!RCTExceptionsManager.reportFatalException ||
+        !RCTExceptionsManager.reportSoftException) {
+      // Backwards compatibility - no differentiation
+      // TODO(#7049989): deprecate reportUnhandledException on Android
+      RCTExceptionsManager.reportUnhandledException(e.message, stack);
+    } else {
+      if (isFatal) {
+        RCTExceptionsManager.reportFatalException(e.message, stack);
+      } else {
+        RCTExceptionsManager.reportSoftException(e.message, stack);
+      }
+    }
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
@@ -44,7 +55,7 @@ function reportException(e: Exception, stack?: any) {
   }
 }
 
-function handleException(e: Exception) {
+function handleException(e: Exception, isFatal: boolean) {
   var stack = parseErrorStack(e);
   var msg =
     'Error: ' + e.message +
@@ -57,7 +68,7 @@ function handleException(e: Exception) {
   } else {
     console.error(msg);
   }
-  reportException(e, stack);
+  reportException(e, isFatal, stack);
 }
 
 /**
@@ -78,7 +89,7 @@ function installConsoleErrorReporter() {
     var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
     var error: any = new Error('console.error: ' + str);
     error.framesToPop = 1;
-    reportException(error);
+    reportException(error, /* isFatal */ false);
   };
   if (console.reportErrorsAsExceptions === undefined) {
     console.reportErrorsAsExceptions = true; // Individual apps can disable this
