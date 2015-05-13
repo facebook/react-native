@@ -15,8 +15,6 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-static void *RCTViewCornerRadiusKVOContext = &RCTViewCornerRadiusKVOContext;
-
 static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
 {
   for (UIView *subview in [view.subviews reverseObjectEnumerator]) {
@@ -123,28 +121,16 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderRightWidth = -1;
     _borderBottomWidth = -1;
     _borderLeftWidth = -1;
+    _borderTopLeftRadius = -1;
+    _borderTopRightRadius = -1;
+    _borderBottomLeftRadius = -1;
+    _borderBottomRightRadius = -1;
 
     _backgroundColor = [super backgroundColor];
     [super setBackgroundColor:[UIColor clearColor]];
-
-    [self.layer addObserver:self forKeyPath:@"cornerRadius" options:0 context:RCTViewCornerRadiusKVOContext];
   }
 
   return self;
-}
-
-- (void)dealloc
-{
-  [self.layer removeObserver:self forKeyPath:@"cornerRadius" context:RCTViewCornerRadiusKVOContext];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-  if (context == RCTViewCornerRadiusKVOContext) {
-    [self.layer setNeedsDisplay];
-  } else {
-    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-  }
 }
 
 - (NSString *)accessibilityLabel
@@ -437,8 +423,12 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (UIImage *)generateBorderImage:(out CGRect *)contentsCenter
 {
-  const CGFloat maxRadius = MIN(self.bounds.size.height, self.bounds.size.width) / 2.0;
-  const CGFloat radius = MAX(0, MIN(self.layer.cornerRadius, maxRadius));
+  const CGFloat maxRadius = MIN(self.bounds.size.height, self.bounds.size.width);
+  const CGFloat radius = MAX(0, _borderRadius);
+  const CGFloat topLeftRadius =     MIN(_borderTopLeftRadius     >= 0 ? _borderTopLeftRadius     : radius, maxRadius);
+  const CGFloat topRightRadius =    MIN(_borderTopRightRadius    >= 0 ? _borderTopRightRadius    : radius, maxRadius);
+  const CGFloat bottomLeftRadius =  MIN(_borderBottomLeftRadius  >= 0 ? _borderBottomLeftRadius  : radius, maxRadius);
+  const CGFloat bottomRightRadius = MIN(_borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius, maxRadius);
 
   const CGFloat borderWidth = MAX(0, _borderWidth);
   const CGFloat topWidth    = _borderTopWidth    >= 0 ? _borderTopWidth    : borderWidth;
@@ -446,20 +436,26 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   const CGFloat bottomWidth = _borderBottomWidth >= 0 ? _borderBottomWidth : borderWidth;
   const CGFloat leftWidth   = _borderLeftWidth   >= 0 ? _borderLeftWidth   : borderWidth;
 
-  const CGFloat topRadius    = MAX(0, radius - topWidth);
-  const CGFloat rightRadius  = MAX(0, radius - rightWidth);
-  const CGFloat bottomRadius = MAX(0, radius - bottomWidth);
-  const CGFloat leftRadius   = MAX(0, radius - leftWidth);
+  const CGFloat innerTopLeftRadiusX = MAX(0, topLeftRadius - leftWidth);
+  const CGFloat innerTopLeftRadiusY = MAX(0, topLeftRadius - topWidth);
 
-  const UIEdgeInsets edgeInsets = UIEdgeInsetsMake(topWidth + topRadius, leftWidth + leftRadius, bottomWidth + bottomRadius, rightWidth + rightRadius);
+  const CGFloat innerTopRightRadiusX = MAX(0, topRightRadius - rightWidth);
+  const CGFloat innerTopRightRadiusY = MAX(0, topRightRadius - topWidth);
+
+  const CGFloat innerBottomLeftRadiusX = MAX(0, bottomLeftRadius - leftWidth);
+  const CGFloat innerBottomLeftRadiusY = MAX(0, bottomLeftRadius - bottomWidth);
+
+  const CGFloat innerBottomRightRadiusX = MAX(0, bottomRightRadius - rightWidth);
+  const CGFloat innerBottomRightRadiusY = MAX(0, bottomRightRadius - bottomWidth);
+
+  const UIEdgeInsets edgeInsets = UIEdgeInsetsMake(topWidth + MAX(innerTopLeftRadiusY, innerTopRightRadiusY), leftWidth + MAX(innerTopLeftRadiusX, innerBottomLeftRadiusX), bottomWidth + MAX(innerBottomLeftRadiusY, innerBottomRightRadiusY), rightWidth + + MAX(innerBottomRightRadiusX, innerTopRightRadiusX));
   const CGSize size = CGSizeMake(edgeInsets.left + 1 + edgeInsets.right, edgeInsets.top + 1 + edgeInsets.bottom);
 
-  UIScreen *screen = self.window.screen ?: [UIScreen mainScreen];
-  UIGraphicsBeginImageContextWithOptions(size, NO, screen.scale * 2);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
 
   CGContextRef ctx = UIGraphicsGetCurrentContext();
   const CGRect rect = {CGPointZero, size};
-  CGPathRef path = CGPathCreateWithRoundedRect(rect, radius, radius, NULL);
+  CGPathRef path = RCTPathCreateWithRoundedRect(rect, topLeftRadius, topLeftRadius, topRightRadius, topRightRadius, bottomLeftRadius, bottomLeftRadius, bottomRightRadius, bottomRightRadius, NULL);
 
   if (_backgroundColor) {
     CGContextSaveGState(ctx);
@@ -474,10 +470,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   CGContextAddPath(ctx, path);
   CGPathRelease(path);
 
-  if (radius > 0 && topWidth > 0 && rightWidth > 0 && bottomWidth > 0 && leftWidth > 0) {
+  BOOL hasRadius = topLeftRadius > 0 || topRightRadius > 0 || bottomLeftRadius > 0 || bottomRightRadius > 0;
+  if (hasRadius && topWidth > 0 && rightWidth > 0 && bottomWidth > 0 && leftWidth > 0) {
     const UIEdgeInsets insetEdgeInsets = UIEdgeInsetsMake(topWidth, leftWidth, bottomWidth, rightWidth);
     const CGRect insetRect = UIEdgeInsetsInsetRect(rect, insetEdgeInsets);
-    CGPathRef insetPath = RCTPathCreateWithRoundedRect(insetRect, leftRadius, topRadius, rightRadius, topRadius, leftRadius, bottomRadius, rightRadius, bottomRadius, NULL);
+    CGPathRef insetPath = RCTPathCreateWithRoundedRect(insetRect, innerTopLeftRadiusX, innerTopLeftRadiusY, innerTopRightRadiusX, innerTopRightRadiusY, innerBottomLeftRadiusX, innerBottomLeftRadiusY, innerBottomRightRadiusX, innerBottomRightRadiusY, NULL);
     CGContextAddPath(ctx, insetPath);
     CGPathRelease(insetPath);
   }
@@ -486,12 +483,12 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
   BOOL hasEqualColor = !_borderTopColor && !_borderRightColor && !_borderBottomColor && !_borderLeftColor;
   BOOL hasEqualBorder = _borderWidth >= 0 && _borderTopWidth < 0 && _borderRightWidth < 0 && _borderBottomWidth < 0 && _borderLeftWidth < 0;
-  if (radius <= 0 && hasEqualBorder && hasEqualColor) {
+  if (!hasRadius && hasEqualBorder && hasEqualColor) {
     CGContextSetStrokeColorWithColor(ctx, _borderColor);
     CGContextSetLineWidth(ctx, 2 * _borderWidth);
     CGContextClipToRect(ctx, rect);
     CGContextStrokeRect(ctx, rect);
-  } else if (radius <= 0 && hasEqualColor) {
+  } else if (!hasRadius && hasEqualColor) {
     CGContextSetFillColorWithColor(ctx, _borderColor);
     CGContextAddRect(ctx, rect);
     const CGRect insetRect = UIEdgeInsetsInsetRect(rect, edgeInsets);
@@ -500,9 +497,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   } else {
     BOOL didSet = NO;
     CGPoint topLeft;
-    if (topRadius > 0 && leftRadius > 0) {
+    if (innerTopLeftRadiusX > 0 && innerTopLeftRadiusY > 0) {
       CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake(leftWidth, topWidth, 2 * leftRadius, 2 * topRadius), CGPointMake(0, 0), CGPointMake(leftWidth, topWidth), points);
+      RCTEllipseGetIntersectionsWithLine(CGRectMake(leftWidth, topWidth, 2 * innerTopLeftRadiusX, 2 * innerTopLeftRadiusY), CGPointMake(0, 0), CGPointMake(leftWidth, topWidth), points);
       if (!isnan(points[1].x) && !isnan(points[1].y)) {
         topLeft = points[1];
         didSet = YES;
@@ -515,9 +512,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
     didSet = NO;
     CGPoint bottomLeft;
-    if (bottomRadius > 0 && leftRadius > 0) {
+    if (innerBottomLeftRadiusX > 0 && innerBottomLeftRadiusY > 0) {
       CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake(leftWidth, (size.height - bottomWidth) - 2 * bottomRadius, 2 * leftRadius, 2 * bottomRadius), CGPointMake(0, size.height), CGPointMake(leftWidth, size.height - bottomWidth), points);
+      RCTEllipseGetIntersectionsWithLine(CGRectMake(leftWidth, (size.height - bottomWidth) - 2 * innerBottomLeftRadiusY, 2 * innerBottomLeftRadiusX, 2 * innerBottomLeftRadiusY), CGPointMake(0, size.height), CGPointMake(leftWidth, size.height - bottomWidth), points);
       if (!isnan(points[1].x) && !isnan(points[1].y)) {
         bottomLeft = points[1];
         didSet = YES;
@@ -530,9 +527,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
     didSet = NO;
     CGPoint topRight;
-    if (topRadius > 0 && rightRadius > 0) {
+    if (innerTopRightRadiusX > 0 && innerTopRightRadiusY > 0) {
       CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake((size.width - rightWidth) - 2 * rightRadius, topWidth, 2 * rightRadius, 2 * topRadius), CGPointMake(size.width, 0), CGPointMake(size.width - rightWidth, topWidth), points);
+      RCTEllipseGetIntersectionsWithLine(CGRectMake((size.width - rightWidth) - 2 * innerTopRightRadiusX, topWidth, 2 * innerTopRightRadiusX, 2 * innerTopRightRadiusY), CGPointMake(size.width, 0), CGPointMake(size.width - rightWidth, topWidth), points);
       if (!isnan(points[0].x) && !isnan(points[0].y)) {
         topRight = points[0];
         didSet = YES;
@@ -545,9 +542,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
     didSet = NO;
     CGPoint bottomRight;
-    if (bottomRadius > 0 && rightRadius > 0) {
+    if (innerBottomRightRadiusX > 0 && innerBottomRightRadiusY > 0) {
       CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake((size.width - rightWidth) - 2 * rightRadius, (size.height - bottomWidth) - 2 * bottomRadius, 2 * rightRadius, 2 * bottomRadius), CGPointMake(size.width, size.height), CGPointMake(size.width - rightWidth, size.height - bottomWidth), points);
+      RCTEllipseGetIntersectionsWithLine(CGRectMake((size.width - rightWidth) - 2 * innerBottomRightRadiusX, (size.height - bottomWidth) - 2 * innerBottomRightRadiusY, 2 * innerBottomRightRadiusX, 2 * innerBottomRightRadiusY), CGPointMake(size.width, size.height), CGPointMake(size.width - rightWidth, size.height - bottomWidth), points);
       if (!isnan(points[0].x) && !isnan(points[0].y)) {
         bottomRight = points[0];
         didSet = YES;
@@ -694,6 +691,22 @@ setBorderWidth(Top)
 setBorderWidth(Right)
 setBorderWidth(Bottom)
 setBorderWidth(Left)
+
+#define setBorderRadius(side) \
+  - (void)setBorder##side##Radius:(CGFloat)border##side##Radius \
+  {                                                             \
+    if (_border##side##Radius == border##side##Radius) {        \
+      return;                                                   \
+    }                                                           \
+    _border##side##Radius = border##side##Radius;               \
+    [self.layer setNeedsDisplay];                               \
+  }
+
+setBorderRadius()
+setBorderRadius(TopLeft)
+setBorderRadius(TopRight)
+setBorderRadius(BottomLeft)
+setBorderRadius(BottomRight)
 
 @end
 
