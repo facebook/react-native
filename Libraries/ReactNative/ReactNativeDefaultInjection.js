@@ -27,7 +27,6 @@ var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
 var ReactEmptyComponent = require('ReactEmptyComponent');
 var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactNativeComponentEnvironment = require('ReactNativeComponentEnvironment');
-var ReactNativeComponentMixin = require('ReactNativeComponentMixin');
 var ReactNativeGlobalInteractionHandler = require('ReactNativeGlobalInteractionHandler');
 var ReactNativeGlobalResponderHandler = require('ReactNativeGlobalResponderHandler');
 var ReactNativeMount = require('ReactNativeMount');
@@ -89,8 +88,6 @@ function inject() {
   ReactEmptyComponent.injection.injectEmptyComponent(RCTView);
 
   EventPluginUtils.injection.injectMount(ReactNativeMount);
-
-  ReactClass.injection.injectMixin(ReactNativeComponentMixin);
 
   ReactNativeComponent.injection.injectTextComponentClass(
     ReactNativeTextComponent

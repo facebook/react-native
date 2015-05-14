@@ -80,10 +80,10 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/PushNotificationIOS/*.js"
   end
 
-  s.subspec 'RCTWebSocketDebugger' do |ss|
+  s.subspec 'RCTSettings' do |ss|
     ss.dependency         'React/Core'
-    ss.libraries        = 'icucore'
-    ss.source_files     = "Libraries/RCTWebSocketDebugger/*.{h,m}"
+    ss.source_files     = "Libraries/Settings/*.{h,m}"
+    ss.preserve_paths   = "Libraries/Settings/*.js"
   end
 
   s.subspec 'RCTText' do |ss|
@@ -96,5 +96,10 @@ Pod::Spec.new do |s|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Vibration/*.{h,m}"
     ss.preserve_paths   = "Libraries/Vibration/*.js"
+  end
+
+  s.subspec 'RCTWebSocketDebugger' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/RCTWebSocketDebugger/*.{h,m}"
   end
 end

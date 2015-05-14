@@ -60,6 +60,7 @@ function Transformer(options) {
       resetCache: options.resetCache,
       cacheVersion: options.cacheVersion,
       projectRoots: options.projectRoots,
+      transformModulePath: options.transformModulePath,
     });
 
   if (options.transformModulePath != null) {

@@ -12,7 +12,6 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var ReactNativeComponentMixin = require('ReactNativeComponentMixin');
 var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
@@ -275,8 +274,7 @@ Object.assign(
   ReactNativeBaseComponent.prototype,
   ReactMultiChild.Mixin,
   ReactNativeBaseComponent.Mixin,
-  NativeMethodsMixin,
-  ReactNativeComponentMixin
+  NativeMethodsMixin
 );
 
 module.exports = ReactNativeBaseComponent;
