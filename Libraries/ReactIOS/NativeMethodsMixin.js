@@ -20,6 +20,7 @@ var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var mergeFast = require('mergeFast');
+var mountSafeCallback = require('mountSafeCallback');
 var precomputeStyle = require('precomputeStyle');
 
 type MeasureOnSuccessCallback = (
@@ -52,7 +53,11 @@ var animationIDInvariant = function(
 var NativeMethodsMixin = {
   addAnimation: function(anim: number, callback?: (finished: bool) => void) {
     animationIDInvariant('addAnimation', anim);
-    RCTPOPAnimationManager.addAnimation(findNodeHandle(this), anim, callback);
+    RCTPOPAnimationManager.addAnimation(
+      findNodeHandle(this),
+      anim,
+      mountSafeCallback(this, callback)
+    );
   },
 
   removeAnimation: function(anim: number) {
@@ -61,7 +66,10 @@ var NativeMethodsMixin = {
   },
 
   measure: function(callback: MeasureOnSuccessCallback) {
-    RCTUIManager.measure(findNodeHandle(this), callback);
+    RCTUIManager.measure(
+      findNodeHandle(this),
+      mountSafeCallback(this, callback)
+    );
   },
 
   measureLayout: function(
@@ -72,8 +80,8 @@ var NativeMethodsMixin = {
     RCTUIManager.measureLayout(
       findNodeHandle(this),
       relativeToNativeNode,
-      onFail,
-      onSuccess
+      mountSafeCallback(this, onFail),
+      mountSafeCallback(this, onSuccess)
     );
   },
 
