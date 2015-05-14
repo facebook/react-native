@@ -5,7 +5,7 @@ var fs = require('fs');
 
 function init(projectDir, appName) {
   console.log('Setting up new React Native app in ' + projectDir);
-  var source = path.resolve(__dirname, 'Examples/SampleApp');
+  var source = path.resolve(__dirname, '..', 'Examples/SampleApp');
 
   walk(source).forEach(function(f) {
     f = f.replace(source + '/', ''); // Strip off absolute path

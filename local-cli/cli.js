@@ -7,7 +7,7 @@
 var spawn = require('child_process').spawn;
 var path = require('path');
 
-var init = require('../init.js');
+var init = require('./init.js');
 var install = require('./install.js');
 var bundle = require('./bundle.js');
 
