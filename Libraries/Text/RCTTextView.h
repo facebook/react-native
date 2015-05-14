@@ -16,13 +16,16 @@
 
 @interface RCTTextView : RCTView <UITextViewDelegate>
 
+// exposed to JS
 @property (nonatomic, assign) BOOL autoCorrect;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
-@property (nonatomic, strong) UIColor *placeholderTextColor;
-@property (nonatomic, assign) UIFont *font;
+
+// Not exposed to JS
+@property (nonatomic, copy) NSAttributedString *attributedText;
+@property (nonatomic, copy) NSAttributedString *attributedPlaceholderText;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
