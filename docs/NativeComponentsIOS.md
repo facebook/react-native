@@ -87,8 +87,6 @@ class MapView extends React.Component {
   }
 }
 
-var RCTMap = requireNativeComponent('RCTMap', MapView);
-
 MapView.propTypes = {
   /**
    * When this property is set to `true` and a valid camera is associated
@@ -99,6 +97,8 @@ MapView.propTypes = {
    */
   pitchEnabled: React.PropTypes.bool,
 };
+
+var RCTMap = requireNativeComponent('RCTMap', MapView);
 
 module.exports = MapView;
 ```
