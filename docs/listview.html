@@ -23,7 +23,7 @@ the available data (<code>onEndReached</code>) and on the set of rows that are v
 in the device viewport change (<code>onChangeVisibleRows</code>), and several
 performance optimizations.</p><p>There are a few performance operations designed to make ListView scroll
 smoothly while dynamically loading potentially very large (or conceptually
-infinite) data sets:</p><ul><li><p>Only re-render changed rows - the hasRowChanged function provided to the
+infinite) data sets:</p><ul><li><p>Only re-render changed rows - the rowHasChanged function provided to the
 data source tells the ListView if it needs to re-render a row because the
 source data has changed - see ListViewDataSource for more details.</p></li><li><p>Rate-limited row rendering - By default, only one row is rendered per
 event-loop (customizable with the <code>pageSize</code> prop).  This breaks up the
