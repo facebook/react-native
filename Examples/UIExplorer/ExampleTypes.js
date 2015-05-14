@@ -27,4 +27,3 @@ export type ExampleModule = {
   examples: Array<Example>;
   external?: bool;
 };
-
