@@ -75,6 +75,7 @@
     UINavigationBar *bar = self.navigationController.navigationBar;
     bar.barTintColor = _navItem.barTintColor;
     bar.tintColor = _navItem.tintColor;
+    bar.translucent = _navItem.translucent;
     if (_navItem.titleTextColor) {
       [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
     }
