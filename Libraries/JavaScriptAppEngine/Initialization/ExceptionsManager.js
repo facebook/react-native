@@ -48,8 +48,10 @@ function reportException(e: Exception, isFatal: bool, stack?: any) {
           var prettyStack = parseErrorStack(e, map);
           RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
         })
-        .then(null, error => {
-          console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
+        .catch(error => {
+          // This can happen in a variety of normal situations, such as
+          // Network module not being available, or when running locally
+          console.warn('Unable to load source map: ' + error.message);
         });
     }
   }
