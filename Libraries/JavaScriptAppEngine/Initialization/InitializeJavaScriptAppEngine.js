@@ -148,6 +148,10 @@ function setupGeolocation() {
   GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
+function setupNumberToLocaleString() {
+  GLOBAL.Number.prototype.toLocaleString = require('JSToLocaleString');
+}
+
 setupDocumentShim();
 setupRedBoxErrorHandler();
 setupTimers();
@@ -156,3 +160,4 @@ setupPromise();
 setupXHR();
 setupRedBoxConsoleErrorHandler();
 setupGeolocation();
+setupNumberToLocaleString();
