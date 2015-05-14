@@ -43,14 +43,6 @@
     "react-native-start": "packager/packager.sh"
   },
   "dependencies": {
-    "connect": "2.8.3",
-    "file": "^0.2.2",
-    "jstransform": "10.0.1",
-    "react-timer-mixin": "^0.13.1",
-    "react-tools": "0.13.0-rc2",
-    "rebound": "^0.0.12",
-    "source-map": "0.1.31",
-    "stacktrace-parser": "0.1.1",
     "absolute-path": "0.0.0",
     "bluebird": "^2.9.21",
     "chalk": "^1.0.0",
