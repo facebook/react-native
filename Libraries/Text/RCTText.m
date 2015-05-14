@@ -25,7 +25,7 @@
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
 
-    self.accessibilityElement = YES;
+    self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
 
     self.opaque = NO;
