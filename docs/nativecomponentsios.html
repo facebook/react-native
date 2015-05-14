@@ -31,8 +31,6 @@ class <span class="token class-name">MapView</span> extends <span class="token c
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
-<span class="token keyword">var</span> RCTMap <span class="token operator">=</span> <span class="token function">requireNativeComponent<span class="token punctuation">(</span></span><span class="token string">&#x27;RCTMap&#x27;</span><span class="token punctuation">,</span> MapView<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
 MapView<span class="token punctuation">.</span>propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
   <span class="token comment" spellcheck="true">/**
    * When this property is set to `true` and a valid camera is associated
@@ -43,6 +41,8 @@ MapView<span class="token punctuation">.</span>propTypes <span class="token oper
    */</span>
   pitchEnabled<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>bool<span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> RCTMap <span class="token operator">=</span> <span class="token function">requireNativeComponent<span class="token punctuation">(</span></span><span class="token string">&#x27;RCTMap&#x27;</span><span class="token punctuation">,</span> MapView<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 module<span class="token punctuation">.</span>exports <span class="token operator">=</span> MapView<span class="token punctuation">;</span></div><p>Now we have a nicely documented wrapper component that is easy to work with.  Note that we changed the second argument to <code>requireNativeComponent</code> from <code>null</code> to the new <code>MapView</code> wrapper component.  This allows the infrastructure to verify that the propTypes match the native props to reduce the chances of mismatches between the ObjC and JS code.</p><p>Next, let&#x27;s add the more complex <code>region</code> prop.  We start by adding the native code:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// RCTMapManager.m
 </span><span class="token function">RCT_CUSTOM_VIEW_PROPERTY<span class="token punctuation">(</span></span>region<span class="token punctuation">,</span> MKCoordinateRegion<span class="token punctuation">,</span> RCTMap<span class="token punctuation">)</span>
