@@ -81,7 +81,7 @@ RCT_EXPORT_MODULE()
                              object:nil];
 
     [notificationCenter addObserver:self
-                           selector:@selector(updateSettings)
+                           selector:@selector(settingsDidChange)
                                name:NSUserDefaultsDidChangeNotification
                              object:nil];
 
@@ -94,13 +94,11 @@ RCT_EXPORT_MODULE()
     _settings = [[NSMutableDictionary alloc] init];
 
     // Delay setup until after Bridge init
-    __weak RCTDevMenu *weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf updateSettings];
-    });
+    [self settingsDidChange];
 
 #if TARGET_IPHONE_SIMULATOR
 
+    __weak RCTDevMenu *weakSelf = self;
     RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
     // Toggle debug menu
@@ -125,6 +123,15 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
+}
+
+- (void)settingsDidChange
+{
+  // Needed to prevent a race condition when reloading
+  __weak RCTDevMenu *weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf updateSettings];
+  });
 }
 
 - (void)updateSettings
@@ -269,6 +276,14 @@ RCT_EXPORT_METHOD(reload)
     }
     case 1: {
       Class cls = NSClassFromString(@"RCTWebSocketExecutor");
+      if (!cls) {
+        [[[UIAlertView alloc] initWithTitle:@"Chrome Debugger Unavailable"
+                                    message:@"You need to include the RCTWebSocket library to enable Chrome debugging"
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+        return;
+      }
       self.executorClass = (_executorClass == cls) ? Nil : cls;
       break;
     }

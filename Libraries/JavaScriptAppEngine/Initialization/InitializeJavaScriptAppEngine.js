@@ -33,39 +33,6 @@ if (typeof window === 'undefined') {
   window = GLOBAL;
 }
 
-/**
- * The document must be shimmed before anything else that might define the
- * `ExecutionEnvironment` module (which checks for `document.createElement`).
- */
-function setupDocumentShim() {
-  // The browser defines Text and Image globals by default. If you forget to
-  // require them, then the error message is very confusing.
-  function getInvalidGlobalUseError(name) {
-    return new Error(
-      'You are trying to render the global ' + name + ' variable as a ' +
-      'React element. You probably forgot to require ' + name + '.'
-    );
-  }
-  GLOBAL.Text = {
-    get defaultProps() {
-      throw getInvalidGlobalUseError('Text');
-    }
-  };
-  GLOBAL.Image = {
-    get defaultProps() {
-      throw getInvalidGlobalUseError('Image');
-    }
-  };
-  // Force `ExecutionEnvironment.canUseDOM` to be false.
-  if (GLOBAL.document) {
-    GLOBAL.document.createElement = null;
-  }
-
-  // There is no DOM so MutationObserver doesn't make sense. It is used
-  // as feature detection in Bluebird Promise implementation
-  GLOBAL.MutationObserver = undefined;
-}
-
 function handleErrorWithRedBox(e, isFatal) {
   try {
     require('ExceptionsManager').handleException(e, isFatal);
@@ -74,12 +41,12 @@ function handleErrorWithRedBox(e, isFatal) {
   }
 }
 
-function setupRedBoxErrorHandler() {
+function setUpRedBoxErrorHandler() {
   var ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
 }
 
-function setupRedBoxConsoleErrorHandler() {
+function setUpRedBoxConsoleErrorHandler() {
   // ExceptionsManager transitively requires Promise so we install it after
   var ExceptionsManager = require('ExceptionsManager');
   var Platform = require('Platform');
@@ -96,7 +63,7 @@ function setupRedBoxConsoleErrorHandler() {
  * implement our own custom timing bridge that should be immune to
  * unexplainably dropped timing signals.
  */
-function setupTimers() {
+function setUpTimers() {
   var JSTimers = require('JSTimers');
   GLOBAL.setTimeout = JSTimers.setTimeout;
   GLOBAL.setInterval = JSTimers.setInterval;
@@ -111,7 +78,7 @@ function setupTimers() {
   };
 }
 
-function setupAlert() {
+function setUpAlert() {
   var RCTAlertManager = require('NativeModules').AlertManager;
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
@@ -125,13 +92,13 @@ function setupAlert() {
   }
 }
 
-function setupPromise() {
+function setUpPromise() {
   // The native Promise implementation throws the following error:
   // ERROR: Event loop not supported.
   GLOBAL.Promise = require('Promise');
 }
 
-function setupXHR() {
+function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
   GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
@@ -143,16 +110,20 @@ function setupXHR() {
   GLOBAL.Response = fetchPolyfill.Response;
 }
 
-function setupGeolocation() {
+function setUpGeolocation() {
   GLOBAL.navigator = GLOBAL.navigator || {};
   GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
-setupDocumentShim();
-setupRedBoxErrorHandler();
-setupTimers();
-setupAlert();
-setupPromise();
-setupXHR();
-setupRedBoxConsoleErrorHandler();
-setupGeolocation();
+function setUpWebSockets() {
+  GLOBAL.WebSocket = require('WebSocket');
+}
+
+setUpRedBoxErrorHandler();
+setUpTimers();
+setUpAlert();
+setUpPromise();
+setUpXHR();
+setUpRedBoxConsoleErrorHandler();
+setUpGeolocation();
+setUpWebSockets();

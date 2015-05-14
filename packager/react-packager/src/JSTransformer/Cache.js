@@ -31,6 +31,10 @@ var validateOpts = declareOpts({
     type: 'array',
     required: true,
   },
+  transformModulePath: {
+    type:'string',
+    required: true,
+  },
 });
 module.exports = Cache;
 
@@ -161,6 +165,8 @@ function cacheFilePath(options) {
 
   var cacheVersion = options.cacheVersion || '0';
   hash.update(cacheVersion);
+
+  hash.update(options.transformModulePath);
 
   var name = 'react-packager-cache-' + hash.digest('hex');
   return path.join(tmpdir, name);

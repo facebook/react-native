@@ -72,11 +72,20 @@
   }
 }
 
+- (UIFont *)font
+{
+  return _textView.font;
+}
+
 - (void)setFont:(UIFont *)font
 {
-  _font = font;
-  _textView.font = _font;
+  _textView.font = font;
   [self updatePlaceholder];
+}
+
+- (UIColor *)textColor
+{
+  return _textView.textColor;
 }
 
 - (void)setTextColor:(UIColor *)textColor
@@ -104,6 +113,11 @@
 {
   _contentInset = contentInset;
   [self updateFrames];
+}
+
+- (NSString *)text
+{
+  return _textView.text;
 }
 
 - (void)setText:(NSString *)text
@@ -146,7 +160,6 @@
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
   if (_clearTextOnFocus) {
-    [_textView setText:@""];
     _textView.text = @"";
     [self _setPlaceholderVisibility];
   }
