@@ -6,6 +6,8 @@
 
 var spawn = require('child_process').spawn;
 var path = require('path');
+
+var init = require('./init.js');
 var install = require('./install.js');
 var bundle = require('./bundle.js');
 
@@ -57,10 +59,6 @@ function run() {
     printUsage();
   }
   // Here goes any cli commands we need to
-}
-
-function init(root, projectName) {
-  spawn(path.resolve(__dirname, '../init.sh'), [projectName], {stdio:'inherit'});
 }
 
 if (require.main === module) {
