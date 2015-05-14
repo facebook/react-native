@@ -1173,7 +1173,11 @@ var Navigator = React.createClass({
   resetTo: function(route) {
     invariant(!!route, 'Must supply route to push');
     this.replaceAtIndex(route, 0, () => {
-      this.popToRoute(route);
+      // Do not use popToRoute here, because race conditions could prevent the
+      // route from existing at this time. Instead, just go to index 0
+      if (this.state.presentedIndex > 0) {
+        this._popN(this.state.presentedIndex);
+      }
     });
   },
 

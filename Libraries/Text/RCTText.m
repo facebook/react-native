@@ -25,6 +25,9 @@
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
 
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitStaticText;
+
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -125,6 +128,13 @@
   }
 
   return reactTag ?: self.reactTag;
+}
+
+#pragma mark - Accessibility
+
+- (NSString *)accessibilityLabel
+{
+  return _textStorage.string;
 }
 
 @end

@@ -13,9 +13,12 @@
 'use strict';
 
 var Promise = require('Promise');
-var RCTSourceCode = require('NativeModules').SourceCode;
+var NativeModules = require('NativeModules');
 var SourceMapConsumer = require('SourceMap').SourceMapConsumer;
 var SourceMapURL = require('./source-map-url');
+
+var RCTSourceCode = NativeModules.SourceCode;
+var RCTDataManager = NativeModules.DataManager;
 
 function loadSourceMap(): Promise {
   return fetchSourceMap()
@@ -31,17 +34,31 @@ function fetchSourceMap(): Promise {
     return Promise.reject(new Error('RCTSourceCode module is not available'));
   }
 
+  if (!RCTDataManager) {
+    // Used internally by fetch
+    return Promise.reject(new Error('RCTDataManager module is not available'));
+  }
+
   return new Promise(RCTSourceCode.getScriptText)
     .then(extractSourceMapURL)
+    .then((url) => {
+      if (url === null) {
+        return Promise.reject(new Error('No source map URL found. May be running from bundled file.'));
+      }
+      return Promise.resolve(url);
+    })
     .then(fetch)
     .then(response => response.text())
 }
 
-function extractSourceMapURL({url, text, fullSourceMappingURL}): string {
+function extractSourceMapURL({url, text, fullSourceMappingURL}): ?string {
   if (fullSourceMappingURL) {
     return fullSourceMappingURL;
   }
   var mapURL = SourceMapURL.getFrom(text);
+  if (!mapURL) {
+    return null;
+  }
   var baseURL = url.match(/(.+:\/\/.*?)\//)[1];
   return baseURL + mapURL;
 }

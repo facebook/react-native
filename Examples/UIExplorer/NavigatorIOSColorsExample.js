@@ -45,7 +45,7 @@ var NavigatorIOSColors = React.createClass({
 
   render: function() {
     // Set StatusBar with light contents to get better contrast
-    StatusBarIOS.setStyle(StatusBarIOS.Style['lightContent']);
+    StatusBarIOS.setStyle(StatusBarIOS.Style.lightContent);
 
     return (
       <NavigatorIOS

@@ -16,16 +16,17 @@
 #import "RCTLog.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
-#import "SRWebSocket.h"
+#import "RCTSRWebSocket.h"
 
-typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
+typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
 
-@interface RCTWebSocketExecutor () <SRWebSocketDelegate>
+@interface RCTWebSocketExecutor () <RCTSRWebSocketDelegate>
+
 @end
 
 @implementation RCTWebSocketExecutor
 {
-  SRWebSocket *_socket;
+  RCTSRWebSocket *_socket;
   dispatch_queue_t _jsQueue;
   RCTSparseArray *_callbacks;
   dispatch_semaphore_t _socketOpenSemaphore;
@@ -42,7 +43,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
   if (self = [super init]) {
 
     _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
-    _socket = [[SRWebSocket alloc] initWithURL:URL];
+    _socket = [[RCTSRWebSocket alloc] initWithURL:URL];
     _socket.delegate = self;
     _callbacks = [[RCTSparseArray alloc] init];
     _injectedObjects = [[NSMutableDictionary alloc] init];
@@ -95,28 +96,28 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
   return runtimeIsReady == 0 && initError == nil;
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
+- (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
   NSError *error = nil;
   NSDictionary *reply = RCTJSONParse(message, &error);
   NSNumber *messageID = reply[@"replyID"];
-  WSMessageCallback callback = _callbacks[messageID];
+  RCTWSMessageCallback callback = _callbacks[messageID];
   if (callback) {
     callback(error, reply);
   }
 }
 
-- (void)webSocketDidOpen:(SRWebSocket *)webSocket
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
   dispatch_semaphore_signal(_socketOpenSemaphore);
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
+- (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   RCTLogError(@"WebSocket connection failed with error %@", error);
 }
 
-- (void)sendMessage:(NSDictionary *)message context:(NSNumber *)executorID waitForReply:(WSMessageCallback)callback
+- (void)sendMessage:(NSDictionary *)message context:(NSNumber *)executorID waitForReply:(RCTWSMessageCallback)callback
 {
   static NSUInteger lastID = 10000;
 
@@ -190,7 +191,7 @@ typedef void (^WSMessageCallback)(NSError *error, NSDictionary *reply);
 
 - (BOOL)isValid
 {
-  return _socket != nil && _socket.readyState == SR_OPEN;
+  return _socket != nil && _socket.readyState == RCTSR_OPEN;
 }
 
 - (void)dealloc

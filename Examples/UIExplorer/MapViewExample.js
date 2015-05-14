@@ -29,7 +29,7 @@ var regionText = {
   longitude: '0',
   latitudeDelta: '0',
   longitudeDelta: '0',
-}
+};
 
 var MapRegionInput = React.createClass({
 
