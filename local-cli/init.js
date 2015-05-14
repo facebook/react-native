@@ -9,7 +9,9 @@ function init(projectDir, appName) {
 
   walk(source).forEach(function(f) {
     f = f.replace(source + '/', ''); // Strip off absolute path
-    if(f === 'project.xcworkspace' || f === 'xcuserdata') { return; }
+    if (f === 'project.xcworkspace' || f === 'xcuserdata') {
+      return;
+    }
 
     var replacements = {
       'Examples/SampleApp/': '',
@@ -18,7 +20,7 @@ function init(projectDir, appName) {
       'SampleApp': appName
     };
 
-    var dest = f.replace(/SampleApp/g, appName).replace(/^_/, ".");
+    var dest = f.replace(/SampleApp/g, appName).replace(/^_/, '.');
     copyAndReplace(
       path.resolve(source, f),
       path.resolve(projectDir, dest),
@@ -37,8 +39,7 @@ function copyAndReplace(src, dest, replacements) {
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest);
     }
-  }
-  else {
+  } else {
     var content = fs.readFileSync(src, 'utf8');
     Object.keys(replacements).forEach(function(regex) {
       content = content.replace(new RegExp(regex, 'g'), replacements[regex]);
@@ -48,15 +49,15 @@ function copyAndReplace(src, dest, replacements) {
 }
 
 function walk(current) {
-  if(fs.lstatSync(current).isDirectory()) {
-    var files = fs.readdirSync(current).map(function(child) {
-      child = path.join(current, child);
-      return walk(child);
-    });
-    return [].concat.apply([current], files);
-  } else {
+  if (!fs.lstatSync(current).isDirectory()) {
     return [current];
   }
+
+  var files = fs.readdirSync(current).map(function(child) {
+    child = path.join(current, child);
+    return walk(child);
+  });
+  return [].concat.apply([current], files);
 }
 
 module.exports = init;
