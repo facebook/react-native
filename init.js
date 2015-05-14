@@ -2,7 +2,6 @@
 
 var path = require('path');
 var fs = require('fs');
-var file = require('file');
 
 function init(projectDir, appName) {
   console.log('Setting up new React Native app in ' + projectDir);
@@ -19,13 +18,18 @@ function init(projectDir, appName) {
       'SampleApp': appName
     };
 
-    var dest = f.replace(new RegExp('SampleApp', 'g'), appName);
+    var dest = f.replace(/SampleApp/g, appName).replace(/^_/, ".");
     copyAndReplace(
       path.resolve(source, f),
       path.resolve(projectDir, dest),
       replacements
     );
   });
+
+  console.log('Next Steps:');
+  console.log('   Open ' + path.resolve(projectDir, appName) + '.xcodeproj in Xcode');
+  console.log('   Hit Run button');
+  console.log('');
 }
 
 function copyAndReplace(src, dest, replacements) {
@@ -39,22 +43,6 @@ function copyAndReplace(src, dest, replacements) {
     Object.keys(replacements).forEach(function(regex) {
       content = content.replace(new RegExp(regex, 'g'), replacements[regex]);
     });
-    fs.writeFileSync(dest, content);
-  }
-}
-
-function copyAndReplace2(src, dest, appName) {
-  if (fs.lstatSync(src).isDirectory()) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest);
-    }
-  }
-  else {
-    var content = fs.readFileSync(src, 'utf8')
-      .replace(new RegExp('SampleApp', 'g'), appName)
-      .replace(new RegExp('Examples/' + appName + '/', 'g'), '')
-      .replace(new RegExp('../../Libraries/', 'g'), 'node_modules/react-native/Libraries/')
-      .replace(new RegExp('../../React/', 'g'), 'node_modules/react-native/React/');
     fs.writeFileSync(dest, content);
   }
 }
