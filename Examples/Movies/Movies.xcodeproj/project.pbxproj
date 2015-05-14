@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1338BC281B04C72D0064A9C9 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1338BC261B04C7080064A9C9 /* libRCTWebSocket.a */; };
 		1341801E1AA91750003F314A /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1341801B1AA91740003F314A /* libRCTNetwork.a */; };
 		13442C061AA90EA00037E5B0 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13442C051AA90E7D0037E5B0 /* libRCTImage.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -19,6 +20,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1338BC251B04C7080064A9C9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1338BC1D1B04C7070064A9C9 /* RCTWebSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3C86DF461ADF2C930047B81A;
+			remoteInfo = RCTWebSocket;
+		};
 		1341801A1AA91740003F314A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 134180151AA91740003F314A /* RCTNetwork.xcodeproj */;
@@ -57,6 +65,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1338BC1D1B04C7070064A9C9 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "/Users/nicklockwood/fbobjc-hg/Libraries/FBReactKit/js/react-native-github/Libraries/Text/../WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<absolute>"; };
 		134180151AA91740003F314A /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
 		13442C001AA90E7D0037E5B0 /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = ../../Libraries/Image/RCTImage.xcodeproj; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Movies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Movies.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,12 +90,21 @@
 				1341801E1AA91750003F314A /* libRCTNetwork.a in Frameworks */,
 				13442C061AA90EA00037E5B0 /* libRCTImage.a in Frameworks */,
 				58C5726B1AA6239E00CDF9C8 /* libRCTText.a in Frameworks */,
+				1338BC281B04C72D0064A9C9 /* libRCTWebSocket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1338BC1E1B04C7070064A9C9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1338BC261B04C7080064A9C9 /* libRCTWebSocket.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		134180161AA91740003F314A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -140,6 +158,7 @@
 				134180151AA91740003F314A /* RCTNetwork.xcodeproj */,
 				13442C001AA90E7D0037E5B0 /* RCTImage.xcodeproj */,
 				587650F61A9EB120008B8F17 /* RCTText.xcodeproj */,
+				1338BC1D1B04C7070064A9C9 /* RCTWebSocket.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -229,6 +248,10 @@
 					ProjectRef = 587650F61A9EB120008B8F17 /* RCTText.xcodeproj */;
 				},
 				{
+					ProductGroup = 1338BC1E1B04C7070064A9C9 /* Products */;
+					ProjectRef = 1338BC1D1B04C7070064A9C9 /* RCTWebSocket.xcodeproj */;
+				},
+				{
 					ProductGroup = 14A2D43D1AC3E41A00CC738A /* Products */;
 					ProjectRef = 14A2D43C1AC3E41A00CC738A /* React.xcodeproj */;
 				},
@@ -241,6 +264,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		1338BC261B04C7080064A9C9 /* libRCTWebSocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTWebSocket.a;
+			remoteRef = 1338BC251B04C7080064A9C9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		1341801B1AA91740003F314A /* libRCTNetwork.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;

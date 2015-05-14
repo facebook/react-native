@@ -98,8 +98,9 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/Vibration/*.js"
   end
 
-  s.subspec 'RCTWebSocketDebugger' do |ss|
+  s.subspec 'RCTWebSocket' do |ss|
     ss.dependency         'React/Core'
-    ss.source_files     = "Libraries/RCTWebSocketDebugger/*.{h,m}"
+    ss.source_files     = "Libraries/WebSocket/*.{h,m}"
+    ss.preserve_paths   = "Libraries/WebSocket/*.js"
   end
 end

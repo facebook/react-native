@@ -41,12 +41,12 @@ function handleErrorWithRedBox(e, isFatal) {
   }
 }
 
-function setupRedBoxErrorHandler() {
+function setUpRedBoxErrorHandler() {
   var ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
 }
 
-function setupRedBoxConsoleErrorHandler() {
+function setUpRedBoxConsoleErrorHandler() {
   // ExceptionsManager transitively requires Promise so we install it after
   var ExceptionsManager = require('ExceptionsManager');
   var Platform = require('Platform');
@@ -63,7 +63,7 @@ function setupRedBoxConsoleErrorHandler() {
  * implement our own custom timing bridge that should be immune to
  * unexplainably dropped timing signals.
  */
-function setupTimers() {
+function setUpTimers() {
   var JSTimers = require('JSTimers');
   GLOBAL.setTimeout = JSTimers.setTimeout;
   GLOBAL.setInterval = JSTimers.setInterval;
@@ -78,7 +78,7 @@ function setupTimers() {
   };
 }
 
-function setupAlert() {
+function setUpAlert() {
   var RCTAlertManager = require('NativeModules').AlertManager;
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
@@ -92,13 +92,13 @@ function setupAlert() {
   }
 }
 
-function setupPromise() {
+function setUpPromise() {
   // The native Promise implementation throws the following error:
   // ERROR: Event loop not supported.
   GLOBAL.Promise = require('Promise');
 }
 
-function setupXHR() {
+function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
   GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
@@ -110,15 +110,20 @@ function setupXHR() {
   GLOBAL.Response = fetchPolyfill.Response;
 }
 
-function setupGeolocation() {
+function setUpGeolocation() {
   GLOBAL.navigator = GLOBAL.navigator || {};
   GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
-setupRedBoxErrorHandler();
-setupTimers();
-setupAlert();
-setupPromise();
-setupXHR();
-setupRedBoxConsoleErrorHandler();
-setupGeolocation();
+function setUpWebSockets() {
+  GLOBAL.WebSocket = require('WebSocket');
+}
+
+setUpRedBoxErrorHandler();
+setUpTimers();
+setUpAlert();
+setUpPromise();
+setUpXHR();
+setUpRedBoxConsoleErrorHandler();
+setUpGeolocation();
+setUpWebSockets();
