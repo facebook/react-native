@@ -21,6 +21,8 @@
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, strong) NSString *text;
+@property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
 @property (nonatomic, assign) UIFont *font;
 
