@@ -13,6 +13,7 @@
 #import "RCTEventDispatcher.h"
 
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
+NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
 
 @implementation RCTPushNotificationManager
 {
@@ -29,6 +30,10 @@ RCT_EXPORT_MODULE()
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRemoteNotificationReceived:)
                                                  name:RCTRemoteNotificationReceived
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRemoteNotificationsRegistered:)
+                                                 name:RCTRemoteNotificationsRegistered
                                                object:nil];
   }
   return self;
@@ -52,6 +57,21 @@ RCT_EXPORT_MODULE()
   }
 }
 
++ (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  NSMutableString *hexString = [NSMutableString string];
+  const unsigned char *bytes = [deviceToken bytes];
+  for (int i = 0; i < [deviceToken length]; i++) {
+    [hexString appendFormat:@"%02x", bytes[i]];
+  }
+  NSDictionary *userInfo = @{
+    @"deviceToken" : [hexString copy]
+  };
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationsRegistered
+                                                      object:self
+                                                    userInfo:userInfo];
+}
+
 + (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
@@ -62,6 +82,12 @@ RCT_EXPORT_MODULE()
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
+                                              body:[notification userInfo]];
+}
+
+- (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
+{
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
                                               body:[notification userInfo]];
 }
 
@@ -83,19 +109,33 @@ RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback
   ]);
 }
 
-RCT_EXPORT_METHOD(requestPermissions)
+RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
 {
+  UIUserNotificationType types = UIUserNotificationTypeNone;
+  if (permissions) {
+    if ([permissions[@"alert"] boolValue]) {
+      types |= UIUserNotificationTypeAlert;
+    }
+    if ([permissions[@"badge"] boolValue]) {
+      types |= UIUserNotificationTypeBadge;
+    }
+    if ([permissions[@"sound"] boolValue]) {
+      types |= UIUserNotificationTypeSound;
+    }
+  } else {
+    types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
+  }
   Class _UIUserNotificationSettings;
   if ((_UIUserNotificationSettings = NSClassFromString(@"UIUserNotificationSettings"))) {
-    UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
-    UIUserNotificationSettings *notificationSettings = [_UIUserNotificationSettings settingsForTypes:types categories:nil];
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
   } else {
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-     UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert];
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
 
 #endif
 
