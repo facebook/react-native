@@ -20,7 +20,6 @@ var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var mergeFast = require('mergeFast');
-var mountSafeCallback = require('mountSafeCallback');
 var precomputeStyle = require('precomputeStyle');
 
 type MeasureOnSuccessCallback = (
@@ -160,5 +159,18 @@ if (__DEV__) {
     throwOnStylesProp(this, newProps);
   };
 }
+
+/**
+ * In the future, we should cleanup callbacks by cancelling them instead of
+ * using this.
+ */
+var mountSafeCallback = function(context: ReactComponent, callback: ?Function): any {
+  return function() {
+    if (!callback || (context.isMounted && !context.isMounted())) {
+      return;
+    }
+    return callback.apply(context, arguments);
+  };
+};
 
 module.exports = NativeMethodsMixin;

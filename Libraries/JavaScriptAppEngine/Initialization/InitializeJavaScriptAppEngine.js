@@ -119,6 +119,11 @@ function setUpWebSockets() {
   GLOBAL.WebSocket = require('WebSocket');
 }
 
+function setupProfile() {
+  console.profile = console.profile || GLOBAL.consoleProfile || function () {};
+  console.profileEnd = console.profileEnd || GLOBAL.consoleProfileEnd || function () {};
+}
+
 setUpRedBoxErrorHandler();
 setUpTimers();
 setUpAlert();
@@ -127,3 +132,4 @@ setUpXHR();
 setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
+setupProfile();

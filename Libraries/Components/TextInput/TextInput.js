@@ -233,6 +233,10 @@ var TextInput = React.createClass({
      */
     onSubmitEditing: PropTypes.func,
     /**
+     * Invoked on mount and layout changes with {x, y, width, height}.
+     */
+    onLayout: PropTypes.func,
+    /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. Default value is false.
      */
@@ -446,6 +450,7 @@ var TextInput = React.createClass({
           onEndEditing={this.props.onEndEditing}
           onSubmitEditing={this.props.onSubmitEditing}
           onSelectionChangeShouldSetResponder={() => true}
+          onLayout={this.props.onLayout}
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
@@ -495,6 +500,7 @@ var TextInput = React.createClass({
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onLayout={this.props.onLayout}
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
@@ -530,6 +536,7 @@ var TextInput = React.createClass({
         onChange={this._onChange}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
+        onLayout={this.props.onLayout}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         text={this.state.bufferedValue}
