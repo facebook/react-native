@@ -59,6 +59,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
 
   // Plugins
   DeviceEventEmitter: require('RCTDeviceEventEmitter'),
+  NativeAppEventEmitter: require('RCTNativeAppEventEmitter'),
   NativeModules: require('NativeModules'),
   requireNativeComponent: require('requireNativeComponent'),
 
