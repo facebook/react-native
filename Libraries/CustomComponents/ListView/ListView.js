@@ -198,9 +198,23 @@ var ListView = React.createClass({
     };
   },
 
+  getInnerViewNode: function() {
+    return this.refs[SCROLLVIEW_REF].getInnerViewNode();
+  },
+
+  scrollTo: function(destY, destX) {
+    this.refs[SCROLLVIEW_REF].scrollTo(destY, destX);
+  },
+
+  scrollWithoutAnimationTo: function(destY, destX) {
+    this.refs[SCROLLVIEW_REF].scrollWithoutAnimationTo(destY, destX);
+  },
+
   /**
    * Provides a handle to the underlying scroll responder to support operations
    * such as scrollTo.
+   *
+   * Deprecated: instead call scrollTo, etc. directly on this component
    */
   getScrollResponder: function() {
     return this.refs[SCROLLVIEW_REF];
