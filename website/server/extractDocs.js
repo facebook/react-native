@@ -157,6 +157,7 @@ var components = [
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Picker/PickerIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
+  '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/SliderIOS/SliderIOS.js',
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
