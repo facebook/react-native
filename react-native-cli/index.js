@@ -7,7 +7,6 @@
 var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
-var utils = require('../local-cli/generator-utils');
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
@@ -56,8 +55,19 @@ if (cli) {
   }
 }
 
+function validatePackageName(name) {
+  if (!name.match(/^[$A-Z_][0-9A-Z_$]*$/i)) {
+    console.error(
+      '"%s" is not a valid name for a project. Please use a valid identifier ' +
+        'name (alphanumeric).',
+      name
+    );
+    process.exit(1);
+  }
+}
+
 function init(name) {
-  utils.validatePackageName(name);
+  validatePackageName(name);
 
   var root = path.resolve(name);
   var projectName = path.basename(root);
