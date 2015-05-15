@@ -2,9 +2,11 @@
 
 @implementation Sample
 
-- (void)test
+RCT_EXPORT_MODULE()
+
+RCT_EXPORT_METHOD(test)
 {
-  RCT_EXPORT();
+  // Your implementation here
 }
 
 @end
