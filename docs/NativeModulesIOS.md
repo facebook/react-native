@@ -246,7 +246,7 @@ The native module can signal events to JavaScript without being invoked directly
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
-  [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
+  [self.bridge.eventDispatcher sendDeviceEventWithName:@"EventReminder"
                                                body:@{@"name": eventName}];
 }
 
@@ -256,6 +256,13 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
+
+var React = require('react-native');
+var {
+  DeviceEventEmitter,
+  //...
+} = React;
+
 var subscription = DeviceEventEmitter.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
