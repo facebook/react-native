@@ -350,6 +350,7 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				DAFFEB461B06A65200653BD2 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -538,6 +539,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DAFFEB461B06A65200653BD2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ $VALID_ARCHS == *\"armv\"* && $CONFIGURATION == \"Debug\" ]] ; then\n  IP_ADDR=$(ifconfig | grep \"inet \" | grep -v 127.0.0.1 | awk '{print $2}')\n  PACKAGER_URL=\"http://$IP_ADDR:8081\"\n\n  echo \"Writing IP address of host ($PACKAGER_URL) to info.plist...\";\n  if ! /usr/libexec/PlistBuddy -c \"Set :ReactServer $PACKAGER_URL\" $INFOPLIST_FILE ; then\n    /usr/libexec/PlistBuddy -c \"Add :ReactServer string $PACKAGER_URL\" $INFOPLIST_FILE\n  fi\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		004D289A1AAF61C70097A701 /* Sources */ = {
