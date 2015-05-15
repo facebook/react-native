@@ -51,7 +51,9 @@ function newLibrary(libraryName) {
 module.exports = {
   init: function(args) {
     var libraryName = args[1];
-    if (!libraryName) { showHelp(); }
+    if (!libraryName) {
+      showHelp();
+    }
     utils.validatePackageName(libraryName);
 
     newLibrary(libraryName);
