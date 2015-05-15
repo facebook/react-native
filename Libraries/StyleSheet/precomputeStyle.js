@@ -13,8 +13,10 @@
 
 var MatrixMath = require('MatrixMath');
 var Platform = require('Platform');
+
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var invariant = require('invariant');
+var stringifySafe = require('stringifySafe');
 
 /**
  * This method provides a hook where flattened styles may be precomputed or
@@ -123,6 +125,13 @@ function _convertToRadians(value: string): number {
 }
 
 function _validateTransform(key, value, transformation) {
+  invariant(
+    !value.getValue,
+    'You passed an animated value or spring to a normal component. ' +
+    'You need to wrap that component in an Animated. For example, ' +
+    'replace <View /> by <Animated.View />.'
+  );
+
   var multivalueTransforms = [
     'matrix',
     'translate',
@@ -132,7 +141,7 @@ function _validateTransform(key, value, transformation) {
       Array.isArray(value),
       'Transform with key of %s must have an array as the value: %s',
       key,
-      JSON.stringify(transformation)
+      stringifySafe(transformation),
     );
   }
   switch (key) {
@@ -142,7 +151,7 @@ function _validateTransform(key, value, transformation) {
         'Matrix transform must have a length of 9 (2d) or 16 (3d). ' +
           'Provided matrix has a length of %s: %s',
         value.length,
-        JSON.stringify(transformation)
+        stringifySafe(transformation),
       );
       break;
     case 'translate':
@@ -152,13 +161,13 @@ function _validateTransform(key, value, transformation) {
         typeof value === 'string',
         'Transform with key of "%s" must be a string: %s',
         key,
-        JSON.stringify(transformation)
+        stringifySafe(transformation),
       );
       invariant(
         value.indexOf('deg') > -1 || value.indexOf('rad') > -1,
         'Rotate transform must be expressed in degrees (deg) or radians ' +
           '(rad): %s',
-        JSON.stringify(transformation)
+        stringifySafe(transformation),
       );
       break;
     default:
@@ -166,7 +175,7 @@ function _validateTransform(key, value, transformation) {
         typeof value === 'number',
         'Transform with key of "%s" must be a number: %s',
         key,
-        JSON.stringify(transformation)
+        stringifySafe(transformation),
       );
   }
 }

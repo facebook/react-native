@@ -836,6 +836,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
+- (BOOL)isLoading
+{
+  return _batchedBridge.loading;
+}
+
 - (BOOL)isValid
 {
   return _batchedBridge.isValid;

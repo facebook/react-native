@@ -112,6 +112,48 @@ static JSValueRef RCTNoop(JSContextRef context, JSObjectRef object, JSObjectRef 
   return JSValueMakeUndefined(context);
 }
 
+#if RCT_DEV
+
+static NSMutableArray *profiles;
+
+static JSValueRef RCTConsoleProfile(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    profiles = [[NSMutableArray alloc] init];
+  });
+
+  static int profileCounter = 1;
+  NSString *profileName;
+  NSNumber *profileID = _RCTProfileBeginEvent();
+
+  if (argumentCount > 0) {
+    profileName = RCTJSValueToNSString(context, arguments[0]);
+  } else {
+    profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
+  }
+
+  [profiles addObjectsFromArray:@[profileName, profileID]];
+
+  RCTLog(@"Profile '%@' finished.", profileName);
+  return JSValueMakeUndefined(context);
+}
+
+static JSValueRef RCTConsoleProfileEnd(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
+{
+  NSNumber *profileID = [profiles lastObject];
+  [profiles removeLastObject];
+  NSString *profileName = [profiles lastObject];
+  [profiles removeLastObject];
+
+  _RCTProfileEndEvent(profileID, profileName, @"console", nil);
+
+  RCTLog(@"Profile '%@' started.", profileName);
+  return JSValueMakeUndefined(context);
+}
+
+#endif
+
 static NSString *RCTJSValueToNSString(JSContextRef context, JSValueRef value)
 {
   JSStringRef JSString = JSValueToStringCopy(context, value, NULL);
@@ -198,6 +240,12 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
       [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
       [strongSelf _addNativeHook:RCTNoop withName:"noop"];
+
+#if RCT_DEV
+      [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
+      [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
+#endif
+
     }];
   }
 
