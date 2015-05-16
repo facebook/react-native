@@ -39,7 +39,7 @@ describe('Transformer', function() {
 
   pit('should loadFileAndTransform', function() {
     workers.mockImpl(function(data, callback) {
-      callback(null, { code: 'transformed', map: 'sourceMap' });
+      callback(null, { code: 'transformed', sourceMap: 'sourceMap' });
     });
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, 'content');

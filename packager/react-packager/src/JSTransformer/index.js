@@ -104,7 +104,7 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
 
             return new ModuleTransport({
               code: res.code,
-              map: res.map,
+              map: res.sourceMap,
               sourcePath: filePath,
               sourceCode: sourceCode,
             });

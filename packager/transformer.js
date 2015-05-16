@@ -10,40 +10,21 @@
  */
 'use strict';
 
-var jstransform = require('jstransform').transform;
-
-var reactVisitors =
-  require('react-tools/vendor/fbtransform/visitors').getAllVisitors();
-var staticTypeSyntax =
-  require('jstransform/visitors/type-syntax').visitorList;
-var trailingCommaVisitors =
-  require('jstransform/visitors/es7-trailing-comma-visitors.js').visitorList;
-
-// Note that reactVisitors now handles ES6 classes, rest parameters, arrow
-// functions, template strings, and object short notation.
-var visitorList = reactVisitors.concat(trailingCommaVisitors);
+var jstransform = require('jstransform/simple').transform;
 
 function transform(srcTxt, filename) {
   var options = {
     es3: true,
-    sourceType: 'nonStrictModule',
-    filename: filename,
+    harmony: true,
+    react: true,
+    stripTypes: true,
+    utility: true,
+    nonStrictEs6module: true,
+    sourceFilename: filename,
+    sourceMap: true
   };
 
-  // These tranforms mostly just erase type annotations and static typing
-  // related statements, but they were conflicting with other tranforms.
-  // Running them first solves that problem
-  var staticTypeSyntaxResult = jstransform(
-    staticTypeSyntax,
-    srcTxt,
-    options
-  );
-
-  return jstransform(
-    visitorList,
-    staticTypeSyntaxResult.code,
-    options
-  );
+  return jstransform(srcTxt, options);
 }
 
 module.exports = function(data, callback) {
