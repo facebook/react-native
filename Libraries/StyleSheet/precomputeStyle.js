@@ -141,7 +141,7 @@ function _validateTransform(key, value, transformation) {
       Array.isArray(value),
       'Transform with key of %s must have an array as the value: %s',
       key,
-      stringifySafe(transformation),
+      stringifySafe(transformation)
     );
   }
   switch (key) {
@@ -151,7 +151,7 @@ function _validateTransform(key, value, transformation) {
         'Matrix transform must have a length of 9 (2d) or 16 (3d). ' +
           'Provided matrix has a length of %s: %s',
         value.length,
-        stringifySafe(transformation),
+        stringifySafe(transformation)
       );
       break;
     case 'translate':
@@ -161,13 +161,13 @@ function _validateTransform(key, value, transformation) {
         typeof value === 'string',
         'Transform with key of "%s" must be a string: %s',
         key,
-        stringifySafe(transformation),
+        stringifySafe(transformation)
       );
       invariant(
         value.indexOf('deg') > -1 || value.indexOf('rad') > -1,
         'Rotate transform must be expressed in degrees (deg) or radians ' +
           '(rad): %s',
-        stringifySafe(transformation),
+        stringifySafe(transformation)
       );
       break;
     default:
@@ -175,7 +175,7 @@ function _validateTransform(key, value, transformation) {
         typeof value === 'number',
         'Transform with key of "%s" must be a number: %s',
         key,
-        stringifySafe(transformation),
+        stringifySafe(transformation)
       );
   }
 }
