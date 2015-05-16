@@ -1017,7 +1017,7 @@ var Navigator = React.createClass({
     this._jumpN(-1);
   },
 
-  push: function(route) {
+  push: function(route, cb) {
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
@@ -1033,6 +1033,7 @@ var Navigator = React.createClass({
       this._enableScene(destIndex);
       this._transitionTo(destIndex);
       this._resetUpdatingRange();
+      if (cb) cb();
     };
     this.setState({
       idStack: nextIDStack,
@@ -1043,7 +1044,7 @@ var Navigator = React.createClass({
     }, requestTransitionAndResetUpdatingRange);
   },
 
-  _popN: function(n) {
+  _popN: function(n, cb) {
     if (n === 0) {
       return;
     }
@@ -1059,12 +1060,13 @@ var Navigator = React.createClass({
       null, // no spring jumping
       () => {
         this._cleanScenesPastIndex(popIndex);
+        if (cb) cb();
       }
     );
   },
 
-  pop: function() {
-    this._popN(1);
+  pop: function(cb) {
+    this._popN(1, cb);
   },
 
   /**
@@ -1122,8 +1124,8 @@ var Navigator = React.createClass({
     this.replaceAtIndex(route, this.state.presentedIndex - 1);
   },
 
-  popToTop: function() {
-    this.popToRoute(this.state.routeStack[0]);
+  popToTop: function(cb) {
+    this.popToRoute(this.state.routeStack[0], cb);
   },
 
   _getNumToPopForRoute: function(route) {
@@ -1135,9 +1137,9 @@ var Navigator = React.createClass({
     return this.state.presentedIndex - indexOfRoute;
   },
 
-  popToRoute: function(route) {
+  popToRoute: function(route, cb) {
     var numToPop = this._getNumToPopForRoute(route);
-    this._popN(numToPop);
+    this._popN(numToPop, cb);
   },
 
   replacePreviousAndPop: function(route) {
@@ -1148,10 +1150,10 @@ var Navigator = React.createClass({
     this.pop();
   },
 
-  resetTo: function(route) {
+  resetTo: function(route, cb) {
     invariant(!!route, 'Must supply route to push');
     this.replaceAtIndex(route, 0, () => {
-      this.popToRoute(route);
+      this.popToRoute(route, cb);
     });
   },
 
