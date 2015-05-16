@@ -53,6 +53,12 @@ var ActivityIndicatorIOS = React.createClass({
       'small',
       'large',
     ]),
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     */
+    onLayout: PropTypes.func,
   },
 
   getDefaultProps: function(): DefaultProps {
@@ -65,10 +71,12 @@ var ActivityIndicatorIOS = React.createClass({
   },
 
   render: function() {
-    var {style, ...props} = this.props;
+    var {onLayout, style, ...props} = this.props;
     var sizeStyle = (this.props.size === 'large') ? styles.sizeLarge : styles.sizeSmall;
     return (
-      <View style={[styles.container, sizeStyle, style]}>
+      <View
+        onLayout={onLayout}
+        style={[styles.container, sizeStyle, style]}>
         <RCTActivityIndicatorView {...props} />
       </View>
     );
