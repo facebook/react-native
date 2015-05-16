@@ -25,7 +25,7 @@ function verifyPropTypes(
 
   if (!component.propTypes) {
   	throw new Error(
-        '`' + component.name + '` has no propTypes defined`'
+        '`' + (component.name || component.displayName) + '` has no propTypes defined`'
       );
   };
 
@@ -36,7 +36,7 @@ function verifyPropTypes(
         !ReactIOSStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       throw new Error(
-        '`' + component.displayName + '` has no propType for native prop `' +
+        '`' + (component.name || component.displayName) + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
         nativeProps[prop].type + '`'
       );
