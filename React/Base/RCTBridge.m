@@ -1148,6 +1148,9 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
             [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                                 object:_parentBridge
                                                               userInfo:@{ @"bridge": self }];
+          } else {
+            [[RCTRedBox sharedInstance] showErrorMessage:[loadError localizedDescription]
+                                             withDetails:[loadError localizedFailureReason]];
           }
         }];
       }

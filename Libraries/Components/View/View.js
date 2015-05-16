@@ -91,7 +91,9 @@ var View = React.createClass({
     onStartShouldSetResponderCapture: PropTypes.func,
 
     /**
-     * Invoked on mount and layout changes with {x, y, width, height}.
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
      */
     onLayout: PropTypes.func,
 

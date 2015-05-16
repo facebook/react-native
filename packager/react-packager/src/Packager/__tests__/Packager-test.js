@@ -150,7 +150,9 @@ describe('Packager', function() {
           sourceCode: 'module.exports = ' +
             JSON.stringify(imgModule_DEPRECATED) +
             ';',
-          sourcePath: '/root/img/img.png'
+          sourcePath: '/root/img/img.png',
+          virtual: true,
+          map: undefined,
         });
 
         var imgModule = {
@@ -172,13 +174,17 @@ describe('Packager', function() {
           sourceCode: 'module.exports = require("AssetRegistry").registerAsset(' +
             JSON.stringify(imgModule) +
             ');',
-          sourcePath: '/root/img/new_image.png'
+          sourcePath: '/root/img/new_image.png',
+          virtual: true,
+          map: undefined,
         });
 
         expect(p.addModule.mock.calls[4][0]).toEqual({
           code: 'lol module.exports = {"json":true}; lol',
           sourceCode: 'module.exports = {"json":true};',
-          sourcePath: '/root/file.json'
+          sourcePath: '/root/file.json',
+          map: undefined,
+          virtual: true,
         });
 
         expect(p.finalize.mock.calls[0]).toEqual([

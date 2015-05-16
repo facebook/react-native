@@ -99,6 +99,12 @@ var Image = React.createClass({
      * testing scripts.
      */
     testID: PropTypes.string,
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     */
+     onLayout: PropTypes.func,
   },
 
   statics: {
