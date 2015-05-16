@@ -92,6 +92,12 @@ var Text = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: React.PropTypes.string,
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     */
+     onLayout: React.PropTypes.func,
   },
 
   viewConfig: viewConfig,

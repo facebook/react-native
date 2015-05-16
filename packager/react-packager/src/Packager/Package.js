@@ -285,6 +285,6 @@ function generateSourceMapForVirtualModule(module) {
     names: [],
     mappings: mappings,
     file: module.sourcePath,
-    sourcesContent: [ module.code ],
+    sourcesContent: [ module.sourceCode ],
   };
 }
