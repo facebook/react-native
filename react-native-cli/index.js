@@ -7,6 +7,7 @@
 var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
+var prompt = require("prompt");
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
@@ -69,6 +70,35 @@ function validatePackageName(name) {
 function init(name) {
   validatePackageName(name);
 
+  if (fs.existsSync(name)) {
+    createAfterConfirmation(name)
+  } else {
+    createProject(name);
+  }
+}
+
+function createAfterConfirmation(name) {
+    prompt.start();
+
+    var property = {
+      name: 'yesno',
+      message: 'Directory ' + name + ' already exist. Continue?',
+      validator: /y[es]*|n[o]?/,
+      warning: 'Must respond yes or no',
+      default: 'no'
+    };
+
+    prompt.get(property, function (err, result) {
+      if (result.yesno[0] === 'y') {
+        createProject(name);
+      } else {
+        console.log('Project initialization canceled');
+        process.exit();
+      }
+    });
+}
+
+function createProject(name) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
