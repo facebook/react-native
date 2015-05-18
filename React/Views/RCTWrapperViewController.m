@@ -74,6 +74,14 @@
 
     UINavigationBar *bar = self.navigationController.navigationBar;
     bar.barTintColor = _navItem.barTintColor;
+    
+    if([_navItem.barTintColor isEqual:[UIColor colorWithRed:0 green:0 blue:0 alpha:0]]) {
+      [bar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+      bar.shadowImage = [UIImage new];
+      bar.translucent = YES;
+      self.navigationController.view.backgroundColor = [UIColor clearColor];
+    }
+    
     bar.tintColor = _navItem.tintColor;
     if (_navItem.titleTextColor) {
       [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
