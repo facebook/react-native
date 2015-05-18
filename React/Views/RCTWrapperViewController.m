@@ -73,13 +73,23 @@
     }
 
     UINavigationBar *bar = self.navigationController.navigationBar;
-    bar.barTintColor = _navItem.barTintColor;
-    
-    if([_navItem.barTintColor isEqual:[UIColor colorWithRed:0 green:0 blue:0 alpha:0]]) {
-      [bar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    float red, green, blue, alpha;
+    BOOL colorConversionSuccessful = [_navItem.barTintColor getRed:&red green:&green blue:&blue alpha:&alpha];
+    if(colorConversionSuccessful && alpha < 1.0f) {
+      CGRect rect = CGRectMake(0, 0, 1, 1);
+      UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+      [_navItem.barTintColor setFill];
+      UIRectFill(rect);
+      
+      UIImage *backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+      UIGraphicsEndImageContext();
+      
+      [bar setBackgroundImage:backgroundImage forBarMetrics:UIBarMetricsDefault];
       bar.shadowImage = [UIImage new];
       bar.translucent = YES;
       self.navigationController.view.backgroundColor = [UIColor clearColor];
+    } else {
+      bar.barTintColor = _navItem.barTintColor;
     }
     
     bar.tintColor = _navItem.tintColor;
