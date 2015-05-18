@@ -78,24 +78,24 @@ function init(name) {
 }
 
 function createAfterConfirmation(name) {
-    prompt.start();
+  prompt.start();
 
-    var property = {
-      name: 'yesno',
-      message: 'Directory ' + name + ' already exist. Continue?',
-      validator: /y[es]*|n[o]?/,
-      warning: 'Must respond yes or no',
-      default: 'no'
-    };
+  var property = {
+    name: 'yesno',
+    message: 'Directory ' + name + ' already exist. Continue?',
+    validator: /y[es]*|n[o]?/,
+    warning: 'Must respond yes or no',
+    default: 'no'
+  };
 
-    prompt.get(property, function (err, result) {
-      if (result.yesno[0] === 'y') {
-        createProject(name);
-      } else {
-        console.log('Project initialization canceled');
-        process.exit();
-      }
-    });
+  prompt.get(property, function (err, result) {
+    if (result.yesno[0] === 'y') {
+      createProject(name);
+    } else {
+      console.log('Project initialization canceled');
+      process.exit();
+    }
+  });
 }
 
 function createProject(name) {
