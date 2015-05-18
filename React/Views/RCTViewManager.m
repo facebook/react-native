@@ -18,6 +18,30 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 
+@implementation RCTConvert(UIAccessibilityTraits)
+
+RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
+                                        @"none": @(UIAccessibilityTraitNone),
+                                        @"button": @(UIAccessibilityTraitButton),
+                                        @"link": @(UIAccessibilityTraitLink),
+                                        @"header": @(UIAccessibilityTraitHeader),
+                                        @"search": @(UIAccessibilityTraitSearchField),
+                                        @"image": @(UIAccessibilityTraitImage),
+                                        @"selected": @(UIAccessibilityTraitSelected),
+                                        @"plays": @(UIAccessibilityTraitPlaysSound),
+                                        @"key": @(UIAccessibilityTraitKeyboardKey),
+                                        @"text": @(UIAccessibilityTraitStaticText),
+                                        @"summary": @(UIAccessibilityTraitSummaryElement),
+                                        @"disabled": @(UIAccessibilityTraitNotEnabled),
+                                        @"frequentUpdates": @(UIAccessibilityTraitUpdatesFrequently),
+                                        @"startsMedia": @(UIAccessibilityTraitStartsMediaSession),
+                                        @"adjustable": @(UIAccessibilityTraitAdjustable),
+                                        @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
+                                        @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
+                                        }), UIAccessibilityTraitNone, unsignedLongLongValue)
+
+@end
+
 @implementation RCTViewManager
 
 @synthesize bridge = _bridge;
@@ -67,6 +91,7 @@ RCT_EXPORT_MODULE()
 #pragma mark - View properties
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
+RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)

@@ -24,6 +24,26 @@ var createReactNativeComponentClass = require('createReactNativeComponentClass')
 
 var stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
+var AccessibilityTraits = [
+  'none',
+  'button',
+  'link',
+  'header',
+  'search',
+  'image',
+  'selected',
+  'plays',
+  'key',
+  'text',
+  'summary',
+  'disabled',
+  'frequentUpdates',
+  'startsMedia',
+  'adjustable',
+  'allowsDirectInteraction',
+  'pageTurn',
+];
+
 /**
  * The most fundamental component for building UI, `View` is a
  * container that supports layout with flexbox, style, some touch handling, and
@@ -70,6 +90,14 @@ var View = React.createClass({
      */
     accessibilityLabel: PropTypes.string,
 
+    /**
+     * Provides additional traits to screen reader. By default no traits are
+     * provided unless specified otherwise in element
+     */
+    accessibilityTraits: PropTypes.oneOfType([
+      PropTypes.oneOf(AccessibilityTraits),
+      PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
+    ]),
     /**
      * Used to locate this view in end-to-end tests.
      */
