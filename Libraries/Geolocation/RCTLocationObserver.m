@@ -320,8 +320,8 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
 - (void)checkLocationConfig
 {
-  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
-    RCTLogError(@"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
+  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] && ![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] ) {
+    RCTLogError(@"NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription key must be present in Info.plist to use geolocation.");
   }
 }
 
