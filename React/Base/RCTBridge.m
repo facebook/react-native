@@ -1182,6 +1182,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
   }
 
   void (^mainThreadInvalidate)(void) = ^{
+    RCTAssertMainThread();
 
     [_mainDisplayLink invalidate];
     _mainDisplayLink = nil;
@@ -1221,7 +1222,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     /**
      * Main Thread deallocations
      */
-    mainThreadInvalidate();
+    dispatch_async(dispatch_get_main_queue(), mainThreadInvalidate);
 
   }];
 }
