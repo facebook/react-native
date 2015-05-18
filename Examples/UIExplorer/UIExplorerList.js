@@ -30,6 +30,8 @@ var {
 var { TestModule } = React.addons;
 var Settings = require('Settings');
 
+import type { Example, ExampleModule } from 'ExampleTypes';
+
 var createExamplePage = require('./createExamplePage');
 
 var COMPONENTS = [
@@ -107,9 +109,17 @@ COMPONENTS.concat(APIS).forEach((Example) => {
   }
 });
 
-class UIExplorerList extends React.Component {
+type Props = {
+  navigator: Array<{title: string, component: ReactClass<any,any,any>}>,
+  onExternalExampleRequested: Function,
+};
 
-  constructor(props) {
+
+
+class UIExplorerList extends React.Component {
+  props: Props;
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       dataSource: ds.cloneWithRowsAndSections({
@@ -150,7 +160,7 @@ class UIExplorerList extends React.Component {
     );
   }
 
-  _renderSectionHeader(data, section) {
+  _renderSectionHeader(data: any, section: string) {
     return (
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionHeaderTitle}>
@@ -160,7 +170,7 @@ class UIExplorerList extends React.Component {
     );
   }
 
-  _renderRow(example, i) {
+  _renderRow(example: ExampleModule, i: number) {
     return (
       <View key={i}>
         <TouchableHighlight onPress={() => this._onPressRow(example)}>
@@ -178,7 +188,7 @@ class UIExplorerList extends React.Component {
     );
   }
 
-  _search(text) {
+  _search(text: mixed) {
     var regex = new RegExp(text, 'i');
     var filter = (component) => regex.test(component.title);
 
@@ -192,7 +202,7 @@ class UIExplorerList extends React.Component {
     Settings.set({searchText: text});
   }
 
-  _onPressRow(example) {
+  _onPressRow(example: ExampleModule) {
     if (example.external) {
       this.props.onExternalExampleRequested(example);
       return;

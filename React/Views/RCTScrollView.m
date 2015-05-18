@@ -294,6 +294,12 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   _scrollView.stickyHeaderIndices = headerIndices;
 }
 
+- (void)setClipsToBounds:(BOOL)clipsToBounds
+{
+  [super setClipsToBounds:clipsToBounds];
+  [_scrollView setClipsToBounds:clipsToBounds];
+}
+
 - (void)dealloc
 {
   _scrollView.delegate = nil;

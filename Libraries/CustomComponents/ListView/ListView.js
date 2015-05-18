@@ -87,7 +87,7 @@ var SCROLLVIEW_REF = 'listviewscroll';
  * smoothly while dynamically loading potentially very large (or conceptually
  * infinite) data sets:
  *
- *  * Only re-render changed rows - the hasRowChanged function provided to the
+ *  * Only re-render changed rows - the rowHasChanged function provided to the
  *    data source tells the ListView if it needs to re-render a row because the
  *    source data has changed - see ListViewDataSource for more details.
  *
@@ -346,12 +346,12 @@ var ListView = React.createClass({
   _measureAndUpdateScrollProps: function() {
     RCTUIManager.measureLayout(
       this.refs[SCROLLVIEW_REF].getInnerViewNode(),
-      this.refs[SCROLLVIEW_REF].getNodeHandle(),
+      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
       logError,
       this._setScrollContentHeight
     );
     RCTUIManager.measureLayoutRelativeToParent(
-      this.refs[SCROLLVIEW_REF].getNodeHandle(),
+      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
       logError,
       this._setScrollVisibleHeight
     );

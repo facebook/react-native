@@ -56,7 +56,7 @@
 - (void)setLeftButtonIcon:(UIImage *)leftButtonIcon
 {
   _leftButtonIcon = leftButtonIcon;
-  _leftButtonIcon = nil;
+  _leftButtonItem = nil;
 }
 
 - (UIBarButtonItem *)leftButtonItem

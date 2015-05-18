@@ -15,7 +15,9 @@ var RCTPOPAnimationManager = require('NativeModules').POPAnimationManager;
 if (!RCTPOPAnimationManager) {
   // POP animation isn't available in the OSS fork - this is a temporary
   // workaround to enable its availability to be determined at runtime.
-  module.exports = (null: ?Object);
+  // For Flow let's pretend like we always export POPAnimation
+  // so all our users don't need to do null checks
+  module.exports = ((null: any): typeof POPAnimation);
 } else {
 
 var ReactPropTypes = require('ReactPropTypes');

@@ -55,7 +55,7 @@ if (cli) {
   }
 }
 
-function init(name) {
+function validatePackageName(name) {
   if (!name.match(/^[$A-Z_][0-9A-Z_$]*$/i)) {
     console.error(
       '"%s" is not a valid name for a project. Please use a valid identifier ' +
@@ -64,6 +64,10 @@ function init(name) {
     );
     process.exit(1);
   }
+}
+
+function init(name) {
+  validatePackageName(name);
 
   var root = path.resolve(name);
   var projectName = path.basename(root);

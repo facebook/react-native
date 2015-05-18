@@ -12,9 +12,10 @@ jest
   .dontMock('AssetRegistry')
   .dontMock('../resolveAssetSource');
 
-var resolveAssetSource;
-var SourceCode;
 var AssetRegistry;
+var Platform;
+var SourceCode;
+var resolveAssetSource;
 
 function expectResolvesAsset(input, expectedSource) {
   var assetId = AssetRegistry.registerAsset(input);
@@ -24,8 +25,9 @@ function expectResolvesAsset(input, expectedSource) {
 describe('resolveAssetSource', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
-    SourceCode = require('NativeModules').SourceCode;
     AssetRegistry = require('AssetRegistry');
+    Platform = require('Platform');
+    SourceCode = require('NativeModules').SourceCode;
     resolveAssetSource = require('../resolveAssetSource');
   });
 
@@ -59,7 +61,7 @@ describe('resolveAssetSource', () => {
     expect(resolveAssetSource('nonsense')).toBe(null);
   });
 
-  describe('bundle was loaded from network', () => {
+  describe('bundle was loaded from network (DEV)', () => {
     beforeEach(() => {
       SourceCode.scriptURL = 'http://10.0.0.1:8081/main.bundle';
     });
@@ -104,9 +106,21 @@ describe('resolveAssetSource', () => {
 
   });
 
-  describe('bundle was loaded from file', () => {
+  describe('bundle was loaded from file (PROD) on iOS', () => {
+    var originalDevMode;
+    var originalPlatform;
+
     beforeEach(() => {
       SourceCode.scriptURL = 'file:///Path/To/Simulator/main.bundle';
+      originalDevMode = __DEV__;
+      originalPlatform = Platform.OS;
+      __DEV__ = false;
+      Platform.OS = 'ios';
+    });
+
+    afterEach(() => {
+      __DEV__ = originalDevMode;
+      Platform.OS = originalPlatform;
     });
 
     it('uses pre-packed image', () => {
@@ -125,6 +139,43 @@ describe('resolveAssetSource', () => {
         width: 100,
         height: 200,
         uri: 'assets/module/a/logo.png',
+      });
+    });
+  });
+
+  describe('bundle was loaded from file (PROD) on Android', () => {
+    var originalDevMode;
+    var originalPlatform;
+
+    beforeEach(() => {
+      SourceCode.scriptURL = 'file:///Path/To/Simulator/main.bundle';
+      originalDevMode = __DEV__;
+      originalPlatform = Platform.OS;
+      __DEV__ = false;
+      Platform.OS = 'android';
+    });
+
+    afterEach(() => {
+      __DEV__ = originalDevMode;
+      Platform.OS = originalPlatform;
+    });
+
+    it('uses pre-packed image', () => {
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/AwesomeModule/Subdir',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: '!@Logo#1_€', // Invalid chars shouldn't get passed to native
+        type: 'png',
+      }, {
+        isStatic: true,
+        width: 100,
+        height: 200,
+        uri: 'assets_awesomemodule_subdir_logo1_',
       });
     });
   });

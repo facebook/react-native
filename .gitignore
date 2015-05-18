@@ -27,7 +27,6 @@ project.xcworkspace
 
 # Node
 node_modules
-
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion
 
 *.iml
@@ -39,3 +38,5 @@ node_modules
 ## File-based project format:
 *.ipr
 *.iws
+=======
+*.log

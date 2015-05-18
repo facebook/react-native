@@ -199,7 +199,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
 
 #pragma mark - Gesture Recognizer Delegate Callbacks
 
-static BOOL RCTAllTouchesAreCancelldOrEnded(NSSet *touches)
+static BOOL RCTAllTouchesAreCancelledOrEnded(NSSet *touches)
 {
   for (UITouch *touch in touches) {
     if (touch.phase == UITouchPhaseBegan ||
@@ -254,7 +254,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   [self _updateAndDispatchTouches:touches eventName:@"topTouchEnd" originatingTime:event.timestamp];
   [self _recordRemovedTouches:touches];
 
-  if (RCTAllTouchesAreCancelldOrEnded(event.allTouches)) {
+  if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
     self.state = UIGestureRecognizerStateEnded;
   } else if (RCTAnyTouchesChanged(event.allTouches)) {
     self.state = UIGestureRecognizerStateChanged;
@@ -267,7 +267,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   [self _updateAndDispatchTouches:touches eventName:@"topTouchCancel" originatingTime:event.timestamp];
   [self _recordRemovedTouches:touches];
 
-  if (RCTAllTouchesAreCancelldOrEnded(event.allTouches)) {
+  if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
     self.state = UIGestureRecognizerStateCancelled;
   } else if (RCTAnyTouchesChanged(event.allTouches)) {
     self.state = UIGestureRecognizerStateChanged;

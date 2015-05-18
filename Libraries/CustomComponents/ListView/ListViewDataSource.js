@@ -103,6 +103,10 @@ class ListViewDataSource {
    *
    *    or
    *
+   *      { sectionID_1: [ <rowData1>, <rowData2>, ... ], ... }
+   *
+   *    or
+   *
    *      [ [ <rowData1>, <rowData2>, ... ], ... ]
    *
    * The constructor takes in a params argument that can contain any of the

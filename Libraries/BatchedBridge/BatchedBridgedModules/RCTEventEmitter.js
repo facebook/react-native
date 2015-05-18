@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactIOSEventEmitter = require('ReactIOSEventEmitter');
+var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
 
 // Completely locally implemented - no native hooks.
-module.exports = ReactIOSEventEmitter;
+module.exports = ReactNativeEventEmitter;
