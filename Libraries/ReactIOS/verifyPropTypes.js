@@ -22,6 +22,13 @@ function verifyPropTypes(
   if (!viewConfig) {
     return; // This happens for UnimplementedView.
   }
+
+  if (!component.propTypes) {
+  	throw new Error(
+        '`' + (component.name || component.displayName) + '` has no propTypes defined`'
+      );
+  };
+
   var nativeProps = viewConfig.nativeProps;
   for (var prop in nativeProps) {
     if (!component.propTypes[prop] &&
@@ -29,7 +36,7 @@ function verifyPropTypes(
         !ReactNativeStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       throw new Error(
-        '`' + component.displayName + '` has no propType for native prop `' +
+        '`' + (component.name || component.displayName) + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
         nativeProps[prop].type + '`'
       );
