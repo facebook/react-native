@@ -297,14 +297,22 @@ var Navigator = React.createClass({
   },
 
   getInitialState: function() {
-    var routeStack = this.props.initialRouteStack || [this.props.initialRoute];
+    return this._getInitialStateFromProps(this.props);
+  },
+
+  componentWillReceiveProps: function(props) {
+    this.setState(this._getInitialStateFromProps(props));
+  },
+
+  _getInitialStateFromProps: function(props) {
+    var routeStack = props.initialRouteStack || [props.initialRoute];
     invariant(
       routeStack.length >= 1,
       'Navigator requires props.initialRoute or props.initialRouteStack.'
     );
     var initialRouteIndex = routeStack.length - 1;
-    if (this.props.initialRoute) {
-      initialRouteIndex = routeStack.indexOf(this.props.initialRoute);
+    if (props.initialRoute) {
+      initialRouteIndex = routeStack.indexOf(props.initialRoute);
       invariant(
         initialRouteIndex !== -1,
         'initialRoute is not in initialRouteStack.'
@@ -312,7 +320,7 @@ var Navigator = React.createClass({
     }
     return {
       sceneConfigStack: routeStack.map(
-        (route) => this.props.configureScene(route)
+        (route) => props.configureScene(route)
       ),
       idStack: routeStack.map(() => getuid()),
       routeStack,
