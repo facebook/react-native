@@ -3,6 +3,7 @@
  *
  * @providesModule MatrixMath
  */
+/* eslint-disable space-infix-ops */
 'use strict';
 
 var invariant = require('invariant');

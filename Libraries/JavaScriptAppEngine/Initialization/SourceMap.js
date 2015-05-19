@@ -18,6 +18,7 @@
  * and wrapping resulting file into `wrapper` function.
  *
  */
+/*eslint-disable */
 
 var scope = {};
 wrapper.call(scope);

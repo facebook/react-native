@@ -9,7 +9,6 @@
  * @providesModule React
  * @flow
  */
-
-"use strict";
+'use strict';
 
 module.exports = require('ReactNative');

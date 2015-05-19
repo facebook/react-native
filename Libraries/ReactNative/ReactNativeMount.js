@@ -21,7 +21,6 @@ var ReactUpdates = require('ReactUpdates');
 
 var emptyObject = require('emptyObject');
 var instantiateReactComponent = require('instantiateReactComponent');
-var invariant = require('invariant');
 var shouldUpdateReactComponent = require('shouldUpdateReactComponent');
 
 function instanceNumberToChildRootID(rootNodeID, instanceNumber) {

@@ -63,7 +63,8 @@ var cachedIndexArray = function(size) {
     for (var i = 0; i < size; i++) {
       arr[i] = i;
     }
-    return cachedIndexArray._cache[size] = arr;
+    cachedIndexArray._cache[size] = arr;
+    return arr;
   } else {
     return cachedResult;
   }
@@ -228,7 +229,7 @@ ReactNativeBaseComponent.Mixin = {
    */
   _reconcileListenersUponUpdate: function(prevProps, nextProps) {
     for (var key in nextProps) {
-      if (registrationNames[key] && (nextProps[key] != prevProps[key])) {
+      if (registrationNames[key] && (nextProps[key] !== prevProps[key])) {
         putListener(this._rootNodeID, key, nextProps[key]);
       }
     }

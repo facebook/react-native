@@ -9,8 +9,7 @@
  * @providesModule ReactNativeEventEmitter
  * @flow
  */
-
-"use strict";
+'use strict';
 
 var EventPluginHub = require('EventPluginHub');
 var ReactEventEmitterMixin = require('ReactEventEmitterMixin');
