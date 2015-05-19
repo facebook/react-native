@@ -210,7 +210,7 @@ var ScrollView = React.createClass({
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollTo: function(destY?: number, destX?: number, options?: { animated?: bool, duration?: number }) {
+  scrollTo: function(destY?: number, destX?: number, options?: { animated?: bool, duration?: number, easing?: string }) {
     if (Platform.OS === 'android') {
       // TODO: update to allow for custom duration which is already enabled on iOS
       RCTUIManager.dispatchViewManagerCommand(
@@ -242,7 +242,8 @@ var ScrollView = React.createClass({
           React.findNodeHandle(this),
           destX || 0,
           destY || 0,
-          options.duration
+          options.duration,
+          options.easing || 'linear'
         );
         return;
       }

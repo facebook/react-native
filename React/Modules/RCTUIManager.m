@@ -1125,12 +1125,13 @@ RCT_EXPORT_METHOD(scrollWithoutAnimationTo:(NSNumber *)reactTag
 RCT_EXPORT_METHOD(scrollWithCustomDurationTo:(NSNumber *)reactTag
                   offsetX:(CGFloat)offsetX
                   offsetY:(CGFloat)offsetY
-                  duration:(NSTimeInterval)duration)
+                  duration:(NSTimeInterval)duration
+                  animationType:(RCTAnimationType)animationType)
 {
     [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
         UIView *view = viewRegistry[reactTag];
         if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
-            RCTAnimation *animation = [[RCTAnimation alloc] initWithDuration:duration dictionary:@{ @"type": @(RCTAnimationTypeLinear) }];
+            RCTAnimation *animation = [[RCTAnimation alloc] initWithDuration:duration dictionary:@{ @"type": @(animationType) }];
 
             [animation performAnimations:^{
                 [(id<RCTScrollableProtocol>)view scrollToOffset:(CGPoint){offsetX, offsetY} animated:NO];
