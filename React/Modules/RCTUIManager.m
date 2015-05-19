@@ -806,7 +806,7 @@ RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
         // Note the default is setup after the props are read for the first time ever
         // for this className - this is ok because we only use the default for restoring
         // defaults, which never happens on first creation.
-        uiManager->_defaultViews[viewName] = [manager view];
+        uiManager->_defaultViews[viewName] = view;
       }
 
       // Set properties
