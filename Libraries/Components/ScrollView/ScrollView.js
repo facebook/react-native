@@ -210,14 +210,44 @@ var ScrollView = React.createClass({
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollTo: function(destY?: number, destX?: number) {
+  scrollTo: function(destY?: number, destX?: number, options?: { animated?: bool, duration?: number }) {
     if (Platform.OS === 'android') {
+      // TODO: update to allow for custom duration which is already enabled on iOS
       RCTUIManager.dispatchViewManagerCommand(
         React.findNodeHandle(this),
         RCTUIManager.RCTScrollView.Commands.scrollTo,
         [destX || 0, destY || 0]
       );
     } else {
+      var animated = options && options.animated || !options;
+
+      if (!animated) {
+        // scroll with no animation
+        RCTUIManager.scrollWithoutAnimationTo(
+          React.findNodeHandle(this),
+          destX || 0,
+          destY || 0
+        );
+        return;
+      }
+
+      // scroll using RCTAnimation with custom duration if a duration was passed
+      if (animated && !isNaN(options.duration)) {
+        invariant(
+          options.duration >= 0,
+          'Duration passed to ScrollView \'scrollTo\' ' +
+          'should be greater than or equal to 0.'
+        );
+        RCTUIManager.scrollWithCustomDurationTo(
+          React.findNodeHandle(this),
+          destX || 0,
+          destY || 0,
+          options.duration
+        );
+        return;
+      }
+
+      // Default scroll behavior
       RCTUIManager.scrollTo(
         React.findNodeHandle(this),
         destX || 0,
@@ -227,20 +257,7 @@ var ScrollView = React.createClass({
   },
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
-    RCTUIManager.scrollWithoutAnimationTo(
-      React.findNodeHandle(this),
-      destX || 0,
-      destY || 0
-    );
-  },
-
-  scrollWithCustomDurationTo: function(destY?: number, destX?: number, duration?: number) {
-    RCTUIManager.scrollWithCustomDurationTo(
-      React.findNodeHandle(this),
-      destX || 0,
-      destY || 0,
-      duration || 0
-    );
+    this.scrollTo(destY, destX, { animated: false });
   },
 
   render: function() {
