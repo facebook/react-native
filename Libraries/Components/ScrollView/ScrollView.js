@@ -232,7 +232,7 @@ var ScrollView = React.createClass({
       }
 
       // scroll using RCTAnimation with custom duration if a duration was passed
-      if (animated && !isNaN(options.duration)) {
+      if (animated && (options && options.duration)) {
         invariant(
           options.duration >= 0,
           'Duration passed to ScrollView \'scrollTo\' ' +
