@@ -287,11 +287,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   _scrollView.centerContent = centerContent;
 }
 
-- (void)setContentOffset:(CGPoint)contentOffset
-{
-  [_scrollView setContentOffset:contentOffset];
-}
-
 - (void)setStickyHeaderIndices:(NSIndexSet *)headerIndices
 {
   RCTAssert(_scrollView.contentSize.width <= self.frame.size.width,

@@ -1133,7 +1133,7 @@ RCT_EXPORT_METHOD(scrollWithCustomDurationTo:(NSNumber *)reactTag
             RCTAnimation *animation = [[RCTAnimation alloc] initWithDuration:duration dictionary:@{ @"type": @(RCTAnimationTypeLinear) }];
 
             [animation performAnimations:^{
-                [(id<RCTScrollableProtocol>)view setContentOffset:(CGPoint){offsetX, offsetY}];
+                [(id<RCTScrollableProtocol>)view scrollToOffset:(CGPoint){offsetX, offsetY} animated:NO];
             } withCompletionBlock:nil];
         } else {
             RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
