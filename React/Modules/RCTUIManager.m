@@ -1122,6 +1122,25 @@ RCT_EXPORT_METHOD(scrollWithoutAnimationTo:(NSNumber *)reactTag
     }];
 }
 
+RCT_EXPORT_METHOD(scrollWithCustomDurationTo:(NSNumber *)reactTag
+                  offsetX:(CGFloat)offsetX
+                  offsetY:(CGFloat)offsetY
+                  duration:(NSTimeInterval)duration)
+{
+    [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
+        UIView *view = viewRegistry[reactTag];
+        if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+            RCTAnimation *animation = [[RCTAnimation alloc] initWithDuration:duration dictionary:@{ @"type": @(RCTAnimationTypeLinear) }];
+
+            [animation performAnimations:^{
+                [(id<RCTScrollableProtocol>)view setContentOffset:(CGPoint){offsetX, offsetY}];
+            } withCompletionBlock:nil];
+        } else {
+            RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(zoomToRect:(NSNumber *)reactTag
                   withRect:(CGRect)rect)
 {

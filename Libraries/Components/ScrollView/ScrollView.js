@@ -234,6 +234,15 @@ var ScrollView = React.createClass({
     );
   },
 
+  scrollWithCustomDurationTo: function(destY?: number, destX?: number, duration?: number) {
+    RCTUIManager.scrollWithCustomDurationTo(
+      React.findNodeHandle(this),
+      destX || 0,
+      destY || 0,
+      duration || 0
+    );
+  },
+
   render: function() {
     var contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
