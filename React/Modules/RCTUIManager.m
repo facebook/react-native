@@ -1309,6 +1309,9 @@ RCT_EXPORT_METHOD(clearJSResponder)
     @"topLoadingError": @{
       @"registrationName": @"onLoadingError"
     },
+    @"topMagicTap": @{
+      @"registrationName": @"onMagicTap"
+    },
   } mutableCopy];
 
   [_viewManagers enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTViewManager *manager, BOOL *stop) {

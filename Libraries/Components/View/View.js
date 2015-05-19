@@ -98,6 +98,13 @@ var View = React.createClass({
       PropTypes.oneOf(AccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
     ]),
+
+    /**
+     * When `accessible` is true, the system will invoke this function when the
+     * user performs the magic tap gesture.
+     */
+    onMagicTap: PropTypes.func,
+
     /**
      * Used to locate this view in end-to-end tests.
      */

@@ -167,6 +167,16 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+- (BOOL)accessibilityPerformMagicTap
+{
+  if (self.magicTapHandler) {
+    self.magicTapHandler(self);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
 #pragma mark - Statics for dealing with layoutGuides
 
 + (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView

@@ -22,6 +22,7 @@ ReactNativeViewAttributes.UIView = {
   accessibilityTraits: true,
   testID: true,
   onLayout: true,
+  onMagicTap: true,
 };
 
 ReactNativeViewAttributes.RCTView = merge(

@@ -17,6 +17,7 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
+#import "UIView+React.h"
 
 @implementation RCTConvert(UIAccessibilityTraits)
 
@@ -170,6 +171,19 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
   } else {
     view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
   }
+}
+RCT_CUSTOM_VIEW_PROPERTY(onMagicTap, BOOL, RCTView)
+{
+  RCTViewMagicTapHandler handler = nil;
+  if ([RCTConvert BOOL:json]) {
+    __weak RCTViewManager *weakSelf = self;
+    handler = ^(RCTView *tappedView) {
+      NSDictionary *body = @{ @"target": tappedView.reactTag };
+      [weakSelf.bridge.eventDispatcher sendInputEventWithName:@"topMagicTap" body:body];
+    };
+  }
+
+  view.magicTapHandler = handler;
 }
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
