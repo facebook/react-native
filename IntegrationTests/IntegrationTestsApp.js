@@ -27,6 +27,7 @@ var TESTS = [
   require('./AsyncStorageTest'),
   require('./LayoutEventsTest'),
   require('./SimpleSnapshotTest'),
+  require('./WebViewExternalLinksTest'),
 ];
 
 TESTS.forEach(

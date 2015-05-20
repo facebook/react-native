@@ -17,6 +17,7 @@
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL shouldInjectAJAXHandler;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) BOOL openLinksInExternalBrowser;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
