@@ -48,7 +48,9 @@ var TabBarExample = React.createClass({
 
   render: function() {
     return (
-      <TabBarIOS>
+      <TabBarIOS
+        tintColor={'black'}
+        barTintColor={'#3abeff'}>
         <TabBarIOS.Item
           title="Blue Tab"
           selected={this.state.selectedTab === 'blueTab'}
@@ -89,6 +91,9 @@ var TabBarExample = React.createClass({
 });
 
 var styles = StyleSheet.create({
+  tabBar: {
+
+  },
   tabContent: {
     flex: 1,
     alignItems: 'center',
