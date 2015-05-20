@@ -387,7 +387,7 @@ exports.examples = [
             <View style={styles.multilineChild}/>
           </TextInput>
         </View>
-      )
+      );
     }
   }
 ];

@@ -789,6 +789,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainThread();
    */
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self invalidate];
 }
 
@@ -819,9 +820,9 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)reload
 {
-/**
- * AnyThread
- */
+  /**
+   * AnyThread
+   */
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
     [self setUp];
@@ -833,6 +834,11 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   RCTAssertMainThread();
 
   _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
+}
+
+- (BOOL)isLoading
+{
+  return _batchedBridge.loading;
 }
 
 - (BOOL)isValid
@@ -873,15 +879,19 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return _eventDispatcher ?: _batchedBridge.eventDispatcher;
 }
 
-#define RCT_BRIDGE_WARN(...) \
+#define RCT_INNER_BRIDGE_ONLY(...) \
 - (void)__VA_ARGS__ \
 { \
   RCTLogMustFix(@"Called method \"%@\" on top level bridge. This method should \
               only be called from bridge instance in a bridge module", @(__func__)); \
 }
 
-RCT_BRIDGE_WARN(enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args)
-RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context)
+- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
+{
+  [self.batchedBridge enqueueJSCall:moduleDotMethod args:args];
+}
+
+RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context)
 
 @end
 
@@ -1084,7 +1094,16 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
      */
     _loading = NO;
 
-  } else if (bundleURL) { // Allow testing without a script
+  } else if (!bundleURL) {
+
+    // Allow testing without a script
+    dispatch_async(dispatch_get_main_queue(), ^{
+      _loading = NO;
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                          object:_parentBridge
+                                                        userInfo:@{ @"bridge": self }];
+    });
+  } else {
 
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
@@ -1108,9 +1127,9 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
                                            withDetails:[error localizedFailureReason]];
         }
 
-        NSDictionary *userInfo = @{@"error": error};
+        NSDictionary *userInfo = @{@"bridge": self, @"error": error};
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
-                                                            object:self
+                                                            object:_parentBridge
                                                           userInfo:userInfo];
 
       } else {
@@ -1129,6 +1148,9 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
             [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                                 object:_parentBridge
                                                               userInfo:@{ @"bridge": self }];
+          } else {
+            [[RCTRedBox sharedInstance] showErrorMessage:[loadError localizedDescription]
+                                             withDetails:[loadError localizedFailureReason]];
           }
         }];
       }
@@ -1160,8 +1182,8 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
   }
 
   void (^mainThreadInvalidate)(void) = ^{
+    RCTAssertMainThread();
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_mainDisplayLink invalidate];
     _mainDisplayLink = nil;
 
@@ -1200,7 +1222,7 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
     /**
      * Main Thread deallocations
      */
-    mainThreadInvalidate();
+    dispatch_async(dispatch_get_main_queue(), mainThreadInvalidate);
 
   }];
 }
@@ -1499,6 +1521,7 @@ RCT_BRIDGE_WARN(_invokeAndProcessModule:(NSString *)module method:(NSString *)me
       @"module": method.moduleClassName,
       @"method": method.JSMethodName,
       @"selector": NSStringFromSelector(method.selector),
+      @"args": RCTJSONStringify(params ?: [NSNull null], NULL),
     });
   } forModule:@(moduleID)];
 

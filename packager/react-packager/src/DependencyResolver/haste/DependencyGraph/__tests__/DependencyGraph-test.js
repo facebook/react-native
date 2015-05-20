@@ -10,12 +10,13 @@
 
 jest
   .dontMock('../index')
-  .dontMock('path')
   .dontMock('absolute-path')
   .dontMock('../docblock')
   .dontMock('../../replacePatterns')
   .dontMock('../../../../lib/getAssetDataFromName')
   .setMock('../../../ModuleDescriptor', function(data) {return data;});
+
+jest.mock('fs');
 
 describe('DependencyGraph', function() {
   var DependencyGraph;

@@ -165,6 +165,7 @@ Packager.prototype._transformModule = function(ppackage, module) {
       map: transformed.map,
       sourceCode: transformed.sourceCode,
       sourcePath: transformed.sourcePath,
+      virtual: transformed.virtual,
     });
   });
 };

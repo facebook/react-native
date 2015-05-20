@@ -113,7 +113,23 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
-RCT_REMAP_VIEW_PROPERTY(borderRadius, layer.cornerRadius, CGFloat)
+RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView) {
+  if ([view respondsToSelector:@selector(setBorderRadius:)]) {
+    if (json) {
+      view.borderRadius = [RCTConvert CGFloat:json];
+    } else if ([view respondsToSelector:@selector(borderRadius)]) {
+      view.borderRadius = [defaultView borderRadius];
+    } else {
+      view.borderRadius = defaultView.layer.cornerRadius;
+    }
+  } else {
+    if (json) {
+      view.layer.cornerRadius = [RCTConvert CGFloat:json];
+    } else {
+      view.layer.cornerRadius = defaultView.layer.cornerRadius;
+    }
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderColor:)]) {
@@ -149,6 +165,19 @@ RCT_VIEW_BORDER_PROPERTY(Top)
 RCT_VIEW_BORDER_PROPERTY(Right)
 RCT_VIEW_BORDER_PROPERTY(Bottom)
 RCT_VIEW_BORDER_PROPERTY(Left)
+
+#define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                           \
+RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)        \
+{                                                                       \
+  if ([view respondsToSelector:@selector(setBorder##SIDE##Radius:)]) {  \
+    view.border##SIDE##Radius = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Radius; \
+  }                                                                     \
+}                                                                       \
+
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopLeft)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
 #pragma mark - ShadowView properties
 

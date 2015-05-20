@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.4.2"
+  s.version             = "0.4.4"
   s.summary             = "Build high quality mobile apps using React."
   s.description         = <<-DESC
                             React Native apps are built using the React JS
@@ -30,6 +30,12 @@ Pod::Spec.new do |s|
     ss.source_files     = "React/**/*.{c,h,m}"
     ss.exclude_files    = "**/__tests__/*", "IntegrationTests/*"
     ss.frameworks       = "JavaScriptCore"
+  end
+
+  s.subspec 'ART' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/ART/**/*.{h,m}"
+    ss.preserve_paths   = "Libraries/ART/**/*.js"
   end
 
   s.subspec 'RCTActionSheet' do |ss|
@@ -74,10 +80,10 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/PushNotificationIOS/*.js"
   end
 
-  s.subspec 'RCTWebSocketDebugger' do |ss|
+  s.subspec 'RCTSettings' do |ss|
     ss.dependency         'React/Core'
-    ss.libraries        = 'icucore'
-    ss.source_files     = "Libraries/RCTWebSocketDebugger/*.{h,m}"
+    ss.source_files     = "Libraries/Settings/*.{h,m}"
+    ss.preserve_paths   = "Libraries/Settings/*.js"
   end
 
   s.subspec 'RCTText' do |ss|
@@ -90,5 +96,11 @@ Pod::Spec.new do |s|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Vibration/*.{h,m}"
     ss.preserve_paths   = "Libraries/Vibration/*.js"
+  end
+
+  s.subspec 'RCTWebSocket' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/WebSocket/*.{h,m}"
+    ss.preserve_paths   = "Libraries/WebSocket/*.js"
   end
 end

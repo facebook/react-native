@@ -349,7 +349,7 @@ function getOptionsFromUrl(reqUrl) {
   // node v0.11.14 bug see https://github.com/facebook/react-native/issues/218
   urlObj.query = urlObj.query || {};
 
-  var pathname = urlObj.pathname;
+  var pathname = decodeURIComponent(urlObj.pathname);
 
   // Backwards compatibility. Options used to be as added as '.' to the
   // entry module name. We can safely remove these options.

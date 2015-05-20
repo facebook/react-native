@@ -13,6 +13,8 @@ jest.dontMock('../')
     .dontMock('../replacePatterns')
     .setMock('../../ModuleDescriptor', function(data) {return data;});
 
+jest.mock('path');
+
 var Promise = require('bluebird');
 
 describe('HasteDependencyResolver', function() {

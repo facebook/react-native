@@ -16,10 +16,12 @@ var reactVisitors =
   require('react-tools/vendor/fbtransform/visitors').getAllVisitors();
 var staticTypeSyntax =
   require('jstransform/visitors/type-syntax').visitorList;
+var trailingCommaVisitors =
+  require('jstransform/visitors/es7-trailing-comma-visitors.js').visitorList;
+
 // Note that reactVisitors now handles ES6 classes, rest parameters, arrow
 // functions, template strings, and object short notation.
-var visitorList = reactVisitors;
-
+var visitorList = reactVisitors.concat(trailingCommaVisitors);
 
 function transform(srcTxt, filename) {
   var options = {

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var View = require('View');
 
 function verifyPropTypes(
@@ -26,7 +26,7 @@ function verifyPropTypes(
   for (var prop in nativeProps) {
     if (!component.propTypes[prop] &&
         !View.propTypes[prop] &&
-        !ReactIOSStyleAttributes[prop] &&
+        !ReactNativeStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       throw new Error(
         '`' + component.displayName + '` has no propType for native prop `' +
