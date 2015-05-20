@@ -688,7 +688,7 @@ var Navigator = React.createClass({
    */
   _enableScene: function(sceneIndex) {
     // First, determine what the defined styles are for scenes in this navigator
-    var sceneStyle = flattenStyle(this.props.sceneStyle);
+    var sceneStyle = flattenStyle([styles.baseScene, this.props.sceneStyle]);
     // Then restore the left value for this scene
     var enabledSceneNativeProps = {
       left: sceneStyle.left,
