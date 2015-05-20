@@ -28,7 +28,7 @@ var validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: ['png'],
+    required: true,
   },
 });
 
@@ -90,7 +90,7 @@ AssetServer.prototype.getAssetData = function(assetPath) {
   var nameData = getAssetDataFromName(assetPath);
   var data = {
     name: nameData.name,
-    type: 'png',
+    type: nameData.type,
   };
 
   return this._getAssetRecord(assetPath).then(function(record) {
