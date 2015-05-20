@@ -13,6 +13,7 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTImageLoader.h"
 
 @implementation RCTDataManager
 
@@ -34,8 +35,43 @@ RCT_EXPORT_METHOD(queryData:(NSString *)queryType
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.HTTPMethod = [RCTConvert NSString:query[@"method"]] ?: @"GET";
     request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
-    request.HTTPBody = [RCTConvert NSData:query[@"data"]];
 
+    if (query[@"data"] != [NSNull null]) {
+      NSDictionary *data = [RCTConvert NSDictionary:query[@"data"]];
+      NSData *body = [RCTConvert NSData:data[@"string"]];
+      if (body != nil) {
+        request.HTTPBody = body;
+        [RCTDataManager sendRequest:request responseSender:responseSender];
+        return;
+      }
+      NSString *uri = [RCTConvert NSString:data[@"uri"]];
+      if (uri != nil) {
+        if ([RCTImageLoader isSystemImageURI:uri]) {
+          [RCTImageLoader loadImageWithTag:(NSString *)uri callback:^(NSError *error, UIImage *image) {
+            if (error) {
+              RCTLogError(@"Error loading image URI: %@", error);
+              // We should really circle back to JS here and notify an error/abort on the request.
+              return;
+            }
+            NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+            request.HTTPBody = imageData;
+            [RCTDataManager sendRequest:request responseSender:responseSender];
+          }];
+        } else {
+          RCTLogError(@"Cannot resolve URI: %@", uri);
+        }
+        return;
+      }
+    }
+
+    // There was no data payload, or we couldn't understand it.
+    [RCTDataManager sendRequest:request responseSender:responseSender];
+  } else {
+    RCTLogError(@"unsupported query type %@", queryType);
+  }
+}
+
++ (void)sendRequest:(NSURLRequest *)request responseSender:(RCTResponseSenderBlock)responseSender {
     // Build data task
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
 
@@ -71,11 +107,6 @@ RCT_EXPORT_METHOD(queryData:(NSString *)queryType
     }];
 
     [task resume];
-
-  } else {
-
-    RCTLogError(@"unsupported query type %@", queryType);
-  }
 }
 
 @end
