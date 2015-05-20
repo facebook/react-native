@@ -827,7 +827,16 @@ var Navigator = React.createClass({
       }
     } else {
       // The gesture has enough velocity to complete, so we transition to the gesture's destination
-      this._transitionTo(destIndex, transitionVelocity);
+      this._transitionTo(
+        destIndex,
+        transitionVelocity,
+        null,
+        () => {
+          if (releaseGestureAction === 'pop') {
+            this._cleanScenesPastIndex(destIndex);
+          }
+        }
+      );
     }
     this._detachGesture();
   },
