@@ -249,6 +249,15 @@ Package.prototype._getMappings = function() {
   return mappings;
 };
 
+Package.prototype.getJSModulePaths = function() {
+  return this._modules.filter(function(module) {
+    // Filter out non-js files. Like images etc.
+    return !module.virtual;
+  }).map(function(module) {
+    return module.sourcePath;
+  });
+};
+
 Package.prototype.getDebugInfo = function() {
   return [
     '<div><h3>Main Module:</h3> ' + this._mainModuleId + '</div>',
