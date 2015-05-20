@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "lint": "node linter.js Examples/",
+    "lint": "node linter.js Examples/ Libraries/",
     "start": "./packager/packager.sh"
   },
   "bin": {

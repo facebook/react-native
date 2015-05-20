@@ -17,6 +17,31 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
+#import "UIView+React.h"
+
+@implementation RCTConvert(UIAccessibilityTraits)
+
+RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
+                                        @"none": @(UIAccessibilityTraitNone),
+                                        @"button": @(UIAccessibilityTraitButton),
+                                        @"link": @(UIAccessibilityTraitLink),
+                                        @"header": @(UIAccessibilityTraitHeader),
+                                        @"search": @(UIAccessibilityTraitSearchField),
+                                        @"image": @(UIAccessibilityTraitImage),
+                                        @"selected": @(UIAccessibilityTraitSelected),
+                                        @"plays": @(UIAccessibilityTraitPlaysSound),
+                                        @"key": @(UIAccessibilityTraitKeyboardKey),
+                                        @"text": @(UIAccessibilityTraitStaticText),
+                                        @"summary": @(UIAccessibilityTraitSummaryElement),
+                                        @"disabled": @(UIAccessibilityTraitNotEnabled),
+                                        @"frequentUpdates": @(UIAccessibilityTraitUpdatesFrequently),
+                                        @"startsMedia": @(UIAccessibilityTraitStartsMediaSession),
+                                        @"adjustable": @(UIAccessibilityTraitAdjustable),
+                                        @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
+                                        @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
+                                        }), UIAccessibilityTraitNone, unsignedLongLongValue)
+
+@end
 
 @implementation RCTViewManager
 
@@ -67,6 +92,7 @@ RCT_EXPORT_MODULE()
 #pragma mark - View properties
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
+RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
@@ -145,6 +171,27 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
   } else {
     view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
   }
+}
+RCT_CUSTOM_VIEW_PROPERTY(onAccessibilityTap, BOOL, RCTView)
+{
+  view.accessibilityTapHandler = [self eventHandlerWithName:@"topAccessibilityTap" json:json];
+}
+RCT_CUSTOM_VIEW_PROPERTY(onMagicTap, BOOL, RCTView)
+{
+  view.magicTapHandler = [self eventHandlerWithName:@"topMagicTap" json:json];
+}
+
+- (RCTViewEventHandler)eventHandlerWithName:(NSString *)eventName json:(id)json
+{
+  RCTViewEventHandler handler = nil;
+  if ([RCTConvert BOOL:json]) {
+    __weak RCTViewManager *weakSelf = self;
+    handler = ^(RCTView *tappedView) {
+      NSDictionary *body = @{ @"target": tappedView.reactTag };
+      [weakSelf.bridge.eventDispatcher sendInputEventWithName:eventName body:body];
+    };
+  }
+  return handler;
 }
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \

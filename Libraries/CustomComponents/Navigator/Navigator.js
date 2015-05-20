@@ -24,6 +24,7 @@
  *
  * @providesModule Navigator
  */
+ /* eslint-disable no-extra-boolean-cast*/
 'use strict';
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
@@ -48,8 +49,6 @@ var clamp = require('clamp');
 var flattenStyle = require('flattenStyle');
 var getNavigatorContext = require('getNavigatorContext');
 var invariant = require('invariant');
-var keyMirror = require('keyMirror');
-var merge = require('merge');
 var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
@@ -689,7 +688,7 @@ var Navigator = React.createClass({
    */
   _enableScene: function(sceneIndex) {
     // First, determine what the defined styles are for scenes in this navigator
-    var sceneStyle = flattenStyle(this.props.sceneStyle);
+    var sceneStyle = flattenStyle([styles.baseScene, this.props.sceneStyle]);
     // Then restore the left value for this scene
     var enabledSceneNativeProps = {
       left: sceneStyle.left,
@@ -745,7 +744,6 @@ var Navigator = React.createClass({
   },
 
   _handleMoveShouldSetPanResponder: function(e, gestureState) {
-    var currentRoute = this.state.routeStack[this.state.presentedIndex];
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     this._expectingGestureGrant = this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
     return !! this._expectingGestureGrant;
@@ -829,7 +827,16 @@ var Navigator = React.createClass({
       }
     } else {
       // The gesture has enough velocity to complete, so we transition to the gesture's destination
-      this._transitionTo(destIndex, transitionVelocity);
+      this._transitionTo(
+        destIndex,
+        transitionVelocity,
+        null,
+        () => {
+          if (releaseGestureAction === 'pop') {
+            this._cleanScenesPastIndex(destIndex);
+          }
+        }
+      );
     }
     this._detachGesture();
   },

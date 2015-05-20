@@ -12,6 +12,7 @@
  * @providesModule fetch
  * @nolint
  */
+/* eslint-disable */
 'use strict';
 
 var self = {};

@@ -75,7 +75,7 @@ var WebView = React.createClass({
         errorEvent.code,
         errorEvent.description);
     } else if (this.state.viewState !== WebViewState.IDLE) {
-      console.error("RCTWebView invalid state encountered: " + this.state.loading);
+      console.error('RCTWebView invalid state encountered: ' + this.state.loading);
     }
 
     var webViewStyles = [styles.container, this.props.style];
@@ -152,7 +152,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event) {
     event.persist(); // persist this event because we need to store it
-    console.error("encountered an error loading page", event.nativeEvent);
+    console.error('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
