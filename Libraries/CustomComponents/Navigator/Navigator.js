@@ -1009,11 +1009,11 @@ var Navigator = React.createClass({
     return destIndex;
   },
 
-  _jumpN: function(n) {
+  _jumpN: function(n, cb) {
     var destIndex = this._getDestIndexWithinBounds(n);
     var requestTransitionAndResetUpdatingRange = () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex);
+      this._transitionTo(destIndex, cb);
       this._resetUpdatingRange();
     };
     this.setState({
@@ -1022,21 +1022,21 @@ var Navigator = React.createClass({
     }, requestTransitionAndResetUpdatingRange);
   },
 
-  jumpTo: function(route) {
+  jumpTo: function(route, cb) {
     var destIndex = this.state.routeStack.indexOf(route);
     invariant(
       destIndex !== -1,
       'Cannot jump to route that is not in the route stack'
     );
-    this._jumpN(destIndex - this.state.presentedIndex);
+    this._jumpN(destIndex - this.state.presentedIndex, cb);
   },
 
-  jumpForward: function() {
-    this._jumpN(1);
+  jumpForward: function(cb) {
+    this._jumpN(1, cb);
   },
 
-  jumpBack: function() {
-    this._jumpN(-1);
+  jumpBack: function(cb) {
+    this._jumpN(-1, cb);
   },
 
   push: function(route, cb) {
@@ -1053,9 +1053,13 @@ var Navigator = React.createClass({
     ]);
     var requestTransitionAndResetUpdatingRange = () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex);
+      this._transitionTo(
+        destIndex,
+        null, // default velocity
+        null, // no spring jumping
+        cb
+      );
       this._resetUpdatingRange();
-      if (cb) cb();
     };
     this.setState({
       idStack: nextIDStack,
@@ -1135,15 +1139,15 @@ var Navigator = React.createClass({
   /**
    * Replaces the current scene in the stack.
    */
-  replace: function(route) {
-    this.replaceAtIndex(route, this.state.presentedIndex);
+  replace: function(route, cb) {
+    this.replaceAtIndex(route, this.state.presentedIndex, cb);
   },
 
   /**
    * Replace the current route's parent.
    */
-  replacePrevious: function(route) {
-    this.replaceAtIndex(route, this.state.presentedIndex - 1);
+  replacePrevious: function(route, cb) {
+    this.replaceAtIndex(route, this.state.presentedIndex - 1, cb);
   },
 
   popToTop: function(cb) {
@@ -1164,12 +1168,12 @@ var Navigator = React.createClass({
     this._popN(numToPop, cb);
   },
 
-  replacePreviousAndPop: function(route) {
+  replacePreviousAndPop: function(route, cb) {
     if (this.state.routeStack.length < 2) {
       return;
     }
     this.replacePrevious(route);
-    this.pop();
+    this.pop(cb);
   },
 
   resetTo: function(route, cb) {
