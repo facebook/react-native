@@ -127,7 +127,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomRightRadius = -1;
 
     _backgroundColor = [super backgroundColor];
-    [super setBackgroundColor:[UIColor clearColor]];
   }
 
   return self;
@@ -443,6 +442,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (UIImage *)generateBorderImage:(out CGRect *)contentsCenter
 {
+  static const CGFloat threshold = 0.001;
+
   const CGFloat maxRadius = MIN(self.bounds.size.height, self.bounds.size.width);
   const CGFloat radius = MAX(0, _borderRadius);
   const CGFloat topLeftRadius =     MIN(_borderTopLeftRadius     >= 0 ? _borderTopLeftRadius     : radius, maxRadius);
@@ -455,6 +456,17 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   const CGFloat rightWidth  = _borderRightWidth  >= 0 ? _borderRightWidth  : borderWidth;
   const CGFloat bottomWidth = _borderBottomWidth >= 0 ? _borderBottomWidth : borderWidth;
   const CGFloat leftWidth   = _borderLeftWidth   >= 0 ? _borderLeftWidth   : borderWidth;
+
+  if (topLeftRadius < threshold &&
+      topRightRadius < threshold &&
+      bottomLeftRadius < threshold &&
+      bottomRightRadius < threshold &&
+      topWidth < threshold &&
+      rightWidth < threshold &&
+      bottomWidth < threshold &&
+      leftWidth < threshold) {
+    return nil;
+  }
 
   const CGFloat innerTopLeftRadiusX = MAX(0, topLeftRadius - leftWidth);
   const CGFloat innerTopLeftRadiusY = MAX(0, topLeftRadius - topWidth);
@@ -657,22 +669,21 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (void)displayLayer:(CALayer *)layer
 {
-  CGRect contentsCenter;
+  CGRect contentsCenter = (CGRect){CGPointZero, {1, 1}};
   UIImage *image = [self generateBorderImage:&contentsCenter];
 
-  if (RCTRunningInTestEnvironment()) {
+  if (image && RCTRunningInTestEnvironment()) {
     const CGSize size = self.bounds.size;
     UIGraphicsBeginImageContextWithOptions(size, NO, image.scale);
     [image drawInRect:(CGRect){CGPointZero, size}];
     image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
-    contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
+  layer.backgroundColor = [image ? [UIColor clearColor] : _backgroundColor CGColor];
   layer.contents = (id)image.CGImage;
   layer.contentsCenter = contentsCenter;
-  layer.contentsScale = image.scale;
+  layer.contentsScale = image.scale ?: 1.0;
   layer.magnificationFilter = kCAFilterNearest;
 }
 
