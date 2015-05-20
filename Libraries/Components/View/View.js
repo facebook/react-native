@@ -100,6 +100,12 @@ var View = React.createClass({
     ]),
 
     /**
+     * When `accessible` is true, the system will try to invoke this function
+     * when the user performs accessibility tap gesture.
+     */
+    onAcccessibilityTap: PropTypes.func,
+
+    /**
      * When `accessible` is true, the system will invoke this function when the
      * user performs the magic tap gesture.
      */

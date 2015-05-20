@@ -167,6 +167,16 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+- (BOOL)accessibilityActivate
+{
+  if (self.accessibilityTapHandler) {
+    self.accessibilityTapHandler(self);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
 - (BOOL)accessibilityPerformMagicTap
 {
   if (self.magicTapHandler) {

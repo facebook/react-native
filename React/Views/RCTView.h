@@ -16,11 +16,12 @@
 @protocol RCTAutoInsetsProtocol;
 
 @class RCTView;
-typedef void (^RCTViewMagicTapHandler)(RCTView *view);
+typedef void (^RCTViewEventHandler)(RCTView *view);
 
 @interface RCTView : UIView
 
-@property (nonatomic, copy) RCTViewMagicTapHandler magicTapHandler;
+@property (nonatomic, copy) RCTViewEventHandler accessibilityTapHandler;
+@property (nonatomic, copy) RCTViewEventHandler magicTapHandler;
 
 /**
  * Used to control how touch events are processed.

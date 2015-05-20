@@ -172,18 +172,26 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
     view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(onAccessibilityTap, BOOL, RCTView)
+{
+  view.accessibilityTapHandler = [self eventHandlerWithName:@"topAccessibilityTap" json:json];
+}
 RCT_CUSTOM_VIEW_PROPERTY(onMagicTap, BOOL, RCTView)
 {
-  RCTViewMagicTapHandler handler = nil;
+  view.magicTapHandler = [self eventHandlerWithName:@"topMagicTap" json:json];
+}
+
+- (RCTViewEventHandler)eventHandlerWithName:(NSString *)eventName json:(id)json
+{
+  RCTViewEventHandler handler = nil;
   if ([RCTConvert BOOL:json]) {
     __weak RCTViewManager *weakSelf = self;
     handler = ^(RCTView *tappedView) {
       NSDictionary *body = @{ @"target": tappedView.reactTag };
-      [weakSelf.bridge.eventDispatcher sendInputEventWithName:@"topMagicTap" body:body];
+      [weakSelf.bridge.eventDispatcher sendInputEventWithName:eventName body:body];
     };
   }
-
-  view.magicTapHandler = handler;
+  return handler;
 }
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
