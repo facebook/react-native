@@ -88,6 +88,19 @@ var WebView = React.createClass({
     automaticallyAdjustContentInsets: PropTypes.bool,
     shouldInjectAJAXHandler: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
+    /**
+     * (navState) => void
+     *
+     * Called when the navigation state changes (for example, when the web view finishes loading).
+     *
+     *   - navState.canGoBack
+     *   - navState.canGoForward
+     *   - navState.url
+     *   - navState.title
+     *   - navState.loading
+     *   - navState.contentWidth
+     *   - navState.contentHeight
+     */
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,

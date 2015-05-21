@@ -112,6 +112,8 @@
 {
   NSURL *url = _webView.request.URL;
   NSString *title = [_webView stringByEvaluatingJavaScriptFromString:@"document.title"];
+  float contentWidth = [[_webView stringByEvaluatingJavaScriptFromString:@"document.body.clientWidth"] floatValue];
+  float contentHeight = [[_webView stringByEvaluatingJavaScriptFromString:@"document.body.clientHeight"] floatValue];
   NSMutableDictionary *event = [[NSMutableDictionary alloc] initWithDictionary: @{
     @"target": self.reactTag,
     @"url": url ? [url absoluteString] : @"",
@@ -119,6 +121,8 @@
     @"title": title,
     @"canGoBack": @([_webView canGoBack]),
     @"canGoForward" : @([_webView canGoForward]),
+    @"contentWidth" : @(contentWidth),
+    @"contentHeight" : @(contentHeight),
   }];
 
   return event;
