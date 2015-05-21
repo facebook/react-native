@@ -8,6 +8,7 @@
  *
  * @providesModule ErrorUtils
  */
+/* eslint-disable consistent-this, global-strict */
 
 var GLOBAL = this;
 

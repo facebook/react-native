@@ -10,9 +10,8 @@
  * @flow
  */
 
-"use strict";
+'use strict';
 
-var ReactElement = require('ReactElement');
 var ReactNativeBaseComponent = require('ReactNativeBaseComponent');
 
 // See also ReactNativeBaseComponent

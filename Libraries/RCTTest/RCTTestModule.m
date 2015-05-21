@@ -11,6 +11,7 @@
 
 #import "FBSnapshotTestController.h"
 #import "RCTAssert.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUIManager.h"
 
@@ -61,6 +62,11 @@ RCT_EXPORT_METHOD(markTestCompleted)
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     _done = YES;
   }];
+}
+
+RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(id)body)
+{
+  [_bridge.eventDispatcher sendAppEventWithName:name body:body];
 }
 
 @end

@@ -60,7 +60,7 @@ var Image = React.createClass({
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `required('image!name')` function).
+     * resource (which should be wrapped in the `require('image!name')` function).
      */
     source: PropTypes.shape({
       uri: PropTypes.string,

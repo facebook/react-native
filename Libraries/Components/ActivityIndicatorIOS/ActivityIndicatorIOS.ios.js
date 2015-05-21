@@ -12,7 +12,6 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
