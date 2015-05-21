@@ -23,6 +23,7 @@ var TypesEnum = {
   easeInEaseOut: true,
   easeIn: true,
   easeOut: true,
+  keyboard: true
 };
 var Types = keyMirror(TypesEnum);
 
