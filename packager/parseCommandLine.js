@@ -52,6 +52,15 @@ function parseCommandLine(config) {
     if (argv[command] === 'false') {
       argv[command] = false;
     }
+    if (config[i].type === 'string') {
+      // According to https://github.com/substack/node-optimist#numbers,
+      // every argument that looks like a number should be converted to one.
+      var strValue = argv[command];
+      var numValue = strValue ? Number(strValue) : undefined;
+      if (typeof numValue === 'number' && !isNaN(numValue)) {
+        argv[command] = numValue;
+      }
+    }
   }
 
   // Show --help
