@@ -100,7 +100,7 @@ exports.examples = [{
 {
   title: 'Prompt',
   render(): React.Component {
-    return <PromptExample />
+    return <PromptExample />;
   }
 }];
 

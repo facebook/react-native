@@ -275,7 +275,7 @@ exports.examples = [
   },
   {
     title: 'Event handling',
-    render: function(): ReactElement { return <TextEventsExample /> },
+    render: function(): ReactElement { return <TextEventsExample />; },
   },
   {
     title: 'Colored input text',

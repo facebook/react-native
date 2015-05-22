@@ -14,6 +14,7 @@
  * @providesModule ExampleTypes
  * @flow
  */
+'use strict';
 
 export type Example = {
   title: string,

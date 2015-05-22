@@ -91,7 +91,7 @@ var BasicStorageExample = React.createClass({
   _removeStorage() {
     AsyncStorage.removeItem(STORAGE_KEY)
       .then(() => this._appendMessage('Selection removed from disk.'))
-      .catch((error) => { this._appendMessage('AsyncStorage error: ' + error.message) })
+      .catch((error) => { this._appendMessage('AsyncStorage error: ' + error.message); })
       .done();
   },
 

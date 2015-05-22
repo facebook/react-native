@@ -133,7 +133,7 @@ var TabBarExample = React.createClass({
     return (
       <Navigator
         style={styles.container}
-        initialRoute={{ message: "First Scene", }}
+        initialRoute={{ message: 'First Scene', }}
         renderScene={this.renderScene}
         configureScene={(route) => {
           if (route.sceneConfig) {
