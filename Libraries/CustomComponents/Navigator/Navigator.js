@@ -1298,6 +1298,14 @@ var Navigator = React.createClass({
     if (i !== this.state.presentedIndex) {
       disabledSceneStyle = styles.disabledScene;
     }
+    var originalRef = child.ref;
+    if (originalRef != null && typeof originalRef !== 'function') {
+      console.warn(
+        'String refs are not supported for navigator scenes. Use a callback ' +
+        'ref instead. Ignoring ref: ' + originalRef
+      );
+      originalRef = null;
+    }
     return (
       <View
         key={this.state.idStack[i]}
@@ -1307,7 +1315,12 @@ var Navigator = React.createClass({
         }}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
         {React.cloneElement(child, {
-          ref: this._handleItemRef.bind(null, this.state.idStack[i], route),
+          ref: component => {
+            this._handleItemRef(this.state.idStack[i], route, component);
+            if (originalRef) {
+              originalRef(component);
+            }
+          }
         })}
       </View>
     );

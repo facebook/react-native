@@ -60,7 +60,7 @@ var validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: ['png'],
+    default: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
   },
 });
 

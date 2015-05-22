@@ -204,7 +204,27 @@ describe('Package', function() {
       expect(p.getAssets()).toEqual([asset1, asset2]);
     });
   });
+
+  describe('getJSModulePaths()', function() {
+    it('should return module paths', function() {
+      var p = new Package('test_url');
+      p.addModule(new ModuleTransport({
+        code: 'transformed foo;\n',
+        sourceCode: 'source foo',
+        sourcePath: 'foo path'
+      }));
+      p.addModule(new ModuleTransport({
+        code: 'image module;\nimage module;',
+        virtual: true,
+        sourceCode: 'image module;\nimage module;',
+        sourcePath: 'image.png',
+      }));
+
+      expect(p.getJSModulePaths()).toEqual(['foo path']);
+    });
+  });
 });
+
 
  function genSourceMap(modules) {
    var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});

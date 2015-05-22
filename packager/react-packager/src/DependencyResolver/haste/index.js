@@ -54,6 +54,10 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  assetExts: {
+    type: 'array',
+    required: true,
+  }
 });
 
 function HasteDependencyResolver(options) {
@@ -62,6 +66,7 @@ function HasteDependencyResolver(options) {
   this._depGraph = new DependencyGraph({
     roots: opts.projectRoots,
     assetRoots_DEPRECATED: opts.assetRoots,
+    assetExts: opts.assetExts,
     ignoreFilePath: function(filepath) {
       return filepath.indexOf('__tests__') !== -1 ||
         (opts.blacklistRE && opts.blacklistRE.test(filepath));

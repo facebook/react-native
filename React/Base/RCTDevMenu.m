@@ -13,6 +13,7 @@
 #import "RCTDefines.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPerfStats.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
@@ -145,6 +146,7 @@ RCT_EXPORT_MODULE()
   self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
   self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
   self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
+  self.showFPS = [_settings[@"showFPS"] ?: @NO boolValue];
   self.executorClass = NSClassFromString(_settings[@"executorClass"]);
 }
 
@@ -230,13 +232,14 @@ RCT_EXPORT_METHOD(show)
 
   NSString *debugTitleChrome = _executorClass && _executorClass == NSClassFromString(@"RCTWebSocketExecutor") ? @"Disable Chrome Debugging" : @"Debug in Chrome";
   NSString *debugTitleSafari = _executorClass && _executorClass == NSClassFromString(@"RCTWebViewExecutor") ? @"Disable Safari Debugging" : @"Debug in Safari";
+  NSString *fpsMonitor = _showFPS ? @"Hide FPS Monitor" : @"Show FPS Monitor";
 
   UIActionSheet *actionSheet =
   [[UIActionSheet alloc] initWithTitle:@"React Native: Development"
                               delegate:self
                      cancelButtonTitle:nil
                 destructiveButtonTitle:nil
-                     otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, nil];
+                     otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, fpsMonitor, nil];
 
   if (_liveReloadURL) {
 
@@ -293,10 +296,14 @@ RCT_EXPORT_METHOD(reload)
       break;
     }
     case 3: {
-      self.liveReloadEnabled = !_liveReloadEnabled;
+      self.showFPS = !_showFPS;
       break;
     }
     case 4: {
+      self.liveReloadEnabled = !_liveReloadEnabled;
+      break;
+    }
+    case 5: {
       self.profilingEnabled = !_profilingEnabled;
       break;
     }
@@ -365,6 +372,21 @@ RCT_EXPORT_METHOD(reload)
 
     _bridge.executorClass = executorClass;
     [self reload];
+  }
+}
+
+- (void)setShowFPS:(BOOL)showFPS
+{
+  if (_showFPS != showFPS) {
+    _showFPS = showFPS;
+
+    if (showFPS) {
+      [_bridge.perfStats show];
+    } else {
+      [_bridge.perfStats hide];
+    }
+
+    [self updateSetting:@"showFPS" value:@(showFPS)];
   }
 }
 
