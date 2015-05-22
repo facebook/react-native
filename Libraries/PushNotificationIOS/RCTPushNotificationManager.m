@@ -12,6 +12,14 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+
+#define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
+#define UIUserNotificationTypeBadge UIRemoteNotificationTypeBadge
+#define UIUserNotificationTypeSound UIRemoteNotificationTypeSound
+
+#endif
+
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
 
@@ -127,7 +135,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
   }
   Class _UIUserNotificationSettings;
   if ((_UIUserNotificationSettings = NSClassFromString(@"UIUserNotificationSettings"))) {
-    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    id notificationSettings = [_UIUserNotificationSettings settingsForTypes:types categories:nil];
     [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
     
     [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -144,15 +152,6 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
 
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-#define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
-#define UIUserNotificationTypeBadge UIRemoteNotificationTypeBadge
-#define UIUserNotificationTypeSound UIRemoteNotificationTypeSound
-
-#endif
-
   NSUInteger types = 0;
   if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
     types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
