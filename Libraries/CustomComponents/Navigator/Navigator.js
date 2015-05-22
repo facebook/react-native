@@ -332,7 +332,7 @@ var Navigator = React.createClass({
     this._subRouteFocus = [];
     this.navigatorContext = {
       // Actions for child navigators or interceptors:
-      setHandlerForRoute: this.setHandlerForRoute,
+      setHandlerForIndex: this.setHandlerForIndex,
       request: this.request,
 
       // Contextual utilities
@@ -462,8 +462,8 @@ var Navigator = React.createClass({
     return true;
   },
 
-  setHandlerForRoute: function(route, handler) {
-    this._handlers[this.state.routeStack.indexOf(route)] = handler;
+  setHandlerForIndex: function(index, handler) {
+    this._handlers[index] = handler;
   },
 
   componentDidMount: function() {
@@ -1262,7 +1262,7 @@ var Navigator = React.createClass({
       ...this.navigatorContext,
       route,
       setHandler: (handler) => {
-        this.navigatorContext.setHandlerForRoute(route, handler);
+        this.navigatorContext.setHandlerForIndex(i, handler);
       },
       onWillFocus: (childRoute) => {
         this._subRouteFocus[i] = childRoute;
