@@ -26,8 +26,6 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     queue = dispatch_queue_create("com.facebook.rctImageLoader", DISPATCH_QUEUE_SERIAL);
-    dispatch_set_target_queue(queue,
-                              dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
   });
 
   return queue;
