@@ -261,3 +261,15 @@ BOOL RCTRunningInTestEnvironment(void)
   });
   return _isTestEnvironment;
 }
+
+BOOL RCTImageHasAlpha(CGImageRef image)
+{
+  switch (CGImageGetAlphaInfo(image)) {
+    case kCGImageAlphaNone:
+    case kCGImageAlphaNoneSkipLast:
+    case kCGImageAlphaNoneSkipFirst:
+      return NO;
+    default:
+      return YES;
+  }
+}

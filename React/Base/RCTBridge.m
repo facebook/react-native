@@ -22,6 +22,7 @@
 #import "RCTJavaScriptLoader.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPerfStats.h"
 #import "RCTProfile.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
@@ -930,6 +931,11 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     _queuesByID = [[RCTSparseArray alloc] init];
     _jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)];
 
+    if (RCT_DEV) {
+      _mainDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_mainThreadUpdate:)];
+      [_mainDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    }
+
     /**
      * Initialize executor to allow enqueueing calls
      */
@@ -1560,6 +1566,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
   }
 
   RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
+
+  [self.perfStats.jsGraph tick:displayLink.timestamp];
 }
 
 - (void)_mainThreadUpdate:(CADisplayLink *)displayLink
@@ -1567,6 +1575,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
   RCTAssertMainThread();
 
   RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
+
+  [self.perfStats.uiGraph tick:displayLink.timestamp];
 }
 
 - (void)startProfiling
@@ -1578,18 +1588,12 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     return;
   }
 
-  [_mainDisplayLink invalidate];
-  _mainDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_mainThreadUpdate:)];
-  [_mainDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-
   RCTProfileInit();
 }
 
 - (void)stopProfiling
 {
    RCTAssertMainThread();
-
-  [_mainDisplayLink invalidate];
 
   NSString *log = RCTProfileEnd();
   NSURL *bundleURL = _parentBridge.bundleURL;
