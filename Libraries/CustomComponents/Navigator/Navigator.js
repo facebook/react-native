@@ -340,14 +340,13 @@ var Navigator = React.createClass({
       getCurrentRoutes: this.getCurrentRoutes,
       // `route` is injected by NavigatorStaticContextContainer
 
-      // Contextual nav actions
+      // Contextual nav action
       pop: this.requestPop,
-      popToRoute: this.requestPopTo,
 
-      // Legacy, imperitive nav actions. Will transition these to contextual actions
       jumpBack: this.jumpBack,
       jumpForward: this.jumpForward,
       jumpTo: this.jumpTo,
+      popToRoute: this.popToRoute,
       push: this.push,
       replace: this.replace,
       replaceAtIndex: this.replaceAtIndex,
@@ -410,8 +409,6 @@ var Navigator = React.createClass({
     switch (action) {
       case 'pop':
         return this._handlePop(arg1);
-      case 'popTo':
-        return this._handlePopTo(arg1);
       case 'push':
         return this._handlePush(arg1);
       default:
@@ -432,23 +429,6 @@ var Navigator = React.createClass({
       );
       this._popN(this.state.presentedIndex - popToBeforeRouteIndex + 1);
       return true;
-    }
-    if (this.state.presentedIndex === 0) {
-      return false;
-    }
-    this.pop();
-    return true;
-  },
-
-  _handlePopTo: function(destRoute) {
-    if (destRoute) {
-      var hasRoute = this.state.routeStack.indexOf(destRoute) !== -1;
-      if (hasRoute) {
-        this.popToRoute(destRoute);
-        return true;
-      } else {
-        return false;
-      }
     }
     if (this.state.presentedIndex === 0) {
       return false;
@@ -1155,17 +1135,13 @@ var Navigator = React.createClass({
     this.popToRoute(this.state.routeStack[0]);
   },
 
-  _getNumToPopForRoute: function(route) {
+  popToRoute: function(route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
       indexOfRoute !== -1,
-      'Calling pop to route for a route that doesn\'t exist!'
+      'Calling popToRoute for a route that doesn\'t exist!'
     );
-    return this.state.presentedIndex - indexOfRoute;
-  },
-
-  popToRoute: function(route) {
-    var numToPop = this._getNumToPopForRoute(route);
+    var numToPop = this.state.presentedIndex - indexOfRoute;
     this._popN(numToPop);
   },
 
