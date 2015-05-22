@@ -63,7 +63,7 @@
     "stacktrace-parser": "git://github.com/frantic/stacktrace-parser.git#493c5e5638",
     "uglify-js": "~2.4.16",
     "underscore": "1.7.0",
-    "worker-farm": "^1.3.0",
+    "worker-farm": "^1.3.1",
     "ws": "0.4.31",
     "yargs": "1.3.2"
   },
