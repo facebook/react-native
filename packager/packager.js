@@ -36,12 +36,15 @@ var webSocketProxy = require('./webSocketProxy.js');
 var options = parseCommandLine([{
   command: 'port',
   default: 8081,
+  type: 'string'
 }, {
   command: 'root',
   description: 'add another root(s) to be used by the packager in this project',
+  type: 'string'
 }, {
   command: 'assetRoots',
-  description: 'specify the root directories of app assets'
+  description: 'specify the root directories of app assets',
+  type: 'string'
 }, {
   command: 'skipflow',
   description: 'Disable flow checks'
