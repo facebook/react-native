@@ -68,8 +68,8 @@ function validatePackageName(name) {
 
   if (name === 'React') {
     console.error(
-      '"%s" is not a valid name for a project. Please do not use the reserve ' +
-        'word "React".',
+      '"%s" is not a valid name for a project. Please do not use the ' +
+        'reserved word "React".',
       name
     );
     process.exit(1);
