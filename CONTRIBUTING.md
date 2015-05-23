@@ -37,7 +37,7 @@ We will be using GitHub Issues for our public bugs. We will keep a close eye on 
 
 ### Reporting New Issues
 
-The best way to get your bug fixed is to provide a reduced test case.
+The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [React Native Playground](https://rnplay.org/) snippet.
 
 ### Security Bugs
 
