@@ -107,7 +107,7 @@ RCT_EXPORT_METHOD(close:(NSNumber *)socketID)
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketClosed" body:@{
     @"code": @(code),
-    @"reason": reason,
+    @"reason": reason ? reason : [NSNull null],
     @"clean": @(wasClean),
     @"id": webSocket.reactTag
   }];
