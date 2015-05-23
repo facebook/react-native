@@ -29,3 +29,11 @@ To activate Live Reload do the following:
 1. Run your application in the iOS simulator.
 2. Press ```Control + Command + Z```.
 3. You will now see the `Enable/Disable Live Reload`, `Reload` and `Enable/Disable Debugging` options.
+
+## Specifying the location of the React Native Packager
+When you are developing the application using an iOS device, you may want to change the location of the React Native Packager. Instead of this being the default `http://localhost:8081` you can change the address to any network reachable machine and make full use of the React Native toolkit. The location is stored in the `info.plist` file of your iOS project, to change it do the following:
+
+1. Select the info.plist file in Xcode's Project Navigator window
+2. Right click, and select `Add Row`
+3. Enter `ReactServer` for the key name and the type should be `String`
+4. Enter the location of your development machine in the value field e.g. `http://localhost:8081`
