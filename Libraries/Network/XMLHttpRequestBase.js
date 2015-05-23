@@ -73,7 +73,7 @@ class XMLHttpRequestBase {
   }
 
   setRequestHeader(header: string, value: any): void {
-    this._headers[header] = value;
+    this._headers[header.toLowerCase()] = value;
   }
 
   open(method: string, url: string, async: ?boolean): void {
