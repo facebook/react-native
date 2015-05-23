@@ -14,6 +14,7 @@
 		1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1461632C1AC3E22900C2F5AD /* libReact.a */; };
 		58C1E40E1ACF54E9006D1A47 /* libRCTAnimationExperimental.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C1E40B1ACF54B4006D1A47 /* libRCTAnimationExperimental.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		D134104F1AD725F900AED5BC /* libRCTWebSocketDebugger.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D134104D1AD725E700AED5BC /* libRCTWebSocketDebugger.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		D134104C1AD725E700AED5BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D13410461AD725E700AED5BC /* RCTWebSocketDebugger.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 832C81801AAF6DEF007FA2F7;
+			remoteInfo = RCTWebSocketDebugger;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +59,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = 2048/main.m; sourceTree = "<group>"; };
 		146163271AC3E22900C2F5AD /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
+		D13410461AD725E700AED5BC /* RCTWebSocketDebugger.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocketDebugger.xcodeproj; path = ../../Libraries/RCTWebSocketDebugger/RCTWebSocketDebugger.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D134104F1AD725F900AED5BC /* libRCTWebSocketDebugger.a in Frameworks */,
 				1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */,
 				58C1E40E1ACF54E9006D1A47 /* libRCTAnimationExperimental.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
@@ -99,6 +109,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				D13410461AD725E700AED5BC /* RCTWebSocketDebugger.xcodeproj */,
 				146163271AC3E22900C2F5AD /* React.xcodeproj */,
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				13ACB66C1AC2113500FF4204 /* RCTAnimationExperimental.xcodeproj */,
@@ -129,6 +140,14 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* 2048.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D13410471AD725E700AED5BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D134104D1AD725E700AED5BC /* libRCTWebSocketDebugger.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,6 +202,10 @@
 					ProjectRef = 832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */;
 				},
 				{
+					ProductGroup = D13410471AD725E700AED5BC /* Products */;
+					ProjectRef = D13410461AD725E700AED5BC /* RCTWebSocketDebugger.xcodeproj */;
+				},
+				{
 					ProductGroup = 146163281AC3E22900C2F5AD /* Products */;
 					ProjectRef = 146163271AC3E22900C2F5AD /* React.xcodeproj */;
 				},
@@ -214,6 +237,13 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D134104D1AD725E700AED5BC /* libRCTWebSocketDebugger.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTWebSocketDebugger.a;
+			remoteRef = D134104C1AD725E700AED5BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
