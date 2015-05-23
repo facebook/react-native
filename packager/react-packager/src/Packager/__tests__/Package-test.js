@@ -47,6 +47,26 @@ describe('Package', function() {
       ].join('\n'));
     });
 
+    it('should be ok to leave out the source map url', function() {
+      var p = new Package();
+      p.addModule(new ModuleTransport({
+        code: 'transformed foo;',
+        sourceCode: 'source foo',
+        sourcePath: 'foo path',
+      }));
+      p.addModule(new ModuleTransport({
+        code: 'transformed bar;',
+        sourceCode: 'source bar',
+        sourcePath: 'bar path',
+      }));
+
+      p.finalize({});
+      expect(p.getSource()).toBe([
+        'transformed foo;',
+        'transformed bar;',
+      ].join('\n'));
+    });
+
     it('should create a package and add run module code', function() {
       ppackage.addModule(new ModuleTransport({
         code: 'transformed foo;',
