@@ -175,6 +175,22 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
   return value ?: defaultValue;
 }
 
+NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
+{
+  if ([json isKindOfClass:[NSArray class]]) {
+    if ([json count] == 0) {
+      return defaultValue;
+    }
+    long long result = 0;
+    for (id arrayElement in json) {
+      NSNumber *value = RCTConvertEnumValue(typeName, mapping, defaultValue, arrayElement);
+      result |= [value longLongValue];
+    }
+    return @(result);
+  }
+  return RCTConvertEnumValue(typeName, mapping, defaultValue, json);
+}
+
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
   @"left": @(NSTextAlignmentLeft),

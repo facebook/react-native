@@ -1,3 +1,5 @@
-**/node_modules/**/.*js
+# node_modules ignored by default
+
 **/staticBundle.js
 **/main.js
+Libraries/vendor/**/*

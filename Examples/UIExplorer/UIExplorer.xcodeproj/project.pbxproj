@@ -13,6 +13,7 @@
 		1341802C1AA9178B003F314A /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1341802B1AA91779003F314A /* libRCTNetwork.a */; };
 		134454601AAFCABD003F0779 /* libRCTAdSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1344545A1AAFCAAE003F0779 /* libRCTAdSupport.a */; };
 		134A8A2A1AACED7A00945AAE /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 134A8A251AACED6A00945AAE /* libRCTGeolocation.a */; };
+		1353F5461B0E64F9009B4FAC /* ClippingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1353F5451B0E64F9009B4FAC /* ClippingTests.m */; };
 		139FDEDB1B0651FB00C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDED91B0651EA00C62182 /* libRCTWebSocket.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
@@ -129,6 +130,7 @@
 		134180261AA91779003F314A /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
 		134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAdSupport.xcodeproj; path = ../../Libraries/AdSupport/RCTAdSupport.xcodeproj; sourceTree = "<group>"; };
 		134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = ../../Libraries/Geolocation/RCTGeolocation.xcodeproj; sourceTree = "<group>"; };
+		1353F5451B0E64F9009B4FAC /* ClippingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClippingTests.m; sourceTree = "<group>"; };
 		139FDECA1B0651EA00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = ../../Libraries/WebSocket/RCTWebSocket.xcodeproj; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* UIExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = UIExplorer/AppDelegate.h; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				004D28A21AAF61C70097A701 /* UIExplorerTests.m */,
+				1353F5451B0E64F9009B4FAC /* ClippingTests.m */,
 				004D28A01AAF61C70097A701 /* Supporting Files */,
 			);
 			path = UIExplorerTests;
@@ -575,6 +578,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				004D28A31AAF61C70097A701 /* UIExplorerTests.m in Sources */,
+				1353F5461B0E64F9009B4FAC /* ClippingTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

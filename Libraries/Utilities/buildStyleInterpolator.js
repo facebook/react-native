@@ -7,6 +7,7 @@
 /**
  * Cannot "use strict" because we must use eval in this file.
  */
+/* eslint-disable global-strict */
 
 var keyOf = require('keyOf');
 
@@ -372,7 +373,7 @@ var MatrixOpsInitial = {
 var setNextValAndDetectChange = function(name, tmpVarName) {
   return (
     '  if (!didChange) {\n' +
-    '    var prevVal = result.' + name +';\n' +
+    '    var prevVal = result.' + name + ';\n' +
     '    result.' + name + ' = ' + tmpVarName + ';\n' +
     '    didChange = didChange  || (' + tmpVarName + ' !== prevVal);\n' +
     '  } else {\n' +

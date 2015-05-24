@@ -213,7 +213,7 @@ var FromTheLeft = {
   translateX: {
     from: -SCREEN_WIDTH,
     to: 0,
-    min: 0, 
+    min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,

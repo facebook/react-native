@@ -9,8 +9,7 @@
  * @providesModule ReactNativeDefaultInjection
  * @flow
  */
-
-"use strict";
+'use strict';
 
 /**
  * Make sure `setTimeout`/`setInterval` are patched correctly.
@@ -21,7 +20,6 @@ var EventPluginUtils = require('EventPluginUtils');
 var IOSDefaultEventPluginOrder = require('IOSDefaultEventPluginOrder');
 var IOSNativeBridgeEventPlugin = require('IOSNativeBridgeEventPlugin');
 var NodeHandle = require('NodeHandle');
-var ReactClass = require('ReactClass');
 var ReactComponentEnvironment = require('ReactComponentEnvironment');
 var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
 var ReactEmptyComponent = require('ReactEmptyComponent');

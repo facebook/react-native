@@ -179,12 +179,12 @@ var TextInput = React.createClass({
       'number-pad',
       'phone-pad',
       'name-phone-pad',
-      'email-address',
       'decimal-pad',
       'twitter',
       'web-search',
       // Cross-platform
       'numeric',
+      'email-address',
     ]),
     /**
      * Determines how the return key should look.

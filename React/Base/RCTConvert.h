@@ -141,6 +141,7 @@ RCT_EXTERN BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
  * Underlying implementations of RCT_XXX_CONVERTER macros. Ignore these.
  */
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
+RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
 RCT_EXTERN void RCTLogConvertError(id, const char *);
 
@@ -192,6 +193,21 @@ RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
     mapping = values;                                     \
   });                                                     \
   return [RCTConvertEnumValue(#type, mapping, @(default), json) getter]; \
+}
+
+/**
+ * This macro is used for creating converters for enum types for
+ * multiple enum values combined with | operator
+ */
+#define RCT_MULTI_ENUM_CONVERTER(type, values, default, getter) \
++ (type)type:(id)json                                     \
+{                                                         \
+  static NSDictionary *mapping;                           \
+  static dispatch_once_t onceToken;                       \
+  dispatch_once(&onceToken, ^{                            \
+    mapping = values;                                     \
+  });                                                     \
+  return [RCTConvertMultiEnumValue(#type, mapping, @(default), json) getter]; \
 }
 
 /**

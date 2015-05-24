@@ -9,12 +9,11 @@
  * @providesModule PointPropType
  * @flow
  */
-'use strict'
+'use strict';
 
 var PropTypes = require('ReactPropTypes');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var pointsDiffer = require('pointsDiffer');
 
 var PointPropType = createStrictShapeTypeChecker({
   x: PropTypes.number,

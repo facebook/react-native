@@ -24,6 +24,7 @@
  *
  * @providesModule Navigator
  */
+ /* eslint-disable no-extra-boolean-cast*/
 'use strict';
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
@@ -48,8 +49,6 @@ var clamp = require('clamp');
 var flattenStyle = require('flattenStyle');
 var getNavigatorContext = require('getNavigatorContext');
 var invariant = require('invariant');
-var keyMirror = require('keyMirror');
-var merge = require('merge');
 var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
@@ -333,7 +332,7 @@ var Navigator = React.createClass({
     this._subRouteFocus = [];
     this.navigatorContext = {
       // Actions for child navigators or interceptors:
-      setHandlerForRoute: this.setHandlerForRoute,
+      setHandlerForIndex: this.setHandlerForIndex,
       request: this.request,
 
       // Contextual utilities
@@ -341,14 +340,13 @@ var Navigator = React.createClass({
       getCurrentRoutes: this.getCurrentRoutes,
       // `route` is injected by NavigatorStaticContextContainer
 
-      // Contextual nav actions
+      // Contextual nav action
       pop: this.requestPop,
-      popToRoute: this.requestPopTo,
 
-      // Legacy, imperitive nav actions. Will transition these to contextual actions
       jumpBack: this.jumpBack,
       jumpForward: this.jumpForward,
       jumpTo: this.jumpTo,
+      popToRoute: this.popToRoute,
       push: this.push,
       replace: this.replace,
       replaceAtIndex: this.replaceAtIndex,
@@ -411,8 +409,6 @@ var Navigator = React.createClass({
     switch (action) {
       case 'pop':
         return this._handlePop(arg1);
-      case 'popTo':
-        return this._handlePopTo(arg1);
       case 'push':
         return this._handlePush(arg1);
       default:
@@ -441,30 +437,13 @@ var Navigator = React.createClass({
     return true;
   },
 
-  _handlePopTo: function(destRoute) {
-    if (destRoute) {
-      var hasRoute = this.state.routeStack.indexOf(destRoute) !== -1;
-      if (hasRoute) {
-        this.popToRoute(destRoute);
-        return true;
-      } else {
-        return false;
-      }
-    }
-    if (this.state.presentedIndex === 0) {
-      return false;
-    }
-    this.pop();
-    return true;
-  },
-
   _handlePush: function(route) {
     this.push(route);
     return true;
   },
 
-  setHandlerForRoute: function(route, handler) {
-    this._handlers[this.state.routeStack.indexOf(route)] = handler;
+  setHandlerForIndex: function(index, handler) {
+    this._handlers[index] = handler;
   },
 
   componentDidMount: function() {
@@ -689,7 +668,7 @@ var Navigator = React.createClass({
    */
   _enableScene: function(sceneIndex) {
     // First, determine what the defined styles are for scenes in this navigator
-    var sceneStyle = flattenStyle(this.props.sceneStyle);
+    var sceneStyle = flattenStyle([styles.baseScene, this.props.sceneStyle]);
     // Then restore the left value for this scene
     var enabledSceneNativeProps = {
       left: sceneStyle.left,
@@ -745,7 +724,6 @@ var Navigator = React.createClass({
   },
 
   _handleMoveShouldSetPanResponder: function(e, gestureState) {
-    var currentRoute = this.state.routeStack[this.state.presentedIndex];
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     this._expectingGestureGrant = this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
     return !! this._expectingGestureGrant;
@@ -829,7 +807,16 @@ var Navigator = React.createClass({
       }
     } else {
       // The gesture has enough velocity to complete, so we transition to the gesture's destination
-      this._transitionTo(destIndex, transitionVelocity);
+      this._transitionTo(
+        destIndex,
+        transitionVelocity,
+        null,
+        () => {
+          if (releaseGestureAction === 'pop') {
+            this._cleanScenesPastIndex(destIndex);
+          }
+        }
+      );
     }
     this._detachGesture();
   },
@@ -1148,17 +1135,13 @@ var Navigator = React.createClass({
     this.popToRoute(this.state.routeStack[0]);
   },
 
-  _getNumToPopForRoute: function(route) {
+  popToRoute: function(route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
       indexOfRoute !== -1,
-      'Calling pop to route for a route that doesn\'t exist!'
+      'Calling popToRoute for a route that doesn\'t exist!'
     );
-    return this.state.presentedIndex - indexOfRoute;
-  },
-
-  popToRoute: function(route) {
-    var numToPop = this._getNumToPopForRoute(route);
+    var numToPop = this.state.presentedIndex - indexOfRoute;
     this._popN(numToPop);
   },
 
@@ -1255,7 +1238,7 @@ var Navigator = React.createClass({
       ...this.navigatorContext,
       route,
       setHandler: (handler) => {
-        this.navigatorContext.setHandlerForRoute(route, handler);
+        this.navigatorContext.setHandlerForIndex(i, handler);
       },
       onWillFocus: (childRoute) => {
         this._subRouteFocus[i] = childRoute;
@@ -1291,6 +1274,14 @@ var Navigator = React.createClass({
     if (i !== this.state.presentedIndex) {
       disabledSceneStyle = styles.disabledScene;
     }
+    var originalRef = child.ref;
+    if (originalRef != null && typeof originalRef !== 'function') {
+      console.warn(
+        'String refs are not supported for navigator scenes. Use a callback ' +
+        'ref instead. Ignoring ref: ' + originalRef
+      );
+      originalRef = null;
+    }
     return (
       <View
         key={this.state.idStack[i]}
@@ -1300,7 +1291,12 @@ var Navigator = React.createClass({
         }}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
         {React.cloneElement(child, {
-          ref: this._handleItemRef.bind(null, this.state.idStack[i], route),
+          ref: component => {
+            this._handleItemRef(this.state.idStack[i], route, component);
+            if (originalRef) {
+              originalRef(component);
+            }
+          }
         })}
       </View>
     );
