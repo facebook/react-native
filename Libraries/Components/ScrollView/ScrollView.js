@@ -224,6 +224,10 @@ var ScrollView = React.createClass({
     scrollIndicatorInsets: EdgeInsetsPropType,
     /**
      * When true, the scroll view scrolls to top when the status bar is tapped.
+     * Unlike iOS, the default value is false so the scroll-to-top behavior is
+     * not accidentally disabled when adding another scroll view; if there are
+     * two scroll views for which scrollsToTop is true, the system disables
+     * scroll-to-top entirely.
      * The default value is true.
      * @platform ios
      */
@@ -353,6 +357,7 @@ var ScrollView = React.createClass({
         !this.props.horizontal;
 
     var props = {
+      scrollsToTop={false}
       ...this.props,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
