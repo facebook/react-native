@@ -33,6 +33,7 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
   letterSpacing: ReactPropTypes.number,
+  placeholderTextColor: ReactPropTypes.string
 });
 
 // Text doesn't support padding correctly (#4841912)

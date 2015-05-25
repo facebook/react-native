@@ -144,7 +144,6 @@ class UIExplorerList extends React.Component {
             clearButtonMode="always"
             onChangeText={this._search.bind(this)}
             placeholder="Search..."
-            placeholderTextColor="red"
             style={styles.searchTextInput}
             value={this.state.searchText}
           />
@@ -260,6 +259,7 @@ var styles = StyleSheet.create({
     paddingBottom: 10,
   },
   searchTextInput: {
+    placeholderTextColor: 'blue',
     backgroundColor: 'white',
     borderColor: '#cccccc',
     borderRadius: 3,

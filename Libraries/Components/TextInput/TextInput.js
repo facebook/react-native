@@ -51,8 +51,6 @@ var RCTTextViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   secureTextEntry: true,
   selectTextOnFocus: true,
   mostRecentEventCounter: true,
-  placeholder: true,
-  placeholderTextColor: true,
   text: true,
 });
 
@@ -62,6 +60,8 @@ var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   clearButtonMode: true,
   clearTextOnFocus: true,
   selectTextOnFocus: true,
+  placeholder: true,
+  placeholderTextColor: true,
 });
 
 var onlyMultiline = {
