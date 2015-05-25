@@ -13,8 +13,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTAssert.h"
 #import "RCTDefines.h"
-#import "RCTLog.h"
 #import "RCTUtils.h"
 
 #if RCT_DEV
@@ -43,7 +43,7 @@ NSLock *_RCTProfileLock;
 #define RCTProfileAddEvent(type, props...) \
 [RCTProfileInfo[type] addObject:@{ \
   @"pid": @([[NSProcessInfo processInfo] processIdentifier]), \
-  @"tid": RCTThreadName([NSThread currentThread]), \
+  @"tid": RCTCurrentThreadName(), \
   props \
 }];
 

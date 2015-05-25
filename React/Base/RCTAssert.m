@@ -60,3 +60,20 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
     RCTCurrentAssertFunction = assertFunction;
   }
 }
+
+NSString *RCTCurrentThreadName(void)
+{
+  NSThread *thread = [NSThread currentThread];
+  NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
+  if (threadName.length == 0) {
+#if DEBUG // This is DEBUG not RCT_DEBUG because it *really* must not ship in RC
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
+#pragma clang diagnostic pop
+#else
+    threadName = [NSString stringWithFormat:@"%p", thread];
+#endif
+  }
+  return threadName;
+}

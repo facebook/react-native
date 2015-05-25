@@ -390,6 +390,10 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
+  RCTAssertThread(_shadowQueue,
+                  @"-[RCTUIManager addUIBlock:] should only be called from the "
+                  "UIManager's _shadowQueue (it may be accessed via `bridge.uiManager.methodQueue`)");
+
   if (!self.isValid) {
     return;
   }
