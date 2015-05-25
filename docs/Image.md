@@ -21,6 +21,10 @@ When your entire codebase respects this convention, you're able to do interestin
 
 ![](/react-native/img/StaticImageAssets.png)
 
+> **NOTE**: App build required for new resources
+>
+> Any time you add a new resource to `Images.xcassets` you will need to re-build your app through XCode before you can use it - a reload from within the simulator is not enough.
+
 *This process is currently being improved, a much better workflow will be
 available shortly.*
 
