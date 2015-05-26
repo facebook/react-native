@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTDefines.h"
+#import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTPerfStats.h"
@@ -241,6 +242,8 @@ RCT_EXPORT_METHOD(show)
                 destructiveButtonTitle:nil
                      otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, fpsMonitor, nil];
 
+  [actionSheet addButtonWithTitle:@"Inspect Element"];
+
   if (_liveReloadURL) {
 
     NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
@@ -300,10 +303,14 @@ RCT_EXPORT_METHOD(reload)
       break;
     }
     case 4: {
-      self.liveReloadEnabled = !_liveReloadEnabled;
+      [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
       break;
     }
     case 5: {
+      self.liveReloadEnabled = !_liveReloadEnabled;
+      break;
+    }
+    case 6: {
       self.profilingEnabled = !_profilingEnabled;
       break;
     }

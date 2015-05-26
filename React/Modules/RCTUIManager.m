@@ -882,6 +882,31 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
   }];
 }
 
+RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point callback:(RCTResponseSenderBlock)callback) {
+  if (!reactTag) {
+    callback(@[[NSNull null]]);
+    return;
+  }
+
+  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    UIView *target = [view hitTest:point withEvent:nil];
+    CGRect frame = [target convertRect:target.bounds toView:view];
+
+    while (target.reactTag == nil && target.superview != nil) {
+      target = [target superview];
+    }
+
+    callback(@[
+      target.reactTag ?: [NSNull null],
+      @(frame.origin.x),
+      @(frame.origin.y),
+      @(frame.size.width),
+      @(frame.size.height),
+    ]);
+  }];
+}
+
 - (void)batchDidComplete
 {
   // Gather blocks to be executed now that all view hierarchy manipulations have
