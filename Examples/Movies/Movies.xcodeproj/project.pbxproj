@@ -16,6 +16,7 @@
 		140D9B661AC36C42004F25EE /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14312D241AC3654D00CDC950 /* libRCTLinking.a */; };
 		14A2D4421AC3E43800CC738A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14A2D4411AC3E41A00CC738A /* libReact.a */; };
 		58C5726B1AA6239E00CDF9C8 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5725B1AA6236500CDF9C8 /* libRCTText.a */; };
+		67C95F201B0E64A30040BCE2 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C95F1E1B0E647A0040BCE2 /* libRCTWebSocket.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		67C95F1D1B0E647A0040BCE2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 67C95F151B0E647A0040BCE2 /* RCTWebSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3C86DF461ADF2C930047B81A;
+			remoteInfo = RCTWebSocket;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +77,7 @@
 		14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		14A2D43C1AC3E41A00CC738A /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		587650F61A9EB120008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = SOURCE_ROOT; };
+		67C95F151B0E647A0040BCE2 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = ../../Libraries/WebSocket/RCTWebSocket.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				67C95F201B0E64A30040BCE2 /* libRCTWebSocket.a in Frameworks */,
 				14A2D4421AC3E43800CC738A /* libReact.a in Frameworks */,
 				140D9B661AC36C42004F25EE /* libRCTLinking.a in Frameworks */,
 				1341801E1AA91750003F314A /* libRCTNetwork.a in Frameworks */,
@@ -135,6 +145,7 @@
 		58C571FC1AA6124500CDF9C8 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				67C95F151B0E647A0040BCE2 /* RCTWebSocket.xcodeproj */,
 				14A2D43C1AC3E41A00CC738A /* React.xcodeproj */,
 				14312D1E1AC3654D00CDC950 /* RCTLinking.xcodeproj */,
 				134180151AA91740003F314A /* RCTNetwork.xcodeproj */,
@@ -148,6 +159,14 @@
 			isa = PBXGroup;
 			children = (
 				58C5725B1AA6236500CDF9C8 /* libRCTText.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		67C95F161B0E647A0040BCE2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				67C95F1E1B0E647A0040BCE2 /* libRCTWebSocket.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -229,6 +248,10 @@
 					ProjectRef = 587650F61A9EB120008B8F17 /* RCTText.xcodeproj */;
 				},
 				{
+					ProductGroup = 67C95F161B0E647A0040BCE2 /* Products */;
+					ProjectRef = 67C95F151B0E647A0040BCE2 /* RCTWebSocket.xcodeproj */;
+				},
+				{
 					ProductGroup = 14A2D43D1AC3E41A00CC738A /* Products */;
 					ProjectRef = 14A2D43C1AC3E41A00CC738A /* React.xcodeproj */;
 				},
@@ -274,6 +297,13 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 58C5725A1AA6236500CDF9C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		67C95F1E1B0E647A0040BCE2 /* libRCTWebSocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTWebSocket.a;
+			remoteRef = 67C95F1D1B0E647A0040BCE2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

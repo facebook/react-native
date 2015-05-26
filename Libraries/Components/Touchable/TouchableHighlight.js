@@ -70,6 +70,14 @@ var TouchableHighlight = React.createClass({
      */
     underlayColor: React.PropTypes.string,
     style: View.propTypes.style,
+    /**
+     * Called immediately after the underlay is shown
+     */
+    onShowUnderlay: React.PropTypes.func,
+    /**
+     * Called immediately after the underlay is hidden
+     */
+    onHideUnderlay: React.PropTypes.func,
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -159,6 +167,7 @@ var TouchableHighlight = React.createClass({
   _showUnderlay: function() {
     this.refs[UNDERLAY_REF].setNativeProps(this.state.activeUnderlayProps);
     this.refs[CHILD_REF].setNativeProps(this.state.activeProps);
+    this.props.onShowUnderlay && this.props.onShowUnderlay();
   },
 
   _hideUnderlay: function() {
@@ -170,6 +179,7 @@ var TouchableHighlight = React.createClass({
         ...INACTIVE_UNDERLAY_PROPS,
         style: this.state.underlayStyle,
       });
+      this.props.onHideUnderlay && this.props.onHideUnderlay();
     }
   },
 
