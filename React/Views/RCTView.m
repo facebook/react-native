@@ -17,16 +17,22 @@
 
 static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
 {
+  float currentZ = -HUGE_VALF;
+  UIView *highestView = nil;
+  
   for (UIView *subview in [view.subviews reverseObjectEnumerator]) {
     if (!subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
       CGPoint convertedPoint = [subview convertPoint:point fromView:view];
-      UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
-      if (subviewHitTestView != nil) {
-        return subviewHitTestView;
+      if (highestView == nil || subview.layer.zPosition > currentZ) {
+        UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
+        if (subviewHitTestView != nil) {
+          currentZ = subview.layer.zPosition;
+          highestView = subviewHitTestView;
+        }
       }
     }
   }
-  return nil;
+  return highestView;
 }
 
 static BOOL RCTEllipseGetIntersectionsWithLine(CGRect ellipseBoundingRect, CGPoint p1, CGPoint p2, CGPoint intersections[2]);
