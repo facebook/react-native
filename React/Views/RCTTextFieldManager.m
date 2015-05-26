@@ -54,6 +54,22 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
+RCT_CUSTOM_VIEW_PROPERTY(placeholderFontSize, CGFloat, RCTTextField)
+{
+  view.placeholderFont = [RCTConvert UIFont:view.placeholderFont withSize:json ?: @(defaultView.font.pointSize)];
+}
+RCT_CUSTOM_VIEW_PROPERTY(placeholderFontWeight, NSString, RCTTextField)
+{
+  view.placeholderFont = [RCTConvert UIFont:view.placeholderFont withWeight:json]; // defaults to normal
+}
+RCT_CUSTOM_VIEW_PROPERTY(placeholderFontStyle, NSString, RCTTextField)
+{
+  view.placeholderFont = [RCTConvert UIFont:view.placeholderFont withStyle:json]; // defaults to normal
+}
+RCT_CUSTOM_VIEW_PROPERTY(placeholderFontFamily, NSString, RCTTextField)
+{
+  view.placeholderFont = [RCTConvert UIFont:view.placeholderFont withFamily:json ?: defaultView.font.familyName];
+}
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {

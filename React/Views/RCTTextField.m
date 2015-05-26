@@ -48,10 +48,22 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
     self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
                                                                  attributes:@{
                                                                               NSForegroundColorAttributeName : self.placeholderTextColor
-                                                                              }];
+                                                                             }];
   } else if (self.placeholder.length) {
     self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder];
   }
+
+  if (self.placeholder.length > 0 && self.placeholderFont) {
+
+    NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedPlaceholder];
+    [mutableAttributedString addAttribute:NSFontAttributeName value:self.placeholderFont range:NSMakeRange(0, self.placeholder.length)];
+    self.attributedPlaceholder = [mutableAttributedString copy];
+  }
+}
+
+- (void)setPlaceholderFont:(UIFont *)placeholderFont {
+  _placeholderFont = placeholderFont;
+  RCTUpdatePlaceholder(self);
 }
 
 - (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor

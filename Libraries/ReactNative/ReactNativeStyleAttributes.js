@@ -14,6 +14,7 @@
 
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var TextStylePropTypes = require('TextStylePropTypes');
+var TextInputStylePropTypes = require('TextInputStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var keyMirror = require('keyMirror');
@@ -23,6 +24,7 @@ var sizesDiffer = require('sizesDiffer');
 var ReactNativeStyleAttributes = {
   ...keyMirror(ViewStylePropTypes),
   ...keyMirror(TextStylePropTypes),
+  ...keyMirror(TextInputStylePropTypes),
   ...keyMirror(ImageStylePropTypes),
 };
 

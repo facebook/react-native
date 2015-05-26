@@ -15,6 +15,7 @@ var ImageStylePropTypes = require('ImageStylePropTypes');
 var ReactPropTypeLocations = require('ReactPropTypeLocations');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
+var TextInputStylePropTypes = require('TextInputStylePropTypes');
 
 var invariant = require('invariant');
 
@@ -73,6 +74,7 @@ var allStylePropTypes = {};
 
 StyleSheetValidation.addValidStylePropTypes(ImageStylePropTypes);
 StyleSheetValidation.addValidStylePropTypes(TextStylePropTypes);
+StyleSheetValidation.addValidStylePropTypes(TextInputStylePropTypes);
 StyleSheetValidation.addValidStylePropTypes(ViewStylePropTypes);
 
 module.exports = StyleSheetValidation;

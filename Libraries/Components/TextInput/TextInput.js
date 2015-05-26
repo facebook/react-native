@@ -25,6 +25,8 @@ var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var StyleSheetPropType = require('StyleSheetPropType');
+var TextInputStylePropTypes = require('TextInputStylePropTypes');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
@@ -34,6 +36,7 @@ var merge = require('merge');
 var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
 var keyboardTypeConsts = RCTUIManager.UIKeyboardType;
 var returnKeyTypeConsts = RCTUIManager.UIReturnKeyType;
+
 
 var RCTTextViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   autoCorrect: true,
@@ -62,6 +65,10 @@ var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   selectTextOnFocus: true,
   placeholder: true,
   placeholderTextColor: true,
+  placeholderFontFamily: true,
+  placeholderFontSize: true,
+  placeholderFontWeight: true,
+  placeholderFontStyle: true
 });
 
 var onlyMultiline = {
@@ -248,7 +255,7 @@ var TextInput = React.createClass({
     /**
      * The text color of the placeholder string
      */
-    placeholderTextColor: PropTypes.string,
+
     /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
@@ -291,7 +298,7 @@ var TextInput = React.createClass({
     /**
      * Styles
      */
-    style: Text.propTypes.style,
+    style:  StyleSheetPropType(TextInputStylePropTypes),
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -452,7 +459,6 @@ var TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={() => true}
           onLayout={this.props.onLayout}
           placeholder={this.props.placeholder}
-          placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
@@ -502,7 +508,6 @@ var TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           onLayout={this.props.onLayout}
           placeholder={this.props.placeholder}
-          placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}

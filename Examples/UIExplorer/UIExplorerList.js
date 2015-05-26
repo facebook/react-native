@@ -259,7 +259,11 @@ var styles = StyleSheet.create({
     paddingBottom: 10,
   },
   searchTextInput: {
-    placeholderTextColor: 'blue',
+    placeholderTextColor: 'green',
+    placeholderFontFamily: 'Cochin',
+    placeholderFontSize: 15,
+    placeholderFontWeight: 'bold',
+    placeholderFontStyle: 'italic',
     backgroundColor: 'white',
     borderColor: '#cccccc',
     borderRadius: 3,
