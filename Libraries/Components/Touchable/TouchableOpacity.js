@@ -44,6 +44,9 @@ var onlyChild = require('onlyChild');
  *   );
  * },
  * ```
+ * > **NOTE**: TouchableOpacity supports only one child
+ * >
+ * > If you wish to have to have several child components, wrap them in a View.
  */
 
 var TouchableOpacity = React.createClass({
