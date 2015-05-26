@@ -51,7 +51,7 @@ Then you just need a little bit of JavaScript to make this a usable React compon
 
 var { requireNativeComponent } = require('react-native');
 
-module.exports = requireNativeComponent('RCTMap', null);
+module.exports = requireNativeComponent('RCTMapManager', null);
 ```
 
 This is now a fully-functioning native map view component in JavaScript, complete with pinch-zoom and other native gesture support.  We can't really control it from JavaScript yet, though :(
