@@ -36,14 +36,18 @@ var webSocketProxy = require('./webSocketProxy.js');
 var options = parseCommandLine([{
   command: 'port',
   default: 8081,
+  type: 'string',
 }, {
   command: 'root',
+  type: 'string',
   description: 'add another root(s) to be used by the packager in this project',
 }, {
   command: 'assetRoots',
+  type: 'string',
   description: 'specify the root directories of app assets'
 }, {
   command: 'platform',
+  type: 'string',
   default: 'ios',
   description: 'Specify the platform-specific blacklist (ios, android, web).'
 }, {
@@ -65,13 +69,13 @@ if (options.projectRoots) {
 }
 
 if (options.root) {
-  if (typeof options.root === 'string') {
-    options.projectRoots.push(path.resolve(options.root));
-  } else {
-    options.root.forEach(function(root) {
-      options.projectRoots.push(path.resolve(root));
-    });
+  if (!Array.isArray(options.root)) {
+    options.root = options.root.split(',');
   }
+
+  options.root.forEach(function(root) {
+    options.projectRoots.push(path.resolve(root));
+  });
 }
 
 if (options.assetRoots) {
