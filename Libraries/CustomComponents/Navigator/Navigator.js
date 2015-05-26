@@ -1013,7 +1013,7 @@ var Navigator = React.createClass({
     var destIndex = this._getDestIndexWithinBounds(n);
     var requestTransitionAndResetUpdatingRange = () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex, cb);
+      this._transitionTo(destIndex, null, null, cb);
       this._resetUpdatingRange();
     };
     this.setState({
