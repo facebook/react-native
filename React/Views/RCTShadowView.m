@@ -38,6 +38,7 @@ typedef enum {
   NSMutableArray *_reactSubviews;
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
+  BOOL _isBGColorExplicitlySet;
   float _paddingMetaProps[META_PROP_COUNT];
   float _marginMetaProps[META_PROP_COUNT];
 }
@@ -515,6 +516,7 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
 - (void)setBackgroundColor:(UIColor *)color
 {
   _backgroundColor = color;
+  _isBGColorExplicitlySet = YES;
   [self dirtyPropagation];
 }
 

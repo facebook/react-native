@@ -51,11 +51,7 @@ RCT_EXPORT_SHADOW_PROPERTY(maximumNumberOfLines, NSInteger)
 RCT_EXPORT_SHADOW_PROPERTY(shadowOffset, CGSize)
 RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
 RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textBackgroundColor, UIColor)
-RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, UIColor, RCTShadowText)
-{
-  view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
-  view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
-}
+RCT_REMAP_SHADOW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
 RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
 {
   NSLineBreakMode truncationMode = NSLineBreakByClipping;

@@ -338,17 +338,14 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   _viewRegistry[reactTag] = rootView;
   CGRect frame = rootView.frame;
 
-  // Register manager (TODO: should we do this, or leave it nil?)
-  _viewManagerRegistry[reactTag] = _viewManagers[@"RCTView"];
-
   // Register shadow view
   dispatch_async(_shadowQueue, ^{
     RCTShadowView *shadowView = [[RCTShadowView alloc] init];
     shadowView.reactTag = reactTag;
     shadowView.frame = frame;
-    shadowView.backgroundColor = [UIColor whiteColor];
+    shadowView.backgroundColor = rootView.backgroundColor;
+    shadowView.viewName = NSStringFromClass([rootView class]);
     _shadowViewRegistry[shadowView.reactTag] = shadowView;
-
     [_rootViewTags addObject:reactTag];
   });
 }
@@ -368,6 +365,22 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
     RCTViewManagerUIBlock uiBlock = [self uiBlockWithLayoutUpdateForRootView:rootShadowView];
     [self addUIBlock:uiBlock];
+    [self flushUIBlocks];
+  });
+}
+
+- (void)setBackgroundColor:(UIColor *)color forRootView:(UIView *)rootView
+{
+  RCTAssertMainThread();
+
+  NSNumber *reactTag = rootView.reactTag;
+  RCTAssert(RCTIsReactRootView(reactTag), @"Specified view %@ is not a root view", reactTag);
+
+  dispatch_async(_shadowQueue, ^{
+    RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
+    RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
+    rootShadowView.backgroundColor = color;
+    [self _amendPendingUIBlocksWithStylePropagationUpdateForRootView:rootShadowView];
     [self flushUIBlocks];
   });
 }
@@ -799,6 +812,11 @@ RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
   }
   _shadowViewRegistry[reactTag] = shadowView;
 
+  // Shadow view is the source of truth for background color this is a little
+  // bit counter-intuitive if people try to set background color when setting up
+  // the view, but it's the only way that makes sense given our threading model
+  UIColor *backgroundColor = shadowView.backgroundColor;
+
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTAssertMainThread();
 
@@ -807,14 +825,15 @@ RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
 
       // Generate default view, used for resetting default props
       if (!uiManager->_defaultViews[viewName]) {
-        // Note the default is setup after the props are read for the first time ever
-        // for this className - this is ok because we only use the default for restoring
-        // defaults, which never happens on first creation.
+        // Note the default is setup after the props are read for the first time
+        // ever for this className - this is ok because we only use the default
+        // for restoring defaults, which never happens on first creation.
         uiManager->_defaultViews[viewName] = [manager view];
       }
 
       // Set properties
       view.reactTag = reactTag;
+      view.backgroundColor = backgroundColor;
       if ([view isKindOfClass:[UIView class]]) {
         view.multipleTouchEnabled = YES;
         view.userInteractionEnabled = YES; // required for touch handling
