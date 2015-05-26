@@ -114,6 +114,16 @@
   }];
 }
 
+- (void)setBarTintColor:(UIColor *)barTintColor
+{
+  _tabController.tabBar.barTintColor = barTintColor;
+}
+
+- (void)setTintColor:(UIColor *)tintColor
+{
+  _tabController.tabBar.tintColor = tintColor;
+}
+
 #pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
