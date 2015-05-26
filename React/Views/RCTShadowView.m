@@ -181,7 +181,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     // Update parent properties for children
     NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
     CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
-    if (alpha < 1.0 && alpha > 0.0) {
+    if (alpha < 1.0) {
       // If we see partial transparency, start propagating full transparency
       properties[RCTBackgroundColorProp] = [UIColor clearColor];
     } else {
