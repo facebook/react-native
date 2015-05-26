@@ -20,16 +20,13 @@ var XMLHttpRequestBase = require('XMLHttpRequestBase');
 class XMLHttpRequest extends XMLHttpRequestBase {
 
   sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
-    if (typeof data === 'string') {
-      data = {string: data};
-    }
     RCTDataManager.queryData(
       'http',
       {
-        method,
-        url,
-        data,
-        headers,
+        method: method,
+        url: url,
+        data: data,
+        headers: headers,
       },
       // TODO: Do we need this? is it used anywhere?
       'h' + crc32(method + '|' + url + '|' + data),

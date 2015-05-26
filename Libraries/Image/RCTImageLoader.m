@@ -154,11 +154,4 @@ static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSEr
   }
 }
 
-+ (BOOL)isSystemImageURI:(NSString *)uri
-{
-  return uri != nil && (
-   [uri hasPrefix:@"assets-library"] ||
-   [uri hasPrefix:@"ph://"]);
-}
-
 @end
