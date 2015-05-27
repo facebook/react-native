@@ -407,6 +407,10 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
                   @"-[RCTUIManager addUIBlock:] should only be called from the "
                   "UIManager's _shadowQueue (it may be accessed via `bridge.uiManager.methodQueue`)");
 
+  if (!block) {
+    return;
+  }
+
   if (!self.isValid) {
     return;
   }
@@ -909,15 +913,6 @@ RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point call
 
 - (void)batchDidComplete
 {
-  // Gather blocks to be executed now that all view hierarchy manipulations have
-  // been completed (note that these may still take place before layout has finished)
-  for (RCTViewManager *manager in _viewManagers.allValues) {
-    RCTViewManagerUIBlock uiBlock = [manager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
-    if (uiBlock) {
-      [self addUIBlock:uiBlock];
-    }
-  }
-
   // Set up next layout animation
   if (_nextLayoutAnimation) {
     RCTLayoutAnimation *layoutAnimation = _nextLayoutAnimation;
@@ -939,6 +934,12 @@ RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point call
       uiManager->_layoutAnimation = nil;
     }];
     _nextLayoutAnimation = nil;
+  }
+
+  // Gather blocks to be executed now that layout is completed
+  for (RCTViewManager *manager in _viewManagers.allValues) {
+    RCTViewManagerUIBlock uiBlock = [manager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
+    [self addUIBlock:uiBlock];
   }
 
   [self flushUIBlocks];

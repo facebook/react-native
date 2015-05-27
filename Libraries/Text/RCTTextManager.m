@@ -47,20 +47,11 @@ RCT_EXPORT_SHADOW_PROPERTY(fontStyle, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(isHighlighted, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(letterSpacing, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(lineHeight, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maximumNumberOfLines, NSInteger)
 RCT_EXPORT_SHADOW_PROPERTY(shadowOffset, CGSize)
 RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
 RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textBackgroundColor, UIColor)
 RCT_REMAP_SHADOW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
-RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
-{
-  NSLineBreakMode truncationMode = NSLineBreakByClipping;
-  view.maximumNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maximumNumberOfLines;
-  if (view.maximumNumberOfLines > 0) {
-    truncationMode = NSLineBreakByTruncatingTail;
-  }
-  view.truncationMode = truncationMode;
-}
+RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
@@ -77,7 +68,7 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
       continue;
     }
 
-    RCTSparseArray *reactTaggedAttributedStrings = [[RCTSparseArray alloc] init];
+    RCTSparseArray *reactTaggedTextStorage = [[RCTSparseArray alloc] init];
     NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
     for (NSInteger i = 0; i < [queue count]; i++) {
       RCTShadowView *shadowView = queue[i];
@@ -85,9 +76,11 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
 
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
         RCTShadowText *shadowText = (RCTShadowText *)shadowView;
-        reactTaggedAttributedStrings[shadowText.reactTag] = [shadowText attributedString];
+        NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:shadowView.frame.size.width];
+        reactTaggedTextStorage[shadowText.reactTag] = textStorage;
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
-        RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'", [(RCTShadowRawText *)shadowView text]);
+        RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'",
+                    [(RCTShadowRawText *)shadowView text]);
       } else {
         for (RCTShadowView *child in [shadowView reactSubviews]) {
           if ([child isTextDirty]) {
@@ -100,9 +93,9 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
     }
 
     [uiBlocks addObject:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-      [reactTaggedAttributedStrings enumerateObjectsUsingBlock:^(NSAttributedString *attributedString, NSNumber *reactTag, BOOL *stop) {
+      [reactTaggedTextStorage enumerateObjectsUsingBlock:^(NSTextStorage *textStorage, NSNumber *reactTag, BOOL *stop) {
         RCTText *text = viewRegistry[reactTag];
-        text.attributedText = attributedString;
+        text.textStorage = textStorage;
       }];
     }];
   }
@@ -122,8 +115,6 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTText *text = viewRegistry[reactTag];
     text.contentInset = padding;
-    text.layoutManager = shadowView.layoutManager;
-    text.textContainer = shadowView.textContainer;
   };
 }
 
