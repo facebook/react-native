@@ -66,6 +66,7 @@
 {
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
+  JSValueRef _undefined;
 }
 
 /**
@@ -237,6 +238,9 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
         JSContextGroupRelease(group);
       }
 
+      // Constant value used for comparison
+      _undefined = JSValueMakeUndefined(ctx);
+
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
       [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
       [strongSelf _addNativeHook:RCTNoop withName:"noop"];
@@ -308,7 +312,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     JSValueRef requireJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, requireNameJSStringRef, &errorJSRef);
     JSStringRelease(requireNameJSStringRef);
 
-    if (requireJSRef != NULL && errorJSRef == NULL) {
+    if (requireJSRef != NULL && requireJSRef != _undefined && errorJSRef == NULL) {
 
       // get module
       JSStringRef moduleNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)name);
@@ -329,16 +333,16 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
           if (arguments.count == 0) {
             resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
           }
+
           // direct method invoke with 1 argument
           else if(arguments.count == 1) {
             JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
             JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
             resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
             JSStringRelease(argsJSStringRef);
+
           } else {
             // apply invoke with array of arguments
-
-            // get apply
             JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
             JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
             JSStringRelease(applyNameJSStringRef);
@@ -358,7 +362,6 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
           }
         }
       }
-
     }
 
     if (!resultJSRef) {
