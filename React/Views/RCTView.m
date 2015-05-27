@@ -449,6 +449,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     const CGRect bounds = self.bounds;
     MIN(bounds.size.height, bounds.size.width);
   });
+
   const CGFloat radius = MAX(0, _borderRadius);
   const CGFloat topLeftRadius     = MIN(_borderTopLeftRadius     >= 0 ? _borderTopLeftRadius     : radius, maxRadius);
   const CGFloat topRightRadius    = MIN(_borderTopRightRadius    >= 0 ? _borderTopRightRadius    : radius, maxRadius);
@@ -461,10 +462,19 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   const CGFloat bottomWidth = _borderBottomWidth >= 0 ? _borderBottomWidth : borderWidth;
   const CGFloat leftWidth   = _borderLeftWidth   >= 0 ? _borderLeftWidth   : borderWidth;
 
-  if (topLeftRadius < RCTViewBorderThreshold && topRightRadius < RCTViewBorderThreshold &&
-      bottomLeftRadius < RCTViewBorderThreshold && bottomRightRadius < RCTViewBorderThreshold &&
-      topWidth < RCTViewBorderThreshold && rightWidth < RCTViewBorderThreshold &&
-      bottomWidth < RCTViewBorderThreshold && leftWidth < RCTViewBorderThreshold) {
+  const BOOL hasCornerRadii =
+  topLeftRadius > RCTViewBorderThreshold ||
+  topRightRadius > RCTViewBorderThreshold ||
+  bottomLeftRadius > RCTViewBorderThreshold ||
+  bottomRightRadius > RCTViewBorderThreshold;
+
+  const BOOL hasBorders =
+  topWidth > RCTViewBorderThreshold ||
+  rightWidth > RCTViewBorderThreshold ||
+  bottomWidth > RCTViewBorderThreshold ||
+  leftWidth > RCTViewBorderThreshold;
+
+  if (!hasCornerRadii && !hasBorders) {
     return nil;
   }
 
@@ -483,7 +493,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   const UIEdgeInsets edgeInsets = UIEdgeInsetsMake(topWidth + MAX(innerTopLeftRadiusY, innerTopRightRadiusY), leftWidth + MAX(innerTopLeftRadiusX, innerBottomLeftRadiusX), bottomWidth + MAX(innerBottomLeftRadiusY, innerBottomRightRadiusY), rightWidth + + MAX(innerBottomRightRadiusX, innerTopRightRadiusX));
   const CGSize size = CGSizeMake(edgeInsets.left + 1 + edgeInsets.right, edgeInsets.top + 1 + edgeInsets.bottom);
 
-  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+  const CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
+  const BOOL opaque = (self.clipsToBounds || !hasCornerRadii) && alpha == 1.0;
+  UIGraphicsBeginImageContextWithOptions(size, opaque, 0.0);
 
   CGContextRef ctx = UIGraphicsGetCurrentContext();
   const CGRect rect = {.size = size};
