@@ -256,6 +256,7 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
+var DeviceEventEmitter = require('RCTDeviceEventEmitter');
 var subscription = DeviceEventEmitter.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
