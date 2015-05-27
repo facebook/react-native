@@ -238,11 +238,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
     }
   }];
 
-  if (stickyHeader) {
-    return stickyHeader;
-  } else {
-    return [super hitTest:point withEvent:event];
-  }
+  return stickyHeader ?: [super hitTest:point withEvent:event];
 }
 
 @end
