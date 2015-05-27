@@ -72,7 +72,9 @@ CalendarManager<span class="token punctuation">.</span><span class="token functi
                                                body<span class="token punctuation">:</span>@<span class="token punctuation">{</span>@<span class="token string">&quot;name&quot;</span><span class="token punctuation">:</span> eventName<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 
-@end</div><p>JavaScript code can subscribe to these events:</p><div class="prism language-javascript"><span class="token keyword">var</span> subscription <span class="token operator">=</span> DeviceEventEmitter<span class="token punctuation">.</span><span class="token function">addListener<span class="token punctuation">(</span></span>
+@end</div><p>JavaScript code can subscribe to these events:</p><div class="prism language-javascript"><span class="token keyword">var</span> <span class="token punctuation">{</span> DeviceEventEmitter <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> subscription <span class="token operator">=</span> DeviceEventEmitter<span class="token punctuation">.</span><span class="token function">addListener<span class="token punctuation">(</span></span>
   <span class="token string">&#x27;EventReminder&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">(</span>reminder<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> console<span class="token punctuation">.</span><span class="token function">log<span class="token punctuation">(</span></span>reminder<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>
