@@ -223,6 +223,24 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   }
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  __block UIView *stickyHeader;
+
+  [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:^(NSUInteger idx, BOOL *stop) {
+    stickyHeader = [self contentView].reactSubviews[idx];
+    CGPoint convertedPoint = [stickyHeader convertPoint:point fromView:self];
+
+    if ([stickyHeader hitTest:convertedPoint withEvent:event]) {
+      *stop = YES;
+    } else {
+      stickyHeader = nil;
+    }
+  }];
+
+  return stickyHeader ?: [super hitTest:point withEvent:event];
+}
+
 @end
 
 @implementation RCTScrollView
