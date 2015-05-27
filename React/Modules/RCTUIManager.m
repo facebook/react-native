@@ -1482,7 +1482,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
     }
 
     // Add native props
-    constantsNamespace[@"nativeProps"] = _viewConfigs[name];
+    constantsNamespace[@"NativeProps"] = _viewConfigs[name];
 
     allJSConstants[name] = [constantsNamespace copy];
   }];

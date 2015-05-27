@@ -43,13 +43,13 @@ function requireNativeComponent(
   wrapperComponent: ?Function
 ): Function {
   var viewConfig = RCTUIManager[viewName];
-  if (!viewConfig || !viewConfig.nativeProps) {
+  if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
     return UnimplementedView;
   }
   var nativeProps = {
-    ...RCTUIManager.RCTView.nativeProps,
-    ...viewConfig.nativeProps,
+    ...RCTUIManager.RCTView.NativeProps,
+    ...viewConfig.NativeProps,
   };
   viewConfig.uiViewClassName = viewName;
   viewConfig.validAttributes = {};
