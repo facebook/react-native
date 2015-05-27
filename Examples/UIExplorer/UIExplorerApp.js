@@ -56,7 +56,7 @@ var UIExplorerApp = React.createClass({
           }
         }}
         itemWrapperStyle={styles.itemWrapper}
-        tintColor='#008888'
+        tintColor="#008888"
       />
     );
   }

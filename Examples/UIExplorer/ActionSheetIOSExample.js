@@ -98,7 +98,7 @@ var ShareActionSheetExample = React.createClass({
       } else {
         text = 'You didn\'t share';
       }
-      this.setState({text})
+      this.setState({text});
     });
   }
 });
