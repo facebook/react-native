@@ -23,4 +23,6 @@
 + (void)loadImageWithTag:(NSString *)tag
                 callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback;
 
++ (BOOL)isSystemImageURI:(NSString *)uri;
+
 @end
