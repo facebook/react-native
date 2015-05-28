@@ -18,14 +18,17 @@ exports.middleware = function(options) {
   return server.processRequest.bind(server);
 };
 
-exports.buildPackageFromUrl = function(options, reqUrl) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
+exports.buildPackage = function(options, packageOptions) {
+  var server = createServer(options);
+  return server.buildPackage(packageOptions)
+    .then(function(p) {
+      server.end();
+      return p;
+    });
+};
 
-  var server = new Server(options);
+exports.buildPackageFromUrl = function(options, reqUrl) {
+  var server = createServer(options);
   return server.buildPackageFromUrl(reqUrl)
     .then(function(p) {
       server.end();
@@ -34,13 +37,7 @@ exports.buildPackageFromUrl = function(options, reqUrl) {
 };
 
 exports.getDependencies = function(options, main) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
-
-  var server = new Server(options);
+  var server = createServer(options);
   return server.getDependencies(main)
     .then(function(r) {
       server.end();
@@ -59,4 +56,14 @@ function useGracefulFs() {
       fs[method] = gracefulFs[method];
     }
   });
+}
+
+function createServer(options) {
+  Activity.disable();
+  // Don't start the filewatcher or the cache.
+  if (options.nonPersistent == null) {
+    options.nonPersistent = true;
+  }
+
+  return new Server(options);
 }

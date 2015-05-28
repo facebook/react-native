@@ -67,6 +67,7 @@ function createWatcher(rootConfig) {
     var watcher = new Watcher(rootConfig.dir, {
       glob: rootConfig.globs,
       dot: false,
+      ignore: '**/node_modules/**/*',
     });
 
     return new Promise(function(resolve, reject) {

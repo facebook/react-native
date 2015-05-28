@@ -95,6 +95,11 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
 /**
  * The event dispatcher is a wrapper around -enqueueJSCall:args: that provides a
  * higher-level interface for sending UI events such as touches and text input.
+ *
+ * NOTE: RCTEventDispatcher is now a bridge module, this is implemented as a
+ * category but remains declared in the bridge to avoid breaking changes
+ *
+ * To be moved.
  */
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 

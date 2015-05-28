@@ -21,6 +21,7 @@ var pointsDiffer = require('pointsDiffer');
 var matricesDiffer = require('matricesDiffer');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
+var warning = require('warning');
 
 /**
  * Used to create React components that directly wrap native component
@@ -42,12 +43,13 @@ function requireNativeComponent(
   wrapperComponent: ?Function
 ): Function {
   var viewConfig = RCTUIManager[viewName];
-  if (!viewConfig || !viewConfig.nativeProps) {
+  if (!viewConfig || !viewConfig.NativeProps) {
+    warning(false, 'Native component for "%s" does not exist', viewName);
     return UnimplementedView;
   }
   var nativeProps = {
-    ...RCTUIManager.RCTView.nativeProps,
-    ...viewConfig.nativeProps,
+    ...RCTUIManager.RCTView.NativeProps,
+    ...viewConfig.NativeProps,
   };
   viewConfig.uiViewClassName = viewName;
   viewConfig.validAttributes = {};

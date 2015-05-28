@@ -74,11 +74,8 @@
 
     redboxError = [[RCTRedBox sharedInstance] currentErrorMessage];
     foundElement = [self findSubviewInView:vc.view matching:^(UIView *view) {
-      if ([view respondsToSelector:@selector(attributedText)]) {
-        NSString *text = [(id)view attributedText].string;
-        if ([text isEqualToString:@"<View>"]) {
-          return YES;
-        }
+      if ([view.accessibilityLabel isEqualToString:@"<View>"]) {
+        return YES;
       }
       return NO;
     }];

@@ -18,7 +18,6 @@
 
 #import "RCTContextExecutor.h"
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #import "RCTJavaScriptLoader.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -211,7 +210,6 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 
 @property (nonatomic, strong) RCTBatchedBridge *batchedBridge;
 @property (nonatomic, strong) RCTBridgeModuleProviderBlock moduleProvider;
-@property (nonatomic, strong, readwrite) RCTEventDispatcher *eventDispatcher;
 
 - (void)_invokeAndProcessModule:(NSString *)module
                          method:(NSString *)method
@@ -875,11 +873,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   return _batchedBridge.modules;
 }
 
-- (RCTEventDispatcher *)eventDispatcher
-{
-  return _eventDispatcher ?: _batchedBridge.eventDispatcher;
-}
-
 #define RCT_INNER_BRIDGE_ONLY(...) \
 - (void)__VA_ARGS__ \
 { \
@@ -942,11 +935,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     Class executorClass = self.executorClass ?: [RCTContextExecutor class];
     _javaScriptExecutor = RCTCreateExecutor(executorClass);
     _latestJSExecutor = _javaScriptExecutor;
-
-    /**
-     * Setup event dispatcher before initializing modules to allow init calls
-     */
-    self.eventDispatcher = [[RCTEventDispatcher alloc] initWithBridge:self];
 
     /**
      * Initialize and register bridge modules *before* adding the display link

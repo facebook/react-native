@@ -57,25 +57,34 @@ describe('Transformer', function() {
   });
 
   pit('should add file info to parse errors', function() {
+    var message = 'message';
+    var snippet = 'snippet';
+
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, 'var x;\nvar answer = 1 = x;');
     });
 
     workers.mockImpl(function(data, callback) {
-      var esprimaError = new Error('Error: Line 2: Invalid left-hand side in assignment');
-      esprimaError.description = 'Invalid left-hand side in assignment';
-      esprimaError.lineNumber = 2;
-      esprimaError.column = 15;
-      callback(null, {error: esprimaError});
+      var babelError = new SyntaxError(message);
+      babelError.type = 'SyntaxError';
+      babelError.description = message;
+      babelError.loc = {
+        line: 2,
+        column: 15,
+      };
+      babelError.codeFrame = snippet;
+      callback(babelError);
     });
 
     return new Transformer(OPTIONS).loadFileAndTransform('foo-file.js')
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
-        expect(error.snippet).toEqual([
-          'var answer = 1 = x;',
-          '             ^',
-        ].join('\n'));
+        expect(error.message).toBe('SyntaxError ' + message);
+        expect(error.lineNumber).toBe(2);
+        expect(error.column).toBe(15);
+        expect(error.filename).toBe('foo-file.js');
+        expect(error.description).toBe(message);
+        expect(error.snippet).toBe(snippet);
       });
   });
 });

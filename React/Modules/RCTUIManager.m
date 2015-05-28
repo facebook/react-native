@@ -338,17 +338,14 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   _viewRegistry[reactTag] = rootView;
   CGRect frame = rootView.frame;
 
-  // Register manager (TODO: should we do this, or leave it nil?)
-  _viewManagerRegistry[reactTag] = _viewManagers[@"RCTView"];
-
   // Register shadow view
   dispatch_async(_shadowQueue, ^{
     RCTShadowView *shadowView = [[RCTShadowView alloc] init];
     shadowView.reactTag = reactTag;
     shadowView.frame = frame;
-    shadowView.backgroundColor = [UIColor whiteColor];
+    shadowView.backgroundColor = rootView.backgroundColor;
+    shadowView.viewName = NSStringFromClass([rootView class]);
     _shadowViewRegistry[shadowView.reactTag] = shadowView;
-
     [_rootViewTags addObject:reactTag];
   });
 }
@@ -372,6 +369,22 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   });
 }
 
+- (void)setBackgroundColor:(UIColor *)color forRootView:(UIView *)rootView
+{
+  RCTAssertMainThread();
+
+  NSNumber *reactTag = rootView.reactTag;
+  RCTAssert(RCTIsReactRootView(reactTag), @"Specified view %@ is not a root view", reactTag);
+
+  dispatch_async(_shadowQueue, ^{
+    RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
+    RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
+    rootShadowView.backgroundColor = color;
+    [self _amendPendingUIBlocksWithStylePropagationUpdateForRootView:rootShadowView];
+    [self flushUIBlocks];
+  });
+}
+
 /**
  * Unregisters views from registries
  */
@@ -390,6 +403,14 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
+  RCTAssertThread(_shadowQueue,
+                  @"-[RCTUIManager addUIBlock:] should only be called from the "
+                  "UIManager's _shadowQueue (it may be accessed via `bridge.uiManager.methodQueue`)");
+
+  if (!block) {
+    return;
+  }
+
   if (!self.isValid) {
     return;
   }
@@ -795,6 +816,11 @@ RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
   }
   _shadowViewRegistry[reactTag] = shadowView;
 
+  // Shadow view is the source of truth for background color this is a little
+  // bit counter-intuitive if people try to set background color when setting up
+  // the view, but it's the only way that makes sense given our threading model
+  UIColor *backgroundColor = shadowView.backgroundColor;
+
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTAssertMainThread();
 
@@ -803,14 +829,15 @@ RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
 
       // Generate default view, used for resetting default props
       if (!uiManager->_defaultViews[viewName]) {
-        // Note the default is setup after the props are read for the first time ever
-        // for this className - this is ok because we only use the default for restoring
-        // defaults, which never happens on first creation.
+        // Note the default is setup after the props are read for the first time
+        // ever for this className - this is ok because we only use the default
+        // for restoring defaults, which never happens on first creation.
         uiManager->_defaultViews[viewName] = [manager view];
       }
 
       // Set properties
       view.reactTag = reactTag;
+      view.backgroundColor = backgroundColor;
       if ([view isKindOfClass:[UIView class]]) {
         view.multipleTouchEnabled = YES;
         view.userInteractionEnabled = YES; // required for touch handling
@@ -859,17 +886,33 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
   }];
 }
 
-- (void)batchDidComplete
-{
-  // Gather blocks to be executed now that all view hierarchy manipulations have
-  // been completed (note that these may still take place before layout has finished)
-  for (RCTViewManager *manager in _viewManagers.allValues) {
-    RCTViewManagerUIBlock uiBlock = [manager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
-    if (uiBlock) {
-      [self addUIBlock:uiBlock];
-    }
+RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point callback:(RCTResponseSenderBlock)callback) {
+  if (!reactTag) {
+    callback(@[[NSNull null]]);
+    return;
   }
 
+  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    UIView *target = [view hitTest:point withEvent:nil];
+    CGRect frame = [target convertRect:target.bounds toView:view];
+
+    while (target.reactTag == nil && target.superview != nil) {
+      target = [target superview];
+    }
+
+    callback(@[
+      target.reactTag ?: [NSNull null],
+      @(frame.origin.x),
+      @(frame.origin.y),
+      @(frame.size.width),
+      @(frame.size.height),
+    ]);
+  }];
+}
+
+- (void)batchDidComplete
+{
   // Set up next layout animation
   if (_nextLayoutAnimation) {
     RCTLayoutAnimation *layoutAnimation = _nextLayoutAnimation;
@@ -891,6 +934,12 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
       uiManager->_layoutAnimation = nil;
     }];
     _nextLayoutAnimation = nil;
+  }
+
+  // Gather blocks to be executed now that layout is completed
+  for (RCTViewManager *manager in _viewManagers.allValues) {
+    RCTViewManagerUIBlock uiBlock = [manager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
+    [self addUIBlock:uiBlock];
   }
 
   [self flushUIBlocks];
@@ -1433,7 +1482,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
     }
 
     // Add native props
-    constantsNamespace[@"nativeProps"] = _viewConfigs[name];
+    constantsNamespace[@"NativeProps"] = _viewConfigs[name];
 
     allJSConstants[name] = [constantsNamespace copy];
   }];

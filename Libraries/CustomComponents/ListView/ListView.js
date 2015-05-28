@@ -108,7 +108,7 @@ var ListView = React.createClass({
    * You must provide a renderRow function. If you omit any of the other render
    * functions, ListView will simply skip rendering them.
    *
-   * - renderRow(rowData, sectionID, rowID);
+   * - renderRow(rowData, sectionID, rowID, highlightRow);
    * - renderSectionHeader(sectionData, sectionID);
    */
   propTypes: {
@@ -116,11 +116,22 @@ var ListView = React.createClass({
 
     dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
     /**
-     * (rowData, sectionID, rowID) => renderable
+     * (sectionID, rowID, adjacentRowHighlighted) => renderable
+     * If provided, a renderable component to be rendered as the separator
+     * below each row but not the last row if there is a section header below.
+     * Take a sectionID and rowID of the row above and whether its adjacent row
+     * is highlighted.
+     */
+    renderSeparator: PropTypes.func,
+    /**
+     * (rowData, sectionID, rowID, highlightRow) => renderable
      * Takes a data entry from the data source and its ids and should return
      * a renderable component to be rendered as the row.  By default the data
      * is exactly what was put into the data source, but it's also possible to
-     * provide custom extractors.
+     * provide custom extractors. ListView can be notified when a row is
+     * being highlighted by calling highlightRow function. The separators above and
+     * below will be hidden when a row is highlighted. The highlighted state of
+     * a row can be reset by calling highlightRow(null).
      */
     renderRow: PropTypes.func.isRequired,
     /**
@@ -227,6 +238,7 @@ var ListView = React.createClass({
     return {
       curRenderedRowsCount: this.props.initialListSize,
       prevRenderedRowsCount: 0,
+      highlightedRow: {},
     };
   },
 
@@ -254,6 +266,10 @@ var ListView = React.createClass({
     if (this.props.dataSource !== nextProps.dataSource) {
       this.setState({prevRenderedRowsCount: 0});
     }
+  },
+
+  onRowHighlighted: function(sectionID, rowID) {
+    this.setState({highlightedRow: {sectionID, rowID}});
   },
 
   render: function() {
@@ -305,11 +321,28 @@ var ListView = React.createClass({
               null,
               dataSource.getRowData(sectionIdx, rowIdx),
               sectionID,
-              rowID
+              rowID,
+              this.onRowHighlighted
             )}
           />;
         bodyComponents.push(row);
         totalIndex++;
+
+        if (this.props.renderSeparator &&
+            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length -1)) {
+          var adjacentRowHighlighted =
+            this.state.highlightedRow.sectionID === sectionID && (
+              this.state.highlightedRow.rowID === rowID ||
+              this.state.highlightedRow.rowID === rowIDs[rowIdx + 1]
+            );
+          var separator = this.props.renderSeparator(
+            sectionID,
+            rowID,
+            adjacentRowHighlighted
+          );
+          bodyComponents.push(separator);
+          totalIndex++;
+        }
         if (++rowCount === this.state.curRenderedRowsCount) {
           break;
         }

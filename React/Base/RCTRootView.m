@@ -51,7 +51,7 @@
   RCTRootContentView *_contentView;
 }
 
-  - (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
 {
   RCTAssertMainThread();
@@ -87,6 +87,12 @@
   return [self initWithBridge:bridge moduleName:moduleName];
 }
 
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  super.backgroundColor = backgroundColor;
+  _contentView.backgroundColor = backgroundColor;
+}
+
 - (UIViewController *)backingViewController
 {
   return _backingViewController ?: [super backingViewController];
@@ -99,7 +105,6 @@
 
 RCT_IMPORT_METHOD(AppRegistry, runApplication)
 RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
-
 
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
@@ -124,6 +129,7 @@ RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
     [_contentView removeFromSuperview];
     _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                       bridge:bridge];
+    _contentView.backgroundColor = self.backgroundColor;
     [self addSubview:_contentView];
 
     NSString *moduleName = _moduleName ?: @"";
@@ -172,6 +178,7 @@ RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
 {
   __weak RCTBridge *_bridge;
   RCTTouchHandler *_touchHandler;
+  UIColor *_backgroundColor;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -181,16 +188,30 @@ RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
     _bridge = bridge;
     [self setUp];
     self.frame = frame;
+    self.layer.backgroundColor = NULL;
   }
   return self;
 }
 
 - (void)setFrame:(CGRect)frame
 {
-  [super setFrame:frame];
+  super.frame = frame;
   if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setFrame:self.bounds forRootView:self];
+    [_bridge.uiManager setFrame:frame forRootView:self];
   }
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  _backgroundColor = backgroundColor;
+  if (self.reactTag && _bridge.isValid) {
+    [_bridge.uiManager setBackgroundColor:backgroundColor forRootView:self];
+  }
+}
+
+- (UIColor *)backgroundColor
+{
+  return _backgroundColor;
 }
 
 - (void)setUp
