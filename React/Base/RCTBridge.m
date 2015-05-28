@@ -214,8 +214,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 - (void)_invokeAndProcessModule:(NSString *)module
                          method:(NSString *)method
                       arguments:(NSArray *)args
-                        context:(NSNumber *)context
-                completionBlock:(void (^)(void))completionBlock;
+                        context:(NSNumber *)context;
 
 @end
 
@@ -228,8 +227,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 - (void)_actuallyInvokeAndProcessModule:(NSString *)module
                                  method:(NSString *)method
                               arguments:(NSArray *)args
-                                context:(NSNumber *)context
-                        completionBlock:(void (^)(void))completionBlock;
+                                context:(NSNumber *)context;
 
 @end
 
@@ -348,8 +346,7 @@ static NSString *RCTStringUpToFirstArgument(NSString *methodName)
           [bridge _invokeAndProcessModule:@"BatchedBridge"
                                    method:@"invokeCallbackAndReturnFlushedQueue"
                                 arguments:@[json, args]
-                                  context:context
-                          completionBlock:nil];
+                                  context:context];
         } : ^(NSArray *unused) {});
       )
     };
@@ -885,25 +882,10 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
-  [self.batchedBridge enqueueJSCall:moduleDotMethod
-                      withArguments:args
-                    completionBlock:nil];
+  [self.batchedBridge enqueueJSCall:moduleDotMethod args:args];
 }
 
-- (void)enqueueJSCall:(NSString *)moduleDotMethod
-        withArguments:(NSArray *)arguments
-      completionBlock:(void (^)(void))completionBlock
-{
-  [self.batchedBridge enqueueJSCall:moduleDotMethod
-                      withArguments:arguments
-                    completionBlock:completionBlock];
-}
-
-RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
-                                       method:(NSString *)method
-                                    arguments:(NSArray *)args
-                                      context:(NSNumber *)context
-                              completionBlock:(void (^)(void))completionBlock)
+RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context)
 
 @end
 
@@ -1111,7 +1093,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
     // Allow testing without a script
     dispatch_async(dispatch_get_main_queue(), ^{
       _loading = NO;
-      [_jsDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                           object:_parentBridge
                                                         userInfo:@{ @"bridge": self }];
@@ -1254,18 +1235,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
-  [self enqueueJSCall:moduleDotMethod
-        withArguments:args
-      completionBlock:nil];
-}
-
-/**
- * Public. Can be invoked from any thread.
- */
-- (void)enqueueJSCall:(NSString *)moduleDotMethod
-        withArguments:(NSArray *)arguments
-      completionBlock:(void (^)(void))completionBlock
-{
   NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
   RCTAssert(moduleID != nil, @"Module '%@' not registered.",
             [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
@@ -1275,9 +1244,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
 
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
-                      arguments:@[moduleID ?: @0, methodID ?: @0, arguments ?: @[]]
-                        context:RCTGetExecutorID(_javaScriptExecutor)
-                completionBlock:completionBlock];
+                      arguments:@[moduleID ?: @0, methodID ?: @0, args ?: @[]]
+                        context:RCTGetExecutorID(_javaScriptExecutor)];
 }
 
 /**
@@ -1299,8 +1267,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"callFunctionReturnFlushedQueue"
                                 arguments:@[moduleID, methodID, @[@[timer]]]
-                                  context:RCTGetExecutorID(_javaScriptExecutor)
-                          completionBlock:nil];
+                                  context:RCTGetExecutorID(_javaScriptExecutor)];
   };
 
   if ([_javaScriptExecutor respondsToSelector:@selector(executeAsyncBlockOnJavaScriptQueue:)]) {
@@ -1366,11 +1333,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
  * Called by enqueueJSCall from any thread, or from _immediatelyCallTimer,
  * on the JS thread, but only in non-batched mode.
  */
-- (void)_invokeAndProcessModule:(NSString *)module
-                         method:(NSString *)method
-                      arguments:(NSArray *)args
-                        context:(NSNumber *)context
-                completionBlock:(void (^)(void))completionBlock
+- (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
   /**
    * AnyThread
@@ -1386,13 +1349,10 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
     }
 
     id call = @{
-      @"js_args": @{
-        @"module": module,
-        @"method": method,
-        @"args": args,
-      },
+      @"module": module,
+      @"method": method,
+      @"args": args,
       @"context": context ?: @0,
-      @"callback": (id)completionBlock ?: [NSNull null],
     };
 
     if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
@@ -1405,11 +1365,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
   }];
 }
 
-- (void)_actuallyInvokeAndProcessModule:(NSString *)module
-                                 method:(NSString *)method
-                              arguments:(NSArray *)args
-                                context:(NSNumber *)context
-                        completionBlock:(void (^)(void))completionBlock
+- (void)_actuallyInvokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args context:(NSNumber *)context
 {
   RCTAssertJSThread();
 
@@ -1421,10 +1377,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
     [self _handleBuffer:json context:context];
-
-    if (completionBlock) {
-      completionBlock();
-    }
   };
 
   [_javaScriptExecutor executeJSCall:module
@@ -1593,23 +1545,12 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module
     return [call[@"context"] isEqualToNumber:currentExecutorID];
   }]];
   if (calls.count > 0) {
-    void (^completionBlock)(void) = ^{
-      for (NSDictionary *call in calls) {
-        id callback = call[@"callback"];
-
-        if (callback && callback != [NSNull null]) {
-          ((void (^)(void))callback)();
-        }
-      }
-    };
-
     _scheduledCalls = [[NSMutableArray alloc] init];
     _scheduledCallbacks = [[RCTSparseArray alloc] init];
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"processBatch"
-                                arguments:@[[calls valueForKey:@"js_args"]]
-                                  context:RCTGetExecutorID(_javaScriptExecutor)
-                          completionBlock:completionBlock];
+                                arguments:@[calls]
+                                  context:RCTGetExecutorID(_javaScriptExecutor)];
   }
 
   RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);

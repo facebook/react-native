@@ -273,14 +273,3 @@ BOOL RCTImageHasAlpha(CGImageRef image)
       return YES;
   }
 }
-
-BOOL _RCTRunLoopRunWhile(BOOL (^block)(void), NSTimeInterval timeout)
-{
-  NSDate *timeoutDate = [[NSDate date] dateByAddingTimeInterval:timeout];
-
-  while (block() && [timeoutDate timeIntervalSinceNow] > 0) {
-    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeoutDate];
-  }
-
-  return !block();
-}

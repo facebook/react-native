@@ -75,17 +75,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 
 /**
- * This is the same `enqueueJSCall:args:` but with a handler to notify that JS
- * has finished executing the call
- *
- * NOTE: The `completionHandler` will be called on the *JS* thread, so any expensive
- * calls should be avoided here
- */
-- (void)enqueueJSCall:(NSString *)moduleDotMethod
-        withArguments:(NSArray *)arguments
-      completionBlock:(void (^)(void))completionBlock;
-
-/**
  * This macro is used to register a JS method to be called via the enqueueJSCall
  * bridge method. You should place this macro inside any file that uses the
  * imported method. If a method has already been registered by another class, it
