@@ -117,12 +117,14 @@
 
 @implementation MyCustomViewManager
 
+<span class="token function">RCT_EXPORT_MODULE<span class="token punctuation">(</span></span><span class="token punctuation">)</span>
+
 <span class="token operator">-</span> <span class="token punctuation">(</span>UIView <span class="token operator">*</span><span class="token punctuation">)</span>view
 <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>MyCustomView alloc<span class="token punctuation">]</span> init<span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">RCT_EXPORT_VIEW_PROPERTY<span class="token punctuation">(</span></span>myCustomProperty<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">RCT_EXPORT_VIEW_PROPERTY<span class="token punctuation">(</span></span>myCustomProperty<span class="token punctuation">,</span> NSString<span class="token punctuation">)</span><span class="token punctuation">;</span>
 @end</div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// JavaScript
 </span>
 <span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
