@@ -22,7 +22,7 @@
 .*/react-tools/node_modules/commoner/lib/reader.js
 
 # Ignore jest
-.*/react-native/node_modules/jest-cli/.*
+.*/node_modules/jest-cli/.*
 
 # Ignore Website
 .*/website/.*
