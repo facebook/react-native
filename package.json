@@ -59,7 +59,7 @@
     "react-timer-mixin": "^0.13.1",
     "react-tools": "0.13.2",
     "rebound": "^0.0.12",
-    "sane": "git://github.com/tadeuzagallo/sane.git#c2c8672928",
+    "sane": "git://github.com/tadeuzagallo/sane.git#a029f8b04a",
     "source-map": "0.1.31",
     "stacktrace-parser": "git://github.com/frantic/stacktrace-parser.git#493c5e5638",
     "uglify-js": "~2.4.16",
