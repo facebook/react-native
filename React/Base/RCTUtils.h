@@ -55,3 +55,12 @@ RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
+
+/**
+ * Helper for async tests, run the runloop while the condition becomes true or
+ * until timeout
+ */
+#define RCTRunLoopRunWhile(condition, timeout) \
+_RCTRunLoopRunWhile(^BOOL{ return condition; }, timeout)
+
+RCT_EXTERN BOOL _RCTRunLoopRunWhile(BOOL (^)(void), NSTimeInterval);
