@@ -81,11 +81,15 @@ var styles = StyleSheet.create({
     borderTopLeftRadius: 100,
   },
   border7: {
-    borderRadius: 20,
+    borderWidth: 10,
+    borderColor: 'rgba(255,0,0,0.5)',
+    borderRadius: 30,
+    overflow: 'hidden',
   },
   border7_inner: {
     backgroundColor: 'blue',
-    flex: 1,
+    width: 100,
+    height: 100
   },
 });
 
