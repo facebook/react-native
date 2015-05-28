@@ -15,6 +15,8 @@ var ModuleTransport = require('../lib/ModuleTransport');
 
 module.exports = Package;
 
+var SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
+
 function Package(sourceMapUrl) {
   this._finalized = false;
   this._modules = [];
@@ -96,12 +98,11 @@ Package.prototype.getSource = function(options) {
   }
 
   var source = this._getSource();
-  source += '\n\/\/@ sourceMappingURL=';
 
   if (options.inlineSourceMap) {
-    source += this._getInlineSourceMap();
-  } else {
-    source += this._sourceMapUrl;
+    source += SOURCEMAPPING_URL + this._getInlineSourceMap();
+  } else if (this._sourceMapUrl) {
+    source += SOURCEMAPPING_URL + this._sourceMapUrl;
   }
 
   return source;

@@ -80,6 +80,13 @@ var styles = StyleSheet.create({
 
     borderTopLeftRadius: 100,
   },
+  border7: {
+    borderRadius: 20,
+  },
+  border7_inner: {
+    backgroundColor: 'blue',
+    flex: 1,
+  },
 });
 
 exports.title = 'Border';
@@ -132,6 +139,17 @@ exports.examples = [
     description: 'border*Width & border*Color',
     render() {
       return <View style={[styles.box, styles.border6]} />;
+    }
+  },
+  {
+    title: 'Custom Borders',
+    description: 'borderRadius & clipping',
+    render() {
+      return (
+        <View style={[styles.box, styles.border7]}>
+          <View style={styles.border7_inner} />
+        </View>
+      );
     }
   },
 ];

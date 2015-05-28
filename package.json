@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "absolute-path": "0.0.0",
+    "babel": "5.4.3",
     "bluebird": "^2.9.21",
     "chalk": "^1.0.0",
     "connect": "2.8.3",
@@ -58,7 +59,7 @@
     "react-timer-mixin": "^0.13.1",
     "react-tools": "0.13.2",
     "rebound": "^0.0.12",
-    "sane": "^1.1.2",
+    "sane": "git://github.com/tadeuzagallo/sane.git#a029f8b04a",
     "source-map": "0.1.31",
     "stacktrace-parser": "git://github.com/frantic/stacktrace-parser.git#493c5e5638",
     "uglify-js": "~2.4.16",
@@ -69,6 +70,8 @@
   },
   "devDependencies": {
     "jest-cli": "0.4.5",
-    "eslint": "0.9.2"
+    "babel-eslint": "3.1.5",
+    "eslint": "0.21.2",
+    "eslint-plugin-react": "2.3.0"
   }
 }

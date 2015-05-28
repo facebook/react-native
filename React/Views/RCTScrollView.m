@@ -21,6 +21,107 @@
 CGFloat const ZINDEX_DEFAULT = 0;
 CGFloat const ZINDEX_STICKY_HEADER = 50;
 
+@interface RCTScrollEvent : NSObject <RCTEvent>
+
+- (instancetype)initWithType:(RCTScrollEventType)type
+                    reactTag:(NSNumber *)reactTag
+                  scrollView:(UIScrollView *)scrollView
+                    userData:(NSDictionary *)userData NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@implementation RCTScrollEvent
+{
+  RCTScrollEventType _type;
+  UIScrollView *_scrollView;
+  NSDictionary *_userData;
+}
+
+@synthesize viewTag = _viewTag;
+
+- (instancetype)initWithType:(RCTScrollEventType)type
+                    reactTag:(NSNumber *)reactTag
+                  scrollView:(UIScrollView *)scrollView
+                    userData:(NSDictionary *)userData
+{
+  if (self = [super init]) {
+    _type = type;
+    _viewTag = reactTag;
+    _scrollView = scrollView;
+    _userData = userData;
+  }
+  return self;
+}
+
+- (uint16_t)coalescingKey
+{
+  return 0;
+}
+
+- (NSDictionary *)body
+{
+  NSDictionary *body = @{
+    @"contentOffset": @{
+      @"x": @(_scrollView.contentOffset.x),
+      @"y": @(_scrollView.contentOffset.y)
+    },
+    @"contentInset": @{
+      @"top": @(_scrollView.contentInset.top),
+      @"left": @(_scrollView.contentInset.left),
+      @"bottom": @(_scrollView.contentInset.bottom),
+      @"right": @(_scrollView.contentInset.right)
+    },
+    @"contentSize": @{
+      @"width": @(_scrollView.contentSize.width),
+      @"height": @(_scrollView.contentSize.height)
+    },
+    @"layoutMeasurement": @{
+      @"width": @(_scrollView.frame.size.width),
+      @"height": @(_scrollView.frame.size.height)
+    },
+    @"zoomScale": @(_scrollView.zoomScale ?: 1),
+  };
+
+  if (_userData) {
+    NSMutableDictionary *mutableBody = [body mutableCopy];
+    [mutableBody addEntriesFromDictionary:_userData];
+    body = mutableBody;
+  }
+
+  return body;
+}
+
+- (NSString *)eventName
+{
+  static NSString *events[] = {
+    @"topScrollBeginDrag",
+    @"topScroll",
+    @"topScrollEndDrag",
+    @"topMomentumScrollBegin",
+    @"topMomentumScrollEnd",
+    @"topScrollAnimationEnd",
+  };
+
+  return events[_type];
+}
+
+- (BOOL)canCoalesce
+{
+  return YES;
+}
+
+- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
+{
+  return newEvent;
+}
+
++ (NSString *)moduleDotMethod
+{
+  return @"RCTEventEmitter.receiveEvent";
+}
+
+@end
+
 /**
  * Include a custom scroll view subclass because we want to limit certain
  * default UIKit behaviors such as textFields automatically scrolling
@@ -221,6 +322,24 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
     previousHeader.transform = CGAffineTransformMakeTranslation(0, yOffset);
     previousHeader.layer.zPosition = ZINDEX_STICKY_HEADER;
   }
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  __block UIView *stickyHeader;
+
+  [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:^(NSUInteger idx, BOOL *stop) {
+    stickyHeader = [self contentView].reactSubviews[idx];
+    CGPoint convertedPoint = [stickyHeader convertPoint:point fromView:self];
+
+    if ([stickyHeader hitTest:convertedPoint withEvent:event]) {
+      *stop = YES;
+    } else {
+      stickyHeader = nil;
+    }
+  }];
+
+  return stickyHeader ?: [super hitTest:point withEvent:event];
 }
 
 @end
@@ -424,6 +543,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
                                      reactTag:self.reactTag
                                    scrollView:scrollView
                                      userData:userData];
+
     // Update dispatch time
     _lastScrollDispatchTime = now;
     _allowNextScrollNoMatterWhat = NO;
@@ -609,6 +729,22 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
 - (id)valueForUndefinedKey:(NSString *)key
 {
   return [_scrollView valueForKey:key];
+}
+
+@end
+
+@implementation RCTEventDispatcher (RCTScrollView)
+
+- (void)sendScrollEventWithType:(RCTScrollEventType)type
+                       reactTag:(NSNumber *)reactTag
+                     scrollView:(UIScrollView *)scrollView
+                       userData:(NSDictionary *)userData
+{
+  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithType:type
+                                                            reactTag:reactTag
+                                                          scrollView:scrollView
+                                                            userData:userData];
+  [self sendEvent:scrollEvent];
 }
 
 @end

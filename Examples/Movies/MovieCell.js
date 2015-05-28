@@ -34,7 +34,10 @@ var MovieCell = React.createClass({
     var criticsScore = this.props.movie.ratings.critics_score;
     return (
       <View>
-        <TouchableHighlight onPress={this.props.onSelect}>
+        <TouchableHighlight 
+          onPress={this.props.onSelect}
+          onShowUnderlay={this.props.onHighlight}
+          onHideUnderlay={this.props.onUnhighlight}>
           <View style={styles.row}>
             <Image
               source={getImageSource(this.props.movie, 'det')}
@@ -54,7 +57,6 @@ var MovieCell = React.createClass({
             </View>
           </View>
         </TouchableHighlight>
-        <View style={styles.cellBorder} />
       </View>
     );
   }

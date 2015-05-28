@@ -237,10 +237,31 @@ var SearchScreen = React.createClass({
     return <ActivityIndicatorIOS style={styles.scrollSpinner} />;
   },
 
-  renderRow: function(movie: Object)  {
+  renderSeparator: function(
+    sectionID: number | string,
+    rowID: number | string,
+    adjacentRowHighlighted: boolean
+  ) {
+    var style = styles.rowSeparator;
+    if (adjacentRowHighlighted) {
+        style = [style, styles.rowSeparatorHide];
+    }
+    return (
+      <View key={"SEP_" + sectionID + "_" + rowID}  style={style}/>
+    );
+  },
+
+  renderRow: function(
+    movie: Object,
+    sectionID: number | string,
+    rowID: number | string,
+    highlightRowFunc: (sectionID: ?number | string, rowID: ?number | string) => void,
+  ) {
     return (
       <MovieCell
         onSelect={() => this.selectMovie(movie)}
+        onHighlight={() => highlightRowFunc(sectionID, rowID)}
+        onUnhighlight={() => highlightRowFunc(null, null)}
         movie={movie}
       />
     );
@@ -254,6 +275,7 @@ var SearchScreen = React.createClass({
       /> :
       <ListView
         ref="listview"
+        renderSeparator={this.renderSeparator}
         dataSource={this.state.dataSource}
         renderFooter={this.renderFooter}
         renderRow={this.renderRow}
@@ -351,6 +373,14 @@ var styles = StyleSheet.create({
   },
   scrollSpinner: {
     marginVertical: 20,
+  },
+  rowSeparator: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    height: 1,
+    marginLeft: 4,
+  },
+  rowSeparatorHide: {
+    opacity: 0.0,
   },
 });
 

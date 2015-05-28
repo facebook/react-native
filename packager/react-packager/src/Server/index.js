@@ -129,7 +129,7 @@ Server.prototype._onFileChange = function(type, filepath, root) {
 };
 
 Server.prototype._rebuildPackages = function() {
-  var buildPackage = this._buildPackage.bind(this);
+  var buildPackage = this.buildPackage.bind(this);
   var packages = this._packages;
   Object.keys(packages).forEach(function(key) {
     var options = getOptionsFromUrl(key);
@@ -171,18 +171,47 @@ Server.prototype.end = function() {
   ]);
 };
 
-Server.prototype._buildPackage = function(options) {
+var packageOpts = declareOpts({
+  sourceMapUrl: {
+    type: 'string',
+    required: false,
+  },
+  entryFile: {
+    type: 'string',
+    required: true,
+  },
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+  minify: {
+    type: 'boolean',
+    default: false,
+  },
+  runModule: {
+    type: 'boolean',
+    default: true,
+  },
+  inlineSourceMap: {
+    type: 'boolean',
+    default: false,
+  },
+});
+
+Server.prototype.buildPackage = function(options) {
+  var opts = packageOpts(options);
+
   return this._packager.package(
-    options.main,
-    options.runModule,
-    options.sourceMapUrl,
-    options.dev
+    opts.entryFile,
+    opts.runModule,
+    opts.sourceMapUrl,
+    opts.dev
   );
 };
 
 Server.prototype.buildPackageFromUrl = function(reqUrl) {
   var options = getOptionsFromUrl(reqUrl);
-  return this._buildPackage(options);
+  return this.buildPackage(options);
 };
 
 Server.prototype.getDependencies = function(main) {
@@ -321,7 +350,7 @@ Server.prototype.processRequest = function(req, res, next) {
 
   var startReqEventId = Activity.startEvent('request:' + req.url);
   var options = getOptionsFromUrl(req.url);
-  var building = this._packages[req.url] || this._buildPackage(options);
+  var building = this._packages[req.url] || this.buildPackage(options);
 
   this._packages[req.url] = building;
     building.then(
@@ -363,7 +392,7 @@ function getOptionsFromUrl(reqUrl) {
 
   return {
     sourceMapUrl: pathname.replace(/\.bundle$/, '.map'),
-    main: entryFile,
+    entryFile: entryFile,
     dev: getBoolOptionFromQuery(urlObj.query, 'dev', true),
     minify: getBoolOptionFromQuery(urlObj.query, 'minify'),
     runModule: getBoolOptionFromQuery(urlObj.query, 'runModule', true),

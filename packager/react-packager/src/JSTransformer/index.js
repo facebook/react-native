@@ -99,7 +99,12 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
         }).then(
           function(res) {
             if (res.error) {
-              throw formatError(res.error, filePath, sourceCode);
+              console.warn(
+                'Error property on the result value form the transformer',
+                'module is deprecated and will be removed in future versions.',
+                'Please pass an error object as the first argument to the callback'
+              );
+              throw formatError(res.error, filePath);
             }
 
             return new ModuleTransport({
@@ -110,6 +115,8 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
             });
           }
         );
+      }).catch(function(err) {
+        throw formatError(err, filePath);
       });
   });
 };
@@ -118,8 +125,8 @@ function TransformError() {}
 util.inherits(TransformError, SyntaxError);
 
 function formatError(err, filename, source) {
-  if (err.lineNumber && err.column) {
-    return formatEsprimaError(err, filename, source);
+  if (err.loc) {
+    return formatBabelError(err, filename, source);
   } else {
     return formatGenericError(err, filename, source);
   }
@@ -136,26 +143,16 @@ function formatGenericError(err, filename) {
   return error;
 }
 
-function formatEsprimaError(err, filename, source) {
-  var stack = err.stack.split('\n');
-  stack.shift();
-
-  var msg = 'TransformError: ' + err.description + ' ' +  filename + ':' +
-    err.lineNumber + ':' + err.column;
-  var sourceLine = source.split('\n')[err.lineNumber - 1];
-  var snippet = sourceLine + '\n' + new Array(err.column - 1).join(' ') + '^';
-
-  stack.unshift(msg);
-
+function formatBabelError(err, filename) {
   var error = new TransformError();
-  error.message = msg;
   error.type = 'TransformError';
-  error.stack = stack.join('\n');
-  error.snippet = snippet;
+  error.message = (err.type || error.type) + ' ' + err.message;
+  error.stack = err.stack;
+  error.snippet = err.codeFrame;
+  error.lineNumber = err.loc.line;
+  error.column = err.loc.column;
   error.filename = filename;
-  error.lineNumber = err.lineNumber;
-  error.column = err.column;
-  error.description = err.description;
+  error.description = err.message;
   return error;
 }
 

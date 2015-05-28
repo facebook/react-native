@@ -29,7 +29,7 @@ function verifyPropTypes(
     );
   }
 
-  var nativeProps = viewConfig.nativeProps;
+  var nativeProps = viewConfig.NativeProps;
   for (var prop in nativeProps) {
     if (!component.propTypes[prop] &&
         !View.propTypes[prop] &&
