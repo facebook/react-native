@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "absolute-path": "0.0.0",
+    "babel": "5.4.3",
     "bluebird": "^2.9.21",
     "chalk": "^1.0.0",
     "connect": "2.8.3",
