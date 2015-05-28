@@ -16,7 +16,7 @@
 .*/node_modules/react-tools/src/event/EventPropagators.js
 
 # Ignore commoner tests
-.*/node_modules/react-tools/node_modules/commoner/test/.*
+.*/node_modules/commoner/test/.*
 
 # See https://github.com/facebook/flow/issues/442
 .*/react-tools/node_modules/commoner/lib/reader.js
