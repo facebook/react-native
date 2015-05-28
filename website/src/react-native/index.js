@@ -215,12 +215,14 @@ var Message = React.createClass({
 
 @implementation MyCustomViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 @end`}
           </Prism>
           <Prism>
