@@ -50,7 +50,7 @@ var TabBarExample = React.createClass({
     return (
       <TabBarIOS
         tintColor="black"
-        barTintColor="#3abeff'">
+        barTintColor="#3abeff">
         <TabBarIOS.Item
           title="Blue Tab"
           selected={this.state.selectedTab === 'blueTab'}
