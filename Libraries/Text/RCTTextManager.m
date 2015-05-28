@@ -34,6 +34,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - View properties
 
+RCT_IGNORE_VIEW_PROPERTY(backgroundColor);
 RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
 
 #pragma mark - Shadow properties

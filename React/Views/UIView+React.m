@@ -83,6 +83,11 @@
   self.layer.bounds = bounds;
 }
 
+- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+{
+  self.backgroundColor = inheritedBackgroundColor;
+}
+
 - (UIViewController *)backingViewController
 {
   id responder = [self nextResponder];

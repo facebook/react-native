@@ -32,6 +32,15 @@
   return self;
 }
 
+- (void)reactSetFrame:(CGRect)frame
+{
+  // Text looks super weird if its frame is animated.
+  // This disables the frame animation, without affecting opacity, etc.
+  [UIView performWithoutAnimation:^{
+    [super reactSetFrame:frame];
+  }];
+}
+
 - (void)setTextStorage:(NSTextStorage *)textStorage
 {
   _textStorage = textStorage;

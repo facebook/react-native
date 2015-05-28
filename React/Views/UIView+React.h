@@ -22,6 +22,11 @@
 - (void)reactSetFrame:(CGRect)frame;
 
 /**
+ * Used to improve performance when compositing views with translucent content.
+ */
+- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor;
+
+/**
  * This method finds and returns the containing view controller for the view.
  */
 - (UIViewController *)backingViewController;
