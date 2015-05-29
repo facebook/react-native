@@ -102,10 +102,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, css_overflow, RCTView)
-{
-  view.clipsToBounds = json ? ![RCTConvert css_overflow:json] : defaultView.clipsToBounds;
-}
+RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
@@ -260,7 +257,7 @@ RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(flex, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(flexDirection, css_flex_direction_t)

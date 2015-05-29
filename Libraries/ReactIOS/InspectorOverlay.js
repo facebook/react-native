@@ -75,7 +75,9 @@ var InspectorOverlay = React.createClass({
 
 var ElementProperties = React.createClass({
   render: function() {
-    var path = this.props.hierarchy.map((instance) => instance.getName()).join(' > ');
+    var path = this.props.hierarchy.map((instance) => {
+      return instance.getName ? instance.getName() : 'Unknown';
+    }).join(' > ');
     return (
       <View style={styles.info}>
         <Text style={styles.path}>

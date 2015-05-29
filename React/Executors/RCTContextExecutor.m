@@ -420,12 +420,12 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-   if ([NSThread currentThread] != _javaScriptThread) {
-     [self performSelector:@selector(executeBlockOnJavaScriptQueue:)
-                  onThread:_javaScriptThread withObject:block waitUntilDone:NO];
-   } else {
-     block();
-   }
+  if ([NSThread currentThread] != _javaScriptThread) {
+    [self performSelector:@selector(executeBlockOnJavaScriptQueue:)
+                 onThread:_javaScriptThread withObject:block waitUntilDone:NO];
+  } else {
+    block();
+  }
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block

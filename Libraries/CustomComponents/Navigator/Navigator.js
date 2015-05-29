@@ -549,11 +549,14 @@ var Navigator = React.createClass({
         this.spring.getCurrentValue()
       );
     } else if (this.state.activeGesture != null) {
-      this._transitionBetween(
-        this.state.presentedIndex,
-        this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture),
-        this.spring.getCurrentValue()
-      );
+      var presentedToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
+      if (presentedToIndex > -1) {
+        this._transitionBetween(
+          this.state.presentedIndex,
+          presentedToIndex,
+          this.spring.getCurrentValue()
+        );
+      }
     }
   },
 

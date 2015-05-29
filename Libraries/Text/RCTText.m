@@ -16,12 +16,14 @@
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
+  NSMutableArray *_reactSubviews;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
+    _reactSubviews = [NSMutableArray array];
 
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
@@ -30,6 +32,30 @@
     self.contentMode = UIViewContentModeRedraw;
   }
   return self;
+}
+
+- (void)reactSetFrame:(CGRect)frame
+{
+  // Text looks super weird if its frame is animated.
+  // This disables the frame animation, without affecting opacity, etc.
+  [UIView performWithoutAnimation:^{
+    [super reactSetFrame:frame];
+  }];
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  [_reactSubviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  [_reactSubviews removeObject:subview];
+}
+
+- (NSMutableArray *)reactSubviews
+{
+  return _reactSubviews;
 }
 
 - (void)setTextStorage:(NSTextStorage *)textStorage

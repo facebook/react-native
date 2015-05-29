@@ -11,6 +11,18 @@
 
 #import "RCTBridge.h"
 
+/**
+ * This notification is sent when the first subviews are added to the root view
+ * after the application has loaded. This is used to hide the `loadingView`, and
+ * is a good indicator that the application is ready to use.
+ */
+extern NSString *const RCTContentDidAppearNotification;
+
+/**
+ * Native view used to host React-managed views within the app. Can be used just
+ * like any ordinary UIView. You can have multiple RCTRootViews on screen at
+ * once, all controlled by the same JavaScript application.
+ */
 @interface RCTRootView : UIView
 
 /**
@@ -66,5 +78,19 @@
  * The React-managed contents view of the root view.
  */
 @property (nonatomic, strong, readonly) UIView *contentView;
+
+/**
+ * A view to display while the JavaScript is loading, so users aren't presented
+ * with a blank screen. By default this is nil, but you can override it with
+ * (for example) a UIActivityIndicatorView or a placeholder image.
+ */
+@property (nonatomic, strong) UIView *loadingView;
+
+/**
+ * Timings for hiding the loading view after the content has loaded. Both of
+ * these values default to 0.25 seconds.
+ */
+@property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
+@property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
 
 @end
