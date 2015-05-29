@@ -4,5 +4,5 @@ Usage:
 
 ```
 % npm install -g react-native-cli
-% react-native init myApplication
+% react-native init MyApplication
 ```
