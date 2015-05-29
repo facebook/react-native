@@ -132,7 +132,6 @@ html * {
   line-height: 20px;
   border-left: 4px solid #05A5D1;
   padding: 5px 10px;
-  margin-left: 20px;
   background-color: rgba(5, 165, 209, 0.05);
   overflow: auto;
 }

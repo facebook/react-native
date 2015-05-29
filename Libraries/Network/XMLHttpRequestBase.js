@@ -23,7 +23,7 @@ class XMLHttpRequestBase {
   readyState: number;
   responseHeaders: ?Object;
   responseText: ?string;
-  status: ?string;
+  status: number;
 
   _method: ?string;
   _url: ?string;
@@ -43,7 +43,7 @@ class XMLHttpRequestBase {
     this.readyState = this.UNSENT;
     this.responseHeaders = undefined;
     this.responseText = undefined;
-    this.status = undefined;
+    this.status = 0;
 
     this._method = null;
     this._url = null;
@@ -73,7 +73,7 @@ class XMLHttpRequestBase {
   }
 
   setRequestHeader(header: string, value: any): void {
-    this._headers[header] = value;
+    this._headers[header.toLowerCase()] = value;
   }
 
   open(method: string, url: string, async: ?boolean): void {
@@ -127,7 +127,7 @@ class XMLHttpRequestBase {
     this._aborted = true;
   }
 
-  callback(status: string, responseHeaders: ?Object, responseText: string): void {
+  callback(status: number, responseHeaders: ?Object, responseText: string): void {
     if (this._aborted) {
       return;
     }

@@ -10,40 +10,37 @@
  */
 'use strict';
 
-var jstransform = require('jstransform').transform;
+var babel = require('babel');
 
-var reactVisitors =
-  require('react-tools/vendor/fbtransform/visitors').getAllVisitors();
-var staticTypeSyntax =
-  require('jstransform/visitors/type-syntax').visitorList;
-var trailingCommaVisitors =
-  require('jstransform/visitors/es7-trailing-comma-visitors.js').visitorList;
-
-// Note that reactVisitors now handles ES6 classes, rest parameters, arrow
-// functions, template strings, and object short notation.
-var visitorList = reactVisitors.concat(trailingCommaVisitors);
-
-function transform(srcTxt, filename) {
-  var options = {
-    es3: true,
-    sourceType: 'nonStrictModule',
+function transform(srcTxt, filename, options) {
+  var result = babel.transform(srcTxt, {
+    retainLines: true,
+    compact: true,
+    comments: false,
     filename: filename,
+    whitelist: [
+      'es6.arrowFunctions',
+      'es6.blockScoping',
+      'es6.classes',
+      'es6.destructuring',
+      'es6.parameters.rest',
+      'es6.properties.computed',
+      'es6.properties.shorthand',
+      'es6.spread',
+      'es6.templateLiterals',
+      'es7.trailingFunctionCommas',
+      'es7.objectRestSpread',
+      'flow',
+      'react',
+    ],
+    sourceFileName: filename,
+    sourceMaps: false,
+    extra: options || {},
+  });
+
+  return {
+    code: result.code,
   };
-
-  // These tranforms mostly just erase type annotations and static typing
-  // related statements, but they were conflicting with other tranforms.
-  // Running them first solves that problem
-  var staticTypeSyntaxResult = jstransform(
-    staticTypeSyntax,
-    srcTxt,
-    options
-  );
-
-  return jstransform(
-    visitorList,
-    staticTypeSyntaxResult.code,
-    options
-  );
 }
 
 module.exports = function(data, callback) {
@@ -54,15 +51,8 @@ module.exports = function(data, callback) {
       data.filename
     );
   } catch (e) {
-    return callback(null, {
-      error: {
-        lineNumber: e.lineNumber,
-        column: e.column,
-        message: e.message,
-        stack: e.stack,
-        description: e.description
-      }
-    });
+    callback(e);
+    return;
   }
 
   callback(null, result);

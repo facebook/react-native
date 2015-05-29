@@ -15,6 +15,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTNavItem.h"
+#import "RCTScrollView.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTWrapperViewController.h"

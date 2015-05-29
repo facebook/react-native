@@ -58,7 +58,7 @@ This is now a fully-functioning native map view component in JavaScript, complet
 
 ## Properties
 
-The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control and specify the visible region.  Disabling pitch is a simple boolean, so we just add this one line:
+The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control and specify the visible region.  Disabling pitch is a simple boolean, so we add this one line:
 
 ```objective-c
 // RCTMapManager.m
@@ -67,7 +67,7 @@ RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
 
 Note that we explicitly specify the type as `BOOL` - React Native uses `RCTConvert` under the hood to convert all sorts of different data types when talking over the bridge, and bad values will show convenient "RedBox" errors to let you know there is an issue ASAP.  When things are straightforward like this, the whole implementation is taken care of for you by this macro.
 
-Now to actually disable pitch, we just set the property in JS:
+Now to actually disable pitch, we set the property in JS:
 
 ```javascript
 // MyApp.js
@@ -115,9 +115,9 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 }
 ```
 
-Ok, this is clearly more complicated than the simple `BOOL` case we had before.  Now we have a `MKCoordinateRegion` type that needs a conversion function, and we have custom code so that the view will animate when we set the region from JS.  There is also a `defaultView` that we use to reset the property back to the default value if JS sends us a null sentinel.
+Ok, this is more complicated than the simple `BOOL` case we had before.  Now we have a `MKCoordinateRegion` type that needs a conversion function, and we have custom code so that the view will animate when we set the region from JS.  Within the function body that we provide, `json` refers to the raw value that has been passed from JS.  There is also a `view` variable which gives us access to the manager's view instance, and a `defaultView` that we use to reset the property back to the default value if JS sends us a null sentinel.
 
-You could of course write any conversion function you want for your view - here is the implementation for `MKCoordinateRegion` via two categories on `RCTConvert`:
+You could write any conversion function you want for your view - here is the implementation for `MKCoordinateRegion` via two categories on `RCTConvert`:
 
 ```objective-c
 @implementation RCTConvert(CoreLocation)

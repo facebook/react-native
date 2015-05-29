@@ -58,6 +58,7 @@ var COMPONENTS = [
 ];
 
 var APIS = [
+  require('./AccessibilityIOSExample'),
   require('./ActionSheetIOSExample'),
   require('./AdSupportIOSExample'),
   require('./AlertIOSExample'),

@@ -9,8 +9,7 @@
  * @providesModule ReactNativeDOMIDOperations
  * @flow
  */
-
-"use strict";
+'use strict';
 
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChildUpdateTypes = require('ReactMultiChildUpdateTypes');

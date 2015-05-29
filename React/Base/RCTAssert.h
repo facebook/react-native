@@ -62,3 +62,31 @@ RCT_EXTERN RCTAssertFunction RCTGetAssertFunction(void);
  * assert info to an extra service without changing the default behavior.
  */
 RCT_EXTERN void RCTAddAssertFunction(RCTAssertFunction assertFunction);
+
+/**
+ * Get the current thread's name (or the current queue, if in debug mode)
+ */
+RCT_EXTERN NSString *RCTCurrentThreadName(void);
+
+/**
+ * Convenience macro to assert which thread is currently running (DEBUG mode only)
+ */
+#if DEBUG
+
+#define RCTAssertThread(thread, format...) \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") \
+RCTAssert( \
+  [(id)thread isKindOfClass:[NSString class]] ? \
+    [RCTCurrentThreadName() isEqualToString:(NSString *)thread] : \
+    [(id)thread isKindOfClass:[NSThread class]] ? \
+      [NSThread currentThread] ==  (NSThread *)thread : \
+      dispatch_get_current_queue() == (dispatch_queue_t)thread, \
+  format); \
+_Pragma("clang diagnostic pop")
+
+#else
+
+#define RCTAssertThread(thread, format...)
+
+#endif

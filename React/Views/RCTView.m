@@ -15,6 +15,8 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
+static const CGFloat RCTViewBorderThreshold = 0.001;
+
 static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
 {
   for (UIView *subview in [view.subviews reverseObjectEnumerator]) {
@@ -127,7 +129,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomRightRadius = -1;
 
     _backgroundColor = [super backgroundColor];
-    [super setBackgroundColor:[UIColor clearColor]];
   }
 
   return self;
@@ -164,6 +165,26 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     default:
       RCTLogError(@"Invalid pointer-events specified %zd on %@", _pointerEvents, self);
       return [super hitTest:point withEvent:event];
+  }
+}
+
+- (BOOL)accessibilityActivate
+{
+  if (self.accessibilityTapHandler) {
+    self.accessibilityTapHandler(self);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+- (BOOL)accessibilityPerformMagicTap
+{
+  if (self.magicTapHandler) {
+    self.magicTapHandler(self);
+    return YES;
+  } else {
+    return NO;
   }
 }
 
@@ -417,17 +438,22 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if ([_backgroundColor isEqual:backgroundColor]) {
     return;
   }
+
   _backgroundColor = backgroundColor;
   [self.layer setNeedsDisplay];
 }
 
-- (UIImage *)generateBorderImage:(out CGRect *)contentsCenter
+- (UIImage *)borderImage:(out CGRect *)contentsCenter
 {
-  const CGFloat maxRadius = MIN(self.bounds.size.height, self.bounds.size.width);
+  const CGFloat maxRadius = ({
+    const CGRect bounds = self.bounds;
+    MIN(bounds.size.height, bounds.size.width);
+  });
+
   const CGFloat radius = MAX(0, _borderRadius);
-  const CGFloat topLeftRadius =     MIN(_borderTopLeftRadius     >= 0 ? _borderTopLeftRadius     : radius, maxRadius);
-  const CGFloat topRightRadius =    MIN(_borderTopRightRadius    >= 0 ? _borderTopRightRadius    : radius, maxRadius);
-  const CGFloat bottomLeftRadius =  MIN(_borderBottomLeftRadius  >= 0 ? _borderBottomLeftRadius  : radius, maxRadius);
+  const CGFloat topLeftRadius     = MIN(_borderTopLeftRadius     >= 0 ? _borderTopLeftRadius     : radius, maxRadius);
+  const CGFloat topRightRadius    = MIN(_borderTopRightRadius    >= 0 ? _borderTopRightRadius    : radius, maxRadius);
+  const CGFloat bottomLeftRadius  = MIN(_borderBottomLeftRadius  >= 0 ? _borderBottomLeftRadius  : radius, maxRadius);
   const CGFloat bottomRightRadius = MIN(_borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius, maxRadius);
 
   const CGFloat borderWidth = MAX(0, _borderWidth);
@@ -435,6 +461,22 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   const CGFloat rightWidth  = _borderRightWidth  >= 0 ? _borderRightWidth  : borderWidth;
   const CGFloat bottomWidth = _borderBottomWidth >= 0 ? _borderBottomWidth : borderWidth;
   const CGFloat leftWidth   = _borderLeftWidth   >= 0 ? _borderLeftWidth   : borderWidth;
+
+  const BOOL hasCornerRadii =
+  topLeftRadius > RCTViewBorderThreshold ||
+  topRightRadius > RCTViewBorderThreshold ||
+  bottomLeftRadius > RCTViewBorderThreshold ||
+  bottomRightRadius > RCTViewBorderThreshold;
+
+  const BOOL hasBorders =
+  topWidth > RCTViewBorderThreshold ||
+  rightWidth > RCTViewBorderThreshold ||
+  bottomWidth > RCTViewBorderThreshold ||
+  leftWidth > RCTViewBorderThreshold;
+
+  if (!hasCornerRadii && !hasBorders) {
+    return nil;
+  }
 
   const CGFloat innerTopLeftRadiusX = MAX(0, topLeftRadius - leftWidth);
   const CGFloat innerTopLeftRadiusY = MAX(0, topLeftRadius - topWidth);
@@ -451,17 +493,26 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   const UIEdgeInsets edgeInsets = UIEdgeInsetsMake(topWidth + MAX(innerTopLeftRadiusY, innerTopRightRadiusY), leftWidth + MAX(innerTopLeftRadiusX, innerBottomLeftRadiusX), bottomWidth + MAX(innerBottomLeftRadiusY, innerBottomRightRadiusY), rightWidth + + MAX(innerBottomRightRadiusX, innerTopRightRadiusX));
   const CGSize size = CGSizeMake(edgeInsets.left + 1 + edgeInsets.right, edgeInsets.top + 1 + edgeInsets.bottom);
 
-  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+  const CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
+  const BOOL opaque = (self.clipsToBounds || !hasCornerRadii) && alpha == 1.0;
+  UIGraphicsBeginImageContextWithOptions(size, opaque, 0.0);
 
   CGContextRef ctx = UIGraphicsGetCurrentContext();
-  const CGRect rect = {CGPointZero, size};
-  CGPathRef path = RCTPathCreateWithRoundedRect(rect, topLeftRadius, topLeftRadius, topRightRadius, topRightRadius, bottomLeftRadius, bottomLeftRadius, bottomRightRadius, bottomRightRadius, NULL);
+  const CGRect rect = {.size = size};
+
+  CGPathRef path;
+  const BOOL hasClipping = self.clipsToBounds;
+  if (hasClipping) {
+    path = CGPathCreateWithRect(rect, NULL);
+  } else {
+    path = RCTPathCreateWithRoundedRect(rect, topLeftRadius, topLeftRadius, topRightRadius, topRightRadius, bottomLeftRadius, bottomLeftRadius, bottomRightRadius, bottomRightRadius, NULL);
+  }
 
   if (_backgroundColor) {
     CGContextSaveGState(ctx);
 
-    CGContextAddPath(ctx, path);
     CGContextSetFillColorWithColor(ctx, _backgroundColor.CGColor);
+    CGContextAddPath(ctx, path);
     CGContextFillPath(ctx);
 
     CGContextRestoreGState(ctx);
@@ -470,29 +521,18 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   CGContextAddPath(ctx, path);
   CGPathRelease(path);
 
-  BOOL hasRadius = topLeftRadius > 0 || topRightRadius > 0 || bottomLeftRadius > 0 || bottomRightRadius > 0;
-  if (hasRadius && topWidth > 0 && rightWidth > 0 && bottomWidth > 0 && leftWidth > 0) {
-    const UIEdgeInsets insetEdgeInsets = UIEdgeInsetsMake(topWidth, leftWidth, bottomWidth, rightWidth);
-    const CGRect insetRect = UIEdgeInsetsInsetRect(rect, insetEdgeInsets);
-    CGPathRef insetPath = RCTPathCreateWithRoundedRect(insetRect, innerTopLeftRadiusX, innerTopLeftRadiusY, innerTopRightRadiusX, innerTopRightRadiusY, innerBottomLeftRadiusX, innerBottomLeftRadiusY, innerBottomRightRadiusX, innerBottomRightRadiusY, NULL);
-    CGContextAddPath(ctx, insetPath);
-    CGPathRelease(insetPath);
-  }
+  const BOOL hasRadius = topLeftRadius > 0 || topRightRadius > 0 || bottomLeftRadius > 0 || bottomRightRadius > 0;
+  const UIEdgeInsets insetEdgeInsets = UIEdgeInsetsMake(topWidth, leftWidth, bottomWidth, rightWidth);
+  CGPathRef insetPath = RCTPathCreateWithRoundedRect(UIEdgeInsetsInsetRect(rect, insetEdgeInsets), innerTopLeftRadiusX, innerTopLeftRadiusY, innerTopRightRadiusX, innerTopRightRadiusY, innerBottomLeftRadiusX, innerBottomLeftRadiusY, innerBottomRightRadiusX, innerBottomRightRadiusY, NULL);
 
+  CGContextAddPath(ctx, insetPath);
   CGContextEOClip(ctx);
 
   BOOL hasEqualColor = !_borderTopColor && !_borderRightColor && !_borderBottomColor && !_borderLeftColor;
-  BOOL hasEqualBorder = _borderWidth >= 0 && _borderTopWidth < 0 && _borderRightWidth < 0 && _borderBottomWidth < 0 && _borderLeftWidth < 0;
-  if (!hasRadius && hasEqualBorder && hasEqualColor) {
-    CGContextSetStrokeColorWithColor(ctx, _borderColor);
-    CGContextSetLineWidth(ctx, 2 * _borderWidth);
-    CGContextClipToRect(ctx, rect);
-    CGContextStrokeRect(ctx, rect);
-  } else if (!hasRadius && hasEqualColor) {
+  if ((hasClipping || !hasRadius) && hasEqualColor) {
     CGContextSetFillColorWithColor(ctx, _borderColor);
     CGContextAddRect(ctx, rect);
-    const CGRect insetRect = UIEdgeInsetsInsetRect(rect, edgeInsets);
-    CGContextAddRect(ctx, insetRect);
+    CGContextAddPath(ctx, insetPath);
     CGContextEOFillPath(ctx);
   } else {
     BOOL didSet = NO;
@@ -628,6 +668,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     }
   }
 
+  CGPathRelease(insetPath);
+
   UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
 
@@ -637,23 +679,62 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (void)displayLayer:(CALayer *)layer
 {
-  CGRect contentsCenter;
-  UIImage *image = [self generateBorderImage:&contentsCenter];
+  CGRect contentsCenter = {.size = {1, 1}};
+  UIImage *image = [self borderImage:&contentsCenter];
 
-  if (RCTRunningInTestEnvironment()) {
+  if (image && RCTRunningInTestEnvironment()) {
     const CGSize size = self.bounds.size;
     UIGraphicsBeginImageContextWithOptions(size, NO, image.scale);
     [image drawInRect:(CGRect){CGPointZero, size}];
     image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
-    contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
+  layer.backgroundColor = [image ? [UIColor clearColor] : _backgroundColor CGColor];
   layer.contents = (id)image.CGImage;
   layer.contentsCenter = contentsCenter;
-  layer.contentsScale = image.scale;
+  layer.contentsScale = image.scale ?: 1.0;
   layer.magnificationFilter = kCAFilterNearest;
+  layer.needsDisplayOnBoundsChange = image != nil;
+
+  [self updateClippingForLayer:layer];
+}
+
+- (void)updateClippingForLayer:(CALayer *)layer
+{
+  CALayer *mask = nil;
+  CGFloat cornerRadius = 0;
+
+  if (self.clipsToBounds) {
+    if (_borderRadius > 0 && _borderTopLeftRadius < 0 && _borderTopRightRadius < 0 && _borderBottomLeftRadius < 0 && _borderBottomRightRadius < 0) {
+      cornerRadius = _borderRadius;
+    } else {
+      const CGRect bounds = layer.bounds;
+      const CGFloat maxRadius = MIN(bounds.size.height, bounds.size.width);
+      const CGFloat radius = MAX(0, _borderRadius);
+      const CGFloat topLeftRadius     = MIN(_borderTopLeftRadius     >= 0 ? _borderTopLeftRadius     : radius, maxRadius);
+      const CGFloat topRightRadius    = MIN(_borderTopRightRadius    >= 0 ? _borderTopRightRadius    : radius, maxRadius);
+      const CGFloat bottomLeftRadius  = MIN(_borderBottomLeftRadius  >= 0 ? _borderBottomLeftRadius  : radius, maxRadius);
+      const CGFloat bottomRightRadius = MIN(_borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius, maxRadius);
+
+      if (ABS(topLeftRadius - topRightRadius) < RCTViewBorderThreshold &&
+          ABS(topLeftRadius - bottomLeftRadius) < RCTViewBorderThreshold &&
+          ABS(topLeftRadius - bottomRightRadius) < RCTViewBorderThreshold) {
+        cornerRadius = topLeftRadius;
+      } else {
+        CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+
+        CGPathRef path = RCTPathCreateWithRoundedRect(bounds, topLeftRadius, topLeftRadius, topRightRadius, topRightRadius, bottomLeftRadius, bottomLeftRadius, bottomRightRadius, bottomRightRadius, NULL);
+        shapeLayer.path = path;
+        CGPathRelease(path);
+
+        mask = shapeLayer;
+      }
+    }
+  }
+
+  layer.cornerRadius = cornerRadius;
+  layer.mask = mask;
 }
 
 #pragma mark Border Color

@@ -31,7 +31,7 @@ var Settings = {
   },
 
   watchKeys(keys: string | Array<string>, callback: Function): number {
-    if (typeof keys == 'string') {
+    if (typeof keys === 'string') {
       keys = [keys];
     }
 
@@ -41,7 +41,7 @@ var Settings = {
     );
 
     var sid = subscriptions.length;
-    subscriptions.push({keys: keys, callback: callback})
+    subscriptions.push({keys: keys, callback: callback});
     return sid;
   },
 
@@ -52,15 +52,14 @@ var Settings = {
   },
 
   _sendObservations(body: Object) {
-    var _this = this;
     Object.keys(body).forEach((key) => {
       var newValue = body[key];
-      var didChange = _this._settings[key] !== newValue;
-      _this._settings[key] = newValue;
+      var didChange = this._settings[key] !== newValue;
+      this._settings[key] = newValue;
 
       if (didChange) {
         subscriptions.forEach((sub) => {
-          if (~sub.keys.indexOf(key) && sub.callback) {
+          if (sub.keys.indexOf(key) !== -1 && sub.callback) {
             sub.callback();
           }
         });

@@ -53,7 +53,7 @@ RCTLogFunction RCTDefaultLogFunction = ^(
 )
 {
   NSString *log = RCTFormatLog(
-    [NSDate date], [NSThread currentThread], level, fileName, lineNumber, message
+    [NSDate date], level, fileName, lineNumber, message
   );
   fprintf(stderr, "%s\n", log.UTF8String);
   fflush(stderr);
@@ -99,25 +99,8 @@ void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
   [prefixStack removeLastObject];
 }
 
-NSString *RCTThreadName(NSThread *thread)
-{
-  NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
-  if (threadName.length == 0) {
-#if DEBUG // This is DEBUG not RCT_DEBUG because it *really* must not ship in RC
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
-#pragma clang diagnostic pop
-#else
-    threadName = [NSString stringWithFormat:@"%p", thread];
-#endif
-  }
-  return threadName;
-}
-
 NSString *RCTFormatLog(
   NSDate *timestamp,
-  NSThread *thread,
   RCTLogLevel level,
   NSString *fileName,
   NSNumber *lineNumber,
@@ -137,9 +120,9 @@ NSString *RCTFormatLog(
   if (level) {
     [log appendFormat:@"[%s]", RCTLogLevels[level - 1]];
   }
-  if (thread) {
-    [log appendFormat:@"[tid:%@]", RCTThreadName(thread)];
-  }
+
+  [log appendFormat:@"[tid:%@]", RCTCurrentThreadName()];
+
   if (fileName) {
     fileName = [fileName lastPathComponent];
     if (lineNumber) {

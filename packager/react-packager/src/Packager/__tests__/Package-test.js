@@ -47,6 +47,26 @@ describe('Package', function() {
       ].join('\n'));
     });
 
+    it('should be ok to leave out the source map url', function() {
+      var p = new Package();
+      p.addModule(new ModuleTransport({
+        code: 'transformed foo;',
+        sourceCode: 'source foo',
+        sourcePath: 'foo path',
+      }));
+      p.addModule(new ModuleTransport({
+        code: 'transformed bar;',
+        sourceCode: 'source bar',
+        sourcePath: 'bar path',
+      }));
+
+      p.finalize({});
+      expect(p.getSource()).toBe([
+        'transformed foo;',
+        'transformed bar;',
+      ].join('\n'));
+    });
+
     it('should create a package and add run module code', function() {
       ppackage.addModule(new ModuleTransport({
         code: 'transformed foo;',
@@ -204,7 +224,27 @@ describe('Package', function() {
       expect(p.getAssets()).toEqual([asset1, asset2]);
     });
   });
+
+  describe('getJSModulePaths()', function() {
+    it('should return module paths', function() {
+      var p = new Package('test_url');
+      p.addModule(new ModuleTransport({
+        code: 'transformed foo;\n',
+        sourceCode: 'source foo',
+        sourcePath: 'foo path'
+      }));
+      p.addModule(new ModuleTransport({
+        code: 'image module;\nimage module;',
+        virtual: true,
+        sourceCode: 'image module;\nimage module;',
+        sourcePath: 'image.png',
+      }));
+
+      expect(p.getJSModulePaths()).toEqual(['foo path']);
+    });
+  });
 });
+
 
  function genSourceMap(modules) {
    var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});

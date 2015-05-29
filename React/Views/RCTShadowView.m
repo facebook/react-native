@@ -38,6 +38,7 @@ typedef enum {
   NSMutableArray *_reactSubviews;
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
+  BOOL _isBGColorExplicitlySet;
   float _paddingMetaProps[META_PROP_COUNT];
   float _marginMetaProps[META_PROP_COUNT];
 }
@@ -180,7 +181,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     // Update parent properties for children
     NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
     CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
-    if (alpha < 1.0 && alpha > 0.0) {
+    if (alpha < 1.0) {
       // If we see partial transparency, start propagating full transparency
       properties[RCTBackgroundColorProp] = [UIColor clearColor];
     } else {
@@ -515,6 +516,7 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
 - (void)setBackgroundColor:(UIColor *)color
 {
   _backgroundColor = color;
+  _isBGColorExplicitlySet = YES;
   [self dirtyPropagation];
 }
 

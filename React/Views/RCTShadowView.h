@@ -38,7 +38,6 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
 @property (nonatomic, copy) NSString *viewName;
-@property (nonatomic, assign) BOOL isBGColorExplicitlySet; // Used to propagate to children
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
 @property (nonatomic, assign) BOOL hasOnLayout;
