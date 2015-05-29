@@ -56,8 +56,6 @@ RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
-  NSMutableArray *uiBlocks = [NSMutableArray new];
-
   for (RCTShadowView *rootView in shadowViewRegistry.allObjects) {
     if (![rootView isReactRootView]) {
       // This isn't a root view
@@ -69,16 +67,13 @@ RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
       continue;
     }
 
-    RCTSparseArray *reactTaggedTextStorage = [[RCTSparseArray alloc] init];
     NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
     for (NSInteger i = 0; i < [queue count]; i++) {
       RCTShadowView *shadowView = queue[i];
       RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
 
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
-        RCTShadowText *shadowText = (RCTShadowText *)shadowView;
-        NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:shadowView.frame.size.width];
-        reactTaggedTextStorage[shadowText.reactTag] = textStorage;
+        [(RCTShadowText *)shadowView recomputeText];
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
         RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'",
                     [(RCTShadowRawText *)shadowView text]);
@@ -92,30 +87,21 @@ RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
 
       [shadowView setTextComputed];
     }
-
-    [uiBlocks addObject:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-      [reactTaggedTextStorage enumerateObjectsUsingBlock:^(NSTextStorage *textStorage, NSNumber *reactTag, BOOL *stop) {
-        RCTText *text = viewRegistry[reactTag];
-        text.textStorage = textStorage;
-      }];
-    }];
   }
 
-  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    for (RCTViewManagerUIBlock shadowBlock in uiBlocks) {
-      shadowBlock(uiManager, viewRegistry);
-    }
-  };
+  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {};
 }
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowText *)shadowView
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
+  NSTextStorage *textStorage = [shadowView buildTextStorageForWidth:shadowView.frame.size.width];
 
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTText *text = viewRegistry[reactTag];
     text.contentInset = padding;
+    text.textStorage = textStorage;
   };
 }
 

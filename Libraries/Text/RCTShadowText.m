@@ -72,6 +72,12 @@ static css_dim_t RCTMeasure(void *context, float width)
   return textStorage;
 }
 
+- (void)recomputeText
+{
+  [self attributedString];
+  [self setTextComputed];
+}
+
 - (NSAttributedString *)attributedString
 {
   return [self _attributedStringWithFontFamily:nil
