@@ -113,6 +113,26 @@ static JSValueRef RCTNoop(JSContextRef context, JSObjectRef object, JSObjectRef 
   return JSValueMakeUndefined(context);
 }
 
+static JSValueRef RCTSetContextName(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
+{
+    if (argumentCount > 0) {
+        JSStringRef messageRef = JSValueToStringCopy(context, arguments[0], exception);
+        if (!messageRef) {
+            return JSValueMakeUndefined(context);
+        }
+        NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, messageRef);
+        JSStringRelease(messageRef);
+
+
+        JSContext *jsc = [JSContext contextWithJSGlobalContextRef:JSContextGetGlobalContext(context)];
+        jsc.name = message;
+    }
+
+    return JSValueMakeUndefined(context);
+}
+
+
+
 #if RCT_DEV
 
 static NSMutableArray *profiles;
@@ -244,6 +264,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
       [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
       [strongSelf _addNativeHook:RCTNoop withName:"noop"];
+      [strongSelf _addNativeHook:RCTSetContextName withName:"setJSContextName"];
 
 #if RCT_DEV
       [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
