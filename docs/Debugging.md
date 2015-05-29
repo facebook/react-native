@@ -8,19 +8,19 @@ next: testing
 ---
 
 ## Debugging React Native Apps
-To access the in-app developer menu, shake the iOS device or simulate a shake in the iOS Simulator by pressing `Control + Command + Z`.
+To access the in-app developer menu, shake the iOS device or simulate a shake in the iOS Simulator by pressing `Control + ⌘ + z`.
 
 > Hint
 >
-> To disable the in-app developer menu for production builds of your application, open the project in Xcode and navigate to `Product` → `Scheme` → `Edit Scheme...`(or press `Command + <`), select Run from the menu on the left, and change the Build Configuration to Release.
+> To disable the in-app developer menu for production builds of your application, open the project in Xcode and navigate to `Product` → `Scheme` → `Edit Scheme...`(or press `⌘ + <`), select `Run` from the menu on the left, and change the Build Configuration to `Release`.
 
 ### Reload
-Selecting Reload will reload the iOS application(this is the same as pressing `Command + R` in the iOS Simulator).
+Selecting Reload will reload the iOS application (this is the same as pressing `⌘ + r` in the iOS Simulator).
 
 ### Chrome Developer Tools
-To debug the JavaScript code of your React app in Chrome, either select the option from the developer menu or press `Command + D` and a webpage should open up at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
+To debug the JavaScript code of your React app in Chrome, either select the option from the developer menu or press `⌘ + d` to open the in-app developer menu, select `Debug in Chrome`, and a webpage should open up at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
 
-Press `Command + Option + I` to open the Chrome Developer Tools, or open it via `View` → `Developer` → `Developer Tools`.
+Press `⌘ + Option + i` to open the Chrome Developer Tools, or open it via `View` → `Developer` → `Developer Tools`.
 
 You should now be able to debug as you normally would.
 
