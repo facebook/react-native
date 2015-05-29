@@ -16,12 +16,14 @@
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
+  NSMutableArray *_reactSubviews;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
+    _reactSubviews = [NSMutableArray array];
 
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
@@ -39,6 +41,21 @@
   [UIView performWithoutAnimation:^{
     [super reactSetFrame:frame];
   }];
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  [_reactSubviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  [_reactSubviews removeObject:subview];
+}
+
+- (NSMutableArray *)reactSubviews
+{
+  return _reactSubviews;
 }
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
