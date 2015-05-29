@@ -407,7 +407,7 @@ var TextInput = React.createClass({
     }
   },
 
-  getChildContext: function() {
+  getChildContext: function(): Object {
     return {isInAParentText: true};
   },
 

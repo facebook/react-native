@@ -179,7 +179,7 @@ var Text = React.createClass({
     return PRESS_RECT_OFFSET;
   },
 
-  getChildContext: function() {
+  getChildContext: function(): Object {
     return {isInAParentText: true};
   },
 
