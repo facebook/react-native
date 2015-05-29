@@ -409,13 +409,13 @@ var TextInput = React.createClass({
 
   render: function() {
     if (Platform.OS === 'ios') {
-      return this._renderIOs();
+      return this._renderIOS();
     } else if (Platform.OS === 'android') {
       return this._renderAndroid();
     }
   },
 
-  _renderIOs: function() {
+  _renderIOS: function() {
     var textContainer;
 
     var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
@@ -515,7 +515,8 @@ var TextInput = React.createClass({
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
-        rejectResponderTermination={true}>
+        rejectResponderTermination={true}
+        testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
     );
