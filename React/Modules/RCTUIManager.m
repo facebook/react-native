@@ -849,9 +849,7 @@ RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
   }];
 }
 
-// TODO: remove viewName param as it isn't needed
 RCT_EXPORT_METHOD(updateView:(NSNumber *)reactTag
-                  viewName:(__unused NSString *)_
                   props:(NSDictionary *)props)
 {
   RCTViewManager *viewManager = _viewManagerRegistry[reactTag];

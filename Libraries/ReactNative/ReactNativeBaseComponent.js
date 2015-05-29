@@ -196,7 +196,6 @@ ReactNativeBaseComponent.Mixin = {
     if (updatePayload) {
       RCTUIManager.updateView(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
-        this.viewConfig.uiViewClassName,
         updatePayload
       );
     }
