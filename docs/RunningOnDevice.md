@@ -35,6 +35,10 @@ The bundle script supports a couple of flags:
 * `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
 * `--minify` - pipe the JS code through UglifyJS.
 
+## Disabling in-app developer menu
+
+When building your app for production, your app's scheme should be set to `Release` as detailed in [the debugging documentation](/react-native/docs/debugging.html#debugging-react-native-apps) in order to disable the in-app developer menu.
+
 ## Troubleshooting
 
 If `curl` command fails make sure the packager is running. Also try adding `--ipv4` flag to the end of it.
