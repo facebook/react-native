@@ -53,6 +53,11 @@ var options = parseCommandLine([{
 }, {
   command: 'skipflow',
   description: 'Disable flow checks'
+}, {
+  command: 'transformer',
+  type: 'string',
+  default: './transformer.js',
+  description: 'Specify a custom transformer to be used (absolute path)'
 }]);
 
 if (options.projectRoots) {
@@ -202,7 +207,7 @@ function getAppMiddleware(options) {
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(options.platform),
     cacheVersion: '2',
-    transformModulePath: require.resolve('./transformer.js'),
+    transformModulePath: require.resolve(options.transformer),
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
     polyfillModuleNames: [
