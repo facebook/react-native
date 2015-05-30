@@ -71,4 +71,4 @@ var Component = React.createClass({
 });
 ```
 
-We strongly discourage using bare timers and always recommend using this mixin. This will eliminate a lot of hard tracking down bugs.
+We strongly discourage using bare timers and always recommend using this mixin. This will eliminate a lot of hard work tracking down bugs.
