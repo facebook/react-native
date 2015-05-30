@@ -94,7 +94,7 @@ var EventSegmentedControlExample = React.createClass({
     return {
       values: ['One', 'Two', 'Three'],
       value: 'Not selected',
-      selectedIndex: undefined
+      selectedSegmentIndex: undefined
     };
   },
 
@@ -105,11 +105,11 @@ var EventSegmentedControlExample = React.createClass({
           Value: {this.state.value}
         </Text>
         <Text style={styles.text} >
-          Index: {this.state.selectedIndex}
+          Index: {this.state.selectedSegmentIndex}
         </Text>
         <SegmentedControlIOS
           values={this.state.values}
-          selectedIndex={this.state.selectedIndex}
+          selectedSegmentIndex={this.state.selectedSegmentIndex}
           onChange={this._onChange}
           onValueChange={this._onValueChange} />
       </View>
@@ -118,7 +118,7 @@ var EventSegmentedControlExample = React.createClass({
 
   _onChange(event) {
     this.setState({
-      selectedIndex: event.nativeEvent.selectedIndex,
+      selectedSegmentIndex: event.nativeEvent.selectedSegmentIndex,
     });
   },
 
