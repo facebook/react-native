@@ -33,7 +33,7 @@ ES6
 * Destructuring: `var {isActive, style} = this.props;`
 * Iteration: `for (var element of array) { }`
 * Computed Properties: `var key = 'abc'; var obj = {[key]: 10};`
-* Object Consise Method: `var obj = { method() { return 10; } };`
+* Object Concise Method: `var obj = { method() { return 10; } };`
 * Object Short Notation: `var name = 'vjeux'; var obj = { name };`
 * Rest Params: `function(type, ...args) { }`
 * Template: ``var who = 'world'; var str = `Hello ${who}`;``

@@ -259,7 +259,7 @@ var TextInput = React.createClass({
      */
     value: PropTypes.string,
     /**
-     * This helps avoid drops characters due to race conditions between JS and
+     * This helps avoid dropping characters due to race conditions between JS and
      * the native text input.  The default should be fine, but if you're
      * potentially doing very slow operations on every keystroke then you may
      * want to try increasing this.
