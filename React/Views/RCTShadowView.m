@@ -13,6 +13,7 @@
 #import "RCTLog.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
+#import "UIView+React.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -38,7 +39,6 @@ typedef enum {
   NSMutableArray *_reactSubviews;
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
-  BOOL _isBGColorExplicitlySet;
   float _paddingMetaProps[META_PROP_COUNT];
   float _marginMetaProps[META_PROP_COUNT];
 }
@@ -167,22 +167,20 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
 - (NSDictionary *)processBackgroundColor:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties
 {
-  if (!_isBGColorExplicitlySet) {
+  if (!_backgroundColor) {
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
-    if (parentBackgroundColor && ![_backgroundColor isEqual:parentBackgroundColor]) {
-      _backgroundColor = parentBackgroundColor;
+    if (parentBackgroundColor) {
       [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
         UIView *view = viewRegistry[_reactTag];
-        view.backgroundColor = parentBackgroundColor;
+        [view reactSetInheritedBackgroundColor:parentBackgroundColor];
       }];
     }
-  }
-  if (_isBGColorExplicitlySet) {
+  } else {
     // Update parent properties for children
     NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
     CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
     if (alpha < 1.0) {
-      // If we see partial transparency, start propagating full transparency
+      // If bg is non-opaque, don't propagate further
       properties[RCTBackgroundColorProp] = [UIColor clearColor];
     } else {
       properties[RCTBackgroundColorProp] = _backgroundColor;
@@ -516,7 +514,6 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
 - (void)setBackgroundColor:(UIColor *)color
 {
   _backgroundColor = color;
-  _isBGColorExplicitlySet = YES;
   [self dirtyPropagation];
 }
 

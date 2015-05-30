@@ -916,10 +916,10 @@ static id RCTConvertPropertyListValue(id json)
   return RCTConvertPropertyListValue(json);
 }
 
-RCT_ENUM_CONVERTER(css_overflow, (@{
-  @"hidden": @NO,
-  @"visible": @YES
-}), YES, boolValue)
+RCT_ENUM_CONVERTER(css_clip_t, (@{
+  @"hidden": @YES,
+  @"visible": @NO
+}), NO, boolValue)
 
 RCT_ENUM_CONVERTER(css_flex_direction_t, (@{
   @"row": @(CSS_FLEX_DIRECTION_ROW),

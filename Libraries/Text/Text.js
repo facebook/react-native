@@ -12,7 +12,9 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
+var ReactInstanceMap = require('ReactInstanceMap');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
@@ -177,6 +179,14 @@ var Text = React.createClass({
     return PRESS_RECT_OFFSET;
   },
 
+  getChildContext: function(): Object {
+    return {isInAParentText: true};
+  },
+
+  childContextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     var props = {};
     for (var key in this.props) {
@@ -194,7 +204,14 @@ var Text = React.createClass({
     props.onResponderMove = this.handleResponderMove;
     props.onResponderRelease = this.handleResponderRelease;
     props.onResponderTerminate = this.handleResponderTerminate;
-    return <RCTText {...props} />;
+
+    // TODO: Switch to use contextTypes and this.context after React upgrade
+    var context = ReactInstanceMap.get(this)._context;
+    if (context.isInAParentText) {
+      return <RCTVirtualText {...props} />;
+    } else {
+      return <RCTText {...props} />;
+    }
   },
 });
 
@@ -208,5 +225,15 @@ type RectOffset = {
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 var RCTText = createReactNativeComponentClass(viewConfig);
+var RCTVirtualText = RCTText;
+
+if (Platform.OS === 'android') {
+  RCTVirtualText = createReactNativeComponentClass({
+    validAttributes: merge(ReactNativeViewAttributes.UIView, {
+      isHighlighted: true,
+    }),
+    uiViewClassName: 'RCTVirtualText',
+  });
+}
 
 module.exports = Text;

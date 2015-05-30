@@ -29,4 +29,7 @@ var ReactNativeStyleAttributes = {
 ReactNativeStyleAttributes.transformMatrix = { diff: matricesDiffer };
 ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
 
+// Do not rely on this attribute.
+ReactNativeStyleAttributes.decomposedMatrix = 'decomposedMatrix';
+
 module.exports = ReactNativeStyleAttributes;

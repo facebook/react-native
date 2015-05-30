@@ -72,6 +72,12 @@ static css_dim_t RCTMeasure(void *context, float width)
   return textStorage;
 }
 
+- (void)recomputeText
+{
+  [self attributedString];
+  [self setTextComputed];
+}
+
 - (NSAttributedString *)attributedString
 {
   return [self _attributedStringWithFontFamily:nil
@@ -125,13 +131,13 @@ static css_dim_t RCTMeasure(void *context, float width)
   }
 
   if (_color) {
-    [self _addAttribute:NSForegroundColorAttributeName withValue:self.color toAttributedString:attributedString];
+    [self _addAttribute:NSForegroundColorAttributeName withValue:_color toAttributedString:attributedString];
   }
   if (_isHighlighted) {
     [self _addAttribute:RCTIsHighlightedAttributeName withValue:@YES toAttributedString:attributedString];
   }
   if (_textBackgroundColor) {
-    [self _addAttribute:NSBackgroundColorAttributeName withValue:self.textBackgroundColor toAttributedString:attributedString];
+    [self _addAttribute:NSBackgroundColorAttributeName withValue:_textBackgroundColor toAttributedString:attributedString];
   }
 
   UIFont *font = [RCTConvert UIFont:nil withFamily:fontFamily size:fontSize weight:fontWeight style:fontStyle];

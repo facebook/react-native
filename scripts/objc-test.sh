@@ -25,5 +25,5 @@ trap cleanup EXIT
 
 xctool \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
-  -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.1' \
+  -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.3' \
   test

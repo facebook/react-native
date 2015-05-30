@@ -407,15 +407,23 @@ var TextInput = React.createClass({
     }
   },
 
+  getChildContext: function(): Object {
+    return {isInAParentText: true};
+  },
+
+  childContextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     if (Platform.OS === 'ios') {
-      return this._renderIOs();
+      return this._renderIOS();
     } else if (Platform.OS === 'android') {
       return this._renderAndroid();
     }
   },
 
-  _renderIOs: function() {
+  _renderIOS: function() {
     var textContainer;
 
     var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
@@ -515,7 +523,8 @@ var TextInput = React.createClass({
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
-        rejectResponderTermination={true}>
+        rejectResponderTermination={true}
+        testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
     );
@@ -523,6 +532,16 @@ var TextInput = React.createClass({
 
   _renderAndroid: function() {
     var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
+    var children = this.props.children;
+    var childCount = 0;
+    ReactChildren.forEach(children, () => ++childCount);
+    invariant(
+      !(this.props.value && childCount),
+      'Cannot specify both value and children.'
+    );
+    if (childCount > 1) {
+      children = <Text>{children}</Text>;
+    }
     var textContainer =
       <AndroidTextInput
         ref="input"
@@ -540,6 +559,7 @@ var TextInput = React.createClass({
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         text={this.state.bufferedValue}
+        children={children}
       />;
 
     return (
