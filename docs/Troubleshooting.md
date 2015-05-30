@@ -58,3 +58,6 @@ If in the `react-native init <project>` phase you saw npm fail with "npm WARN lo
 sudo chown -R $USER ~/.npm
 sudo chown -R $USER /usr/local/lib/node_modules
 ```
+
+## Debugging in Chrome hangs and/or does not work well
+It is possible that one of your Chrome extensions is interacting in unexpected ways with the debugger. If you are having this issue, try disabling all of your extensions and re-enabling them one-by-one until you find the problematic extension.
