@@ -36,6 +36,7 @@ var createReactNativeComponentClass = function(
   };
   Constructor.displayName = viewConfig.uiViewClassName;
   Constructor.prototype = new ReactNativeBaseComponent(viewConfig);
+  Constructor.prototype.constructor = Constructor;
 
   return Constructor;
 };
