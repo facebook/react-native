@@ -27,7 +27,7 @@ function getBabelrc () {
       ).babel;
     } catch (e) {
       // If neither exist
-      return null
+      return null;
     }
   }
 }
