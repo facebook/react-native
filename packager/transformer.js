@@ -11,9 +11,31 @@
 'use strict';
 
 var babel = require('babel');
+var fs = require('fs');
 
-function transform(srcTxt, filename, options) {
-  var result = babel.transform(srcTxt, {
+function getBabelrc () {
+  try {
+    // Try to get .babelrc file
+    return JSON.parse(
+      fs.readFileSync(process.cwd() + '/.babelrc').toString()
+    );
+  } catch (e) {
+    try {
+      // Fall back to package.json
+      return JSON.parse(
+        fs.readFileSync(process.cwd() + '/package.json').toString()
+      ).babel;
+    } catch (e) {
+      // If neither exist
+      return null
+    }
+  }
+}
+
+var babelrc = getBabelrc()
+
+function transform(srcTxt, filename, extra) {
+  var options = {
     retainLines: true,
     compact: true,
     comments: false,
@@ -35,8 +57,17 @@ function transform(srcTxt, filename, options) {
     ],
     sourceFileName: filename,
     sourceMaps: false,
-    extra: options || {},
-  });
+    extra: extra || {},
+  };
+
+  // If custom babel options exist, merge them in
+  if (babelrc) {
+    Object.keys(babelrc).forEach(function (key) {
+      options[key] = babelrc[key];
+    });
+  }
+
+  var result = babel.transform(srcTxt, options);
 
   return {
     code: result.code,
