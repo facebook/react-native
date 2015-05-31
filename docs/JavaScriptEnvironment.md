@@ -17,9 +17,13 @@ When using React Native, you're going to be running your JavaScript code in two 
 While both environments are very similar, you may end up hitting some inconsistencies. We're likely going to experiment with other JS engines in the future, so it's best to avoid relying on specifics of any runtime.
 
 
-## JavaScript Transforms
+## JavaScript Syntax Transformers
 
-React Native ships with many JavaScript transforms to make writing code more enjoyable. If you are curious, you can see the [implementation of all those transformations](https://github.com/facebook/jstransform/tree/master/visitors). Here's the full list:
+Syntax transformers make writing code more enjoyable by allowing you to use new JavaScript syntax without having to wait for support on all interpreters.
+
+As of version 0.5.0, React Native ships with the [Babel JavaScript compiler](https://babeljs.io). Check [Babel documentation](http://babeljs.io/docs/advanced/transformers/) on its supported transformations for more details.
+
+Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/master/packager/transformer.js#L21).
 
 ES5
 
@@ -27,18 +31,18 @@ ES5
 
 ES6
 
-* Arrow function: `<C onPress={() => this.setState({pressed: true})}`
-* Call spread: `Math.max(...array);`
-* Class: `class C extends React.Component { render() { return <View />; } }`
-* Destructuring: `var {isActive, style} = this.props;`
-* Iteration: `for (var element of array) { }`
-* Computed Properties: `var key = 'abc'; var obj = {[key]: 10};`
+* [Arrow functions](http://babeljs.io/docs/learn-es2015/#arrows): `<C onPress={() => this.setState({pressed: true})}`
+* [Call spread](http://babeljs.io/docs/learn-es2015/#default-rest-spread): `Math.max(...array);`
+* [Classes](http://babeljs.io/docs/learn-es2015/#classes): `class C extends React.Component { render() { return <View />; } }`
+* [Destructuring](http://babeljs.io/docs/learn-es2015/#destructuring): `var {isActive, style} = this.props;`
+* [Iteration](http://babeljs.io/docs/learn-es2015/#iterators-for-of): `for (var element of array) { }`
+* [Computed Properties](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var key = 'abc'; var obj = {[key]: 10};`
 * Object Consise Method: `var obj = { method() { return 10; } };`
-* Object Short Notation: `var name = 'vjeux'; var obj = { name };`
-* Rest Params: `function(type, ...args) { }`
-* Template: ``var who = 'world'; var str = `Hello ${who}`;``
+* [Object Short Notation](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var name = 'vjeux'; var obj = { name };`
+* [Rest Params](https://github.com/sebmarkbage/ecmascript-rest-spread): `function(type, ...args) { }`
+* [Template Literals](http://babeljs.io/docs/learn-es2015/#template-strings): ``var who = 'world'; var str = `Hello ${who}`;``
 
 ES7
 
-* Object Spread: `var extended = { ...obj, a: 10 };`
-* Function Trailing Comma: `function f(a, b, c,) { }`
+* [Object Spread](https://github.com/sebmarkbage/ecmascript-rest-spread): `var extended = { ...obj, a: 10 };`
+* [Function Trailing Comma](https://github.com/jeffmo/es-trailing-function-commas): `function f(a, b, c,) { }`
