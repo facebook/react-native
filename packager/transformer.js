@@ -20,7 +20,6 @@ function getBabelrc () {
       fs.readFileSync(process.cwd() + '/.babelrc').toString()
     );
   } catch (e) {
-    // If neither exist
     return null;
   }
 }
