@@ -20,15 +20,8 @@ function getBabelrc () {
       fs.readFileSync(process.cwd() + '/.babelrc').toString()
     );
   } catch (e) {
-    try {
-      // Fall back to package.json
-      return JSON.parse(
-        fs.readFileSync(process.cwd() + '/package.json').toString()
-      ).babel;
-    } catch (e) {
-      // If neither exist
-      return null;
-    }
+    // If neither exist
+    return null;
   }
 }
 
