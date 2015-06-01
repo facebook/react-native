@@ -29,6 +29,7 @@ if (dimensions && dimensions.windowPhysicalPixels) {
     width: windowPhysicalPixels.width / windowPhysicalPixels.scale,
     height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
     scale: windowPhysicalPixels.scale,
+    fontScale: windowPhysicalPixels.fontScale,
   };
 
   // delete so no callers rely on this existing
