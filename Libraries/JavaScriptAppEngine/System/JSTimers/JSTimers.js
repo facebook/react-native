@@ -60,14 +60,10 @@ var JSTimers = {
     var freeIndex = JSTimers._getFreeIndex();
     JSTimersExecution.timerIDs[freeIndex] = newID;
     JSTimersExecution.callbacks[freeIndex] = function() {
-      var startTime = Date.now();
-      var ret = func.apply(undefined, args);
-      var endTime = Date.now();
-      RCTTiming.createTimer(newID, Math.max(0, duration - (endTime - startTime)), endTime, false);
-      return ret;
+      return func.apply(undefined, args);
     };
     JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.setInterval;
-    RCTTiming.createTimer(newID, duration, Date.now(), /** recurring */ false);
+    RCTTiming.createTimer(newID, duration, Date.now(), /** recurring */ true);
     return newID;
   },
 

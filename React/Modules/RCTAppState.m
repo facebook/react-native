@@ -48,17 +48,16 @@ RCT_EXPORT_MODULE()
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
                              UIApplicationDidFinishLaunchingNotification]) {
-
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(handleAppStateDidChange)
                                                    name:name
                                                  object:nil];
-
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(handleMemoryWarning)
-                                                   name:UIApplicationDidReceiveMemoryWarningNotification
-                                                 object:nil];
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMemoryWarning)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
   }
   return self;
 }
