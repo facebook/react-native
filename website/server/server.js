@@ -7,7 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-"use strict";
+'use strict';
+
 var connect = require('connect');
 var http = require('http');
 var optimist = require('optimist');
@@ -52,7 +53,8 @@ var app = connect()
   })
   .use(reactMiddleware.provide(buildOptions))
   .use(connect['static'](FILE_SERVE_ROOT))
-  .use(connect.favicon(path.join(FILE_SERVE_ROOT, 'elements', 'favicon', 'favicon.ico')))
+  .use(connect.favicon(path.join(FILE_SERVE_ROOT, 
+    'elements', 'favicon', 'favicon.ico')))
   .use(connect.logger())
   .use(connect.compress())
   .use(connect.errorHandler());
@@ -60,6 +62,8 @@ var app = connect()
 var portToUse = port || 8080;
 var server = http.createServer(app);
 server.listen(portToUse, function(){
-  console.log('Open http://localhost:' + portToUse + '/react-native/index.html');
+  console.log('Open http://localhost:' 
+    + portToUse + '/react-native/index.html');
 });
+
 module.exports = server;

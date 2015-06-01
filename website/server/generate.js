@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+'use strict';
+
 var Promise = require('bluebird');
 var request = require('request');
 var glob = require('glob');
@@ -30,7 +32,9 @@ glob('src/**/*.*', function(er, files) {
       targetFile = targetFile.replace(/\.js$/, '.html');
       queue = queue.then(function() {
         return new Promise(function(resolve, reject) {
-          request('http://localhost:8079/' + targetFile.replace(/^build\//, ''), function(error, response, body) {
+          var url = 'http://localhost:8079/' 
+            + targetFile.replace(/^build\//, '')
+          request(url, function(error, response, body) {
             if (error) {
               reject(error);
               return;
