@@ -66,7 +66,6 @@
 {
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
-  JSValueRef _undefined;
 }
 
 /**
@@ -238,9 +237,6 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
         JSContextGroupRelease(group);
       }
 
-      // Constant value used for comparison
-      _undefined = JSValueMakeUndefined(ctx);
-
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
       [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
       [strongSelf _addNativeHook:RCTNoop withName:"noop"];
@@ -312,7 +308,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     JSValueRef requireJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, requireNameJSStringRef, &errorJSRef);
     JSStringRelease(requireNameJSStringRef);
 
-    if (requireJSRef != NULL && requireJSRef != _undefined && errorJSRef == NULL) {
+    if (requireJSRef != NULL && !JSValueIsUndefined(contextJSRef, requireJSRef) && errorJSRef == NULL) {
 
       // get module
       JSStringRef moduleNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)name);
