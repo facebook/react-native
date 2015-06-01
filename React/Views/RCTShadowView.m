@@ -120,7 +120,9 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 // width = 213.5 - 106.5 = 107
 // You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
 
-- (void)applyLayoutNode:(css_node_t *)node viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame absolutePosition:(CGPoint)absolutePosition
+- (void)applyLayoutNode:(css_node_t *)node
+      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+       absolutePosition:(CGPoint)absolutePosition
 {
   if (!node->layout.should_update) {
     return;
@@ -161,12 +163,19 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
   for (int i = 0; i < node->children_count; ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
-    [child applyLayoutNode:node->get_child(node->context, i) viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+    [child applyLayoutNode:node->get_child(node->context, i)
+         viewsWithNewFrame:viewsWithNewFrame
+          absolutePosition:absolutePosition];
   }
 }
 
-- (NSDictionary *)processBackgroundColor:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+                          parentProperties:(NSDictionary *)parentProperties
 {
+  // TODO: we always refresh all propagated properties when propagation is
+  // dirtied, but really we should track which properties have changed and
+  // only update those.
+
   if (!_backgroundColor) {
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
     if (parentBackgroundColor) {
@@ -190,14 +199,15 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return parentProperties;
 }
 
-- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties
+- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks
+                parentProperties:(NSDictionary *)parentProperties
 {
   if (_propagationLifecycle == RCTUpdateLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
     return;
   }
   _propagationLifecycle = RCTUpdateLifecycleComputed;
   _lastParentProperties = parentProperties;
-  NSDictionary *nextProps = [self processBackgroundColor:applierBlocks parentProperties:parentProperties];
+  NSDictionary *nextProps = [self processUpdatedProperties:applierBlocks parentProperties:parentProperties];
   for (RCTShadowView *child in _reactSubviews) {
     [child collectUpdatedProperties:applierBlocks parentProperties:nextProps];
   }
@@ -212,21 +222,19 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
-  CGFloat totalOffsetTop = 0.0;
-  CGFloat totalOffsetLeft = 0.0;
-  CGSize size = self.frame.size;
+  CGPoint offset = CGPointZero;
   NSInteger depth = 30; // max depth to search
   RCTShadowView *shadowView = self;
   while (depth && shadowView && shadowView != ancestor) {
-    totalOffsetTop += shadowView.frame.origin.y;
-    totalOffsetLeft += shadowView.frame.origin.x;
+    offset.x += shadowView.frame.origin.x;
+    offset.y += shadowView.frame.origin.y;
     shadowView = shadowView->_superview;
     depth--;
   }
   if (ancestor != shadowView) {
     return CGRectNull;
   }
-  return (CGRect){{totalOffsetLeft, totalOffsetTop}, size};
+  return (CGRect){offset, self.frame.size};
 }
 
 - (instancetype)init

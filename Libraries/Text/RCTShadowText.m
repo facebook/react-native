@@ -12,6 +12,8 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowRawText.h"
+#import "RCTSparseArray.h"
+#import "RCTText.h"
 #import "RCTUtils.h"
 
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
@@ -19,6 +21,8 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 
 @implementation RCTShadowText
 {
+  NSTextStorage *_cachedTextStorage;
+  CGFloat _cachedTextStorageWidth;
   NSAttributedString *_cachedAttributedString;
   CGFloat _effectiveLetterSpacing;
 }
@@ -50,8 +54,35 @@ static css_dim_t RCTMeasure(void *context, float width)
   return self;
 }
 
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+                          parentProperties:(NSDictionary *)parentProperties
+{
+  parentProperties = [super processUpdatedProperties:applierBlocks
+                                    parentProperties:parentProperties];
+
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width];
+  [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
+    RCTText *view = viewRegistry[self.reactTag];
+    view.textStorage = textStorage;
+  }];
+
+  return parentProperties;
+}
+
+- (void)applyLayoutNode:(css_node_t *)node
+      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+       absolutePosition:(CGPoint)absolutePosition
+{
+  [super applyLayoutNode:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+  [self dirtyPropagation];
+}
+
 - (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width
 {
+  if (_cachedTextStorage && width == _cachedTextStorageWidth) {
+    return _cachedTextStorage;
+  }
+
   NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
 
   NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:self.attributedString];
@@ -69,13 +100,23 @@ static css_dim_t RCTMeasure(void *context, float width)
   [layoutManager addTextContainer:textContainer];
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
+  _cachedTextStorage = textStorage;
+  _cachedTextStorageWidth = width;
+
   return textStorage;
+}
+
+- (void)dirtyText
+{
+  [super dirtyText];
+  _cachedTextStorage = nil;
 }
 
 - (void)recomputeText
 {
   [self attributedString];
   [self setTextComputed];
+  [self dirtyPropagation];
 }
 
 - (NSAttributedString *)attributedString
