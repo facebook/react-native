@@ -104,7 +104,9 @@ class MessageQueue {
 
   flushedQueue() {
     BridgeProfiling.profile('JSTimersExecution.callImmediates()');
-    guard(() => JSTimersExecution.callImmediates());
+    guard(() => {
+      ReactUpdates.batchedUpdates(JSTimersExecution.callImmediates);
+    });
     BridgeProfiling.profileEnd();
     let queue = this._queue;
     this._queue = [[],[],[]];
