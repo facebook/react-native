@@ -197,7 +197,8 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   NSMutableDictionary *_defaultViews; // Main thread only
   NSDictionary *_viewManagers;
   NSDictionary *_viewConfigs;
-  NSUInteger _rootTag;
+
+  NSMutableSet *_bridgeTransactionListeners;
 }
 
 @synthesize bridge = _bridge;
@@ -263,7 +264,8 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
     // Internal resources
     _pendingUIBlocks = [[NSMutableArray alloc] init];
     _rootViewTags = [[NSMutableSet alloc] init];
-    _rootTag = 1;
+
+    _bridgeTransactionListeners = [[NSMutableSet alloc] init];
   }
   return self;
 }
@@ -287,6 +289,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
     _rootViewTags = nil;
     _shadowViewRegistry = nil;
     _viewRegistry = nil;
+    _bridgeTransactionListeners = nil;
     _bridge = nil;
 
     [_pendingUIBlocksLock lock];
@@ -397,6 +400,10 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
         [(id<RCTInvalidating>)subview invalidate];
       }
       registry[subview.reactTag] = nil;
+
+      if (registry == _viewRegistry) {
+        [_bridgeTransactionListeners removeObject:subview];
+      }
     });
   }
 }
@@ -482,7 +489,6 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   }
 
   // Perform layout (possibly animated)
-  NSNumber *rootViewTag = rootShadowView.reactTag;
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTResponseSenderBlock callback = self->_layoutAnimation.callback;
     __block NSInteger completionsCalled = 0;
@@ -547,17 +553,11 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
     }
 
     /**
-     * Enumerate all active (attached to a parent) views and call
-     * reactBridgeDidFinishTransaction on them if they implement it.
-     * TODO: this is quite inefficient. If this was handled via the
-     * ViewManager instead, it could be done more efficiently.
+     * TODO(tadeu): Remove it once and for all
      */
-    UIView *rootView = _viewRegistry[rootViewTag];
-    RCTTraverseViewNodes(rootView, ^(id<RCTViewNodeProtocol> view) {
-      if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
-        [view reactBridgeDidFinishTransaction];
-      }
-    });
+    for (id<RCTViewNodeProtocol> node in _bridgeTransactionListeners) {
+      [node reactBridgeDidFinishTransaction];
+    }
   };
 }
 
@@ -844,6 +844,10 @@ RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
         view.layer.allowsGroupOpacity = YES; // required for touch handling
       }
       RCTSetViewProps(props, view, uiManager->_defaultViews[viewName], manager);
+
+      if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
+        [uiManager->_bridgeTransactionListeners addObject:view];
+      }
     }
     viewRegistry[reactTag] = view;
   }];
