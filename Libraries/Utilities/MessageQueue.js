@@ -472,8 +472,10 @@ var MessageQueueMixin = {
   },
 
   _flushedQueueUnguarded: function() {
-    // Call the functions registred via setImmediate
-    JSTimersExecution.callImmediates();
+    ReactUpdates.batchedUpdates(() => {
+      // Call the functions registered via setImmediate
+      JSTimersExecution.callImmediates();
+    });
 
     var currentOutgoingItems = this._outgoingItems;
     this._swapAndReinitializeBuffer();
