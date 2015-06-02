@@ -11,11 +11,10 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
-#import "RCTSparseArray.h"
 
-static uint64_t RCTGetEventID(id<RCTEvent> event)
+static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
-  return (
+  return @(
     [event.viewTag intValue] |
     (((uint64_t)event.eventName.hash & 0xFFFF) << 32)  |
     (((uint64_t)event.coalescingKey) << 48)
@@ -68,7 +67,7 @@ static uint64_t RCTGetEventID(id<RCTEvent> event)
 
 @implementation RCTEventDispatcher
 {
-  RCTSparseArray *_eventQueue;
+  NSMutableDictionary *_eventQueue;
   NSLock *_eventQueueLock;
 }
 
@@ -79,7 +78,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _eventQueue = [[RCTSparseArray alloc] init];
+    _eventQueue = [[NSMutableDictionary alloc] init];
     _eventQueueLock = [[NSLock alloc] init];
   }
   return self;
@@ -139,7 +138,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
 
   [_eventQueueLock lock];
 
-  uint64_t eventID = RCTGetEventID(event);
+  NSNumber *eventID = RCTGetEventID(event);
   id<RCTEvent> previousEvent = _eventQueue[eventID];
 
   if (previousEvent) {
@@ -176,14 +175,14 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
 
 - (void)didUpdateFrame:(RCTFrameUpdate *)update
 {
-  RCTSparseArray *eventQueue;
+  NSDictionary *eventQueue;
 
   [_eventQueueLock lock];
   eventQueue = _eventQueue;
-  _eventQueue = [[RCTSparseArray alloc] init];
+  _eventQueue = [[NSMutableDictionary alloc] init];
   [_eventQueueLock unlock];
 
-  for (id<RCTEvent> event in eventQueue.allObjects) {
+  for (id<RCTEvent> event in eventQueue.allValues) {
     [self dispatchEvent:event];
   }
 }
