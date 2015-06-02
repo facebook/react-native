@@ -59,7 +59,7 @@ var InspectorOverlay = React.createClass({
         ? 'flex-start'
         : 'flex-end';
 
-      content.push(<View style={[styles.frame, this.state.frame]} />);
+      content.push(<View pointerEvents="none" style={[styles.frame, this.state.frame]} />);
       content.push(<ElementProperties hierarchy={this.state.hierarchy} />);
     }
     return (
