@@ -18,20 +18,6 @@
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
- * Block that bridge modules use to resolve the JS promise waiting for a result.
- * Nil results are supported and are converted to JS's undefined value.
- */
-typedef void (^RCTPromiseResolveBlock)(id result);
-
-/**
- * Block that bridge modules use to reject the JS promise waiting for a result.
- * The error may be nil but it is preferable to pass an NSError object for more
- * precise error messages.
- */
-typedef void (^RCTPromiseRejectBlock)(NSError *error);
-
-
-/**
  * This constant can be returned from +methodQueue to force module
  * methods to be called on the JavaScript thread. This can have serious
  * implications for performance, so only use this if you're sure it's what
@@ -51,7 +37,7 @@ extern const dispatch_queue_t RCTJSThread;
  * A reference to the RCTBridge. Useful for modules that require access
  * to bridge features, such as sending events or making JS calls. This
  * will be set automatically by the bridge when it initializes the module.
- * To implement this in your module, just add @synthesize bridge = _bridge;
+* To implement this in your module, just add @synthesize bridge = _bridge;
  */
 @property (nonatomic, weak) RCTBridge *bridge;
 
@@ -84,26 +70,6 @@ extern const dispatch_queue_t RCTJSThread;
  * { ... }
  *
  * and is exposed to JavaScript as `NativeModules.ModuleName.doSomething`.
- *
- * ## Promises
- *
- * Bridge modules can also define methods that are exported to JavaScript as
- * methods that return a Promise, and are compatible with JS async functions.
- *
- * Declare the last two parameters of your native method to be a resolver block
- * and a rejecter block. The resolver block must precede the rejecter block.
- *
- * For example:
- *
- * RCT_EXPORT_METHOD(doSomethingAsync:(NSString *)aString
- *                           resolver:(RCTPromiseResolveBlock)resolve
- *                           rejecter:(RCTPromiseRejectBlock)reject
- * { ... }
- *
- * Calling `NativeModules.ModuleName.doSomethingAsync(aString)` from
- * JavaScript will return a promise that is resolved or rejected when your
- * native method implementation calls the respective block.
- *
  */
 #define RCT_EXPORT_METHOD(method) \
   RCT_REMAP_METHOD(, method)
@@ -152,7 +118,7 @@ extern const dispatch_queue_t RCTJSThread;
   RCT_EXTERN_REMAP_MODULE(, objc_name, objc_supername)
 
 /**
- * Like RCT_EXTERN_MODULE, but allows setting a custom JavaScript name.
+ * Similar to RCT_EXTERN_MODULE but allows setting a custom JavaScript name
  */
 #define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername) \
   objc_name : objc_supername \
@@ -170,7 +136,7 @@ extern const dispatch_queue_t RCTJSThread;
   RCT_EXTERN_REMAP_METHOD(, method)
 
 /**
- * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
+ * Similar to RCT_EXTERN_REMAP_METHOD but allows setting a custom JavaScript name
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
   - (void)__rct_export__##method { \
