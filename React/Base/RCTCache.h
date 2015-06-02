@@ -23,7 +23,7 @@
 
 #pragma mark - Insertion
 
-- (void)setData:(NSData *)data forKey:(NSString *)key;
+- (void)setData:(NSData *)data forKey:(NSString *)key expireAt:(NSDate *)expireAt;
 - (void)removeAllData;
 
 @end
