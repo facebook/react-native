@@ -1339,11 +1339,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
    * AnyThread
    */
 
-  RCTProfileBeginFlowEvent();
-
   __weak RCTBatchedBridge *weakSelf = self;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    RCTProfileEndFlowEvent();
     RCTProfileBeginEvent();
 
     RCTBatchedBridge *strongSelf = weakSelf;
@@ -1351,17 +1348,13 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
       return;
     }
 
-
-    RCT_IF_DEV(NSNumber *callID = _RCTProfileBeginFlowEvent();)
     id call = @{
-      @"js_args": @{
-        @"module": module,
-        @"method": method,
-        @"args": args,
-      },
+      @"module": module,
+      @"method": method,
+      @"args": args,
       @"context": context ?: @0,
-      RCT_IF_DEV(@"call_id": callID,)
     };
+
     if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
       strongSelf->_scheduledCallbacks[args[0]] = call;
     } else {
@@ -1497,10 +1490,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     return NO;
   }
 
-  RCTProfileBeginFlowEvent();
   __weak RCTBatchedBridge *weakSelf = self;
   [self dispatchBlock:^{
-    RCTProfileEndFlowEvent();
     RCTProfileBeginEvent();
     RCTBatchedBridge *strongSelf = weakSelf;
 
@@ -1535,41 +1526,30 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 {
   RCTAssertJSThread();
 
-  NSArray *calls = [_scheduledCallbacks.allObjects arrayByAddingObjectsFromArray:_scheduledCalls];
-  NSNumber *currentExecutorID = RCTGetExecutorID(_javaScriptExecutor);
-  calls = [calls filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSDictionary *call, NSDictionary *bindings) {
-    return [call[@"context"] isEqualToNumber:currentExecutorID];
-  }]];
+  RCTProfileImmediateEvent(@"JS Thread Tick", displayLink.timestamp, @"g");
 
-  RCT_IF_DEV(
-    RCTProfileImmediateEvent(@"JS Thread Tick", displayLink.timestamp, @"g");
-
-    for (NSDictionary *call in calls) {
-      _RCTProfileEndFlowEvent(call[@"call_id"]);
-    }
-  )
   RCTProfileBeginEvent();
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
   for (id<RCTFrameUpdateObserver> observer in _frameUpdateObservers) {
     if (![observer respondsToSelector:@selector(isPaused)] || ![observer isPaused]) {
-      RCT_IF_DEV(NSString *name = [NSString stringWithFormat:@"[%@ didUpdateFrame:%f]", observer, displayLink.timestamp];)
-      RCTProfileBeginFlowEvent();
       [self dispatchBlock:^{
-        RCTProfileEndFlowEvent();
-        RCTProfileBeginEvent();
         [observer didUpdateFrame:frameUpdate];
-        RCTProfileEndEvent(name, @"objc_call,fps", nil);
       } forModule:RCTModuleIDsByName[RCTBridgeModuleNameForClass([observer class])]];
     }
   }
 
+  NSArray *calls = [_scheduledCallbacks.allObjects arrayByAddingObjectsFromArray:_scheduledCalls];
+  NSNumber *currentExecutorID = RCTGetExecutorID(_javaScriptExecutor);
+  calls = [calls filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSDictionary *call, NSDictionary *bindings) {
+    return [call[@"context"] isEqualToNumber:currentExecutorID];
+  }]];
   if (calls.count > 0) {
     _scheduledCalls = [[NSMutableArray alloc] init];
     _scheduledCallbacks = [[RCTSparseArray alloc] init];
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"processBatch"
-                                arguments:@[[calls valueForKey:@"js_args"]]
+                                arguments:@[calls]
                                   context:RCTGetExecutorID(_javaScriptExecutor)];
   }
 
