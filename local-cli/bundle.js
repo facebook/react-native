@@ -12,12 +12,12 @@ function getBundle(flags) {
   var outPath = flags.out ? flags.out : OUT_PATH;
 
   var projectRoots = [path.resolve(__dirname, '../../..')];
-  if(flags.root){
+  if (flags.root) {
     projectRoots.push(path.resolve(flags.root));
   }
 
   var assetRoots = [path.resolve(__dirname, '../../..')];
-  if(flags.assetRoot){
+  if (flags.assetRoot) {
     assetRoots.push(path.resolve(flags.assetRoot));
   }
 
