@@ -32,17 +32,23 @@ var DISABLED_WASH = 'rgba(255,255,255,0.25)';
 
 var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
+
 var DEFAULT_URL = 'https://m.facebook.com';
+var LOCAL_BASE_URL = '/WebViewTestFolder/';
+var LOCAL_INDEX_URL = 'index.html';
+var INLINE_HTML = '<script src="inline.js" type="text/javascript"></script>';
 
 var WebViewExample = React.createClass({
 
   getInitialState: function() {
     return {
-      url: DEFAULT_URL,
       status: 'No Page Loaded',
       backButtonEnabled: false,
       forwardButtonEnabled: false,
       loading: true,
+      source:{
+        uri:DEFAULT_URL,
+      }
     };
   },
 
@@ -54,6 +60,15 @@ var WebViewExample = React.createClass({
 
   render: function() {
     this.inputText = this.state.url;
+
+    var webViewProps = {
+      ref: WEBVIEW_REF,
+      automaticallyAdjustContentInsets: false,
+      style: styles.webView,
+      onNavigationStateChange: this.onNavigationStateChange,
+      source: this.state.source,
+      startInLoadingState: true,
+    }
 
     return (
       <View style={[styles.container]}>
@@ -88,16 +103,22 @@ var WebViewExample = React.createClass({
               </Text>
             </View>
           </TouchableOpacity>
+          <TouchableOpacity onPress={this.pressLocalFileButton}>
+            <View style={styles.goButton}>
+              <Text>
+                 Local(File)
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this.pressLocalInlineButton}>
+            <View style={styles.goButton}>
+              <Text>
+                 Local(Inline)
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        <WebView
-          ref={WEBVIEW_REF}
-          automaticallyAdjustContentInsets={false}
-          style={styles.webView}
-          url={this.state.url}
-          javaScriptEnabledAndroid={true}
-          onNavigationStateChange={this.onNavigationStateChange}
-          startInLoadingState={true}
-        />
+        <WebView {...webViewProps}/>
         <View style={styles.statusBar}>
           <Text style={styles.statusBarText}>{this.state.status}</Text>
         </View>
@@ -132,16 +153,42 @@ var WebViewExample = React.createClass({
   },
 
   pressGoButton: function() {
+
     var url = this.inputText.toLowerCase();
+
     if (url === this.state.url) {
       this.reload();
     } else {
       this.setState({
-        url: url,
+        source:{
+          uri: url,
+          html: null,
+          baseUrl: null,
+        },
       });
     }
     // dismiss keyoard
     this.refs[TEXT_INPUT_REF].blur();
+  },
+
+  pressLocalFileButton: function() {
+    this.setState({
+      source:{
+        baseUrl: LOCAL_BASE_URL,
+        uri: LOCAL_INDEX_URL,
+        html: null,
+      },
+    });
+  },
+
+  pressLocalInlineButton: function() {
+    this.setState({
+      source:{
+        uri: null,
+        html: INLINE_HTML,
+        baseUrl: LOCAL_BASE_URL,
+      },
+    });
   },
 
 });
