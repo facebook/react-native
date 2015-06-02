@@ -30,17 +30,10 @@ function reportException(e: Exception, isFatal: bool, stack?: any) {
     if (!stack) {
       stack = parseErrorStack(e);
     }
-    if (!RCTExceptionsManager.reportFatalException ||
-        !RCTExceptionsManager.reportSoftException) {
-      // Backwards compatibility - no differentiation
-      // TODO(#7049989): deprecate reportUnhandledException on Android
-      RCTExceptionsManager.reportUnhandledException(e.message, stack);
+    if (isFatal) {
+      RCTExceptionsManager.reportFatalException(e.message, stack);
     } else {
-      if (isFatal) {
-        RCTExceptionsManager.reportFatalException(e.message, stack);
-      } else {
-        RCTExceptionsManager.reportSoftException(e.message, stack);
-      }
+      RCTExceptionsManager.reportSoftException(e.message, stack);
     }
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
