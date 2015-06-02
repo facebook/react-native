@@ -13,6 +13,7 @@
 
 @interface RCTWebView : RCTView
 
+@property (nonatomic, strong) NSDictionary *source;
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL shouldInjectAJAXHandler;

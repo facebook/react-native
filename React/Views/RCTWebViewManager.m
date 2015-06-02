@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE()
   return [[RCTWebView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
+RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary);
 RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL);
 RCT_REMAP_VIEW_PROPERTY(html, HTML, NSString);
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL);
