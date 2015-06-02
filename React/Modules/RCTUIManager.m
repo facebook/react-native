@@ -921,6 +921,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point call
 
 - (void)batchDidComplete
 {
+  RCTProfileBeginEvent();
   // Gather blocks to be executed now that all view hierarchy manipulations have
   // been completed (note that these may still take place before layout has finished)
   for (RCTViewManager *manager in _viewManagers.allValues) {
@@ -951,6 +952,9 @@ RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point call
     _nextLayoutAnimation = nil;
   }
 
+  RCTProfileEndEvent(@"[RCTUIManager batchDidComplete]", @"uimanager", @{
+    @"view_count": @([_viewRegistry count]),
+  });
   [self flushUIBlocks];
 }
 

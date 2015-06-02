@@ -17,6 +17,9 @@
 #import "RCTDefines.h"
 #import "RCTUtils.h"
 
+NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
+NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
+
 #if RCT_DEV
 
 #pragma mark - Prototypes
@@ -113,10 +116,16 @@ void RCTProfileInit(void)
       RCTProfileSamples: [[NSMutableArray alloc] init],
     };
   );
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidStartProfiling
+                                                      object:nil];
 }
 
 NSString *RCTProfileEnd(void)
 {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
+                                                      object:nil];
+
   RCTProfileLock(
     NSString *log = RCTJSONStringify(RCTProfileInfo, NULL);
     RCTProfileEventID = 0;

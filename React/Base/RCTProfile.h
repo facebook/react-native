@@ -20,6 +20,9 @@
  * before before using it.
  */
 
+NSString *const RCTProfileDidStartProfiling;
+NSString *const RCTProfileDidEndProfiling;
+
 #if RCT_DEV
 
 #define RCTProfileBeginFlowEvent() \
