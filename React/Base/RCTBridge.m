@@ -1555,7 +1555,9 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
   RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
 
-  [self.perfStats.jsGraph tick:displayLink.timestamp];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self.perfStats.jsGraph tick:displayLink.timestamp];
+  });
 }
 
 - (void)_mainThreadUpdate:(CADisplayLink *)displayLink
