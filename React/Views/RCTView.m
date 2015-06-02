@@ -277,7 +277,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     // View has cliping enabled, so we can easily test if it is partially
     // or completely within the clipRect, and mount or unmount it accordingly
 
-    if (CGRectIntersectsRect(clipRect, view.frame)) {
+    if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
 
       // View is at least partially visible, so remount it if unmounted
       if (view.superview == nil) {
