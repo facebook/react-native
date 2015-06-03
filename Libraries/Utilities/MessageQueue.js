@@ -483,10 +483,8 @@ var MessageQueueMixin = {
 
   _flushedQueueUnguarded: function() {
     BridgeProfiling.profile('JSTimersExecution.callImmediates()');
-    ReactUpdates.batchedUpdates(() => {
-      // Call the functions registered via setImmediate
-      JSTimersExecution.callImmediates();
-    });
+    // Call the functions registered via setImmediate
+    JSTimersExecution.callImmediates();
     BridgeProfiling.profileEnd();
 
     var currentOutgoingItems = this._outgoingItems;
