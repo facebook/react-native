@@ -180,4 +180,32 @@ void RCTProfileImmediateEvent(NSString *name, NSTimeInterval timestamp, NSString
   );
 }
 
+NSNumber *_RCTProfileBeginFlowEvent(void)
+{
+  static NSUInteger flowID = 0;
+
+  CHECK(@0);
+  RCTProfileAddEvent(RCTProfileTraceEvents,
+    @"name": @"flow",
+    @"id": @(++flowID),
+    @"cat": @"flow",
+    @"ph": @"s",
+    @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+  );
+
+  return @(flowID);
+}
+
+void _RCTProfileEndFlowEvent(NSNumber *flowID)
+{
+  CHECK();
+  RCTProfileAddEvent(RCTProfileTraceEvents,
+    @"name": @"flow",
+    @"id": flowID,
+    @"cat": @"flow",
+    @"ph": @"f",
+    @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+  );
+}
+
 #endif
