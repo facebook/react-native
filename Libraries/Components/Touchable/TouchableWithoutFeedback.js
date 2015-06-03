@@ -12,7 +12,9 @@
 'use strict';
 
 var React = require('React');
+var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
+var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
 
 /**
@@ -31,7 +33,7 @@ type Event = Object;
  * one of the primary reason a "web" app doesn't feel "native".
  */
 var TouchableWithoutFeedback = React.createClass({
-  mixins: [Touchable.Mixin],
+  mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
     /**
@@ -42,10 +44,30 @@ var TouchableWithoutFeedback = React.createClass({
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
     onLongPress: React.PropTypes.func,
+    /**
+     * Delay in ms, from the start of the touch, before onPressIn is called.
+     */
+    delayPressIn: React.PropTypes.number,
+    /**
+     * Delay in ms, from the release of the touch, before onPressOut is called.
+     */
+    delayPressOut: React.PropTypes.number,
+    /**
+     * Delay in ms, from onPressIn, before onLongPress is called.
+     */
+    delayLongPress: React.PropTypes.number,
   },
 
   getInitialState: function() {
     return this.touchableGetInitialState();
+  },
+
+  componentDidMount: function() {
+    ensurePositiveDelayProps(this.props);
+  },
+
+  componentWillReceiveProps: function(nextProps: Object) {
+    ensurePositiveDelayProps(nextProps);
   },
 
   /**
@@ -73,7 +95,16 @@ var TouchableWithoutFeedback = React.createClass({
   },
 
   touchableGetHighlightDelayMS: function(): number {
-    return 0;
+    return this.props.delayPressIn || 0;
+  },
+
+  touchableGetLongPressDelayMS: function(): number {
+    return this.props.delayLongPress === 0 ? 0 :
+      this.props.delayLongPress || 500;
+  },
+
+  touchableGetPressOutDelayMS: function(): number {
+    return this.props.delayPressOut || 0;
   },
 
   render: function(): ReactElement {
