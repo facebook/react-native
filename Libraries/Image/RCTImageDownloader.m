@@ -13,7 +13,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *error);
+typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *error, NSDate *expireAt);
 
 @implementation RCTImageDownloader
 {
@@ -77,27 +77,36 @@ static NSString *RCTCacheKeyForURL(NSURL *url)
       _pendingBlocks[cacheKey] = [NSMutableArray arrayWithObject:block];
 
       __weak RCTImageDownloader *weakSelf = self;
-      RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSData *data, NSError *error) {
+      RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSData *data, NSError *error, NSDate *expireAt) {
         dispatch_async(_processingQueue, ^{
           RCTImageDownloader *strongSelf = weakSelf;
           NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
           [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
           for (RCTCachedDataDownloadBlock block in blocks) {
-            block(cached, data, error);
+            block(cached, data, error, expireAt);
           }
         });
       };
 
-      if ([_cache hasDataForKey:cacheKey]) {
+      if ([_cache hasDataForKey:cacheKey]) { // && _notCaching
         [_cache fetchDataForKey:cacheKey completionHandler:^(NSData *data) {
           if (!cancelled) {
-            runBlocks(YES, data, nil);
+            runBlocks(YES, data, nil, nil);
           }
         }];
       } else {
+        // fetch metadata
+        
+
+        // fetch image itself
         task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+          NSString *cacheControl = [((NSHTTPURLResponse *)response).allHeaderFields valueForKey:@"Cache-Control"];
+          NSDate *expireAt = [NSDate date];
+          if (cacheControl != nil) {
+            // TODO:
+          }
           if (!cancelled) {
-            runBlocks(NO, data, error);
+            runBlocks(NO, data, error, expireAt);
           }
         }];
 
@@ -113,10 +122,10 @@ static NSString *RCTCacheKeyForURL(NSURL *url)
 {
   NSString *cacheKey = RCTCacheKeyForURL(url);
   __weak RCTImageDownloader *weakSelf = self;
-  return [self _downloadDataForURL:url block:^(BOOL cached, NSData *data, NSError *error) {
+  return [self _downloadDataForURL:url block:^(BOOL cached, NSData *data, NSError *error, NSDate *expireAt) {
     if (!cached) {
       RCTImageDownloader *strongSelf = weakSelf;
-      [strongSelf->_cache setData:data forKey:cacheKey];
+      [strongSelf->_cache setData:data forKey:cacheKey expireAt: expireAt];
     }
     block(data, error);
   }];

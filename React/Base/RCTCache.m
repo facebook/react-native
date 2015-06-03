@@ -158,6 +158,12 @@ static BOOL RCTSetExtendedAttribute(NSURL *fileURL, NSString *key, NSString *val
 
 - (BOOL)hasDataForKey:(NSString *)key
 {
+  NSString *cacheExpirationKey = [key stringByAppendingString:@":expireAt"];
+  NSDate *expirationDate = _storage[cacheExpirationKey] ? _storage[cacheExpirationKey] : nil;
+
+  if (expirationDate == nil || [NSDate date] > expirationDate) {
+    return NO;
+  }
   return _storage[key] != nil;
 }
 
@@ -179,7 +185,7 @@ static BOOL RCTSetExtendedAttribute(NSURL *fileURL, NSString *key, NSString *val
   }];
 }
 
-- (void)setData:(NSData *)data forKey:(NSString *)key
+- (void)setData:(NSData *)data forKey:(NSString *)key expireAt:(NSDate *)expireAt
 {
   NSParameterAssert(key.length > 0);
   RCTCacheRecord *record = _storage[key];
@@ -188,6 +194,11 @@ static BOOL RCTSetExtendedAttribute(NSURL *fileURL, NSString *key, NSString *val
 
     record = [[RCTCacheRecord alloc] initWithUUID:[NSUUID UUID]];
     _storage[key] = record;
+  }
+
+  if (expireAt) {
+    NSString *cacheExpirationKey = [key stringByAppendingString:@":expireAt"];
+    _storage[cacheExpirationKey] = expireAt;
   }
 
   NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
