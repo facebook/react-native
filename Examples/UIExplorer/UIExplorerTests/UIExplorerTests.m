@@ -85,7 +85,7 @@
   }
 
   XCTAssertNil(redboxError, @"RedBox error: %@", redboxError);
-  XCTAssertTrue(foundElement, @"Cound't find element with '<View>' text in %d seconds", TIMEOUT_SECONDS);
+  XCTAssertTrue(foundElement, @"Couldn't find element with '<View>' text in %d seconds", TIMEOUT_SECONDS);
 }
 
 #define RCT_SNAPSHOT_TEST(name, reRecord) \
