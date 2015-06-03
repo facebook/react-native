@@ -36,8 +36,6 @@
 
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
-  NSMutableArray *_pendingTouches;
-  NSMutableArray *_bridgeInteractionTiming;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -51,9 +49,6 @@
     _nativeTouches = [[NSMutableOrderedSet alloc] init];
     _reactTouches = [[NSMutableArray alloc] init];
     _touchViews = [[NSMutableArray alloc] init];
-
-    _pendingTouches = [[NSMutableArray alloc] init];
-    _bridgeInteractionTiming = [[NSMutableArray alloc] init];
 
     // `cancelsTouchesInView` is needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
