@@ -30,10 +30,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
       },
       // TODO: Do we need this? is it used anywhere?
       'h' + crc32(method + '|' + url + '|' + data),
-      (result) => {
-        result = JSON.parse(result);
-        this.callback(result.status, result.responseHeaders, result.responseText);
-      }
+      this.callback.bind(this)
     );
   }
 

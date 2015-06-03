@@ -45,7 +45,6 @@ var DEFAULT_INITIAL_ROWS = 10;
 var DEFAULT_SCROLL_RENDER_AHEAD = 1000;
 var DEFAULT_END_REACHED_THRESHOLD = 1000;
 var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
-var RENDER_INTERVAL = 20;
 var SCROLLVIEW_REF = 'listviewscroll';
 
 
@@ -258,7 +257,6 @@ var ListView = React.createClass({
     // the component is laid out
     this.requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
-      this.setInterval(this._renderMoreRowsIfNeeded, RENDER_INTERVAL);
     });
   },
 
@@ -329,7 +327,7 @@ var ListView = React.createClass({
         totalIndex++;
 
         if (this.props.renderSeparator &&
-            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length -1)) {
+            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)) {
           var adjacentRowHighlighted =
             this.state.highlightedRow.sectionID === sectionID && (
               this.state.highlightedRow.rowID === rowID ||
@@ -397,6 +395,7 @@ var ListView = React.createClass({
   _setScrollVisibleHeight: function(left, top, width, height) {
     this.scrollProperties.visibleHeight = height;
     this._updateVisibleRows();
+    this._renderMoreRowsIfNeeded();
   },
 
   _renderMoreRowsIfNeeded: function() {
@@ -443,8 +442,8 @@ var ListView = React.createClass({
     }
     var updatedFrames = e && e.nativeEvent.updatedChildFrames;
     if (updatedFrames) {
-      updatedFrames.forEach((frame) => {
-        this._childFrames[frame.index] = merge(frame);
+      updatedFrames.forEach((newFrame) => {
+        this._childFrames[newFrame.index] = merge(newFrame);
       });
     }
     var dataSource = this.props.dataSource;

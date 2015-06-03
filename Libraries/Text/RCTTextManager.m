@@ -96,12 +96,10 @@ RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
-  NSTextStorage *textStorage = [shadowView buildTextStorageForWidth:shadowView.frame.size.width];
 
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTText *text = viewRegistry[reactTag];
     text.contentInset = padding;
-    text.textStorage = textStorage;
   };
 }
 
