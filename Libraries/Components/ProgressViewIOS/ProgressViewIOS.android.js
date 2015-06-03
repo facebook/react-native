@@ -7,7 +7,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule SegmentedControlIOS
+ * @providesModule ProgressViewIOS
  */
 
 'use strict';
@@ -17,7 +17,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var Dummy = React.createClass({
+var DummyProgressViewIOS = React.createClass({
   render: function() {
     return (
       <View style={[styles.dummy, this.props.style]}>
@@ -46,4 +46,4 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = Dummy;
+module.exports = DummyProgressViewIOS;
