@@ -481,6 +481,10 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
     shadowView.newView = NO;
   }
 
+  // These are blocks to be executed on each view, immediately after
+  // reactSetFrame: has been called. Note that if reactSetFrame: is not called,
+  // these won't be called either, so this is not a suitable place to update
+  // properties that aren't related to layout.
   NSMutableArray *updateBlocks = [[NSMutableArray alloc] init];
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     RCTViewManager *manager = _viewManagerRegistry[shadowView.reactTag];
