@@ -8,6 +8,9 @@
  */
 'use strict';
 
+var Promise = require('bluebird');
+var isAbsolutePath = require('absolute-path');
+
 function ModuleDescriptor(fields) {
   if (!fields.id) {
     throw new Error('Missing required fields id');
@@ -17,16 +20,12 @@ function ModuleDescriptor(fields) {
   if (!fields.path) {
     throw new Error('Missing required fields path');
   }
+  if (!isAbsolutePath(fields.path)) {
+    throw new Error('Expected absolute path but found: ' + fields.path);
+  }
   this.path = fields.path;
 
-  if (!fields.dependencies) {
-    throw new Error('Missing required fields dependencies');
-  }
   this.dependencies = fields.dependencies;
-
-  this.resolveDependency = fields.resolveDependency;
-
-  this.entry = fields.entry || false;
 
   this.isPolyfill = fields.isPolyfill || false;
 
@@ -50,12 +49,30 @@ function ModuleDescriptor(fields) {
   this._fields = fields;
 }
 
+ModuleDescriptor.prototype.loadDependencies = function(loader) {
+  if (!this.dependencies) {
+    if (this._loadingDependencies) {
+      return this._loadingDependencies;
+    }
+
+    var self = this;
+    this._loadingDependencies = loader(this).then(function(dependencies) {
+      self.dependencies = dependencies;
+    });
+    return this._loadingDependencies;
+  }
+
+  return Promise.resolve(this.dependencies);
+};
+
 ModuleDescriptor.prototype.toJSON = function() {
-  return {
-    id: this.id,
-    path: this.path,
-    dependencies: this.dependencies
-  };
+  var ret = {};
+  Object.keys(this).forEach(function(prop) {
+    if (prop[0] !== '_' && typeof this[prop] !== 'function') {
+      ret[prop] = this[prop];
+    }
+  }, this);
+  return ret;
 };
 
 module.exports = ModuleDescriptor;
