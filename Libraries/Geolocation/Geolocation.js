@@ -26,6 +26,7 @@ type GeoOptions = {
   timeout: number;
   maximumAge: number;
   enableHighAccuracy: bool;
+  backgroundMode: bool;
 }
 
 /**
