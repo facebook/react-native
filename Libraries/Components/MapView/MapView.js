@@ -83,6 +83,19 @@ var MapView = React.createClass({
     scrollEnabled: React.PropTypes.bool,
 
     /**
+     * The map type to be displayed.
+     * 
+     * - standard: standard road map (default)
+     * - satellite: satellite view
+     * - hybrid: satellite view with roads and points of interest overlayed
+     */
+    mapType: React.PropTypes.oneOf([
+      'standard', 
+      'satellite', 
+      'hybrid',
+    ]),
+
+    /**
      * The region to be displayed by the map.
      *
      * The region is defined by the center coordinates and the span of
