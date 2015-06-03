@@ -60,13 +60,13 @@ var styles = StyleSheet.create({
     position: 'absolute',
   },
   content: {
-    backgroundColor: 'rgba(0, 0, 255, 0.1)',
+    backgroundColor: 'rgba(200, 230, 255, 0.8)',
   },
   padding: {
-    borderColor: 'rgba(182, 217, 167, 0.3)',
+    borderColor: 'rgba(77, 255, 0, 0.3)',
   },
   margin: {
-    borderColor: 'rgba(248, 194, 136, 0.3)',
+    borderColor: 'rgba(255, 132, 0, 0.3)',
   },
 });
 

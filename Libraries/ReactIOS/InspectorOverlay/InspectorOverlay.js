@@ -18,6 +18,7 @@ var Text = require('Text');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 var ElementBox = require('ElementBox');
+var ElementProperties = require('ElementProperties');
 
 var InspectorOverlay = React.createClass({
   getInitialState: function() {
@@ -34,6 +35,9 @@ var InspectorOverlay = React.createClass({
       [locationX, locationY],
       (nativeViewTag, left, top, width, height) => {
         var instance = Inspector.findInstanceByNativeTag(this.props.rootTag, nativeViewTag);
+        if (!instance) {
+          return;
+        }
         var hierarchy = Inspector.getOwnerHierarchy(instance);
         var publicInstance = instance.getPublicInstance();
         this.setState({
@@ -52,18 +56,31 @@ var InspectorOverlay = React.createClass({
 
   render: function() {
     var content = [];
+    var justifyContent = 'flex-end';
 
     if (this.state.frame) {
       var distanceToTop = this.state.frame.top;
       var distanceToBottom = Dimensions.get('window').height -
         (this.state.frame.top + this.state.frame.height);
 
-      var justifyContent = distanceToTop > distanceToBottom
+      justifyContent = distanceToTop > distanceToBottom
         ? 'flex-start'
         : 'flex-end';
 
       content.push(<ElementBox frame={this.state.frame} style={this.state.style} />);
-      content.push(<ElementProperties hierarchy={this.state.hierarchy} />);
+      content.push(
+        <ElementProperties
+          style={this.state.style}
+          frame={this.state.frame}
+          hierarchy={this.state.hierarchy}
+        />
+      );
+    } else {
+      content.push(
+        <View style={styles.welcomeMessage}>
+          <Text style={styles.welcomeText}>Welcome to the inspector! Tap something to inspect it.</Text>
+        </View>
+      );
     }
     return (
       <View
@@ -76,38 +93,23 @@ var InspectorOverlay = React.createClass({
   }
 });
 
-var ElementProperties = React.createClass({
-  render: function() {
-    var path = this.props.hierarchy.map((instance) => {
-      return instance.getName ? instance.getName() : 'Unknown';
-    }).join(' > ');
-    return (
-      <View style={styles.info}>
-        <Text style={styles.path}>
-          {path}
-        </Text>
-      </View>
-    );
-  }
-});
-
 var styles = StyleSheet.create({
+  welcomeMessage: {
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 10,
+    paddingVertical: 50,
+  },
+  welcomeText: {
+    color: 'white',
+  },
   inspector: {
-    backgroundColor: 'rgba(255,255,255,0.8)',
+    backgroundColor: 'rgba(255,255,255,0.0)',
     position: 'absolute',
     left: 0,
     top: 0,
     right: 0,
     bottom: 0,
   },
-  info: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 10,
-  },
-  path: {
-    color: 'white',
-    fontSize: 9,
-  }
 });
 
 module.exports = InspectorOverlay;

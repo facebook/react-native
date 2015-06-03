@@ -24,10 +24,10 @@ function resolveBoxStyle(prefix: String, style: Object): ?Object {
   var res = {};
   var subs = ['top', 'left', 'bottom', 'right'];
   var set = false;
+  subs.forEach(sub => {
+    res[sub] = style[prefix] || 0;
+  });
   if (style[prefix]) {
-    subs.forEach(sub => {
-      res[sub] = style[prefix];
-    });
     set = true;
   }
   if (style[prefix + 'Vertical']) {
@@ -42,8 +42,6 @@ function resolveBoxStyle(prefix: String, style: Object): ?Object {
     var val = style[prefix + capFirst(sub)];
     if (val) {
       res[sub] = val;
-    }
-    if (res[sub]) {
       set = true;
     }
   });
