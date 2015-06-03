@@ -110,6 +110,13 @@ RCT_EXPORT_MODULE()
                                      [weakSelf toggle];
                                    }];
 
+    // Toggle element inspector
+    [commands registerKeyCommandWithInput:@"i"
+                            modifierFlags:UIKeyModifierCommand
+                                   action:^(UIKeyCommand *command) {
+                                     [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+                                   }];
+
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
