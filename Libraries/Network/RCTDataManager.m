@@ -24,7 +24,6 @@ RCT_EXPORT_MODULE()
  */
 RCT_EXPORT_METHOD(queryData:(NSString *)queryType
                   withQuery:(NSDictionary *)query
-                  queryHash:(__unused NSString *)queryHash
                   responseSender:(RCTResponseSenderBlock)responseSender)
 {
   if ([queryType isEqualToString:@"http"]) {
@@ -39,34 +38,35 @@ RCT_EXPORT_METHOD(queryData:(NSString *)queryType
     // Build data task
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
 
+      NSHTTPURLResponse *httpResponse = nil;
+      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        // Might be a local file request
+        httpResponse = (NSHTTPURLResponse *)response;
+      }
+
       // Build response
-      NSDictionary *responseJSON;
+      NSArray *responseJSON;
       if (connectionError == nil) {
         NSStringEncoding encoding = NSUTF8StringEncoding;
         if (response.textEncodingName) {
           CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
           encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
         }
-        NSHTTPURLResponse *httpResponse = nil;
-        if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-          // Might be a local file request
-          httpResponse = (NSHTTPURLResponse *)response;
-        }
-        responseJSON = @{
-          @"status": @([httpResponse statusCode] ?: 200),
-          @"responseHeaders": [httpResponse allHeaderFields] ?: @{},
-          @"responseText": [[NSString alloc] initWithData:data encoding:encoding] ?: @""
-        };
+        responseJSON = @[
+          @(httpResponse.statusCode ?: 200),
+          httpResponse.allHeaderFields ?: @{},
+          [[NSString alloc] initWithData:data encoding:encoding] ?: @"",
+        ];
       } else {
-        responseJSON = @{
-          @"status": @0,
-          @"responseHeaders": @{},
-          @"responseText": [connectionError localizedDescription] ?: [NSNull null]
-        };
+        responseJSON = @[
+          @(httpResponse.statusCode),
+          httpResponse.allHeaderFields ?: @{},
+          connectionError.localizedDescription ?: [NSNull null],
+        ];
       }
 
       // Send response (won't be sent on same thread as caller)
-      responseSender(@[RCTJSONStringify(responseJSON, NULL)]);
+      responseSender(responseJSON);
 
     }];
 

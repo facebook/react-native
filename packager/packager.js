@@ -10,7 +10,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
+var execFile = require('child_process').execFile;
 var http = require('http');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
@@ -172,7 +172,7 @@ function getDevToolsLauncher(options) {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
-      exec(path.join(__dirname, script) + ' ' + debuggerURL, function(err, stdout, stderr) {
+      execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
         if (err) {
           console.log('Failed to run ' + script, err);
         }

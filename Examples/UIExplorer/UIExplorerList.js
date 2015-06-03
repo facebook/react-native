@@ -30,7 +30,7 @@ var {
 var { TestModule } = React.addons;
 var Settings = require('Settings');
 
-import type { Example, ExampleModule } from 'ExampleTypes';
+import type { ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = require('./createExamplePage');
 
@@ -154,7 +154,9 @@ class UIExplorerList extends React.Component {
           dataSource={this.state.dataSource}
           renderRow={this._renderRow.bind(this)}
           renderSectionHeader={this._renderSectionHeader}
+          keyboardShouldPersistTaps={true}
           automaticallyAdjustContentInsets={false}
+          keyboardDismissMode="onDrag"
         />
       </View>
     );

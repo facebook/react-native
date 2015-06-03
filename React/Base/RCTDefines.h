@@ -42,6 +42,12 @@
 #endif
 #endif
 
+#if RCT_DEV
+#define RCT_IF_DEV(...) __VA_ARGS__
+#else
+#define RCT_IF_DEV(...)
+#endif
+
 /**
  * By default, only raise an NSAssertion in debug mode
  * (custom assert functions will still be called).
