@@ -17,6 +17,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
+var ElementBox = require('ElementBox');
 
 var InspectorOverlay = React.createClass({
   getInitialState: function() {
@@ -34,9 +35,11 @@ var InspectorOverlay = React.createClass({
       (nativeViewTag, left, top, width, height) => {
         var instance = Inspector.findInstanceByNativeTag(this.props.rootTag, nativeViewTag);
         var hierarchy = Inspector.getOwnerHierarchy(instance);
+        var publicInstance = instance.getPublicInstance();
         this.setState({
           hierarchy,
-          frame: {left, top, width, height}
+          frame: {left, top, width, height},
+          style: publicInstance.props ? publicInstance.props.style : {},
         });
       }
     );
@@ -59,7 +62,7 @@ var InspectorOverlay = React.createClass({
         ? 'flex-start'
         : 'flex-end';
 
-      content.push(<View pointerEvents="none" style={[styles.frame, this.state.frame]} />);
+      content.push(<ElementBox frame={this.state.frame} style={this.state.style} />);
       content.push(<ElementProperties hierarchy={this.state.hierarchy} />);
     }
     return (
@@ -96,10 +99,6 @@ var styles = StyleSheet.create({
     top: 0,
     right: 0,
     bottom: 0,
-  },
-  frame: {
-    position: 'absolute',
-    backgroundColor: 'rgba(155,155,255,0.3)',
   },
   info: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
