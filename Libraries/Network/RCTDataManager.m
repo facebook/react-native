@@ -24,7 +24,6 @@ RCT_EXPORT_MODULE()
  */
 RCT_EXPORT_METHOD(queryData:(NSString *)queryType
                   withQuery:(NSDictionary *)query
-                  queryHash:(__unused NSString *)queryHash
                   responseSender:(RCTResponseSenderBlock)responseSender)
 {
   if ([queryType isEqualToString:@"http"]) {
