@@ -8,6 +8,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "RCTDefines.h"
 
 @class RCTBridge;
 
@@ -49,7 +50,10 @@ extern const dispatch_queue_t RCTJSThread;
  */
 #define RCT_EXPORT_MODULE(js_name) \
   + (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
-  ))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; }
+  ))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; } \
+  RCT_EXTERN void RCTRegisterModuleProvider(void); \
+  + (void)load { static dispatch_once_t dispatchToken; dispatch_once(&dispatchToken, ^{ \
+  RCTRegisterModuleProvider(); }); }
 
 /**
  * Wrap the parameter line of your method implementation with this macro to

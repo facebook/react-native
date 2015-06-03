@@ -62,6 +62,198 @@ typedef struct section RCTHeaderSection;
               [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
             @"This method must be called on JS thread")
 
+
+/**
+ * This class encapsulates the extraction of strings from a named section of an RCTHeaderValue.
+ *
+ * It provides implementations of -isEqual: and -hash to allow storing in a Cocoa collection
+ *
+ * Specifically, its hash value is the address of the mach_header for the binary that contains
+ * a given address.  This makes it cheap to create many RCTHeaderStringExtractor objects and
+ * de-duplicate those that refer to the same mach_header by sticking them in an NSSet.
+ */
+@interface RCTHeaderStringExtractor : NSObject
+
+- (instancetype)initWithAddressFromSharedObject:(const void *)address;
+- (NSArray *)stringsFromSection:(NSString *)sectionName;
+- (NSArray *)stringArraysFromSection:(NSString *)sectionName entriesPerArray:(NSUInteger)arraySize;
+@end
+
+@implementation RCTHeaderStringExtractor
+{
+  RCTHeaderValue _mach_header;
+}
+
+- (instancetype)initWithAddressFromSharedObject:(const void *)address
+{
+  if (!(self = [super init])) {
+    return nil;
+  }
+  
+  Dl_info info;
+  dladdr(address, &info);
+  const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
+  _mach_header = mach_header;
+  
+  return self;
+}
+
+- (BOOL)isEqualToExtractor:(RCTHeaderStringExtractor *)extractor {
+  return extractor->_mach_header == _mach_header;
+}
+
+- (BOOL)isEqual:(id)object {
+  if (![object isKindOfClass:[self class]]) {
+    return NO;
+  }
+  
+  return [self isEqualToExtractor:(RCTHeaderStringExtractor *)object];
+}
+
+- (NSUInteger)hash {
+  return _mach_header;
+}
+
+- (NSArray *)stringsFromSection:(NSString *)sectionName
+{
+  const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)_mach_header, "__DATA", [sectionName UTF8String]);
+  
+  NSMutableArray *stringArray = [NSMutableArray array];
+  if (section) {
+    for (RCTHeaderValue addr = section->offset;
+         addr < section->offset + section->size;
+         addr += sizeof(const char **)) {
+      
+      // Get data entry
+      NSString *entry = @(*(const char **)(_mach_header + addr));
+      [stringArray addObject:entry];
+    }
+  }
+  return stringArray;
+}
+
+- (NSArray *)stringArraysFromSection:(NSString *)sectionName entriesPerArray:(NSUInteger)arraySize
+{
+  const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)_mach_header, "__DATA", [sectionName UTF8String]);
+  NSMutableArray *results = [NSMutableArray array];
+  if (section) {
+    
+    for (RCTHeaderValue addr = section->offset;
+         addr < section->offset + section->size;
+         addr += sizeof(const char **) * arraySize) {
+      
+      // Get data entry
+      const char **entries = (const char **)(_mach_header + addr);
+      NSMutableArray *innerArray = [NSMutableArray array];
+      
+      for (int i=0; i < arraySize; i++) {
+        const char *entry = entries[i];
+        if (entry != NULL) {
+          [innerArray addObject:@(entry)];
+        }
+      }
+      [results addObject:innerArray];
+    }
+  }
+  
+  return results;
+}
+
+@end
+
+NSSet *RCTHeaderStringExtractors;
+dispatch_queue_t RCTHeaderStringExtratorQueue;
+
+/**
+ * This function registers the mach binary that contains the symbol at the given address
+ * as a provider of React Native modules.  This must be called prior to instantiating
+ * any instances of RCTBridge for registration to be effective.
+ */
+void RCTRegisterModuleProviderContainingAddress(const void *address) {
+  static dispatch_once_t dispatchToken;
+  dispatch_once(&dispatchToken, ^{
+    RCTHeaderStringExtratorQueue = dispatch_queue_create("com.facebook.React.ModuleNameExtractor", DISPATCH_QUEUE_SERIAL);
+    RCTHeaderStringExtractors = [NSMutableSet set];
+  });
+  
+  dispatch_sync(RCTHeaderStringExtratorQueue, ^{
+    RCTHeaderStringExtractor *moduleExtractor = [[RCTHeaderStringExtractor alloc] initWithAddressFromSharedObject:address];
+    
+    [(NSMutableSet *)RCTHeaderStringExtractors addObject:moduleExtractor];
+  });
+}
+
+/**
+ * This function registers the mach binary that contains the caller as a provider of
+ * React Native modules.  This must be called prior to instantiating any instances of
+ * RCTBridge for registration to be effective.
+ */
+void RCTRegisterModuleProvider(void) {
+  const void *caller = __builtin_return_address(0);
+  RCTRegisterModuleProviderContainingAddress(caller);
+}
+
+/**
+ * This function registers the mach binary containing the `main()` function as a provider
+ * of ReactNative modules.  This guards against the case where the user statically links
+ * a library containing modules into their app, but doesn't define any modules in the
+ * app itself, or explicitly call RCTRegisterModuleProvider.
+ */
+void RCTRegisterMainAppModuleProvider(void) {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    const void *mainAddr = dlsym(RTLD_DEFAULT, "main");
+    if (mainAddr != NULL) {
+      RCTRegisterModuleProviderContainingAddress(mainAddr);
+    }
+  });
+}
+
+/**
+ * This function enumerates the RCTHeaderStringExtractors for the registered
+ * native module providers and extracts all strings from the given named section.
+ * Returns the set of strings from all providers, with duplicates removed.
+ */
+NSArray *RCTStringsFromSection(NSString *sectionName) {
+  RCTRegisterMainAppModuleProvider();
+  NSMutableArray *allStrings = [NSMutableArray array];
+  dispatch_sync(RCTHeaderStringExtratorQueue, ^{
+    for (RCTHeaderStringExtractor *extractor in RCTHeaderStringExtractors) {
+      [allStrings addObjectsFromArray:[extractor stringsFromSection:sectionName]];
+    }
+  });
+  return allStrings;
+}
+
+/**
+ * This function enumerates the RCTHeaderStringExtractors for the registered
+ * native module providers and returns extracted strings grouped in a two-dimensional
+ * array whose inner arrays are of a maximum size `stringsPerArray`
+ */
+NSArray *RCTStringArraysFromSection(NSString *sectionName, NSUInteger stringsPerArray) {
+  RCTRegisterMainAppModuleProvider();
+  NSMutableArray *results = [NSMutableArray array];
+  dispatch_sync(RCTHeaderStringExtratorQueue, ^{
+    for (RCTHeaderStringExtractor *extractor in RCTHeaderStringExtractors) {
+      [results addObjectsFromArray:[extractor stringArraysFromSection:sectionName entriesPerArray:stringsPerArray]];
+    }
+  });
+  return results;
+}
+
+
+NSArray *RCTExportedModuleNames() {
+  return RCTStringsFromSection(@"RCTExportModule");
+}
+
+NSArray *RCTExportedMethodNames() {
+  return RCTStringArraysFromSection(@"RCTExport", 3);
+}
+
+NSArray *RCTImportedMethodNames() {
+  return RCTStringsFromSection(@"RCTImport");
+}
+
 NSString *const RCTEnqueueNotification = @"RCTEnqueueNotification";
 NSString *const RCTDequeueNotification = @"RCTDequeueNotification";
 
@@ -94,23 +286,7 @@ static NSArray *RCTJSMethods(void)
   dispatch_once(&onceToken, ^{
     NSMutableSet *uniqueMethods = [NSMutableSet set];
 
-    Dl_info info;
-    dladdr(&RCTJSMethods, &info);
-
-    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTImport");
-
-    if (section) {
-      for (RCTHeaderValue addr = section->offset;
-           addr < section->offset + section->size;
-           addr += sizeof(const char **)) {
-
-        // Get data entry
-        NSString *entry = @(*(const char **)(mach_header + addr));
-        [uniqueMethods addObject:entry];
-      }
-    }
-
+    [uniqueMethods addObjectsFromArray:RCTImportedMethodNames()];
     JSMethods = [uniqueMethods allObjects];
   });
 
@@ -135,41 +311,28 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
     RCTModuleNamesByID = [[NSMutableArray alloc] init];
     RCTModuleClassesByID = [[NSMutableArray alloc] init];
 
-    Dl_info info;
-    dladdr(&RCTBridgeModuleClassesByModuleID, &info);
+    for (NSString *entry in RCTExportedModuleNames()) {
+      NSArray *parts = [[entry substringWithRange:(NSRange){2, entry.length - 3}]
+                        componentsSeparatedByString:@" "];
 
-    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExportModule");
-
-    if (section) {
-      for (RCTHeaderValue addr = section->offset;
-           addr < section->offset + section->size;
-           addr += sizeof(const char **)) {
-
-        // Get data entry
-        NSString *entry = @(*(const char **)(mach_header + addr));
-        NSArray *parts = [[entry substringWithRange:(NSRange){2, entry.length - 3}]
-                          componentsSeparatedByString:@" "];
-
-        // Parse class name
-        NSString *moduleClassName = parts[0];
-        NSRange categoryRange = [moduleClassName rangeOfString:@"("];
-        if (categoryRange.length) {
-          moduleClassName = [moduleClassName substringToIndex:categoryRange.location];
-        }
-
-        // Get class
-        Class cls = NSClassFromString(moduleClassName);
-        RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
-                  @"%@ does not conform to the RCTBridgeModule protocol",
-                  NSStringFromClass(cls));
-
-        // Register module
-        NSString *moduleName = RCTBridgeModuleNameForClass(cls);
-        ((NSMutableDictionary *)RCTModuleIDsByName)[moduleName] = @(RCTModuleNamesByID.count);
-        [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
-        [(NSMutableArray *)RCTModuleClassesByID addObject:cls];
+      // Parse class name
+      NSString *moduleClassName = parts[0];
+      NSRange categoryRange = [moduleClassName rangeOfString:@"("];
+      if (categoryRange.length) {
+        moduleClassName = [moduleClassName substringToIndex:categoryRange.location];
       }
+
+      // Get class
+      Class cls = NSClassFromString(moduleClassName);
+      RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
+                @"%@ does not conform to the RCTBridgeModule protocol",
+                NSStringFromClass(cls));
+
+      // Register module
+      NSString *moduleName = RCTBridgeModuleNameForClass(cls);
+      ((NSMutableDictionary *)RCTModuleIDsByName)[moduleName] = @(RCTModuleNamesByID.count);
+      [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
+      [(NSMutableArray *)RCTModuleClassesByID addObject:cls];
     }
 
     if (RCT_DEBUG) {
@@ -541,38 +704,29 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
 
-    Dl_info info;
-    dladdr(&RCTExportedMethodsByModuleID, &info);
-
-    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExport");
-
-    if (section == NULL) {
-      return;
-    }
+    NSArray *nativeMethodNameArrays = RCTExportedMethodNames();
 
     NSArray *classes = RCTBridgeModuleClassesByModuleID();
     NSMutableDictionary *methodsByModuleClassName = [NSMutableDictionary dictionaryWithCapacity:[classes count]];
 
-    for (RCTHeaderValue addr = section->offset;
-         addr < section->offset + section->size;
-         addr += sizeof(const char **) * 3) {
-
-      // Get data entry
-      const char **entries = (const char **)(mach_header + addr);
+    for (NSArray *entries in nativeMethodNameArrays) {
 
       // Create method
       RCTModuleMethod *moduleMethod;
-      if (entries[2] == NULL) {
-
+      if (entries.count < 3) {
+        NSString *reactName = entries[0];
+        NSString *jsName = entries[1];
         // Legacy support for RCT_EXPORT()
-        moduleMethod = [[RCTModuleMethod alloc] initWithReactMethodName:@(entries[0])
-                                                         objCMethodName:@(entries[0])
-                                                           JSMethodName:strlen(entries[1]) ? @(entries[1]) : nil];
+        moduleMethod = [[RCTModuleMethod alloc] initWithReactMethodName:reactName
+                                                         objCMethodName:reactName
+                                                           JSMethodName:jsName.length > 0 ? jsName : nil];
       } else {
-        moduleMethod = [[RCTModuleMethod alloc] initWithReactMethodName:@(entries[0])
-                                                         objCMethodName:strlen(entries[1]) ? @(entries[1]) : nil
-                                                           JSMethodName:strlen(entries[2]) ? @(entries[2]) : nil];
+        NSString *reactName = entries[0];
+        NSString *objcName = entries[1];
+        NSString *jsName = entries[2];
+        moduleMethod = [[RCTModuleMethod alloc] initWithReactMethodName:reactName
+                                                         objCMethodName:objcName.length > 0 ? objcName : nil
+                                                           JSMethodName:jsName.length > 0 ? jsName : nil];
       }
 
       // Cache method
