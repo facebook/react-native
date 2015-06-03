@@ -51,6 +51,7 @@ Then you just need a little bit of JavaScript to make this a usable React compon
 
 var { requireNativeComponent } = require('react-native');
 
+// requireNativeComponent automatically resolves this to "RCTMapManager"
 module.exports = requireNativeComponent('RCTMap', null);
 ```
 
