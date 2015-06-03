@@ -28,7 +28,6 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, strong) UIColor *textBackgroundColor;
 @property (nonatomic, assign) NSWritingDirection writingDirection;
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width;
 - (void)recomputeText;
 
 @end

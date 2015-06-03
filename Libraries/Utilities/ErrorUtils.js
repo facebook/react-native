@@ -22,6 +22,6 @@ var GLOBAL = this;
  *
  * However, we still want to treat ErrorUtils as a module so that other modules
  * that use it aren't just using a global variable, so simply export the global
- * variable here. ErrorUtils is original defined in a file named error-guard.js.
+ * variable here. ErrorUtils is originally defined in a file named error-guard.js.
  */
 module.exports = GLOBAL.ErrorUtils;

@@ -33,7 +33,7 @@ if (typeof window === 'undefined') {
   window = GLOBAL;
 }
 
-function handleErrorWithRedBox(e, isFatal) {
+function handleError(e, isFatal) {
   try {
     require('ExceptionsManager').handleException(e, isFatal);
   } catch(ee) {
@@ -43,7 +43,7 @@ function handleErrorWithRedBox(e, isFatal) {
 
 function setUpRedBoxErrorHandler() {
   var ErrorUtils = require('ErrorUtils');
-  ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
+  ErrorUtils.setGlobalHandler(handleError);
 }
 
 function setUpRedBoxConsoleErrorHandler() {

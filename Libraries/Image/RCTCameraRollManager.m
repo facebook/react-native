@@ -69,7 +69,9 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   NSString *afterCursor = params[@"after"];
   NSString *groupTypesStr = params[@"groupTypes"];
   NSString *groupName = params[@"groupName"];
+  NSString *assetType = params[@"assetType"];
   ALAssetsGroupType groupTypes;
+
   if ([groupTypesStr isEqualToString:@"Album"]) {
     groupTypes = ALAssetsGroupAlbum;
   } else if ([groupTypesStr isEqualToString:@"All"]) {
@@ -93,7 +95,15 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
 
   [[RCTImageLoader assetsLibrary] enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
     if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:ALAssetsGroupPropertyName]])) {
-      [group setAssetsFilter:ALAssetsFilter.allPhotos];
+
+      if (assetType == nil || [assetType isEqualToString:@"Photos"]) {
+        [group setAssetsFilter:ALAssetsFilter.allPhotos];
+      } else if ([assetType isEqualToString:@"Videos"]) {
+        [group setAssetsFilter:ALAssetsFilter.allVideos];
+      } else if ([assetType isEqualToString:@"All"]) {
+        [group setAssetsFilter:ALAssetsFilter.allAssets];
+      }
+
       [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stopAssets) {
         if (result) {
           NSString *uri = [(NSURL *)[result valueForProperty:ALAssetPropertyAssetURL] absoluteString];

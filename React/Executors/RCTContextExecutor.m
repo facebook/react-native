@@ -133,22 +133,27 @@ static JSValueRef RCTConsoleProfile(JSContextRef context, JSObjectRef object, JS
     profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
   }
 
-  [profiles addObjectsFromArray:@[profileName, profileID]];
+  id profileInfo = [NSNull null];
+  if (argumentCount > 1 && !JSValueIsUndefined(context, arguments[1])) {
+    profileInfo = @[RCTJSValueToNSString(context, arguments[1])];
+  }
 
-  RCTLog(@"Profile '%@' finished.", profileName);
+  [profiles addObjectsFromArray:@[profileName, profileID, profileInfo]];
+
   return JSValueMakeUndefined(context);
 }
 
 static JSValueRef RCTConsoleProfileEnd(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
 {
+  NSString *profileInfo = [profiles lastObject];
+  [profiles removeLastObject];
   NSNumber *profileID = [profiles lastObject];
   [profiles removeLastObject];
   NSString *profileName = [profiles lastObject];
   [profiles removeLastObject];
 
-  _RCTProfileEndEvent(profileID, profileName, @"console", nil);
+  _RCTProfileEndEvent(profileID, profileName, @"console", profileInfo);
 
-  RCTLog(@"Profile '%@' started.", profileName);
   return JSValueMakeUndefined(context);
 }
 
@@ -244,12 +249,34 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 #if RCT_DEV
       [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
       [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
+
+      for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(toggleProfilingFlag:)
+                                                     name:event
+                                                   object:nil];
+      }
 #endif
 
     }];
   }
 
   return self;
+}
+
+- (void)toggleProfilingFlag:(NSNotification *)notification
+{
+  JSObjectRef globalObject = JSContextGetGlobalObject(_context.ctx);
+
+  bool enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
+  JSStringRef JSName = JSStringCreateWithUTF8CString("__BridgeProfilingIsProfiling");
+  JSObjectSetProperty(_context.ctx,
+                      globalObject,
+                      JSName,
+                      JSValueMakeBoolean(_context.ctx, enabled),
+                      kJSPropertyAttributeNone,
+                      NULL);
+  JSStringRelease(JSName);
 }
 
 - (void)_addNativeHook:(JSObjectCallAsFunctionCallback)hook withName:(const char *)name
@@ -269,6 +296,10 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (void)invalidate
 {
+#if RCT_DEV
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+#endif
+
   [_context performSelector:@selector(invalidate) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
 }
 

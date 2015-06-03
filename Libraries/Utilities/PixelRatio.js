@@ -60,6 +60,20 @@ class PixelRatio {
   }
 
   /**
+   * Returns the scaling factor for font sizes. This is the ratio that is used to calculate the
+   * absolute font size, so any elements that heavily depend on that should use this to do
+   * calculations.
+   *
+   * If a font scale is not set, this returns the device pixel ratio.
+   *
+   * Currently this is only implemented on Android and reflects the user preference set in
+   * Settings > Display > Font size, on iOS it will always return the default pixel ratio.
+   */
+  static getFontScale(): number {
+    return Dimensions.get('window').fontScale || PixelRatio.get();
+  }
+
+  /**
    * Converts a layout size (dp) to pixel size (px).
    *
    * Guaranteed to return an integer number.
