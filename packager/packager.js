@@ -56,7 +56,7 @@ var options = parseCommandLine([{
 }, {
   command: 'transformer',
   type: 'string',
-  default: './transformer.js',
+  default: require.resolve('./transformer.js'),
   description: 'Specify a custom transformer to be used (absolute path)'
 }]);
 
@@ -203,11 +203,15 @@ function statusPageMiddleware(req, res, next) {
 }
 
 function getAppMiddleware(options) {
+  var transformerPath = options.transformer;
+  if (!path.isAbsolute(transformerPath)) {
+    transformerPath = path.resolve(process.cwd(), transformerPath);
+  }
   return ReactPackager.middleware({
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(options.platform),
     cacheVersion: '2',
-    transformModulePath: require.resolve(options.transformer),
+    transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
     polyfillModuleNames: [
