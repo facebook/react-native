@@ -65,7 +65,7 @@ static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSEr
  * Can be called from any thread.
  * Will always call callback on main thread.
  */
-+ (void)loadImageWithTag:(NSString *)imageTag callback:(void (^)(NSError *error, id image))callback
++ (void)loadImageWithTag:(NSString *)imageTag thumb:(BOOL)thumb callback:(void (^)(NSError *error, id image))callback
 {
   if ([imageTag hasPrefix:@"assets-library"]) {
     [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
@@ -77,10 +77,17 @@ static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSEr
         dispatch_async(RCTImageLoaderQueue(), ^{
           // Also make sure the image is released immediately after it's used so it
           // doesn't spike the memory up during the process.
+          
           @autoreleasepool {
+            UIImage *image = nil;
             ALAssetRepresentation *representation = [asset defaultRepresentation];
             ALAssetOrientation orientation = [representation orientation];
-            UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
+            if (!thumb){
+              image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
+            }else{
+              image = [UIImage imageWithCGImage:[asset thumbnail] scale:1.0f orientation:(UIImageOrientation)orientation];
+            }
+            
             RCTDispatchCallbackOnMainQueue(callback, nil, image);
           }
         });
