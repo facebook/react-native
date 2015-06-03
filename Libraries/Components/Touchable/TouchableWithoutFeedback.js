@@ -40,6 +40,7 @@ var TouchableWithoutFeedback = React.createClass({
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
      */
+    accessible: React.PropTypes.bool,
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
@@ -110,7 +111,7 @@ var TouchableWithoutFeedback = React.createClass({
   render: function(): ReactElement {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     return (React: any).cloneElement(onlyChild(this.props.children), {
-      accessible: true,
+      accessible: this.props.accessible !== false,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
