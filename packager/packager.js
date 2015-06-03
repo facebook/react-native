@@ -12,6 +12,7 @@ var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
 var http = require('http');
+var isAbsolutePath = require('absolute-path');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
@@ -204,7 +205,7 @@ function statusPageMiddleware(req, res, next) {
 
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
-  if (!path.isAbsolute(transformerPath)) {
+  if (!isAbsolutePath(transformerPath)) {
     transformerPath = path.resolve(process.cwd(), transformerPath);
   }
   return ReactPackager.middleware({
