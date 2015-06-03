@@ -577,6 +577,80 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should work with packages with a dot in the name', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("sha.js")',
+            'require("x.y.z")',
+          ].join('\n'),
+          'sha.js': {
+            'package.json': JSON.stringify({
+              name: 'sha.js',
+              main: 'main.js'
+            }),
+            'main.js': 'lol'
+          },
+          'x.y.z': {
+            'package.json': JSON.stringify({
+              name: 'x.y.z',
+              main: 'main.js'
+            }),
+            'main.js': 'lol'
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+      });
+      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        expect(getDataFromModules(deps))
+          .toEqual([
+            {
+              id: 'index',
+              altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['sha.js', 'x.y.z'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: undefined,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+            {
+              id: 'sha.js/main',
+              path: '/root/sha.js/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: undefined,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+            {
+              id: 'x.y.z/main',
+              path: '/root/x.y.z/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: undefined,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+          ]);
+      });
+    });
+
     pit('should default main package to index.js', function() {
       var root = '/root';
       fs.__setMockFilesystem({
@@ -2106,6 +2180,63 @@ describe('DependencyGraph', function() {
               altId: '/root/index.js',
               path: '/root/index.js',
               dependencies: ['foo/lol'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: undefined,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+          ]);
+      });
+    });
+
+    pit('should work with node packages with a .js in the name', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("sha.js")',
+          ].join('\n'),
+          'node_modules': {
+            'sha.js': {
+              'package.json': JSON.stringify({
+                name: 'sha.js',
+                main: 'main.js'
+              }),
+              'main.js': 'lol'
+            }
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+      });
+      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        expect(getDataFromModules(deps))
+          .toEqual([
+            {
+              id: 'index',
+              altId: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['sha.js'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: undefined,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+            {
+              id: 'sha.js/main',
+              path: '/root/node_modules/sha.js/main.js',
+              dependencies: [],
               isAsset: false,
               isAsset_DEPRECATED: false,
               isJSON: undefined,

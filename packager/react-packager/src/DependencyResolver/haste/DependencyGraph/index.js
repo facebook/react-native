@@ -144,8 +144,7 @@ DependecyGraph.prototype.getOrderedDependencies = function(entryPath) {
     function iter(mod) {
       var p = Promise.resolve();
       mod.dependencies.forEach(function(name) {
-        var id = sansExtJs(name);
-        var dep = self.resolveDependency(mod, id);
+        var dep = self.resolveDependency(mod, name);
 
         if (dep == null) {
           debug(
