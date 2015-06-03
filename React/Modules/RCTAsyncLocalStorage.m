@@ -61,6 +61,34 @@ static id RCTReadFile(NSString *filePath, NSString *key, NSDictionary **errorOut
   return nil;
 }
 
+// Only merges objects - all other types are just clobbered (including arrays)
+static void RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
+{
+  for (NSString *key in source) {
+    id sourceValue = source[key];
+    if ([sourceValue isKindOfClass:[NSDictionary class]]) {
+      id destinationValue = destination[key];
+      NSMutableDictionary *nestedDestination;
+      if ([destinationValue classForCoder] == [NSMutableDictionary class]) {
+        nestedDestination = destinationValue;
+      } else {
+        if ([destinationValue isKindOfClass:[NSDictionary class]]) {
+          // Ideally we wouldn't eagerly copy here...
+          nestedDestination = [destinationValue mutableCopy];
+        } else {
+          destination[key] = [sourceValue copy];
+        }
+      }
+      if (nestedDestination) {
+        RCTMergeRecursive(nestedDestination, sourceValue);
+        destination[key] = nestedDestination;
+      }
+    } else {
+      destination[key] = sourceValue;
+    }
+  }
+}
+
 #pragma mark - RCTAsyncLocalStorage
 
 @implementation RCTAsyncLocalStorage
@@ -135,13 +163,19 @@ RCT_EXPORT_MODULE()
   if (errorOut) {
     return errorOut;
   }
+  id value = [self _getValueForKey:key errorOut:&errorOut];
+  [result addObject:@[key, value ?: [NSNull null]]]; // Insert null if missing or failure.
+  return errorOut;
+}
+
+- (NSString *)_getValueForKey:(NSString *)key errorOut:(NSDictionary **)errorOut
+{
   id value = _manifest[key]; // nil means missing, null means there is a data file, anything else is an inline value.
   if (value == [NSNull null]) {
     NSString *filePath = [self _filePathForKey:key];
-    value = RCTReadFile(filePath, key, &errorOut);
+    value = RCTReadFile(filePath, key, errorOut);
   }
-  [result addObject:@[key, value ?: [NSNull null]]]; // Insert null if missing or failure.
-  return errorOut;
+  return value;
 }
 
 - (id)_writeEntry:(NSArray *)entry
@@ -198,7 +232,6 @@ RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
     id keyError = [self _appendItemForKey:key toArray:result];
     RCTAppendError(keyError, &errors);
   }
-  [self _writeManifest:&errors];
   callback(@[errors ?: [NSNull null], result]);
 }
 
@@ -214,6 +247,38 @@ RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
   for (NSArray *entry in kvPairs) {
     id keyError = [self _writeEntry:entry];
     RCTAppendError(keyError, &errors);
+  }
+  [self _writeManifest:&errors];
+  if (callback) {
+    callback(@[errors ?: [NSNull null]]);
+  }
+}
+
+RCT_EXPORT_METHOD(multiMerge:(NSArray *)kvPairs
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  id errorOut = [self _ensureSetup];
+  if (errorOut) {
+    callback(@[@[errorOut]]);
+    return;
+  }
+  NSMutableArray *errors;
+  for (__strong NSArray *entry in kvPairs) {
+    id keyError;
+    NSString *value = [self _getValueForKey:entry[0] errorOut:&keyError];
+    if (keyError) {
+      RCTAppendError(keyError, &errors);
+    } else {
+      if (value) {
+        NSMutableDictionary *mergedVal = [RCTJSONParseMutable(value, &keyError) mutableCopy];
+        RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &keyError));
+        entry = @[entry[0], RCTJSONStringify(mergedVal, &keyError)];
+      }
+      if (!keyError) {
+        keyError = [self _writeEntry:entry];
+      }
+      RCTAppendError(keyError, &errors);
+    }
   }
   [self _writeManifest:&errors];
   if (callback) {
