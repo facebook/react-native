@@ -24,7 +24,9 @@ var InspectorOverlay = React.createClass({
   getInitialState: function() {
     return {
       frame: null,
+      pointerY: 0,
       hierarchy: [],
+      selection: -1,
     };
   },
 
@@ -42,11 +44,25 @@ var InspectorOverlay = React.createClass({
         var publicInstance = instance.getPublicInstance();
         this.setState({
           hierarchy,
+          pointerY: locationY,
+          selection: hierarchy.length - 1,
           frame: {left, top, width, height},
           style: publicInstance.props ? publicInstance.props.style : {},
         });
       }
     );
+  },
+
+  setSelection(i) {
+    var instance = this.state.hierarchy[i];
+    var publicInstance = instance.getPublicInstance();
+    UIManager.measure(React.findNodeHandle(instance), (x, y, width, height, left, top) => {
+      this.setState({
+        frame: {left, top, width, height},
+        style: publicInstance.props ? publicInstance.props.style : {},
+        selection: i,
+      });
+    });
   },
 
   shouldSetResponser: function(e) {
@@ -59,9 +75,8 @@ var InspectorOverlay = React.createClass({
     var justifyContent = 'flex-end';
 
     if (this.state.frame) {
-      var distanceToTop = this.state.frame.top;
-      var distanceToBottom = Dimensions.get('window').height -
-        (this.state.frame.top + this.state.frame.height);
+      var distanceToTop = this.state.pointerY;
+      var distanceToBottom = Dimensions.get('window').height - distanceToTop;
 
       justifyContent = distanceToTop > distanceToBottom
         ? 'flex-start'
@@ -73,6 +88,8 @@ var InspectorOverlay = React.createClass({
           style={this.state.style}
           frame={this.state.frame}
           hierarchy={this.state.hierarchy}
+          selection={this.state.selection}
+          setSelection={this.setSelection}
         />
       );
     } else {
