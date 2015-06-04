@@ -61,14 +61,12 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 @end
 
 static const char *RCTJavaScriptExecutorID = "RCTJavaScriptExecutorID";
-__used static id<RCTJavaScriptExecutor> RCTCreateExecutor(Class executorClass)
+__used static void RCTSetNewExecutorID(id<RCTJavaScriptExecutor> executor)
 {
   static NSUInteger executorID = 0;
-  id<RCTJavaScriptExecutor> executor = [[executorClass alloc] init];
   if (executor) {
     objc_setAssociatedObject(executor, RCTJavaScriptExecutorID, @(++executorID), OBJC_ASSOCIATION_RETAIN);
   }
-  return executor;
 }
 
 __used static NSNumber *RCTGetExecutorID(id<RCTJavaScriptExecutor> executor)

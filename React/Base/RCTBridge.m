@@ -27,6 +27,7 @@
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
 #import "RCTSparseArray.h"
+#import "RCTStandardExecutorSource.h"
 #import "RCTUtils.h"
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
@@ -765,6 +766,17 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
                     launchOptions:(NSDictionary *)launchOptions
 {
+  return [self initWithBundleURL:bundleURL
+                  moduleProvider:block
+                   launchOptions:launchOptions
+                  executorSource:[[RCTStandardExecutorSource alloc] init]];
+}
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                    launchOptions:(NSDictionary *)launchOptions
+                   executorSource:(id<RCTJavaScriptExecutorSource>)executorSource
+{
   RCTAssertMainThread();
 
   if ((self = [super init])) {
@@ -776,6 +788,7 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+    _executorSource = executorSource;
     [self bindKeys];
     [self setUp];
   }
@@ -932,8 +945,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     /**
      * Initialize executor to allow enqueueing calls
      */
-    Class executorClass = self.executorClass ?: [RCTContextExecutor class];
-    _javaScriptExecutor = RCTCreateExecutor(executorClass);
+    _javaScriptExecutor = [_parentBridge.executorSource executor];
+    RCTSetNewExecutorID(_javaScriptExecutor);
     _latestJSExecutor = _javaScriptExecutor;
 
     /**
@@ -971,16 +984,9 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
   [_parentBridge reload];
 }
 
-- (Class)executorClass
+- (id<RCTJavaScriptExecutorSource>)executorSource
 {
-  return _parentBridge.executorClass;
-}
-
-- (void)setExecutorClass:(Class)executorClass
-{
-  RCTAssertMainThread();
-
-  _parentBridge.executorClass = executorClass;
+  return _parentBridge.executorSource;
 }
 
 - (BOOL)isLoading

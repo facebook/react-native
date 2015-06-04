@@ -16,7 +16,9 @@
 #import "RCTLog.h"
 #import "RCTPerfStats.h"
 #import "RCTProfile.h"
-#import "RCTRootView.h"
+#import "RCTRedBox.h"
+#import "RCTJavaScriptExecutorSource.h"
+#import "RCTStandardExecutorSource.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
 
@@ -45,7 +47,7 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
 
 @interface RCTDevMenu () <RCTBridgeModule, UIActionSheetDelegate>
 
-@property (nonatomic, strong) Class executorClass;
+@property (nonatomic, assign) RCTStandardExecutorType executorType;
 
 @end
 
@@ -114,7 +116,7 @@ RCT_EXPORT_MODULE()
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(UIKeyCommand *command) {
-                                     weakSelf.executorClass = Nil;
+                                     weakSelf.executorType = RCTStandardExecutorTypeDefault;
                                    }];
 #endif
 
@@ -148,7 +150,7 @@ RCT_EXPORT_MODULE()
   self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
   self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
   self.showFPS = [_settings[@"showFPS"] ?: @NO boolValue];
-  self.executorClass = NSClassFromString(_settings[@"executorClass"]);
+  self.executorType = [_settings[@"executorType"] ?: @(RCTStandardExecutorTypeDefault) unsignedIntegerValue];
 }
 
 - (void)jsLoaded:(NSNotification *)notification
@@ -177,7 +179,7 @@ RCT_EXPORT_MODULE()
     // Hit these setters again after bridge has finished loading
     self.profilingEnabled = _profilingEnabled;
     self.liveReloadEnabled = _liveReloadEnabled;
-    self.executorClass = _executorClass;
+    self.executorType = _executorType;
   });
 }
 
@@ -231,16 +233,24 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
-  NSString *debugTitleChrome = _executorClass && _executorClass == NSClassFromString(@"RCTWebSocketExecutor") ? @"Disable Chrome Debugging" : @"Debug in Chrome";
-  NSString *debugTitleSafari = _executorClass && _executorClass == NSClassFromString(@"RCTWebViewExecutor") ? @"Disable Safari Debugging" : @"Debug in Safari";
-  NSString *fpsMonitor = _showFPS ? @"Hide FPS Monitor" : @"Show FPS Monitor";
-
   UIActionSheet *actionSheet =
   [[UIActionSheet alloc] initWithTitle:@"React Native: Development"
                               delegate:self
                      cancelButtonTitle:nil
                 destructiveButtonTitle:nil
-                     otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, fpsMonitor, nil];
+                     otherButtonTitles:@"Reload", nil];
+
+  if ([_bridge.executorSource isKindOfClass:[RCTStandardExecutorSource class]]) {
+    RCTStandardExecutorSource *source = (RCTStandardExecutorSource *)_bridge.executorSource;
+    RCTStandardExecutorType executorType = source.executorType;
+    NSString *debugTitleChrome = (executorType == RCTStandardExecutorTypeWebSocket) ? @"Disable Chrome Debugging" : @"Debug in Chrome";
+    NSString *debugTitleSafari = (executorType == RCTStandardExecutorTypeUIWebView) ? @"Disable Safari Debugging" : @"Debug in Safari";
+    [actionSheet addButtonWithTitle:debugTitleChrome];
+    [actionSheet addButtonWithTitle:debugTitleSafari];
+  }
+
+  NSString *fpsMonitor = _showFPS ? @"Hide FPS Monitor" : @"Show FPS Monitor";
+  [actionSheet addButtonWithTitle:fpsMonitor];
 
   [actionSheet addButtonWithTitle:@"Inspect Element"];
 
@@ -275,47 +285,25 @@ RCT_EXPORT_METHOD(reload)
     return;
   }
 
-  switch (buttonIndex) {
-    case 0: {
-      [self reload];
-      break;
-    }
-    case 1: {
-      Class cls = NSClassFromString(@"RCTWebSocketExecutor");
-      if (!cls) {
-        [[[UIAlertView alloc] initWithTitle:@"Chrome Debugger Unavailable"
-                                    message:@"You need to include the RCTWebSocket library to enable Chrome debugging"
-                                   delegate:nil
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil] show];
-        return;
-      }
-      self.executorClass = (_executorClass == cls) ? Nil : cls;
-      break;
-    }
-    case 2: {
-      Class cls = NSClassFromString(@"RCTWebViewExecutor");
-      self.executorClass = (_executorClass == cls) ? Nil : cls;
-      break;
-    }
-    case 3: {
-      self.showFPS = !_showFPS;
-      break;
-    }
-    case 4: {
-      [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
-      break;
-    }
-    case 5: {
-      self.liveReloadEnabled = !_liveReloadEnabled;
-      break;
-    }
-    case 6: {
-      self.profilingEnabled = !_profilingEnabled;
-      break;
-    }
-    default:
-      break;
+  if (buttonIndex == 0) {
+    [self reload];
+    return;
+  }
+
+  // Note: after supporting iOS 8+, use UIAlertController which has a more cohesive API
+  NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+  if ([buttonTitle containsString:@"Chrome"]) {
+    [self _toggleExecutorType:RCTStandardExecutorTypeWebSocket];
+  } else if ([buttonTitle containsString:@"Safari"]) {
+    [self _toggleExecutorType:RCTStandardExecutorTypeUIWebView];
+  } else if ([buttonTitle containsString:@"FPS Monitor"]) {
+    self.showFPS = !_showFPS;
+  } else if ([buttonTitle containsString:@"Inspect Element"]) {
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+  } else if ([buttonTitle containsString:@"Live Reload"]) {
+    self.liveReloadEnabled = !_liveReloadEnabled;
+  } else if ([buttonTitle containsString:@"Profiling"]) {
+    self.profilingEnabled = !_profilingEnabled;
   }
 }
 
@@ -358,27 +346,28 @@ RCT_EXPORT_METHOD(reload)
   }
 }
 
-- (void)setExecutorClass:(Class)executorClass
+- (void)_toggleExecutorType:(RCTStandardExecutorType)executorType
 {
-  if (_executorClass != executorClass) {
-    _executorClass = executorClass;
-    [self updateSetting:@"executorClass" value: NSStringFromClass(executorClass)];
+  if (_executorType == executorType) {
+    self.executorType = RCTStandardExecutorTypeDefault;
+  } else {
+    self.executorType = executorType;
+  }
+}
+
+- (void)setExecutorType:(RCTStandardExecutorType)executorType
+{
+  if (_executorType != executorType) {
+    _executorType = executorType;
+    [self updateSetting:@"executorType" value:@(executorType)];
   }
 
-  if (_bridge.executorClass != executorClass) {
-
-    // TODO (6929129): we can remove this special case test once we have better
-    // support for custom executors in the dev menu. But right now this is
-    // needed to prevent overriding a custom executor with the default if a
-    // custom executor has been set directly on the bridge
-    if (executorClass == Nil &&
-        (_bridge.executorClass != NSClassFromString(@"RCTWebSocketExecutor") &&
-         _bridge.executorClass != NSClassFromString(@"RCTWebViewExecutor"))) {
-          return;
-        }
-
-    _bridge.executorClass = executorClass;
-    [self reload];
+  if ([_bridge.executorSource isKindOfClass:[RCTStandardExecutorSource class]]) {
+    RCTStandardExecutorSource *source = (RCTStandardExecutorSource *)_bridge.executorSource;
+    if (source.executorType != executorType) {
+      source.executorType = executorType;
+      [_bridge reload];
+    }
   }
 }
 

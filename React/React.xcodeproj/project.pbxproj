@@ -58,6 +58,7 @@
 		58114A171AAE854800E7D092 /* RCTPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A151AAE854800E7D092 /* RCTPickerManager.m */; };
 		58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A4E1AAE93D500E7D092 /* RCTAsyncLocalStorage.m */; };
 		58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */; };
+		78B543961ADA560C00791665 /* RCTStandardExecutorSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 78B543951ADA560C00791665 /* RCTStandardExecutorSource.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		830BA4551A8E3BDA00D53203 /* RCTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 830BA4541A8E3BDA00D53203 /* RCTCache.m */; };
 		832348161A77A5AA00B55238 /* Layout.c in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FC71A68125100A75B9A /* Layout.c */; };
@@ -195,6 +196,9 @@
 		58114A4F1AAE93D500E7D092 /* RCTAsyncLocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAsyncLocalStorage.h; sourceTree = "<group>"; };
 		58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDatePickerManager.m; sourceTree = "<group>"; };
 		58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDatePickerManager.h; sourceTree = "<group>"; };
+		78B543941ADA560C00791665 /* RCTStandardExecutorSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTStandardExecutorSource.h; sourceTree = "<group>"; };
+		78B543951ADA560C00791665 /* RCTStandardExecutorSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTStandardExecutorSource.m; sourceTree = "<group>"; };
+		78B543AD1ADC604F00791665 /* RCTJavaScriptExecutorSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJavaScriptExecutorSource.h; sourceTree = "<group>"; };
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
 		830A229C1A66C68A008503DA /* RCTRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootView.h; sourceTree = "<group>"; };
 		830A229D1A66C68A008503DA /* RCTRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootView.m; sourceTree = "<group>"; };
@@ -407,6 +411,7 @@
 				83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */,
 				83CBBA4C1A601E3B00E9B192 /* RCTInvalidating.h */,
 				83CBBA631A601ECA00E9B192 /* RCTJavaScriptExecutor.h */,
+				78B543AD1ADC604F00791665 /* RCTJavaScriptExecutorSource.h */,
 				13A1F71C1A75392D00D3D453 /* RCTKeyCommands.h */,
 				13A1F71D1A75392D00D3D453 /* RCTKeyCommands.m */,
 				83CBBA4D1A601E3B00E9B192 /* RCTLog.h */,
@@ -415,6 +420,8 @@
 				83CBBA591A601E9000E9B192 /* RCTRedBox.m */,
 				830A229C1A66C68A008503DA /* RCTRootView.h */,
 				830A229D1A66C68A008503DA /* RCTRootView.m */,
+				78B543941ADA560C00791665 /* RCTStandardExecutorSource.h */,
+				78B543951ADA560C00791665 /* RCTStandardExecutorSource.m */,
 				00C1A2B11AC0B7E000E89A1C /* RCTDevMenu.h */,
 				00C1A2B21AC0B7E000E89A1C /* RCTDevMenu.m */,
 				83BEE46C1A6D19BC00B5863B /* RCTSparseArray.h */,
@@ -529,6 +536,7 @@
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,
 				13E067561A70F44B002CDEE1 /* RCTViewManager.m in Sources */,
 				58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */,
+				78B543961ADA560C00791665 /* RCTStandardExecutorSource.m in Sources */,
 				13B080061A6947C200A75B9A /* RCTScrollViewManager.m in Sources */,
 				146459261B06C49500B389AA /* RCTFPSGraph.m in Sources */,
 				14200DAA1AC179B3008EE6BA /* RCTJavaScriptLoader.m in Sources */,
