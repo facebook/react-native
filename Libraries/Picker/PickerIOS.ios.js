@@ -20,8 +20,7 @@ var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactNativeComponentClass =
-  require('createReactNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 var merge = require('merge');
 
 var PICKER = 'picker';
@@ -112,14 +111,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var rkPickerIOSAttributes = merge(ReactNativeViewAttributes.UIView, {
-  items: true,
-  selectedIndex: true,
-});
-
-var RCTPickerIOS = createReactNativeComponentClass({
-  validAttributes: rkPickerIOSAttributes,
-  uiViewClassName: 'RCTPicker',
-});
+var RCTPickerIOS = requireNativeComponent('RCTPicker', null);
 
 module.exports = PickerIOS;

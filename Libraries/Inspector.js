@@ -50,6 +50,9 @@ function findInstanceByNativeTag(rootTag, nativeTag) {
   var containerID = ReactNativeTagHandles.tagToRootNodeID[rootTag];
   var rootInstance = ReactNativeMount._instancesByContainerID[containerID];
   var targetID = ReactNativeTagHandles.tagToRootNodeID[nativeTag];
+  if (!targetID) {
+    return undefined;
+  }
   return findInstance(rootInstance, targetID);
 }
 
