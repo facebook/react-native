@@ -595,8 +595,8 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     color = [UIColor whiteColor];
   }
 
-  // Cache and return
-  if (json) {
+  // Cache if possible and return
+  if (json && [colorCache count] < 204) {
     colorCache[json] = color;
   }
   return color;
