@@ -168,9 +168,11 @@ describe('DependencyGraph', function() {
             '/**',
             ' * @providesModule index',
             ' */',
-            'require("./a.json")'
+            'require("./a.json")',
+            'require("./b")'
           ].join('\n'),
           'a.json': JSON.stringify({}),
+          'b.json': JSON.stringify({}),
         }
       });
 
@@ -186,7 +188,7 @@ describe('DependencyGraph', function() {
               id: 'index',
               altId: 'package/index',
               path: '/root/index.js',
-              dependencies: ['./a.json'],
+              dependencies: ['./a.json', './b'],
               isAsset: false,
               isAsset_DEPRECATED: false,
               isJSON: undefined,
@@ -198,6 +200,17 @@ describe('DependencyGraph', function() {
               id: 'package/a.json',
               isJSON: true,
               path: '/root/a.json',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+            {
+              id: 'package/b.json',
+              isJSON: true,
+              path: '/root/b.json',
               dependencies: [],
               isAsset: false,
               isAsset_DEPRECATED: false,
@@ -839,6 +852,58 @@ describe('DependencyGraph', function() {
             {
               id: 'test/lib/index',
               path: '/root/lib/index.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: undefined,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+          ]);
+      });
+    });
+
+    pit('should resolve require to main if it is a dir w/ a package.json', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'package.json': JSON.stringify({
+            name: 'test',
+          }),
+          'index.js': 'require("./lib/")',
+          lib: {
+            'package.json': JSON.stringify({
+              'main': 'main.js',
+            }),
+            'index.js': 'lol',
+            'main.js': 'lol',
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+      });
+      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        expect(getDataFromModules(deps))
+          .toEqual([
+            {
+              id: 'test/index',
+              path: '/root/index.js',
+              dependencies: ['./lib/'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: undefined,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+            {
+              id: '/root/lib/main.js',
+              path: '/root/lib/main.js',
               dependencies: [],
               isAsset: false,
               isAsset_DEPRECATED: false,

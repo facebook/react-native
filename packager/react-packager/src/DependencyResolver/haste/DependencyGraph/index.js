@@ -1,6 +1,3 @@
-// TODO
-// Fix it to work with tests
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -296,16 +293,18 @@ DependecyGraph.prototype.resolveDependency = function(
     modulePath = path.join(dir, depModuleId);
     modulePath = browserFieldRedirect(packageJson, modulePath);
 
-    // JS modules can be required without extensios.
-    if (!this._isFileAsset(modulePath) && !modulePath.match(/\.json$/)) {
-      modulePath = withExtJs(modulePath);
-    }
+    dep = this._graph[modulePath] ||
+      this._graph[modulePath + '.js'] ||
+      this._graph[modulePath + '.json'];
 
-    dep = this._graph[modulePath];
-
-    // Maybe the dependency is a directory and there is an index.js inside it.
+    // Maybe the dependency is a directory and there is a packageJson and/or index.js inside it.
     if (dep == null) {
-      dep = this._graph[path.join(dir, depModuleId, 'index.js')];
+      var dirPackageJson = this._packageByRoot[path.join(dir, depModuleId).replace(/\/$/, '')];
+      if (dirPackageJson) {
+        dep = this._resolvePackageMain(dirPackageJson);
+      } else {
+        dep = this._graph[path.join(dir, depModuleId, 'index.js')];
+      }
     }
 
     // Maybe it's an asset with @n.nx resolution and the path doesn't map
@@ -444,14 +443,6 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
         return Promise.resolve();
       }
 
-      if (packageJson.name == null) {
-        debug(
-          'WARNING: package.json `%s` is missing a name field',
-          packagePath
-        );
-        return Promise.resolve();
-      }
-
       packageJson._root = packageRoot;
       self._addPackageToIndices(packageJson);
 
@@ -461,14 +452,14 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
 
 DependecyGraph.prototype._addPackageToIndices = function(packageJson) {
   this._packageByRoot[packageJson._root] = packageJson;
-  if (!this._isInNodeModules(packageJson._root)) {
+  if (!this._isInNodeModules(packageJson._root) && packageJson.name != null) {
     this._packagesById[packageJson.name] = packageJson;
   }
 };
 
 DependecyGraph.prototype._removePackageFromIndices = function(packageJson) {
   delete this._packageByRoot[packageJson._root];
-  if (!this._isInNodeModules(packageJson._root)) {
+  if (!this._isInNodeModules(packageJson._root) && packageJson.name != null) {
     delete this._packagesById[packageJson.name];
   }
 };
@@ -536,7 +527,7 @@ DependecyGraph.prototype._processModule = function(modulePath) {
  */
 DependecyGraph.prototype._lookupName = function(modulePath) {
   var packageJson = this._lookupPackage(modulePath);
-  if (packageJson == null) {
+  if (packageJson == null || packageJson.name == null) {
     return path.resolve(modulePath);
   } else {
     var relativePath =
