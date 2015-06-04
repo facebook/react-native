@@ -40,7 +40,7 @@ describe('HasteDependencyResolver', function() {
       // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
       depGraph.getOrderedDependencies.mockImpl(function() {
-        return Promise.resolve(deps);
+        return deps;
       });
       depGraph.load.mockImpl(function() {
         return Promise.resolve();
@@ -123,7 +123,7 @@ describe('HasteDependencyResolver', function() {
       // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
       depGraph.getOrderedDependencies.mockImpl(function() {
-        return Promise.resolve(deps);
+        return deps;
       });
       depGraph.load.mockImpl(function() {
         return Promise.resolve();
@@ -207,7 +207,7 @@ describe('HasteDependencyResolver', function() {
       // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
       depGraph.getOrderedDependencies.mockImpl(function() {
-        return Promise.resolve(deps);
+        return deps;
       });
       depGraph.load.mockImpl(function() {
         return Promise.resolve();

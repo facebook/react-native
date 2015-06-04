@@ -19,7 +19,6 @@ var debug = require('debug')('DependecyGraph');
 var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
 var getAssetDataFromName = require('../../../lib/getAssetDataFromName');
-var crypto = require('crypto');
 
 var readFile = Promise.promisify(fs.readFile);
 var readDir = Promise.promisify(fs.readdir);
@@ -46,11 +45,7 @@ var validateOpts = declareOpts({
   assetExts: {
     type: 'array',
     required: true,
-  },
-  _providesModuleNodeModules: {
-    type: 'array',
-    default: ['react-tools', 'react-native'],
-  },
+  }
 });
 
 function DependecyGraph(options) {
@@ -74,8 +69,6 @@ function DependecyGraph(options) {
     '\.(' + ['js', 'json'].concat(this._assetExts).join('|') + ')$'
   );
 
-  this._providesModuleNodeModules = opts._providesModuleNodeModules;
-
   // Kick off the search process to precompute the dependency graph.
   this._init();
 }
@@ -97,99 +90,58 @@ DependecyGraph.prototype.load = function() {
  * Given an entry file return an array of all the dependent module descriptors.
  */
 DependecyGraph.prototype.getOrderedDependencies = function(entryPath) {
-  return this.load().then(function() {
-    var absolutePath = this._getAbsolutePath(entryPath);
-    if (absolutePath == null) {
-      throw new NotFoundError(
-        'Cannot find entry file %s in any of the roots: %j',
-        entryPath,
-        this._roots
-      );
-    }
-
-    var module = this._graph[absolutePath];
-    if (module == null) {
-      throw new Error('Module with path "' + entryPath + '" is not in graph');
-    }
-
-    var self = this;
-    var deps = [];
-    var visited = Object.create(null);
-
-    // Node haste sucks. Id's aren't unique. So to make sure our entry point
-    // is the thing that ends up in our dependency list.
-    var graphMap = Object.create(this._moduleById);
-    graphMap[module.id] = module;
-
-    // Recursively collect the dependency list.
-    function collect(mod) {
-      deps.push(mod);
-
-      if (mod.dependencies == null) {
-        return mod.loadDependencies(function() {
-          return readFile(mod.path, 'utf8').then(function(content) {
-            return extractRequires(content);
-          });
-        }).then(function() {
-          return iter(mod);
-        });
-      }
-
-      return iter(mod);
-    }
-
-    function iter(mod) {
-      var p = Promise.resolve();
-      mod.dependencies.forEach(function(name) {
-        var dep = self.resolveDependency(mod, name);
-
-        if (dep == null) {
-          debug(
-            'WARNING: Cannot find required module `%s` from module `%s`.',
-            name,
-            mod.id
-          );
-          return;
-        }
-
-        p = p.then(function() {
-          if (!visited[realId(dep)]) {
-            visited[realId(dep)] = true;
-            return collect(dep);
-          }
-          return null;
-        });
-      });
-      return p;
-    }
-
-    visited[realId(module)] = true;
-    return collect(module).then(function() {
-      return deps;
-    });
-  }.bind(this));
-};
-
-function browserFieldRedirect(packageJson, modulePath, isMain) {
-  if (packageJson.browser && typeof packageJson.browser === 'object') {
-    if (isMain) {
-      var tmpMain = packageJson.browser[modulePath] ||
-            packageJson.browser[sansExtJs(modulePath)] ||
-            packageJson.browser[withExtJs(modulePath)];
-      if (tmpMain) {
-        return tmpMain;
-      }
-    } else {
-      var relPath = './' + path.relative(packageJson._root, modulePath);
-      var tmpModulePath = packageJson.browser[withExtJs(relPath)] ||
-            packageJson.browser[sansExtJs(relPath)];
-      if (tmpModulePath) {
-        return path.join(packageJson._root, tmpModulePath);
-      }
-    }
+  var absolutePath = this._getAbsolutePath(entryPath);
+  if (absolutePath == null) {
+    throw new NotFoundError(
+      'Cannot find entry file %s in any of the roots: %j',
+      entryPath,
+      this._roots
+    );
   }
-  return modulePath;
-}
+
+  var module = this._graph[absolutePath];
+  if (module == null) {
+    throw new Error('Module with path "' + entryPath + '" is not in graph');
+  }
+
+  var self = this;
+  var deps = [];
+  var visited = Object.create(null);
+
+  // Node haste sucks. Id's aren't unique. So to make sure our entry point
+  // is the thing that ends up in our dependency list.
+  var graphMap = Object.create(this._moduleById);
+  graphMap[module.id] = module;
+
+  // Recursively collect the dependency list.
+  function collect(module) {
+    deps.push(module);
+
+    module.dependencies.forEach(function(name) {
+      var id = sansExtJs(name);
+      var dep = self.resolveDependency(module, id);
+
+      if (dep == null) {
+        debug(
+          'WARNING: Cannot find required module `%s` from module `%s`.',
+          name,
+          module.id
+        );
+        return;
+      }
+
+      if (!visited[dep.id]) {
+        visited[dep.id] = true;
+        collect(dep);
+      }
+    });
+  }
+
+  visited[module.id] = true;
+  collect(module);
+
+  return deps;
+};
 
 /**
  * Given a module descriptor `fromModule` return the module descriptor for
@@ -205,7 +157,7 @@ DependecyGraph.prototype.resolveDependency = function(
     // Process DEPRECATED global asset requires.
     if (assetMatch && assetMatch[1]) {
       if (!this._assetMap_DEPRECATED[assetMatch[1]]) {
-        debug('WARNING: Cannot find asset:', assetMatch[1]);
+        debug('WARINING: Cannot find asset:', assetMatch[1]);
         return null;
       }
       return this._assetMap_DEPRECATED[assetMatch[1]];
@@ -225,39 +177,19 @@ DependecyGraph.prototype.resolveDependency = function(
       depModuleId = fromPackageJson.browser[depModuleId];
     }
 
-
-    var packageName = depModuleId.replace(/\/.+/, '');
-    packageJson = this._lookupNodePackage(fromModule.path, packageName);
-
-    if (packageJson != null && packageName !== depModuleId) {
-      modulePath = path.join(
-        packageJson._root,
-        path.relative(packageName, depModuleId)
-      );
-
-      modulePath = browserFieldRedirect(packageJson, modulePath);
-
-      dep = this._graph[withExtJs(modulePath)];
-      if (dep != null) {
-        return dep;
-      }
-    }
-
     // `depModuleId` is simply a top-level `providesModule`.
     // `depModuleId` is a package module but given the full path from the
     //  package, i.e. package_name/module_name
-    if (packageJson == null && this._moduleById[sansExtJs(depModuleId)]) {
+    if (this._moduleById[sansExtJs(depModuleId)]) {
       return this._moduleById[sansExtJs(depModuleId)];
     }
 
-    if (packageJson == null) {
-      // `depModuleId` is a package and it's depending on the "main" resolution.
-      packageJson = this._packagesById[depModuleId];
-    }
+    // `depModuleId` is a package and it's depending on the "main" resolution.
+    packageJson = this._packagesById[depModuleId];
 
-    // We are being forgiving here and not raising an error because we could be
+    // We are being forgiving here and raising an error because we could be
     // processing a file that uses it's own require system.
-    if (packageJson == null || packageName !== depModuleId) {
+    if (packageJson == null) {
       debug(
         'WARNING: Cannot find required module `%s` from module `%s`.',
         depModuleId,
@@ -266,8 +198,33 @@ DependecyGraph.prototype.resolveDependency = function(
       return null;
     }
 
-    // We are requiring node or a haste package via it's main file.
-    dep = this._resolvePackageMain(packageJson);
+    var main;
+
+    // We prioritize the `browser` field if it's a module path.
+    if (typeof packageJson.browser === 'string') {
+      main = packageJson.browser;
+    } else {
+      main = packageJson.main || 'index';
+    }
+
+    // If there is a mapping for main in the `browser` field.
+    if (packageJson.browser && typeof packageJson.browser === 'object') {
+      var tmpMain = packageJson.browser[main] ||
+            packageJson.browser[withExtJs(main)] ||
+            packageJson.browser[sansExtJs(main)];
+      if (tmpMain) {
+        main = tmpMain;
+      }
+    }
+
+    modulePath = withExtJs(path.join(packageJson._root, main));
+    dep = this._graph[modulePath];
+
+    // Some packages use just a dir and rely on an index.js inside that dir.
+    if (dep == null) {
+      dep = this._graph[path.join(packageJson._root, main, 'index.js')];
+    }
+
     if (dep == null) {
       throw new Error(
         'Cannot find package main file for package: ' + packageJson._root
@@ -291,20 +248,26 @@ DependecyGraph.prototype.resolveDependency = function(
     //          modulePath: /x/y/a/b
     var dir = path.dirname(fromModule.path);
     modulePath = path.join(dir, depModuleId);
-    modulePath = browserFieldRedirect(packageJson, modulePath);
 
-    dep = this._graph[modulePath] ||
-      this._graph[modulePath + '.js'] ||
-      this._graph[modulePath + '.json'];
-
-    // Maybe the dependency is a directory and there is a packageJson and/or index.js inside it.
-    if (dep == null) {
-      var dirPackageJson = this._packageByRoot[path.join(dir, depModuleId).replace(/\/$/, '')];
-      if (dirPackageJson) {
-        dep = this._resolvePackageMain(dirPackageJson);
-      } else {
-        dep = this._graph[path.join(dir, depModuleId, 'index.js')];
+    if (packageJson.browser && typeof packageJson.browser === 'object') {
+      var relPath = './' + path.relative(packageJson._root, modulePath);
+      var tmpModulePath = packageJson.browser[withExtJs(relPath)] ||
+            packageJson.browser[sansExtJs(relPath)];
+      if (tmpModulePath) {
+        modulePath = path.join(packageJson._root, tmpModulePath);
       }
+    }
+
+    // JS modules can be required without extensios.
+    if (!this._isFileAsset(modulePath) && !modulePath.match(/\.json$/)) {
+      modulePath = withExtJs(modulePath);
+    }
+
+    dep = this._graph[modulePath];
+
+    // Maybe the dependency is a directory and there is an index.js inside it.
+    if (dep == null) {
+      dep = this._graph[path.join(dir, depModuleId, 'index.js')];
     }
 
     // Maybe it's an asset with @n.nx resolution and the path doesn't map
@@ -326,25 +289,6 @@ DependecyGraph.prototype.resolveDependency = function(
 
     return dep;
   }
-};
-
-DependecyGraph.prototype._resolvePackageMain = function(packageJson) {
-  var main;
-  // We prioritize the `browser` field if it's a module path.
-  if (typeof packageJson.browser === 'string') {
-    main = packageJson.browser;
-  } else {
-    main = packageJson.main || 'index';
-  }
-
-  // If there is a mapping for main in the `browser` field.
-  main = browserFieldRedirect(packageJson, main, true);
-
-  var modulePath = withExtJs(path.join(packageJson._root, main));
-
-  return this._graph[modulePath] ||
-    // Some packages use just a dir and rely on an index.js inside that dir.
-    this._graph[path.join(packageJson._root, main, 'index.js')];
 };
 
 /**
@@ -395,9 +339,9 @@ DependecyGraph.prototype._search = function() {
       });
 
       var processing = self._findAndProcessPackage(files, dir)
-            .then(function() {
-              return Promise.all(modulePaths.map(self._processModule.bind(self)));
-            });
+        .then(function() {
+          return Promise.all(modulePaths.map(self._processModule.bind(self)));
+        });
 
       return Promise.all([
         processing,
@@ -414,8 +358,10 @@ DependecyGraph.prototype._search = function() {
  * and update indices.
  */
 DependecyGraph.prototype._findAndProcessPackage = function(files, root) {
+  var self = this;
+
   var packagePath;
-  for (var i = 0; i < files.length; i++) {
+  for (var i = 0; i < files.length ; i++) {
     var file = files[i];
     if (path.basename(file) === 'package.json') {
       packagePath = file;
@@ -443,6 +389,14 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
         return Promise.resolve();
       }
 
+      if (packageJson.name == null) {
+        debug(
+          'WARNING: package.json `%s` is missing a name field',
+          packagePath
+        );
+        return Promise.resolve();
+      }
+
       packageJson._root = packageRoot;
       self._addPackageToIndices(packageJson);
 
@@ -452,16 +406,12 @@ DependecyGraph.prototype._processPackage = function(packagePath) {
 
 DependecyGraph.prototype._addPackageToIndices = function(packageJson) {
   this._packageByRoot[packageJson._root] = packageJson;
-  if (!this._isInNodeModules(packageJson._root) && packageJson.name != null) {
-    this._packagesById[packageJson.name] = packageJson;
-  }
+  this._packagesById[packageJson.name] = packageJson;
 };
 
 DependecyGraph.prototype._removePackageFromIndices = function(packageJson) {
   delete this._packageByRoot[packageJson._root];
-  if (!this._isInNodeModules(packageJson._root) && packageJson.name != null) {
-    delete this._packagesById[packageJson.name];
-  }
+  delete this._packagesById[packageJson.name];
 };
 
 /**
@@ -486,14 +436,6 @@ DependecyGraph.prototype._processModule = function(modulePath) {
     moduleData.id = this._lookupName(modulePath);
     moduleData.isJSON = true;
     moduleData.dependencies = [];
-    module = new ModuleDescriptor(moduleData);
-    this._updateGraphWithModule(module);
-    return Promise.resolve(module);
-  }
-
-  if (this._isInNodeModules(modulePath)) {
-    moduleData.id = this._lookupName(modulePath);
-    moduleData.dependencies = null;
     module = new ModuleDescriptor(moduleData);
     this._updateGraphWithModule(module);
     return Promise.resolve(module);
@@ -527,7 +469,7 @@ DependecyGraph.prototype._processModule = function(modulePath) {
  */
 DependecyGraph.prototype._lookupName = function(modulePath) {
   var packageJson = this._lookupPackage(modulePath);
-  if (packageJson == null || packageJson.name == null) {
+  if (packageJson == null) {
     return path.resolve(modulePath);
   } else {
     var relativePath =
@@ -541,10 +483,6 @@ DependecyGraph.prototype._deleteModule = function(module) {
 
   // Others may keep a reference so we mark it as deleted.
   module.deleted = true;
-
-  if (this._isInNodeModules(module.path)) {
-    return;
-  }
 
   // Haste allows different module to have the same id.
   if (this._moduleById[module.id] === module) {
@@ -565,10 +503,6 @@ DependecyGraph.prototype._updateGraphWithModule = function(module) {
   }
 
   this._graph[module.path] = module;
-
-  if (this._isInNodeModules(module.path)) {
-    return;
-  }
 
   if (this._moduleById[module.id]) {
     debug(
@@ -593,14 +527,28 @@ DependecyGraph.prototype._updateGraphWithModule = function(module) {
  * Find the nearest package to a module.
  */
 DependecyGraph.prototype._lookupPackage = function(modulePath) {
-  return lookupPackage(path.dirname(modulePath), this._packageByRoot);
-};
+  var packageByRoot = this._packageByRoot;
 
-/**
- * Find the nearest node package to a module.
- */
-DependecyGraph.prototype._lookupNodePackage = function(startPath, packageName) {
-  return lookupNodePackage(path.dirname(startPath), this._packageByRoot, packageName);
+  /**
+   * Auxiliary function to recursively lookup a package.
+   */
+  function lookupPackage(currDir) {
+    // ideally we stop once we're outside root and this can be a simple child
+    // dir check. However, we have to support modules that was symlinked inside
+    // our project root.
+    if (currDir === '/') {
+      return null;
+    } else {
+      var packageJson = packageByRoot[currDir];
+      if (packageJson) {
+        return packageJson;
+      } else {
+        return lookupPackage(path.dirname(currDir));
+      }
+    }
+  }
+
+  return lookupPackage(path.dirname(modulePath));
 };
 
 /**
@@ -625,14 +573,12 @@ DependecyGraph.prototype._processFileChange = function(
   }
 
   var isPackage = path.basename(filePath) === 'package.json';
-  var packageJson;
-  if (isPackage) {
-    packageJson = this._packageByRoot[path.dirname(absPath)];
-  }
-
   if (eventType === 'delete') {
-    if (isPackage && packageJson) {
-      this._removePackageFromIndices(packageJson);
+    if (isPackage) {
+      var packageJson = this._packageByRoot[path.dirname(absPath)];
+      if (packageJson) {
+        this._removePackageFromIndices(packageJson);
+      }
     } else {
       var module = this._graph[absPath];
       if (module == null) {
@@ -645,14 +591,7 @@ DependecyGraph.prototype._processFileChange = function(
     var self = this;
     this._loading = this._loading.then(function() {
       if (isPackage) {
-        self._removePackageFromIndices(packageJson);
-        return self._processPackage(absPath)
-          .then(function(p) {
-            return self._resolvePackageMain(p);
-          })
-          .then(function(mainModule) {
-            return self._processModule(mainModule.path);
-          });
+        return self._processPackage(absPath);
       }
       return self._processModule(absPath);
     });
@@ -734,25 +673,6 @@ DependecyGraph.prototype._processAssetChange_DEPRECATED = function(eventType, fi
 
 DependecyGraph.prototype._isFileAsset = function(file) {
   return this._assetExts.indexOf(extname(file)) !== -1;
-};
-
-DependecyGraph.prototype._isInNodeModules = function(file) {
-  var inNodeModules = file.indexOf('/node_modules/') !== -1;
-
-  if (!inNodeModules) {
-    return false;
-  }
-
-  var dirs = this._providesModuleNodeModules;
-
-  for (var i = 0; i < dirs.length; i++) {
-    var index = file.indexOf(dirs[i]);
-    if (index !== -1) {
-      return file.slice(index).indexOf('/node_modules/') !== -1;
-    }
-  }
-
-  return true;
 };
 
 /**
@@ -862,54 +782,6 @@ function assetName(file, ext) {
 
 function extname(name) {
   return path.extname(name).replace(/^\./, '');
-}
-
-function realId(module) {
-  if (module._realId) {
-    return module._realId;
-  }
-
-  var hash = crypto.createHash('md5');
-  hash.update(module.id);
-  hash.update(module.path);
-  Object.defineProperty(module, '_realId', { value: hash.digest('hex') });
-  return module._realId;
-}
-
-/**
- * Auxiliary function to recursively lookup a package.
- */
-function lookupPackage(currDir, packageByRoot) {
-  // ideally we stop once we're outside root and this can be a simple child
-  // dir check. However, we have to support modules that was symlinked inside
-  // our project root.
-  if (currDir === '/') {
-    return null;
-  } else {
-    var packageJson = packageByRoot[currDir];
-    if (packageJson) {
-      return packageJson;
-    } else {
-      return lookupPackage(path.dirname(currDir), packageByRoot);
-    }
-  }
-}
-
-/**
- * Auxiliary function to recursively lookup a package.
- */
-function lookupNodePackage(currDir, packageByRoot, packageName) {
-  if (currDir === '/') {
-    return null;
-  }
-  var packageRoot = path.join(currDir, 'node_modules', packageName);
-
-  var packageJson = packageByRoot[packageRoot];
-  if (packageJson) {
-    return packageJson;
-  } else {
-    return lookupNodePackage(path.dirname(currDir), packageByRoot, packageName);
-  }
 }
 
 function NotFoundError() {

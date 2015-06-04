@@ -91,8 +91,9 @@ HasteDependencyResolver.prototype.getDependencies = function(main, options) {
   var depGraph = this._depGraph;
   var self = this;
 
-  return depGraph.getOrderedDependencies(main)
-    .then(function(dependencies) {
+  return depGraph.load()
+    .then(function() {
+      var dependencies = depGraph.getOrderedDependencies(main);
       var mainModuleId = dependencies[0].id;
 
       self._prependPolyfillDependencies(dependencies, opts.dev);
