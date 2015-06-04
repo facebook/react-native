@@ -43,6 +43,28 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
 
 @end
 
+@interface RCTDevMenuItem : NSObject
+
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) dispatch_block_t handler;
+
+- (instancetype)initWithTitle:(NSString *)title handler:(dispatch_block_t)handler;
+
+@end
+
+@implementation RCTDevMenuItem
+
+- (instancetype)initWithTitle:(NSString *)title handler:(dispatch_block_t)handler
+{
+  if (self = [super init]) {
+    self.title = title;
+    self.handler = handler;
+  }
+  return self;
+}
+
+@end
+
 @interface RCTDevMenu () <RCTBridgeModule, UIActionSheetDelegate>
 
 @property (nonatomic, strong) Class executorClass;
@@ -57,6 +79,8 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
   NSURLSessionDataTask *_updateTask;
   NSURL *_liveReloadURL;
   BOOL _jsLoaded;
+  NSArray *_presentedItems;
+  NSMutableArray *_extraMenuItems;
 }
 
 @synthesize bridge = _bridge;
@@ -94,6 +118,7 @@ RCT_EXPORT_MODULE()
 
     _defaults = [NSUserDefaults standardUserDefaults];
     _settings = [[NSMutableDictionary alloc] init];
+    _extraMenuItems = [NSMutableArray array];
 
     // Delay setup until after Bridge init
     [self settingsDidChange];
@@ -108,6 +133,13 @@ RCT_EXPORT_MODULE()
                             modifierFlags:UIKeyModifierCommand
                                    action:^(UIKeyCommand *command) {
                                      [weakSelf toggle];
+                                   }];
+
+    // Toggle element inspector
+    [commands registerKeyCommandWithInput:@"i"
+                            modifierFlags:UIKeyModifierCommand
+                                   action:^(UIKeyCommand *command) {
+                                     [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
                                    }];
 
     // Reload in normal mode
@@ -225,32 +257,82 @@ RCT_EXPORT_MODULE()
   }
 }
 
+- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler
+{
+  [_extraMenuItems addObject:[[RCTDevMenuItem alloc] initWithTitle:title handler:handler]];
+}
+
+- (NSArray *)menuItems
+{
+  NSMutableArray *items = [NSMutableArray array];
+
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Reload" handler:^{
+    [self reload];
+  }]];
+
+  Class chromeExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  if (!chromeExecutorClass) {
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Chrome Debugger Unavailable" handler:^{
+      [[[UIAlertView alloc] initWithTitle:@"Chrome Debugger Unavailable"
+                                  message:@"You need to include the RCTWebSocket library to enable Chrome debugging"
+                                 delegate:nil
+                        cancelButtonTitle:@"OK"
+                        otherButtonTitles:nil] show];
+    }]];
+  } else {
+    BOOL isDebuggingInChrome = _executorClass && _executorClass == chromeExecutorClass;
+    NSString *debugTitleChrome = isDebuggingInChrome ? @"Disable Chrome Debugging" : @"Debug in Chrome";
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:debugTitleChrome handler:^{
+      self.executorClass = isDebuggingInChrome ? Nil : chromeExecutorClass;
+    }]];
+  }
+
+  Class safariExecutorClass = NSClassFromString(@"RCTWebViewExecutor");
+  BOOL isDebuggingInSafari = _executorClass && _executorClass == safariExecutorClass;
+  NSString *debugTitleSafari = isDebuggingInSafari ? @"Disable Safari Debugging" : @"Debug in Safari";
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:debugTitleSafari handler:^{
+    self.executorClass = isDebuggingInSafari ? Nil : safariExecutorClass;
+  }]];
+
+  NSString *fpsMonitor = _showFPS ? @"Hide FPS Monitor" : @"Show FPS Monitor";
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:fpsMonitor handler:^{
+    self.showFPS = !_showFPS;
+  }]];
+
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Inspect Element" handler:^{
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+  }]];
+
+  if (_liveReloadURL) {
+    NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:liveReloadTitle handler:^{
+      self.liveReloadEnabled = !_liveReloadEnabled;
+    }]];
+
+    NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Profiling" : @"Start Profiling";
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:profilingTitle handler:^{
+      self.profilingEnabled = !_profilingEnabled;
+    }]];
+  }
+
+  [items addObjectsFromArray:_extraMenuItems];
+
+  return items;
+}
+
 RCT_EXPORT_METHOD(show)
 {
   if (_actionSheet || !_bridge) {
     return;
   }
 
-  NSString *debugTitleChrome = _executorClass && _executorClass == NSClassFromString(@"RCTWebSocketExecutor") ? @"Disable Chrome Debugging" : @"Debug in Chrome";
-  NSString *debugTitleSafari = _executorClass && _executorClass == NSClassFromString(@"RCTWebViewExecutor") ? @"Disable Safari Debugging" : @"Debug in Safari";
-  NSString *fpsMonitor = _showFPS ? @"Hide FPS Monitor" : @"Show FPS Monitor";
+  UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  actionSheet.title = @"React Native: Development";
+  actionSheet.delegate = self;
 
-  UIActionSheet *actionSheet =
-  [[UIActionSheet alloc] initWithTitle:@"React Native: Development"
-                              delegate:self
-                     cancelButtonTitle:nil
-                destructiveButtonTitle:nil
-                     otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, fpsMonitor, nil];
-
-  [actionSheet addButtonWithTitle:@"Inspect Element"];
-
-  if (_liveReloadURL) {
-
-    NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
-    NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Profiling" : @"Start Profiling";
-
-    [actionSheet addButtonWithTitle:liveReloadTitle];
-    [actionSheet addButtonWithTitle:profilingTitle];
+  NSArray *items = [self menuItems];
+  for (RCTDevMenuItem *item in items) {
+    [actionSheet addButtonWithTitle:item.title];
   }
 
   [actionSheet addButtonWithTitle:@"Cancel"];
@@ -259,13 +341,7 @@ RCT_EXPORT_METHOD(show)
   actionSheet.actionSheetStyle = UIBarStyleBlack;
   [actionSheet showInView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
   _actionSheet = actionSheet;
-}
-
-RCT_EXPORT_METHOD(reload)
-{
-  _jsLoaded = NO;
-  _liveReloadURL = nil;
-  [_bridge reload];
+  _presentedItems = items;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -275,48 +351,16 @@ RCT_EXPORT_METHOD(reload)
     return;
   }
 
-  switch (buttonIndex) {
-    case 0: {
-      [self reload];
-      break;
-    }
-    case 1: {
-      Class cls = NSClassFromString(@"RCTWebSocketExecutor");
-      if (!cls) {
-        [[[UIAlertView alloc] initWithTitle:@"Chrome Debugger Unavailable"
-                                    message:@"You need to include the RCTWebSocket library to enable Chrome debugging"
-                                   delegate:nil
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil] show];
-        return;
-      }
-      self.executorClass = (_executorClass == cls) ? Nil : cls;
-      break;
-    }
-    case 2: {
-      Class cls = NSClassFromString(@"RCTWebViewExecutor");
-      self.executorClass = (_executorClass == cls) ? Nil : cls;
-      break;
-    }
-    case 3: {
-      self.showFPS = !_showFPS;
-      break;
-    }
-    case 4: {
-      [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
-      break;
-    }
-    case 5: {
-      self.liveReloadEnabled = !_liveReloadEnabled;
-      break;
-    }
-    case 6: {
-      self.profilingEnabled = !_profilingEnabled;
-      break;
-    }
-    default:
-      break;
-  }
+  RCTDevMenuItem *item = _presentedItems[buttonIndex];
+  item.handler();
+  return;
+}
+
+RCT_EXPORT_METHOD(reload)
+{
+  _jsLoaded = NO;
+  _liveReloadURL = nil;
+  [_bridge reload];
 }
 
 - (void)setShakeToShow:(BOOL)shakeToShow
@@ -438,6 +482,7 @@ RCT_EXPORT_METHOD(reload)
 
 - (void)show {}
 - (void)reload {}
+- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 
 @end
 

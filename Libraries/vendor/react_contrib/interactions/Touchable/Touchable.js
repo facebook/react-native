@@ -232,6 +232,8 @@ var PRESS_EXPAND_PX = 20;
 
 var LONG_PRESS_THRESHOLD = 500;
 
+var LONG_PRESS_DELAY_MS = LONG_PRESS_THRESHOLD - HIGHLIGHT_DELAY_MS;
+
 var LONG_PRESS_ALLOWED_MOVEMENT = 10;
 
 // Default amount "active" region protrudes beyond box
@@ -276,7 +278,7 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
  *     +
  *     | RESPONDER_GRANT (HitRect)
  *     v
- * +---------------------------+  DELAY   +-------------------------+  T - DELAY     +------------------------------+
+ * +---------------------------+  DELAY   +-------------------------+  T + DELAY     +------------------------------+
  * |RESPONDER_INACTIVE_PRESS_IN|+-------->|RESPONDER_ACTIVE_PRESS_IN| +------------> |RESPONDER_ACTIVE_LONG_PRESS_IN|
  * +---------------------------+          +-------------------------+                +------------------------------+
  *     +            ^                         +           ^                                 +           ^
@@ -288,7 +290,7 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
  * |RESPONDER_INACTIVE_PRESS_OUT|+------->|RESPONDER_ACTIVE_PRESS_OUT|               |RESPONDER_ACTIVE_LONG_PRESS_OUT|
  * +----------------------------+         +--------------------------+               +-------------------------------+
  *
- * T - DELAY => LONG_PRESS_THRESHOLD - DELAY
+ * T + DELAY => LONG_PRESS_DELAY_MS + DELAY
  *
  * Not drawn are the side effects of each transition. The most important side
  * effect is the `touchableHandlePress` abstract method invocation that occurs
@@ -348,12 +350,16 @@ var TouchableMixin = {
     // event to make sure it doesn't get reused in the event object pool.
     e.persist();
 
+    this.pressOutDelayTimeout && clearTimeout(this.pressOutDelayTimeout);
+    this.pressOutDelayTimeout = null;
+
     this.state.touchable.touchState = States.NOT_RESPONDER;
     this.state.touchable.responderID = dispatchID;
     this._receiveSignal(Signals.RESPONDER_GRANT, e);
     var delayMS =
       this.touchableGetHighlightDelayMS !== undefined ?
-      this.touchableGetHighlightDelayMS() : HIGHLIGHT_DELAY_MS;
+      Math.max(this.touchableGetHighlightDelayMS(), 0) : HIGHLIGHT_DELAY_MS;
+    delayMS = isNaN(delayMS) ? HIGHLIGHT_DELAY_MS : delayMS;
     if (delayMS !== 0) {
       this.touchableDelayTimeout = setTimeout(
         this._handleDelay.bind(this, e),
@@ -363,9 +369,13 @@ var TouchableMixin = {
       this._handleDelay(e);
     }
 
+    var longDelayMS =
+      this.touchableGetLongPressDelayMS !== undefined ?
+      Math.max(this.touchableGetLongPressDelayMS(), 10) : LONG_PRESS_DELAY_MS;
+    longDelayMS = isNaN(longDelayMS) ? LONG_PRESS_DELAY_MS : longDelayMS;
     this.longPressDelayTimeout = setTimeout(
       this._handleLongDelay.bind(this, e),
-      LONG_PRESS_THRESHOLD - delayMS
+      longDelayMS + delayMS
     );
   },
 
@@ -632,8 +642,14 @@ var TouchableMixin = {
     if (newIsHighlight && !curIsHighlight) {
       this._savePressInLocation(e);
       this.touchableHandleActivePressIn && this.touchableHandleActivePressIn();
-    } else if (!newIsHighlight && curIsHighlight) {
-      this.touchableHandleActivePressOut && this.touchableHandleActivePressOut();
+    } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
+      if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
+        this.pressOutDelayTimeout = this.setTimeout(function() {
+          this.touchableHandleActivePressOut();
+        }, this.touchableGetPressOutDelayMS());
+      } else {
+        this.touchableHandleActivePressOut();
+      }
     }
 
     if (IsPressingIn[curState] && signal === Signals.RESPONDER_RELEASE) {

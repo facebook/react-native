@@ -45,6 +45,7 @@ var COMPONENTS = [
   require('./NavigatorIOSColorsExample'),
   require('./NavigatorIOSExample'),
   require('./PickerIOSExample'),
+  require('./ProgressViewIOSExample'),
   require('./ScrollViewExample'),
   require('./SegmentedControlIOSExample'),
   require('./SliderIOSExample'),
