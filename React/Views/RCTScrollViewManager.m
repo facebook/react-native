@@ -10,10 +10,21 @@
 #import "RCTScrollViewManager.h"
 
 #import "RCTBridge.h"
-#import "RCTConvert.h"
 #import "RCTScrollView.h"
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
+
+@implementation RCTConvert (UIScrollView)
+
+RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
+  @"none": @(UIScrollViewKeyboardDismissModeNone),
+  @"on-drag": @(UIScrollViewKeyboardDismissModeOnDrag),
+  @"interactive": @(UIScrollViewKeyboardDismissModeInteractive),
+  // Backwards compatibility
+  @"onDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
+}), UIScrollViewKeyboardDismissModeNone, integerValue)
+
+@end
 
 @implementation RCTScrollViewManager
 
@@ -53,14 +64,10 @@ RCT_DEPRECATED_VIEW_PROPERTY(throttleScrollCallbackMS, scrollEventThrottle)
 - (NSDictionary *)constantsToExport
 {
   return @{
+    // TODO: unused - remove these?
     @"DecelerationRate": @{
-      @"Normal": @(UIScrollViewDecelerationRateNormal),
-      @"Fast": @(UIScrollViewDecelerationRateFast),
-    },
-    @"KeyboardDismissMode": @{
-      @"None": @(UIScrollViewKeyboardDismissModeNone),
-      @"Interactive": @(UIScrollViewKeyboardDismissModeInteractive),
-      @"OnDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
+      @"normal": @(UIScrollViewDecelerationRateNormal),
+      @"fast": @(UIScrollViewDecelerationRateFast),
     },
   };
 }

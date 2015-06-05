@@ -59,7 +59,7 @@ var PickerIOS = React.createClass({
       <View style={this.props.style}>
         <RCTPickerIOS
           ref={PICKER}
-          style={styles.rkPickerIOS}
+          style={styles.pickerIOS}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
@@ -103,7 +103,7 @@ PickerIOS.Item = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  rkPickerIOS: {
+  pickerIOS: {
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
     // surrounding view to ensure it gets rendered.

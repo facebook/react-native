@@ -21,6 +21,8 @@ void RCTLogConvertError(id json, const char *type)
               json, [json classForCoder], type);
 }
 
+RCT_CONVERTER(id, id, self)
+
 RCT_CONVERTER(BOOL, BOOL, boolValue)
 RCT_NUMBER_CONVERTER(double, doubleValue)
 RCT_NUMBER_CONVERTER(float, floatValue)
@@ -219,12 +221,6 @@ RCT_ENUM_CONVERTER(UITextFieldViewMode, (@{
   @"always": @(UITextFieldViewModeAlways),
 }), UITextFieldViewModeNever, integerValue)
 
-RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
-  @"none": @(UIScrollViewKeyboardDismissModeNone),
-  @"on-drag": @(UIScrollViewKeyboardDismissModeOnDrag),
-  @"interactive": @(UIScrollViewKeyboardDismissModeInteractive),
-}), UIScrollViewKeyboardDismissModeNone, integerValue)
-
 RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"default": @(UIKeyboardTypeDefault),
   @"ascii-capable": @(UIKeyboardTypeASCIICapable),
@@ -237,6 +233,8 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"decimal-pad": @(UIKeyboardTypeDecimalPad),
   @"twitter": @(UIKeyboardTypeTwitter),
   @"web-search": @(UIKeyboardTypeWebSearch),
+  // Added for Android compatibility
+  @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
 RCT_ENUM_CONVERTER(UIReturnKeyType, (@{
@@ -267,7 +265,11 @@ RCT_ENUM_CONVERTER(UIViewContentMode, (@{
   @"top-right": @(UIViewContentModeTopRight),
   @"bottom-left": @(UIViewContentModeBottomLeft),
   @"bottom-right": @(UIViewContentModeBottomRight),
-}), UIViewContentModeScaleToFill, integerValue)
+  // Cross-platform values
+  @"cover": @(UIViewContentModeScaleAspectFill),
+  @"contain": @(UIViewContentModeScaleAspectFit),
+  @"stretch": @(UIViewContentModeScaleToFill),
+}), UIViewContentModeScaleAspectFill, integerValue)
 
 RCT_ENUM_CONVERTER(UIBarStyle, (@{
   @"default": @(UIBarStyleDefault),

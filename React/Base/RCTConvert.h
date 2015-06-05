@@ -23,6 +23,8 @@
  */
 @interface RCTConvert : NSObject
 
++ (id)id:(id)json;
+
 + (BOOL)BOOL:(id)json;
 + (double)double:(id)json;
 + (float)float:(id)json;
@@ -52,7 +54,6 @@
 + (NSWritingDirection)NSWritingDirection:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
-+ (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 

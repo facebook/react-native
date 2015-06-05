@@ -77,13 +77,7 @@ var styles = StyleSheet.create({
 
 var RCTProgressView = requireNativeComponent(
   'RCTProgressView',
-  null
+  ProgressViewIOS
 );
-if (__DEV__) {
-  verifyPropTypes(
-    RCTProgressView,
-    RCTProgressView.viewConfig
-  );
-}
 
 module.exports = ProgressViewIOS;

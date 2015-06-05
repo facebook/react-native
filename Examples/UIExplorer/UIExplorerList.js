@@ -157,7 +157,7 @@ class UIExplorerList extends React.Component {
           renderSectionHeader={this._renderSectionHeader}
           keyboardShouldPersistTaps={true}
           automaticallyAdjustContentInsets={false}
-          keyboardDismissMode="onDrag"
+          keyboardDismissMode="on-drag"
         />
       </View>
     );

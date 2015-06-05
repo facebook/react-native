@@ -281,7 +281,7 @@ var SearchScreen = React.createClass({
         renderRow={this.renderRow}
         onEndReached={this.onEndReached}
         automaticallyAdjustContentInsets={false}
-        keyboardDismissMode="onDrag"
+        keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps={true}
         showsVerticalScrollIndicator={false}
       />;
