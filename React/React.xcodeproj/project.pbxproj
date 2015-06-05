@@ -16,6 +16,7 @@
 		134FCB361A6D42D900051CC8 /* RCTSparseArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 83BEE46D1A6D19BC00B5863B /* RCTSparseArray.m */; };
 		134FCB3D1A6E7F0800051CC8 /* RCTContextExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 134FCB3A1A6E7F0800051CC8 /* RCTContextExecutor.m */; };
 		134FCB3E1A6E7F0800051CC8 /* RCTWebViewExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 134FCB3C1A6E7F0800051CC8 /* RCTWebViewExecutor.m */; };
+		13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13513F3B1B1F43F400FCE529 /* RCTProgressViewManager.m */; };
 		13723B501A82FD3C00F88898 /* RCTStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */; };
 		1372B70A1AB030C200659ED6 /* RCTAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = 1372B7091AB030C200659ED6 /* RCTAppState.m */; };
 		137327E71AA5CF210034F82E /* RCTTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 137327E01AA5CF210034F82E /* RCTTabBar.m */; };
@@ -104,6 +105,8 @@
 		134FCB3A1A6E7F0800051CC8 /* RCTContextExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTContextExecutor.m; sourceTree = "<group>"; };
 		134FCB3B1A6E7F0800051CC8 /* RCTWebViewExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebViewExecutor.h; sourceTree = "<group>"; };
 		134FCB3C1A6E7F0800051CC8 /* RCTWebViewExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebViewExecutor.m; sourceTree = "<group>"; };
+		13513F3A1B1F43F400FCE529 /* RCTProgressViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTProgressViewManager.h; sourceTree = "<group>"; };
+		13513F3B1B1F43F400FCE529 /* RCTProgressViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTProgressViewManager.m; sourceTree = "<group>"; };
 		13723B4E1A82FD3C00F88898 /* RCTStatusBarManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTStatusBarManager.h; sourceTree = "<group>"; };
 		13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTStatusBarManager.m; sourceTree = "<group>"; };
 		1372B7081AB030C200659ED6 /* RCTAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAppState.h; sourceTree = "<group>"; };
@@ -307,6 +310,8 @@
 				58114A141AAE854800E7D092 /* RCTPickerManager.h */,
 				58114A151AAE854800E7D092 /* RCTPickerManager.m */,
 				13442BF31AA90E0B0037E5B0 /* RCTPointerEvents.h */,
+				13513F3A1B1F43F400FCE529 /* RCTProgressViewManager.h */,
+				13513F3B1B1F43F400FCE529 /* RCTProgressViewManager.m */,
 				131B6AF01AF1093D00FFC3E0 /* RCTSegmentedControl.h */,
 				131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */,
 				131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */,
@@ -524,6 +529,7 @@
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
 				832348161A77A5AA00B55238 /* Layout.c in Sources */,
 				14F4D38B1AE1B7E40049C042 /* RCTProfile.m in Sources */,
+				13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */,
 				14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,

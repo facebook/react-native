@@ -24,7 +24,7 @@ NSString *RCTJSONStringify(id jsonObject, NSError **error)
   return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : nil;
 }
 
-id RCTJSONParse(NSString *jsonString, NSError **error)
+id RCTJSONParseWithOptions(NSString *jsonString, NSError **error, NSJSONReadingOptions options)
 {
   if (!jsonString) {
     return nil;
@@ -39,7 +39,15 @@ id RCTJSONParse(NSString *jsonString, NSError **error)
       return nil;
     }
   }
-  return [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:error];
+  return [NSJSONSerialization JSONObjectWithData:jsonData options:options error:error];
+}
+
+id RCTJSONParse(NSString *jsonString, NSError **error) {
+  return RCTJSONParseWithOptions(jsonString, error, NSJSONReadingAllowFragments);
+}
+
+id RCTJSONParseMutable(NSString *jsonString, NSError **error) {
+  return RCTJSONParseWithOptions(jsonString, error, NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves);
 }
 
 id RCTJSONClean(id object)
