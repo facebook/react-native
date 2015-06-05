@@ -1313,7 +1313,12 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
 #pragma mark - Payload Generation
 
-- (void)dispatchBlock:(dispatch_block_t)block forModule:(NSNumber *)moduleID
+- (void)dispatchBlock:(dispatch_block_t)block forModule:(id<RCTBridgeModule>)module
+{
+  [self dispatchBlock:block forModuleID:RCTModuleIDsByName[RCTBridgeModuleNameForClass([module class])]];
+}
+
+- (void)dispatchBlock:(dispatch_block_t)block forModuleID:(NSNumber *)moduleID
 {
   RCTAssertJSThread();
 
@@ -1458,7 +1463,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     if ([module respondsToSelector:@selector(batchDidComplete)]) {
       [self dispatchBlock:^{
         [module batchDidComplete];
-      } forModule:moduleID];
+      } forModuleID:moduleID];
     }
   }];
 }
@@ -1526,7 +1531,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
       @"selector": NSStringFromSelector(method.selector),
       @"args": RCTJSONStringify(params ?: [NSNull null], NULL),
     });
-  } forModule:@(moduleID)];
+  } forModuleID:@(moduleID)];
 
   return YES;
 }
@@ -1546,7 +1551,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
         RCTProfileBeginEvent();
         [observer didUpdateFrame:frameUpdate];
         RCTProfileEndEvent(name, @"objc_call,fps", nil);
-      } forModule:RCTModuleIDsByName[RCTBridgeModuleNameForClass([observer class])]];
+      } forModule:(id<RCTBridgeModule>)observer];
     }
   }
 
@@ -1591,35 +1596,39 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
 - (void)startProfiling
 {
-   RCTAssertMainThread();
+  RCTAssertMainThread();
 
   if (![_parentBridge.bundleURL.scheme isEqualToString:@"http"]) {
     RCTLogError(@"To run the profiler you must be running from the dev server");
     return;
   }
 
-  RCTProfileInit();
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+    RCTProfileInit(self);
+  }];
 }
 
 - (void)stopProfiling
 {
    RCTAssertMainThread();
 
-  NSString *log = RCTProfileEnd();
-  NSURL *bundleURL = _parentBridge.bundleURL;
-  NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", bundleURL.scheme, bundleURL.host, bundleURL.port];
-  NSURL *URL = [NSURL URLWithString:URLString];
-  NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
-  URLRequest.HTTPMethod = @"POST";
-  [URLRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-  NSURLSessionTask *task = [[NSURLSession sharedSession] uploadTaskWithRequest:URLRequest
-                                                                      fromData:[log dataUsingEncoding:NSUTF8StringEncoding]
-                                                             completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                                               if (error) {
-                                                                 RCTLogError(@"%@", error.localizedDescription);
-                                                               }
-                                                             }];
-  [task resume];
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+    NSString *log = RCTProfileEnd(self);
+    NSURL *bundleURL = _parentBridge.bundleURL;
+    NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", bundleURL.scheme, bundleURL.host, bundleURL.port];
+    NSURL *URL = [NSURL URLWithString:URLString];
+    NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
+    URLRequest.HTTPMethod = @"POST";
+    [URLRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSURLSessionTask *task = [[NSURLSession sharedSession] uploadTaskWithRequest:URLRequest
+                                                                        fromData:[log dataUsingEncoding:NSUTF8StringEncoding]
+                                                               completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                                                 if (error) {
+                                                                   RCTLogError(@"%@", error.localizedDescription);
+                                                                 }
+                                                               }];
+    [task resume];
+  }];
 }
 
 @end
