@@ -85,11 +85,6 @@
                            selector:@selector(dismiss)
                                name:RCTReloadNotification
                              object:nil];
-
-    [notificationCenter addObserver:self
-                           selector:@selector(dismiss)
-                               name:RCTJavaScriptDidLoadNotification
-                             object:nil];
   }
   return self;
 }

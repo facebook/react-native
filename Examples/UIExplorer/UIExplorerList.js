@@ -45,6 +45,7 @@ var COMPONENTS = [
   require('./NavigatorIOSColorsExample'),
   require('./NavigatorIOSExample'),
   require('./PickerIOSExample'),
+  require('./ProgressViewIOSExample'),
   require('./ScrollViewExample'),
   require('./SegmentedControlIOSExample'),
   require('./SliderIOSExample'),
@@ -156,7 +157,7 @@ class UIExplorerList extends React.Component {
           renderSectionHeader={this._renderSectionHeader}
           keyboardShouldPersistTaps={true}
           automaticallyAdjustContentInsets={false}
-          keyboardDismissMode="onDrag"
+          keyboardDismissMode="on-drag"
         />
       </View>
     );

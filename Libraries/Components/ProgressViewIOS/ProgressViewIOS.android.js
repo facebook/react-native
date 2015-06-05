@@ -7,7 +7,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule SegmentedControlIOS
+ * @providesModule ProgressViewIOS
  */
 
 'use strict';
@@ -17,12 +17,12 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var DummySegmentedControlIOS = React.createClass({
+var DummyProgressViewIOS = React.createClass({
   render: function() {
     return (
       <View style={[styles.dummy, this.props.style]}>
         <Text style={styles.text}>
-          SegmentedControlIOS is not supported on this platform!
+          ProgressViewIOS is not supported on this platform!
         </Text>
       </View>
     );
@@ -32,7 +32,7 @@ var DummySegmentedControlIOS = React.createClass({
 var styles = StyleSheet.create({
   dummy: {
     width: 120,
-    height: 50,
+    height: 20,
     backgroundColor: '#ffbcbc',
     borderWidth: 1,
     borderColor: 'red',
@@ -46,4 +46,4 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = DummySegmentedControlIOS;
+module.exports = DummyProgressViewIOS;

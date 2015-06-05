@@ -35,7 +35,11 @@
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
     _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
     _testController.referenceImagesDirectory = referenceDir;
+#if RUNNING_ON_CI
+    _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+#else
     _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
+#endif
   }
   return self;
 }

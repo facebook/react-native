@@ -16,12 +16,19 @@ var {
   View,
 } = React;
 
+var deepDiffer = require('deepDiffer');
+
 var DEBUG = false;
 
 var KEY_1 = 'key_1';
 var VAL_1 = 'val_1';
 var KEY_2 = 'key_2';
 var VAL_2 = 'val_2';
+var KEY_MERGE = 'key_merge';
+var VAL_MERGE_1 = {'foo': 1, 'bar': {'hoo': 1, 'boo': 1}, 'moo': {'a': 3}};
+var VAL_MERGE_2 = {'bar': {'hoo': 2}, 'baz': 2, 'moo': {'a': 3}};
+var VAL_MERGE_EXPECT =
+  {'foo': 1, 'bar': {'hoo': 2, 'boo': 1}, 'baz': 2, 'moo': {'a': 3}};
 
 // setup in componentDidMount
 var done;
@@ -40,8 +47,9 @@ function expectTrue(condition, message) {
 
 function expectEqual(lhs, rhs, testname) {
   expectTrue(
-    lhs === rhs,
-    'Error in test ' + testname + ': expected ' + rhs + ', got ' + lhs
+    !deepDiffer(lhs, rhs),
+    'Error in test ' + testname + ': expected\n' + JSON.stringify(rhs) +
+      '\ngot\n' + JSON.stringify(lhs)
   );
 }
 
@@ -93,28 +101,43 @@ function testRemoveItem() {
           'Missing KEY_1 or KEY_2 in ' + '(' + result + ')'
         );
         updateMessage('testRemoveItem - add two items');
-        AsyncStorage.removeItem(KEY_1, (err) => {
-          expectAsyncNoError(err);
+        AsyncStorage.removeItem(KEY_1, (err2) => {
+          expectAsyncNoError(err2);
           updateMessage('delete successful ');
-          AsyncStorage.getItem(KEY_1, (err, result) => {
-            expectAsyncNoError(err);
+          AsyncStorage.getItem(KEY_1, (err3, result2) => {
+            expectAsyncNoError(err3);
             expectEqual(
-              result,
+              result2,
               null,
               'testRemoveItem: key_1 present after delete'
             );
             updateMessage('key properly removed ');
-            AsyncStorage.getAllKeys((err, result2) => {
-             expectAsyncNoError(err);
+            AsyncStorage.getAllKeys((err4, result3) => {
+             expectAsyncNoError(err4);
              expectTrue(
-               result2.indexOf(KEY_1) === -1,
-               'Unexpected: KEY_1 present in ' + result2
+               result3.indexOf(KEY_1) === -1,
+               'Unexpected: KEY_1 present in ' + result3
              );
-             updateMessage('proper length returned.\nDone!');
-             done();
+             updateMessage('proper length returned.');
+             runTestCase('should merge values', testMerge);
             });
           });
         });
+      });
+    });
+  });
+}
+
+function testMerge() {
+  AsyncStorage.setItem(KEY_MERGE, JSON.stringify(VAL_MERGE_1), (err1) => {
+    expectAsyncNoError(err1);
+    AsyncStorage.mergeItem(KEY_MERGE, JSON.stringify(VAL_MERGE_2), (err2) => {
+      expectAsyncNoError(err2);
+      AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
+        expectAsyncNoError(err3);
+        expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
+        updateMessage('objects deeply merged\nDone!');
+        done();
       });
     });
   });

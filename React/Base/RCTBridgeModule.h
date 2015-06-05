@@ -146,15 +146,6 @@ extern const dispatch_queue_t RCTJSThread;
   }
 
 /**
- * Deprecated, do not use.
- */
-#define RCT_EXPORT(js_name) \
-  _Pragma("message(\"RCT_EXPORT is deprecated. Use RCT_EXPORT_METHOD instead.\")") \
-  __attribute__((used, section("__DATA,RCTExport"))) \
-  __attribute__((__aligned__(1))) \
-  static const char *__rct_export_entry__[] = { __func__, #js_name, NULL }
-
-/**
  * The queue that will be used to call all exported methods. If omitted, this
  * will call on the default background queue, which is avoids blocking the main
  * thread.
