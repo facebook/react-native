@@ -23,6 +23,7 @@ var View = require('View');
 
 var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
+var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('keyOf');
 var merge = require('merge');
 var onlyChild = require('onlyChild');
@@ -111,6 +112,7 @@ var TouchableHighlight = React.createClass({
   },
 
   componentDidMount: function() {
+    ensurePositiveDelayProps(this.props);
     ensureComponentIsNative(this.refs[CHILD_REF]);
   },
 
@@ -119,6 +121,7 @@ var TouchableHighlight = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    ensurePositiveDelayProps(nextProps);
     if (nextProps.activeOpacity !== this.props.activeOpacity ||
         nextProps.underlayColor !== this.props.underlayColor ||
         nextProps.style !== this.props.style) {
@@ -152,7 +155,8 @@ var TouchableHighlight = React.createClass({
   touchableHandlePress: function() {
     this.clearTimeout(this._hideTimeout);
     this._showUnderlay();
-    this._hideTimeout = this.setTimeout(this._hideUnderlay, 100);
+    this._hideTimeout = this.setTimeout(this._hideUnderlay,
+      this.props.delayPressOut || 100);
     this.props.onPress && this.props.onPress();
   },
 
@@ -162,6 +166,18 @@ var TouchableHighlight = React.createClass({
 
   touchableGetPressRectOffset: function() {
     return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+  },
+
+  touchableGetHighlightDelayMS: function() {
+    return this.props.delayPressIn;
+  },
+
+  touchableGetLongPressDelayMS: function() {
+    return this.props.delayLongPress;
+  },
+
+  touchableGetPressOutDelayMS: function() {
+    return this.props.delayPressOut;
   },
 
   _showUnderlay: function() {

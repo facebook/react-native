@@ -51,6 +51,12 @@
  */
 - (void)reload;
 
+/**
+ * Add custom item to the development menu. The handler will be called
+ * when user selects the item.
+ */
+- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler;
+
 @end
 
 /**
