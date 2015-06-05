@@ -10,8 +10,10 @@
 
 jest
   .dontMock('worker-farm')
-  .dontMock('os')
+  .dontMock('../../lib/ModuleTransport')
   .dontMock('../index');
+
+jest.mock('fs');
 
 var OPTIONS = {
   transformModulePath: '/foo/bar'
@@ -37,7 +39,7 @@ describe('Transformer', function() {
 
   pit('should loadFileAndTransform', function() {
     workers.mockImpl(function(data, callback) {
-      callback(null, { code: 'transformed' });
+      callback(null, { code: 'transformed', map: 'sourceMap' });
     });
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, 'content');
@@ -47,6 +49,7 @@ describe('Transformer', function() {
       .then(function(data) {
         expect(data).toEqual({
           code: 'transformed',
+          map: 'sourceMap',
           sourcePath: 'file',
           sourceCode: 'content'
         });
@@ -54,25 +57,34 @@ describe('Transformer', function() {
   });
 
   pit('should add file info to parse errors', function() {
+    var message = 'message';
+    var snippet = 'snippet';
+
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, 'var x;\nvar answer = 1 = x;');
     });
 
     workers.mockImpl(function(data, callback) {
-      var esprimaError = new Error('Error: Line 2: Invalid left-hand side in assignment');
-      esprimaError.description = 'Invalid left-hand side in assignment';
-      esprimaError.lineNumber = 2;
-      esprimaError.column = 15;
-      callback(null, {error: esprimaError});
+      var babelError = new SyntaxError(message);
+      babelError.type = 'SyntaxError';
+      babelError.description = message;
+      babelError.loc = {
+        line: 2,
+        column: 15,
+      };
+      babelError.codeFrame = snippet;
+      callback(babelError);
     });
 
     return new Transformer(OPTIONS).loadFileAndTransform('foo-file.js')
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
-        expect(error.snippet).toEqual([
-          'var answer = 1 = x;',
-          '             ^',
-        ].join('\n'));
+        expect(error.message).toBe('SyntaxError ' + message);
+        expect(error.lineNumber).toBe(2);
+        expect(error.column).toBe(15);
+        expect(error.filename).toBe('foo-file.js');
+        expect(error.description).toBe(message);
+        expect(error.snippet).toBe(snippet);
       });
   });
 });

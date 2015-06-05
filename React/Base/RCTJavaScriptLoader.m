@@ -27,7 +27,7 @@
   return self;
 }
 
-- (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(void (^)(NSError *))onComplete
+- (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(void (^)(NSError *, NSString *))onComplete
 {
   // Sanitize the script URL
   scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];
@@ -37,7 +37,7 @@
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
       NSLocalizedDescriptionKey: scriptURL ? [NSString stringWithFormat:@"Script at '%@' could not be found.", scriptURL] : @"No script URL provided"
     }];
-    onComplete(error);
+    onComplete(error, nil);
     return;
   }
 
@@ -57,7 +57,7 @@
                                     code:error.code
                                 userInfo:userInfo];
       }
-      onComplete(error);
+      onComplete(error, nil);
       return;
     }
 
@@ -96,18 +96,10 @@
                                   code:[(NSHTTPURLResponse *)response statusCode]
                               userInfo:userInfo];
 
-      onComplete(error);
+      onComplete(error, nil);
       return;
     }
-    RCTSourceCode *sourceCodeModule = _bridge.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
-    sourceCodeModule.scriptURL = scriptURL;
-    sourceCodeModule.scriptText = rawText;
-
-    [_bridge enqueueApplicationScript:rawText url:scriptURL onComplete:^(NSError *scriptError) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        onComplete(scriptError);
-      });
-    }];
+    onComplete(nil, rawText);
   }];
 
   [task resume];

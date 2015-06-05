@@ -74,7 +74,9 @@ var AppRegistry = {
     );
     invariant(
       runnables[appKey] && runnables[appKey].run,
-      'Application ' + appKey + ' has not been registered.'
+      'Application ' + appKey + ' has not been registered. This ' +
+      'is either due to a require() error during initialization ' +
+      'or failure to call AppRegistry.registerComponent.'
     );
     runnables[appKey].run(appParameters);
   },

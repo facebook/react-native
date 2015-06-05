@@ -13,8 +13,6 @@
 
 var RCTDataManager = require('NativeModules').DataManager;
 
-var crc32 = require('crc32');
-
 var XMLHttpRequestBase = require('XMLHttpRequestBase');
 
 class XMLHttpRequest extends XMLHttpRequestBase {
@@ -28,12 +26,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
         data: data,
         headers: headers,
       },
-      // TODO: Do we need this? is it used anywhere?
-      'h' + crc32(method + '|' + url + '|' + data),
-      (result) => {
-        result = JSON.parse(result);
-        this.callback(result.status, result.responseHeaders, result.responseText);
-      }
+      this.callback.bind(this)
     );
   }
 

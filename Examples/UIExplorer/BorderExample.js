@@ -68,6 +68,29 @@ var styles = StyleSheet.create({
     borderLeftWidth: 40,
     borderLeftColor: 'blue',
   },
+  border6: {
+    borderTopWidth: 10,
+    borderTopColor: 'red',
+    borderRightWidth: 20,
+    borderRightColor: 'yellow',
+    borderBottomWidth: 30,
+    borderBottomColor: 'green',
+    borderLeftWidth: 40,
+    borderLeftColor: 'blue',
+
+    borderTopLeftRadius: 100,
+  },
+  border7: {
+    borderWidth: 10,
+    borderColor: 'rgba(255,0,0,0.5)',
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
+  border7_inner: {
+    backgroundColor: 'blue',
+    width: 100,
+    height: 100
+  },
 });
 
 exports.title = 'Border';
@@ -113,6 +136,24 @@ exports.examples = [
     description: 'border*Width & border*Color',
     render() {
       return <View style={[styles.box, styles.border5]} />;
+    }
+  },
+  {
+    title: 'Custom Borders',
+    description: 'border*Width & border*Color',
+    render() {
+      return <View style={[styles.box, styles.border6]} />;
+    }
+  },
+  {
+    title: 'Custom Borders',
+    description: 'borderRadius & clipping',
+    render() {
+      return (
+        <View style={[styles.box, styles.border7]}>
+          <View style={styles.border7_inner} />
+        </View>
+      );
     }
   },
 ];

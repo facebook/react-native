@@ -45,7 +45,6 @@ var DEFAULT_INITIAL_ROWS = 10;
 var DEFAULT_SCROLL_RENDER_AHEAD = 1000;
 var DEFAULT_END_REACHED_THRESHOLD = 1000;
 var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
-var RENDER_INTERVAL = 20;
 var SCROLLVIEW_REF = 'listviewscroll';
 
 
@@ -87,7 +86,7 @@ var SCROLLVIEW_REF = 'listviewscroll';
  * smoothly while dynamically loading potentially very large (or conceptually
  * infinite) data sets:
  *
- *  * Only re-render changed rows - the hasRowChanged function provided to the
+ *  * Only re-render changed rows - the rowHasChanged function provided to the
  *    data source tells the ListView if it needs to re-render a row because the
  *    source data has changed - see ListViewDataSource for more details.
  *
@@ -108,7 +107,7 @@ var ListView = React.createClass({
    * You must provide a renderRow function. If you omit any of the other render
    * functions, ListView will simply skip rendering them.
    *
-   * - renderRow(rowData, sectionID, rowID);
+   * - renderRow(rowData, sectionID, rowID, highlightRow);
    * - renderSectionHeader(sectionData, sectionID);
    */
   propTypes: {
@@ -116,11 +115,22 @@ var ListView = React.createClass({
 
     dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
     /**
-     * (rowData, sectionID, rowID) => renderable
+     * (sectionID, rowID, adjacentRowHighlighted) => renderable
+     * If provided, a renderable component to be rendered as the separator
+     * below each row but not the last row if there is a section header below.
+     * Take a sectionID and rowID of the row above and whether its adjacent row
+     * is highlighted.
+     */
+    renderSeparator: PropTypes.func,
+    /**
+     * (rowData, sectionID, rowID, highlightRow) => renderable
      * Takes a data entry from the data source and its ids and should return
      * a renderable component to be rendered as the row.  By default the data
      * is exactly what was put into the data source, but it's also possible to
-     * provide custom extractors.
+     * provide custom extractors. ListView can be notified when a row is
+     * being highlighted by calling highlightRow function. The separators above and
+     * below will be hidden when a row is highlighted. The highlighted state of
+     * a row can be reset by calling highlightRow(null).
      */
     renderRow: PropTypes.func.isRequired,
     /**
@@ -227,6 +237,7 @@ var ListView = React.createClass({
     return {
       curRenderedRowsCount: this.props.initialListSize,
       prevRenderedRowsCount: 0,
+      highlightedRow: {},
     };
   },
 
@@ -246,7 +257,6 @@ var ListView = React.createClass({
     // the component is laid out
     this.requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
-      this.setInterval(this._renderMoreRowsIfNeeded, RENDER_INTERVAL);
     });
   },
 
@@ -254,6 +264,10 @@ var ListView = React.createClass({
     if (this.props.dataSource !== nextProps.dataSource) {
       this.setState({prevRenderedRowsCount: 0});
     }
+  },
+
+  onRowHighlighted: function(sectionID, rowID) {
+    this.setState({highlightedRow: {sectionID, rowID}});
   },
 
   render: function() {
@@ -305,11 +319,28 @@ var ListView = React.createClass({
               null,
               dataSource.getRowData(sectionIdx, rowIdx),
               sectionID,
-              rowID
+              rowID,
+              this.onRowHighlighted
             )}
           />;
         bodyComponents.push(row);
         totalIndex++;
+
+        if (this.props.renderSeparator &&
+            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)) {
+          var adjacentRowHighlighted =
+            this.state.highlightedRow.sectionID === sectionID && (
+              this.state.highlightedRow.rowID === rowID ||
+              this.state.highlightedRow.rowID === rowIDs[rowIdx + 1]
+            );
+          var separator = this.props.renderSeparator(
+            sectionID,
+            rowID,
+            adjacentRowHighlighted
+          );
+          bodyComponents.push(separator);
+          totalIndex++;
+        }
         if (++rowCount === this.state.curRenderedRowsCount) {
           break;
         }
@@ -346,12 +377,12 @@ var ListView = React.createClass({
   _measureAndUpdateScrollProps: function() {
     RCTUIManager.measureLayout(
       this.refs[SCROLLVIEW_REF].getInnerViewNode(),
-      this.refs[SCROLLVIEW_REF].getNodeHandle(),
+      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
       logError,
       this._setScrollContentHeight
     );
     RCTUIManager.measureLayoutRelativeToParent(
-      this.refs[SCROLLVIEW_REF].getNodeHandle(),
+      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
       logError,
       this._setScrollVisibleHeight
     );
@@ -364,6 +395,7 @@ var ListView = React.createClass({
   _setScrollVisibleHeight: function(left, top, width, height) {
     this.scrollProperties.visibleHeight = height;
     this._updateVisibleRows();
+    this._renderMoreRowsIfNeeded();
   },
 
   _renderMoreRowsIfNeeded: function() {
@@ -410,8 +442,8 @@ var ListView = React.createClass({
     }
     var updatedFrames = e && e.nativeEvent.updatedChildFrames;
     if (updatedFrames) {
-      updatedFrames.forEach((frame) => {
-        this._childFrames[frame.index] = merge(frame);
+      updatedFrames.forEach((newFrame) => {
+        this._childFrames[newFrame.index] = merge(newFrame);
       });
     }
     var dataSource = this.props.dataSource;

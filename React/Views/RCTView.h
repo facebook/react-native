@@ -15,7 +15,13 @@
 
 @protocol RCTAutoInsetsProtocol;
 
+@class RCTView;
+typedef void (^RCTViewEventHandler)(RCTView *view);
+
 @interface RCTView : UIView
+
+@property (nonatomic, copy) RCTViewEventHandler accessibilityTapHandler;
+@property (nonatomic, copy) RCTViewEventHandler magicTapHandler;
 
 /**
  * Used to control how touch events are processed.
@@ -47,6 +53,15 @@
  * removeClippedSubviews set to YES
  */
 - (void)updateClippedSubviews;
+
+/**
+ * Border radii.
+ */
+@property (nonatomic, assign) CGFloat borderRadius;
+@property (nonatomic, assign) CGFloat borderTopLeftRadius;
+@property (nonatomic, assign) CGFloat borderTopRightRadius;
+@property (nonatomic, assign) CGFloat borderBottomLeftRadius;
+@property (nonatomic, assign) CGFloat borderBottomRightRadius;
 
 /**
  * Border colors.

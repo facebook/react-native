@@ -15,8 +15,14 @@
 .*/node_modules/react-tools/src/core/ReactInstanceHandles.js
 .*/node_modules/react-tools/src/event/EventPropagators.js
 
+# Ignore commoner tests
+.*/node_modules/commoner/test/.*
+
+# See https://github.com/facebook/flow/issues/442
+.*/react-tools/node_modules/commoner/lib/reader.js
+
 # Ignore jest
-.*/react-native/node_modules/jest-cli/.*
+.*/node_modules/jest-cli/.*
 
 # Ignore Website
 .*/website/.*
@@ -31,4 +37,4 @@ Examples/UIExplorer/ImageMocks.js
 module.system=haste
 
 [version]
-0.10.0
+0.11.0

@@ -105,10 +105,20 @@ function getFileDocBlock(commentsForFile) {
   commentsForFile.some(function(comment, i) {
     if (comment.loc.start.line === 1) {
       var lines = comment.value.split('\n');
+      var inCopyrightBlock = false;
       var filteredLines = lines.filter(function(line) {
-        var hasCopyright = !!line.match(/^\s*\*\s+Copyright/);
+        if (!!line.match(/^\s*\*\s+Copyright \(c\)/)) {
+          inCopyrightBlock = true;
+        }
+
         var hasProvides = !!line.match(/^\s*\*\s+@provides/);
-        return !hasCopyright && !hasProvides;
+        var hasFlow = !!line.match(/^\s*\*\s+@flow/);
+
+        if (hasFlow || hasProvides) {
+          inCopyrightBlock = false;
+        }
+
+        return !inCopyrightBlock && !hasFlow && !hasProvides;
       });
       docblock = filteredLines.join('\n');
       return true;
@@ -199,13 +209,21 @@ function sanitizeTypehint(string) {
 
 /**
  * @param {object} node
+ * @param {object} docNode  Node used for location/docblock purposes
  * @param {object} state
  * @param {string} source
  * @param {array<object>} commentsForFile
  * @param {array<string>} linesForFile
  * @return {object}
  */
-function getFunctionData(node, state, source, commentsForFile, linesForFile) {
+function getFunctionData(
+  node,
+  docNode,
+  state,
+  source,
+  commentsForFile,
+  linesForFile
+) {
   var params = [];
   var typechecks = commentsForFile.typechecks;
   var typehintsFromBlock = null;
@@ -277,9 +295,9 @@ function getFunctionData(node, state, source, commentsForFile, linesForFile) {
     });
   }
   return {
-    line: node.loc.start.line,
+    line: docNode.loc.start.line,
     source: source.substring.apply(source, node.range),
-    docblock: getDocBlock(node, commentsForFile, linesForFile),
+    docblock: getDocBlock(docNode, commentsForFile, linesForFile),
     modifiers: [],
     params: params,
     tparams: tparams,
@@ -310,7 +328,7 @@ function getObjectData(node, state, source, scopeChain,
 
     switch (property.value.type) {
     case Syntax.FunctionExpression:
-      var methodData = getFunctionData(property.value, state, source,
+      var methodData = getFunctionData(property.value, property, state, source,
         commentsForFile, linesForFile);
       methodData.name = property.key.name || property.key.value;
       methodData.source = source.substring.apply(source, property.range);
@@ -325,7 +343,8 @@ function getObjectData(node, state, source, scopeChain,
       if (expr) {
         if (expr.type === Syntax.FunctionDeclaration) {
           var functionData =
-            getFunctionData(expr, state, source, commentsForFile, linesForFile);
+            getFunctionData(expr, property, state, source, commentsForFile,
+              linesForFile);
           functionData.name = property.key.name || property.key.value;
           functionData.modifiers.push('static');
           methods.push(functionData);
@@ -379,7 +398,7 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
     if (bodyItem.type === Syntax.MethodDefinition) {
       if (bodyItem.value.type === Syntax.FunctionExpression) {
         var methodData =
-          getFunctionData(bodyItem.value, state, source,
+          getFunctionData(bodyItem.value, bodyItem, state, source,
             commentsForFile, linesForFile);
         methodData.name = bodyItem.key.name;
         methodData.source = source.substring.apply(source, bodyItem.range);
@@ -519,7 +538,8 @@ function parseSource(source) {
         break;
       case Syntax.FunctionDeclaration:
       case Syntax.FunctionExpression:
-        data = getFunctionData(definition, _state, source, ast.comments, lines);
+        data = getFunctionData(definition, definition, _state, source,
+          ast.comments, lines);
         data.type = 'function';
         break;
       default:

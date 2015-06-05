@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var View = require('View');
 
 function verifyPropTypes(
@@ -22,16 +22,23 @@ function verifyPropTypes(
   if (!viewConfig) {
     return; // This happens for UnimplementedView.
   }
-  var nativeProps = viewConfig.nativeProps;
+  var componentName = component.name || component.displayName;
+  if (!component.propTypes) {
+    throw new Error(
+      '`' + componentName + '` has no propTypes defined`'
+    );
+  }
+
+  var nativeProps = viewConfig.NativeProps;
   for (var prop in nativeProps) {
     if (!component.propTypes[prop] &&
         !View.propTypes[prop] &&
-        !ReactIOSStyleAttributes[prop] &&
+        !ReactNativeStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       throw new Error(
-        '`' + component.displayName + '` has no propType for native prop `' +
+        '`' + componentName + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
-        nativeProps[prop].type + '`'
+        nativeProps[prop] + '`'
       );
     }
   }

@@ -59,6 +59,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
 {
   NSString *title = args[@"title"];
   NSString *message = args[@"message"];
+  NSString *type = args[@"type"];
   NSArray *buttons = args[@"buttons"];
 
   if (!title && !message) {
@@ -70,12 +71,19 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
 
   UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                      message:message
+                                                      message:nil
                                                      delegate:self
                                             cancelButtonTitle:nil
                                             otherButtonTitles:nil];
 
   NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
+
+  if ([type isEqualToString:@"plain-text"]) {
+    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    [alertView textFieldAtIndex:0].text = message;
+  } else {
+    alertView.message = message;
+  }
 
   NSInteger index = 0;
   for (NSDictionary *button in buttons) {
@@ -108,7 +116,15 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
 
   RCTResponseSenderBlock callback = _alertCallbacks[index];
   NSArray *buttonKeys = _alertButtonKeys[index];
-  callback(@[buttonKeys[buttonIndex]]);
+  NSArray *args;
+
+  if (alertView.alertViewStyle == UIAlertViewStylePlainTextInput) {
+    args = @[buttonKeys[buttonIndex], [alertView textFieldAtIndex:0].text];
+  } else {
+    args = @[buttonKeys[buttonIndex]];
+  }
+
+  callback(args);
 
   [_alerts removeObjectAtIndex:index];
   [_alertCallbacks removeObjectAtIndex:index];

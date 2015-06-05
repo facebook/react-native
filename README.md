@@ -177,6 +177,8 @@ Custom iOS views can be exposed by subclassing `RCTViewManager`, implementing a 
 
 @implementation MyCustomViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];

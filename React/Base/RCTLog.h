@@ -43,17 +43,11 @@ typedef void (^RCTLogFunction)(
 );
 
 /**
- * Get a given thread's name (or the current queue, if in debug mode)
- */
-RCT_EXTERN NSString *RCTThreadName(NSThread *);
-
-/**
  * A method to generate a string from a collection of log data. To omit any
  * particular data from the log, just pass nil or zero for the argument.
  */
 RCT_EXTERN NSString *RCTFormatLog(
   NSDate *timestamp,
-  NSThread *thread,
   RCTLogLevel level,
   NSString *fileName,
   NSNumber *lineNumber,

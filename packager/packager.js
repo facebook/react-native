@@ -10,7 +10,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
+var execFile = require('child_process').execFile;
 var http = require('http');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
@@ -40,14 +40,18 @@ var webSocketProxy = require('./webSocketProxy.js');
 var options = parseCommandLine([{
   command: 'port',
   default: 8081,
+  type: 'string',
 }, {
   command: 'root',
+  type: 'string',
   description: 'add another root(s) to be used by the packager in this project',
 }, {
   command: 'assetRoots',
+  type: 'string',
   description: 'specify the root directories of app assets'
 }, {
   command: 'platform',
+  type: 'string',
   default: 'ios',
   description: 'Specify the platform-specific blacklist (ios, android, web).'
 }, {
@@ -70,13 +74,13 @@ if (options.projectRoots) {
 }
 
 if (options.root) {
-  if (typeof options.root === 'string') {
-    options.projectRoots.push(path.resolve(options.root));
-  } else {
-    options.root.forEach(function(root) {
-      options.projectRoots.push(path.resolve(root));
-    });
+  if (!Array.isArray(options.root)) {
+    options.root = options.root.split(',');
   }
+
+  options.root.forEach(function(root) {
+    options.projectRoots.push(path.resolve(root));
+  });
 }
 
 if (options.assetRoots) {
@@ -174,7 +178,7 @@ function getDevToolsLauncher(options) {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
-      exec(path.join(__dirname, script) + ' ' + debuggerURL, function(err, stdout, stderr) {
+      execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
         if (err) {
           console.log('Failed to run ' + script, err);
         }
@@ -206,7 +210,12 @@ function getAppMiddleware(options) {
     cacheVersion: '2',
     transformModulePath: require.resolve('./transformer.js'),
     assetRoots: options.assetRoots,
-    assetExts: ['png', 'jpeg', 'jpg']
+    assetExts: ['png', 'jpeg', 'jpg'],
+    polyfillModuleNames: [
+      require.resolve(
+        '../Libraries/JavaScriptAppEngine/polyfills/document.js'
+      ),
+    ],
   });
 }
 

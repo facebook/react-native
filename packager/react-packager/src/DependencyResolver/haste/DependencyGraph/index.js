@@ -48,7 +48,7 @@ var validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: ['png'],
+    required: true,
   }
 });
 

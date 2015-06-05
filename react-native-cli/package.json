@@ -5,5 +5,8 @@
   "main": "index.js",
   "bin": {
     "react-native": "index.js"
+  },
+  "dependencies": {
+    "prompt": "^0.2.14"
   }
 }

@@ -78,9 +78,11 @@ var NavigatorInterceptor = React.createClass({
     }
     switch (action) {
       case 'pop':
-        return this.props.onPopRequest && this.props.onPopRequest(action, arg1, arg2);
+        return this.props.onPopRequest && this.props.onPopRequest(arg1, arg2);
+      case 'popTo':
+        return this.props.onPopToRequest && this.props.onPopToRequest(arg1, arg2);
       case 'push':
-        return this.props.onPushRequest && this.props.onPushRequest(action, arg1, arg2);
+        return this.props.onPushRequest && this.props.onPushRequest(arg1, arg2);
       default:
         return false;
     }

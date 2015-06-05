@@ -17,6 +17,7 @@ var ReactUpdates = require('ReactUpdates');
 var invariant = require('invariant');
 var warning = require('warning');
 
+var BridgeProfiling = require('BridgeProfiling');
 var JSTimersExecution = require('JSTimersExecution');
 
 var INTERNAL_ERROR = 'Error in MessageQueue implementation';
@@ -81,6 +82,14 @@ var REQUEST_PARAMSS = 2;
 var RESPONSE_CBIDS = 3;
 var RESPONSE_RETURN_VALUES = 4;
 
+var applyWithErrorReporter = function(fun: Function, context: ?any, args: ?any) {
+  try {
+    return fun.apply(context, args);
+  } catch (e) {
+    ErrorUtils.reportFatalError(e);
+  }
+};
+
 /**
  * Utility to catch errors and prevent having to bind, or execute a bound
  * function, while catching errors in a process and returning a resulting
@@ -97,10 +106,10 @@ var RESPONSE_RETURN_VALUES = 4;
  */
 var guardReturn = function(operation, operationArguments, getReturnValue, context) {
   if (operation) {
-    ErrorUtils.applyWithGuard(operation, context, operationArguments);
+    applyWithErrorReporter(operation, context, operationArguments);
   }
   if (getReturnValue) {
-    return ErrorUtils.applyWithGuard(getReturnValue, context, null);
+    return applyWithErrorReporter(getReturnValue, context, null);
   }
   return null;
 };
@@ -269,7 +278,9 @@ var MessageQueueMixin = {
       if (DEBUG_SPY_MODE) {
         console.log('N->JS: Callback#' + cbID + '(' + JSON.stringify(args) + ')');
       }
+      BridgeProfiling.profile('Callback#' + cbID + '(' + JSON.stringify(args) + ')');
       cb.apply(scope, args);
+      BridgeProfiling.profileEnd();
     } catch(ie_requires_catch) {
       throw ie_requires_catch;
     } finally {
@@ -303,7 +314,9 @@ var MessageQueueMixin = {
         'N->JS: ' + moduleName + '.' + methodName +
         '(' + JSON.stringify(params) + ')');
     }
+    BridgeProfiling.profile(moduleName + '.' + methodName + '(' + JSON.stringify(params) + ')');
     var ret = jsCall(this._requireFunc(moduleName), methodName, params);
+    BridgeProfiling.profileEnd();
 
     return ret;
   },
@@ -322,23 +335,29 @@ var MessageQueueMixin = {
 
   processBatch: function(batch) {
     var self = this;
-    ReactUpdates.batchedUpdates(function() {
-      batch.forEach(function(call) {
-        invariant(
-          call.module === 'BatchedBridge',
-          'All the calls should pass through the BatchedBridge module'
-        );
-        if (call.method === 'callFunctionReturnFlushedQueue') {
-          self.callFunction.apply(self, call.args);
-        } else if (call.method === 'invokeCallbackAndReturnFlushedQueue') {
-          self.invokeCallback.apply(self, call.args);
-        } else {
-          throw new Error(
-            'Unrecognized method called on BatchedBridge: ' + call.method);
-        }
+    BridgeProfiling.profile('MessageQueue.processBatch()');
+    var flushedQueue = guardReturn(function () {
+      ReactUpdates.batchedUpdates(function() {
+        batch.forEach(function(call) {
+          invariant(
+            call.module === 'BatchedBridge',
+            'All the calls should pass through the BatchedBridge module'
+          );
+          if (call.method === 'callFunctionReturnFlushedQueue') {
+            self._callFunction.apply(self, call.args);
+          } else if (call.method === 'invokeCallbackAndReturnFlushedQueue') {
+            self._invokeCallback.apply(self, call.args);
+          } else {
+            throw new Error(
+              'Unrecognized method called on BatchedBridge: ' + call.method);
+          }
+        });
+        BridgeProfiling.profile('React.batchedUpdates()');
       });
-    });
-    return this.flushedQueue();
+      BridgeProfiling.profileEnd();
+    }, null, this._flushedQueueUnguarded, this);
+    BridgeProfiling.profileEnd();
+    return flushedQueue;
   },
 
   setLoggingEnabled: function(enabled) {
@@ -463,8 +482,10 @@ var MessageQueueMixin = {
   },
 
   _flushedQueueUnguarded: function() {
-    // Call the functions registred via setImmediate
+    BridgeProfiling.profile('JSTimersExecution.callImmediates()');
+    // Call the functions registered via setImmediate
     JSTimersExecution.callImmediates();
+    BridgeProfiling.profileEnd();
 
     var currentOutgoingItems = this._outgoingItems;
     this._swapAndReinitializeBuffer();

@@ -112,6 +112,53 @@ static JSValueRef RCTNoop(JSContextRef context, JSObjectRef object, JSObjectRef 
   return JSValueMakeUndefined(context);
 }
 
+#if RCT_DEV
+
+static NSMutableArray *profiles;
+
+static JSValueRef RCTConsoleProfile(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    profiles = [[NSMutableArray alloc] init];
+  });
+
+  static int profileCounter = 1;
+  NSString *profileName;
+  NSNumber *profileID = _RCTProfileBeginEvent();
+
+  if (argumentCount > 0) {
+    profileName = RCTJSValueToNSString(context, arguments[0]);
+  } else {
+    profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
+  }
+
+  id profileInfo = [NSNull null];
+  if (argumentCount > 1 && !JSValueIsUndefined(context, arguments[1])) {
+    profileInfo = @[RCTJSValueToNSString(context, arguments[1])];
+  }
+
+  [profiles addObjectsFromArray:@[profileName, profileID, profileInfo]];
+
+  return JSValueMakeUndefined(context);
+}
+
+static JSValueRef RCTConsoleProfileEnd(JSContextRef context, JSObjectRef object, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
+{
+  NSString *profileInfo = [profiles lastObject];
+  [profiles removeLastObject];
+  NSNumber *profileID = [profiles lastObject];
+  [profiles removeLastObject];
+  NSString *profileName = [profiles lastObject];
+  [profiles removeLastObject];
+
+  _RCTProfileEndEvent(profileID, profileName, @"console", profileInfo);
+
+  return JSValueMakeUndefined(context);
+}
+
+#endif
+
 static NSString *RCTJSValueToNSString(JSContextRef context, JSValueRef value)
 {
   JSStringRef JSString = JSValueToStringCopy(context, value, NULL);
@@ -198,10 +245,38 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
       [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
       [strongSelf _addNativeHook:RCTNoop withName:"noop"];
+
+#if RCT_DEV
+      [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
+      [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
+
+      for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(toggleProfilingFlag:)
+                                                     name:event
+                                                   object:nil];
+      }
+#endif
+
     }];
   }
 
   return self;
+}
+
+- (void)toggleProfilingFlag:(NSNotification *)notification
+{
+  JSObjectRef globalObject = JSContextGetGlobalObject(_context.ctx);
+
+  bool enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
+  JSStringRef JSName = JSStringCreateWithUTF8CString("__BridgeProfilingIsProfiling");
+  JSObjectSetProperty(_context.ctx,
+                      globalObject,
+                      JSName,
+                      JSValueMakeBoolean(_context.ctx, enabled),
+                      kJSPropertyAttributeNone,
+                      NULL);
+  JSStringRelease(JSName);
 }
 
 - (void)_addNativeHook:(JSObjectCallAsFunctionCallback)hook withName:(const char *)name
@@ -221,6 +296,10 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (void)invalidate
 {
+#if RCT_DEV
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+#endif
+
   [_context performSelector:@selector(invalidate) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
 }
 
@@ -243,21 +322,77 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       return;
     }
     NSError *error;
-    NSString *argsString = RCTJSONStringify(arguments, &error);
+    NSString *argsString = (arguments.count == 1) ? RCTJSONStringify(arguments[0], &error) : RCTJSONStringify(arguments, &error);
     if (!argsString) {
       RCTLogError(@"Cannot convert argument to string: %@", error);
       onComplete(nil, error);
       return;
     }
-    NSString *execString = [NSString stringWithFormat:@"require('%@').%@.apply(null, %@);", name, method, argsString];
 
-    JSValueRef jsError = NULL;
-    JSStringRef execJSString = JSStringCreateWithCFString((__bridge CFStringRef)execString);
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, NULL, 0, &jsError);
-    JSStringRelease(execJSString);
+    JSValueRef errorJSRef = NULL;
+    JSValueRef resultJSRef = NULL;
+    JSGlobalContextRef contextJSRef = JSContextGetGlobalContext(strongSelf->_context.ctx);
+    JSObjectRef globalObjectJSRef = JSContextGetGlobalObject(strongSelf->_context.ctx);
 
-    if (!result) {
-      onComplete(nil, RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError));
+    // get require
+    JSStringRef requireNameJSStringRef = JSStringCreateWithUTF8CString("require");
+    JSValueRef requireJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, requireNameJSStringRef, &errorJSRef);
+    JSStringRelease(requireNameJSStringRef);
+
+    if (requireJSRef != NULL && !JSValueIsUndefined(contextJSRef, requireJSRef) && errorJSRef == NULL) {
+
+      // get module
+      JSStringRef moduleNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)name);
+      JSValueRef moduleNameJSRef = JSValueMakeString(contextJSRef, moduleNameJSStringRef);
+      JSValueRef moduleJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)requireJSRef, NULL, 1, (const JSValueRef *)&moduleNameJSRef, &errorJSRef);
+      JSStringRelease(moduleNameJSStringRef);
+
+      if (moduleJSRef != NULL && errorJSRef == NULL) {
+
+        // get method
+        JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);
+        JSValueRef methodJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
+        JSStringRelease(methodNameJSStringRef);
+
+        if (methodJSRef != NULL && errorJSRef == NULL) {
+
+          // direct method invoke with no arguments
+          if (arguments.count == 0) {
+            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
+          }
+
+          // direct method invoke with 1 argument
+          else if(arguments.count == 1) {
+            JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
+            JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
+            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
+            JSStringRelease(argsJSStringRef);
+
+          } else {
+            // apply invoke with array of arguments
+            JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
+            JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
+            JSStringRelease(applyNameJSStringRef);
+
+            if (applyJSRef != NULL && errorJSRef == NULL) {
+              // invoke apply
+              JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
+              JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
+
+              JSValueRef args[2];
+              args[0] = JSValueMakeNull(contextJSRef);
+              args[1] = argsJSRef;
+
+              resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
+              JSStringRelease(argsJSStringRef);
+            }
+          }
+        }
+      }
+    }
+
+    if (!resultJSRef) {
+      onComplete(nil, RCTNSErrorFromJSError(contextJSRef, errorJSRef));
       return;
     }
 
@@ -267,8 +402,8 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     id objcValue;
     // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
     // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
-    if (!JSValueIsNull(strongSelf->_context.ctx, result)) {
-      JSStringRef jsJSONString = JSValueCreateJSONString(strongSelf->_context.ctx, result, 0, nil);
+    if (!JSValueIsNull(contextJSRef, resultJSRef)) {
+      JSStringRef jsJSONString = JSValueCreateJSONString(contextJSRef, resultJSRef, 0, nil);
       if (jsJSONString) {
         NSString *objcJSONString = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, jsJSONString);
         JSStringRelease(jsJSONString);
@@ -312,12 +447,12 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-   if ([NSThread currentThread] != _javaScriptThread) {
-     [self performSelector:@selector(executeBlockOnJavaScriptQueue:)
-                  onThread:_javaScriptThread withObject:block waitUntilDone:NO];
-   } else {
-     block();
-   }
+  if ([NSThread currentThread] != _javaScriptThread) {
+    [self performSelector:@selector(executeBlockOnJavaScriptQueue:)
+                 onThread:_javaScriptThread withObject:block waitUntilDone:NO];
+  } else {
+    block();
+  }
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block

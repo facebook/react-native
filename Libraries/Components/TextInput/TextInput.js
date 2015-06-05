@@ -19,14 +19,14 @@ var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
 var merge = require('merge');
@@ -35,7 +35,7 @@ var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
 var keyboardTypeConsts = RCTUIManager.UIKeyboardType;
 var returnKeyTypeConsts = RCTUIManager.UIReturnKeyType;
 
-var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
+var RCTTextViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   autoCorrect: true,
   autoCapitalize: true,
   clearTextOnFocus: true,
@@ -179,12 +179,12 @@ var TextInput = React.createClass({
       'number-pad',
       'phone-pad',
       'name-phone-pad',
-      'email-address',
       'decimal-pad',
       'twitter',
       'web-search',
       // Cross-platform
       'numeric',
+      'email-address',
     ]),
     /**
      * Determines how the return key should look.
@@ -232,6 +232,10 @@ var TextInput = React.createClass({
      * Callback that is called when the text input's submit button is pressed.
      */
     onSubmitEditing: PropTypes.func,
+    /**
+     * Invoked on mount and layout changes with {x, y, width, height}.
+     */
+    onLayout: PropTypes.func,
     /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. Default value is false.
@@ -305,7 +309,7 @@ var TextInput = React.createClass({
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
-      this.refs.input.getNativeNode();
+      React.findNodeHandle(this.refs.input);
   },
 
   getDefaultProps: function(): DefaultProps {
@@ -403,15 +407,23 @@ var TextInput = React.createClass({
     }
   },
 
+  getChildContext: function(): Object {
+    return {isInAParentText: true};
+  },
+
+  childContextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     if (Platform.OS === 'ios') {
-      return this._renderIOs();
+      return this._renderIOS();
     } else if (Platform.OS === 'android') {
       return this._renderAndroid();
     }
   },
 
-  _renderIOs: function() {
+  _renderIOS: function() {
     var textContainer;
 
     var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
@@ -446,6 +458,7 @@ var TextInput = React.createClass({
           onEndEditing={this.props.onEndEditing}
           onSubmitEditing={this.props.onSubmitEditing}
           onSelectionChangeShouldSetResponder={() => true}
+          onLayout={this.props.onLayout}
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
@@ -495,6 +508,7 @@ var TextInput = React.createClass({
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onLayout={this.props.onLayout}
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
@@ -509,7 +523,8 @@ var TextInput = React.createClass({
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
-        rejectResponderTermination={true}>
+        rejectResponderTermination={true}
+        testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
     );
@@ -517,6 +532,16 @@ var TextInput = React.createClass({
 
   _renderAndroid: function() {
     var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
+    var children = this.props.children;
+    var childCount = 0;
+    ReactChildren.forEach(children, () => ++childCount);
+    invariant(
+      !(this.props.value && childCount),
+      'Cannot specify both value and children.'
+    );
+    if (childCount > 1) {
+      children = <Text>{children}</Text>;
+    }
     var textContainer =
       <AndroidTextInput
         ref="input"
@@ -530,9 +555,11 @@ var TextInput = React.createClass({
         onChange={this._onChange}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
+        onLayout={this.props.onLayout}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         text={this.state.bufferedValue}
+        children={children}
       />;
 
     return (
@@ -592,17 +619,17 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTTextView = createReactIOSNativeComponentClass({
+var RCTTextView = createReactNativeComponentClass({
   validAttributes: RCTTextViewAttributes,
   uiViewClassName: 'RCTTextView',
 });
 
-var RCTTextField = createReactIOSNativeComponentClass({
+var RCTTextField = createReactNativeComponentClass({
   validAttributes: RCTTextFieldAttributes,
   uiViewClassName: 'RCTTextField',
 });
 
-var AndroidTextInput = createReactIOSNativeComponentClass({
+var AndroidTextInput = createReactNativeComponentClass({
   validAttributes: AndroidTextInputAttributes,
   uiViewClassName: 'AndroidTextInput',
 });

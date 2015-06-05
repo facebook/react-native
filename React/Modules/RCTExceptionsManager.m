@@ -36,62 +36,70 @@ RCT_EXPORT_MODULE()
   return [self initWithDelegate:nil];
 }
 
-RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
+RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
+                  stack:(NSArray *)stack)
+{
+  // TODO(#7070533): report a soft error to the server
+  if (_delegate) {
+    [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
+    return;
+  }
+  // JS already logs the error via console.
+}
+
+RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray *)stack)
 {
   if (_delegate) {
-    [_delegate unhandledJSExceptionWithMessage:message stack:stack];
+    [_delegate handleFatalJSExceptionWithMessage:message stack:stack];
     return;
   }
 
-#if RCT_DEBUG // Red box is only available in debug mode
-
   [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
 
-#else
+  if (!RCT_DEBUG) {
 
-  static NSUInteger reloadRetries = 0;
-  const NSUInteger maxMessageLength = 75;
+    static NSUInteger reloadRetries = 0;
+    const NSUInteger maxMessageLength = 75;
 
-  if (reloadRetries < _maxReloadAttempts) {
+    if (reloadRetries < _maxReloadAttempts) {
 
-    reloadRetries++;
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                        object:nil];
+      reloadRetries++;
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                          object:nil];
 
-  } else {
+    } else {
 
-    // Filter out numbers so the same base errors are mapped to the same categories independent of incorrect values.
-    NSString *pattern = @"[+-]?\\d+[,.]?\\d*";
-    NSString *sanitizedMessage = [message stringByReplacingOccurrencesOfString:pattern withString:@"<num>" options:NSRegularExpressionSearch range:(NSRange){0, message.length}];
+      if (message.length > maxMessageLength) {
+        message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
+      }
 
-    if (sanitizedMessage.length > maxMessageLength) {
-      sanitizedMessage = [[sanitizedMessage substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
+      NSMutableString *prettyStack = [NSMutableString stringWithString:@"\n"];
+      for (NSDictionary *frame in stack) {
+        [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+      }
+
+      NSString *name = [@"Unhandled JS Exception: " stringByAppendingString:message];
+      [NSException raise:name format:@"Message: %@, stack: %@", message, prettyStack];
     }
-
-    NSMutableString *prettyStack = [NSMutableString stringWithString:@"\n"];
-    for (NSDictionary *frame in stack) {
-      [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
-    }
-
-    NSString *name = [@"Unhandled JS Exception: " stringByAppendingString:sanitizedMessage];
-    [NSException raise:name format:@"Message: %@, stack: %@", message, prettyStack];
   }
-
-#endif
-
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
                   stack:(NSArray *)stack)
 {
+  if (_delegate) {
+    [_delegate updateJSExceptionWithMessage:message stack:stack];
+    return;
+  }
 
-#if RCT_DEBUG // Red box is only available in debug mode
-
-    [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
-
-#endif
-
+  [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
 }
 
+// Deprecated.  Use reportFatalException directly instead.
+RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
+                  stack:(NSArray *)stack)
+{
+  [self reportFatalException:message stack:stack];
+}
 @end

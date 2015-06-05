@@ -18,7 +18,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
@@ -60,7 +60,7 @@ var Image = React.createClass({
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `required('image!name')` function).
+     * resource (which should be wrapped in the `require('image!name')` function).
      */
     source: PropTypes.shape({
       uri: PropTypes.string,
@@ -99,6 +99,12 @@ var Image = React.createClass({
      * testing scripts.
      */
     testID: PropTypes.string,
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     */
+     onLayout: PropTypes.func,
   },
 
   statics: {
@@ -113,7 +119,7 @@ var Image = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'UIView',
-    validAttributes: ReactIOSViewAttributes.UIView
+    validAttributes: ReactNativeViewAttributes.UIView
   },
 
   render: function() {
@@ -123,8 +129,7 @@ var Image = React.createClass({
           'not be set directly on Image.');
       }
     }
-    var source = resolveAssetSource(this.props.source);
-    invariant(source, 'source must be initialized');
+    var source = resolveAssetSource(this.props.source) || {};
 
     var {width, height} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]);

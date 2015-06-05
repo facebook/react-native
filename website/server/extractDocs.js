@@ -19,9 +19,12 @@ function getNameFromPath(filepath) {
   while (ext = path.extname(filepath)) {
     filepath = path.basename(filepath, ext);
   }
+
   if (filepath === 'LayoutPropTypes') {
     return 'Flexbox';
-  } else if (filepath == 'TabBarItemIOS') {
+  } else if (filepath === 'TransformPropTypes') {
+    return 'Transforms';
+  } else if (filepath === 'TabBarItemIOS') {
     return 'TabBarIOS.Item';
   }
   return filepath;
@@ -41,6 +44,33 @@ function getExample(componentName) {
   };
 }
 
+// Hide a component from the sidebar by making it return false from
+// this function
+function shouldDisplayInSidebar(componentName) {
+  if (componentName === 'Transforms') {
+    return false;
+  }
+
+  return true;
+}
+
+function getNextComponent(i) {
+  var next;
+  var filepath = all[i];
+
+  if (all[i + 1]) {
+    var nextComponentName = getNameFromPath(all[i + 1]);
+
+    if (shouldDisplayInSidebar(nextComponentName)) {
+      return slugify(nextComponentName);
+    } else {
+      return getNextComponent(i + 1);
+    }
+  } else {
+    return 'network';
+  }
+}
+
 function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
 
@@ -56,16 +86,19 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   }
   json.example = getExample(componentName);
 
+  // Put Flexbox into the Polyfills category
+  var category = (type === 'style' ? 'Polyfills' : type + 's');
+  var next = getNextComponent(i);
+
   var res = [
     '---',
     'id: ' + slugify(componentName),
     'title: ' + componentName,
     'layout: autodocs',
-    'category: ' + (type === 'style' ? 'Polyfills' : type + 's'),
+    'category: ' + category,
     'permalink: docs/' + slugify(componentName) + '.html',
-    'next: ' + (all[i + 1] ?
-      slugify(getNameFromPath(all[i + 1])) :
-      'network'),
+    'next: ' + next,
+    'sidebar: ' + shouldDisplayInSidebar(componentName),
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
@@ -80,6 +113,7 @@ function renderComponent(filepath) {
     docgenHelpers.findExportedOrFirst,
     docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
   );
+
   return componentsToMarkdown('component', json, filepath, n++, styleDocs);
 }
 
@@ -102,6 +136,14 @@ function renderStyle(filepath) {
     docgenHelpers.findExportedObject,
     [docgen.handlers.propTypeHandler]
   );
+
+  // Remove deprecated transform props from docs
+  if (filepath === "../Libraries/StyleSheet/TransformPropTypes.js") {
+    ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
+      delete json['props'][key];
+    });
+  }
+
   return componentsToMarkdown('style', json, filepath, n++);
 }
 
@@ -115,6 +157,7 @@ var components = [
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Picker/PickerIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
+  '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/SliderIOS/SliderIOS.js',
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
@@ -148,6 +191,7 @@ var apis = [
 
 var styles = [
   '../Libraries/StyleSheet/LayoutPropTypes.js',
+  '../Libraries/StyleSheet/TransformPropTypes.js',
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
@@ -159,16 +203,17 @@ var polyfills = [
 
 var all = components
   .concat(apis)
-  .concat(styles.slice(0, 1))
+  .concat(styles.slice(0, 2))
   .concat(polyfills);
 
-var styleDocs = styles.slice(1).reduce(function(docs, filepath) {
+var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
       fs.readFileSync(filepath),
       docgenHelpers.findExportedObject,
       [docgen.handlers.propTypeHandler]
     );
+
   return docs;
 }, {});
 
@@ -177,7 +222,7 @@ module.exports = function() {
   return [].concat(
     components.map(renderComponent),
     apis.map(renderAPI('api')),
-    styles.slice(0, 1).map(renderStyle),
+    styles.slice(0, 2).map(renderStyle),
     polyfills.map(renderAPI('Polyfill'))
   );
 };

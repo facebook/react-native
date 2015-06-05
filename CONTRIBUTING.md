@@ -19,8 +19,8 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 1. Fork the repo and create your branch from `master`.
 2. If you've added code that should be tested, add tests!
 3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Make sure your code lints - we've done our best to make sure these rules match our internal linting guidelines.
+4. Ensure tests pass on Travis.
+5. Make sure your code lints (`node linter.js <files touched>`).
 6. If you haven't already, complete the CLA.
 
 ### Contributor License Agreement ("CLA")
@@ -37,7 +37,7 @@ We will be using GitHub Issues for our public bugs. We will keep a close eye on 
 
 ### Reporting New Issues
 
-The best way to get your bug fixed is to provide a reduced test case.
+The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [React Native Playground](https://rnplay.org/) snippet.
 
 ### Security Bugs
 

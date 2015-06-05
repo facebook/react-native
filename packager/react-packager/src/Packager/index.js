@@ -14,9 +14,9 @@ var path = require('path');
 var Promise = require('bluebird');
 var Transformer = require('../JSTransformer');
 var DependencyResolver = require('../DependencyResolver');
-var _ = require('underscore');
 var Package = require('./Package');
 var Activity = require('../Activity');
+var ModuleTransport = require('../lib/ModuleTransport');
 var declareOpts = require('../lib/declareOpts');
 var imageSize = require('image-size');
 
@@ -90,6 +90,7 @@ function Packager(options) {
     moduleFormat: opts.moduleFormat,
     assetRoots: opts.assetRoots,
     fileWatcher: opts.fileWatcher,
+    assetExts: opts.assetExts,
   });
 
   this._transformer = new Transformer({
@@ -129,12 +130,8 @@ Packager.prototype.package = function(main, runModule, sourceMapUrl, isDev) {
     .then(function(transformedModules) {
       Activity.endEvent(transformEventId);
 
-      transformedModules.forEach(function(transformed) {
-        ppackage.addModule(
-          transformed.code,
-          transformed.sourceCode,
-          transformed.sourcePath
-        );
+      transformedModules.forEach(function(moduleTransport) {
+        ppackage.addModule(moduleTransport);
       });
 
       ppackage.finalize({ runMainModule: runModule });
@@ -167,11 +164,14 @@ Packager.prototype._transformModule = function(ppackage, module) {
 
   var resolver = this._resolver;
   return transform.then(function(transformed) {
-    return _.extend(
-      {},
-      transformed,
-      {code: resolver.wrapModule(module, transformed.code)}
-    );
+    var code = resolver.wrapModule(module, transformed.code);
+    return new ModuleTransport({
+      code: code,
+      map: transformed.map,
+      sourceCode: transformed.sourceCode,
+      sourcePath: transformed.sourcePath,
+      virtual: transformed.virtual,
+    });
   });
 };
 
@@ -195,11 +195,12 @@ Packager.prototype.generateAssetModule_DEPRECATED = function(ppackage, module) {
 
     var code = 'module.exports = ' + JSON.stringify(img) + ';';
 
-    return {
+    return new ModuleTransport({
       code: code,
       sourceCode: code,
       sourcePath: module.path,
-    };
+      virtual: true,
+    });
   });
 };
 
@@ -224,13 +225,15 @@ Packager.prototype.generateAssetModule = function(ppackage, module) {
 
     ppackage.addAsset(img);
 
-    var code = 'module.exports = ' + JSON.stringify(img) + ';';
+    var ASSET_TEMPLATE = 'module.exports = require("AssetRegistry").registerAsset(%json);';
+    var code = ASSET_TEMPLATE.replace('%json', JSON.stringify(img));
 
-    return {
+    return new ModuleTransport({
       code: code,
       sourceCode: code,
       sourcePath: module.path,
-    };
+      virtual: true,
+    });
   });
 };
 
@@ -238,11 +241,12 @@ function generateJSONModule(module) {
   return readFile(module.path).then(function(data) {
     var code = 'module.exports = ' + data.toString('utf8') + ';';
 
-    return {
+    return new ModuleTransport({
       code: code,
       sourceCode: code,
       sourcePath: module.path,
-    };
+      virtual: true,
+    });
   });
 }
 

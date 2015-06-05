@@ -7,14 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDefines.h"
-
-#if RCT_DEBUG // Red box is only available in debug mode
-
 #import "RCTRedBox.h"
 
 #import "RCTBridge.h"
+#import "RCTDefines.h"
 #import "RCTUtils.h"
+
+#if RCT_DEBUG
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
 
@@ -59,6 +58,7 @@
     [_rootView addSubview:_stackTraceTableView];
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    dismissButton.accessibilityIdentifier = @"redbox-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
     [dismissButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
@@ -66,6 +66,7 @@
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
 
     UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    reloadButton.accessibilityIdentifier = @"redbox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
     [reloadButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
@@ -77,8 +78,25 @@
     reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     [_rootView addSubview:dismissButton];
     [_rootView addSubview:reloadButton];
+
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+
+    [notificationCenter addObserver:self
+                           selector:@selector(dismiss)
+                               name:RCTReloadNotification
+                             object:nil];
+
+    [notificationCenter addObserver:self
+                           selector:@selector(dismiss)
+                               name:RCTJavaScriptDidLoadNotification
+                             object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)openStackFrameInEditor:(NSDictionary *)stackFrame
@@ -92,7 +110,7 @@
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
   [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
 
-  [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:nil];
+  [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
@@ -126,7 +144,6 @@
 - (void)reload
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
-  [self dismiss];
 }
 
 #pragma mark - TableView
@@ -157,6 +174,7 @@
 {
   if (!cell) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"msg-cell"];
+    cell.textLabel.accessibilityIdentifier = @"redbox-error";
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.textLabel.font = [UIFont boldSystemFontOfSize:16];
     cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -307,6 +325,21 @@
 {
   [_window dismiss];
 }
+
+@end
+
+#else // Disabled
+
+@implementation RCTRedBox
+
++ (instancetype)sharedInstance { return nil; }
+- (void)showErrorMessage:(NSString *)message {}
+- (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow {}
+- (NSString *)currentErrorMessage { return nil; }
+- (void)dismiss {}
 
 @end
 

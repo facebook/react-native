@@ -12,6 +12,7 @@
 'use strict';
 
 var POPAnimationOrNull = require('POPAnimation');
+var React = require('React');
 
 if (!POPAnimationOrNull) {
   // POP animation isn't available in the OSS fork - this is a temporary
@@ -83,7 +84,7 @@ var POPAnimationMixin = {
       'Invalid refKey ' + refKey + ' for anim:\n' + JSON.stringify(anim) +
         '\nvalid refs: ' + JSON.stringify(Object.keys(this.refs))
     );
-    var refNodeHandle = this.refs[refKey].getNodeHandle();
+    var refNodeHandle = React.findNodeHandle(this.refs[refKey]);
     this.startAnimationWithNodeHandle(refNodeHandle, animID, doneCallback);
   },
 
@@ -192,7 +193,7 @@ var POPAnimationMixin = {
    */
   stopAnimations: function(refKey: string) {
     invariant(this.refs[refKey], 'invalid ref');
-    this.stopNodeHandleAnimations(this.refs[refKey].getNodeHandle());
+    this.stopNodeHandleAnimations(React.findNodeHandle(this.refs[refKey]));
   },
 
   /**

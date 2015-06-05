@@ -183,7 +183,7 @@ var PanResponder = {
    * changes* in the centroid of recently moved touches.
    *
    * There is also some nuance with how we handle multiple moved touches in a
-   * single event. With the way `ReactIOSEventEmitter` dispatches touches as
+   * single event. With the way `ReactNativeEventEmitter` dispatches touches as
    * individual events, multiple touches generate two 'move' events, each of
    * them triggering `onResponderMove`. But with the way `PanResponder` works,
    * all of the gesture inference is performed on the first dispatch, since it

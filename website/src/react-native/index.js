@@ -176,7 +176,7 @@ RCT_EXPORT_MODULE();
 // Available as NativeModules.MyCustomModule.processString
 RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
 {
-  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"];]]);
+  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"]]);
 }
 @end`}
           </Prism>
@@ -215,12 +215,14 @@ var Message = React.createClass({
 
 @implementation MyCustomViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 @end`}
           </Prism>
           <Prism>

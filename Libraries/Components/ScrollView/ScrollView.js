@@ -17,7 +17,7 @@ var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
 var ScrollResponder = require('ScrollResponder');
 var StyleSheet = require('StyleSheet');
@@ -25,7 +25,7 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
@@ -186,7 +186,7 @@ var ScrollView = React.createClass({
     /**
      * Experimental: When true, offscreen child views (whose `overflow` value is
      * `hidden`) are removed from their native backing superview when offscreen.
-     * This canimprove scrolling performance on long lists. The default value is
+     * This can improve scrolling performance on long lists. The default value is
      * false.
      */
     removeClippedSubviews: PropTypes.bool,
@@ -207,20 +207,28 @@ var ScrollView = React.createClass({
   },
 
   getInnerViewNode: function(): any {
-    return this.refs[INNERVIEW].getNodeHandle();
+    return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
   scrollTo: function(destY?: number, destX?: number) {
-    RCTUIManager.scrollTo(
-      this.getNodeHandle(),
-      destX || 0,
-      destY || 0
-    );
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        React.findNodeHandle(this),
+        RCTUIManager.RCTScrollView.Commands.scrollTo,
+        [destX || 0, destY || 0]
+      );
+    } else {
+      RCTUIManager.scrollTo(
+        React.findNodeHandle(this),
+        destX || 0,
+        destY || 0
+      );
+    }
   },
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
     RCTUIManager.scrollWithoutAnimationTo(
-      this.getNodeHandle(),
+      React.findNodeHandle(this),
       destX || 0,
       destY || 0
     );
@@ -335,7 +343,7 @@ var styles = StyleSheet.create({
 });
 
 var validAttributes = {
-  ...ReactIOSViewAttributes.UIView,
+  ...ReactNativeViewAttributes.UIView,
   alwaysBounceHorizontal: true,
   alwaysBounceVertical: true,
   automaticallyAdjustContentInsets: true,
@@ -362,11 +370,11 @@ var validAttributes = {
 };
 
 if (Platform.OS === 'android') {
-  var AndroidScrollView = createReactIOSNativeComponentClass({
+  var AndroidScrollView = createReactNativeComponentClass({
     validAttributes: validAttributes,
-    uiViewClassName: 'AndroidScrollView',
+    uiViewClassName: 'RCTScrollView',
   });
-  var AndroidHorizontalScrollView = createReactIOSNativeComponentClass({
+  var AndroidHorizontalScrollView = createReactNativeComponentClass({
     validAttributes: validAttributes,
     uiViewClassName: 'AndroidHorizontalScrollView',
   });

@@ -65,6 +65,6 @@ cd EndToEndTest
 # Make sure we installed local version of react-native
 ls `basename $MARKER` > /dev/null
 
-flow
+flow --retries 10
 
 xctool -scheme EndToEndTest -sdk iphonesimulator test

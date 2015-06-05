@@ -32,6 +32,7 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   writingDirection: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
+  letterSpacing: ReactPropTypes.number,
 });
 
 // Text doesn't support padding correctly (#4841912)

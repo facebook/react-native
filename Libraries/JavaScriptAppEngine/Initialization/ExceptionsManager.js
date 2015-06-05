@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Platform = require('Platform');
 var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
 var loadSourceMap = require('loadSourceMap');
@@ -26,26 +25,32 @@ type Exception = {
   message: string;
 }
 
-function reportException(e: Exception, stack?: any) {
+function reportException(e: Exception, isFatal: bool, stack?: any) {
   if (RCTExceptionsManager) {
     if (!stack) {
       stack = parseErrorStack(e);
     }
-    RCTExceptionsManager.reportUnhandledException(e.message, stack);
+    if (isFatal) {
+      RCTExceptionsManager.reportFatalException(e.message, stack);
+    } else {
+      RCTExceptionsManager.reportSoftException(e.message, stack);
+    }
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = parseErrorStack(e, map);
           RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
         })
-        .then(null, error => {
-          console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
+        .catch(error => {
+          // This can happen in a variety of normal situations, such as
+          // Network module not being available, or when running locally
+          console.warn('Unable to load source map: ' + error.message);
         });
     }
   }
 }
 
-function handleException(e: Exception) {
+function handleException(e: Exception, isFatal: boolean) {
   var stack = parseErrorStack(e);
   var msg =
     'Error: ' + e.message +
@@ -58,7 +63,7 @@ function handleException(e: Exception) {
   } else {
     console.error(msg);
   }
-  reportException(e, stack);
+  reportException(e, isFatal, stack);
 }
 
 /**
@@ -79,7 +84,7 @@ function installConsoleErrorReporter() {
     var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
     var error: any = new Error('console.error: ' + str);
     error.framesToPop = 1;
-    reportException(error);
+    reportException(error, /* isFatal */ false);
   };
   if (console.reportErrorsAsExceptions === undefined) {
     console.reportErrorsAsExceptions = true; // Individual apps can disable this

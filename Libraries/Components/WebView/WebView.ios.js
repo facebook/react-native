@@ -14,7 +14,6 @@
 var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
@@ -189,7 +188,7 @@ var WebView = React.createClass({
   },
 
   getWebWiewHandle: function(): any {
-    return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
+    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
   onLoadingStart: function(event: Event) {
@@ -198,7 +197,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
-    console.error("encountered an error loading page", event.nativeEvent);
+    console.error('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,

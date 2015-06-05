@@ -15,14 +15,34 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
-var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 
 var stylePropType = StyleSheetPropType(ViewStylePropTypes);
+
+var AccessibilityTraits = [
+  'none',
+  'button',
+  'link',
+  'header',
+  'search',
+  'image',
+  'selected',
+  'plays',
+  'key',
+  'text',
+  'summary',
+  'disabled',
+  'frequentUpdates',
+  'startsMedia',
+  'adjustable',
+  'allowsDirectInteraction',
+  'pageTurn',
+];
 
 /**
  * The most fundamental component for building UI, `View` is a
@@ -53,7 +73,7 @@ var View = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactIOSViewAttributes.RCTView
+    validAttributes: ReactNativeViewAttributes.RCTView
   },
 
   propTypes: {
@@ -69,6 +89,27 @@ var View = React.createClass({
      * children and accumulating all the Text nodes separated by space.
      */
     accessibilityLabel: PropTypes.string,
+
+    /**
+     * Provides additional traits to screen reader. By default no traits are
+     * provided unless specified otherwise in element
+     */
+    accessibilityTraits: PropTypes.oneOfType([
+      PropTypes.oneOf(AccessibilityTraits),
+      PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
+    ]),
+
+    /**
+     * When `accessible` is true, the system will try to invoke this function
+     * when the user performs accessibility tap gesture.
+     */
+    onAcccessibilityTap: PropTypes.func,
+
+    /**
+     * When `accessible` is true, the system will invoke this function when the
+     * user performs the magic tap gesture.
+     */
+    onMagicTap: PropTypes.func,
 
     /**
      * Used to locate this view in end-to-end tests.
@@ -89,6 +130,13 @@ var View = React.createClass({
     onResponderTerminationRequest: PropTypes.func,
     onStartShouldSetResponder: PropTypes.func,
     onStartShouldSetResponderCapture: PropTypes.func,
+
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     */
+    onLayout: PropTypes.func,
 
     /**
      * In the absence of `auto` property, `none` is much like `CSS`'s `none`
@@ -158,8 +206,8 @@ var View = React.createClass({
   },
 });
 
-var RCTView = createReactIOSNativeComponentClass({
-  validAttributes: ReactIOSViewAttributes.RCTView,
+var RCTView = createReactNativeComponentClass({
+  validAttributes: ReactNativeViewAttributes.RCTView,
   uiViewClassName: 'RCTView',
 });
 RCTView.propTypes = View.propTypes;
@@ -167,7 +215,7 @@ if (__DEV__) {
   var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
   for (var prop in viewConfig.nativeProps) {
     var viewAny: any = View; // Appease flow
-    if (!viewAny.propTypes[prop] && !ReactIOSStyleAttributes[prop]) {
+    if (!viewAny.propTypes[prop] && !ReactNativeStyleAttributes[prop]) {
       throw new Error(
         'View is missing propType for native prop `' + prop + '`'
       );

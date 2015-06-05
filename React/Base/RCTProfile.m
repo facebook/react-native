@@ -13,9 +13,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTAssert.h"
 #import "RCTDefines.h"
-#import "RCTLog.h"
 #import "RCTUtils.h"
+
+NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
+NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 #if RCT_DEV
 
@@ -43,7 +46,7 @@ NSLock *_RCTProfileLock;
 #define RCTProfileAddEvent(type, props...) \
 [RCTProfileInfo[type] addObject:@{ \
   @"pid": @([[NSProcessInfo processInfo] processIdentifier]), \
-  @"tid": RCTThreadName([NSThread currentThread]), \
+  @"tid": RCTCurrentThreadName(), \
   props \
 }];
 
@@ -113,10 +116,16 @@ void RCTProfileInit(void)
       RCTProfileSamples: [[NSMutableArray alloc] init],
     };
   );
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidStartProfiling
+                                                      object:nil];
 }
 
 NSString *RCTProfileEnd(void)
 {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
+                                                      object:nil];
+
   RCTProfileLock(
     NSString *log = RCTJSONStringify(RCTProfileInfo, NULL);
     RCTProfileEventID = 0;
@@ -168,6 +177,34 @@ void RCTProfileImmediateEvent(NSString *name, NSTimeInterval timestamp, NSString
       @"ph": @"i",
       @"args": RCTProfileGetMemoryUsage(),
     );
+  );
+}
+
+NSNumber *_RCTProfileBeginFlowEvent(void)
+{
+  static NSUInteger flowID = 0;
+
+  CHECK(@0);
+  RCTProfileAddEvent(RCTProfileTraceEvents,
+    @"name": @"flow",
+    @"id": @(++flowID),
+    @"cat": @"flow",
+    @"ph": @"s",
+    @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+  );
+
+  return @(flowID);
+}
+
+void _RCTProfileEndFlowEvent(NSNumber *flowID)
+{
+  CHECK();
+  RCTProfileAddEvent(RCTProfileTraceEvents,
+    @"name": @"flow",
+    @"id": flowID,
+    @"cat": @"flow",
+    @"ph": @"f",
+    @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
   );
 }
 

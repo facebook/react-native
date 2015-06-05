@@ -11,15 +11,18 @@
  */
 'use strict';
 
+var Map = require('Map');
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTAppState = NativeModules.AppState;
 
 var logError = require('logError');
+var invariant = require('invariant');
 
-var DEVICE_APPSTATE_EVENT = 'appStateDidChange';
-
-var _appStateHandlers = {};
+var _eventHandlers = {
+  change: new Map(),
+  memoryWarning: new Map(),
+};
 
 /**
  * `AppStateIOS` can tell you if the app is in the foreground or background,
@@ -82,12 +85,23 @@ var AppStateIOS = {
     type: string,
     handler: Function
   ) {
-    _appStateHandlers[handler] = RCTDeviceEventEmitter.addListener(
-      DEVICE_APPSTATE_EVENT,
-      (appStateData) => {
-        handler(appStateData.app_state);
-      }
+    invariant(
+      ['change', 'memoryWarning'].indexOf(type) !== -1,
+      'Trying to subscribe to unknown event: "%s"', type
     );
+    if (type === 'change') {
+      _eventHandlers[type].set(handler, RCTDeviceEventEmitter.addListener(
+        'appStateDidChange',
+        (appStateData) => {
+          handler(appStateData.app_state);
+        }
+      ));
+    } else if (type === 'memoryWarning') {
+      _eventHandlers[type].set(handler, RCTDeviceEventEmitter.addListener(
+        'memoryWarning',
+        handler
+      ));
+    }
   },
 
   /**
@@ -97,11 +111,15 @@ var AppStateIOS = {
     type: string,
     handler: Function
   ) {
-    if (!_appStateHandlers[handler]) {
+    invariant(
+      ['change', 'memoryWarning'].indexOf(type) !== -1,
+      'Trying to remove listener for unknown event: "%s"', type
+    );
+    if (!_eventHandlers[type].has(handler)) {
       return;
     }
-    _appStateHandlers[handler].remove();
-    _appStateHandlers[handler] = null;
+    _eventHandlers[type].get(handler).remove();
+    _eventHandlers[type].delete(handler);
   },
 
   currentState: (null : ?String),
@@ -109,7 +127,7 @@ var AppStateIOS = {
 };
 
 RCTDeviceEventEmitter.addListener(
-  DEVICE_APPSTATE_EVENT,
+  'appStateDidChange',
   (appStateData) => {
     AppStateIOS.currentState = appStateData.app_state;
   }

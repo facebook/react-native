@@ -28,13 +28,19 @@ var AppStateSubscription = React.createClass({
     return {
       appState: AppStateIOS.currentState,
       previousAppStates: [],
+      memoryWarnings: 0,
     };
   },
   componentDidMount: function() {
     AppStateIOS.addEventListener('change', this._handleAppStateChange);
+    AppStateIOS.addEventListener('memoryWarning', this._handleMemoryWarning);
   },
   componentWillUnmount: function() {
     AppStateIOS.removeEventListener('change', this._handleAppStateChange);
+    AppStateIOS.removeEventListener('memoryWarning', this._handleMemoryWarning);
+  },
+  _handleMemoryWarning: function() {
+    this.setState({memoryWarnings: this.state.memoryWarnings + 1})
   },
   _handleAppStateChange: function(appState) {
     var previousAppStates = this.state.previousAppStates.slice();
@@ -45,6 +51,13 @@ var AppStateSubscription = React.createClass({
     });
   },
   render() {
+    if (this.props.showMemoryWarnings) {
+      return (
+        <View>
+          <Text>{this.state.memoryWarnings}</Text>
+        </View>
+      );
+    }
     if (this.props.showCurrentOnly) {
       return (
         <View>
@@ -76,5 +89,10 @@ exports.examples = [
   {
     title: 'Previous states:',
     render(): ReactElement { return <AppStateSubscription showCurrentOnly={false} />; }
+  },
+  {
+    title: 'Memory Warnings',
+    description: "In the simulator, hit Shift+Command+M to simulate a memory warning.",
+    render(): ReactElement { return <AppStateSubscription showMemoryWarnings={true} />; }
   },
 ];

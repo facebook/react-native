@@ -14,25 +14,20 @@ extern NSString *const RCTReactTagAttributeName;
 
 @interface RCTShadowText : RCTShadowView
 
-@property (nonatomic, assign) NSWritingDirection writingDirection;
-@property (nonatomic, strong) UIColor *textBackgroundColor;
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, copy) NSString *fontFamily;
 @property (nonatomic, assign) CGFloat fontSize;
 @property (nonatomic, copy) NSString *fontWeight;
 @property (nonatomic, copy) NSString *fontStyle;
 @property (nonatomic, assign) BOOL isHighlighted;
+@property (nonatomic, assign) CGFloat letterSpacing;
 @property (nonatomic, assign) CGFloat lineHeight;
-@property (nonatomic, assign) NSUInteger maximumNumberOfLines;
+@property (nonatomic, assign) NSUInteger numberOfLines;
 @property (nonatomic, assign) CGSize shadowOffset;
 @property (nonatomic, assign) NSTextAlignment textAlign;
+@property (nonatomic, strong) UIColor *textBackgroundColor;
+@property (nonatomic, assign) NSWritingDirection writingDirection;
 
-// Not exposed to JS
-@property (nonatomic, strong) UIFont *font;
-@property (nonatomic, assign) NSLineBreakMode truncationMode;
-
-@property (nonatomic, copy, readonly) NSAttributedString *attributedString;
-@property (nonatomic, strong, readonly) NSLayoutManager *layoutManager;
-@property (nonatomic, strong, readonly) NSTextContainer *textContainer;
+- (void)recomputeText;
 
 @end

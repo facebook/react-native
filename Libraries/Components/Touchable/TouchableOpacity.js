@@ -20,6 +20,7 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
+var flattenStyle = require('flattenStyle');
 var keyOf = require('keyOf');
 var onlyChild = require('onlyChild');
 
@@ -43,6 +44,9 @@ var onlyChild = require('onlyChild');
  *   );
  * },
  * ```
+ * > **NOTE**: TouchableOpacity supports only one child
+ * >
+ * > If you wish to have to have several child components, wrap them in a View.
  */
 
 var TouchableOpacity = React.createClass({
@@ -105,12 +109,13 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableHandleActivePressOut: function() {
-    this.setOpacityTo(1.0);
+    var child = onlyChild(this.props.children);
+    var childStyle = flattenStyle(child.props.style) || {};
+    this.setOpacityTo(childStyle.opacity === undefined ? 1 : childStyle.opacity);
     this.props.onPressOut && this.props.onPressOut();
   },
 
   touchableHandlePress: function() {
-    this.setOpacityTo(1.0);
     this.props.onPress && this.props.onPress();
   },
 

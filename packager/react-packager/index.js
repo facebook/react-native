@@ -8,6 +8,8 @@
  */
 'use strict';
 
+useGracefulFs();
+
 var Activity = require('./src/Activity');
 var Server = require('./src/Server');
 
@@ -16,14 +18,17 @@ exports.middleware = function(options) {
   return server.processRequest.bind(server);
 };
 
-exports.buildPackageFromUrl = function(options, reqUrl) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
+exports.buildPackage = function(options, packageOptions) {
+  var server = createServer(options);
+  return server.buildPackage(packageOptions)
+    .then(function(p) {
+      server.end();
+      return p;
+    });
+};
 
-  var server = new Server(options);
+exports.buildPackageFromUrl = function(options, reqUrl) {
+  var server = createServer(options);
   return server.buildPackageFromUrl(reqUrl)
     .then(function(p) {
       server.end();
@@ -32,16 +37,33 @@ exports.buildPackageFromUrl = function(options, reqUrl) {
 };
 
 exports.getDependencies = function(options, main) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
-
-  var server = new Server(options);
+  var server = createServer(options);
   return server.getDependencies(main)
     .then(function(r) {
       server.end();
       return r.dependencies;
     });
 };
+
+function useGracefulFs() {
+  var fs = require('fs');
+  var gracefulFs = require('graceful-fs');
+
+  // A bit sneaky but it's not straightforward to update all the
+  // modules we depend on.
+  Object.keys(fs).forEach(function(method) {
+    if (typeof fs[method] === 'function' && gracefulFs[method]) {
+      fs[method] = gracefulFs[method];
+    }
+  });
+}
+
+function createServer(options) {
+  Activity.disable();
+  // Don't start the filewatcher or the cache.
+  if (options.nonPersistent == null) {
+    options.nonPersistent = true;
+  }
+
+  return new Server(options);
+}

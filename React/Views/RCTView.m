@@ -10,12 +10,11 @@
 #import "RCTView.h"
 
 #import "RCTAutoInsetsProtocol.h"
+#import "RCTBorderDrawing.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
-
-static void *RCTViewCornerRadiusKVOContext = &RCTViewCornerRadiusKVOContext;
 
 static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
 {
@@ -30,10 +29,6 @@ static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
   }
   return nil;
 }
-
-static BOOL RCTEllipseGetIntersectionsWithLine(CGRect ellipseBoundingRect, CGPoint p1, CGPoint p2, CGPoint intersections[2]);
-static CGPathRef RCTPathCreateWithRoundedRect(CGRect rect, CGFloat topLeftRadiusX, CGFloat topLeftRadiusY, CGFloat topRightRadiusX, CGFloat topRightRadiusY, CGFloat bottomLeftRadiusX, CGFloat bottomLeftRadiusY, CGFloat bottomRightRadiusX, CGFloat bottomRightRadiusY, const CGAffineTransform *transform);
-static void RCTPathAddEllipticArc(CGMutablePathRef path, const CGAffineTransform *m, CGFloat x, CGFloat y, CGFloat xRadius, CGFloat yRadius, CGFloat startAngle, CGFloat endAngle, bool clockwise);
 
 @implementation UIView (RCTViewUnmounting)
 
@@ -123,28 +118,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderRightWidth = -1;
     _borderBottomWidth = -1;
     _borderLeftWidth = -1;
+    _borderTopLeftRadius = -1;
+    _borderTopRightRadius = -1;
+    _borderBottomLeftRadius = -1;
+    _borderBottomRightRadius = -1;
 
     _backgroundColor = [super backgroundColor];
-    [super setBackgroundColor:[UIColor clearColor]];
-
-    [self.layer addObserver:self forKeyPath:@"cornerRadius" options:0 context:RCTViewCornerRadiusKVOContext];
   }
 
   return self;
-}
-
-- (void)dealloc
-{
-  [self.layer removeObserver:self forKeyPath:@"cornerRadius" context:RCTViewCornerRadiusKVOContext];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-  if (context == RCTViewCornerRadiusKVOContext) {
-    [self.layer setNeedsDisplay];
-  } else {
-    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-  }
 }
 
 - (NSString *)accessibilityLabel
@@ -178,6 +160,26 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     default:
       RCTLogError(@"Invalid pointer-events specified %zd on %@", _pointerEvents, self);
       return [super hitTest:point withEvent:event];
+  }
+}
+
+- (BOOL)accessibilityActivate
+{
+  if (self.accessibilityTapHandler) {
+    self.accessibilityTapHandler(self);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+- (BOOL)accessibilityPerformMagicTap
+{
+  if (self.magicTapHandler) {
+    self.magicTapHandler(self);
+    return YES;
+  } else {
+    return NO;
   }
 }
 
@@ -275,7 +277,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     // View has cliping enabled, so we can easily test if it is partially
     // or completely within the clipRect, and mount or unmount it accordingly
 
-    if (CGRectIntersectsRect(clipRect, view.frame)) {
+    if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
 
       // View is at least partially visible, so remount it if unmounted
       if (view.superview == nil) {
@@ -431,217 +433,91 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if ([_backgroundColor isEqual:backgroundColor]) {
     return;
   }
+
   _backgroundColor = backgroundColor;
   [self.layer setNeedsDisplay];
 }
 
-- (UIImage *)generateBorderImage:(out CGRect *)contentsCenter
+- (UIEdgeInsets)bordersAsInsets
 {
-  const CGFloat maxRadius = MIN(self.bounds.size.height, self.bounds.size.width) / 2.0;
-  const CGFloat radius = MAX(0, MIN(self.layer.cornerRadius, maxRadius));
-
   const CGFloat borderWidth = MAX(0, _borderWidth);
-  const CGFloat topWidth    = _borderTopWidth    >= 0 ? _borderTopWidth    : borderWidth;
-  const CGFloat rightWidth  = _borderRightWidth  >= 0 ? _borderRightWidth  : borderWidth;
-  const CGFloat bottomWidth = _borderBottomWidth >= 0 ? _borderBottomWidth : borderWidth;
-  const CGFloat leftWidth   = _borderLeftWidth   >= 0 ? _borderLeftWidth   : borderWidth;
 
-  const CGFloat topRadius    = MAX(0, radius - topWidth);
-  const CGFloat rightRadius  = MAX(0, radius - rightWidth);
-  const CGFloat bottomRadius = MAX(0, radius - bottomWidth);
-  const CGFloat leftRadius   = MAX(0, radius - leftWidth);
+  return (UIEdgeInsets) {
+    _borderTopWidth >= 0 ? _borderTopWidth : borderWidth,
+    _borderLeftWidth >= 0 ? _borderLeftWidth : borderWidth,
+    _borderBottomWidth >= 0 ? _borderBottomWidth : borderWidth,
+    _borderRightWidth  >= 0 ? _borderRightWidth : borderWidth,
+  };
+}
 
-  const UIEdgeInsets edgeInsets = UIEdgeInsetsMake(topWidth + topRadius, leftWidth + leftRadius, bottomWidth + bottomRadius, rightWidth + rightRadius);
-  const CGSize size = CGSizeMake(edgeInsets.left + 1 + edgeInsets.right, edgeInsets.top + 1 + edgeInsets.bottom);
+- (RCTCornerRadii)cornerRadii
+{
+  const CGRect bounds = self.bounds;
+  const CGFloat maxRadius = MIN(bounds.size.height, bounds.size.width);
+  const CGFloat radius = MAX(0, _borderRadius);
 
-  UIScreen *screen = self.window.screen ?: [UIScreen mainScreen];
-  UIGraphicsBeginImageContextWithOptions(size, NO, screen.scale * 2);
+  return (RCTCornerRadii){
+    MIN(_borderTopLeftRadius >= 0 ? _borderTopLeftRadius : radius, maxRadius),
+    MIN(_borderTopRightRadius >= 0 ? _borderTopRightRadius : radius, maxRadius),
+    MIN(_borderBottomLeftRadius >= 0 ? _borderBottomLeftRadius : radius, maxRadius),
+    MIN(_borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius, maxRadius),
+  };
+}
 
-  CGContextRef ctx = UIGraphicsGetCurrentContext();
-  const CGRect rect = {CGPointZero, size};
-  CGPathRef path = CGPathCreateWithRoundedRect(rect, radius, radius, NULL);
-
-  if (_backgroundColor) {
-    CGContextSaveGState(ctx);
-
-    CGContextAddPath(ctx, path);
-    CGContextSetFillColorWithColor(ctx, _backgroundColor.CGColor);
-    CGContextFillPath(ctx);
-
-    CGContextRestoreGState(ctx);
-  }
-
-  CGContextAddPath(ctx, path);
-  CGPathRelease(path);
-
-  if (radius > 0 && topWidth > 0 && rightWidth > 0 && bottomWidth > 0 && leftWidth > 0) {
-    const UIEdgeInsets insetEdgeInsets = UIEdgeInsetsMake(topWidth, leftWidth, bottomWidth, rightWidth);
-    const CGRect insetRect = UIEdgeInsetsInsetRect(rect, insetEdgeInsets);
-    CGPathRef insetPath = RCTPathCreateWithRoundedRect(insetRect, leftRadius, topRadius, rightRadius, topRadius, leftRadius, bottomRadius, rightRadius, bottomRadius, NULL);
-    CGContextAddPath(ctx, insetPath);
-    CGPathRelease(insetPath);
-  }
-
-  CGContextEOClip(ctx);
-
-  BOOL hasEqualColor = !_borderTopColor && !_borderRightColor && !_borderBottomColor && !_borderLeftColor;
-  BOOL hasEqualBorder = _borderWidth >= 0 && _borderTopWidth < 0 && _borderRightWidth < 0 && _borderBottomWidth < 0 && _borderLeftWidth < 0;
-  if (radius <= 0 && hasEqualBorder && hasEqualColor) {
-    CGContextSetStrokeColorWithColor(ctx, _borderColor);
-    CGContextSetLineWidth(ctx, 2 * _borderWidth);
-    CGContextClipToRect(ctx, rect);
-    CGContextStrokeRect(ctx, rect);
-  } else if (radius <= 0 && hasEqualColor) {
-    CGContextSetFillColorWithColor(ctx, _borderColor);
-    CGContextAddRect(ctx, rect);
-    const CGRect insetRect = UIEdgeInsetsInsetRect(rect, edgeInsets);
-    CGContextAddRect(ctx, insetRect);
-    CGContextEOFillPath(ctx);
-  } else {
-    BOOL didSet = NO;
-    CGPoint topLeft;
-    if (topRadius > 0 && leftRadius > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake(leftWidth, topWidth, 2 * leftRadius, 2 * topRadius), CGPointMake(0, 0), CGPointMake(leftWidth, topWidth), points);
-      if (!isnan(points[1].x) && !isnan(points[1].y)) {
-        topLeft = points[1];
-        didSet = YES;
-      }
-    }
-
-    if (!didSet) {
-      topLeft = CGPointMake(leftWidth, topWidth);
-    }
-
-    didSet = NO;
-    CGPoint bottomLeft;
-    if (bottomRadius > 0 && leftRadius > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake(leftWidth, (size.height - bottomWidth) - 2 * bottomRadius, 2 * leftRadius, 2 * bottomRadius), CGPointMake(0, size.height), CGPointMake(leftWidth, size.height - bottomWidth), points);
-      if (!isnan(points[1].x) && !isnan(points[1].y)) {
-        bottomLeft = points[1];
-        didSet = YES;
-      }
-    }
-
-    if (!didSet) {
-      bottomLeft = CGPointMake(leftWidth, size.height - bottomWidth);
-    }
-
-    didSet = NO;
-    CGPoint topRight;
-    if (topRadius > 0 && rightRadius > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake((size.width - rightWidth) - 2 * rightRadius, topWidth, 2 * rightRadius, 2 * topRadius), CGPointMake(size.width, 0), CGPointMake(size.width - rightWidth, topWidth), points);
-      if (!isnan(points[0].x) && !isnan(points[0].y)) {
-        topRight = points[0];
-        didSet = YES;
-      }
-    }
-
-    if (!didSet) {
-      topRight = CGPointMake(size.width - rightWidth, topWidth);
-    }
-
-    didSet = NO;
-    CGPoint bottomRight;
-    if (bottomRadius > 0 && rightRadius > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(CGRectMake((size.width - rightWidth) - 2 * rightRadius, (size.height - bottomWidth) - 2 * bottomRadius, 2 * rightRadius, 2 * bottomRadius), CGPointMake(size.width, size.height), CGPointMake(size.width - rightWidth, size.height - bottomWidth), points);
-      if (!isnan(points[0].x) && !isnan(points[0].y)) {
-        bottomRight = points[0];
-        didSet = YES;
-      }
-    }
-
-    if (!didSet) {
-      bottomRight = CGPointMake(size.width - rightWidth, size.height - bottomWidth);
-    }
-
-    // RIGHT
-    if (rightWidth > 0) {
-      CGContextSaveGState(ctx);
-
-      const CGPoint points[] = {
-        CGPointMake(size.width, 0),
-        topRight,
-        bottomRight,
-        CGPointMake(size.width, size.height),
-      };
-
-      CGContextSetFillColorWithColor(ctx, _borderRightColor ?: _borderColor);
-      CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
-
-      CGContextRestoreGState(ctx);
-    }
-
-    // BOTTOM
-    if (bottomWidth > 0) {
-      CGContextSaveGState(ctx);
-
-      const CGPoint points[] = {
-        CGPointMake(0, size.height),
-        bottomLeft,
-        bottomRight,
-        CGPointMake(size.width, size.height),
-      };
-
-      CGContextSetFillColorWithColor(ctx, _borderBottomColor ?: _borderColor);
-      CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
-
-      CGContextRestoreGState(ctx);
-    }
-
-    // LEFT
-    if (leftWidth > 0) {
-      CGContextSaveGState(ctx);
-
-      const CGPoint points[] = {
-        CGPointMake(0, 0),
-        topLeft,
-        bottomLeft,
-        CGPointMake(0, size.height),
-      };
-
-      CGContextSetFillColorWithColor(ctx, _borderLeftColor ?: _borderColor);
-      CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
-
-      CGContextRestoreGState(ctx);
-    }
-
-    // TOP
-    if (topWidth > 0) {
-      CGContextSaveGState(ctx);
-
-      const CGPoint points[] = {
-        CGPointMake(0, 0),
-        topLeft,
-        topRight,
-        CGPointMake(size.width, 0),
-      };
-
-      CGContextSetFillColorWithColor(ctx, _borderTopColor ?: _borderColor);
-      CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
-
-      CGContextRestoreGState(ctx);
-    }
-  }
-
-  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  *contentsCenter = CGRectMake(edgeInsets.left / size.width, edgeInsets.top / size.height, 1.0 / size.width, 1.0 / size.height);
-  return [image resizableImageWithCapInsets:edgeInsets];
+- (RCTBorderColors)borderColors
+{
+  return (RCTBorderColors){
+    _borderTopColor ?: _borderColor,
+    _borderLeftColor ?: _borderColor,
+    _borderBottomColor ?: _borderColor,
+    _borderRightColor ?: _borderColor
+  };
 }
 
 - (void)displayLayer:(CALayer *)layer
 {
-  CGRect contentsCenter;
-  UIImage *image = [self generateBorderImage:&contentsCenter];
+  const RCTCornerRadii cornerRadii = [self cornerRadii];
+  const UIEdgeInsets borderInsets = [self bordersAsInsets];
+  const RCTBorderColors borderColors = [self borderColors];
+
+  BOOL useIOSBorderRendering =
+  !RCTRunningInTestEnvironment() &&
+  RCTCornerRadiiAreEqual(cornerRadii) &&
+  RCTBorderInsetsAreEqual(borderInsets) &&
+  RCTBorderColorsAreEqual(borderColors);
+
+  // TODO: A problem with this is that iOS draws borders in front of the content
+  // whereas CSS draws them behind the content. Also iOS clips to the outside of
+  // the border, but CSS clips to the inside. To solve this, we'll need to add
+  // a container view inside the main view to correctly clip the subviews.
+
+  if (useIOSBorderRendering) {
+    layer.cornerRadius = cornerRadii.topLeft;
+    layer.borderColor = borderColors.left;
+    layer.borderWidth = borderInsets.left;
+    layer.backgroundColor = _backgroundColor.CGColor;
+    layer.contents = nil;
+    layer.needsDisplayOnBoundsChange = NO;
+    layer.mask = nil;
+    return;
+  }
+
+  UIImage *image = RCTGetBorderImage([self cornerRadii],
+                                     [self bordersAsInsets],
+                                     [self borderColors],
+                                     _backgroundColor.CGColor,
+                                     self.clipsToBounds);
+
+  const CGRect contentsCenter = ({
+    CGSize size = image.size;
+    UIEdgeInsets insets = image.capInsets;
+    CGRectMake(
+      insets.left / size.width,
+      insets.top / size.height,
+      1.0 / size.width,
+      1.0 / size.height
+    );
+  });
 
   if (RCTRunningInTestEnvironment()) {
     const CGSize size = self.bounds.size;
@@ -649,14 +525,42 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     [image drawInRect:(CGRect){CGPointZero, size}];
     image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
-    contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
+  layer.backgroundColor = NULL;
   layer.contents = (id)image.CGImage;
   layer.contentsCenter = contentsCenter;
   layer.contentsScale = image.scale;
   layer.magnificationFilter = kCAFilterNearest;
+  layer.needsDisplayOnBoundsChange = YES;
+
+  [self updateClippingForLayer:layer];
+}
+
+- (void)updateClippingForLayer:(CALayer *)layer
+{
+  CALayer *mask = nil;
+  CGFloat cornerRadius = 0;
+
+  if (self.clipsToBounds) {
+
+    const RCTCornerRadii cornerRadii = [self cornerRadii];
+    if (RCTCornerRadiiAreEqual(cornerRadii)) {
+
+      cornerRadius = cornerRadii.topLeft;
+
+    } else {
+
+      CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+      CGPathRef path = RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+      shapeLayer.path = path;
+      CGPathRelease(path);
+      mask = shapeLayer;
+    }
+  }
+
+  layer.cornerRadius = cornerRadius;
+  layer.mask = mask;
 }
 
 #pragma mark Border Color
@@ -695,75 +599,20 @@ setBorderWidth(Right)
 setBorderWidth(Bottom)
 setBorderWidth(Left)
 
+#define setBorderRadius(side) \
+  - (void)setBorder##side##Radius:(CGFloat)border##side##Radius \
+  {                                                             \
+    if (_border##side##Radius == border##side##Radius) {        \
+      return;                                                   \
+    }                                                           \
+    _border##side##Radius = border##side##Radius;               \
+    [self.layer setNeedsDisplay];                               \
+  }
+
+setBorderRadius()
+setBorderRadius(TopLeft)
+setBorderRadius(TopRight)
+setBorderRadius(BottomLeft)
+setBorderRadius(BottomRight)
+
 @end
-
-static void RCTPathAddEllipticArc(CGMutablePathRef path, const CGAffineTransform *m, CGFloat x, CGFloat y, CGFloat xRadius, CGFloat yRadius, CGFloat startAngle, CGFloat endAngle, bool clockwise)
-{
-  CGFloat xScale = 1, yScale = 1, radius = 0;
-  if (xRadius != 0) {
-    xScale = 1;
-    yScale = yRadius / xRadius;
-    radius = xRadius;
-  } else if (yRadius != 0) {
-    xScale = xRadius / yRadius;
-    yScale = 1;
-    radius = yRadius;
-  }
-
-  CGAffineTransform t = CGAffineTransformMakeTranslation(x, y);
-  t = CGAffineTransformScale(t, xScale, yScale);
-  if (m != NULL) {
-    t = CGAffineTransformConcat(t, *m);
-  }
-
-  CGPathAddArc(path, &t, 0, 0, radius, startAngle, endAngle, clockwise);
-}
-
-static CGPathRef RCTPathCreateWithRoundedRect(CGRect rect, CGFloat topLeftRadiusX, CGFloat topLeftRadiusY, CGFloat topRightRadiusX, CGFloat topRightRadiusY, CGFloat bottomLeftRadiusX, CGFloat bottomLeftRadiusY, CGFloat bottomRightRadiusX, CGFloat bottomRightRadiusY, const CGAffineTransform *transform)
-{
-  const CGFloat minX = CGRectGetMinX(rect);
-  const CGFloat minY = CGRectGetMinY(rect);
-  const CGFloat maxX = CGRectGetMaxX(rect);
-  const CGFloat maxY = CGRectGetMaxY(rect);
-
-  CGMutablePathRef path = CGPathCreateMutable();
-  RCTPathAddEllipticArc(path, transform, minX + topLeftRadiusX, minY + topLeftRadiusY, topLeftRadiusX, topLeftRadiusY, M_PI, 3 * M_PI_2, false);
-  RCTPathAddEllipticArc(path, transform, maxX - topRightRadiusX, minY + topRightRadiusY, topRightRadiusX, topRightRadiusY, 3 * M_PI_2, 0, false);
-  RCTPathAddEllipticArc(path, transform, maxX - bottomRightRadiusX, maxY - bottomRightRadiusY, bottomRightRadiusX, bottomRightRadiusY, 0, M_PI_2, false);
-  RCTPathAddEllipticArc(path, transform, minX + bottomLeftRadiusX, maxY - bottomLeftRadiusY, bottomLeftRadiusX, bottomLeftRadiusY, M_PI_2, M_PI, false);
-  CGPathCloseSubpath(path);
-  return path;
-}
-
-static BOOL RCTEllipseGetIntersectionsWithLine(CGRect ellipseBoundingRect, CGPoint p1, CGPoint p2, CGPoint intersections[2])
-{
-  const CGFloat ellipseCenterX = CGRectGetMidX(ellipseBoundingRect);
-  const CGFloat ellipseCenterY = CGRectGetMidY(ellipseBoundingRect);
-
-  // ellipseBoundingRect.origin.x -= ellipseCenterX;
-  // ellipseBoundingRect.origin.y -= ellipseCenterY;
-
-  p1.x -= ellipseCenterX;
-  p1.y -= ellipseCenterY;
-
-  p2.x -= ellipseCenterX;
-  p2.y -= ellipseCenterY;
-
-  const CGFloat m = (p2.y - p1.y) / (p2.x - p1.x);
-  const CGFloat a = ellipseBoundingRect.size.width / 2;
-  const CGFloat b = ellipseBoundingRect.size.height / 2;
-  const CGFloat c = p1.y - m * p1.x;
-  const CGFloat A = (b * b + a * a * m * m);
-  const CGFloat B = 2 * a * a * c * m;
-  const CGFloat D = sqrt((a * a * (b * b - c * c)) / A + pow(B / (2 * A), 2));
-
-  const CGFloat x_ = -B / (2 * A);
-  const CGFloat x1 = x_ + D;
-  const CGFloat x2 = x_ - D;
-  const CGFloat y1 = m * x1 + c;
-  const CGFloat y2 = m * x2 + c;
-
-  intersections[0] = CGPointMake(x1 + ellipseCenterX, y1 + ellipseCenterY);
-  intersections[1] = CGPointMake(x2 + ellipseCenterX, y2 + ellipseCenterY);
-  return YES;
-}
