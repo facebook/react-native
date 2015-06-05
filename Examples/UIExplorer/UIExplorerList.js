@@ -77,6 +77,7 @@ var APIS = [
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
   require('./VibrationIOSExample'),
+  require('./XHRExample'),
 ];
 
 var ds = new ListView.DataSource({
