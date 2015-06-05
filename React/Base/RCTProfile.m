@@ -10,10 +10,13 @@
 #import "RCTProfile.h"
 
 #import <mach/mach.h>
+#import <objc/message.h>
+#import <objc/runtime.h>
 
 #import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
+#import "RCTBridge.h"
 #import "RCTDefines.h"
 #import "RCTUtils.h"
 
@@ -32,6 +35,7 @@ NSDictionary *RCTProfileGetMemoryUsage(void);
 
 NSString const *RCTProfileTraceEvents = @"traceEvents";
 NSString const *RCTProfileSamples = @"samples";
+NSString *const RCTProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
 
@@ -92,6 +96,111 @@ NSDictionary *RCTProfileGetMemoryUsage(void)
   }
 }
 
+#pragma mark - Module hooks
+
+@interface RCTBridge (Private)
+
+- (void)dispatchBlock:(dispatch_block_t)block forModule:(id<RCTBridgeModule>)module;
+
+@end
+
+static const char *RCTProfileProxyClassName(Class);
+static const char *RCTProfileProxyClassName(Class class)
+{
+  return [RCTProfilePrefix stringByAppendingString:NSStringFromClass(class)].UTF8String;
+}
+
+static SEL RCTProfileProxySelector(SEL);
+static SEL RCTProfileProxySelector(SEL selector)
+{
+  NSString *selectorName = NSStringFromSelector(selector);
+  return NSSelectorFromString([RCTProfilePrefix stringByAppendingString:selectorName]);
+}
+
+static void RCTProfileForwardInvocation(NSObject *, SEL, NSInvocation *);
+static void RCTProfileForwardInvocation(NSObject *self, SEL cmd, NSInvocation *invocation)
+{
+  NSString *name = [NSString stringWithFormat:@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(invocation.selector)];
+  SEL newSel = RCTProfileProxySelector(invocation.selector);
+
+  if ([object_getClass(self) instancesRespondToSelector:newSel]) {
+    invocation.selector = newSel;
+    RCTProfileBeginEvent();
+    [invocation invoke];
+    RCTProfileEndEvent(name, @"objc_call,modules,auto", nil);
+  } else {
+    // Use original selector to don't change error message
+    [self doesNotRecognizeSelector:invocation.selector];
+  }
+}
+
+static IMP RCTProfileMsgForward(NSObject *, SEL);
+static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
+{
+  IMP imp = _objc_msgForward;
+#if !defined(__arm64__)
+  NSMethodSignature *signature = [self methodSignatureForSelector:selector];
+  if (signature.methodReturnType[0] == _C_STRUCT_B && signature.methodReturnLength > 8) {
+    imp = _objc_msgForward_stret;
+  }
+#endif
+  return imp;
+}
+
+static void RCTProfileHookModules(RCTBridge *);
+static void RCTProfileHookModules(RCTBridge *bridge)
+{
+  [bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *className, id<RCTBridgeModule> module, BOOL *stop) {
+    [bridge dispatchBlock:^{
+      Class moduleClass = object_getClass(module);
+      Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
+
+      unsigned int methodCount;
+      Method *methods = class_copyMethodList(moduleClass, &methodCount);
+      for (NSUInteger i = 0; i < methodCount; i++) {
+        Method method = methods[i];
+        SEL selector = method_getName(method);
+        if ([NSStringFromSelector(selector) hasPrefix:@"rct"] || [NSObject instancesRespondToSelector:selector]) {
+          continue;
+        }
+        IMP originalIMP = method_getImplementation(method);
+        const char *returnType = method_getTypeEncoding(method);
+        class_addMethod(proxyClass, selector, RCTProfileMsgForward(module, selector), returnType);
+        class_addMethod(proxyClass, RCTProfileProxySelector(selector), originalIMP, returnType);
+      }
+      free(methods);
+
+      for (Class cls in @[proxyClass, object_getClass(proxyClass)]) {
+        Method oldImp = class_getInstanceMethod(cls, @selector(class));
+        class_replaceMethod(cls, @selector(class), imp_implementationWithBlock(^{ return moduleClass; }), method_getTypeEncoding(oldImp));
+      }
+
+      IMP originalFwd = class_replaceMethod(moduleClass, @selector(forwardInvocation:), (IMP)RCTProfileForwardInvocation, "v@:@");
+      if (originalFwd != NULL) {
+        class_addMethod(proxyClass, RCTProfileProxySelector(@selector(forwardInvocation:)), originalFwd, "v@:@");
+      }
+
+      objc_registerClassPair(proxyClass);
+      object_setClass(module, proxyClass);
+    } forModule:module];
+  }];
+}
+
+void RCTProfileUnhookModules(RCTBridge *);
+void RCTProfileUnhookModules(RCTBridge *bridge)
+{
+  [bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *className, id<RCTBridgeModule> module, BOOL *stop) {
+    [bridge dispatchBlock:^{
+      Class proxyClass = object_getClass(module);
+      if (module.class != proxyClass) {
+        object_setClass(module, module.class);
+        objc_disposeClassPair(proxyClass);
+      }
+    } forModule:module];
+  }];
+}
+
+
 #pragma mark - Public Functions
 
 BOOL RCTProfileIsProfiling(void)
@@ -102,8 +211,10 @@ BOOL RCTProfileIsProfiling(void)
   return profiling;
 }
 
-void RCTProfileInit(void)
+void RCTProfileInit(RCTBridge *bridge)
 {
+  RCTProfileHookModules(bridge);
+
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     _RCTProfileLock = [[NSLock alloc] init];
@@ -121,7 +232,7 @@ void RCTProfileInit(void)
                                                       object:nil];
 }
 
-NSString *RCTProfileEnd(void)
+NSString *RCTProfileEnd(RCTBridge *bridge)
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
                                                       object:nil];
@@ -132,6 +243,9 @@ NSString *RCTProfileEnd(void)
     RCTProfileInfo = nil;
     RCTProfileOngoingEvents = nil;
   );
+
+  RCTProfileUnhookModules(bridge);
+
   return log;
 }
 

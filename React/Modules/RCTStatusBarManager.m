@@ -11,6 +11,21 @@
 
 #import "RCTLog.h"
 
+@implementation RCTConvert (UIStatusBar)
+
+RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
+  @"default": @(UIStatusBarStyleDefault),
+  @"light-content": @(UIStatusBarStyleLightContent),
+}), UIStatusBarStyleDefault, integerValue);
+
+RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
+  @"none": @(UIStatusBarAnimationNone),
+  @"fade": @(UIStatusBarAnimationFade),
+  @"slide": @(UIStatusBarAnimationSlide),
+}), UIStatusBarAnimationNone, integerValue);
+
+@end
+
 @implementation RCTStatusBarManager
 
 static BOOL RCTViewControllerBasedStatusBarAppearance()
@@ -18,7 +33,8 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   static BOOL value;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] ?: @YES boolValue];
+    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:
+              @"UIViewControllerBasedStatusBarAppearance"] ?: @YES boolValue];
   });
 
   return value;
@@ -53,21 +69,6 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
     [[UIApplication sharedApplication] setStatusBarHidden:hidden
                                             withAnimation:animation];
   }
-}
-
-- (NSDictionary *)constantsToExport
-{
-  return @{
-    @"Style": @{
-      @"default": @(UIStatusBarStyleDefault),
-      @"lightContent": @(UIStatusBarStyleLightContent),
-    },
-    @"Animation": @{
-      @"none": @(UIStatusBarAnimationNone),
-      @"fade": @(UIStatusBarAnimationFade),
-      @"slide": @(UIStatusBarAnimationSlide),
-    },
-  };
 }
 
 @end

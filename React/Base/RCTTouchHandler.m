@@ -36,8 +36,6 @@
 
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
-  NSMutableArray *_pendingTouches;
-  NSMutableArray *_bridgeInteractionTiming;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -51,9 +49,6 @@
     _nativeTouches = [[NSMutableOrderedSet alloc] init];
     _reactTouches = [[NSMutableArray alloc] init];
     _touchViews = [[NSMutableArray alloc] init];
-
-    _pendingTouches = [[NSMutableArray alloc] init];
-    _bridgeInteractionTiming = [[NSMutableArray alloc] init];
 
     // `cancelsTouchesInView` is needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
@@ -94,11 +89,11 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
       return;
     }
 
-    // Get new, unique touch id
+    // Get new, unique touch identifier for the react touch
     const NSUInteger RCTMaxTouches = 11; // This is the maximum supported by iDevices
-    NSInteger touchID = ([_reactTouches.lastObject[@"target"] integerValue] + 1) % RCTMaxTouches;
+    NSInteger touchID = ([_reactTouches.lastObject[@"identifier"] integerValue] + 1) % RCTMaxTouches;
     for (NSDictionary *reactTouch in _reactTouches) {
-      NSInteger usedID = [reactTouch[@"target"] integerValue];
+      NSInteger usedID = [reactTouch[@"identifier"] integerValue];
       if (usedID == touchID) {
         // ID has already been used, try next value
         touchID ++;

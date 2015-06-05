@@ -1397,11 +1397,6 @@ RCT_EXPORT_METHOD(clearJSResponder)
   NSMutableDictionary *allJSConstants = [@{
     @"customBubblingEventTypes": [self customBubblingEventTypes],
     @"customDirectEventTypes": [self customDirectEventTypes],
-    @"NSTextAlignment": @{
-      @"Left": @(NSTextAlignmentLeft),
-      @"Center": @(NSTextAlignmentCenter),
-      @"Right": @(NSTextAlignmentRight),
-    },
     @"Dimensions": @{
       @"window": @{
         @"width": @(RCTScreenSize().width),
@@ -1411,73 +1406,6 @@ RCT_EXPORT_METHOD(clearJSResponder)
       @"modalFullscreenView": @{
         @"width": @(RCTScreenSize().width),
         @"height": @(RCTScreenSize().height),
-      },
-    },
-    @"StyleConstants": @{
-      @"PointerEventsValues": @{
-        @"none": @(RCTPointerEventsNone),
-        @"box-none": @(RCTPointerEventsBoxNone),
-        @"box-only": @(RCTPointerEventsBoxOnly),
-        @"auto": @(RCTPointerEventsUnspecified),
-      },
-    },
-    @"UIText": @{
-      @"AutocapitalizationType": @{
-        @"characters": @(UITextAutocapitalizationTypeAllCharacters),
-        @"sentences": @(UITextAutocapitalizationTypeSentences),
-        @"words": @(UITextAutocapitalizationTypeWords),
-        @"none": @(UITextAutocapitalizationTypeNone),
-      },
-    },
-    @"UITextField": @{
-      @"clearButtonMode": @{
-        @"never": @(UITextFieldViewModeNever),
-        @"while-editing": @(UITextFieldViewModeWhileEditing),
-        @"unless-editing": @(UITextFieldViewModeUnlessEditing),
-        @"always": @(UITextFieldViewModeAlways),
-      },
-    },
-    @"UIKeyboardType": @{
-      @"default": @(UIKeyboardTypeDefault),
-      @"ascii-capable": @(UIKeyboardTypeASCIICapable),
-      @"numbers-and-punctuation": @(UIKeyboardTypeNumbersAndPunctuation),
-      @"url": @(UIKeyboardTypeURL),
-      @"number-pad": @(UIKeyboardTypeNumberPad),
-      @"phone-pad": @(UIKeyboardTypePhonePad),
-      @"name-phone-pad": @(UIKeyboardTypeNamePhonePad),
-      @"decimal-pad": @(UIKeyboardTypeDecimalPad),
-      @"email-address": @(UIKeyboardTypeEmailAddress),
-      @"twitter": @(UIKeyboardTypeTwitter),
-      @"web-search": @(UIKeyboardTypeWebSearch),
-    },
-    @"UIReturnKeyType": @{
-      @"default": @(UIReturnKeyDefault),
-      @"go": @(UIReturnKeyGo),
-      @"google": @(UIReturnKeyGoogle),
-      @"join": @(UIReturnKeyJoin),
-      @"next": @(UIReturnKeyNext),
-      @"route": @(UIReturnKeyRoute),
-      @"search": @(UIReturnKeySearch),
-      @"send": @(UIReturnKeySend),
-      @"yahoo": @(UIReturnKeyYahoo),
-      @"done": @(UIReturnKeyDone),
-      @"emergency-call": @(UIReturnKeyEmergencyCall),
-    },
-    @"UIView": @{
-      @"ContentMode": @{
-        @"ScaleToFill": @(UIViewContentModeScaleToFill),
-        @"ScaleAspectFit": @(UIViewContentModeScaleAspectFit),
-        @"ScaleAspectFill": @(UIViewContentModeScaleAspectFill),
-        @"Redraw": @(UIViewContentModeRedraw),
-        @"Center": @(UIViewContentModeCenter),
-        @"Top": @(UIViewContentModeTop),
-        @"Bottom": @(UIViewContentModeBottom),
-        @"Left": @(UIViewContentModeLeft),
-        @"Right": @(UIViewContentModeRight),
-        @"TopLeft": @(UIViewContentModeTopLeft),
-        @"TopRight": @(UIViewContentModeTopRight),
-        @"BottomLeft": @(UIViewContentModeBottomLeft),
-        @"BottomRight": @(UIViewContentModeBottomRight),
       },
     },
   } mutableCopy];

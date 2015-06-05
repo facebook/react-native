@@ -120,7 +120,7 @@ var DatePickerIOS = React.createClass({
       <View style={props.style}>
         <RCTDatePickerIOS
           ref={DATEPICKER}
-          style={styles.rkDatePickerIOS}
+          style={styles.datePickerIOS}
           date={props.date.getTime()}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
@@ -128,7 +128,7 @@ var DatePickerIOS = React.createClass({
           minimumDate={
             props.minimumDate ? props.minimumDate.getTime() : undefined
           }
-          mode={RCTDatePickerIOSConsts.DatePickerModes[props.mode]}
+          mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
@@ -139,7 +139,7 @@ var DatePickerIOS = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  rkDatePickerIOS: {
+  datePickerIOS: {
     height: RCTDatePickerIOSConsts.ComponentHeight,
     width: RCTDatePickerIOSConsts.ComponentWidth,
   },

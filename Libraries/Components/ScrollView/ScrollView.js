@@ -38,12 +38,6 @@ var PropTypes = React.PropTypes;
 var SCROLLVIEW = 'ScrollView';
 var INNERVIEW = 'InnerScrollView';
 
-var keyboardDismissModeConstants = {
-  'none': RCTScrollViewConsts.KeyboardDismissMode.None, // default
-  'interactive': RCTScrollViewConsts.KeyboardDismissMode.Interactive,
-  'onDrag': RCTScrollViewConsts.KeyboardDismissMode.OnDrag,
-};
-
 /**
  * Component that wraps platform ScrollView while providing
  * integration with touch locking "responder" system.
@@ -147,7 +141,7 @@ var ScrollView = React.createClass({
     keyboardDismissMode: PropTypes.oneOf([
       'none', // default
       'interactive',
-      'onDrag',
+      'on-drag',
     ]),
     /**
      * When false, tapping outside of the focused text input when the keyboard
@@ -287,9 +281,6 @@ var ScrollView = React.createClass({
       ...this.props,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
-      keyboardDismissMode: this.props.keyboardDismissMode ?
-        keyboardDismissModeConstants[this.props.keyboardDismissMode] :
-        undefined,
       style: ([styles.base, this.props.style]: ?Array<any>),
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchMove: this.scrollResponderHandleTouchMove,
@@ -308,7 +299,7 @@ var ScrollView = React.createClass({
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
     };
-
+    
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
       ScrollViewClass = RCTScrollView;
@@ -318,6 +309,13 @@ var ScrollView = React.createClass({
       } else {
         ScrollViewClass = AndroidScrollView;
       }
+      var keyboardDismissModeConstants = {
+        'none': RCTScrollViewConsts.KeyboardDismissMode.None, // default
+        'interactive': RCTScrollViewConsts.KeyboardDismissMode.Interactive,
+        'on-drag': RCTScrollViewConsts.KeyboardDismissMode.OnDrag,
+      };
+      props.keyboardDismissMode = props.keyboardDismissMode ?
+        keyboardDismissModeConstants[props.keyboardDismissMode] : undefined;
     }
     invariant(
       ScrollViewClass !== undefined,

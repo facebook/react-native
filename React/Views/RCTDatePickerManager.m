@@ -10,7 +10,6 @@
 #import "RCTDatePickerManager.h"
 
 #import "RCTBridge.h"
-#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
@@ -20,7 +19,7 @@ RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
   @"time": @(UIDatePickerModeTime),
   @"date": @(UIDatePickerModeDate),
   @"datetime": @(UIDatePickerModeDateAndTime),
-  //@"countdown": @(UIDatePickerModeCountDownTimer) // not supported yet
+  @"countdown": @(UIDatePickerModeCountDownTimer), // not supported yet
 }), UIDatePickerModeTime, integerValue)
 
 @end
@@ -31,9 +30,12 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
+  // TODO: we crash here if the RCTDatePickerManager is released
+  // while the UIDatePicker is still sending onChange events. To
+  // fix this we should maybe subclass UIDatePicker and make it
+  // be its own event target.
   UIDatePicker *picker = [[UIDatePicker alloc] init];
-  [picker addTarget:self
-             action:@selector(onChange:)
+  [picker addTarget:self action:@selector(onChange:)
    forControlEvents:UIControlEventValueChanged];
   return picker;
 }
@@ -56,17 +58,10 @@ RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
 - (NSDictionary *)constantsToExport
 {
-  UIDatePicker *dp = [[UIDatePicker alloc] init];
-  [dp layoutIfNeeded];
-
+  UIDatePicker *view = [[UIDatePicker alloc] init];
   return @{
-    @"ComponentHeight": @(CGRectGetHeight(dp.frame)),
-    @"ComponentWidth": @(CGRectGetWidth(dp.frame)),
-    @"DatePickerModes": @{
-      @"time": @(UIDatePickerModeTime),
-      @"date": @(UIDatePickerModeDate),
-      @"datetime": @(UIDatePickerModeDateAndTime),
-    }
+    @"ComponentHeight": @(view.intrinsicContentSize.height),
+    @"ComponentWidth": @(view.intrinsicContentSize.width),
   };
 }
 

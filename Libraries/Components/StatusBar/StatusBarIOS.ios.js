@@ -13,26 +13,26 @@
 
 var RCTStatusBarManager = require('NativeModules').StatusBarManager;
 
+type StatusBarStyle = $Enum<{
+  'default': string,
+  'light-content': string,
+}>;
+
+type StatusBarAnimation = $Enum<{
+  'none': string,
+  'fade': string,
+  'slide': string,
+}>;
+
 var StatusBarIOS = {
 
-  Style: {
-    default: RCTStatusBarManager.Style.default,
-    lightContent: RCTStatusBarManager.Style.lightContent
-  },
-
-  Animation: {
-    none: RCTStatusBarManager.Animation.none,
-    fade: RCTStatusBarManager.Animation.fade,
-    slide: RCTStatusBarManager.Animation.slide,
-  },
-
-  setStyle(style: number, animated?: boolean) {
+  setStyle(style: StatusBarStyle, animated?: boolean) {
     animated = animated || false;
     RCTStatusBarManager.setStyle(style, animated);
   },
 
-  setHidden(hidden: boolean, animation: number) {
-    animation = animation || StatusBarIOS.Animation.none;
+  setHidden(hidden: boolean, animation?: StatusBarAnimation) {
+    animation = animation || 'none';
     RCTStatusBarManager.setHidden(hidden, animation);
   },
 };
