@@ -102,6 +102,11 @@ RCT_EXPORT_METHOD(requestPermissions)
   }
 }
 
+RCT_EXPORT_METHOD(abandonPermissions)
+{
+  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+}
+
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
 
