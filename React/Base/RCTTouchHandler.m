@@ -89,11 +89,11 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
       return;
     }
 
-    // Get new, unique touch id
+    // Get new, unique touch identifier for the react touch
     const NSUInteger RCTMaxTouches = 11; // This is the maximum supported by iDevices
-    NSInteger touchID = ([_reactTouches.lastObject[@"target"] integerValue] + 1) % RCTMaxTouches;
+    NSInteger touchID = ([_reactTouches.lastObject[@"identifier"] integerValue] + 1) % RCTMaxTouches;
     for (NSDictionary *reactTouch in _reactTouches) {
-      NSInteger usedID = [reactTouch[@"target"] integerValue];
+      NSInteger usedID = [reactTouch[@"identifier"] integerValue];
       if (usedID == touchID) {
         // ID has already been used, try next value
         touchID ++;
