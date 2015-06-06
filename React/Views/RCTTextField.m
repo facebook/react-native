@@ -116,6 +116,10 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   return UIEdgeInsetsInsetRect(rect, _contentInset);
 }
 
+- (void)setTextColor:(UIColor *)textColor {
+  self.textColor = textColor;
+}
+
 - (CGRect)editingRectForBounds:(CGRect)bounds
 {
   return [self textRectForBounds:bounds];

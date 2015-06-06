@@ -145,6 +145,7 @@ class UIExplorerList extends React.Component {
             onChangeText={this._search.bind(this)}
             placeholder="Search..."
             style={styles.searchTextInput}
+            placeholderStyle={styles.searchPlaceholder}
             value={this.state.searchText}
           />
         </View>
@@ -259,11 +260,6 @@ var styles = StyleSheet.create({
     paddingBottom: 10,
   },
   searchTextInput: {
-    placeholderTextColor: 'green',
-    placeholderFontFamily: 'Cochin',
-    placeholderFontSize: 15,
-    placeholderFontWeight: 'bold',
-    placeholderFontStyle: 'italic',
     backgroundColor: 'white',
     borderColor: '#cccccc',
     borderRadius: 3,
@@ -271,6 +267,13 @@ var styles = StyleSheet.create({
     height: 30,
     paddingLeft: 8,
   },
+  searchPlaceholder:{
+    placeholderTextColor: 'green',
+    placeholderFontFamily: 'Cochin',
+    placeholderFontSize: 15,
+    placeholderFontWeight: 'bold',
+    placeholderFontStyle: 'italic',
+  }
 });
 
 module.exports = UIExplorerList;

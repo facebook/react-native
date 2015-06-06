@@ -64,11 +64,11 @@ var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
   clearTextOnFocus: true,
   selectTextOnFocus: true,
   placeholder: true,
+  placeholderFontStyle: true,
   placeholderTextColor: true,
   placeholderFontFamily: true,
   placeholderFontSize: true,
   placeholderFontWeight: true,
-  placeholderFontStyle: true
 });
 
 var onlyMultiline = {
@@ -253,10 +253,6 @@ var TextInput = React.createClass({
      */
     placeholder: PropTypes.string,
     /**
-     * The text color of the placeholder string
-     */
-
-    /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
      */
@@ -298,7 +294,13 @@ var TextInput = React.createClass({
     /**
      * Styles
      */
-    style:  StyleSheetPropType(TextInputStylePropTypes),
+    style: Text.propTypes.styles,
+    /**
+     * Styles for placeholder
+     */
+    placeholderStyle: StyleSheetPropType(TextInputStylePropTypes),
+
+    placeholderTextColor: PropTypes.string,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -446,6 +448,8 @@ var TextInput = React.createClass({
         <RCTTextField
           ref="input"
           style={[styles.input, this.props.style]}
+          placeholderStyle={this.props.placeholderStyle}
+          placeholderTextColor={this.props.placeholderStyle.placeholderTextColor}
           enabled={this.props.editable}
           keyboardType={keyboardType}
           returnKeyType={returnKeyType}
@@ -492,6 +496,8 @@ var TextInput = React.createClass({
         <RCTTextView
           ref="input"
           style={[styles.input, this.props.style]}
+          placeholderStyle={this.props.placeholderStyle}
+          placeholderTextColor={this.props.placeholderStyle.placeholderTextColor}
           children={children}
           mostRecentEventCounter={this.state.mostRecentEventCounter}
           editable={this.props.editable}
