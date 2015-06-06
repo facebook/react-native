@@ -39,7 +39,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
     ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didCompleteNetworkResponse',
-      (args) => this._didCompleteResponse.apply(this, args[0], args[1])
+      (args) => this._didCompleteResponse.call(this, args[0], args[1])
     ));
   }
 
