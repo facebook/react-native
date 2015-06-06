@@ -379,8 +379,13 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   NSNumber *reactTag = rootView.reactTag;
   RCTAssert(RCTIsReactRootView(reactTag), @"Specified view %@ is not a root view", reactTag);
 
+  __weak RCTUIManager *weakSelf = self;
   dispatch_async(_shadowQueue, ^{
-    RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
+    RCTUIManager *strongSelf = weakSelf;
+    if (!strongSelf.isValid) {
+      return;
+    }
+    RCTShadowView *rootShadowView = strongSelf->_shadowViewRegistry[reactTag];
     RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
     rootShadowView.backgroundColor = color;
     [self _amendPendingUIBlocksWithStylePropagationUpdateForRootView:rootShadowView];
