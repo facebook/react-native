@@ -513,6 +513,35 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		5CC373051B23ADA4004C3480 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "if [ -d \"$SRCROOT/../../packager\" ]\nthen\n    PACKAGER_ROOT=$SRCROOT/../../packager\nelse\n    PACKAGER_ROOT=$SRCROOT/node_modules/react-native/packager\nfi\n\n$PACKAGER_ROOT/launchPackager.command ${INFOPLIST_FILE}\n";
+		};
+		5CED84D91B3760EE00715E21 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "if [ -d \"$SRCROOT/../../packager\" ]\nthen\n    PACKAGER_ROOT=$SRCROOT/../../packager\nelse\n    PACKAGER_ROOT=$SRCROOT/node_modules/react-native/packager\nfi\n\n$PACKAGER_ROOT/launchPackager.command ${INFOPLIST_FILE}\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		00E356EA1AD99517003FC87E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;

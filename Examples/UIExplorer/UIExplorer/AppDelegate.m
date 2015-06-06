@@ -17,6 +17,7 @@
 #import "RCTBridge.h"
 #import "RCTJavaScriptLoader.h"
 #import "RCTRootView.h"
+#import "RCTUtils.h"
 
 @interface AppDelegate() <RCTBridgeDelegate>
 
@@ -59,8 +60,8 @@
      * on the same Wi-Fi network.
      */
 
-    sourceURL = [NSURL URLWithString:@"http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle?platform=ios&dev=true"];
-
+    sourceURL = RCTPackagerURL(@"/Examples/UIExplorer/UIExplorerApp.ios.bundle?platform=ios&dev=true");
+    
     /**
      * OPTION 2
      * Load from pre-bundled file on disk. To re-generate the static bundle, `cd`

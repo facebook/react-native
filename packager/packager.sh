@@ -7,6 +7,10 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+# Set terminal title
+echo -en "\033]0;React Packager\a"
+clear
+
 if [ $REACT_PACKAGER_LOG ];
 then
   echo "Logs will be redirected to $REACT_PACKAGER_LOG"

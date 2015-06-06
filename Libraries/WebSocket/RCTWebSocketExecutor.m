@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  return [self initWithURL:[RCTConvert NSURL:@"http://localhost:8081/debugger-proxy"]];
+  return [self initWithURL:RCTPackagerURL(@"/debugger-proxy")];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL

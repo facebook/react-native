@@ -37,6 +37,10 @@ var parseCommandLine = require('./parseCommandLine.js');
 var webSocketProxy = require('./webSocketProxy.js');
 
 var options = parseCommandLine([{
+  command: 'url',
+  default: 'http://localhost',
+  type: 'string',
+}, {
   command: 'port',
   default: 8081,
   type: 'string',
@@ -116,7 +120,7 @@ if (options.assetRoots) {
 checkNodeVersion();
 
 console.log(formatBanner(
-  'Running packager on port ' + options.port + '.\n'+
+  'Running packager on ' + options.url + ":" + options.port + '.\n'+
   '\n' +
   'Keep this packager running while developing on any JS projects. Feel free ' +
   'to close this tab and run your own packager instance if you prefer.\n' +
@@ -195,7 +199,7 @@ function getDevToolsLauncher(options) {
       res.writeHead(200, {'Content-Type': 'text/html'});
       fs.createReadStream(debuggerPath).pipe(res);
     } else if (req.url === '/launch-chrome-devtools') {
-      var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
+      var debuggerURL = options.url + ':' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
       childProcess.execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
