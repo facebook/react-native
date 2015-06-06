@@ -64,7 +64,9 @@ class XMLHttpRequest extends XMLHttpRequestBase {
 
   _didCompleteResponse(requestId: number, error: string): void {
     if (requestId === this._requestId) {
-      this.responseText = error;
+      if (error) {
+        this.responseText = error;
+      }
       this._clearSubscriptions();
       this._requestId = null;
       this.setReadyState(this.DONE);
