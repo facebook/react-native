@@ -342,14 +342,19 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
   CGRect frame = rootView.frame;
 
   // Register shadow view
+  __weak RCTUIManager *weakSelf = self;
   dispatch_async(_shadowQueue, ^{
+    RCTUIManager *strongSelf = weakSelf;
+    if (!strongSelf.isValid) {
+      return;
+    }
     RCTShadowView *shadowView = [[RCTShadowView alloc] init];
     shadowView.reactTag = reactTag;
     shadowView.frame = frame;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
-    _shadowViewRegistry[shadowView.reactTag] = shadowView;
-    [_rootViewTags addObject:reactTag];
+    strongSelf->_shadowViewRegistry[shadowView.reactTag] = shadowView;
+    [strongSelf->_rootViewTags addObject:reactTag];
   });
 }
 
