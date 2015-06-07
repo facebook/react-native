@@ -35,6 +35,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   TabBarIOS: require('TabBarIOS'),
   Text: require('Text'),
   TextInput: require('TextInput'),
+  TouchableBounce: require('TouchableBounce'),
   TouchableHighlight: require('TouchableHighlight'),
   TouchableOpacity: require('TouchableOpacity'),
   TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
