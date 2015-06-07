@@ -227,7 +227,44 @@ If a node is completely off the screen, its layout will be cleared.
 
 ## Rendering
 
-Despite that the data structure of the navigation is a tree, **the views of
+### The renderScene function
+
+Developer provides the function `renderScene` that renders the scene for a
+node.
+
+```
+function renderScene(node: NavigationNode): ?ReactElement {
+  return <MyScene route={node.route} />;
+```
+
+For each scene and its descendant children, it can access to the navigation
+node via the `NavigationNode.forComponent()`.
+
+Internally, the navigation node is passed via context.
+
+This shows an example to build a "back button".
+
+
+```
+class MyScene {
+  render() {
+    var node = NavigationNode.forComponent(this);
+    return (
+      <Button onPress={this.onPress} disabled={!node.previous}>
+        Back
+      </Button>
+    );
+  }
+
+  onPress() {
+    var node = NavigationNode.forComponent(this);
+    node.back();
+  }
+}
+
+```
+
+Despite that the data structure of the navigation is a tree, the views for
 the node are rendered as flat array of components.
 
 ```
@@ -235,9 +272,21 @@ function renderNavigation(rootNode: NavigationNode=) {
   var nodes = NavigationNode.getVisibleNodes();
   return (
     <NavigationRootView>
-      {nodes.map(node => <NavigationNodeView node={node}/>}
+      {nodes.map(node => {
+        reutrn <NavigationNodeView node={node} renderScene={renderScene}/>;
+      }}
     </NavigationRootView>
   );
+}
+
+class NavigationRootView extends ComponentWithNavigationNode {
+  render() {
+    return (
+      <View style={this._renderStyle(this.props.node}>
+        {this.props.renderScene((this.props.node)}
+      </View>
+    )
+  }
 }
 ```
 
@@ -343,10 +392,4 @@ following touch moves to the target view until the gesture finishes.
 * Navigation state is managed and lives independently from the navigation components.
 * The views can subscribe to the navigation state and render accordingly.
 * The views can change the navigation state which emit events that can cause UI updates.
-
-
-
-
-
-
-
+* 
