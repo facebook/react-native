@@ -1061,6 +1061,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
+      
+      [[RCTRedBox sharedInstance] dismiss];
 
       _loading = NO;
       if (!self.isValid) {
@@ -1085,6 +1087,17 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                             object:_parentBridge
                                                           userInfo:userInfo];
+        
+        /**
+         * Register the display link to start sending js calls after everything
+         * is setup
+         */
+        NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
+        [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                            object:_parentBridge
+                                                          userInfo:@{ @"bridge": self }];
 
       } else {
 
