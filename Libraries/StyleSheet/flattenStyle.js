@@ -43,12 +43,6 @@ function flattenStyle(style: ?StyleObj): ?Object {
 
         if (__DEV__) {
           var value = computedStyle[key];
-          invariant(
-            !value || typeof value !== 'object' || !value.getValue,
-              'You passed an Animated.Value to a normal component. ' +
-              'You need to wrap that component in an Animated. For example, ' +
-              'replace <View /> by <Animated.View />.'
-          );
         }
       }
     }
