@@ -1088,13 +1088,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
                                                             object:_parentBridge
                                                           userInfo:userInfo];
         
-        /**
-         * Register the display link to start sending js calls after everything
-         * is setup
-         */
-        NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
-        [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
-        
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                             object:_parentBridge
                                                           userInfo:@{ @"bridge": self }];
