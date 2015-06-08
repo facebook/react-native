@@ -50,6 +50,7 @@ RCT_REMAP_VIEW_PROPERTY(keyboardType, textView.keyboardType, UIKeyboardType)
 RCT_REMAP_VIEW_PROPERTY(returnKeyType, textView.returnKeyType, UIReturnKeyType)
 RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, textView.enablesReturnKeyAutomatically, BOOL)
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
+RCT_REMAP_VIEW_PROPERTY(numberOfLines, maximumNumberOfLines, NSInteger );
 
 // Shadow View properties
 RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)

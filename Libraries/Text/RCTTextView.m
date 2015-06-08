@@ -143,6 +143,32 @@
   return _textView.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
+- (void)setTruncationMode:(NSLineBreakMode)truncationMode
+{
+  _textView.textContainer.lineBreakMode = truncationMode;
+  if (_placeholderView) {
+    _textView.textContainer.lineBreakMode = truncationMode;
+  }
+}
+
+- (void)setMaximumNumberOfLines:(NSUInteger)maximumNumberOfLines
+{
+  if (maximumNumberOfLines < 1) {
+    maximumNumberOfLines = 1;
+  }
+
+  [self setTruncationMode:NSLineBreakByTruncatingTail];
+  _textView.textContainer.maximumNumberOfLines = maximumNumberOfLines;
+  if (_placeholderView) {
+    _placeholderView.textContainer.maximumNumberOfLines = maximumNumberOfLines;
+  }
+}
+
+- (NSUInteger)maximumNumberOfLines
+{
+  return _textView.textContainer.maximumNumberOfLines;
+}
+
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
   if (_selectTextOnFocus) {

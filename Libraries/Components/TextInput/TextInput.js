@@ -46,6 +46,7 @@ var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
   fontSize: true,
   fontStyle: true,
   fontWeight: true,
+  numberOfLines: true,
   keyboardType: true,
   returnKeyType: true,
   enablesReturnKeyAutomatically: true,
@@ -69,6 +70,8 @@ var onlyMultiline = {
   onSelectionChange: true,
   onTextInput: true,
   children: true,
+  scrollEnabled: true,
+  numberOfLines: true
 };
 
 var notMultiline = {
@@ -506,6 +509,7 @@ var TextInput = React.createClass({
           placeholder={this.props.placeholder}
           placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
+          numberOfLines={this.props.numberOfLines}
           autoCapitalize={autoCapitalize}
           autoCorrect={this.props.autoCorrect}
           clearButtonMode={clearButtonMode}

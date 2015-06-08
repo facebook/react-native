@@ -22,6 +22,7 @@
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) NSUInteger maximumNumberOfLines;
 
 // Not exposed to JS
 @property (nonatomic, copy) NSAttributedString *attributedText;
