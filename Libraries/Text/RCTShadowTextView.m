@@ -12,6 +12,7 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "NSAttributedString+EmptyStringWithAttributes.h"
 
 static css_dim_t RCTMeasure(void *context, float width)
 {
@@ -82,10 +83,20 @@ static css_dim_t RCTMeasure(void *context, float width)
   if ( !([self isTextDirty] || [self isLayoutDirty])  && _stringHandler.cachedAttributedString) {
     return _stringHandler.cachedAttributedString;
   }
-  NSAttributedString *attributedString = [_stringHandler attributedString:_text];
+  
+  // Never pass an empty string to the _stringHandler.
+  NSString *stringToProcess = _text;
+  BOOL isEmptyStringWithAttributes = false;
+  if ( !(_text && _text.length )) {
+    stringToProcess = @"A";
+    isEmptyStringWithAttributes = true;
+  }
+  
+  [_stringHandler attributedString:stringToProcess];
   [self dirtyLayout];
   
-  return attributedString;
+  [_stringHandler.cachedAttributedString setIsEmptyStringWithAttributes:isEmptyStringWithAttributes];
+  return _stringHandler.cachedAttributedString;
 }
 
 - (NSAttributedString *)attributedPlaceholderString

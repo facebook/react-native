@@ -8,6 +8,7 @@
  */
 
 #import "RCTTextView.h"
+#import "NSAttributedString+EmptyStringWithAttributes.h"
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
@@ -57,7 +58,14 @@
   _textView.scrollEnabled = NO;
   UITextRange *range = _textView.selectedTextRange;
   
-  _textView.attributedText = attributedText;
+  // Check if we should really display the NSAttributedString's value or this is in fact an empty string.
+  if (attributedText.isEmptyStringWithAttributes) {
+    NSRange range = NSMakeRange(0, 1);
+    _textView.typingAttributes = [attributedText attributesAtIndex:0 effectiveRange:&range];
+    _textView.attributedText = [[NSAttributedString alloc]init];
+  } else {
+    _textView.attributedText = attributedText;
+  }
   
   _textView.scrollEnabled = oldScrollEnabled;
   _textView.selectedTextRange = range;//you keep before

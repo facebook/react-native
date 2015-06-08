@@ -16,6 +16,7 @@
 		58B512161A9E6EFF00147676 /* RCTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512141A9E6EFF00147676 /* RCTText.m */; };
 		B87780921AFA36B50016FC2B /* RCTShadowTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B87780911AFA36B50016FC2B /* RCTShadowTextView.m */; };
 		B87780951AFA37CA0016FC2B /* RCTAttributedStringHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B87780941AFA37CA0016FC2B /* RCTAttributedStringHandler.m */; };
+		B8C3BF4C1B25860600BB4D5C /* NSAttributedString+EmptyStringWithAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = B8C3BF4B1B25860600BB4D5C /* NSAttributedString+EmptyStringWithAttributes.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +51,8 @@
 		B87780911AFA36B50016FC2B /* RCTShadowTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTShadowTextView.m; sourceTree = "<group>"; };
 		B87780931AFA37CA0016FC2B /* RCTAttributedStringHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAttributedStringHandler.h; sourceTree = "<group>"; };
 		B87780941AFA37CA0016FC2B /* RCTAttributedStringHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAttributedStringHandler.m; sourceTree = "<group>"; };
+		B8C3BF4A1B25860600BB4D5C /* NSAttributedString+EmptyStringWithAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+EmptyStringWithAttributes.h"; sourceTree = "<group>"; };
+		B8C3BF4B1B25860600BB4D5C /* NSAttributedString+EmptyStringWithAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+EmptyStringWithAttributes.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +69,8 @@
 		58B511921A9E6C1200147676 = {
 			isa = PBXGroup;
 			children = (
+				B8C3BF4A1B25860600BB4D5C /* NSAttributedString+EmptyStringWithAttributes.h */,
+				B8C3BF4B1B25860600BB4D5C /* NSAttributedString+EmptyStringWithAttributes.m */,
 				B87780931AFA37CA0016FC2B /* RCTAttributedStringHandler.h */,
 				B87780941AFA37CA0016FC2B /* RCTAttributedStringHandler.m */,
 				B87780901AFA36B50016FC2B /* RCTShadowTextView.h */,
@@ -163,6 +168,7 @@
 				B87780921AFA36B50016FC2B /* RCTShadowTextView.m in Sources */,
 				58B511CF1A9E6C5C00147676 /* RCTShadowRawText.m in Sources */,
 				58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */,
+				B8C3BF4C1B25860600BB4D5C /* NSAttributedString+EmptyStringWithAttributes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
