@@ -39,12 +39,12 @@
 
 #pragma mark Logic Tests
 
-- (void)testTheTester
+- (void)DISABLED_testTheTester // #7149037
 {
   [_runner runTest:_cmd module:@"IntegrationTestHarnessTest"];
 }
 
-- (void)testTheTester_waitOneFrame
+- (void)DISABLED_testTheTester_waitOneFrame // #7149037
 {
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
@@ -61,29 +61,29 @@
   expectErrorRegex:@"because shouldThrow"];
 }
 
-- (void)testTimers
+- (void)DISABLED_testTimers // #7149037
 {
   [_runner runTest:_cmd module:@"TimersTest"];
 }
 
-- (void)testAsyncStorage
+- (void)DISABLED_testAsyncStorage // #7149037
 {
   [_runner runTest:_cmd module:@"AsyncStorageTest"];
 }
 
-- (void)testLayoutEvents
+- (void)DISABLED_testLayoutEvents // #7149037
 {
   [_runner runTest:_cmd module:@"LayoutEventsTest"];
 }
 
-- (void)testAppEvents
+- (void)DISABLED_testAppEvents // #7149037
 {
   [_runner runTest:_cmd module:@"AppEventsTest"];
 }
 
 #pragma mark Snapshot Tests
 
-- (void)testSimpleSnapshot
+- (void)DISABLED_testSimpleSnapshot // #7149037
 {
   [_runner runTest:_cmd module:@"SimpleSnapshotTest"];
 }
