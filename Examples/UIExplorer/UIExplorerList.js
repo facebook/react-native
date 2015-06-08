@@ -90,7 +90,6 @@ if (Platform.OS === 'ios') {
 
 } else if (Platform.OS === 'android') {
   var COMPONENTS = COMMON_COMPONENTS.concat([
-    require('ToolbarAndroidSampleApp'),
   ]);
 
   var APIS = COMMON_APIS.concat([
@@ -129,17 +128,12 @@ COMPONENTS.concat(APIS).forEach((Example) => {
   }
 });
 
-if (Platform.OS === 'ios') {
-  type Props = {
-    navigator: Array<{title: string, component: ReactClass<any,any,any>}>,
-    onExternalExampleRequested: Function,
-  };
-} else if (Platform.OS === 'android') {
-  type Props = {
-    onSelectExample: Function,
-    isInDrawer: bool,
-  };
-}
+type Props = {
+  navigator: Array<{title: string, component: ReactClass<any,any,any>}>,
+  onExternalExampleRequested: Function,
+  onSelectExample: Function,
+  isInDrawer: bool,
+};
 
 class UIExplorerList extends React.Component {
   props: Props;
@@ -214,7 +208,7 @@ class UIExplorerList extends React.Component {
     );
   }
 
-  _renderRow(example: ExampleModule, i: number) {
+  _renderRow(example: any, i: number) {
     return (
       <View key={i}>
         <TouchableHighlight onPress={() => this._onPressRow(example)}>
@@ -246,7 +240,7 @@ class UIExplorerList extends React.Component {
     Settings.set({searchText: text});
   }
 
-  _onPressRow(example: ExampleModule) {
+  _onPressRow(example: any) {
     if (example.external) {
       this.props.onExternalExampleRequested(example);
       return;
