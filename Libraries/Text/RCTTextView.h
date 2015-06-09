@@ -23,6 +23,7 @@
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) NSUInteger maximumNumberOfLines;
+@property (nonatomic, assign) NSLineBreakMode truncationMode;
 
 // Not exposed to JS
 @property (nonatomic, copy) NSAttributedString *attributedText;

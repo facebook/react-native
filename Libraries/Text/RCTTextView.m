@@ -157,7 +157,6 @@
     maximumNumberOfLines = 1;
   }
 
-  [self setTruncationMode:NSLineBreakByTruncatingTail];
   _textView.textContainer.maximumNumberOfLines = maximumNumberOfLines;
   if (_placeholderView) {
     _placeholderView.textContainer.maximumNumberOfLines = maximumNumberOfLines;

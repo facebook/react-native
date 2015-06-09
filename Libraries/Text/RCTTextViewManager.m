@@ -50,7 +50,6 @@ RCT_REMAP_VIEW_PROPERTY(keyboardType, textView.keyboardType, UIKeyboardType)
 RCT_REMAP_VIEW_PROPERTY(returnKeyType, textView.returnKeyType, UIReturnKeyType)
 RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, textView.enablesReturnKeyAutomatically, BOOL)
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
-RCT_REMAP_VIEW_PROPERTY(numberOfLines, maximumNumberOfLines, NSInteger );
 
 // Shadow View properties
 RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
@@ -64,6 +63,7 @@ RCT_EXPORT_SHADOW_PROPERTY(isHighlighted, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(lineHeight, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
 RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textBackgroundColor, UIColor)
+RCT_REMAP_SHADOW_PROPERTY(numberOfLines, maximumNumberOfLines, NSInteger );
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
@@ -136,7 +136,10 @@ RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textBackgroundColor, UIColor)
   UIEdgeInsets padding = shadowView.paddingAsInsets;
   return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTTextView *textView = viewRegistry[reactTag];
+    RCTShadowTextView *shadowTextView = (RCTShadowTextView *)shadowView;
     textView.contentInset = padding;
+    textView.maximumNumberOfLines = shadowTextView.maximumNumberOfLines;
+    textView.truncationMode = shadowTextView.truncationMode;
   };
 }
 

@@ -193,5 +193,30 @@ RCT_ATTR_STRING_PROPERTY(WritingDirection, writingDirection, NSWritingDirection)
   }
 }
 
+- (void)setTruncationMode:(NSLineBreakMode)truncationMode
+{
+  _textContainer.lineBreakMode = truncationMode;
+}
+
+- (NSLineBreakMode)truncationMode
+{
+  return _textContainer.lineBreakMode;
+}
+
+- (void)setMaximumNumberOfLines:(NSUInteger)maximumNumberOfLines
+{
+  if (maximumNumberOfLines < 1 ) {
+    maximumNumberOfLines = 1;
+  }
+  
+  self.truncationMode = NSLineBreakByTruncatingTail;
+  _textContainer.maximumNumberOfLines = maximumNumberOfLines;
+}
+
+- (NSUInteger)maximumNumberOfLines
+{
+  return _textContainer.maximumNumberOfLines;
+}
+
 @end
 

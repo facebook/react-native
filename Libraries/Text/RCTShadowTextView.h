@@ -45,4 +45,7 @@
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSTextAlignment textAlign;
 
+@property (nonatomic, assign) NSUInteger maximumNumberOfLines;
+@property (nonatomic, assign) NSLineBreakMode truncationMode;
+
 @end
