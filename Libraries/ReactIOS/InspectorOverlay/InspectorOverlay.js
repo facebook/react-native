@@ -19,61 +19,8 @@ var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 var ElementBox = require('ElementBox');
 var ElementProperties = require('ElementProperties');
-var TimerMixin = require('TimerMixin');
-
-var highlightComponentInstance = function() {};
-var hideHighlight = function() {};
-var getSelectedInstance = function() {};
-
-if (typeof window !== 'undefined' && window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.getSelectedInstance = function() {
-    return getSelectedInstance();
-  };
-
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.Overlay = {
-    highlightComponentInstance(val) {
-      highlightComponentInstance(val);
-    },
-    hideHighlight() {
-      hideHighlight();
-    }
-  };
-}
 
 var InspectorOverlay = React.createClass({
-  mixins: [TimerMixin],
-
-  componentWillMount() {
-    highlightComponentInstance = this.handleHighlight;
-    hideHighlight = this.hideHighlight;
-    getSelectedInstance = this.getSelectedInstance;
-    // this is needed so that changes from chrome will be sent to RN (changes
-    // are flushed only when an event happens)
-    this.setInterval(() => {}, 100);
-  },
-
-  getSelectedInstance() {
-    return this.state.selInstance;
-  },
-
-  handleHighlight(publicInstance) {
-    var instance = publicInstance._reactInternalInstance;
-    var hierarchy = Inspector.getOwnerHierarchy(instance);
-    var handle = React.findNodeHandle(publicInstance);
-    if (!handle) {
-      return;
-    }
-    UIManager.measure(handle, (x, y, width, height, left, top) => {
-      this.setState({
-        selInstance: publicInstance,
-        frame: {left, top, width, height},
-        style: publicInstance.props ? publicInstance.props.style : {},
-        selection: hierarchy.length - 1,
-        hierarchy,
-      });
-    });
-  },
-
   getInitialState: function() {
     return {
       frame: null,
@@ -97,7 +44,6 @@ var InspectorOverlay = React.createClass({
         var publicInstance = instance.getPublicInstance();
         this.setState({
           hierarchy,
-          selInstance: publicInstance,
           pointerY: locationY,
           selection: hierarchy.length - 1,
           frame: {left, top, width, height},
@@ -113,7 +59,6 @@ var InspectorOverlay = React.createClass({
     UIManager.measure(React.findNodeHandle(instance), (x, y, width, height, left, top) => {
       this.setState({
         frame: {left, top, width, height},
-        selInstance: publicInstance,
         style: publicInstance.props ? publicInstance.props.style : {},
         selection: i,
       });
