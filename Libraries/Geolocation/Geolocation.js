@@ -18,6 +18,8 @@ var invariant = require('invariant');
 var logError = require('logError');
 var warning = require('warning');
 
+var PERMISSION_TYPES = ['IN_USE', 'ALWAYS'];
+
 var subscriptions = [];
 
 var updatesEnabled = false;
@@ -26,7 +28,7 @@ type GeoOptions = {
   timeout: number;
   maximumAge: number;
   enableHighAccuracy: bool;
-  backgroundMode: bool;
+  permissionTypeIOS: string;
 }
 
 /**
@@ -56,12 +58,18 @@ var Geolocation = {
     geo_error?: Function,
     geo_options?: GeoOptions
   ) {
+    geo_options = geo_options || {};
+    geo_options.permissionTypeIOS = geo_options.permissionTypeIOS || 'IN_USE';
+    invariant(
+      PERMISSION_TYPES.indexOf(geo_options.permissionTypeIOS) > -1,
+      'Invalid permissionTypeIOS option value.'
+    );
     invariant(
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.'
     );
     RCTLocationObserver.getCurrentPosition(
-      geo_options || {},
+      geo_options,
       geo_success,
       geo_error || logError
     );
@@ -72,8 +80,15 @@ var Geolocation = {
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
    */
   watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
+    options = options || {};
+    options.permissionTypeIOS = options.permissionTypeIOS || 'IN_USE';
+    invariant(
+      PERMISSION_TYPES.indexOf(options.permissionTypeIOS) > -1,
+      'Invalid permissionTypeIOS option value.'
+    );
+
     if (!updatesEnabled) {
-      RCTLocationObserver.startObserving(options || {});
+      RCTLocationObserver.startObserving(options);
       updatesEnabled = true;
     }
     var watchID = subscriptions.length;
@@ -129,6 +144,6 @@ var Geolocation = {
       subscriptions = [];
     }
   }
-};
+}
 
 module.exports = Geolocation;
