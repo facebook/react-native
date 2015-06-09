@@ -441,14 +441,14 @@ var MessageQueueMixin = {
   },
 
   /**
-   * @param {Function} onSucc Function to store in current thread for later
-   * lookup, when request succeeds.
    * @param {Function} onFail Function to store in current thread for later
    * lookup, when request fails.
+   * @param {Function} onSucc Function to store in current thread for later
+   * lookup, when request succeeds.
    * @param {Object?=} scope Scope to invoke `cb` with.
    * @param {Object?=} res Resulting callback ids. Use `this._POOLED_CBIDS`.
    */
-  _storeCallbacksInCurrentThread: function(onSucc, onFail, scope) {
+  _storeCallbacksInCurrentThread: function(onFail, onSucc, scope) {
     invariant(onFail || onSucc, INTERNAL_ERROR);
     this._bookkeeping.allocateCallbackIDs(this._POOLED_CBIDS);
     var succCBID = this._POOLED_CBIDS.successCallbackID;
@@ -506,7 +506,7 @@ var MessageQueueMixin = {
     return ret;
   },
 
-  call: function(moduleName, methodName, params, onSucc, onFail, scope) {
+  call: function(moduleName, methodName, params, onFail, onSucc, scope) {
     invariant(
       (!onFail || typeof onFail === 'function') &&
       (!onSucc || typeof onSucc === 'function'),
@@ -514,10 +514,10 @@ var MessageQueueMixin = {
     );
     // Store callback _before_ sending the request, just in case the MailBox
     // returns the response in a blocking manner.
-    if (onSucc || onFail) {
-      this._storeCallbacksInCurrentThread(onSucc, onFail, scope, this._POOLED_CBIDS);
-      onSucc && params.push(this._POOLED_CBIDS.successCallbackID);
+    if (onFail || onSucc) {
+      this._storeCallbacksInCurrentThread(onFail, onSucc, scope, this._POOLED_CBIDS);
       onFail && params.push(this._POOLED_CBIDS.errorCallbackID);
+      onSucc && params.push(this._POOLED_CBIDS.successCallbackID);
     }
     var moduleID = this._remoteModuleNameToModuleID[moduleName];
     if (moduleID === undefined || moduleID === null) {

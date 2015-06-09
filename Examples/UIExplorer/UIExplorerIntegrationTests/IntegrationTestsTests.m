@@ -33,7 +33,7 @@
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp");
 
   // If tests have changes, set recordMode = YES below and run the affected
-  // tests on an iPhone5, iOS 8.1 simulator.
+  // tests on an iPhone5, iOS 8.3 simulator.
   _runner.recordMode = NO;
 }
 
@@ -79,6 +79,11 @@
 - (void)testAppEvents
 {
   [_runner runTest:_cmd module:@"AppEventsTest"];
+}
+
+- (void)testPromises
+{
+  [_runner runTest:_cmd module:@"PromiseTest"];
 }
 
 #pragma mark Snapshot Tests

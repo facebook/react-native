@@ -473,7 +473,7 @@ case _value: { \
 
           // Unknown argument type
           RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
-                      " to support this type.", argumentName, [self methodName]);
+              " to support this type.", argumentName, [self methodName]);
         }
     }
 

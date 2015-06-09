@@ -45,23 +45,6 @@ var BatchedBridgeFactory = {
   _createBridgedModule: function(messageQueue, moduleConfig, moduleName) {
     var remoteModule = mapObject(moduleConfig.methods, function(methodConfig, memberName) {
       switch (methodConfig.type) {
-        case MethodTypes.remote:
-          return function() {
-            var lastArg = arguments.length > 0 ? arguments[arguments.length - 1] : null;
-            var secondLastArg = arguments.length > 1 ? arguments[arguments.length - 2] : null;
-            var hasErrorCB = typeof lastArg === 'function';
-            var hasSuccCB = typeof secondLastArg === 'function';
-            hasSuccCB && invariant(
-              hasErrorCB,
-              'Cannot have a non-function arg after a function arg.'
-            );
-            var numCBs = (hasSuccCB ? 1 : 0) + (hasErrorCB ? 1 : 0);
-            var args = slice.call(arguments, 0, arguments.length - numCBs);
-            var onSucc = hasSuccCB ? secondLastArg : null;
-            var onFail = hasErrorCB ? lastArg : null;
-            messageQueue.call(moduleName, memberName, args, onSucc, onFail);
-          };
-
         case MethodTypes.remoteAsync:
           return function(...args) {
             return new Promise((resolve, reject) => {
@@ -76,7 +59,21 @@ var BatchedBridgeFactory = {
           return null;
 
         default:
-          throw new Error('Unknown bridge method type: ' + methodConfig.type);
+          return function() {
+            var lastArg = arguments.length > 0 ? arguments[arguments.length - 1] : null;
+            var secondLastArg = arguments.length > 1 ? arguments[arguments.length - 2] : null;
+            var hasSuccCB = typeof lastArg === 'function';
+            var hasErrorCB = typeof secondLastArg === 'function';
+            hasErrorCB && invariant(
+              hasSuccCB,
+              'Cannot have a non-function arg after a function arg.'
+            );
+            var numCBs = (hasSuccCB ? 1 : 0) + (hasErrorCB ? 1 : 0);
+            var args = slice.call(arguments, 0, arguments.length - numCBs);
+            var onSucc = hasSuccCB ? lastArg : null;
+            var onFail = hasErrorCB ? secondLastArg : null;
+            return messageQueue.call(moduleName, memberName, args, onFail, onSucc);
+          };
       }
     });
     for (var constName in moduleConfig.constants) {
