@@ -47,6 +47,11 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldFlushDateMillis
 };
 
+typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
+  RCTJavaScriptFunctionKindNormal,
+  RCTJavaScriptFunctionKindAsync,
+};
+
 #ifdef __LP64__
 typedef struct mach_header_64 *RCTHeaderValue;
 typedef struct section_64 RCTHeaderSection;
@@ -204,6 +209,27 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
   return RCTModuleClassesByID;
 }
 
+// TODO: Can we just replace RCTMakeError with this function instead?
+static NSDictionary *RCTJSErrorFromNSError(NSError *error)
+{
+  NSString *errorMessage;
+  NSArray *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary *errorInfo =
+  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+
+  if (error) {
+    errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
+    errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    errorInfo[@"code"] = @(error.code);
+  } else {
+    errorMessage = @"Unknown error from a native module";
+    errorInfo[@"domain"] = RCTErrorDomain;
+    errorInfo[@"code"] = @-1;
+  }
+
+  return RCTMakeError(errorMessage, nil, errorInfo);
+}
+
 @class RCTBatchedBridge;
 
 @interface RCTBridge ()
@@ -239,6 +265,7 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
 @property (nonatomic, copy, readonly) NSString *moduleClassName;
 @property (nonatomic, copy, readonly) NSString *JSMethodName;
 @property (nonatomic, assign, readonly) SEL selector;
+@property (nonatomic, assign, readonly) RCTJavaScriptFunctionKind functionKind;
 
 @end
 
@@ -390,22 +417,64 @@ case _value: { \
 
                 [invocation setArgument:returnValue atIndex:index];
 
-                free(returnValue);
-              }];
-              break;
+                  free(returnValue);
+                }];
+                break;
+              }
+
+            default:
+              defaultCase(argumentType);
+          }
+        } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
+          addBlockArgument();
+        } else if ([argumentName isEqualToString:@"RCTPromiseResolveBlock"]) {
+          RCTAssert(i == numberOfArguments - 2,
+                    @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
+                    _moduleClassName, objCMethodName);
+          RCT_ARG_BLOCK(
+            if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+              RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise resolver ID", index,
+                          json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+              return;
             }
 
-          default:
-            defaultCase(argumentType);
-        }
-      } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
-        addBlockArgument();
-      } else {
+            // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+            __autoreleasing RCTPromiseResolveBlock value = (^(id result) {
+              NSArray *arguments = result ? @[result] : @[];
+              [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                       method:@"invokeCallbackAndReturnFlushedQueue"
+                                    arguments:@[json, arguments]
+                                      context:context];
+            });
+          )
+          _functionKind = RCTJavaScriptFunctionKindAsync;
+        } else if ([argumentName isEqualToString:@"RCTPromiseRejectBlock"]) {
+          RCTAssert(i == numberOfArguments - 1,
+                    @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
+                    _moduleClassName, objCMethodName);
+          RCT_ARG_BLOCK(
+            if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+              RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise rejecter ID", index,
+                          json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+              return;
+            }
 
-        // Unknown argument type
-        RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
-                    " to support this type.", argumentName, [self methodName]);
-      }
+            // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+            __autoreleasing RCTPromiseRejectBlock value = (^(NSError *error) {
+              NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
+              [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                       method:@"invokeCallbackAndReturnFlushedQueue"
+                                    arguments:@[json, @[errorJSON]]
+                                      context:context];
+            });
+          )
+          _functionKind = RCTJavaScriptFunctionKindAsync;
+        } else {
+
+          // Unknown argument type
+          RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
+                      " to support this type.", argumentName, [self methodName]);
+        }
     }
 
     _argumentBlocks = [argumentBlocks copy];
@@ -427,9 +496,18 @@ case _value: { \
 
     // Safety check
     if (arguments.count != _argumentBlocks.count) {
+      NSInteger actualCount = arguments.count;
+      NSInteger expectedCount = _argumentBlocks.count;
+
+      // Subtract the implicit Promise resolver and rejecter functions for implementations of async functions
+      if (_functionKind == RCTJavaScriptFunctionKindAsync) {
+        actualCount -= 2;
+        expectedCount -= 2;
+      }
+
       RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
                   RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
-                  arguments.count, _argumentBlocks.count);
+                  actualCount, expectedCount);
       return;
     }
   }
@@ -535,7 +613,7 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
  *     },
  *     "methodName2": {
  *       "methodID": 1,
- *       "type": "remote"
+ *       "type": "remoteAsync"
  *     },
  *     etc...
  *   },
@@ -559,7 +637,7 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
       [methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger methodID, BOOL *_stop) {
         methodsByName[method.JSMethodName] = @{
           @"methodID": @(methodID),
-          @"type": @"remote",
+          @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
         };
       }];
 
