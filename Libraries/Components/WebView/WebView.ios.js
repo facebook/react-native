@@ -79,8 +79,13 @@ var WebView = React.createClass({
   },
 
   propTypes: {
-    url: PropTypes.string,
-    html: PropTypes.string,
+    url: PropTypes.string, // Deprecated
+    html: PropTypes.string, // Deprecated
+    source: PropTypes.shape({
+      uri: PropTypes.string, // Supports remote and file protocol, or relative if baseUrl is also passed
+      baseUrl: PropTypes.string, // From your project root
+      html: PropTypes.string, // Inline html, if you pass a baseUrl you can require relative files inside
+    }),
     renderError: PropTypes.func, // view to show if there's an error
     renderLoading: PropTypes.func, // loading indicator to show
     bounces: PropTypes.bool,
@@ -147,6 +152,7 @@ var WebView = React.createClass({
         style={webViewStyles}
         url={this.props.url}
         html={this.props.html}
+        source={this.props.source}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
         shouldInjectAJAXHandler={this.props.shouldInjectAJAXHandler}

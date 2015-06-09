@@ -26,6 +26,7 @@
 {
   RCTEventDispatcher *_eventDispatcher;
   UIWebView *_webView;
+  NSDictionary *_source;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -55,6 +56,51 @@
 - (void)reload
 {
   [_webView reload];
+}
+
+- (void)setSource:(NSDictionary *)source
+{
+  NSDictionary *previousSource = _source;
+  _source = source;
+  
+  NSURL *baseUrl;
+  if(source[@"baseUrl"] != nil && source[@"baseUrl"] != [NSNull null]){
+    baseUrl = [NSURL fileURLWithPath:
+               [NSString stringWithFormat:@"%@/%@/",
+                [[NSBundle mainBundle] bundlePath], source[@"baseUrl"]]];
+  }
+  
+  if(source[@"html"] != nil && source[@"html"] != [NSNull null]){
+    if(baseUrl){
+      return [_webView loadHTMLString:source[@"html"] baseURL:baseUrl];
+    }
+    else{
+      return [_webView loadHTMLString:source[@"html"] baseURL:nil];
+    }
+  }
+  
+  if(source[@"uri"] == nil || source[@"uri"] == [NSNull null]){
+    //Throw exception
+  }
+  
+  NSURL *uri = [NSURL URLWithString:source[@"uri"]];
+  
+  if(baseUrl){
+    uri = [NSURL URLWithString:[uri path] relativeToURL:baseUrl];
+  }
+  else if([[uri scheme] isEqualToString:@"file"]){
+    baseUrl = [NSURL URLWithString:
+               [[uri.pathComponents subarrayWithRange:NSMakeRange(1, uri.pathComponents.count - 1)] componentsJoinedByString:@"/"]];
+    
+    uri = [NSURL URLWithString:[[uri pathComponents] lastObject] relativeToURL:baseUrl];
+  }
+  
+  if ([uri isEqual:_webView.request.URL]) {
+    return;
+  }
+  
+  [_webView loadRequest:[NSURLRequest requestWithURL:uri]];
+  
 }
 
 - (void)setURL:(NSURL *)URL
