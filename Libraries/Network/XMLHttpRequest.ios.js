@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var FormData = require('FormData');
 var RCTDataManager = require('NativeModules').DataManager;
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
@@ -82,13 +83,19 @@ class XMLHttpRequest extends XMLHttpRequestBase {
   }
 
   sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+    if (typeof data === 'string') {
+      data = {string: data};
+    }
+    if (data instanceof FormData) {
+      data = {formData: data.getParts()};
+    }
     RCTDataManager.queryData(
       'http',
       {
-        method: method,
-        url: url,
-        data: data,
-        headers: headers,
+        method,
+        url,
+        data,
+        headers,
       },
       this.onreadystatechange ? true : false,
       this._didCreateRequest.bind(this)
