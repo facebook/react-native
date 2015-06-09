@@ -1081,6 +1081,10 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
 - (NSDictionary *)modules
 {
+  if (!self.isValid) {
+    return nil;
+  }
+
   RCTAssert(_modulesByName != nil, @"Bridge modules have not yet been initialized. "
             "You may be trying to access a module too early in the startup procedure.");
 
