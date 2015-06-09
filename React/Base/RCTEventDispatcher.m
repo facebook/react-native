@@ -72,6 +72,7 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
 }
 
 @synthesize bridge = _bridge;
+@synthesize paused = _paused;
 
 RCT_EXPORT_MODULE()
 
@@ -146,6 +147,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
   }
 
   _eventQueue[eventID] = event;
+  _paused = NO;
 
   [_eventQueueLock unlock];
 }
@@ -180,6 +182,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
   [_eventQueueLock lock];
   eventQueue = _eventQueue;
   _eventQueue = [[NSMutableDictionary alloc] init];
+  _paused = YES;
   [_eventQueueLock unlock];
 
   for (id<RCTEvent> event in eventQueue.allValues) {

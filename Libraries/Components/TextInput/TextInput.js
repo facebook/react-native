@@ -510,6 +510,7 @@ var TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
         onLayout={this.props.onLayout}

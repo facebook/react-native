@@ -85,7 +85,7 @@ function setUpAlert() {
       var alertOpts = {
         title: 'Alert',
         message: '' + text,
-        buttons: [{'cancel': 'Okay'}],
+        buttons: [{'cancel': 'OK'}],
       };
       RCTAlertManager.alertWithArgs(alertOpts, null);
     };

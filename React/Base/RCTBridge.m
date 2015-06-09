@@ -1111,7 +1111,9 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     // Invalidate modules
     for (id target in _modulesByID.allObjects) {
       if ([target respondsToSelector:@selector(invalidate)]) {
-        [(id<RCTInvalidating>)target invalidate];
+        [self dispatchBlock:^{
+          [(id<RCTInvalidating>)target invalidate];
+        } forModule:target];
       }
     }
 

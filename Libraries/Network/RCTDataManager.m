@@ -11,10 +11,21 @@
 
 #import "RCTAssert.h"
 #import "RCTConvert.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+@interface RCTDataManager () <NSURLSessionDataDelegate>
+
+@end
+
 @implementation RCTDataManager
+{
+  NSURLSession *_session;
+  NSOperationQueue *_callbackQueue;
+}
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -24,6 +35,7 @@ RCT_EXPORT_MODULE()
  */
 RCT_EXPORT_METHOD(queryData:(NSString *)queryType
                   withQuery:(NSDictionary *)query
+                  sendIncrementalUpdates:(BOOL)incrementalUpdates
                   responseSender:(RCTResponseSenderBlock)responseSender)
 {
   if ([queryType isEqualToString:@"http"]) {
@@ -35,47 +47,110 @@ RCT_EXPORT_METHOD(queryData:(NSString *)queryType
     request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
     request.HTTPBody = [RCTConvert NSData:query[@"data"]];
 
-    // Build data task
-    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
+    // Create session if one doesn't already exist
+    if (!_session) {
+      _callbackQueue = [[NSOperationQueue alloc] init];
+      NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+      _session = [NSURLSession sessionWithConfiguration:configuration
+                                               delegate:self
+                                          delegateQueue:_callbackQueue];
+    }
 
-      NSHTTPURLResponse *httpResponse = nil;
-      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        // Might be a local file request
-        httpResponse = (NSHTTPURLResponse *)response;
-      }
-
-      // Build response
-      NSArray *responseJSON;
-      if (connectionError == nil) {
-        NSStringEncoding encoding = NSUTF8StringEncoding;
-        if (response.textEncodingName) {
-          CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
-          encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
+    __block NSURLSessionDataTask *task;
+    if (incrementalUpdates) {
+      task = [_session dataTaskWithRequest:request];
+    } else {
+      task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        RCTSendResponseEvent(_bridge, task);
+        if (!error) {
+          RCTSendDataEvent(_bridge, task, data);
         }
-        responseJSON = @[
-          @(httpResponse.statusCode ?: 200),
-          httpResponse.allHeaderFields ?: @{},
-          [[NSString alloc] initWithData:data encoding:encoding] ?: @"",
-        ];
-      } else {
-        responseJSON = @[
-          @(httpResponse.statusCode),
-          httpResponse.allHeaderFields ?: @{},
-          connectionError.localizedDescription ?: [NSNull null],
-        ];
-      }
+        RCTSendCompletionEvent(_bridge, task, error);
+      }];
+    }
 
-      // Send response (won't be sent on same thread as caller)
-      responseSender(responseJSON);
-
-    }];
-
+    // Build data task
+    responseSender(@[@(task.taskIdentifier)]);
     [task resume];
 
   } else {
 
     RCTLogError(@"unsupported query type %@", queryType);
   }
+}
+
+#pragma mark - URLSession delegate
+
+- (void)URLSession:(NSURLSession *)session
+          dataTask:(NSURLSessionDataTask *)task
+didReceiveResponse:(NSURLResponse *)response
+ completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
+{
+  RCTSendResponseEvent(_bridge, task);
+  completionHandler(NSURLSessionResponseAllow);
+}
+
+- (void)URLSession:(NSURLSession *)session
+          dataTask:(NSURLSessionDataTask *)task
+    didReceiveData:(NSData *)data
+{
+  RCTSendDataEvent(_bridge, task, data);
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+{
+  RCTSendCompletionEvent(_bridge, task, error);
+}
+
+#pragma mark - Build responses
+
+static void RCTSendResponseEvent(RCTBridge *bridge, NSURLSessionTask *task)
+{
+  NSURLResponse *response = task.response;
+  NSHTTPURLResponse *httpResponse = nil;
+  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+    // Might be a local file request
+    httpResponse = (NSHTTPURLResponse *)response;
+  }
+
+  NSArray *responseJSON = @[@(task.taskIdentifier),
+                            @(httpResponse.statusCode ?: 200),
+                            httpResponse.allHeaderFields ?: @{},
+                            ];
+
+  [bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
+                                             body:responseJSON];
+}
+
+static void RCTSendDataEvent(RCTBridge *bridge, NSURLSessionDataTask *task, NSData *data)
+{
+  // Get text encoding
+  NSURLResponse *response = task.response;
+  NSStringEncoding encoding = NSUTF8StringEncoding;
+  if (response.textEncodingName) {
+    CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
+    encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
+  }
+
+  NSString *responseText = [[NSString alloc] initWithData:data encoding:encoding];
+  if (!responseText && data.length) {
+    RCTLogError(@"Received data was invalid.");
+    return;
+  }
+
+  NSArray *responseJSON = @[@(task.taskIdentifier), responseText ?: @""];
+  [bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkData"
+                                             body:responseJSON];
+}
+
+static void RCTSendCompletionEvent(RCTBridge *bridge, NSURLSessionTask *task, NSError *error)
+{
+  NSArray *responseJSON = @[@(task.taskIdentifier),
+                            error.localizedDescription ?: [NSNull null],
+                            ];
+
+  [bridge.eventDispatcher sendDeviceEventWithName:@"didCompleteNetworkResponse"
+                                             body:responseJSON];
 }
 
 @end
