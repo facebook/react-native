@@ -281,3 +281,13 @@ BOOL RCTImageHasAlpha(CGImageRef image)
       return YES;
   }
 }
+
+id RCTNullIfNil(id value)
+{
+  return value ?: (id)kCFNull;
+}
+
+id RCTNilIfNull(id value)
+{
+  return value == (id)kCFNull ? nil : value;
+}

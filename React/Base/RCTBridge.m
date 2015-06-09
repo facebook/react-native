@@ -1379,15 +1379,42 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     return;
   }
 
-  // TODO: if we sort the requests by module, we could dispatch once per
-  // module instead of per request, which would reduce the call overhead.
+  NSMapTable *buckets = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsStrongMemory capacity:_queuesByID.count];
   for (NSUInteger i = 0; i < numRequests; i++) {
-    @autoreleasepool {
-      [self _handleRequestNumber:i
-                        moduleID:[moduleIDs[i] integerValue]
-                        methodID:[methodIDs[i] integerValue]
-                          params:paramsArrays[i]
-                         context:context];
+    id queue = RCTNullIfNil(_queuesByID[moduleIDs[i]]);
+    NSMutableOrderedSet *set = [buckets objectForKey:queue];
+    if (!set) {
+      set = [[NSMutableOrderedSet alloc] init];
+      [buckets setObject:set forKey:queue];
+    }
+    [set addObject:@(i)];
+  }
+
+  for (id queue in buckets) {
+    RCTProfileBeginFlowEvent();
+    dispatch_block_t block = ^{
+      RCTProfileEndFlowEvent();
+      RCTProfileBeginEvent();
+
+      NSOrderedSet *calls = [buckets objectForKey:queue];
+      @autoreleasepool {
+        for (NSNumber *indexObj in calls) {
+          NSUInteger index = indexObj.unsignedIntegerValue;
+          [self _handleRequestNumber:index
+                            moduleID:[moduleIDs[index] integerValue]
+                            methodID:[methodIDs[index] integerValue]
+                              params:paramsArrays[index]
+                             context:context];
+        }
+      }
+
+      RCTProfileEndEvent(RCTCurrentThreadName(), @"objc_call,dispatch_async", @{ @"calls": @(calls.count) });
+    };
+
+    if (queue == (id)kCFNull) {
+      [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
+    } else {
+      dispatch_async(queue, block);
     }
   }
 
@@ -1407,8 +1434,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
                       params:(NSArray *)params
                      context:(NSNumber *)context
 {
-  RCTAssertJSThread();
-
   if (!self.isValid) {
     return NO;
   }
@@ -1426,6 +1451,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     return NO;
   }
 
+  RCTProfileBeginEvent();
+
   RCTModuleMethod *method = methods[methodID];
 
   // Look up module
@@ -1435,36 +1462,22 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     return NO;
   }
 
-  RCTProfileBeginFlowEvent();
-  __weak RCTBatchedBridge *weakSelf = self;
-  [self dispatchBlock:^{
-    RCTProfileEndFlowEvent();
-    RCTProfileBeginEvent();
-    RCTBatchedBridge *strongSelf = weakSelf;
-
-    if (!strongSelf.isValid) {
-      // strongSelf has been invalidated since the dispatch_async call and this
-      // invocation should not continue.
-      return;
+  @try {
+    [method invokeWithBridge:self module:module arguments:params context:context];
+  }
+  @catch (NSException *exception) {
+    RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
+    if (!RCT_DEBUG && [exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
+      @throw exception;
     }
+  }
 
-    @try {
-      [method invokeWithBridge:strongSelf module:module arguments:params context:context];
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, module, params, exception);
-      if (!RCT_DEBUG && [exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
-        @throw exception;
-      }
-    }
-
-    RCTProfileEndEvent(@"Invoke callback", @"objc_call", @{
-      @"module": method.moduleClassName,
-      @"method": method.JSMethodName,
-      @"selector": NSStringFromSelector(method.selector),
-      @"args": RCTJSONStringify(params ?: [NSNull null], NULL),
-    });
-  } forModuleID:@(moduleID)];
+  RCTProfileEndEvent(@"Invoke callback", @"objc_call", @{
+    @"module": method.moduleClassName,
+    @"method": method.JSMethodName,
+    @"selector": NSStringFromSelector(method.selector),
+    @"args": RCTJSONStringify(params ?: [NSNull null], NULL),
+  });
 
   return YES;
 }

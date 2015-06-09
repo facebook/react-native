@@ -57,3 +57,6 @@ RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
+
+RCT_EXTERN id RCTNullIfNil(id value);
+RCT_EXTERN id RCTNilIfNull(id value);
