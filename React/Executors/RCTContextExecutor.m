@@ -68,6 +68,8 @@
   NSThread *_javaScriptThread;
 }
 
+RCT_EXPORT_MODULE()
+
 /**
  * The one tiny pure native hook that we implement is a native logging hook.
  * You could even argue that this is not necessary - we could plumb logging
@@ -233,35 +235,41 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       JSGlobalContextRef ctx;
       if (context) {
         ctx = JSGlobalContextRetain(context);
-      } else {
-        JSContextGroupRef group = JSContextGroupCreate();
-        ctx = JSGlobalContextCreateInGroup(group, NULL);
-#if FB_JSC_HACK
-        JSContextGroupBindToCurrentThread(group);
-#endif
-        JSContextGroupRelease(group);
+        strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
       }
-
-      strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
-      [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
-      [strongSelf _addNativeHook:RCTNoop withName:"noop"];
-
-#if RCT_DEV
-      [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
-      [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
-
-      for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(toggleProfilingFlag:)
-                                                     name:event
-                                                   object:nil];
-      }
-#endif
-
     }];
   }
 
   return self;
+}
+
+- (void)setUp
+{
+  __weak RCTContextExecutor *weakSelf = self;
+  [self executeBlockOnJavaScriptQueue:^{
+    RCTContextExecutor *strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    if (!strongSelf->_context) {
+      JSGlobalContextRef ctx = JSGlobalContextCreate(NULL);
+      JSGlobalContextRetain(ctx);
+      strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
+    }
+    [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
+    [strongSelf _addNativeHook:RCTNoop withName:"noop"];
+#if RCT_DEV
+    [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
+    [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
+
+    for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(toggleProfilingFlag:)
+                                                   name:event
+                                                 object:nil];
+    }
+#endif
+  }];
 }
 
 - (void)toggleProfilingFlag:(NSNotification *)notification

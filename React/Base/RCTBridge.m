@@ -899,7 +899,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 @implementation RCTBatchedBridge
 {
   BOOL _loading;
-  id<RCTJavaScriptExecutor> _javaScriptExecutor;
+  __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
   RCTSparseArray *_modulesByID;
   RCTSparseArray *_queuesByID;
   dispatch_queue_t _methodQueue;
@@ -935,13 +935,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
       _mainDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_mainThreadUpdate:)];
       [_mainDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
-
-    /**
-     * Initialize executor to allow enqueueing calls
-     */
-    Class executorClass = self.executorClass ?: [RCTContextExecutor class];
-    _javaScriptExecutor = RCTCreateExecutor(executorClass);
-    _latestJSExecutor = _javaScriptExecutor;
 
     /**
      * Initialize and register bridge modules *before* adding the display link
@@ -980,7 +973,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
 - (Class)executorClass
 {
-  return _parentBridge.executorClass;
+  return _parentBridge.executorClass ?: [RCTContextExecutor class];
 }
 
 - (void)setExecutorClass:(Class)executorClass
@@ -1044,6 +1037,16 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
   // Store modules
   _modulesByName = [modulesByName copy];
+
+  /**
+   * The executor is a bridge module, wait for it to be created and set it before
+   * any other module has access to the bridge
+   */
+  _javaScriptExecutor = _modulesByName[RCTBridgeModuleNameForClass(self.executorClass)];
+  _latestJSExecutor = _javaScriptExecutor;
+  RCTSetExecutorID(_javaScriptExecutor);
+
+  [_javaScriptExecutor setUp];
 
   // Set bridge
   for (id<RCTBridgeModule> module in _modulesByName.allValues) {

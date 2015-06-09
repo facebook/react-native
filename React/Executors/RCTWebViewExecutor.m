@@ -46,16 +46,14 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
   NSRegularExpression *_scriptTagsRegex;
 }
 
+RCT_EXPORT_MODULE()
+
 @synthesize valid = _valid;
 
 - (instancetype)initWithWebView:(UIWebView *)webView
 {
   if ((self = [super init])) {
-    _objectsToInject = [[NSMutableDictionary alloc] init];
-    _webView = webView ?: [[UIWebView alloc] init];
-    _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL],
-    _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL],
-    _webView.delegate = self;
+    _webView = webView;
   }
   return self;
 }
@@ -63,6 +61,18 @@ static void RCTReportError(RCTJavaScriptCallback callback, NSString *fmt, ...)
 - (id)init
 {
   return [self initWithWebView:nil];
+}
+
+- (void)setUp
+{
+  if (!_webView) {
+    _webView = [[UIWebView alloc] init];
+  }
+
+  _objectsToInject = [[NSMutableDictionary alloc] init];
+  _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL],
+  _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL],
+  _webView.delegate = self;
 }
 
 - (void)invalidate

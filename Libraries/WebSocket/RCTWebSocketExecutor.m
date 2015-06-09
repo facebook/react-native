@@ -31,7 +31,10 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
   RCTSparseArray *_callbacks;
   dispatch_semaphore_t _socketOpenSemaphore;
   NSMutableDictionary *_injectedObjects;
+  NSURL *_url;
 }
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
@@ -41,39 +44,43 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
 - (instancetype)initWithURL:(NSURL *)URL
 {
   if (self = [super init]) {
-
-    _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
-    _socket = [[RCTSRWebSocket alloc] initWithURL:URL];
-    _socket.delegate = self;
-    _callbacks = [[RCTSparseArray alloc] init];
-    _injectedObjects = [[NSMutableDictionary alloc] init];
-    [_socket setDelegateDispatchQueue:_jsQueue];
-
-    NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:URL];
-    [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
-
-    if (![self connectToProxy]) {
-      RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If \
-                  you are running on the device, check if you have the right IP \
-                  address in `RCTWebSocketExecutor.m`.", URL);
-      [self invalidate];
-      return nil;
-    }
-
-    NSInteger retries = 3;
-    BOOL runtimeIsReady = [self prepareJSRuntime];
-    while (!runtimeIsReady && retries > 0) {
-      runtimeIsReady = [self prepareJSRuntime];
-      retries--;
-    }
-    if (!runtimeIsReady) {
-      RCTLogError(@"Runtime is not ready. Make sure Chrome is running and not "
-        "paused on a breakpoint or exception and try reloading again.");
-      [self invalidate];
-      return nil;
-    }
+    _url = URL;
   }
   return self;
+}
+
+- (void)setUp
+{
+  _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
+  _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
+  _socket.delegate = self;
+  _callbacks = [[RCTSparseArray alloc] init];
+  _injectedObjects = [[NSMutableDictionary alloc] init];
+  [_socket setDelegateDispatchQueue:_jsQueue];
+
+  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:_url];
+  [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
+
+  if (![self connectToProxy]) {
+    RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If \
+                you are running on the device, check if you have the right IP \
+                address in `RCTWebSocketExecutor.m`.", _url);
+    [self invalidate];
+    return;
+  }
+
+  NSInteger retries = 3;
+  BOOL runtimeIsReady = [self prepareJSRuntime];
+  while (!runtimeIsReady && retries > 0) {
+    runtimeIsReady = [self prepareJSRuntime];
+    retries--;
+  }
+  if (!runtimeIsReady) {
+    RCTLogError(@"Runtime is not ready. Make sure Chrome is running and not "
+                "paused on a breakpoint or exception and try reloading again.");
+    [self invalidate];
+    return;
+  }
 }
 
 - (BOOL)connectToProxy

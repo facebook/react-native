@@ -25,6 +25,10 @@
 
 @implementation TestExecutor
 
+RCT_EXPORT_MODULE()
+
+- (void)setUp {}
+
 - (instancetype)init
 {
   if (self = [super init]) {

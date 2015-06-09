@@ -13,18 +13,28 @@
 @end
 
 @implementation RCTContextExecutorTests
+{
+  RCTContextExecutor *_executor;
+}
+
+- (void)setUp
+{
+  [super setUp];
+  _executor = [[RCTContextExecutor alloc] init];
+  RCTSetExecutorID(_executor);
+  [_executor setUp];
+}
 
 - (void)testNativeLoggingHookExceptionBehavior
 {
-  RCTContextExecutor *executor = [[RCTContextExecutor alloc] init];
   dispatch_semaphore_t doneSem = dispatch_semaphore_create(0);
-  [executor executeApplicationScript:@"var x = {toString: function() { throw 1; }}; nativeLoggingHook(x);"
+  [_executor executeApplicationScript:@"var x = {toString: function() { throw 1; }}; nativeLoggingHook(x);"
                            sourceURL:[NSURL URLWithString:@"file://"]
                           onComplete:^(id error){
                             dispatch_semaphore_signal(doneSem);
                           }];
   dispatch_semaphore_wait(doneSem, DISPATCH_TIME_FOREVER);
-  [executor invalidate];
+  [_executor invalidate];
 }
 
 static uint64_t _get_time_nanoseconds(void)
@@ -91,7 +101,6 @@ static uint64_t _get_time_nanoseconds(void)
   };
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-  RCTContextExecutor *executor = RCTCreateExecutor([RCTContextExecutor class]);
   NSString *script = @" \
     var modules = { \
       module: { \
@@ -105,7 +114,7 @@ static uint64_t _get_time_nanoseconds(void)
     } \
   ";
 
-  [executor executeApplicationScript:script sourceURL:[NSURL URLWithString:@"http://localhost:8081/"] onComplete:^(NSError *error) {
+  [_executor executeApplicationScript:script sourceURL:[NSURL URLWithString:@"http://localhost:8081/"] onComplete:^(NSError *error) {
     NSMutableArray *params = [[NSMutableArray alloc] init];
     id data = @1;
     for (int i = 0; i < 4; i++) {
@@ -115,10 +124,10 @@ static uint64_t _get_time_nanoseconds(void)
       for (int j = 0; j < runs; j++) {
         @autoreleasepool {
           double start = _get_time_nanoseconds();
-          [executor executeJSCall:@"module"
+          [_executor executeJSCall:@"module"
                            method:@"method"
                         arguments:params
-                          context:RCTGetExecutorID(executor)
+                          context:RCTGetExecutorID(_executor)
                          callback:^(id json, NSError *__error) {
                            RCTAssert([json isEqual:@YES], @"Invalid return");
                          }];

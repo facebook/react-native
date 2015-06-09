@@ -133,8 +133,8 @@ RCT_EXPORT_MODULE();
     (void)bridge;
   }
 
-  // Sleep on the main thread so the deallocation can happen on the JS thread.
-  sleep(DEFAULT_TIMEOUT);
+  RUN_RUNLOOP_WHILE(weakExecutor, 1);
+  sleep(1);
   XCTAssertNil(weakExecutor, @"JavaScriptExecutor should have been released");
 }
 
@@ -151,7 +151,8 @@ RCT_EXPORT_MODULE();
     (void)bridge;
   }
 
-  sleep(DEFAULT_TIMEOUT);
+  RUN_RUNLOOP_WHILE(weakContext, 1);
+  sleep(1);
   XCTAssertNil(weakContext, @"RCTJavaScriptContext should have been deallocated");
 }
 
