@@ -48,11 +48,11 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 };
 
 #ifdef __LP64__
-typedef uint64_t RCTHeaderValue;
+typedef struct mach_header_64 *RCTHeaderValue;
 typedef struct section_64 RCTHeaderSection;
 #define RCTGetSectByNameFromHeader getsectbynamefromheader_64
 #else
-typedef uint32_t RCTHeaderValue;
+typedef struct mach_header *RCTHeaderValue;
 typedef struct section RCTHeaderSection;
 #define RCTGetSectByNameFromHeader getsectbynamefromheader
 #endif
@@ -98,15 +98,15 @@ static NSArray *RCTJSMethods(void)
     dladdr(&RCTJSMethods, &info);
 
     const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTImport");
-
-    if (section) {
-      for (RCTHeaderValue addr = section->offset;
-           addr < section->offset + section->size;
+    unsigned long size = 0;
+    const uint8_t *sectionData = getsectiondata(mach_header, "__DATA", "RCTImport", &size);
+    if (sectionData) {
+      for (const uint8_t *addr = sectionData;
+           addr < sectionData + size;
            addr += sizeof(const char **)) {
 
         // Get data entry
-        NSString *entry = @(*(const char **)(mach_header + addr));
+        NSString *entry = @(*(const char **)addr);
         [uniqueMethods addObject:entry];
       }
     }
@@ -139,15 +139,15 @@ static NSArray *RCTBridgeModuleClassesByModuleID(void)
     dladdr(&RCTBridgeModuleClassesByModuleID, &info);
 
     const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExportModule");
-
-    if (section) {
-      for (RCTHeaderValue addr = section->offset;
-           addr < section->offset + section->size;
+    unsigned long size;
+    const uint8_t *sectionData = getsectiondata(mach_header, "__DATA", "RCTExportModule", &size);
+    if (sectionData) {
+      for (const uint8_t *addr = sectionData;
+           addr < sectionData + size;
            addr += sizeof(const char **)) {
 
         // Get data entry
-        NSString *entry = @(*(const char **)(mach_header + addr));
+        NSString *entry = @(*(const char **)addr);
         NSArray *parts = [[entry substringWithRange:(NSRange){2, entry.length - 3}]
                           componentsSeparatedByString:@" "];
 
@@ -481,21 +481,23 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
     dladdr(&RCTExportedMethodsByModuleID, &info);
 
     const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    const RCTHeaderSection *section = RCTGetSectByNameFromHeader((void *)mach_header, "__DATA", "RCTExport");
 
-    if (section == NULL) {
+    unsigned long size;
+    const uint8_t *sectionData = getsectiondata(mach_header, "__DATA", "RCTExport", &size);
+
+    if (sectionData == NULL) {
       return;
     }
 
     NSArray *classes = RCTBridgeModuleClassesByModuleID();
     NSMutableDictionary *methodsByModuleClassName = [NSMutableDictionary dictionaryWithCapacity:[classes count]];
 
-    for (RCTHeaderValue addr = section->offset;
-         addr < section->offset + section->size;
+    for (const uint8_t *addr = sectionData;
+         addr < sectionData + size;
          addr += sizeof(const char **) * 3) {
 
       // Get data entry
-      const char **entries = (const char **)(mach_header + addr);
+      const char **entries = (const char **) addr;
 
       // Create method
       RCTModuleMethod *moduleMethod =
