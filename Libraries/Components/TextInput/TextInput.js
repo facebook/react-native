@@ -19,7 +19,6 @@ var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
@@ -29,36 +28,7 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
-var merge = require('merge');
-
-var RCTTextViewAttributes = merge(ReactNativeViewAttributes.UIView, {
-  autoCorrect: true,
-  autoCapitalize: true,
-  clearTextOnFocus: true,
-  color: true,
-  editable: true,
-  fontFamily: true,
-  fontSize: true,
-  fontStyle: true,
-  fontWeight: true,
-  keyboardType: true,
-  returnKeyType: true,
-  enablesReturnKeyAutomatically: true,
-  secureTextEntry: true,
-  selectTextOnFocus: true,
-  mostRecentEventCounter: true,
-  placeholder: true,
-  placeholderTextColor: true,
-  text: true,
-});
-
-var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
-  caretHidden: true,
-  enabled: true,
-  clearButtonMode: true,
-  clearTextOnFocus: true,
-  selectTextOnFocus: true,
-});
+var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
   onSelectionChange: true,
@@ -82,15 +52,13 @@ var AndroidTextInputAttributes = {
   testID: true,
 };
 
-var viewConfigIOS = {
-  uiViewClassName: 'RCTTextField',
-  validAttributes: RCTTextFieldAttributes,
-};
-
 var viewConfigAndroid = {
   uiViewClassName: 'AndroidTextInput',
   validAttributes: AndroidTextInputAttributes,
 };
+
+var RCTTextView = requireNativeComponent('RCTTextView', null);
+var RCTTextField = requireNativeComponent('RCTTextField', null);
 
 type DefaultProps = {
   bufferDelay: number;
@@ -164,7 +132,7 @@ var TextInput = React.createClass({
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
-      'default',    
+      'default',
       'numeric',
       'email-address',
       // iOS-only
@@ -296,7 +264,7 @@ var TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig: ((Platform.OS === 'ios' ? viewConfigIOS :
+  viewConfig: ((Platform.OS === 'ios' ? RCTTextField.viewConfig :
     (Platform.OS === 'android' ? viewConfigAndroid : {})) : Object),
 
   isFocused: function(): boolean {
@@ -575,16 +543,6 @@ var styles = StyleSheet.create({
   input: {
     alignSelf: 'stretch',
   },
-});
-
-var RCTTextView = createReactNativeComponentClass({
-  validAttributes: RCTTextViewAttributes,
-  uiViewClassName: 'RCTTextView',
-});
-
-var RCTTextField = createReactNativeComponentClass({
-  validAttributes: RCTTextFieldAttributes,
-  uiViewClassName: 'RCTTextField',
 });
 
 var AndroidTextInput = createReactNativeComponentClass({
