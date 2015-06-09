@@ -999,11 +999,11 @@ var Navigator = React.createClass({
     return destIndex;
   },
 
-  _jumpN: function(n) {
+  _jumpN: function(n, cb) {
     var destIndex = this._getDestIndexWithinBounds(n);
     var requestTransitionAndResetUpdatingRange = () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex);
+      this._transitionTo(destIndex, null, null, cb);
       this._resetUpdatingRange();
     };
     this.setState({
@@ -1012,24 +1012,24 @@ var Navigator = React.createClass({
     }, requestTransitionAndResetUpdatingRange);
   },
 
-  jumpTo: function(route) {
+  jumpTo: function(route, cb) {
     var destIndex = this.state.routeStack.indexOf(route);
     invariant(
       destIndex !== -1,
       'Cannot jump to route that is not in the route stack'
     );
-    this._jumpN(destIndex - this.state.presentedIndex);
+    this._jumpN(destIndex - this.state.presentedIndex, cb);
   },
 
-  jumpForward: function() {
-    this._jumpN(1);
+  jumpForward: function(cb) {
+    this._jumpN(1, cb);
   },
 
-  jumpBack: function() {
-    this._jumpN(-1);
+  jumpBack: function(cb) {
+    this._jumpN(-1, cb);
   },
 
-  push: function(route) {
+  push: function(route, cb) {
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
@@ -1043,7 +1043,12 @@ var Navigator = React.createClass({
     ]);
     var requestTransitionAndResetUpdatingRange = () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex);
+      this._transitionTo(
+        destIndex,
+        null, // default velocity
+        null, // no spring jumping
+        cb
+      );
       this._resetUpdatingRange();
     };
     this.setState({
@@ -1055,7 +1060,7 @@ var Navigator = React.createClass({
     }, requestTransitionAndResetUpdatingRange);
   },
 
-  _popN: function(n) {
+  _popN: function(n, cb) {
     if (n === 0) {
       return;
     }
@@ -1071,12 +1076,13 @@ var Navigator = React.createClass({
       null, // no spring jumping
       () => {
         this._cleanScenesPastIndex(popIndex);
+        if (cb) cb();
       }
     );
   },
 
-  pop: function() {
-    this._popN(1);
+  pop: function(cb) {
+    this._popN(1, cb);
   },
 
   /**
@@ -1123,46 +1129,46 @@ var Navigator = React.createClass({
   /**
    * Replaces the current scene in the stack.
    */
-  replace: function(route) {
-    this.replaceAtIndex(route, this.state.presentedIndex);
+  replace: function(route, cb) {
+    this.replaceAtIndex(route, this.state.presentedIndex, cb);
   },
 
   /**
    * Replace the current route's parent.
    */
-  replacePrevious: function(route) {
-    this.replaceAtIndex(route, this.state.presentedIndex - 1);
+  replacePrevious: function(route, cb) {
+    this.replaceAtIndex(route, this.state.presentedIndex - 1, cb);
   },
 
-  popToTop: function() {
-    this.popToRoute(this.state.routeStack[0]);
+  popToTop: function(cb) {
+    this.popToRoute(this.state.routeStack[0], cb);
   },
 
-  popToRoute: function(route) {
+  popToRoute: function(route, cb) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
       indexOfRoute !== -1,
       'Calling popToRoute for a route that doesn\'t exist!'
     );
     var numToPop = this.state.presentedIndex - indexOfRoute;
-    this._popN(numToPop);
+    this._popN(numToPop, cb);
   },
 
-  replacePreviousAndPop: function(route) {
+  replacePreviousAndPop: function(route, cb) {
     if (this.state.routeStack.length < 2) {
       return;
     }
     this.replacePrevious(route);
-    this.pop();
+    this.pop(cb);
   },
 
-  resetTo: function(route) {
+  resetTo: function(route, cb) {
     invariant(!!route, 'Must supply route to push');
     this.replaceAtIndex(route, 0, () => {
       // Do not use popToRoute here, because race conditions could prevent the
       // route from existing at this time. Instead, just go to index 0
       if (this.state.presentedIndex > 0) {
-        this._popN(this.state.presentedIndex);
+        this._popN(this.state.presentedIndex, cb);
       }
     });
   },
