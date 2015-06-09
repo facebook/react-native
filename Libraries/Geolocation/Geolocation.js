@@ -58,10 +58,8 @@ var Geolocation = {
     geo_error?: Function,
     geo_options?: GeoOptions
   ) {
-    geo_options = geo_options || {};
-    geo_options.permissionTypeIOS = geo_options.permissionTypeIOS || 'IN_USE';
     invariant(
-      PERMISSION_TYPES.indexOf(geo_options.permissionTypeIOS) > -1,
+      !geo_options || !geo_options.permissionTypeIOS || PERMISSION_TYPES.indexOf(geo_options.permissionTypeIOS) > -1,
       'Invalid permissionTypeIOS option value.'
     );
     invariant(
@@ -80,10 +78,8 @@ var Geolocation = {
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
    */
   watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
-    options = options || {};
-    options.permissionTypeIOS = options.permissionTypeIOS || 'IN_USE';
     invariant(
-      PERMISSION_TYPES.indexOf(options.permissionTypeIOS) > -1,
+      !options || !options.permissionTypeIOS || PERMISSION_TYPES.indexOf(options.permissionTypeIOS) > -1,
       'Invalid permissionTypeIOS option value.'
     );
 
