@@ -1290,7 +1290,7 @@ var Navigator = React.createClass({
         key={this.state.idStack[i]}
         ref={'scene_' + i}
         onStartShouldSetResponderCapture={() => {
-          return !!this.state.transitionFromIndex || !!this.state.activeGesture;
+          return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
         }}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
         {React.cloneElement(child, {

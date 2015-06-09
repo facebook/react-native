@@ -95,12 +95,15 @@
   [_runner runTest:_cmd module:@#name];   \
 }
 
+/*
+These tests are all disabled due to #7149037.
 RCT_SNAPSHOT_TEST(ViewExample, NO)
 RCT_SNAPSHOT_TEST(LayoutExample, NO)
 RCT_SNAPSHOT_TEST(TextExample, NO)
 RCT_SNAPSHOT_TEST(SwitchExample, NO)
 RCT_SNAPSHOT_TEST(SliderExample, NO)
 RCT_SNAPSHOT_TEST(TabBarExample, NO)
+*/
 
 // Make sure this test runs last
 - (void)testZZZ_NotInRecordMode

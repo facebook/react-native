@@ -20,6 +20,7 @@ var {
   AppRegistry,
   ListView,
   PixelRatio,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -34,50 +35,66 @@ import type { ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = require('./createExamplePage');
 
-var COMPONENTS = [
-  require('./ActivityIndicatorIOSExample'),
-  require('./DatePickerIOSExample'),
-  require('./ImageExample'),
-  require('./ListViewExample'),
-  require('./ListViewPagingExample'),
-  require('./MapViewExample'),
-  require('./Navigator/NavigatorExample'),
-  require('./NavigatorIOSColorsExample'),
-  require('./NavigatorIOSExample'),
-  require('./PickerIOSExample'),
-  require('./ProgressViewIOSExample'),
-  require('./ScrollViewExample'),
-  require('./SegmentedControlIOSExample'),
-  require('./SliderIOSExample'),
-  require('./SwitchIOSExample'),
-  require('./TabBarIOSExample'),
-  require('./TextExample.ios'),
-  require('./TextInputExample'),
-  require('./TouchableExample'),
+var COMMON_COMPONENTS = [
   require('./ViewExample'),
   require('./WebViewExample'),
 ];
 
-var APIS = [
-  require('./AccessibilityIOSExample'),
-  require('./ActionSheetIOSExample'),
-  require('./AdSupportIOSExample'),
-  require('./AlertIOSExample'),
-  require('./AppStateIOSExample'),
-  require('./AsyncStorageExample'),
-  require('./BorderExample'),
-  require('./CameraRollExample.ios'),
+var COMMON_APIS = [
   require('./GeolocationExample'),
-  require('./LayoutEventsExample'),
   require('./LayoutExample'),
-  require('./NetInfoExample'),
   require('./PanResponderExample'),
-  require('./PointerEventsExample'),
-  require('./PushNotificationIOSExample'),
-  require('./StatusBarIOSExample'),
-  require('./TimerExample'),
-  require('./VibrationIOSExample'),
 ];
+
+if (Platform.OS === 'ios') {
+  var COMPONENTS = COMMON_COMPONENTS.concat([
+    require('./ActivityIndicatorIOSExample'),
+    require('./DatePickerIOSExample'),
+    require('./ImageExample'),
+    require('./ListViewExample'),
+    require('./ListViewPagingExample'),
+    require('./MapViewExample'),
+    require('./Navigator/NavigatorExample'),
+    require('./NavigatorIOSColorsExample'),
+    require('./NavigatorIOSExample'),
+    require('./PickerIOSExample'),
+    require('./ProgressViewIOSExample'),
+    require('./ScrollViewExample'),
+    require('./SegmentedControlIOSExample'),
+    require('./SliderIOSExample'),
+    require('./SwitchIOSExample'),
+    require('./TabBarIOSExample'),
+    require('./TextExample.ios'),
+    require('./TextInputExample'),
+    require('./TouchableExample'),
+  ]);
+
+  var APIS = COMMON_APIS.concat([
+    require('./AccessibilityIOSExample'),
+    require('./ActionSheetIOSExample'),
+    require('./AdSupportIOSExample'),
+    require('./AlertIOSExample'),
+    require('./AppStateIOSExample'),
+    require('./AsyncStorageExample'),
+    require('./BorderExample'),
+    require('./CameraRollExample.ios'),
+    require('./LayoutEventsExample'),
+    require('./NetInfoExample'),
+    require('./PointerEventsExample'),
+    require('./PushNotificationIOSExample'),
+    require('./StatusBarIOSExample'),
+    require('./TimerExample'),
+    require('./VibrationIOSExample'),
+    require('./XHRExample'),
+  ]);
+
+} else if (Platform.OS === 'android') {
+  var COMPONENTS = COMMON_COMPONENTS.concat([
+  ]);
+
+  var APIS = COMMON_APIS.concat([
+  ]);
+}
 
 var ds = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2,
@@ -114,9 +131,9 @@ COMPONENTS.concat(APIS).forEach((Example) => {
 type Props = {
   navigator: Array<{title: string, component: ReactClass<any,any,any>}>,
   onExternalExampleRequested: Function,
+  onSelectExample: Function,
+  isInDrawer: bool,
 };
-
-
 
 class UIExplorerList extends React.Component {
   props: Props;
@@ -128,7 +145,7 @@ class UIExplorerList extends React.Component {
         components: COMPONENTS,
         apis: APIS,
       }),
-      searchText: Settings.get('searchText'),
+      searchText: Platform.OS === 'ios' ? Settings.get('searchText') : '',
     };
   }
 
@@ -137,8 +154,12 @@ class UIExplorerList extends React.Component {
   }
 
   render() {
-    return (
-      <View style={styles.listContainer}>
+    if (Platform.OS === 'ios' ||
+      (Platform.OS === 'android' && !this.props.isInDrawer)) {
+      var platformTextInputStyle =
+        Platform.OS === 'ios' ? styles.searchTextInputIOS :
+        Platform.OS === 'android' ? styles.searchTextInputAndroid : {};
+      var textInput = (
         <View style={styles.searchRow}>
           <TextInput
             autoCapitalize="none"
@@ -146,10 +167,24 @@ class UIExplorerList extends React.Component {
             clearButtonMode="always"
             onChangeText={this._search.bind(this)}
             placeholder="Search..."
-            style={styles.searchTextInput}
+            style={[styles.searchTextInput, platformTextInputStyle]}
             value={this.state.searchText}
           />
-        </View>
+        </View>);
+    }
+
+    var homePage;
+    if (Platform.OS === 'android' && this.props.isInDrawer) {
+      homePage = this._renderRow({
+        title: 'UIExplorer',
+        description: 'List of examples',
+      }, -1);
+    }
+
+    return (
+      <View style={styles.listContainer}>
+        {textInput}
+        {homePage}
         <ListView
           style={styles.list}
           dataSource={this.state.dataSource}
@@ -173,7 +208,7 @@ class UIExplorerList extends React.Component {
     );
   }
 
-  _renderRow(example: ExampleModule, i: number) {
+  _renderRow(example: any, i: number) {
     return (
       <View key={i}>
         <TouchableHighlight onPress={() => this._onPressRow(example)}>
@@ -205,16 +240,23 @@ class UIExplorerList extends React.Component {
     Settings.set({searchText: text});
   }
 
-  _onPressRow(example: ExampleModule) {
+  _onPressRow(example: any) {
     if (example.external) {
       this.props.onExternalExampleRequested(example);
       return;
     }
     var Component = makeRenderable(example);
-    this.props.navigator.push({
-      title: Component.title,
-      component: Component,
-    });
+    if (Platform.OS === 'ios') {
+      this.props.navigator.push({
+        title: Component.title,
+        component: Component,
+      });
+    } else if (Platform.OS === 'android') {
+      this.props.onSelectExample({
+        title: Component.title,
+        component: Component,
+      });
+    }
   }
 }
 
@@ -267,8 +309,13 @@ var styles = StyleSheet.create({
     borderColor: '#cccccc',
     borderRadius: 3,
     borderWidth: 1,
-    height: 30,
     paddingLeft: 8,
+  },
+  searchTextInputIOS: {
+    height: 30,
+  },
+  searchTextInputAndroid: {
+    padding: 2,
   },
 });
 
