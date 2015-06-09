@@ -95,6 +95,10 @@ var WebView = React.createClass({
      * Used for android only, JS is enabled by default for WebView on iOS
      */
     javaScriptEnabledAndroid: PropTypes.bool,
+    /**
+     * Use an external browser to open links, rather than navigating the WebView. (Currently supported on iOS, only.)
+     */
+    openLinksInExternalBrowser: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -155,6 +159,7 @@ var WebView = React.createClass({
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        openLinksInExternalBrowser={this.props.openLinksInExternalBrowser}
       />;
 
     return (

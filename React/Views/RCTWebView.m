@@ -131,6 +131,14 @@ static NSString *const RCTJSAJAXScheme = @"react-ajax";
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
+  // When user clicks a link, launch in Safari, rather than this WebView, if desired.
+  if (_openLinksInExternalBrowser) {
+    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+      [[UIApplication sharedApplication] openURL:[request URL]];
+      return NO;
+    }
+  }
+
   // We have this check to filter out iframe requests and whatnot
   BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
   if (isTopFrame) {
