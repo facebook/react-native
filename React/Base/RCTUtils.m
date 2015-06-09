@@ -289,17 +289,6 @@ NSError *RCTErrorWithMessage(NSString *message)
   return error;
 }
 
-void RCTDispatchCallbackOnMainQueue(RCTResultOrErrorBlock callback, NSError *error, id result)
-{
-  if ([NSThread isMainThread]) {
-    callback(error, result);
-  } else {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      callback(error, result);
-    });
-  }
-}
-
 id RCTNullIfNil(id value)
 {
   return value ?: (id)kCFNull;

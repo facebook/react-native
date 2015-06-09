@@ -89,28 +89,24 @@ class XMLHttpRequest extends XMLHttpRequestBase {
     if (data instanceof FormData) {
       data = {formData: data.getParts()};
     }
-    RCTDataManager.queryData(
-      'http',
+    RCTDataManager.sendRequest(
       {
         method,
         url,
         data,
         headers,
+        incrementalUpdates: this.onreadystatechange ? true : false,
       },
-      this.onreadystatechange ? true : false,
       this._didCreateRequest.bind(this)
     );
   }
 
   abortImpl(): void {
     if (this._requestId) {
+      RCTDataManager.cancelRequest(this._requestId);
       this._clearSubscriptions();
       this._requestId = null;
     }
-    console.warn(
-      'XMLHttpRequest: abort() cancels JS callbacks ' +
-      'but not native HTTP request.'
-    );
   }
 }
 

@@ -118,7 +118,8 @@ RCT_CONVERTER(NSString *, NSString, description)
 
 + (NSURLRequest *)NSURLRequest:(id)json
 {
-  return [NSURLRequest requestWithURL:[self NSURL:json]];
+  NSURL *URL = [self NSURL:json];
+  return URL ? [NSURLRequest requestWithURL:URL] : nil;
 }
 
 + (NSDate *)NSDate:(id)json

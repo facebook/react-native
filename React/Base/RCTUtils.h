@@ -61,10 +61,6 @@ RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 // Create an NSError in the NCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
-// Dispatch an error + result callback on the main thread.
-typedef void (^RCTResultOrErrorBlock)(NSError *error, id result);
-RCT_EXTERN void RCTDispatchCallbackOnMainQueue(RCTResultOrErrorBlock callback, NSError *error, id result);
-
 // Convert nil values to NSNull, and vice-versa
 RCT_EXTERN id RCTNullIfNil(id value);
 RCT_EXTERN id RCTNilIfNull(id value);

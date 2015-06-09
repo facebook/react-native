@@ -16,10 +16,22 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
+#import "RCTDefines.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+
+static void RCTDispatchCallbackOnMainQueue(void (^ __nonnull callback)(NSError *, id), NSError *error, UIImage *image)
+{
+  if ([NSThread isMainThread]) {
+    callback(error, image);
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      callback(error, image);
+    });
+  }
+}
 
 static dispatch_queue_t RCTImageLoaderQueue(void)
 {
@@ -135,13 +147,6 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
       RCTDispatchCallbackOnMainQueue(callback, error, nil);
     }
   }
-}
-
-+ (BOOL)isSystemImageURI:(NSString *)uri
-{
-  return uri != nil && (
-   [uri hasPrefix:@"assets-library"] ||
-   [uri hasPrefix:@"ph://"]);
 }
 
 @end

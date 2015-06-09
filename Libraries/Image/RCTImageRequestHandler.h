@@ -7,15 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridgeModule.h"
+#import "RCTURLRequestHandler.h"
 
-@protocol RCTDataQueryExecutor <NSObject>
-
-- (void)addQuery:(NSDictionary *)query responseSender:(RCTResponseSenderBlock)responseSender;
-
-@optional
-
-@property (nonatomic, weak) RCTBridge *bridge;
-@property (nonatomic, assign) BOOL sendIncrementalUpdates;
+@interface RCTImageRequestHandler : NSObject <RCTURLRequestHandler>
 
 @end
