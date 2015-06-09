@@ -36,7 +36,7 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/UIExplorer/UIExplorerApp.includeRequire.runModule.bundle?dev=true"];
+  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.includeRequire.runModule.bundle?dev=true"];
 
   /**
    * OPTION 2

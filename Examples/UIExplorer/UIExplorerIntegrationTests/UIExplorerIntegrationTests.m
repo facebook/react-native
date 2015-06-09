@@ -39,7 +39,7 @@
 #endif
   NSString *version = [[UIDevice currentDevice] systemVersion];
   RCTAssert([version isEqualToString:@"8.3"], @"Snapshot tests should be run on iOS 8.3, found %@", version);
-  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp");
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios");
 
   // If tests have changes, set recordMode = YES below and run the affected
   // tests on an iPhone5, iOS 8.1 simulator.
@@ -95,15 +95,12 @@
   [_runner runTest:_cmd module:@#name];   \
 }
 
-/*
-These tests are all disabled due to #7149037.
 RCT_SNAPSHOT_TEST(ViewExample, NO)
 RCT_SNAPSHOT_TEST(LayoutExample, NO)
 RCT_SNAPSHOT_TEST(TextExample, NO)
 RCT_SNAPSHOT_TEST(SwitchExample, NO)
 RCT_SNAPSHOT_TEST(SliderExample, NO)
 RCT_SNAPSHOT_TEST(TabBarExample, NO)
-*/
 
 // Make sure this test runs last
 - (void)testZZZ_NotInRecordMode
