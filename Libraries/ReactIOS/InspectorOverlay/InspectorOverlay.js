@@ -19,7 +19,7 @@ var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 var ElementBox = require('ElementBox');
 var ElementProperties = require('ElementProperties');
-var TimerMixin = require('TimerMixin');
+var TimerMixin = require('react-timer-mixin');
 
 var highlightComponentInstance = function() {};
 var hideHighlight = function() {};
