@@ -17,11 +17,17 @@
 
 var React = require('react-native');
 var {
+  AlertIOS,
+  CameraRoll,
+  Image,
+  LinkingIOS,
+  PixelRatio,
   ProgressViewIOS,
   StyleSheet,
-  View,
   Text,
+  TextInput,
   TouchableHighlight,
+  View,
 } = React;
 
 class Downloader extends React.Component {
@@ -109,6 +115,177 @@ class Downloader extends React.Component {
   }
 }
 
+var PAGE_SIZE = 20;
+
+class FormUploader extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isUploading: false,
+      randomPhoto: null,
+      textParams: [],
+    };
+    this._isMounted = true;
+    this._fetchRandomPhoto = this._fetchRandomPhoto.bind(this);
+    this._addTextParam = this._addTextParam.bind(this);
+    this._upload = this._upload.bind(this);
+
+    this._fetchRandomPhoto();
+  }
+
+  _fetchRandomPhoto() {
+    CameraRoll.getPhotos(
+      {first: PAGE_SIZE},
+      (data) => {
+        console.log('isMounted', this._isMounted);
+        if (!this._isMounted) {
+          return;
+        }
+        var edges = data.edges;
+        var edge = edges[Math.floor(Math.random() * edges.length)];
+        var randomPhoto = edge && edge.node && edge.node.image;
+        if (randomPhoto) {
+          this.setState({randomPhoto});
+        }
+      },
+      (error) => undefined
+    );
+  }
+
+  _addTextParam() {
+    var textParams = this.state.textParams;
+    textParams.push({name: '', value: ''});
+    this.setState({textParams});
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  _onTextParamNameChange(index, text) {
+    var textParams = this.state.textParams;
+    textParams[index].name = text;
+    this.setState({textParams});
+  }
+
+  _onTextParamValueChange(index, text) {
+    var textParams = this.state.textParams;
+    textParams[index].value = text;
+    this.setState({textParams});
+  }
+
+  _upload() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://posttestserver.com/post.php');
+    xhr.onload = () => {
+      this.setState({isUploading: false});
+      if (xhr.status !== 200) {
+        AlertIOS.alert(
+          'Upload failed',
+          'Expected HTTP 200 OK response, got ' + xhr.status
+        );
+        return;
+      }
+      if (!xhr.responseText) {
+        AlertIOS.alert(
+          'Upload failed',
+          'No response payload.'
+        );
+        return;
+      }
+      var index = xhr.responseText.indexOf('http://www.posttestserver.com/');
+      if (index === -1) {
+        AlertIOS.alert(
+          'Upload failed',
+          'Invalid response payload.'
+        );
+        return;
+      }
+      var url = xhr.responseText.slice(index).split('\n')[0];
+      LinkingIOS.openURL(url);
+    };
+    var formdata = new FormData();
+    if (this.state.randomPhoto) {
+      formdata.append('image', {...this.state.randomPhoto, name: 'image.jpg'});
+    }
+    this.state.textParams.forEach(
+      (param) => formdata.append(param.name, param.value)
+    );
+    xhr.send(formdata);
+    this.setState({isUploading: true});
+  }
+
+  render() {
+    var image = null;
+    if (this.state.randomPhoto) {
+      image = (
+        <Image
+          source={this.state.randomPhoto}
+          style={styles.randomPhoto}
+        />
+      );
+    }
+    var textItems = this.state.textParams.map((item, index) => (
+      <View style={styles.paramRow}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={this._onTextParamNameChange.bind(this, index)}
+          placeholder="name..."
+          style={styles.textInput}
+        />
+        <Text style={styles.equalSign}>=</Text>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={this._onTextParamValueChange.bind(this, index)}
+          placeholder="value..."
+          style={styles.textInput}
+        />
+      </View>
+    ));
+    var uploadButtonLabel = this.state.isUploading ? 'Uploading...' : 'Upload';
+    var uploadButton = (
+      <View style={styles.uploadButtonBox}>
+        <Text style={styles.uploadButtonLabel}>{uploadButtonLabel}</Text>
+      </View>
+    );
+    if (!this.state.isUploading) {
+      uploadButton = (
+        <TouchableHighlight onPress={this._upload}>
+          {uploadButton}
+        </TouchableHighlight>
+      );
+    }
+    return (
+      <View>
+        <View style={[styles.paramRow, styles.photoRow]}>
+          <Text style={styles.photoLabel}>
+            Random photo from your library
+            (<Text style={styles.textButton} onPress={this._fetchRandomPhoto}>
+              update
+            </Text>)
+          </Text>
+          {image}
+        </View>
+        {textItems}
+        <View>
+          <Text
+            style={[styles.textButton, styles.addTextParamButton]}
+            onPress={this._addTextParam}>
+            Add a text param
+          </Text>
+        </View>
+        <View style={styles.uploadButton}>
+          {uploadButton}
+        </View>
+      </View>
+    );
+  }
+}
+
+
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
 exports.description = 'XMLHttpRequest';
@@ -116,6 +293,11 @@ exports.examples = [{
   title: 'File Download',
   render() {
     return <Downloader/>;
+  }
+}, {
+  title: 'multipart/form-data Upload',
+  render() {
+    return <FormUploader/>;
   }
 }];
 
@@ -126,6 +308,52 @@ var styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#eeeeee',
-    padding: 10,
+    padding: 8,
+  },
+  paramRow: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    alignItems: 'center',
+    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomColor: 'grey',
+  },
+  photoLabel: {
+    flex: 1,
+  },
+  randomPhoto: {
+    width: 50,
+    height: 50,
+  },
+  textButton: {
+    color: 'blue',
+  },
+  addTextParamButton: {
+    marginTop: 8,
+  },
+  textInput: {
+    flex: 1,
+    borderRadius: 3,
+    borderColor: 'grey',
+    borderWidth: 1,
+    height: 30,
+    paddingLeft: 8,
+  },
+  equalSign: {
+    paddingHorizontal: 4,
+  },
+  uploadButton: {
+    marginTop: 16,
+  },
+  uploadButtonBox: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    backgroundColor: 'blue',
+    borderRadius: 4,
+  },
+  uploadButtonLabel: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
