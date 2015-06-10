@@ -299,7 +299,7 @@ var ScrollView = React.createClass({
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
     };
-    
+
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
       ScrollViewClass = RCTScrollView;

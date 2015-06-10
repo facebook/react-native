@@ -66,14 +66,14 @@ class PushNotificationIOS {
       'PushNotificationIOS only supports `notification` and `register` events'
     );
     if (type === 'notification') {
-      _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
+      _notifHandlers[String(handler)] = RCTDeviceEventEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
       );
     } else if (type === 'register') {
-      _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
+      _notifHandlers[String(handler)] = RCTDeviceEventEmitter.addListener(
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
@@ -143,11 +143,11 @@ class PushNotificationIOS {
       type === 'notification' || type === 'register',
       'PushNotificationIOS only supports `notification` and `register` events'
     );
-    if (!_notifHandlers[handler]) {
+    if (!_notifHandlers[String(handler)]) {
       return;
     }
-    _notifHandlers[handler].remove();
-    _notifHandlers[handler] = null;
+    _notifHandlers[String(handler)].remove();
+    _notifHandlers[String(handler)] = null;
   }
 
 

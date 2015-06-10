@@ -20,7 +20,7 @@
  *
  * If none are set, returns false.
  */
-function resolveBoxStyle(prefix: String, style: Object): ?Object {
+function resolveBoxStyle(prefix: string, style: Object): ?Object {
   var res = {};
   var subs = ['top', 'left', 'bottom', 'right'];
   var set = false;
