@@ -28,6 +28,7 @@ var TESTS = [
   require('./LayoutEventsTest'),
   require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),
+  require('./PromiseTest'),
 ];
 
 TESTS.forEach(

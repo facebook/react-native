@@ -514,10 +514,10 @@ var MessageQueueMixin = {
     );
     // Store callback _before_ sending the request, just in case the MailBox
     // returns the response in a blocking manner.
-    if (onSucc) {
+    if (onFail || onSucc) {
       this._storeCallbacksInCurrentThread(onFail, onSucc, scope, this._POOLED_CBIDS);
       onFail && params.push(this._POOLED_CBIDS.errorCallbackID);
-      params.push(this._POOLED_CBIDS.successCallbackID);
+      onSucc && params.push(this._POOLED_CBIDS.successCallbackID);
     }
     var moduleID = this._remoteModuleNameToModuleID[moduleName];
     if (moduleID === undefined || moduleID === null) {

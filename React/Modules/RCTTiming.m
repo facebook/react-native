@@ -155,6 +155,10 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
   if ([timersToCall count] > 0) {
     [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[timersToCall]];
   }
+
+  if (_timers.count == 0) {
+    [self stopTimers];
+  }
 }
 
 /**

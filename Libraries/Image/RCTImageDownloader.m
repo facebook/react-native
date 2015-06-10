@@ -82,8 +82,8 @@ static NSString *RCTCacheKeyForURL(NSURL *url)
           RCTImageDownloader *strongSelf = weakSelf;
           NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
           [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
-          for (RCTCachedDataDownloadBlock cacheDownloadBlock in blocks) {
-            cacheDownloadBlock(cached, data, error);
+          for (RCTCachedDataDownloadBlock downloadBlock in blocks) {
+            downloadBlock(cached, data, error);
           }
         });
       };

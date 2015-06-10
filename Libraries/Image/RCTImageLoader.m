@@ -16,9 +16,22 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
+#import "RCTDefines.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
+
+static void RCTDispatchCallbackOnMainQueue(void (^ __nonnull callback)(NSError *, id), NSError *error, UIImage *image)
+{
+  if ([NSThread isMainThread]) {
+    callback(error, image);
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      callback(error, image);
+    });
+  }
+}
 
 static dispatch_queue_t RCTImageLoaderQueue(void)
 {
@@ -29,24 +42,6 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
   });
 
   return queue;
-}
-
-static NSError *RCTErrorWithMessage(NSString *message)
-{
-  NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
-  NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
-  return error;
-}
-
-static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSError *error, UIImage *image)
-{
-  if ([NSThread isMainThread]) {
-    callback(error, image);
-  } else {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      callback(error, image);
-    });
-  }
 }
 
 @implementation RCTImageLoader

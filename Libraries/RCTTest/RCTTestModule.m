@@ -69,4 +69,21 @@ RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(id)body)
   [_bridge.eventDispatcher sendAppEventWithName:name body:body];
 }
 
+RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve(@1);
+}
+
+RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  reject(nil);
+}
+
+RCT_EXPORT_METHOD(finish:(BOOL)success)
+{
+  RCTAssert(success, @"RCTTestModule finished without success");
+  [self markTestCompleted];
+}
+
+
 @end
