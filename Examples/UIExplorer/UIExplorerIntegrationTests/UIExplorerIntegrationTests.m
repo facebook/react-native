@@ -39,7 +39,7 @@
 #endif
   NSString *version = [[UIDevice currentDevice] systemVersion];
   RCTAssert([version isEqualToString:@"8.3"], @"Snapshot tests should be run on iOS 8.3, found %@", version);
-  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp");
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios");
 
   // If tests have changes, set recordMode = YES below and run the affected
   // tests on an iPhone5, iOS 8.1 simulator.

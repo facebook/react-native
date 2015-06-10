@@ -18,6 +18,8 @@
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack;
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack;
 
+- (void)setNextBackgroundColor:(UIColor *)color;
+
 - (NSString *)currentErrorMessage;
 
 - (void)dismiss;

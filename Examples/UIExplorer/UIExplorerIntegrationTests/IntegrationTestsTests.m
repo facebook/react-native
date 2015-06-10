@@ -30,10 +30,10 @@
 #endif
   NSString *version = [[UIDevice currentDevice] systemVersion];
   RCTAssert([version integerValue] == 8, @"Tests should be run on iOS 8.x, found %@", version);
-  _runner = RCTInitRunnerForApp(@"IntegrationTests/IntegrationTestsApp");
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp");
 
   // If tests have changes, set recordMode = YES below and run the affected
-  // tests on an iPhone5, iOS 8.1 simulator.
+  // tests on an iPhone5, iOS 8.3 simulator.
   _runner.recordMode = NO;
 }
 
@@ -71,7 +71,7 @@
   [_runner runTest:_cmd module:@"AsyncStorageTest"];
 }
 
-- (void)testLayoutEvents
+- (void)DISABLED_testLayoutEvents // #7149037
 {
   [_runner runTest:_cmd module:@"LayoutEventsTest"];
 }
@@ -79,6 +79,11 @@
 - (void)testAppEvents
 {
   [_runner runTest:_cmd module:@"AppEventsTest"];
+}
+
+- (void)testPromises
+{
+  [_runner runTest:_cmd module:@"PromiseTest"];
 }
 
 #pragma mark Snapshot Tests

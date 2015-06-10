@@ -7,11 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
+#import "RCTURLRequestHandler.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (nonatomic, strong) UIWindow *window;
+@interface RCTImageRequestHandler : NSObject <RCTURLRequestHandler>
 
 @end
-

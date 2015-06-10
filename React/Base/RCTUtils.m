@@ -281,3 +281,20 @@ BOOL RCTImageHasAlpha(CGImageRef image)
       return YES;
   }
 }
+
+NSError *RCTErrorWithMessage(NSString *message)
+{
+  NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
+  NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
+  return error;
+}
+
+id RCTNullIfNil(id value)
+{
+  return value ?: (id)kCFNull;
+}
+
+id RCTNilIfNull(id value)
+{
+  return value == (id)kCFNull ? nil : value;
+}

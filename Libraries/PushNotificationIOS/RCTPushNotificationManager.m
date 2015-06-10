@@ -121,7 +121,7 @@ RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback
 
 RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
 {
-  UIUserNotificationType types = UIRemoteNotificationTypeNone;
+  UIUserNotificationType types = UIUserNotificationTypeNone;
   if (permissions) {
     if ([permissions[@"alert"] boolValue]) {
       types |= UIUserNotificationTypeAlert;

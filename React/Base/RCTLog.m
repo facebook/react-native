@@ -171,6 +171,9 @@ void _RCTLogFormat(
 
       // Log to red box
       if (level >= RCTLOG_REDBOX_LEVEL) {
+        if (level < RCTLOG_FATAL_LEVEL) {
+          [[RCTRedBox sharedInstance] setNextBackgroundColor:[UIColor colorWithRed:0.9 green:0.4 blue:0.2 alpha:1]];
+        }
         [[RCTRedBox sharedInstance] showErrorMessage:message];
       }
 
