@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTDefines.h"
+
 @class RCTBridge;
 
 /**
@@ -62,8 +64,9 @@ extern const dispatch_queue_t RCTJSThread;
  * match the Objective-C class name.
  */
 #define RCT_EXPORT_MODULE(js_name) \
-  + (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
-  ))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; }
+  RCT_EXTERN void RCTRegisterModule(Class); \
+  + (NSString *)moduleName { return @#js_name; } \
+  + (void)load { RCTRegisterModule([self class]); }
 
 /**
  * Wrap the parameter line of your method implementation with this macro to
@@ -173,11 +176,10 @@ extern const dispatch_queue_t RCTJSThread;
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  - (void)__rct_export__##method { \
-    __attribute__((used, section("__DATA,RCTExport"))) \
-    __attribute__((__aligned__(1))) \
-    static const char *__rct_export_entry__[] = { __func__, #method, #js_name }; \
-  }
+  + (NSArray *)RCT_CONCAT(__rct_export__, __COUNTER__) { \
+    return @[@#js_name, @#method]; \
+  } \
+
 
 /**
  * The queue that will be used to call all exported methods. If omitted, this
