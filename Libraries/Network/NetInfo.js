@@ -147,7 +147,7 @@ var NetInfo = {
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    _subscriptions[handler] = RCTDeviceEventEmitter.addListener(
+    _subscriptions[String(handler)] = RCTDeviceEventEmitter.addListener(
       DEVICE_REACHABILITY_EVENT,
       (appStateData) => {
         handler(appStateData.network_reachability);
@@ -159,11 +159,11 @@ var NetInfo = {
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    if (!_subscriptions[handler]) {
+    if (!_subscriptions[String(handler)]) {
       return;
     }
-    _subscriptions[handler].remove();
-    _subscriptions[handler] = null;
+    _subscriptions[String(handler)].remove();
+    _subscriptions[String(handler)] = null;
   },
 
   fetch: function(): Promise {
@@ -204,12 +204,12 @@ NetInfo.isConnected = {
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    _isConnectedSubscriptions[handler] = (connection) => {
+    _isConnectedSubscriptions[String(handler)] = (connection) => {
       handler(_isConnected(connection));
     };
     NetInfo.addEventListener(
       eventName,
-      _isConnectedSubscriptions[handler]
+      _isConnectedSubscriptions[String(handler)]
     );
   },
 
@@ -219,7 +219,7 @@ NetInfo.isConnected = {
   ): void {
     NetInfo.removeEventListener(
       eventName,
-      _isConnectedSubscriptions[handler]
+      _isConnectedSubscriptions[String(handler)]
     );
   },
 

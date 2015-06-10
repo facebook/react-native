@@ -14,7 +14,7 @@
 var GLOBAL = GLOBAL || this;
 
 var BridgeProfiling = {
-  profile(profileName: String, args?: any) {
+  profile(profileName: string, args?: any) {
     if (GLOBAL.__BridgeProfilingIsProfiling) {
       if (args) {
         try {

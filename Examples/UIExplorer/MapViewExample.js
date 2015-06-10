@@ -159,12 +159,15 @@ var MapViewExample = React.createClass({
   render() {
     return (
       <View>
+        {/* $FlowIssue #7363964 - There's a bug in Flow where you cannot
+          * omit a property or set it to undefined if it's inside a shape,
+          * even if it isn't required */}
         <MapView
           style={styles.map}
           onRegionChange={this._onRegionChange}
           onRegionChangeComplete={this._onRegionChangeComplete}
-          region={this.state.mapRegion}
-          annotations={this.state.annotations}
+          region={this.state.mapRegion || undefined}
+          annotations={this.state.annotations || undefined}
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}
