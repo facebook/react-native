@@ -42,7 +42,7 @@ typedef void (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
   NSString *boundary;
 }
 
-- (void)process:(NSArray *)formData callback:(nonnull void (^)(NSError *error, NSDictionary *result))callback
+- (void)process:(NSArray *)formData callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
   if (![formData count]) {
     callback(nil, nil);
@@ -298,7 +298,7 @@ RCT_EXPORT_MODULE()
  * - @"contentType" (NSString): the content type header of the request
  *
  */
-- (void)processDataForHTTPQuery:(NSDictionary *)query callback:(nonnull void (^)(NSError *error, NSDictionary *result))callback
+- (void)processDataForHTTPQuery:(NSDictionary *)query callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
   if (!query) {
     callback(nil, nil);
