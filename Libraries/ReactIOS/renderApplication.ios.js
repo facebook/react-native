@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var InspectorOverlay = require('InspectorOverlay');
+var Inspector = require('Inspector');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
@@ -30,7 +30,7 @@ var AppContainer = React.createClass({
   toggleElementInspector: function() {
     var inspector = this.state.inspector
       ? null
-      : <InspectorOverlay
+      : <Inspector
           rootTag={this.props.rootTag}
           inspectedViewTag={React.findNodeHandle(this.refs.main)}
         />;
