@@ -70,6 +70,30 @@ typedef struct section RCTHeaderSection;
 NSString *const RCTEnqueueNotification = @"RCTEnqueueNotification";
 NSString *const RCTDequeueNotification = @"RCTDequeueNotification";
 
+static NSDictionary *RCTModuleIDsByName;
+static NSArray *RCTModuleNamesByID;
+static NSArray *RCTModuleClassesByID;
+void RCTRegisterModule(Class moduleClass)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    RCTModuleIDsByName = [[NSMutableDictionary alloc] init];
+    RCTModuleNamesByID = [[NSMutableArray alloc] init];
+    RCTModuleClassesByID = [[NSMutableArray alloc] init];
+  });
+
+  RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
+            @"%@ does not conform to the RCTBridgeModule protocol",
+            NSStringFromClass(moduleClass));
+
+  // Register module
+  NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+  ((NSMutableDictionary *)RCTModuleIDsByName)[moduleName] = @(RCTModuleNamesByID.count);
+  [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
+  [(NSMutableArray *)RCTModuleClassesByID addObject:moduleClass];
+
+}
+
 /**
  * This function returns the module name for a given class.
  */
@@ -120,93 +144,6 @@ static NSArray *RCTJSMethods(void)
   });
 
   return JSMethods;
-}
-
-/**
- * This function scans all exported modules available at runtime and returns an
- * array. As a backup, it also scans all classes that implement the
- * RTCBridgeModule protocol to ensure they've been exported. This scanning
- * functionality is disabled in release mode to improve startup performance.
- */
-static NSDictionary *RCTModuleIDsByName;
-static NSArray *RCTModuleNamesByID;
-static NSArray *RCTModuleClassesByID;
-static NSArray *RCTBridgeModuleClassesByModuleID(void)
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-
-    RCTModuleIDsByName = [[NSMutableDictionary alloc] init];
-    RCTModuleNamesByID = [[NSMutableArray alloc] init];
-    RCTModuleClassesByID = [[NSMutableArray alloc] init];
-
-    Dl_info info;
-    dladdr(&RCTBridgeModuleClassesByModuleID, &info);
-
-    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    unsigned long size;
-    const uint8_t *sectionData = getsectiondata(mach_header, "__DATA", "RCTExportModule", &size);
-    if (sectionData) {
-      for (const uint8_t *addr = sectionData;
-           addr < sectionData + size;
-           addr += sizeof(const char **)) {
-
-        // Get data entry
-        NSString *entry = @(*(const char **)addr);
-        NSArray *parts = [[entry substringWithRange:(NSRange){2, entry.length - 3}]
-                          componentsSeparatedByString:@" "];
-
-        // Parse class name
-        NSString *moduleClassName = parts[0];
-        NSRange categoryRange = [moduleClassName rangeOfString:@"("];
-        if (categoryRange.length) {
-          moduleClassName = [moduleClassName substringToIndex:categoryRange.location];
-        }
-
-        // Get class
-        Class cls = NSClassFromString(moduleClassName);
-        RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
-                  @"%@ does not conform to the RCTBridgeModule protocol",
-                  NSStringFromClass(cls));
-
-        // Register module
-        NSString *moduleName = RCTBridgeModuleNameForClass(cls);
-        ((NSMutableDictionary *)RCTModuleIDsByName)[moduleName] = @(RCTModuleNamesByID.count);
-        [(NSMutableArray *)RCTModuleNamesByID addObject:moduleName];
-        [(NSMutableArray *)RCTModuleClassesByID addObject:cls];
-      }
-    }
-
-    if (RCT_DEBUG) {
-
-      // We may be able to get rid of this check in future, once people
-      // get used to the new registration system. That would potentially
-      // allow you to create modules that are not automatically registered
-
-      static unsigned int classCount;
-      Class *classes = objc_copyClassList(&classCount);
-      for (unsigned int i = 0; i < classCount; i++)
-      {
-        Class cls = classes[i];
-        Class superclass = cls;
-        while (superclass)
-        {
-          if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
-          {
-            if (![RCTModuleClassesByID containsObject:cls]) {
-              RCTLogError(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", NSStringFromClass(cls));
-            }
-            break;
-          }
-          superclass = class_getSuperclass(superclass);
-        }
-      }
-      free(classes);
-    }
-
-  });
-
-  return RCTModuleClassesByID;
 }
 
 // TODO: Can we just replace RCTMakeError with this function instead?
@@ -278,25 +215,42 @@ static NSDictionary *RCTJSErrorFromNSError(NSError *error)
   dispatch_block_t _methodQueue;
 }
 
-- (instancetype)initWithReactMethodName:(NSString *)reactMethodName
-                         objCMethodName:(NSString *)objCMethodName
-                           JSMethodName:(NSString *)JSMethodName
+- (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
+                          JSMethodName:(NSString *)JSMethodName
+                           moduleClass:(Class)moduleClass
 {
   if ((self = [super init])) {
+    static NSRegularExpression *typeRegex;
+    static NSRegularExpression *selectorRegex;
+    if (!typeRegex) {
+      NSString *unusedPattern = @"(?:(?:__unused|__attribute__\\(\\(unused\\)\\)))";
+      NSString *constPattern = @"(?:const)";
+      NSString *constUnusedPattern = [NSString stringWithFormat:@"(?:(?:%@|%@)\\s*)", unusedPattern, constPattern];
+      NSString *pattern = [NSString stringWithFormat:@"\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\)", constUnusedPattern];
+      typeRegex = [[NSRegularExpression alloc] initWithPattern:pattern options:0 error:NULL];
 
-    NSArray *parts = [[reactMethodName substringWithRange:(NSRange){2, reactMethodName.length - 3}] componentsSeparatedByString:@" "];
-
-    // Parse class and method
-    _moduleClassName = parts[0];
-    NSRange categoryRange = [_moduleClassName rangeOfString:@"("];
-    if (categoryRange.length) {
-      _moduleClassName = [_moduleClassName substringToIndex:categoryRange.location];
+      selectorRegex = [[NSRegularExpression alloc] initWithPattern:@"(?<=:).*?(?=[a-zA-Z_]+:|$)" options:0 error:NULL];
     }
 
-    NSString *selectorString = [parts[1] substringFromIndex:14];
-    _selector = NSSelectorFromString(selectorString);
-    _JSMethodName = JSMethodName ?: ({
-      NSString *methodName = selectorString;
+    NSMutableArray *argumentNames = [NSMutableArray array];
+    [typeRegex enumerateMatchesInString:objCMethodName options:0 range:NSMakeRange(0, objCMethodName.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+      NSString *argumentName = [objCMethodName substringWithRange:[result rangeAtIndex:1]];
+      [argumentNames addObject:argumentName];
+    }];
+
+    // Remove the parameters' type and name
+    objCMethodName = [selectorRegex stringByReplacingMatchesInString:objCMethodName
+                                                             options:0
+                                                               range:NSMakeRange(0, objCMethodName.length)
+                                                        withTemplate:@""];
+    // Remove any spaces since `selector : (Type)name` is a valid syntax
+    objCMethodName = [objCMethodName stringByReplacingOccurrencesOfString:@" " withString:@""];
+
+    _moduleClass = moduleClass;
+    _moduleClassName = NSStringFromClass(_moduleClass);
+    _selector = NSSelectorFromString(objCMethodName);
+    _JSMethodName = JSMethodName.length > 0 ? JSMethodName : ({
+      NSString *methodName = NSStringFromSelector(_selector);
       NSRange colonRange = [methodName rangeOfString:@":"];
       if (colonRange.length) {
         methodName = [methodName substringToIndex:colonRange.location];
@@ -304,31 +258,6 @@ static NSDictionary *RCTJSErrorFromNSError(NSError *error)
       methodName;
     });
 
-    static NSRegularExpression *regExp;
-    if (!regExp) {
-      NSString *unusedPattern = @"(?:(?:__unused|__attribute__\\(\\(unused\\)\\)))";
-      NSString *constPattern = @"(?:const)";
-      NSString *constUnusedPattern = [NSString stringWithFormat:@"(?:(?:%@|%@)\\s*)", unusedPattern, constPattern];
-      NSString *pattern = [NSString stringWithFormat:@"\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\)", constUnusedPattern];
-      regExp = [[NSRegularExpression alloc] initWithPattern:pattern options:0 error:NULL];
-    }
-
-    NSMutableArray *argumentNames = [NSMutableArray array];
-    [regExp enumerateMatchesInString:objCMethodName options:0 range:NSMakeRange(0, objCMethodName.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-      NSString *argumentName = [objCMethodName substringWithRange:[result rangeAtIndex:1]];
-      [argumentNames addObject:argumentName];
-    }];
-
-    // Extract class and method details
-    _moduleClass = NSClassFromString(_moduleClassName);
-
-    if (RCT_DEBUG) {
-
-      // Sanity check
-      RCTAssert([_moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
-                @"You are attempting to export the method %@, but %@ does not \
-                conform to the RCTBridgeModule Protocol", objCMethodName, _moduleClassName);
-    }
 
     // Get method signature
     _methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
@@ -554,44 +483,33 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
   static RCTSparseArray *methodsByModuleID;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+    methodsByModuleID = [[RCTSparseArray alloc] initWithCapacity:[RCTModuleClassesByID count]];
 
-    Dl_info info;
-    dladdr(&RCTExportedMethodsByModuleID, &info);
+    [RCTModuleClassesByID enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
 
-    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
+      methodsByModuleID[moduleID] = [[NSMutableArray alloc] init];
 
-    unsigned long size;
-    const uint8_t *sectionData = getsectiondata(mach_header, "__DATA", "RCTExport", &size);
+      unsigned int methodCount;
+      Method *methods = class_copyMethodList(object_getClass(moduleClass), &methodCount);
 
-    if (sectionData == NULL) {
-      return;
-    }
+      for (unsigned int i = 0; i < methodCount; i++) {
+        Method method = methods[i];
+        SEL selector = method_getName(method);
+        if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
+          NSArray *entries = ((NSArray *(*)(id, SEL))objc_msgSend)(moduleClass, selector);
+          RCTModuleMethod *moduleMethod =
+            [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
+                                               JSMethodName:entries[0]
+                                               moduleClass:moduleClass];
 
-    NSArray *classes = RCTBridgeModuleClassesByModuleID();
-    NSMutableDictionary *methodsByModuleClassName = [NSMutableDictionary dictionaryWithCapacity:[classes count]];
+          [methodsByModuleID[moduleID] addObject:moduleMethod];
+        }
+      }
 
-    for (const uint8_t *addr = sectionData;
-         addr < sectionData + size;
-         addr += sizeof(const char **) * 3) {
+      free(methods);
 
-      // Get data entry
-      const char **entries = (const char **) addr;
-
-      // Create method
-      RCTModuleMethod *moduleMethod =
-      [[RCTModuleMethod alloc] initWithReactMethodName:@(entries[0])
-                                        objCMethodName:@(entries[1])
-                                          JSMethodName:strlen(entries[2]) ? @(entries[2]) : nil];
-      // Cache method
-      NSArray *methods = methodsByModuleClassName[moduleMethod.moduleClassName];
-      methodsByModuleClassName[moduleMethod.moduleClassName] =
-      methods ? [methods arrayByAddingObject:moduleMethod] : @[moduleMethod];
-    }
-
-    methodsByModuleID = [[RCTSparseArray alloc] initWithCapacity:[classes count]];
-    [classes enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
-      methodsByModuleID[moduleID] = methodsByModuleClassName[NSStringFromClass(moduleClass)];
     }];
+
   });
 
   return methodsByModuleID;
@@ -630,7 +548,7 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
   dispatch_once(&onceToken, ^{
 
     remoteModuleConfigByClassName = [[NSMutableDictionary alloc] init];
-    [RCTBridgeModuleClassesByModuleID() enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
+    [RCTModuleClassesByID enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
 
       NSArray *methods = RCTExportedMethodsByModuleID()[moduleID];
       NSMutableDictionary *methodsByName = [NSMutableDictionary dictionaryWithCapacity:methods.count];
@@ -767,6 +685,38 @@ static NSDictionary *RCTLocalModulesConfig()
 @implementation RCTBridge
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
+
+#if RCT_DEBUG
++ (void)initialize
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+
+    static unsigned int classCount;
+    Class *classes = objc_copyClassList(&classCount);
+
+    for (unsigned int i = 0; i < classCount; i++)
+    {
+      Class cls = classes[i];
+      Class superclass = cls;
+      while (superclass)
+      {
+        if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
+        {
+          if (![RCTModuleClassesByID containsObject:cls]) {
+            RCTLogError(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", NSStringFromClass(cls));
+          }
+          break;
+        }
+        superclass = class_getSuperclass(superclass);
+      }
+    }
+
+    free(classes);
+
+  });
+}
+#endif
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
@@ -1006,7 +956,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
   // Instantiate modules
   _modulesByID = [[RCTSparseArray alloc] init];
   NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
-  [RCTBridgeModuleClassesByModuleID() enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
+  [RCTModuleClassesByID enumerateObjectsUsingBlock:^(Class moduleClass, NSUInteger moduleID, BOOL *stop) {
     NSString *moduleName = RCTModuleNamesByID[moduleID];
     // Check if module instance has already been registered for this name
     id<RCTBridgeModule> module = modulesByName[moduleName];

@@ -28,14 +28,11 @@
 'use strict';
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
-var BackAndroid = require('BackAndroid');
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
-var NavigatorInterceptor = require('NavigatorInterceptor');
 var NavigatorNavigationBar = require('NavigatorNavigationBar');
 var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
-var NavigatorStaticContextContainer = require('NavigatorStaticContextContainer');
 var PanResponder = require('PanResponder');
 var Platform = require('Platform');
 var React = require('React');
@@ -47,7 +44,6 @@ var View = require('View');
 
 var clamp = require('clamp');
 var flattenStyle = require('flattenStyle');
-var getNavigatorContext = require('getNavigatorContext');
 var invariant = require('invariant');
 var rebound = require('rebound');
 
@@ -165,40 +161,6 @@ var GESTURE_ACTIONS = [
  *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
  *     other scene
  *
- * ### Navigation Context
- *
- * The navigator context object is made available to scenes through the
- * `renderScene` function. Alternatively, any scene or component inside a
- * Navigator can get the navigation context by calling
- * `Navigator.getContext(this)`.
- *
- * Unlike the Navigator methods, the functions in navigation context do not
- * directly control a specific navigator. Instead, the navigator context allows
- * a scene to request navigation from its parents. Navigation requests will
- * travel up through the hierarchy of Navigators, and will be resolved by the
- * deepest active navigator.
- *
- * Navigation context objects contain the following:
- *
- *  - `getCurrentRoutes()` - returns the routes for the closest navigator
- *  - `jumpBack()` - Jump backward without unmounting the current scene
- *  - `jumpForward()` - Jump forward to the next scene in the route stack
- *  - `jumpTo(route)` - Transition to an existing scene without unmounting
- *  - `parentNavigator` - a refrence to the parent navigation context
- *  - `push(route)` - Navigate forward to a new scene, squashing any scenes
- *     that you could `jumpForward` to
- *  - `pop()` - Transition back and unmount the current scene
- *  - `replace(route)` - Replace the current scene with a new route
- *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
- *  - `replacePrevious(route)` - Replace the previous scene
- *  - `route` - The route that was used to render the scene with this context
- *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
- *     array of routes
- *  - `popToRoute(route)` - Pop to a particular scene, as specified by it's
- *     route. All scenes after it will be unmounted
- *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
- *     other scene
- *
  */
 var Navigator = React.createClass({
 
@@ -273,17 +235,10 @@ var Navigator = React.createClass({
     sceneStyle: View.propTypes.style,
   },
 
-  contextTypes: {
-    // TODO (t6707746) Re-enable this when owner context switches to parent context
-    // navigator: PropTypes.object,
-  },
-
   statics: {
     BreadcrumbNavigationBar: NavigatorBreadcrumbNavigationBar,
     NavigationBar: NavigatorNavigationBar,
     SceneConfigs: NavigatorSceneConfigs,
-    Interceptor: NavigatorInterceptor,
-    getContext: getNavigatorContext,
   },
 
   mixins: [TimerMixin, InteractionMixin, Subscribable.Mixin],
@@ -328,34 +283,8 @@ var Navigator = React.createClass({
   },
 
   componentWillMount: function() {
-    this.parentNavigator = getNavigatorContext(this) || this.props.navigator;
     this._subRouteFocus = [];
-    this.navigatorContext = {
-      // Actions for child navigators or interceptors:
-      setHandlerForIndex: this.setHandlerForIndex,
-      request: this.request,
-
-      // Contextual utilities
-      parentNavigator: this.parentNavigator,
-      getCurrentRoutes: this.getCurrentRoutes,
-      // `route` is injected by NavigatorStaticContextContainer
-
-      // Contextual nav action
-      pop: this.requestPop,
-
-      jumpBack: this.jumpBack,
-      jumpForward: this.jumpForward,
-      jumpTo: this.jumpTo,
-      popToRoute: this.popToRoute,
-      push: this.push,
-      replace: this.replace,
-      replaceAtIndex: this.replaceAtIndex,
-      replacePrevious: this.replacePrevious,
-      replacePreviousAndPop: this.replacePreviousAndPop,
-      immediatelyResetRouteStack: this.immediatelyResetRouteStack,
-      resetTo: this.resetTo,
-      popToTop: this.popToTop,
-    };
+    this.parentNavigator = this.props.navigator;
     this._handlers = {};
     this.springSystem = new rebound.SpringSystem();
     this.spring = this.springSystem.createSpring();
@@ -386,91 +315,13 @@ var Navigator = React.createClass({
     this._emitWillFocus(this.state.routeStack[this.state.presentedIndex]);
   },
 
-  request: function(action, arg1, arg2) {
-    if (this.parentNavigator) {
-      return this.parentNavigator.request.apply(null, arguments);
-    }
-    return this._handleRequest.apply(null, arguments);
-  },
-
-  requestPop: function(popToBeforeRoute) {
-    return this.request('pop', popToBeforeRoute);
-  },
-
-  requestPopTo: function(route) {
-    return this.request('popTo', route);
-  },
-
-  _handleRequest: function(action, arg1, arg2) {
-    var childHandler = this._handlers[this.state.presentedIndex];
-    if (childHandler && childHandler(action, arg1, arg2)) {
-      return true;
-    }
-    switch (action) {
-      case 'pop':
-        return this._handlePop(arg1);
-      case 'push':
-        return this._handlePush(arg1);
-      default:
-        invariant(false, 'Unsupported request type ' + action);
-        return false;
-    }
-  },
-
-  _handlePop: function(popToBeforeRoute) {
-    if (popToBeforeRoute) {
-      var popToBeforeRouteIndex = this.state.routeStack.indexOf(popToBeforeRoute);
-      if (popToBeforeRouteIndex === -1) {
-        return false;
-      }
-      invariant(
-        popToBeforeRouteIndex <= this.state.presentedIndex,
-        'Cannot pop past a route that is forward in the navigator'
-      );
-      this._popN(this.state.presentedIndex - popToBeforeRouteIndex + 1);
-      return true;
-    }
-    if (this.state.presentedIndex === 0) {
-      return false;
-    }
-    this.pop();
-    return true;
-  },
-
-  _handlePush: function(route) {
-    this.push(route);
-    return true;
-  },
-
-  setHandlerForIndex: function(index, handler) {
-    this._handlers[index] = handler;
-  },
-
   componentDidMount: function() {
     this._handleSpringUpdate();
     this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
-    if (this.parentNavigator) {
-      this.parentNavigator.setHandler(this._handleRequest);
-    } else if (Platform.OS === 'android') {
-      // There is no navigator in our props or context, so this is the
-      // top-level navigator. We will handle back button presses here
-      BackAndroid.addEventListener('hardwareBackPress', this._handleAndroidBackPress);
-    }
   },
 
   componentWillUnmount: function() {
-    if (this.parentNavigator) {
-      this.parentNavigator.setHandler(null);
-    } else if (Platform.OS === 'android') {
-      BackAndroid.removeEventListener('hardwareBackPress', this._handleAndroidBackPress);
-    }
-  },
 
-  _handleAndroidBackPress: function() {
-    var didPop = this.requestPop();
-    if (!didPop) {
-      BackAndroid.exitApp();
-    }
   },
 
   /**
@@ -532,8 +383,7 @@ var Navigator = React.createClass({
     this.spring.getSpringConfig().tension = sceneConfig.springTension;
     this.spring.setVelocity(velocity || sceneConfig.defaultTransitionVelocity);
     this.spring.setEndValue(1);
-    var willFocusRoute = this._subRouteFocus[this.state.presentedIndex] || this.state.routeStack[this.state.presentedIndex];
-    this._emitWillFocus(willFocusRoute);
+    this._emitWillFocus(this.state.routeStack[this.state.presentedIndex]);
   },
 
   /**
@@ -611,32 +461,18 @@ var Navigator = React.createClass({
   },
 
   _emitDidFocus: function(route) {
-    if (this._lastDidFocus === route) {
-      return;
-    }
-    this._lastDidFocus = route;
     if (this.props.onDidFocus) {
       this.props.onDidFocus(route);
-    }
-    if (this.parentNavigator && this.parentNavigator.onDidFocus) {
-      this.parentNavigator.onDidFocus(route);
     }
   },
 
   _emitWillFocus: function(route) {
-    if (this._lastWillFocus === route) {
-      return;
-    }
-    this._lastWillFocus = route;
     var navBar = this._navBar;
     if (navBar && navBar.handleWillFocus) {
       navBar.handleWillFocus(route);
     }
     if (this.props.onWillFocus) {
       this.props.onWillFocus(route);
-    }
-    if (this.parentNavigator && this.parentNavigator.onWillFocus) {
-      this.parentNavigator.onWillFocus(route);
     }
   },
 
@@ -1237,41 +1073,20 @@ var Navigator = React.createClass({
     var shouldRenderScene =
       i >= this.state.updatingRangeStart &&
       i <= this.state.updatingRangeStart + this.state.updatingRangeLength;
-    var sceneNavigatorContext = {
-      ...this.navigatorContext,
-      route,
-      setHandler: (handler) => {
-        this.navigatorContext.setHandlerForIndex(i, handler);
-      },
-      onWillFocus: (childRoute) => {
-        this._subRouteFocus[i] = childRoute;
-        if (this.state.presentedIndex === i) {
-          this._emitWillFocus(childRoute);
-        }
-      },
-      onDidFocus: (childRoute) => {
-        this._subRouteFocus[i] = childRoute;
-        if (this.state.presentedIndex === i) {
-          this._emitDidFocus(childRoute);
-        }
-      },
-    };
-    var scene = shouldRenderScene ?
-      this._renderScene(route, i, sceneNavigatorContext) : null;
+    var scene = shouldRenderScene ? this._renderScene(route, i) : null;
     return (
-      <NavigatorStaticContextContainer
-        navigatorContext={sceneNavigatorContext}
+      <StaticContainer
         key={'nav' + i}
         shouldUpdate={shouldRenderScene}>
         {scene}
-      </NavigatorStaticContextContainer>
+      </StaticContainer>
     );
   },
 
-  _renderScene: function(route, i, sceneNavigatorContext) {
+  _renderScene: function(route, i) {
     var child = this.props.renderScene(
       route,
-      sceneNavigatorContext
+      this
     );
     var disabledSceneStyle = null;
     if (i !== this.state.presentedIndex) {
@@ -1311,7 +1126,7 @@ var Navigator = React.createClass({
     }
     return React.cloneElement(this.props.navigationBar, {
       ref: (navBar) => { this._navBar = navBar; },
-      navigator: this.navigatorContext,
+      navigator: this,
       navState: this.state,
     });
   },

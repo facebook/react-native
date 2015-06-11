@@ -21,17 +21,17 @@
 /**
  * This notification triggers a reload of all bridges currently running.
  */
-extern NSString *const RCTReloadNotification;
+RCT_EXTERN NSString *const RCTReloadNotification;
 
 /**
  * This notification fires when the bridge has finished loading.
  */
-extern NSString *const RCTJavaScriptDidLoadNotification;
+RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
  * This notification fires when the bridge failed to load.
  */
-extern NSString *const RCTJavaScriptDidFailToLoadNotification;
+RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
 /**
  * This block can be used to instantiate modules that require additional
@@ -42,6 +42,13 @@ extern NSString *const RCTJavaScriptDidFailToLoadNotification;
  * module instances should not be shared between bridges.
  */
 typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
+
+/**
+ * Register the given class as a bridge module. All modules must be registered
+ * prior to the first bridge initialization.
+ *
+ */
+RCT_EXTERN void RCTRegisterModule(Class);
 
 /**
  * This function returns the module name for a given class.

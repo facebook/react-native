@@ -74,3 +74,11 @@
 #define RCT_NSASSERT 0
 #endif
 #endif
+
+/**
+ * Concat two literals. Supports macro expansions
+ *
+ * i.e. RCT_CONCAT(foo, __FILE__)
+ */
+#define RCT_CONCAT2(A, B) A ## B
+#define RCT_CONCAT(A, B) RCT_CONCAT2(A, B)
