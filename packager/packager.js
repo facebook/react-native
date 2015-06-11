@@ -53,6 +53,9 @@ var options = parseCommandLine([{
 }, {
   command: 'skipflow',
   description: 'Disable flow checks'
+}, {
+  command: 'nonPersistent',
+  description: 'Disable file watcher'
 }]);
 
 if (options.projectRoots) {
@@ -199,6 +202,7 @@ function statusPageMiddleware(req, res, next) {
 
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
+    nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(options.platform),
     cacheVersion: '2',
