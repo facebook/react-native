@@ -44,9 +44,7 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
     [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
     return;
   }
-  RCTRedBox *box = [RCTRedBox sharedInstance];
-  [box setNextBackgroundColor:[UIColor colorWithRed:0.9 green:0.4 blue:0.2 alpha:1]];
-  [box showErrorMessage:message withStack:stack];
+  [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
