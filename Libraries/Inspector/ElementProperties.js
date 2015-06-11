@@ -11,15 +11,15 @@
  */
 'use strict';
 
+var BoxInspector = require('BoxInspector');
+var PropTypes = require('ReactPropTypes');
 var React = require('React');
+var StyleInspector = require('StyleInspector');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
-var View = require('View');
-var PropTypes = require('ReactPropTypes');
-var BoxInspector = require('BoxInspector');
-var StyleInspector = require('StyleInspector');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var View = require('View');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
@@ -93,7 +93,6 @@ var styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   info: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     padding: 10,
   },
   path: {
