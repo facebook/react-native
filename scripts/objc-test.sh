@@ -20,9 +20,12 @@ function cleanup {
 
     [ -f $REACT_PACKAGER_LOG ] && cat $REACT_PACKAGER_LOG
   fi
+  [ $SERVER_PID ] && kill -9 $SERVER_PID
 }
 trap cleanup EXIT
 
+node ./packager/packager.js -- --nonPersistent &
+SERVER_PID=$!
 xctool \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
   -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.3' \
