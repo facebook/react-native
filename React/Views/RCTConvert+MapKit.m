@@ -43,4 +43,10 @@
 
 RCT_ARRAY_CONVERTER(MKShape)
 
+RCT_ENUM_CONVERTER(MKMapType, (@{
+  @"standard": @(MKMapTypeStandard),
+  @"satellite": @(MKMapTypeSatellite),
+  @"hybrid": @(MKMapTypeHybrid),
+}), MKMapTypeStandard, integerValue)
+
 @end
