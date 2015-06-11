@@ -103,4 +103,10 @@ Pod::Spec.new do |s|
     ss.source_files     = "Libraries/WebSocket/*.{h,m}"
     ss.preserve_paths   = "Libraries/WebSocket/*.js"
   end
+
+  s.subspec 'RCTLinkingIOS' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/LinkingIOS/*.{h,m}"
+    ss.preserve_paths   = "Libraries/LinkingIOS/*.js"
+  end
 end
