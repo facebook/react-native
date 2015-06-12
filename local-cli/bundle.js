@@ -17,8 +17,10 @@ function getBundle(flags) {
   }
 
   var assetRoots = [path.resolve(__dirname, '../../..')];
-  if (flags.assetRoot) {
-    assetRoots.push(path.resolve(flags.assetRoot));
+  if (flags.assetRoots) {
+    assetRoots = assetRoots.concat(flags.assetRoots.split(",").map(function(root) {
+      return path.resolve(root);
+    });
   }
 
 
@@ -58,7 +60,7 @@ function showHelp() {
     '  --dev\t\tsets DEV flag to true',
     '  --minify\tminify js bundle',
     '  --root\t\tadd another root(s) to be used in bundling in this project',
-    '  --assetRoot\t\tspecify the root directory of app assets',
+    '  --assetRoots\t\tspecify the root directories of app assets',
     '  --out\t\tspecify the output file',
   ].join('\n'));
   process.exit(1);
@@ -71,7 +73,7 @@ module.exports = {
       dev: args.indexOf('--dev') !== -1,
       minify: args.indexOf('--minify') !== -1,
       root: args.indexOf('--root') !== -1 ? args[args.indexOf('--root') + 1] : false,
-      assetRoot: args.indexOf('--assetRoot') !== -1 ? args[args.indexOf('--assetRoot') + 1] : false,
+      assetRoots: args.indexOf('--assetRoots') !== -1 ? args[args.indexOf('--assetRoots') + 1] : false,
       out: args.indexOf('--out') !== -1 ? args[args.indexOf('--out') + 1] : false,
     }
 
