@@ -68,6 +68,8 @@
   NSThread *_javaScriptThread;
 }
 
+@synthesize valid = _valid;
+
 RCT_EXPORT_MODULE()
 
 /**
@@ -135,7 +137,7 @@ static JSValueRef RCTConsoleProfile(JSContextRef context, JSObjectRef object, JS
     profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
   }
 
-  id profileInfo = [NSNull null];
+  id profileInfo = (id)kCFNull;
   if (argumentCount > 1 && !JSValueIsUndefined(context, arguments[1])) {
     profileInfo = @[RCTJSValueToNSString(context, arguments[1])];
   }
@@ -224,6 +226,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
             @"Can't initialize RCTContextExecutor without a javaScriptThread");
 
   if ((self = [super init])) {
+    _valid = YES;
     _javaScriptThread = javaScriptThread;
     __weak RCTContextExecutor *weakSelf = self;
     [self executeBlockOnJavaScriptQueue: ^{
@@ -248,12 +251,11 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   __weak RCTContextExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:^{
     RCTContextExecutor *strongSelf = weakSelf;
-    if (!strongSelf) {
+    if (!strongSelf.isValid) {
       return;
     }
     if (!strongSelf->_context) {
       JSGlobalContextRef ctx = JSGlobalContextCreate(NULL);
-      JSGlobalContextRetain(ctx);
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
     }
     [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
@@ -263,7 +265,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
 
     for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
-      [[NSNotificationCenter defaultCenter] addObserver:self
+      [[NSNotificationCenter defaultCenter] addObserver:strongSelf
                                                selector:@selector(toggleProfilingFlag:)
                                                    name:event
                                                  object:nil];
@@ -297,13 +299,14 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 }
 
-- (BOOL)isValid
-{
-  return _context.isValid;
-}
-
 - (void)invalidate
 {
+  if (!self.isValid) {
+    return;
+  }
+
+  _valid = NO;
+
 #if RCT_DEV
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 #endif

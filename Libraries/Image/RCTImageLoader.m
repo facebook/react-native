@@ -22,7 +22,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-static void RCTDispatchCallbackOnMainQueue(void (^ __nonnull callback)(NSError *, id), NSError *error, UIImage *image)
+static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSError *error, UIImage *image)
 {
   if ([NSThread isMainThread]) {
     callback(error, image);

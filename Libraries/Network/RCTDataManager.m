@@ -42,7 +42,7 @@ typedef void (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
   NSString *boundary;
 }
 
-- (void)process:(NSArray *)formData callback:(nonnull void (^)(NSError *error, NSDictionary *result))callback
+- (void)process:(NSArray *)formData callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
   if (![formData count]) {
     callback(nil, nil);
@@ -202,6 +202,7 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
 {
   NSInteger _currentRequestID;
   NSMapTable *_activeRequests;
+  dispatch_queue_t _methodQueue;
 }
 
 @synthesize bridge = _bridge;
@@ -212,11 +213,17 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _currentRequestID = 0;
+    _methodQueue = dispatch_queue_create("com.facebook.React.RCTDataManager", DISPATCH_QUEUE_SERIAL);
     _activeRequests = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                                 valueOptions:NSPointerFunctionsStrongMemory
                                                     capacity:0];
   }
   return self;
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return _methodQueue;
 }
 
 - (void)buildRequest:(NSDictionary *)query
@@ -298,7 +305,7 @@ RCT_EXPORT_MODULE()
  * - @"contentType" (NSString): the content type header of the request
  *
  */
-- (void)processDataForHTTPQuery:(NSDictionary *)query callback:(nonnull void (^)(NSError *error, NSDictionary *result))callback
+- (void)processDataForHTTPQuery:(NSDictionary *)query callback:(void (^)(NSError *error, NSDictionary *result))callback
 {
   if (!query) {
     callback(nil, nil);
@@ -381,55 +388,62 @@ RCT_EXPORT_MODULE()
 
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response
 {
-  RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
-  RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
+  dispatch_async(_methodQueue, ^{
+    RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
+    RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
 
-  request.response = response;
+    request.response = response;
 
-  NSHTTPURLResponse *httpResponse = nil;
-  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-    // Might be a local file request
-    httpResponse = (NSHTTPURLResponse *)response;
-  }
+    NSHTTPURLResponse *httpResponse = nil;
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+      // Might be a local file request
+      httpResponse = (NSHTTPURLResponse *)response;
+    }
 
-  NSArray *responseJSON = @[request.requestID,
-                            @(httpResponse.statusCode ?: 200),
-                            httpResponse.allHeaderFields ?: @{},
-                            ];
+    NSArray *responseJSON = @[request.requestID,
+                              @(httpResponse.statusCode ?: 200),
+                              httpResponse.allHeaderFields ?: @{},
+                              ];
 
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
-                                              body:responseJSON];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
+                                                body:responseJSON];
+  });
 }
 
 - (void)URLRequest:(id)requestToken didReceiveData:(NSData *)data
 {
-  RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
-  RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
+  dispatch_async(_methodQueue, ^{
+    RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
+    RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
 
-  if (request.incrementalUpdates) {
-    [self sendData:data forRequestToken:requestToken];
-  } else {
-    [request.data appendData:data];
-  }
+    if (request.incrementalUpdates) {
+      [self sendData:data forRequestToken:requestToken];
+    } else {
+      [request.data appendData:data];
+    }
+  });
 }
 
 - (void)URLRequest:(id)requestToken didCompleteWithError:(NSError *)error
 {
-  RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
-  RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
+  dispatch_async(_methodQueue, ^{
+    RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
+    RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
 
-  if (!request.incrementalUpdates) {
-    [self sendData:request.data forRequestToken:requestToken];
-  }
+    if (!request.incrementalUpdates) {
+      [self sendData:request.data forRequestToken:requestToken];
+    }
 
-  NSArray *responseJSON = @[request.requestID,
-                            error.localizedDescription ?: [NSNull null]
-                            ];
+    NSArray *responseJSON = @[
+      request.requestID,
+      RCTNullIfNil(error.localizedDescription),
+    ];
 
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didCompleteNetworkResponse"
-                                              body:responseJSON];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didCompleteNetworkResponse"
+                                                body:responseJSON];
 
-  [_activeRequests removeObjectForKey:requestToken];
+    [_activeRequests removeObjectForKey:requestToken];
+  });
 }
 
 #pragma mark - JS API

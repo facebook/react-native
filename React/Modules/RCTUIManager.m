@@ -471,7 +471,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
     [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
     [areNew addObject:@(shadowView.isNewView)];
     [parentsAreNew addObject:@(shadowView.superview.isNewView)];
-    id event = [NSNull null];
+    id event = (id)kCFNull;
     if (shadowView.hasOnLayout) {
       event = @{
         @"target": shadowView.reactTag,
@@ -519,7 +519,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
 
       void (^completion)(BOOL finished) = ^(BOOL finished) {
         completionsCalled++;
-        if (event != [NSNull null]) {
+        if (event != (id)kCFNull) {
           [self.bridge.eventDispatcher sendInputEventWithName:@"topLayout" body:event];
         }
         if (callback && completionsCalled == frames.count - 1) {
@@ -753,7 +753,7 @@ static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, 
   // TODO: cache respondsToSelector tests
   if ([manager respondsToSelector:setter]) {
 
-    if (value == [NSNull null]) {
+    if (value == (id)kCFNull) {
       value = nil;
     }
 
@@ -906,7 +906,7 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point callback:(RCTResponseSenderBlock)callback) {
   if (!reactTag) {
-    callback(@[[NSNull null]]);
+    callback(@[(id)kCFNull]);
     return;
   }
 
@@ -920,7 +920,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point call
     }
 
     callback(@[
-      target.reactTag ?: [NSNull null],
+      RCTNullIfNil(target.reactTag),
       @(frame.origin.x),
       @(frame.origin.y),
       @(frame.size.width),

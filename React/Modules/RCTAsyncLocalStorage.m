@@ -164,14 +164,14 @@ RCT_EXPORT_MODULE()
     return errorOut;
   }
   id value = [self _getValueForKey:key errorOut:&errorOut];
-  [result addObject:@[key, value ?: [NSNull null]]]; // Insert null if missing or failure.
+  [result addObject:@[key, RCTNullIfNil(value)]]; // Insert null if missing or failure.
   return errorOut;
 }
 
 - (NSString *)_getValueForKey:(NSString *)key errorOut:(NSDictionary **)errorOut
 {
   id value = _manifest[key]; // nil means missing, null means there is a data file, anything else is an inline value.
-  if (value == [NSNull null]) {
+  if (value == (id)kCFNull) {
     NSString *filePath = [self _filePathForKey:key];
     value = RCTReadFile(filePath, key, errorOut);
   }
@@ -195,7 +195,7 @@ RCT_EXPORT_MODULE()
   NSString *filePath = [self _filePathForKey:key];
   NSError *error;
   if (value.length <= kInlineValueThreshold) {
-    if (_manifest[key] && _manifest[key] != [NSNull null]) {
+    if (_manifest[key] && _manifest[key] != (id)kCFNull) {
       // If the value already existed but wasn't inlined, remove the old file.
       [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
     }
@@ -206,7 +206,7 @@ RCT_EXPORT_MODULE()
   if (error) {
     errorOut = RCTMakeError(@"Failed to write value.", error, @{@"key": key});
   } else {
-    _manifest[key] = [NSNull null]; // Mark existence of file with null, any other value is inline data.
+    _manifest[key] = (id)kCFNull; // Mark existence of file with null, any other value is inline data.
   }
   return errorOut;
 }
@@ -223,7 +223,7 @@ RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
 
   id errorOut = [self _ensureSetup];
   if (errorOut) {
-    callback(@[@[errorOut], [NSNull null]]);
+    callback(@[@[errorOut], (id)kCFNull]);
     return;
   }
   NSMutableArray *errors;
@@ -232,7 +232,7 @@ RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
     id keyError = [self _appendItemForKey:key toArray:result];
     RCTAppendError(keyError, &errors);
   }
-  callback(@[errors ?: [NSNull null], result]);
+  callback(@[RCTNullIfNil(errors), result]);
 }
 
 RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
@@ -250,7 +250,7 @@ RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
   }
   [self _writeManifest:&errors];
   if (callback) {
-    callback(@[errors ?: [NSNull null]]);
+    callback(@[RCTNullIfNil(errors)]);
   }
 }
 
@@ -282,7 +282,7 @@ RCT_EXPORT_METHOD(multiMerge:(NSArray *)kvPairs
   }
   [self _writeManifest:&errors];
   if (callback) {
-    callback(@[errors ?: [NSNull null]]);
+    callback(@[RCTNullIfNil(errors)]);
   }
 }
 
@@ -306,7 +306,7 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
   }
   [self _writeManifest:&errors];
   if (callback) {
-    callback(@[errors ?: [NSNull null]]);
+    callback(@[RCTNullIfNil(errors)]);
   }
 }
 
@@ -323,7 +323,7 @@ RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
     errorOut = [self _writeManifest:nil];
   }
   if (callback) {
-    callback(@[errorOut ?: [NSNull null]]);
+    callback(@[RCTNullIfNil(errorOut)]);
   }
 }
 
@@ -331,9 +331,9 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 {
   id errorOut = [self _ensureSetup];
   if (errorOut) {
-    callback(@[errorOut, [NSNull null]]);
+    callback(@[errorOut, (id)kCFNull]);
   } else {
-    callback(@[[NSNull null], [_manifest allKeys]]);
+    callback(@[(id)kCFNull, [_manifest allKeys]]);
   }
 }
 

@@ -57,7 +57,7 @@ static uint64_t _get_time_nanoseconds(void)
 
   JSContextGroupRef group = JSContextGroupCreate();
   JSGlobalContextRef context = JSGlobalContextCreateInGroup(group, NULL);
-  id message = @[@[@1, @2, @3, @4], @[@{@"a": @1}, @{@"b": @2}], [NSNull null]];
+  id message = @[@[@1, @2, @3, @4], @[@{@"a": @1}, @{@"b": @2}], (id)kCFNull];
   NSString *code = RCTJSONStringify(message, NULL);
   JSStringRef script = JSStringCreateWithCFString((__bridge CFStringRef)code);
   JSValueRef error = NULL;

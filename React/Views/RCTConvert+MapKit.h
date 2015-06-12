@@ -15,6 +15,7 @@
 + (MKCoordinateSpan)MKCoordinateSpan:(id)json;
 + (MKCoordinateRegion)MKCoordinateRegion:(id)json;
 + (MKShape *)MKShape:(id)json;
++ (MKMapType)MKMapType:(id)json;
 
 typedef NSArray MKShapeArray;
 + (MKShapeArray *)MKShapeArray:(id)json;
