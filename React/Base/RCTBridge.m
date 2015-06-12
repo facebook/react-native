@@ -1087,10 +1087,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                             object:_parentBridge
                                                           userInfo:userInfo];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                            object:_parentBridge
-                                                          userInfo:@{ @"bridge": self }];
 
       } else {
 
