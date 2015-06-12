@@ -118,6 +118,17 @@ var Cell = React.createClass({
     }
   },
 
+  imageStyle() {
+    switch (this.props.player) {
+      case 1:
+        return styles.imageX;
+      case 2:
+        return styles.imageO;
+      default:
+        return {};
+    }
+  },
+
   textContents() {
     switch (this.props.player) {
       case 1:
@@ -147,7 +158,7 @@ var Cell = React.createClass({
         underlayColor="transparent"
         activeOpacity={0.5}>
         <View style={[styles.cell, this.cellStyle()]}>
-          <Image source={{uri: this.imageContents()}} />
+          <Image source={{uri: this.imageContents()}} style={this.imageStyle()}/>
         </View>
       </TouchableHighlight>
     );
@@ -291,6 +302,17 @@ var styles = StyleSheet.create({
   },
   cellTextO: {
     color: '#b9dc2f',
+  },
+
+  // CELL IMAGE
+
+  imageX: {
+    width: 34,
+    height: 42,
+  },
+  imageO: {
+    width: 45,
+    height: 41,
   },
 
   // GAME OVER
