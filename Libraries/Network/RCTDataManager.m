@@ -436,7 +436,7 @@ RCT_EXPORT_MODULE()
 
     NSArray *responseJSON = @[
       request.requestID,
-      error.localizedDescription ?: [NSNull null],
+      RCTNullIfNil(error.localizedDescription),
     ];
 
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didCompleteNetworkResponse"

@@ -54,7 +54,7 @@ RCT_CONVERTER(NSString *, NSString, description)
       RCTLogConvertError(json, "a number");
     }
     return number;
-  } else if (json && json != [NSNull null]) {
+  } else if (json && json != (id)kCFNull) {
     RCTLogConvertError(json, "a number");
   }
   return nil;
@@ -141,7 +141,7 @@ RCT_CONVERTER(NSString *, NSString, description)
                   "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
     }
     return date;
-  } else if (json && json != [NSNull null]) {
+  } else if (json && json != (id)kCFNull) {
     RCTLogConvertError(json, "a date");
   }
   return nil;

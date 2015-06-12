@@ -137,7 +137,7 @@ static JSValueRef RCTConsoleProfile(JSContextRef context, JSObjectRef object, JS
     profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
   }
 
-  id profileInfo = [NSNull null];
+  id profileInfo = (id)kCFNull;
   if (argumentCount > 1 && !JSValueIsUndefined(context, arguments[1])) {
     profileInfo = @[RCTJSValueToNSString(context, arguments[1])];
   }

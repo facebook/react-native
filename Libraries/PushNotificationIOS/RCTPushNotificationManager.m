@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
@@ -172,7 +173,7 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 - (NSDictionary *)constantsToExport
 {
   return @{
-    @"initialNotification": _initialNotification ?: [NSNull null]
+    @"initialNotification": RCTNullIfNil(_initialNotification),
   };
 }
 
