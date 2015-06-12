@@ -79,6 +79,9 @@ static css_dim_t RCTMeasure(void *context, float width)
 
 - (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width
 {
+  UIEdgeInsets padding = self.paddingAsInsets;
+  width -= (padding.left + padding.right);
+
   if (_cachedTextStorage && width == _cachedTextStorageWidth) {
     return _cachedTextStorage;
   }
@@ -92,16 +95,13 @@ static css_dim_t RCTMeasure(void *context, float width)
   textContainer.lineFragmentPadding = 0.0;
   textContainer.lineBreakMode = _numberOfLines > 0 ? NSLineBreakByTruncatingTail : NSLineBreakByClipping;
   textContainer.maximumNumberOfLines = _numberOfLines;
-
-  UIEdgeInsets padding = self.paddingAsInsets;
-  width -= (padding.left + padding.right);
   textContainer.size = (CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX};
 
   [layoutManager addTextContainer:textContainer];
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
-  _cachedTextStorage = textStorage;
   _cachedTextStorageWidth = width;
+  _cachedTextStorage = textStorage;
 
   return textStorage;
 }
