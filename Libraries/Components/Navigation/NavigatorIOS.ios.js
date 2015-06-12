@@ -83,16 +83,16 @@ var NavigatorTransitionerIOS = React.createClass({
 type Route = {
   component: Function;
   title: string;
-  passProps: Object;
-  backButtonTitle: string;
-  backButtonIcon: Object;
-  leftButtonTitle: string;
-  leftButtonIcon: Object;
-  onLeftButtonPress: Function;
-  rightButtonTitle: string;
-  rightButtonIcon: Object;
-  onRightButtonPress: Function;
-  wrapperStyle: any;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
 };
 
 type State = {
