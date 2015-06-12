@@ -28,9 +28,6 @@ var SearchScreen = require('./SearchScreen');
 var MoviesApp = React.createClass({
   render: function() {
     return (
-      /* $FlowIssue #7363964 - There's a bug in Flow where you cannot
-        * omit a property or set it to undefined if it's inside a shape,
-        * even if it isn't required */
       <NavigatorIOS
         style={styles.container}
         initialRoute={{
