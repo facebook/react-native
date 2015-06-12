@@ -119,6 +119,11 @@ var PAGE_SIZE = 20;
 
 class FormUploader extends React.Component {
 
+  _isMounted: boolean;
+  _fetchRandomPhoto: () => void;
+  _addTextParam: () => void;
+  _upload: () => void;
+
   constructor(props) {
     super(props);
     this.state = {
