@@ -20,7 +20,7 @@ function getBundle(flags) {
   if (flags.assetRoots) {
     assetRoots = assetRoots.concat(flags.assetRoots.split(",").map(function(root) {
       return path.resolve(root);
-    });
+    }));
   }
 
 
