@@ -19,7 +19,8 @@ var _notifHandlers = {};
 var _initialNotification = RCTPushNotificationManager &&
   RCTPushNotificationManager.initialNotification;
 
-var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
+var DEVICE_NOTIF_EVENT_FOREGROUND = 'remoteNotificationReceivedForeground';
+var DEVICE_NOTIF_EVENT_BACKGROUND = 'remoteNotificationReceivedBackground';
 var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 
 /**
@@ -55,19 +56,30 @@ class PushNotificationIOS {
    *
    * Valid events are:
    *
-   * - `notification` : Fired when a remote notification is received. The
-   *   handler will be invoked with an instance of `PushNotificationIOS`.
+   * - `notificationForeground` : Fired when a remote notification is received
+   *   and the app is running in foreground. The handler will be invoked with an
+   *   instance of `PushNotificationIOS`.
+   * - `notificationBackground` : Same as `notificationForeground`, only it will
+   *   only be fired when app is opening from background.
    * - `register`: Fired when the user registers for remote notifications. The
    *   handler will be invoked with a hex string representing the deviceToken.
    */
   static addEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notificationForeground' || type === 'notificationBackground' || type === 'register',
+      'PushNotificationIOS only supports `notificationForeground`, `notificationBackground`, and `register` events'
     );
-    if (type === 'notification') {
+
+    if (type === 'notificationForeground') {
       _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
-        DEVICE_NOTIF_EVENT,
+        DEVICE_NOTIF_EVENT_FOREGROUND,
+        (notifData) => {
+          handler(new PushNotificationIOS(notifData));
+        }
+      );
+    } else if (type === 'notificationBackground') {
+      _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
+        DEVICE_NOTIF_EVENT_BACKGROUND,
         (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
@@ -80,6 +92,7 @@ class PushNotificationIOS {
         }
       );
     }
+
   }
 
   /**
@@ -140,8 +153,8 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notificationForeground' || type === 'notificationBackground' || type === 'register',
+      'PushNotificationIOS only supports `notificationForeground`, `notificationBackground`, and `register` events'
     );
     if (!_notifHandlers[handler]) {
       return;

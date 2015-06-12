@@ -22,7 +22,8 @@
 
 #endif
 
-NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
+NSString *const RCTRemoteNotificationReceivedForeground = @"RemoteNotificationReceivedForeground";
+NSString *const RCTRemoteNotificationReceivedBackground = @"RemoteNotificationReceivedBackground";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
 
 @implementation RCTPushNotificationManager
@@ -38,9 +39,15 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleRemoteNotificationReceived:)
-                                                 name:RCTRemoteNotificationReceived
+                                             selector:@selector(handleRemoteNotificationReceivedForeground:)
+                                                 name:RCTRemoteNotificationReceivedForeground
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRemoteNotificationReceivedBackground:)
+                                                 name:RCTRemoteNotificationReceivedBackground
+                                               object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRemoteNotificationsRegistered:)
                                                  name:RCTRemoteNotificationsRegistered
@@ -84,14 +91,30 @@ RCT_EXPORT_MODULE()
 
 + (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
-                                                      object:self
-                                                    userInfo:notification];
+  UIApplicationState state = [application applicationState];
+
+  if (state == UIApplicationStateActive) {
+    //app is in foreground
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceivedForeground
+                                                        object:self
+                                                      userInfo:notification];
+  } else {
+    //app is in background
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceivedBackground
+                                                        object:self
+                                                      userInfo:notification];
+  }
 }
 
-- (void)handleRemoteNotificationReceived:(NSNotification *)notification
+- (void)handleRemoteNotificationReceivedForeground:(NSNotification *)notification
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceivedForeground"
+                                              body:[notification userInfo]];
+}
+
+- (void)handleRemoteNotificationReceivedBackground:(NSNotification *)notification
+{
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceivedBackground"
                                               body:[notification userInfo]];
 }
 
