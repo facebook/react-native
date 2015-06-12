@@ -107,8 +107,8 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
     reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
-    reactTouch[@"touches"] = [NSNull null];        // We hijack this touchObj to serve both as an event
-    reactTouch[@"changedTouches"] = [NSNull null]; // and as a Touch object, so making this JIT friendly.
+    reactTouch[@"touches"] = (id)kCFNull;        // We hijack this touchObj to serve both as an event
+    reactTouch[@"changedTouches"] = (id)kCFNull; // and as a Touch object, so making this JIT friendly.
 
     // Add to arrays
     [_touchViews addObject:targetView];

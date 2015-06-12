@@ -10,6 +10,7 @@
 #import "RCTActionSheetManager.h"
 
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
 
@@ -90,7 +91,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
       if (activityError) {
         failureCallback(@[[activityError localizedDescription]]);
       } else {
-        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+        successCallback(@[@(completed), RCTNullIfNil(activityType)]);
       }
     };
   } else {
@@ -100,7 +101,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     if (![UIActivityViewController instancesRespondToSelector:@selector(completionWithItemsHandler)]) {
       // Legacy iOS 7 implementation
       share.completionHandler = ^(NSString *activityType, BOOL completed) {
-        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+        successCallback(@[@(completed), RCTNullIfNil(activityType)]);
       };
     } else
 
@@ -109,7 +110,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     {
       // iOS 8 version
       share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
-        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
+        successCallback(@[@(completed), RCTNullIfNil(activityType)]);
       };
     }
   }

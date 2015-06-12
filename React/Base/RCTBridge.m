@@ -449,7 +449,7 @@ case _value: { \
   // Set arguments
   NSUInteger index = 0;
   for (id json in arguments) {
-    id arg = (json == [NSNull null]) ? nil : json;
+    id arg = RCTNilIfNull(json);
     void (^block)(RCTBridge *, NSNumber *, NSInvocation *, NSUInteger, id) = _argumentBlocks[index];
     block(bridge, context, invocation, index + 2, arg);
     index++;
@@ -1012,7 +1012,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
       if (queue) {
         _queuesByID[moduleID] = queue;
       } else {
-        _queuesByID[moduleID] = [NSNull null];
+        _queuesByID[moduleID] = (id)kCFNull;
       }
     }
 
@@ -1266,8 +1266,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
                                context:context
                               callback:^(id json, NSError *error) {
                                 RCTProfileEndEvent(@"FetchApplicationScriptCallbacks", @"js_call,init", @{
-                                  @"json": json ?: [NSNull null],
-                                  @"error": error ?: [NSNull null],
+                                  @"json": RCTNullIfNil(json),
+                                  @"error": RCTNullIfNil(error),
                                 });
 
                                 [self _handleBuffer:json context:context];
@@ -1293,7 +1293,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     queue = _queuesByID[moduleID];
   }
 
-  if (queue == [NSNull null]) {
+  if (queue == (id)kCFNull) {
     [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
   } else {
     dispatch_async(queue ?: _methodQueue, block);
@@ -1509,7 +1509,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
     @"module": method.moduleClassName,
     @"method": method.JSMethodName,
     @"selector": NSStringFromSelector(method.selector),
-    @"args": RCTJSONStringify(params ?: [NSNull null], NULL),
+    @"args": RCTJSONStringify(RCTNullIfNil(params), NULL),
   });
 
   return YES;

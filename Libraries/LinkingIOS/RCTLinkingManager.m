@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 
 NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
@@ -76,7 +77,7 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
 - (NSDictionary *)constantsToExport
 {
   NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  return @{@"initialURL": [initialURL absoluteString] ?: [NSNull null]};
+  return @{@"initialURL": RCTNullIfNil([initialURL absoluteString])};
 }
 
 @end
