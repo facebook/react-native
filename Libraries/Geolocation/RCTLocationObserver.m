@@ -334,7 +334,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary*)options
 {
   if([options[RCTPermissionKey] isEqualToString:RCTPermissionTypeAlways] && ![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"]) {
     //@TODO we should also check that the location background capability exists, and we should cache the results
-    RCTLogError(@"NSLocationAlwaysUsageDescription key must be present in Info.plist for 'ALWAYS' authorization.");
+    RCTLogError(@"NSLocationAlwaysUsageDescription key must be present in Info.plist for 'always' authorization.");
   }
   else if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
     RCTLogError(@"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");

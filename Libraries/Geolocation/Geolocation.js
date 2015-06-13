@@ -67,7 +67,7 @@ var Geolocation = {
       'Must provide a valid geo_success callback.'
     );
     RCTLocationObserver.getCurrentPosition(
-      geo_options,
+      geo_options || {},
       geo_success,
       geo_error || logError
     );
