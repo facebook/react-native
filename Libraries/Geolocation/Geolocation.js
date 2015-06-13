@@ -18,7 +18,7 @@ var invariant = require('invariant');
 var logError = require('logError');
 var warning = require('warning');
 
-var PERMISSION_TYPES = ['IN_USE', 'ALWAYS'];
+var PERMISSION_TYPES = ['always', 'inUse'];
 
 var subscriptions = [];
 
@@ -84,7 +84,7 @@ var Geolocation = {
     );
 
     if (!updatesEnabled) {
-      RCTLocationObserver.startObserving(options);
+      RCTLocationObserver.startObserving(options || {});
       updatesEnabled = true;
     }
     var watchID = subscriptions.length;
@@ -140,6 +140,6 @@ var Geolocation = {
       subscriptions = [];
     }
   }
-}
+};
 
 module.exports = Geolocation;

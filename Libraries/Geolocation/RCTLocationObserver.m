@@ -25,8 +25,9 @@ typedef NS_ENUM(NSInteger, RCTPositionErrorCode) {
   RCTPositionErrorTimeout,
 };
 
-static NSString *const PERMISSION_TYPE_ALWAYS = @"ALWAYS";
-static NSString *const PERMISSIONS_KEY = @"permissionTypeIOS";
+static NSString *const RCTPermissionTypeAlways = @"always";
+static NSString *const RCTPermissionTypeInUse = @"inUse";
+static NSString *const RCTPermissionKey = @"permissionTypeIOS";
 
 #define RCT_DEFAULT_LOCATION_ACCURACY kCLLocationAccuracyHundredMeters
 
@@ -134,8 +135,7 @@ RCT_EXPORT_MODULE()
     _locationManager.distanceFilter = RCT_DEFAULT_LOCATION_ACCURACY;
     _locationManager.delegate = self;
   }
-
-  if ([permissionType isEqualToString:PERMISSION_TYPE_ALWAYS] && [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+  if ([permissionType isEqualToString:RCTPermissionTypeAlways] && [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
     [_locationManager requestAlwaysAuthorization];
   }
   // Defaults to minimal permission: `requestWhenInUseAuthorization`
@@ -164,7 +164,6 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(startObserving:(NSDictionary*)options)
 {
-  NSLog(@"***$$$$$$$$$$$$$$$$$$$$$$$$ START OBS");
   [self checkLocationConfig:options];
   _observerOptions = [RCTConvert RCTLocationOptions:options];
 
@@ -174,7 +173,7 @@ RCT_EXPORT_METHOD(startObserving:(NSDictionary*)options)
   }
 
   _locationManager.desiredAccuracy = _observerOptions.accuracy;
-  [self beginLocationUpdates:options[PERMISSIONS_KEY]];
+  [self beginLocationUpdates:options[@"permissionTypeIOS"]];
   _observingLocation = YES;
 }
 
@@ -246,7 +245,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary*)options
 
   // Configure location manager and begin updating location
   _locationManager.desiredAccuracy = MIN(_locationManager.desiredAccuracy, locationOptions.accuracy);
-  [self beginLocationUpdates:options[PERMISSIONS_KEY]];
+  [self beginLocationUpdates:options[RCTPermissionKey]];
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -333,7 +332,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(NSDictionary*)options
 
 - (void)checkLocationConfig:(NSDictionary*)options
 {
-  if([options[PERMISSIONS_KEY] isEqualToString:PERMISSION_TYPE_ALWAYS] && ![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"]) {
+  if([options[RCTPermissionKey] isEqualToString:RCTPermissionTypeAlways] && ![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"]) {
     //@TODO we should also check that the location background capability exists, and we should cache the results
     RCTLogError(@"NSLocationAlwaysUsageDescription key must be present in Info.plist for 'ALWAYS' authorization.");
   }
