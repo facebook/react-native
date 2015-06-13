@@ -103,13 +103,13 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(
 You would then call this from JavaScript by using either:
 
 ```javascript
-CalendarManager.addEvent('Birthday Party', date.toTime()); // passing date as number of seconds since Unix epoch
+CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey', date.toTime()); // passing date as number of seconds since Unix epoch
 ```
 
 or
 
 ```javascript
-CalendarManager.addEvent('Birthday Party', date.toISOString()); // passing date as ISO-8601 string
+CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey', date.toISOString()); // passing date as ISO-8601 string
 ```
 
 And both values would get converted correctly to the native `NSDate`.  A bad value, like an `Array`, would generate a helpful "RedBox" error message.
