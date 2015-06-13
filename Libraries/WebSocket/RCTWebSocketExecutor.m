@@ -186,6 +186,15 @@ RCT_EXPORT_MODULE()
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_async(dispatch_get_main_queue(), block);
+  }
+}
+
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
   dispatch_async(dispatch_get_main_queue(), block);
 }
 
