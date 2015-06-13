@@ -779,9 +779,14 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   /**
    * AnyThread
    */
+  __weak RCTBridge *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self invalidate];
-    [self setUp];
+    if (!weakSelf.isValid) {
+      return;
+    }
+
+    [weakSelf invalidate];
+    [weakSelf setUp];
   });
 }
 
