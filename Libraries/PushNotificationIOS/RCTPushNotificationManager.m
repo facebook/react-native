@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTConvert.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
@@ -174,6 +175,27 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
   return @{
     @"initialNotification": _initialNotification ?: [NSNull null]
   };
+}
+
+- (UILocalNotification *)createNotification:(NSDictionary*)details
+{
+  UILocalNotification *notification = [UILocalNotification new];
+
+  notification.fireDate = details[@"fireDate"] ? [RCTConvert NSDate:details[@"fireDate"]] : [NSDate new];
+  notification.alertBody = details[@"alertBody"] ? [RCTConvert NSString:details[@"alertBody"]] : nil;
+
+  return notification;
+}
+
+RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)details)
+{
+  [[UIApplication sharedApplication] presentLocalNotificationNow:[self createNotification:details]];
+}
+
+
+RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)details)
+{
+  [[UIApplication sharedApplication] scheduleLocalNotification:[self createNotification:details]];
 }
 
 @end
