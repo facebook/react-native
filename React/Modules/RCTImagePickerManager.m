@@ -8,6 +8,7 @@
 
 #import "RCTImagePickerManager.h"
 #import "RCTRootView.h"
+#import <MobileCoreServices/UTCoreTypes.h>
 
 @implementation RCTImagePickerManager
 {
@@ -31,19 +32,29 @@ RCT_EXPORT_MODULE(ImagePicker);
   [super viewDidLoad];
 }
 
-RCT_EXPORT_METHOD(selectPhoto:(RCTResponseSenderBlock)callback onCancel:(RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(selectPhoto:(NSDictionary *)config andSuccessCallback:(RCTResponseSenderBlock)callback andCancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
-  NSLog(@"Doing something cool now");
-
   UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
   UIViewController *rootViewController = keyWindow.rootViewController;
 
   UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
   imagePicker.delegate = self;
+  imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+
+  NSMutableArray *allowedTypes = [[NSMutableArray alloc] init];
+  if ([config[@"showImages"] boolValue]) {
+    [allowedTypes addObject:(NSString *)kUTTypeImage];
+  }
+  
+  if ([config[@"showVideos"] boolValue]) {
+    [allowedTypes addObject:(NSString *)kUTTypeMovie];
+  }
+  
+  imagePicker.mediaTypes = allowedTypes;
 
   [_pickers addObject:imagePicker];
   [_pickerCallbacks addObject:callback];
-  [_pickerCancelCallbacks addObject:errorCallback];
+  [_pickerCancelCallbacks addObject:cancelCallback];
 
   [rootViewController presentViewController:imagePicker animated:YES completion:nil];
 }
@@ -52,8 +63,6 @@ RCT_EXPORT_METHOD(selectPhoto:(RCTResponseSenderBlock)callback onCancel:(RCTResp
 {
   NSUInteger index = [_pickers indexOfObject:picker];
   RCTResponseSenderBlock callback = _pickerCallbacks[index];
-
-  NSLog(@"%@", info);
 
   [_pickers removeObjectAtIndex:index];
   [_pickerCallbacks removeObjectAtIndex:index];
