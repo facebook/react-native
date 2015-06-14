@@ -17,8 +17,16 @@ var ImagePickerIOS = {
   openSelectDialog: function(config, successCallback, cancelCallback) {
     var successCallback = successCallback || function () {};
     var cancelCallback = cancelCallback || function () {};
+    var defaultConfig = {
+      showImages: true,
+      showVideos: false
+    }
 
-    return RCTImagePicker.openSelectDialog(config, successCallback, cancelCallback);
+    for (var c in config) {
+      defaultConfig[c] = config[c];
+    }
+
+    return RCTImagePicker.openSelectDialog(defaultConfig, successCallback, cancelCallback);
   },
 };
 
