@@ -14,11 +14,11 @@
 var RCTImagePicker = require('NativeModules').ImagePickerIOS;
 
 var ImagePickerIOS = {
-  canRecordVideos: function(callback) {
+  canRecordVideos: function(callback: Function) {
     var callback = callback || function () {};
     return RCTImagePicker.canRecordVideos(callback);
   },
-  canUseCamera: function(callback) {
+  canUseCamera: function(callback: Function) {
     var callback = callback || function () {};
     return RCTImagePicker.canUseCamera(callback);
   },
