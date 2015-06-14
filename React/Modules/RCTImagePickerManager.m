@@ -17,7 +17,7 @@
   NSMutableArray *_pickerCancelCallbacks;
 }
 
-RCT_EXPORT_MODULE(ImagePicker);
+RCT_EXPORT_MODULE(ImagePickerIOS);
 
 - (instancetype)init {
   if ((self = [super init])) {
@@ -32,7 +32,7 @@ RCT_EXPORT_MODULE(ImagePicker);
   [super viewDidLoad];
 }
 
-RCT_EXPORT_METHOD(selectPhoto:(NSDictionary *)config andSuccessCallback:(RCTResponseSenderBlock)callback andCancelCallback:(RCTResponseSenderBlock)cancelCallback)
+RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config andSuccessCallback:(RCTResponseSenderBlock)callback andCancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
   UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
   UIViewController *rootViewController = keyWindow.rootViewController;
