@@ -14,7 +14,7 @@
 var RCTImagePicker = require('NativeModules').ImagePickerIOS;
 
 var ImagePickerIOS = {
-  openSelectDialog: function(config, successCallback, cancelCallback) {
+  openSelectDialog: function(config: Object, successCallback: Function, cancelCallback: Function) {
     var successCallback = successCallback || function () {};
     var cancelCallback = cancelCallback || function () {};
     var defaultConfig = {
