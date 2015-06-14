@@ -14,6 +14,27 @@
 var RCTImagePicker = require('NativeModules').ImagePickerIOS;
 
 var ImagePickerIOS = {
+  canRecordVideos: function(callback) {
+    var callback = callback || function () {};
+    return RCTImagePicker.canRecordVideos(callback);
+  },
+  canUseCamera: function(callback) {
+    var callback = callback || function () {};
+    return RCTImagePicker.canUseCamera(callback);
+  },
+  openCameraDialog: function(config: Object, successCallback: Function, cancelCallback: Function) {
+    var successCallback = successCallback || function () {};
+    var cancelCallback = cancelCallback || function () {};
+    var defaultConfig = {
+      videoMode: false
+    }
+
+    for (var c in config) {
+      defaultConfig[c] = config[c];
+    }
+
+    return RCTImagePicker.openCameraDialog(defaultConfig, successCallback, cancelCallback);
+  },
   openSelectDialog: function(config: Object, successCallback: Function, cancelCallback: Function) {
     var successCallback = successCallback || function () {};
     var cancelCallback = cancelCallback || function () {};

@@ -32,6 +32,41 @@ RCT_EXPORT_MODULE(ImagePickerIOS);
   [super viewDidLoad];
 }
 
+RCT_EXPORT_METHOD(canRecordVideos:(RCTResponseSenderBlock)callback)
+{
+  NSArray *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+  callback(@[
+      [NSNumber numberWithBool:[availableMediaTypes containsObject:(NSString *)kUTTypeMovie]]
+      ]);
+}
+
+RCT_EXPORT_METHOD(canUseCamera:(RCTResponseSenderBlock)callback)
+{
+  callback(@[
+      [NSNumber numberWithBool:[UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]]
+      ]);
+}
+
+RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config andSuccessCallback:(RCTResponseSenderBlock)callback andCancelCallback:(RCTResponseSenderBlock)cancelCallback)
+{
+  UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+  UIViewController *rootViewController = keyWindow.rootViewController;
+
+  UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+  imagePicker.delegate = self;
+  imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+
+  if ([config[@"videoMode"] boolValue]) {
+    imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
+  }
+
+  [_pickers addObject:imagePicker];
+  [_pickerCallbacks addObject:callback];
+  [_pickerCancelCallbacks addObject:cancelCallback];
+
+  [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+}
+
 RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config andSuccessCallback:(RCTResponseSenderBlock)callback andCancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
   UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
@@ -45,11 +80,11 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config andSuccessCallback:(RC
   if ([config[@"showImages"] boolValue]) {
     [allowedTypes addObject:(NSString *)kUTTypeImage];
   }
-  
+
   if ([config[@"showVideos"] boolValue]) {
     [allowedTypes addObject:(NSString *)kUTTypeMovie];
   }
-  
+
   imagePicker.mediaTypes = allowedTypes;
 
   [_pickers addObject:imagePicker];
