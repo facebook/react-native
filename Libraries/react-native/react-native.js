@@ -43,6 +43,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
 
   // APIs
   AlertIOS: require('AlertIOS'),
+  ImagePickerIOS: require('ImagePickerIOS'),
   AppRegistry: require('AppRegistry'),
   AppStateIOS: require('AppStateIOS'),
   AsyncStorage: require('AsyncStorage'),
