@@ -148,6 +148,11 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
 
 }
 
+RCT_EXPORT_METHOD(abandonPermissions)
+{
+  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+}
+
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
   NSUInteger types = 0;
