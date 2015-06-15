@@ -62,7 +62,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
-  if ((self = [super init])) {
+  if ((self = [super initWithFrame:CGRectZero])) {
 
     self.backgroundColor = [UIColor whiteColor];
 
@@ -99,6 +99,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
   return [self initWithBridge:bridge moduleName:moduleName];
 }
+
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
@@ -147,7 +150,7 @@ RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
                          options:UIViewAnimationOptionTransitionCrossDissolve
                       animations:^{
                         _loadingView.hidden = YES;
-                      } completion:^(BOOL finished) {
+                      } completion:^(__unused BOOL finished) {
                         [_loadingView removeFromSuperview];
                       }];
     });

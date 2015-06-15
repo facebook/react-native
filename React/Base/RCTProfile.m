@@ -118,7 +118,7 @@ static SEL RCTProfileProxySelector(SEL selector)
 }
 
 static void RCTProfileForwardInvocation(NSObject *, SEL, NSInvocation *);
-static void RCTProfileForwardInvocation(NSObject *self, SEL cmd, NSInvocation *invocation)
+static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvocation *invocation)
 {
   NSString *name = [NSString stringWithFormat:@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(invocation.selector)];
   SEL newSel = RCTProfileProxySelector(invocation.selector);
@@ -150,7 +150,7 @@ static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
 static void RCTProfileHookModules(RCTBridge *);
 static void RCTProfileHookModules(RCTBridge *bridge)
 {
-  [bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *className, id<RCTBridgeModule> module, BOOL *stop) {
+  for (id<RCTBridgeModule> module in  bridge.modules.allValues) {
     [bridge dispatchBlock:^{
       Class moduleClass = object_getClass(module);
       Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
@@ -183,13 +183,13 @@ static void RCTProfileHookModules(RCTBridge *bridge)
       objc_registerClassPair(proxyClass);
       object_setClass(module, proxyClass);
     } forModule:module];
-  }];
+  }
 }
 
 void RCTProfileUnhookModules(RCTBridge *);
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
-  [bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *className, id<RCTBridgeModule> module, BOOL *stop) {
+  for (id<RCTBridgeModule> module in bridge.modules.allValues) {
     [bridge dispatchBlock:^{
       Class proxyClass = object_getClass(module);
       if (module.class != proxyClass) {
@@ -197,7 +197,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
         objc_disposeClassPair(proxyClass);
       }
     } forModule:module];
-  }];
+  };
 }
 
 

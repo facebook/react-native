@@ -164,6 +164,10 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
                         handler:(id<RCTURLRequestHandler>)handler
                        callback:(RCTDataLoaderCallback)callback
 {
+   RCTAssertParam(request);
+   RCTAssertParam(handler);
+   RCTAssertParam(callback);
+
   if ((self = [super init])) {
     _callback = callback;
     _request = [[RCTActiveURLRequest alloc] init];
@@ -173,6 +177,11 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
     _requestToken = [handler sendRequest:request withDelegate:self];
   }
   return self;
+}
+
+- (instancetype)init
+{
+  return [self initWithRequest:nil handler:nil callback:nil];
 }
 
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response

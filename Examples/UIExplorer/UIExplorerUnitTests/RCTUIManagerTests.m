@@ -136,7 +136,7 @@
 
   // We need to keep these in array to keep them around
   NSMutableArray *viewsToRemove = [NSMutableArray array];
-  for (NSInteger i = 0; i < removeAtIndices.count; i++) {
+  for (NSUInteger i = 0; i < removeAtIndices.count; i++) {
     NSNumber *reactTagToRemove = @([removeAtIndices[i] integerValue] + 1);
     UIView *viewToRemove = _uiManager.viewRegistry[reactTagToRemove];
     [viewsToRemove addObject:viewToRemove];
@@ -160,7 +160,7 @@
                instead have the following subviews %@", [containerView reactSubviews]);
 
   NSArray *expectedReactTags = @[@11, @5, @1, @2, @7, @8, @12, @10];
-  for (NSInteger i = 0; i < [[containerView subviews] count]; i++) {
+  for (NSUInteger i = 0; i < containerView.subviews.count; i++) {
     XCTAssertEqualObjects([[containerView reactSubviews][i] reactTag], expectedReactTags[i],
                  @"Expected subview at index %ld to have react tag #%@ but has tag #%@",
                          (long)i, expectedReactTags[i], [[containerView reactSubviews][i] reactTag]);

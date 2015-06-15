@@ -42,17 +42,17 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-- (void)executeJSCall:(NSString *)name
-               method:(NSString *)method
-            arguments:(NSArray *)arguments
-              context:(NSNumber *)executorID
+- (void)executeJSCall:(__unused NSString *)name
+               method:(__unused NSString *)method
+            arguments:(__unused NSArray *)arguments
+              context:(__unused NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
   onComplete(nil, nil);
 }
 
-- (void)executeApplicationScript:(NSString *)script
-                       sourceURL:(NSURL *)url
+- (void)executeApplicationScript:(__unused NSString *)script
+                       sourceURL:(__unused NSURL *)url
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
   onComplete(nil);

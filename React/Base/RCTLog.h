@@ -90,13 +90,12 @@ RCT_EXTERN void RCTAddLogFunction(RCTLogFunction logFunction);
 RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
 
 /**
- * Private logging functions - ignore these.
+ * Private logging function - ignore this.
  */
-RCT_EXTERN void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
 #define _RCTLog(lvl, ...) do { \
-  if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
-  _RCTLogFormat(lvl, __FILE__, __LINE__, __VA_ARGS__); \
-} while (0)
+if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
+_RCTLogFormat(lvl, __FILE__, __LINE__, __VA_ARGS__); } while (0)
+RCT_EXTERN void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
 
 /**
  * Logging macros. Use these to log information, warnings and errors in your

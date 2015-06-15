@@ -139,7 +139,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
   _paused = NO;
 }
 
-- (void)didUpdateFrame:(RCTFrameUpdate *)update
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
   NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
   for (RCTTimer *timer in _timers.allObjects) {

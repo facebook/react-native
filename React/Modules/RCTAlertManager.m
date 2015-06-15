@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
 
   [_alerts addObject:alertView];
-  [_alertCallbacks addObject:callback ?: ^(id unused) {}];
+  [_alertCallbacks addObject:callback ?: ^(__unused id unused) {}];
   [_alertButtonKeys addObject:buttonKeys];
 
   [alertView show];

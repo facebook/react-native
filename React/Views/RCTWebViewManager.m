@@ -47,7 +47,7 @@ RCT_EXPORT_VIEW_PROPERTY(shouldInjectAJAXHandler, BOOL);
 
 RCT_EXPORT_METHOD(goBack:(NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RKWebView, got: %@", view);
@@ -58,7 +58,7 @@ RCT_EXPORT_METHOD(goBack:(NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(goForward:(NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     id view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RKWebView, got: %@", view);
@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(goForward:(NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(reload:(NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogMustFix(@"Invalid view returned from registry, expecting RKWebView, got: %@", view);

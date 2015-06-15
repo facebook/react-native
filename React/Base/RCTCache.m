@@ -12,6 +12,8 @@
 #import <UIKit/UIKit.h>
 #import <sys/xattr.h>
 
+#import "RCTAssert.h"
+
 static NSString *const RCTCacheSubdirectoryName = @"React";
 static NSString *const RCTKeyExtendedAttributeName = @"com.facebook.React.RCTCacheManager.Key";
 static NSMapTable *RCTLivingCachesByName;
@@ -122,7 +124,8 @@ static BOOL RCTSetExtendedAttribute(NSURL *fileURL, NSString *key, NSString *val
 
 - (instancetype)initWithName:(NSString *)name
 {
-  NSParameterAssert(name.length < NAME_MAX);
+  RCTAssertParam(name);
+  RCTAssert(name.length < NAME_MAX, @"Name must be fewer than %i characters in length.", NAME_MAX);
   RCTCache *cachedCache = [RCTLivingCachesByName objectForKey:name];
   if (cachedCache) {
     self = cachedCache;
@@ -212,12 +215,12 @@ static BOOL RCTSetExtendedAttribute(NSURL *fileURL, NSString *key, NSString *val
   UIBackgroundTaskIdentifier identifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
   dispatch_group_t group = dispatch_group_create();
 
-  [_storage enumerateKeysAndObjectsUsingBlock:^(NSString *key, RCTCacheRecord *record, BOOL *stop) {
+  for (RCTCacheRecord *record in _storage.allValues) {
     NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
     dispatch_group_async(group, record.queue, ^{
       [_fileManager removeItemAtURL:fileURL error:NULL];
     });
-  }];
+  }
 
   if (identifier != UIBackgroundTaskInvalid) {
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{

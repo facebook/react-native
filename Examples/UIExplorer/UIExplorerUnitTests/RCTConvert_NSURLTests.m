@@ -13,7 +13,7 @@
 #define TEST_URL(name, _input, _expectedURL) \
 - (void)test_##name { \
   NSURL *result = [RCTConvert NSURL:_input]; \
-  NSURL *expected = [NSURL URLWithString:_expectedURL]; \
+  NSURL *expected = (_expectedURL) ? [NSURL URLWithString:_expectedURL ?: @""] : nil; \
   XCTAssertEqualObjects(result.absoluteURL, expected); \
 } \
 

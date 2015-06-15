@@ -77,7 +77,7 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
   // To fix this, we use a linear search, since there won't be many keys anyway
 
   [_commandBindings enumerateKeysAndObjectsUsingBlock:
-   ^(UIKeyCommand *k, void (^block)(UIKeyCommand *), BOOL *stop) {
+   ^(UIKeyCommand *k, void (^block)(UIKeyCommand *), __unused BOOL *stop) {
     if ([key.input isEqualToString:k.input] && key.modifierFlags == k.modifierFlags) {
       block(key);
     }
@@ -105,7 +105,7 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
                                               modifierFlags:flags
                                                      action:@selector(RCT_handleKeyCommand:)];
 
-  _commandBindings[command] = block ?: ^(UIKeyCommand *cmd) {};
+  _commandBindings[command] = block ?: ^(__unused UIKeyCommand *cmd) {};
 }
 
 - (void)unregisterKeyCommandWithInput:(NSString *)input

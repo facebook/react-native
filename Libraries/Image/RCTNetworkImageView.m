@@ -9,6 +9,7 @@
 
 #import "RCTNetworkImageView.h"
 
+#import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
@@ -25,15 +26,21 @@
   id _downloadToken;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame imageDownloader:(RCTImageDownloader *)imageDownloader
+- (instancetype)initWithImageDownloader:(RCTImageDownloader *)imageDownloader
 {
-  if ((self = [super initWithFrame:frame])) {
+  RCTAssertParam(imageDownloader);
+
+  if ((self = [super initWithFrame:CGRectZero])) {
     _deferSentinel = 0;
     _imageDownloader = imageDownloader;
     self.userInteractionEnabled = NO;
+    self.contentMode = UIViewContentModeScaleAspectFill;
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (NSURL *)imageURL
 {

@@ -213,7 +213,8 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame parentConstraint:(CGSize)parentConstraint
+- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
+                parentConstraint:(__unused CGSize)parentConstraint
 {
   [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, CSS_UNDEFINED);

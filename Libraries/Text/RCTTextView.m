@@ -25,6 +25,8 @@
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
+  RCTAssertParam(eventDispatcher);
+
   if ((self = [super initWithFrame:CGRectZero])) {
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
@@ -35,9 +37,11 @@
     _textView.delegate = self;
     [self addSubview:_textView];
   }
-
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)updateFrames
 {
