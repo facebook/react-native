@@ -42,6 +42,14 @@ var INNERVIEW = 'InnerScrollView';
  * Component that wraps platform ScrollView while providing
  * integration with touch locking "responder" system.
  *
+ * Keep in mind that ScrollViews must have a bounded height in order to work,
+ * since they contain unbounded-height children into a bounded container (via
+ * a scroll interaction). In order to bound the height of a ScrollView, either
+ * set the height of the view directly (discouraged) or make sure all parent
+ * views have bounded height. Forgetting to transfer `{flex: 1}` down the
+ * view stack can lead to errors here, which the element inspector makes
+ * easy to debug.
+ *
  * Doesn't yet support other contained responders from blocking this scroll
  * view from becoming the responder.
  */
