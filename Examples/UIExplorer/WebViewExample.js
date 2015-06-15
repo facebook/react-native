@@ -43,6 +43,7 @@ var WebViewExample = React.createClass({
       backButtonEnabled: false,
       forwardButtonEnabled: false,
       loading: true,
+      scalesPageToFit: true,
     };
   },
 
@@ -97,6 +98,7 @@ var WebViewExample = React.createClass({
           javaScriptEnabledAndroid={true}
           onNavigationStateChange={this.onNavigationStateChange}
           startInLoadingState={true}
+          scalesPageToFit={this.state.scalesPageToFit}
         />
         <View style={styles.statusBar}>
           <Text style={styles.statusBarText}>{this.state.status}</Text>
@@ -124,6 +126,7 @@ var WebViewExample = React.createClass({
       url: navState.url,
       status: navState.title,
       loading: navState.loading,
+      scalesPageToFit: true
     });
   },
 
