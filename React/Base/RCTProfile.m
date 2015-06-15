@@ -43,7 +43,7 @@ NSDictionary *RCTProfileInfo;
 NSUInteger RCTProfileEventID = 0;
 NSMutableDictionary *RCTProfileOngoingEvents;
 NSTimeInterval RCTProfileStartTime;
-NSLock *_RCTProfileLock;
+NSRecursiveLock *_RCTProfileLock;
 
 #pragma mark - Macros
 
@@ -123,15 +123,17 @@ static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvo
   NSString *name = [NSString stringWithFormat:@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(invocation.selector)];
   SEL newSel = RCTProfileProxySelector(invocation.selector);
 
-  if ([object_getClass(self) instancesRespondToSelector:newSel]) {
-    invocation.selector = newSel;
-    RCTProfileBeginEvent();
-    [invocation invoke];
-    RCTProfileEndEvent(name, @"objc_call,modules,auto", nil);
-  } else {
-    // Use original selector to don't change error message
-    [self doesNotRecognizeSelector:invocation.selector];
-  }
+  RCTProfileLock(
+    if ([object_getClass(self) instancesRespondToSelector:newSel]) {
+      invocation.selector = newSel;
+      RCTProfileBeginEvent();
+      [invocation invoke];
+      RCTProfileEndEvent(name, @"objc_call,modules,auto", nil);
+    } else {
+      // Use original selector to don't change error message
+      [self doesNotRecognizeSelector:invocation.selector];
+    }
+  );
 }
 
 static IMP RCTProfileMsgForward(NSObject *, SEL);
@@ -191,11 +193,13 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 {
   for (id<RCTBridgeModule> module in bridge.modules.allValues) {
     [bridge dispatchBlock:^{
+    RCTProfileLock(
       Class proxyClass = object_getClass(module);
       if (module.class != proxyClass) {
         object_setClass(module, module.class);
         objc_disposeClassPair(proxyClass);
       }
+    );
     } forModule:module];
   };
 }
@@ -217,7 +221,7 @@ void RCTProfileInit(RCTBridge *bridge)
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    _RCTProfileLock = [[NSLock alloc] init];
+    _RCTProfileLock = [[NSRecursiveLock alloc] init];
   });
   RCTProfileLock(
     RCTProfileStartTime = CACurrentMediaTime();

@@ -156,6 +156,10 @@ static JSValueRef RCTConsoleProfileEnd(JSContextRef context, __unused JSObjectRe
   NSString *profileName = [profiles lastObject];
   [profiles removeLastObject];
 
+  if (argumentCount > 0 && !JSValueIsUndefined(context, arguments[0])) {
+    profileName = RCTJSValueToNSString(context, arguments[0]);
+  }
+
   _RCTProfileEndEvent(profileID, profileName, @"console", profileInfo);
 
   return JSValueMakeUndefined(context);
