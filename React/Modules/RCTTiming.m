@@ -74,7 +74,7 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
+RCT_IMPORT_METHOD(JSTimersExecution, callTimers)
 
 - (instancetype)init
 {
@@ -153,7 +153,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
   // call timers that need to be called
   if ([timersToCall count] > 0) {
-    [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[timersToCall]];
+    [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
   }
 
   if (_timers.count == 0) {

@@ -1245,7 +1245,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 {
   RCTAssertJSThread();
 
-  NSString *moduleDotMethod = @"RCTJSTimers.callTimers";
+  NSString *moduleDotMethod = @"JSTimersExecution.callTimers";
   NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
   RCTAssert(moduleID != nil, @"Module '%@' not registered.",
             [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
