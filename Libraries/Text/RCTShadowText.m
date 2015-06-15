@@ -54,6 +54,12 @@ static css_dim_t RCTMeasure(void *context, float width)
   return self;
 }
 
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; text: %@>", [self attributedString].string];
+}
+
 - (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
                           parentProperties:(NSDictionary *)parentProperties
 {

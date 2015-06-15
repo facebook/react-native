@@ -185,6 +185,14 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
   }
 }
 
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  NSRange semicolonRange = [superDescription rangeOfString:@";"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
+  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+}
+
 #pragma mark - Statics for dealing with layoutGuides
 
 + (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView
