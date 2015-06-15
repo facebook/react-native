@@ -74,8 +74,6 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_IMPORT_METHOD(JSTimersExecution, callTimers)
-
 - (instancetype)init
 {
   if ((self = [super init])) {

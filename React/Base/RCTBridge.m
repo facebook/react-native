@@ -13,10 +13,6 @@
 #import <objc/message.h>
 #import <objc/runtime.h>
 
-#import <mach-o/dyld.h>
-#import <mach-o/getsect.h>
-
-#import "RCTAssert.h"
 #import "RCTContextExecutor.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
@@ -53,16 +49,6 @@ typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
   RCTJavaScriptFunctionKindNormal,
   RCTJavaScriptFunctionKindAsync,
 };
-
-#ifdef __LP64__
-typedef struct mach_header_64 *RCTHeaderValue;
-typedef struct section_64 RCTHeaderSection;
-#define RCTGetSectByNameFromHeader getsectbynamefromheader_64
-#else
-typedef struct mach_header *RCTHeaderValue;
-typedef struct section RCTHeaderSection;
-#define RCTGetSectByNameFromHeader getsectbynamefromheader
-#endif
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTContextExecutor"] || \
@@ -112,40 +98,6 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
     name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
   }
   return name;
-}
-
-/**
- * This function scans all classes available at runtime and returns an array
- * of all JSMethods registered.
- */
-static NSArray *RCTJSMethods(void)
-{
-  static NSArray *JSMethods;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    NSMutableSet *uniqueMethods = [NSMutableSet set];
-
-    Dl_info info;
-    dladdr(&RCTJSMethods, &info);
-
-    const RCTHeaderValue mach_header = (RCTHeaderValue)info.dli_fbase;
-    unsigned long size = 0;
-    const uint8_t *sectionData = getsectiondata(mach_header, "__DATA", "RCTImport", &size);
-    if (sectionData) {
-      for (const uint8_t *addr = sectionData;
-           addr < sectionData + size;
-           addr += sizeof(const char **)) {
-
-        // Get data entry
-        NSString *entry = @(*(const char **)addr);
-        [uniqueMethods addObject:entry];
-      }
-    }
-
-    JSMethods = [uniqueMethods allObjects];
-  });
-
-  return JSMethods;
 }
 
 // TODO: Can we just replace RCTMakeError with this function instead?
@@ -596,80 +548,6 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
   return moduleConfig;
 }
 
-/**
- * As above, but for local modules/methods, which represent JS classes
- * and methods that will be called by the native code via the bridge.
- * Structure is essentially the same as for remote modules:
- *
- * "ModuleName1": {
- *   "moduleID": 0,
- *   "methods": {
- *     "methodName1": {
- *       "methodID": 0,
- *       "type": "local"
- *     },
- *     "methodName2": {
- *       "methodID": 1,
- *       "type": "local"
- *     },
- *     etc...
- *   }
- * },
- * etc...
- */
-static NSMutableDictionary *RCTLocalModuleIDs;
-static NSMutableDictionary *RCTLocalMethodIDs;
-static NSMutableArray *RCTLocalModuleNames;
-static NSMutableArray *RCTLocalMethodNames;
-static NSDictionary *RCTLocalModulesConfig()
-{
-  static NSMutableDictionary *localModules;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-
-    RCTLocalModuleIDs = [[NSMutableDictionary alloc] init];
-    RCTLocalMethodIDs = [[NSMutableDictionary alloc] init];
-    RCTLocalModuleNames = [[NSMutableArray alloc] init];
-    RCTLocalMethodNames = [[NSMutableArray alloc] init];
-
-    localModules = [[NSMutableDictionary alloc] init];
-    for (NSString *moduleDotMethod in RCTJSMethods()) {
-
-      NSArray *parts = [moduleDotMethod componentsSeparatedByString:@"."];
-      RCTAssert(parts.count == 2, @"'%@' is not a valid JS method definition - expected 'Module.method' format.", moduleDotMethod);
-
-      // Add module if it doesn't already exist
-      NSString *moduleName = parts[0];
-      NSDictionary *module = localModules[moduleName];
-      if (!module) {
-        module = @{
-          @"moduleID": @(localModules.count),
-          @"methods": [[NSMutableDictionary alloc] init]
-        };
-        localModules[moduleName] = module;
-      [RCTLocalModuleNames addObject:moduleName];
-      }
-
-      // Add method if it doesn't already exist
-      NSString *methodName = parts[1];
-      NSMutableDictionary *methods = module[@"methods"];
-      if (!methods[methodName]) {
-        methods[methodName] = @{
-          @"methodID": @(methods.count),
-          @"type": @"local"
-        };
-        [RCTLocalMethodNames addObject:methodName];
-      }
-
-      // Add module and method lookup
-      RCTLocalModuleIDs[moduleDotMethod] = module[@"moduleID"];
-      RCTLocalMethodIDs[moduleDotMethod] = methods[methodName][@"methodID"];
-    }
-  });
-
-  return localModules;
-}
-
 @interface RCTFrameUpdate (Private)
 
 - (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink;
@@ -734,12 +612,6 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
   RCTAssertMainThread();
 
   if ((self = [super init])) {
-
-    /**
-     * Pre register modules
-     */
-    RCTLocalModulesConfig();
-
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
@@ -1052,7 +924,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
   // Inject module data into JS context
   NSString *configJSON = RCTJSONStringify(@{
     @"remoteModuleConfig": RCTRemoteModulesConfig(_modulesByName),
-    @"localModulesConfig": RCTLocalModulesConfig()
   }, NULL);
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   [_javaScriptExecutor injectJSONText:configJSON
@@ -1211,13 +1082,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
   }];
 }
 
-/**
- * - TODO (#5906496): When we build a `MessageQueue.m`, handling all the requests could
- * cause both a queue of "responses". We would flush them here. However, we
- * currently just expect each objc block to handle its own response sending
- * using a `RCTResponseSenderBlock`.
- */
-
 #pragma mark - RCTBridge methods
 
 /**
@@ -1225,16 +1089,11 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
-  NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
-  RCTAssert(moduleID != nil, @"Module '%@' not registered.",
-            [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
-
-  NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
-  RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
+  NSArray *ids = [moduleDotMethod componentsSeparatedByString:@"."];
 
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
-                      arguments:@[moduleID ?: @0, methodID ?: @0, args ?: @[]]
+                      arguments:@[ids[0], ids[1], args ?: @[]]
                         context:RCTGetExecutorID(_javaScriptExecutor)];
 }
 
@@ -1245,18 +1104,10 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 {
   RCTAssertJSThread();
 
-  NSString *moduleDotMethod = @"JSTimersExecution.callTimers";
-  NSNumber *moduleID = RCTLocalModuleIDs[moduleDotMethod];
-  RCTAssert(moduleID != nil, @"Module '%@' not registered.",
-            [[moduleDotMethod componentsSeparatedByString:@"."] firstObject]);
-
-  NSNumber *methodID = RCTLocalMethodIDs[moduleDotMethod];
-  RCTAssert(methodID != nil, @"Method '%@' not registered.", moduleDotMethod);
-
   dispatch_block_t block = ^{
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"callFunctionReturnFlushedQueue"
-                                arguments:@[moduleID, methodID, @[@[timer]]]
+                                arguments:@[@"JSTimersExecution", @"callTimers", @[@[timer]]]
                                   context:RCTGetExecutorID(_javaScriptExecutor)];
   };
 

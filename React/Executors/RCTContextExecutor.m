@@ -365,7 +365,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       JSValueRef moduleJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)requireJSRef, NULL, 1, (const JSValueRef *)&moduleNameJSRef, &errorJSRef);
       JSStringRelease(moduleNameJSStringRef);
 
-      if (moduleJSRef != NULL && errorJSRef == NULL) {
+      if (moduleJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, moduleJSRef)) {
 
         // get method
         JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);

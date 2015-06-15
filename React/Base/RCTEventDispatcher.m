@@ -89,10 +89,6 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-RCT_IMPORT_METHOD(RCTNativeAppEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTDeviceEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
-
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
   [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit"

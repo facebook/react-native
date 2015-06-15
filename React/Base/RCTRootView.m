@@ -119,9 +119,6 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   return YES;
 }
 
-RCT_IMPORT_METHOD(AppRegistry, runApplication)
-RCT_IMPORT_METHOD(ReactNative, unmountComponentAtNodeAndRemoveContainer)
-
 - (void)setLoadingView:(UIView *)loadingView
 {
   _loadingView = loadingView;

@@ -149,8 +149,6 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
 }
 
-RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
-
 /**
  * Constructs information about touch events to send across the serialized
  * boundary. This data should be compliant with W3C `Touch` objects. This data
