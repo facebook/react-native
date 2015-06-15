@@ -44,6 +44,7 @@ var COMMON_APIS = [
   require('./GeolocationExample'),
   require('./LayoutExample'),
   require('./PanResponderExample'),
+  require('./PointerEventsExample'),
 ];
 
 if (Platform.OS === 'ios') {
@@ -80,7 +81,6 @@ if (Platform.OS === 'ios') {
     require('./CameraRollExample.ios'),
     require('./LayoutEventsExample'),
     require('./NetInfoExample'),
-    require('./PointerEventsExample'),
     require('./PushNotificationIOSExample'),
     require('./StatusBarIOSExample'),
     require('./TimerExample'),

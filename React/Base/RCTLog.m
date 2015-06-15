@@ -171,7 +171,22 @@ void _RCTLogFormat(
 
       // Log to red box
       if (level >= RCTLOG_REDBOX_LEVEL) {
-        [[RCTRedBox sharedInstance] showErrorMessage:message];
+        NSArray *stackSymbols = [NSThread callStackSymbols];
+        NSMutableArray *stack = [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
+        [stackSymbols enumerateObjectsUsingBlock:^(NSString *frameSymbols, NSUInteger idx, BOOL *stop) {
+          if (idx != 0) { // don't include the current frame
+            NSString *address = [[frameSymbols componentsSeparatedByString:@"0x"][1] componentsSeparatedByString:@" "][0];
+            NSRange addressRange = [frameSymbols rangeOfString:address];
+            NSString *methodName = [frameSymbols substringFromIndex:(addressRange.location + addressRange.length + 1)];
+            if (idx == 1) {
+              NSString *file = [[@(fileName) componentsSeparatedByString:@"/"] lastObject];
+              stack[0] = @{@"methodName": methodName, @"file": file, @"lineNumber": @(lineNumber)};
+            } else {
+              stack[idx - 1] = @{@"methodName": methodName};
+            }
+          }
+        }];
+        [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
       }
 
       // Log to JS executor

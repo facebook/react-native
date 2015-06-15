@@ -182,25 +182,19 @@ RCT_EXPORT_MODULE()
   [_webView loadHTMLString:runScript baseURL:url];
 }
 
-/**
- * In order to avoid `UIWebView` thread locks, all JS executions should be
- * performed outside of the event loop that notifies the `UIWebViewDelegate`
- * that the page has loaded. This is only an issue with the remote debug mode of
- * `UIWebView`. For a production `UIWebView` deployment, this delay is
- * unnecessary and possibly harmful (or helpful?)
- *
- * The delay might not be needed as soon as the following change lands into
- * iOS7. (Review the patch linked here and search for "crash"
- * https://bugs.webkit.org/show_bug.cgi?id=125746).
- */
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC);
 
-  dispatch_after(when, dispatch_get_main_queue(), ^{
-    RCTAssertMainThread();
+  if ([NSThread isMainThread]) {
     block();
-  });
+  } else {
+    dispatch_async(dispatch_get_main_queue(), block);
+  }
+}
+
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  dispatch_async(dispatch_get_main_queue(), block);
 }
 
 /**
