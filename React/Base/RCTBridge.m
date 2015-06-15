@@ -496,7 +496,8 @@ static RCTSparseArray *RCTExportedMethodsByModuleID(void)
         Method method = methods[i];
         SEL selector = method_getName(method);
         if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
-          NSArray *entries = ((NSArray *(*)(id, SEL))objc_msgSend)(moduleClass, selector);
+          IMP imp = method_getImplementation(method);
+          NSArray *entries = ((NSArray *(*)(id, SEL))imp)(moduleClass, selector);
           RCTModuleMethod *moduleMethod =
             [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
                                                JSMethodName:entries[0]
@@ -1018,7 +1019,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(NSString *)module method:(NSStrin
 
     if ([module conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:module];
-    }
+   }
   }];
 }
 
