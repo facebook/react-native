@@ -22,3 +22,37 @@ React Native provides facilities to make it easier to test integrated components
 ## Snapshot Tests
 
 A common type of integration test is the snapshot test.  These tests render a component, and verify snapshots of the screen against reference images using `TestModule.verifySnapshot()`, using the [`FBSnapshotTestCase`](https://github.com/facebook/ios-snapshot-test-case) library behind the scenes.  Reference images are recorded by setting `recordMode = YES` on the `RCTTestRunner`, then running the tests.  Snapshots will differ slightly between 32 and 64 bit, and various OS versions, so it's recommended that you enforce tests are run with the correct configuration.  It's also highly recommended that all network data be mocked out, along with other potentially troublesome dependencies.  See [`SimpleSnapshotTest`](https://github.com/facebook/react-native/blob/master/IntegrationTests/SimpleSnapshotTest.js) for a basic example.
+
+## Testing Components
+
+Jest is a great tool for testing React components, but it requires a little more setup for testing React Native components.  To get started, you'll need to do the following:
+
+1. Transpile ES6 code
+2. Mock React Native
+
+### Transpiling ES6 Code
+
+React Native is written in ES6 and there's a very good chance that your component is it too.  So you'll have to make sure to preprocess your source files to ES5 prior to running your tests.  You can do this by configuring Jest with a [`scriptPreprocessor`](https://facebook.github.io/jest/docs/api.html#config-scriptpreprocessor-string) like [this one](https://gist.github.com/naoufal/dd8447646fe6f6fbf426).
+
+### Mocking React Native
+
+As you already know, React Native exposes plenty of native modules written in Objective-C and Swift.  This is problematic when running tests in the command-line with Jest.  Luckily, you can circumvent this by [manually mocking](https://facebook.github.io/jest/docs/manual-mocks.html) React Native with [React](https://facebook.github.io/react/index.html).
+
+```js
+// __mocks__/react-native.js
+
+'use strict';
+
+var React = require('react');
+var ReactNative = React;
+
+ReactNative.StyleSheet = {
+  create: function(styles) {
+    return styles;
+  }
+};
+
+module.exports = ReactNative;
+```
+
+This will allow you to test functionality shared between React and React Native.  However, as you can see in the example, you'll need to mock functionalities that are unique to React Native.
