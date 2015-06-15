@@ -134,12 +134,12 @@ typedef void (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
 
 @implementation RCTActiveURLRequest
 
-- (void)setResponse:(NSURLResponse *)response;
+- (instancetype)init
 {
-  _response = response;
-  if (!_incrementalUpdates) {
-    _data = [[NSMutableData alloc] initWithCapacity:(NSUInteger)MAX(0, response.expectedContentLength)];
+  if ((self = [super init])) {
+    _data = [[NSMutableData alloc] init];
   }
+  return self;
 }
 
 @end
