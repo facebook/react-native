@@ -371,9 +371,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass, NSString *viewNa
     rootShadowView.frame = frame;
     [rootShadowView updateLayout];
 
-    RCTViewManagerUIBlock uiBlock = [self uiBlockWithLayoutUpdateForRootView:rootShadowView];
-    [self addUIBlock:uiBlock];
-    [self flushUIBlocks];
+    [self batchDidComplete];
   });
 }
 
