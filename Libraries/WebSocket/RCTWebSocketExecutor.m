@@ -43,7 +43,9 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
-  if (self = [super init]) {
+  RCTAssertParam(URL);
+
+  if ((self = [super init])) {
     _url = URL;
   }
   return self;

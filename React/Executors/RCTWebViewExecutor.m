@@ -153,7 +153,8 @@ RCT_EXPORT_MODULE()
 
   if (_objectsToInject.count > 0) {
     NSMutableString *scriptWithInjections = [[NSMutableString alloc] initWithString:@"/* BEGIN NATIVELY INJECTED OBJECTS */\n"];
-    [_objectsToInject enumerateKeysAndObjectsUsingBlock:^(NSString *objectName, NSString *blockScript, BOOL *stop) {
+    [_objectsToInject enumerateKeysAndObjectsUsingBlock:
+     ^(NSString *objectName, NSString *blockScript, __unused BOOL *stop) {
       [scriptWithInjections appendString:objectName];
       [scriptWithInjections appendString:@" = ("];
       [scriptWithInjections appendString:blockScript];
@@ -200,7 +201,7 @@ RCT_EXPORT_MODULE()
 /**
  * `UIWebViewDelegate` methods. Handle application script load.
  */
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(__unused UIWebView *)webView
 {
   RCTAssertMainThread();
   if (_onApplicationScriptLoaded) {

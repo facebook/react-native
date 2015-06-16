@@ -13,6 +13,15 @@ NSString *const RCTErrorDomain = @"RCTErrorDomain";
 
 RCTAssertFunction RCTCurrentAssertFunction = nil;
 
+NSException *_RCTNotImplementedException(SEL, Class);
+NSException *_RCTNotImplementedException(SEL cmd, Class cls)
+{
+  NSString *msg = [NSString stringWithFormat:@"%s is not implemented "
+                   "for the class %@", sel_getName(cmd), cls];
+  return [NSException exceptionWithName:@"RCTNotDesignatedInitializerException"
+                                 reason:msg userInfo:nil];
+}
+
 void _RCTAssertFormat(
   BOOL condition,
   const char *fileName,

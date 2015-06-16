@@ -158,7 +158,9 @@ RCT_EXPORT_MODULE();
 
 - (void)testContentViewIsInvalidated
 {
-  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:nil launchOptions:nil];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
+                                            moduleProvider:nil
+                                             launchOptions:nil];
   __weak id rootContentView;
   @autoreleasepool {
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@""];

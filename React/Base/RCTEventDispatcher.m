@@ -31,6 +31,8 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
                       eventName:(NSString *)eventName
                            body:(NSDictionary *)body
 {
+  RCTAssertParam(eventName);
+
   if ((self = [super init])) {
     _viewTag = viewTag;
     _eventName = eventName;
@@ -38,6 +40,8 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-init)
 
 - (uint16_t)coalescingKey
 {
@@ -84,10 +88,6 @@ RCT_EXPORT_MODULE()
   }
   return self;
 }
-
-RCT_IMPORT_METHOD(RCTNativeAppEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTDeviceEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
@@ -175,12 +175,10 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
   return RCTJSThread;
 }
 
-- (void)didUpdateFrame:(RCTFrameUpdate *)update
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSDictionary *eventQueue;
-
   [_eventQueueLock lock];
-  eventQueue = _eventQueue;
+   NSDictionary *eventQueue = _eventQueue;
   _eventQueue = [[NSMutableDictionary alloc] init];
   _paused = YES;
   [_eventQueueLock unlock];
@@ -188,15 +186,6 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
   for (id<RCTEvent> event in eventQueue.allValues) {
     [self dispatchEvent:event];
   }
-}
-
-@end
-
-@implementation RCTBridge (RCTEventDispatcher)
-
-- (RCTEventDispatcher *)eventDispatcher
-{
-  return self.modules[RCTBridgeModuleNameForClass([RCTEventDispatcher class])];
 }
 
 @end

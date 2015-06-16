@@ -36,9 +36,6 @@ RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
 
-// Get current time, for precise performance metrics
-RCT_EXTERN NSTimeInterval RCTTGetAbsoluteTime(void);
-
 // Method swizzling
 RCT_EXTERN void RCTSwapClassMethods(Class cls, SEL original, SEL replacement);
 RCT_EXTERN void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);

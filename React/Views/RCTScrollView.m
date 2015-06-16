@@ -44,7 +44,9 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
                   scrollView:(UIScrollView *)scrollView
                     userData:(NSDictionary *)userData
 {
-  if (self = [super init]) {
+  RCTAssertParam(reactTag);
+
+  if ((self = [super init])) {
     _type = type;
     _viewTag = reactTag;
     _scrollView = scrollView;
@@ -52,6 +54,8 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-init)
 
 - (uint16_t)coalescingKey
 {
@@ -166,7 +170,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   return NO;
 }
 
-- (void)handleCustomPan:(UIPanGestureRecognizer *)sender
+- (void)handleCustomPan:(__unused UIPanGestureRecognizer *)sender
 {
   if ([self _shouldDisableScrollInteraction]) {
     self.panGestureRecognizer.enabled = NO;
@@ -181,7 +185,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   }
 }
 
-- (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
+- (void)scrollRectToVisible:(__unused CGRect)rect animated:(__unused BOOL)animated
 {
   // noop
 }
@@ -228,7 +232,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
  * In order to have this called, you must have delaysContentTouches set to NO
  * (which is the not the `UIKit` default).
  */
-- (BOOL)touchesShouldCancelInContentView:(UIView *)view
+- (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
 {
   //TODO: shouldn't this call super if _shouldDisableScrollInteraction returns NO?
   return ![self _shouldDisableScrollInteraction];
@@ -265,8 +269,9 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   __block UIView *previousHeader = nil;
   __block UIView *currentHeader = nil;
   __block UIView *nextHeader = nil;
-  NSInteger subviewCount = contentView.reactSubviews.count;
-  [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:^(NSUInteger idx, BOOL *stop) {
+  NSUInteger subviewCount = contentView.reactSubviews.count;
+  [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:
+   ^(NSUInteger idx, __unused BOOL *stop) {
 
     if (idx >= subviewCount) {
       RCTLogError(@"Sticky header index %zd was outside the range {0, %zd}", idx, subviewCount);
@@ -358,6 +363,8 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
+  RCTAssertParam(eventDispatcher);
+
   if ((self = [super initWithFrame:CGRectZero])) {
 
     _eventDispatcher = eventDispatcher;
@@ -377,12 +384,15 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+
 - (void)setRemoveClippedSubviews:(__unused BOOL)removeClippedSubviews
 {
   // Does nothing
 }
 
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(UIView *)view atIndex:(__unused NSInteger)atIndex
 {
   RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview");
   _contentView = view;
@@ -401,9 +411,19 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   return _contentView ? @[_contentView] : @[];
 }
 
+- (BOOL)centerContent
+{
+  return _scrollView.centerContent;
+}
+
 - (void)setCenterContent:(BOOL)centerContent
 {
   _scrollView.centerContent = centerContent;
+}
+
+- (NSIndexSet *)stickyHeaderIndices
+{
+  return _scrollView.stickyHeaderIndices;
 }
 
 - (void)setStickyHeaderIndices:(NSIndexSet *)headerIndices
@@ -506,7 +526,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
     // Calculate changed frames
     NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
-    [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, BOOL *stop) {
+    [[_contentView reactSubviews] enumerateObjectsUsingBlock:
+     ^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
 
       // Check if new or changed
       CGRect newFrame = subview.frame;
@@ -560,7 +581,17 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:nil];
+  NSDictionary *userData = @{
+    @"velocity": @{
+      @"x": @(velocity.x),
+      @"y": @(velocity.y)
+    },
+    @"targetContentOffset": @{
+      @"x": @(targetContentOffset->x),
+      @"y": @(targetContentOffset->y)
+    }
+  };
+  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:userData];
   RCT_FORWARD_SCROLL_EVENT(scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset);
 }
 
@@ -589,7 +620,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   return YES;
 }
 
-- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+- (UIView *)viewForZoomingInScrollView:(__unused UIScrollView *)scrollView
 {
   return _contentView;
 }

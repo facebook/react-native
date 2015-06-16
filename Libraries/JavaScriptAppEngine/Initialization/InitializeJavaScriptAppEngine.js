@@ -123,6 +123,7 @@ function setUpWebSockets() {
 function setupProfile() {
   console.profile = console.profile || GLOBAL.consoleProfile || function () {};
   console.profileEnd = console.profileEnd || GLOBAL.consoleProfileEnd || function () {};
+  require('BridgeProfiling').swizzleReactPerf();
 }
 
 setUpRedBoxErrorHandler();

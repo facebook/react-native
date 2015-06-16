@@ -10,6 +10,7 @@
 #import "RCTTestRunner.h"
 
 #import "FBSnapshotTestController.h"
+#import "RCTAssert.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
@@ -30,6 +31,9 @@
 
 - (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir
 {
+  RCTAssertParam(app);
+  RCTAssertParam(referenceDir);
+
   if ((self = [super init])) {
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
@@ -43,6 +47,8 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setRecordMode:(BOOL)recordMode
 {

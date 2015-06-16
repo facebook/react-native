@@ -536,32 +536,32 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
 
     // Parse color
-    NSUInteger red = -1;
-    NSUInteger green = -1;
-    NSUInteger blue = -1;
+    uint32_t red = 0, green = 0, blue = 0;
     CGFloat alpha = 1.0;
     if ([colorString hasPrefix:@"#"]) {
       if (colorString.length == 4) { // 3 digit hex
-        sscanf([colorString UTF8String], "#%01tX%01tX%01tX", &red, &green, &blue);
+        sscanf([colorString UTF8String], "#%01x%01x%01x", &red, &green, &blue);
         // expand to 6 digit hex
         red = red | (red << 4);
         green = green | (green << 4);
         blue = blue | (blue << 4);
-      } else if (colorString.length == 7) { // normal 6 digit hex
-        sscanf([colorString UTF8String], "#%02tX%02tX%02tX", &red, &green, &blue);
+      } else if (colorString.length == 7) { // 6 digit hex
+        sscanf(colorString.UTF8String, "#%02x%02x%02x", &red, &green, &blue);
       } else {
-        RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long", colorString);
+        RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long.", colorString);
+        alpha = -1;
       }
     } else if ([colorString hasPrefix:@"rgba("]) {
       double tmpAlpha;
-      sscanf([colorString UTF8String], "rgba(%zd,%zd,%zd,%lf)", &red, &green, &blue, &tmpAlpha);
-      alpha = tmpAlpha > 0.99 ? 1.0 : tmpAlpha;
+      sscanf(colorString.UTF8String, "rgba(%u,%u,%u,%lf)", &red, &green, &blue, &tmpAlpha);
+      alpha = tmpAlpha;
     } else if ([colorString hasPrefix:@"rgb("]) {
-      sscanf([colorString UTF8String], "rgb(%zd,%zd,%zd)", &red, &green, &blue);
+      sscanf(colorString.UTF8String, "rgb(%u,%u,%u)", &red, &green, &blue);
     } else {
-      RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb", colorString);
+      RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb or a valid CSS color name.", colorString);
+      alpha = -1;
     }
-    if (red == -1 || green == -1 || blue == -1 || alpha > 1.0 || alpha < 0.0) {
+    if (alpha < 0) {
       RCTLogError(@"Invalid color string '%@'", colorString);
     } else {
       color = [UIColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:alpha];
@@ -574,19 +574,19 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     } else {
 
       // Color array
-      color = [UIColor colorWithRed:[self double:json[0]]
-                              green:[self double:json[1]]
-                               blue:[self double:json[2]]
-                              alpha:[json count] > 3 ? [self double:json[3]] : 1];
+      color = [UIColor colorWithRed:[self CGFloat:json[0]]
+                              green:[self CGFloat:json[1]]
+                               blue:[self CGFloat:json[2]]
+                              alpha:[json count] > 3 ? [self CGFloat:json[3]] : 1];
     }
 
   } else if ([json isKindOfClass:[NSDictionary class]]) {
 
     // Color dictionary
-    color = [UIColor colorWithRed:[self double:json[@"r"]]
-                            green:[self double:json[@"g"]]
-                             blue:[self double:json[@"b"]]
-                            alpha:[self double:json[@"a"] ?: @1]];
+    color = [UIColor colorWithRed:[self CGFloat:json[@"r"]]
+                            green:[self CGFloat:json[@"g"]]
+                             blue:[self CGFloat:json[@"b"]]
+                            alpha:[self CGFloat:json[@"a"] ?: @1]];
 
   }
   else if (RCT_DEBUG && json && json != (id)kCFNull) {
@@ -830,7 +830,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
 {
   __block BOOL copy = NO;
   __block NSArray *values = json = [RCTConvert NSArray:json];
-  [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, BOOL *stop) {
+  [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
     id value = ((id(*)(Class, SEL, id))objc_msgSend)([RCTConvert class], type, jsonValue);
     if (copy) {
       if (value) {
@@ -839,7 +839,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
     } else if (value != jsonValue) {
       // Converted value is different, so we'll need to copy the array
       values = [[NSMutableArray alloc] initWithCapacity:values.count];
-      for (NSInteger i = 0; i < idx; i++) {
+      for (NSUInteger i = 0; i < idx; i++) {
         [(NSMutableArray *)values addObject:json[i]];
       }
       if (value) {
@@ -876,7 +876,7 @@ static id RCTConvertPropertyListValue(id json)
   if ([json isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
     NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[json count]];
-    [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, id jsonValue, BOOL *stop) {
+    [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, id jsonValue, __unused BOOL *stop) {
       id value = RCTConvertPropertyListValue(jsonValue);
       if (value) {
         values[key] = value;
@@ -889,7 +889,7 @@ static id RCTConvertPropertyListValue(id json)
   if ([json isKindOfClass:[NSArray class]]) {
     __block BOOL copy = NO;
     __block NSArray *values = json;
-    [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, BOOL *stop) {
+    [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
       id value = RCTConvertPropertyListValue(jsonValue);
       if (copy) {
         if (value) {
@@ -898,7 +898,7 @@ static id RCTConvertPropertyListValue(id json)
       } else if (value != jsonValue) {
         // Converted value is different, so we'll need to copy the array
         values = [[NSMutableArray alloc] initWithCapacity:values.count];
-        for (NSInteger i = 0; i < idx; i++) {
+        for (NSUInteger i = 0; i < idx; i++) {
           [(NSMutableArray *)values addObject:json[i]];
         }
         if (value) {

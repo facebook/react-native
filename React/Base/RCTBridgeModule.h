@@ -176,7 +176,7 @@ extern const dispatch_queue_t RCTJSThread;
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  + (NSArray *)RCT_CONCAT(__rct_export__, __COUNTER__) { \
+  + (NSArray *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
     return @[@#js_name, @#method]; \
   } \
 

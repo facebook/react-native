@@ -30,6 +30,8 @@
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
+  RCTAssertParam(eventDispatcher);
+
   if ((self = [super initWithFrame:CGRectZero])) {
     super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
@@ -41,6 +43,9 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)goForward
 {
@@ -57,6 +62,11 @@
   [_webView reload];
 }
 
+- (NSURL *)URL
+{
+  return _webView.request.URL;
+}
+
 - (void)setURL:(NSURL *)URL
 {
   // Because of the way React works, as pages redirect, we actually end up
@@ -68,7 +78,7 @@
   }
   if (!URL) {
     // Clear the webview
-    [_webView loadHTMLString:nil baseURL:nil];
+    [_webView loadHTMLString:@"" baseURL:nil];
     return;
   }
   [_webView loadRequest:[NSURLRequest requestWithURL:URL]];
@@ -128,7 +138,7 @@
 
 static NSString *const RCTJSAJAXScheme = @"react-ajax";
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+- (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
   // We have this check to filter out iframe requests and whatnot
@@ -146,7 +156,7 @@ static NSString *const RCTJSAJAXScheme = @"react-ajax";
   return ![request.URL.scheme isEqualToString:RCTJSAJAXScheme];
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
   if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
     // NSURLErrorCancelled is reported when a page has a redirect OR if you load

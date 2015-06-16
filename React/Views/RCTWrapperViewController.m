@@ -32,7 +32,10 @@
 - (instancetype)initWithContentView:(UIView *)contentView
                     eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  RCTAssertParam(contentView);
+  RCTAssertParam(eventDispatcher);
+
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     _contentView = contentView;
     _eventDispatcher = eventDispatcher;
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -43,11 +46,14 @@
 - (instancetype)initWithNavItem:(RCTNavItem *)navItem
                 eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if (self = [self initWithContentView:navItem eventDispatcher:eventDispatcher]) {
+  if ((self = [self initWithContentView:navItem eventDispatcher:eventDispatcher])) {
     _navItem = navItem;
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithNibName:(NSString *)nn bundle:(NSBundle *)nb)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)viewWillLayoutSubviews
 {

@@ -30,7 +30,7 @@
   dispatch_semaphore_t doneSem = dispatch_semaphore_create(0);
   [_executor executeApplicationScript:@"var x = {toString: function() { throw 1; }}; nativeLoggingHook(x);"
                            sourceURL:[NSURL URLWithString:@"file://"]
-                          onComplete:^(id error){
+                          onComplete:^(__unused id error){
                             dispatch_semaphore_signal(doneSem);
                           }];
   dispatch_semaphore_wait(doneSem, DISPATCH_TIME_FOREVER);
@@ -39,7 +39,7 @@
 
 static uint64_t _get_time_nanoseconds(void)
 {
-  static struct mach_timebase_info tb_info = {0};
+  static struct mach_timebase_info tb_info = {0, 0};
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     int ret = mach_timebase_info(&tb_info);
@@ -114,7 +114,7 @@ static uint64_t _get_time_nanoseconds(void)
     } \
   ";
 
-  [_executor executeApplicationScript:script sourceURL:[NSURL URLWithString:@"http://localhost:8081/"] onComplete:^(NSError *error) {
+  [_executor executeApplicationScript:script sourceURL:[NSURL URLWithString:@"http://localhost:8081/"] onComplete:^(__unused NSError *error) {
     NSMutableArray *params = [[NSMutableArray alloc] init];
     id data = @1;
     for (int i = 0; i < 4; i++) {
@@ -128,8 +128,8 @@ static uint64_t _get_time_nanoseconds(void)
                            method:@"method"
                         arguments:params
                           context:RCTGetExecutorID(_executor)
-                         callback:^(id json, NSError *__error) {
-                           RCTAssert([json isEqual:@YES], @"Invalid return");
+                         callback:^(id json, __unused NSError *unused) {
+                           XCTAssert([json isEqual:@YES], @"Invalid return");
                          }];
           double run = _get_time_nanoseconds() - start;
           if ((j % frequency) == frequency - 1) { // Warmup

@@ -183,6 +183,10 @@ var TextInput = React.createClass({
      * Callback that is called when the text input's text changes.
      */
     onChange: PropTypes.func,
+    /**
+     * Callback that is called when the text input's text changes.
+     * Changed text is passed as an argument to the callback handler.
+     */
     onChangeText: PropTypes.func,
     /**
      * Callback that is called when text input ends.

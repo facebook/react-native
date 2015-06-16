@@ -43,11 +43,11 @@ RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, RCTTextField)
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, __unused RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withWeight:json]; // defaults to normal
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, RCTTextField)
+RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTTextField)
 {
   view.font = [RCTConvert UIFont:view.font withStyle:json]; // defaults to normal
 }
@@ -60,7 +60,7 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
-  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  return ^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     ((RCTTextField *)viewRegistry[reactTag]).contentInset = padding;
   };
 }
