@@ -15,8 +15,8 @@ var babel = require('babel');
 function transform(srcTxt, filename, options) {
   var result = babel.transform(srcTxt, {
     retainLines: true,
-    compact: true,
-    comments: false,
+    compact: false,
+    comments: true,
     filename: filename,
     whitelist: [
       'es6.arrowFunctions',
@@ -36,6 +36,7 @@ function transform(srcTxt, filename, options) {
     sourceFileName: filename,
     sourceMaps: false,
     extra: options || {},
+    auxiliaryCommentBefore: "istanbul ignore next",
   });
 
   return {
