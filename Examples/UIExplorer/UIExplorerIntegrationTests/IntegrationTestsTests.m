@@ -25,11 +25,12 @@
 
 - (void)setUp
 {
-#ifdef __LP64__
-  RCTAssert(!__LP64__, @"Tests should be run on 32-bit device simulators (e.g. iPhone 5)");
+#if __LP64__
+  #error Tests should be run on 32-bit device simulators (e.g. iPhone 5)
 #endif
-  NSString *version = [[UIDevice currentDevice] systemVersion];
-  RCTAssert([version integerValue] == 8, @"Tests should be run on iOS 8.x, found %@", version);
+
+  NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
+  RCTAssert(version.majorVersion == 8 || version.minorVersion == 3, @"Tests should be run on iOS 8.3, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp");
 
   // If tests have changes, set recordMode = YES below and run the affected
