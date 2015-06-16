@@ -33,7 +33,8 @@
     "init.sh",
     "LICENSE",
     "PATENTS",
-    "README.md"
+    "README.md",
+    "jestSupport"
   ],
   "scripts": {
     "test": "jest",
