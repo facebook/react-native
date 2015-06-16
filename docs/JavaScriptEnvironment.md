@@ -19,9 +19,9 @@ While both environments are very similar, you may end up hitting some inconsiste
 
 ## JavaScript Syntax Transformers
 
-Syntax transformers make writing code more enjoyable by allowing you to use new JavaScript syntax without having to wait for support on all interpreters.
+Syntax transformers make writing code more enjoyable by allowing you to use new JavaScript language features.
 
-As of version 0.5.0, React Native ships with the [Babel JavaScript compiler](https://babeljs.io). Check [Babel documentation](http://babeljs.io/docs/advanced/transformers/) on its supported transformations for more details.
+As of version 0.5.0, React Native ships with the [Babel JavaScript compiler](https://babeljs.io). Check the [Babel documentation](http://babeljs.io/docs/advanced/transformers/) for its supported transformations and more details.
 
 Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/master/packager/transformer.js#L21).
 
@@ -47,8 +47,8 @@ ES7
 * [Function Trailing Comma](https://github.com/jeffmo/es-trailing-function-commas): `function f(a, b, c,) { }`
 
 ### Custom transformer
-You can also use a custom transformer file instead of the [default one](https://github.com/facebook/react-native/blob/master/packager/transformer.js), in case you want to modify or extend the behavior beyond babel configuration.
-In order to so, start the packager like this:
+You can also use a custom transformer file instead of the [default one](https://github.com/facebook/react-native/blob/master/packager/transformer.js), in case you want to modify or extend the behavior beyond the Babel configuration.
+In order to do so, start the packager like this:
 ```
 ./node_modules/react-native/packager/packager.sh --transformer=yourtransformer.js
 ``` 
