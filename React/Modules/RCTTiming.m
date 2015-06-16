@@ -74,8 +74,6 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
-
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -139,7 +137,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
   _paused = NO;
 }
 
-- (void)didUpdateFrame:(RCTFrameUpdate *)update
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
   NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
   for (RCTTimer *timer in _timers.allObjects) {
@@ -153,7 +151,7 @@ RCT_IMPORT_METHOD(RCTJSTimers, callTimers)
 
   // call timers that need to be called
   if ([timersToCall count] > 0) {
-    [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[timersToCall]];
+    [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
   }
 
   if (_timers.count == 0) {

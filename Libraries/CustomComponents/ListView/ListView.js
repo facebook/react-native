@@ -262,7 +262,16 @@ var ListView = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
-      this.setState({prevRenderedRowsCount: 0});
+      this.setState((state, props) => {
+        var rowsToRender = Math.min(
+          state.curRenderedRowsCount + props.pageSize,
+          props.dataSource.getRowCount()
+        );
+        return {
+          prevRenderedRowsCount: 0,
+          curRenderedRowsCount: rowsToRender,
+        };
+      });
     }
   },
 
@@ -412,22 +421,21 @@ var ListView = React.createClass({
   },
 
   _pageInNewRows: function() {
-    var rowsToRender = Math.min(
-      this.state.curRenderedRowsCount + this.props.pageSize,
-      this.props.dataSource.getRowCount()
-    );
-    this.setState(
-      {
-        prevRenderedRowsCount: this.state.curRenderedRowsCount,
+    this.setState((state, props) => {
+      var rowsToRender = Math.min(
+        state.curRenderedRowsCount + props.pageSize,
+        props.dataSource.getRowCount()
+      );
+      return {
+        prevRenderedRowsCount: state.curRenderedRowsCount,
         curRenderedRowsCount: rowsToRender
-      },
-      () => {
-        this._measureAndUpdateScrollProps();
-        this.setState({
-          prevRenderedRowsCount: this.state.curRenderedRowsCount,
-        });
-      }
-    );
+      };
+    }, () => {
+      this._measureAndUpdateScrollProps();
+      this.setState(state => ({
+        prevRenderedRowsCount: state.curRenderedRowsCount,
+      }));
+    });
   },
 
   _getDistanceFromEnd: function(scrollProperties) {

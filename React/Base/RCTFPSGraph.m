@@ -9,6 +9,7 @@
 
 #import "RCTFPSGraph.h"
 
+#import "RCTAssert.h"
 #import "RCTDefines.h"
 
 #if RCT_DEV
@@ -32,7 +33,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame graphPosition:(RCTFPSGraphPosition)position name:(NSString *)name color:(UIColor *)color
 {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     _margin = 2;
     _prevTime = -1;
     _maxFPS = 0;
@@ -42,8 +43,10 @@
     _frames = malloc(sizeof(float) * _length);
     memset(_frames, 0, sizeof(float) * _length);
 
-    _name = name;
-    _position = position;
+    _name = name ?: @"FPS";
+    _position = position ?: RCTFPSGraphPositionLeft;
+
+    color = color ?: [UIColor greenColor];
     _graph = [self createGraph:color];
     _label = [self createLabel:color];
 
@@ -52,6 +55,9 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dealloc
 {

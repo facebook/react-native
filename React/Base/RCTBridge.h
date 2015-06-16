@@ -75,22 +75,15 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 /**
  * This method is used to call functions in the JavaScript application context.
  * It is primarily intended for use by modules that require two-way communication
- * with the JavaScript code. Method should be registered using the
- * RCT_IMPORT_METHOD macro below. Attempting to call a method that has not been
- * registered will result in an error. Safe to call from any thread.
+ * with the JavaScript code. Safe to call from any thread.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 
 /**
- * This macro is used to register a JS method to be called via the enqueueJSCall
- * bridge method. You should place this macro inside any file that uses the
- * imported method. If a method has already been registered by another class, it
- * is not necessary to register it again, but it is good practice. Registering
- * the same method more than once will not result in an error.
+ * DEPRECATED: Do not use.
  */
 #define RCT_IMPORT_METHOD(module, method) \
-__attribute__((used, section("__DATA,RCTImport"))) \
-static const char *__rct_import_##module##_##method##__ = #module"."#method;
+  _Pragma("message(\"This macro is no longer required\")")
 
 /**
  * URL of the script that was loaded into the bridge.

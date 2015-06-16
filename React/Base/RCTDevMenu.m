@@ -9,6 +9,7 @@
 
 #import "RCTDevMenu.h"
 
+#import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
@@ -34,7 +35,7 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
 
 @implementation UIWindow (RCTDevMenu)
 
-- (void)RCT_motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+- (void)RCT_motionEnded:(__unused UIEventSubtype)motion withEvent:(UIEvent *)event
 {
   if (event.subtype == UIEventSubtypeMotionShake) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTShowDevMenuNotification object:nil];
@@ -48,7 +49,7 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) dispatch_block_t handler;
 
-- (instancetype)initWithTitle:(NSString *)title handler:(dispatch_block_t)handler;
+- (instancetype)initWithTitle:(NSString *)title handler:(dispatch_block_t)handler NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -56,12 +57,14 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
 
 - (instancetype)initWithTitle:(NSString *)title handler:(dispatch_block_t)handler
 {
-  if (self = [super init]) {
-    self.title = title;
-    self.handler = handler;
+  if ((self = [super init])) {
+    _title = [title copy];
+    _handler = [handler copy];
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-init)
 
 @end
 
@@ -131,21 +134,23 @@ RCT_EXPORT_MODULE()
     // Toggle debug menu
     [commands registerKeyCommandWithInput:@"d"
                             modifierFlags:UIKeyModifierCommand
-                                   action:^(UIKeyCommand *command) {
+                                   action:^(__unused UIKeyCommand *command) {
                                      [weakSelf toggle];
                                    }];
 
     // Toggle element inspector
     [commands registerKeyCommandWithInput:@"i"
                             modifierFlags:UIKeyModifierCommand
-                                   action:^(UIKeyCommand *command) {
-                                     [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+                                   action:^(__unused UIKeyCommand *command) {
+                                     [_bridge.eventDispatcher
+                                      sendDeviceEventWithName:@"toggleElementInspector"
+                                      body:nil];
                                    }];
 
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
-                                   action:^(UIKeyCommand *command) {
+                                   action:^(__unused UIKeyCommand *command) {
                                      weakSelf.executorClass = Nil;
                                    }];
 #endif
@@ -454,7 +459,8 @@ RCT_EXPORT_METHOD(reload)
   }
 
   __weak RCTDevMenu *weakSelf = self;
-  _updateTask = [[NSURLSession sharedSession] dataTaskWithURL:_liveReloadURL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+  _updateTask = [[NSURLSession sharedSession] dataTaskWithURL:_liveReloadURL completionHandler:
+                 ^(__unused NSData *data, NSURLResponse *response, NSError *error) {
 
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong RCTDevMenu *strongSelf = weakSelf;

@@ -42,7 +42,7 @@
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios");
 
   // If tests have changes, set recordMode = YES below and run the affected
-  // tests on an iPhone5, iOS 8.1 simulator.
+  // tests on an iPhone5, iOS 8.3 simulator.
   _runner.recordMode = NO;
 }
 

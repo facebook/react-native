@@ -305,10 +305,12 @@ var MessageQueueMixin = {
     return guardReturn(this._callFunction, [moduleID, methodID, params], null, this);
   },
 
-  _callFunction: function(moduleID, methodID, params) {
-    var moduleName = this._localModuleIDToModuleName[moduleID];
+  _callFunction: function(moduleName, methodName, params) {
+    if (isFinite(moduleName)) {
+      moduleName = this._localModuleIDToModuleName[moduleName];
+      methodName = this._localModuleNameToMethodIDToName[moduleName][methodName];
+    }
 
-    var methodName = this._localModuleNameToMethodIDToName[moduleName][methodID];
     if (DEBUG_SPY_MODE) {
       console.log(
         'N->JS: ' + moduleName + '.' + methodName +

@@ -90,6 +90,8 @@
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -145,12 +147,12 @@
 
 #pragma mark - TableView
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView
 {
   return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(__unused UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
   return section == 0 ? 1 : [_lastStackTrace count];
 }

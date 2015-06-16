@@ -129,6 +129,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
+
 - (NSString *)accessibilityLabel
 {
   if (super.accessibilityLabel) {
@@ -181,6 +183,14 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   } else {
     return NO;
   }
+}
+
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  NSRange semicolonRange = [superDescription rangeOfString:@";"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
+  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
 }
 
 #pragma mark - Statics for dealing with layoutGuides
@@ -236,10 +246,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (void)react_remountAllSubviews
 {
   if (_reactSubviews) {
-    NSInteger index = 0;
+    NSUInteger index = 0;
     for (UIView *view in _reactSubviews) {
       if (view.superview != self) {
-        if (index < [self subviews].count) {
+        if (index < self.subviews.count) {
           [self insertSubview:view atIndex:index];
         } else {
           [self addSubview:view];

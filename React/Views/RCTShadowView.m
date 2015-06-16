@@ -213,7 +213,8 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame parentConstraint:(CGSize)parentConstraint
+- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
+                parentConstraint:(__unused CGSize)parentConstraint
 {
   [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, CSS_UNDEFINED);
@@ -361,6 +362,34 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     }
   }
   return self.reactTag;
+}
+
+- (NSString *)description
+{
+  NSString *description = super.description;
+  description = [[description substringToIndex:description.length - 1] stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>", self.viewName, self.reactTag, NSStringFromCGRect(self.frame)];
+  return description;
+}
+
+- (void)addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
+{
+  for (NSUInteger i = 0; i < level; i++) {
+    [string appendString:@"  | "];
+  }
+
+  [string appendString:self.description];
+  [string appendString:@"\n"];
+
+  for (RCTShadowView *subview in _reactSubviews) {
+    [subview addRecursiveDescriptionToString:string atLevel:level + 1];
+  }
+}
+
+- (NSString *)recursiveDescription
+{
+  NSMutableString *description = [NSMutableString string];
+  [self addRecursiveDescriptionToString:description atLevel:0];
+  return description;
 }
 
 // Margin

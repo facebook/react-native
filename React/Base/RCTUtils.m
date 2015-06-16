@@ -70,7 +70,7 @@ id RCTJSONClean(id object)
   if ([object isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
     NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
-    [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, BOOL *stop) {
+    [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, __unused BOOL *stop) {
       id value = RCTJSONClean(item);
       values[key] = value;
       copy |= value != item;
@@ -81,14 +81,14 @@ id RCTJSONClean(id object)
   if ([object isKindOfClass:[NSArray class]]) {
     __block BOOL copy = NO;
     __block NSArray *values = object;
-    [object enumerateObjectsUsingBlock:^(id item, NSUInteger idx, BOOL *stop) {
+    [object enumerateObjectsUsingBlock:^(id item, NSUInteger idx, __unused BOOL *stop) {
       id value = RCTJSONClean(item);
       if (copy) {
         [(NSMutableArray *)values addObject:value];
       } else if (value != item) {
         // Converted value is different, so we'll need to copy the array
         values = [[NSMutableArray alloc] initWithCapacity:values.count];
-        for (NSInteger i = 0; i < idx; i++) {
+        for (NSUInteger i = 0; i < idx; i++) {
           [(NSMutableArray *)values addObject:object[i]];
         }
         [(NSMutableArray *)values addObject:value];
@@ -165,19 +165,6 @@ CGFloat RCTFloorPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();
   return floor(value * scale) / scale;
-}
-
-NSTimeInterval RCTTGetAbsoluteTime(void)
-{
-  static struct mach_timebase_info tb_info = {0};
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    int ret = mach_timebase_info(&tb_info);
-    assert(0 == ret);
-  });
-
-  uint64_t timeInNanoseconds = (mach_absolute_time() * tb_info.numer) / tb_info.denom;
-  return ((NSTimeInterval)timeInNanoseconds) / 1000000;
 }
 
 void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)

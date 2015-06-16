@@ -28,12 +28,6 @@ typedef void (^RCTAssertFunction)(
 );
 
 /**
- * Private logging function - ignore this.
- */
-RCT_EXTERN void _RCTAssertFormat(
-  BOOL, const char *, int, const char *, NSString *, ...) NS_FORMAT_FUNCTION(5,6);
-
-/**
  * This is the main assert macro that you should use.
  */
 #define RCTAssert(condition, ...) do { BOOL pass = ((condition) != 0); \
@@ -41,12 +35,19 @@ if (RCT_NSASSERT && !pass) { [[NSAssertionHandler currentHandler] handleFailureI
 file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; } \
 _RCTAssertFormat(pass, __FILE__, __LINE__, __func__, __VA_ARGS__); \
 } while (false)
+RCT_EXTERN void _RCTAssertFormat(BOOL, const char *, int, const char *, NSString *, ...) NS_FORMAT_FUNCTION(5,6);
+
+/**
+ * Convenience macro for asserting that a parameter is non-nil/non-zero.
+ */
+#define RCTAssertParam(name) RCTAssert(name, \
+@"'%s' is a required parameter", #name)
 
 /**
  * Convenience macro for asserting that we're running on main thread.
  */
 #define RCTAssertMainThread() RCTAssert([NSThread isMainThread], \
-@"This function must be called on the main thread");
+@"This function must be called on the main thread")
 
 /**
  * These methods get and set the current assert function called by the RCTAssert

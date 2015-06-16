@@ -27,9 +27,11 @@ const NSInteger UNINITIALIZED_INDEX = -1;
   NSInteger _selectedIndex;
 }
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if (self = [super initWithFrame:CGRectZero]) {
+  RCTAssertParam(eventDispatcher);
+
+  if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
     _selectedIndex = UNINITIALIZED_INDEX;
     self.delegate = self;
@@ -37,12 +39,13 @@ const NSInteger UNINITIALIZED_INDEX = -1;
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+
 - (void)setItems:(NSArray *)items
 {
-  if (_items != items) {
-    _items = [items copy];
-    [self setNeedsLayout];
-  }
+  _items = [items copy];
+  [self setNeedsLayout];
 }
 
 - (void)setSelectedIndex:(NSInteger)selectedIndex
@@ -58,12 +61,13 @@ const NSInteger UNINITIALIZED_INDEX = -1;
 
 #pragma mark - UIPickerViewDataSource protocol
 
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+- (NSInteger)numberOfComponentsInPickerView:(__unused UIPickerView *)pickerView
 {
   return 1;
 }
 
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+- (NSInteger)pickerView:(__unused UIPickerView *)pickerView
+numberOfRowsInComponent:(__unused NSInteger)component
 {
   return _items.count;
 }
@@ -80,12 +84,14 @@ const NSInteger UNINITIALIZED_INDEX = -1;
   return [self itemForRow:row][@"value"];
 }
 
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+- (NSString *)pickerView:(__unused UIPickerView *)pickerView
+             titleForRow:(NSInteger)row forComponent:(__unused NSInteger)component
 {
   return [self itemForRow:row][@"label"];
 }
 
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+- (void)pickerView:(__unused UIPickerView *)pickerView
+      didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
 {
   _selectedIndex = row;
   NSDictionary *event = @{
@@ -96,4 +102,5 @@ const NSInteger UNINITIALIZED_INDEX = -1;
 
   [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
 }
+
 @end

@@ -61,18 +61,19 @@ RCT_EXPORT_MODULE()
   _initialNotification = [bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
 }
 
-+ (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
++ (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
 {
   if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
     [application registerForRemoteNotifications];
   }
 }
 
-+ (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
++ (void)application:(__unused UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   NSMutableString *hexString = [NSMutableString string];
-  const unsigned char *bytes = [deviceToken bytes];
-  for (int i = 0; i < [deviceToken length]; i++) {
+  NSUInteger deviceTokenLength = deviceToken.length;
+  const unsigned char *bytes = deviceToken.bytes;
+  for (NSUInteger i = 0; i < deviceTokenLength; i++) {
     [hexString appendFormat:@"%02x", bytes[i]];
   }
   NSDictionary *userInfo = @{
@@ -83,7 +84,7 @@ RCT_EXPORT_MODULE()
                                                     userInfo:userInfo];
 }
 
-+ (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
++ (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
@@ -145,6 +146,11 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
   [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
 #endif
 
+}
+
+RCT_EXPORT_METHOD(abandonPermissions)
+{
+  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
 }
 
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)

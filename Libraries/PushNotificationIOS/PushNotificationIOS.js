@@ -122,6 +122,18 @@ class PushNotificationIOS {
   }
 
   /**
+   * Unregister for all remote notifications received via Apple Push Notification service.
+   *
+   * You should call this method in rare circumstances only, such as when a new version of
+   * the app removes support for all types of remote notifications. Users can temporarily
+   * prevent apps from receiving remote notifications through the Notifications section of
+   * the Settings app. Apps unregistered through this method can always re-register.
+   */
+  static abandonPermissions() {
+    RCTPushNotificationManager.abandonPermissions();
+  }
+
+  /**
    * See what push permissions are currently enabled. `callback` will be
    * invoked with a `permissions` object:
    *
