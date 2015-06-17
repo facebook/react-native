@@ -79,6 +79,11 @@
       [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
     }
 
+    if (_navItem.shadowHidden) {
+      UIImageView *navBarHairlineImageView = [self findHairlineImageViewUnder:bar];
+      navBarHairlineImageView.hidden = YES;
+    }
+
     UINavigationItem *item = self.navigationItem;
     item.title = _navItem.title;
     item.backBarButtonItem = _navItem.backButtonItem;
@@ -91,6 +96,19 @@
       item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
     }
   }
+}
+
+- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
+  if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
+    return (UIImageView *)view;
+  }
+  for (UIView *subview in view.subviews) {
+    UIImageView *imageView = [self findHairlineImageViewUnder:subview];
+    if (imageView) {
+      return imageView;
+    }
+  }
+  return nil;
 }
 
 - (void)loadView
