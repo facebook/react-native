@@ -50,6 +50,7 @@ var AndroidTextInputAttributes = {
   placeholder: true,
   text: true,
   testID: true,
+  underlineColorAndroid: true,
 };
 
 var viewConfigAndroid = {
@@ -260,6 +261,10 @@ var TextInput = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * The color of the textInput underline. Is only supported on Android.
+     */
+    underlineColorAndroid: PropTypes.string,
   },
 
   /**
@@ -489,6 +494,7 @@ var TextInput = React.createClass({
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         text={this.state.bufferedValue}
+        underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
       />;
 
