@@ -25,7 +25,9 @@
 'use strict';
 
 jest
+  .dontMock('EmitterSubscription')
   .dontMock('EventEmitter')
+  .dontMock('EventSubscriptionVendor')
   .dontMock('NavigationEvent')
   .dontMock('NavigationEventEmitter');
 
