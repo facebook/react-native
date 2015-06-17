@@ -14,7 +14,7 @@
 var GLOBAL = GLOBAL || this;
 
 var BridgeProfiling = {
-  profile(profileName?: string, args?: any) {
+  profile(profileName?: any, args?: any) {
     if (GLOBAL.__BridgeProfilingIsProfiling) {
       if (args) {
         try {
@@ -23,6 +23,8 @@ var BridgeProfiling = {
           args = err.message;
         }
       }
+      profileName = typeof profileName === 'function' ?
+        profileName() : profileName;
       console.profile(profileName, args);
     }
   },

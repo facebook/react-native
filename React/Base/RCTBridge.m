@@ -40,9 +40,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
   RCTBridgeFieldParamss,
-  RCTBridgeFieldResponseCBIDs,
-  RCTBridgeFieldResponseReturnValues,
-  RCTBridgeFieldFlushDateMillis
 };
 
 typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
@@ -1255,14 +1252,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 
   if (![buffer isKindOfClass:[NSArray class]]) {
     RCTLogError(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
-    return;
-  }
-
-  NSUInteger bufferRowCount = [requestsArray count];
-  NSUInteger expectedFieldsCount = RCTBridgeFieldResponseReturnValues + 1;
-
-  if (bufferRowCount != expectedFieldsCount) {
-    RCTLogError(@"Must pass all fields to buffer - expected %zd, saw %zd", expectedFieldsCount, bufferRowCount);
     return;
   }
 
