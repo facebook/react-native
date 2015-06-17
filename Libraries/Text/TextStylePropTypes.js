@@ -34,10 +34,13 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
   letterSpacing: ReactPropTypes.number,
-  strikeThrough:ReactPropTypes.oneOf(
-    ['none' /*default*/, 'solid', 'double', 'dotted','dashed']
+  textDecorationLine:ReactPropTypes.oneOf(
+    ['none' /*default*/, 'underline', 'line-through', 'underline line-through']
   ),
-  strikeThroughColor: ReactPropTypes.string
+  textDecorationStyle:ReactPropTypes.oneOf(
+    ['solid' /*default*/, 'double', 'dotted','dashed']
+  ),
+  textDecorationColor: ReactPropTypes.string,
 });
 
 // Text doesn't support padding correctly (#4841912)

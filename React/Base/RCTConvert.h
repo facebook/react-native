@@ -12,9 +12,11 @@
 
 #import "Layout.h"
 #import "RCTAnimationType.h"
+#import "RCTTextDecorationType.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
+
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -121,6 +123,7 @@ typedef BOOL css_clip_t;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
++ (RCTTextDecorationType)RCTTextDecorationType:(id)json;
 
 @end
 

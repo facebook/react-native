@@ -203,12 +203,18 @@ RCT_ENUM_CONVERTER(NSTextAlignment, (@{
 }), NSTextAlignmentNatural, integerValue)
 
 RCT_ENUM_CONVERTER(NSUnderlineStyle, (@{
-  @"none": @(NSUnderlineStyleNone),
   @"solid": @(NSUnderlineStyleSingle),
   @"double": @(NSUnderlineStyleDouble),
   @"dotted": @(NSUnderlinePatternDot | NSUnderlineStyleSingle),
   @"dashed": @(NSUnderlinePatternDash | NSUnderlineStyleSingle),
-}), NSUnderlineStyleNone, integerValue)
+}), NSUnderlineStyleSingle, integerValue)
+
+RCT_ENUM_CONVERTER(RCTTextDecorationType, (@{
+  @"none": @(RCTTextDecorationTypeNone),
+  @"underline": @(RCTTextDecorationTypeUnderline),
+  @"line-through": @(RCTTextDecorationTypeStrikethrough),
+  @"underline line-through": @(RCTTextDecorationTypeUnderlineStrikethrough),
+}), RCTTextDecorationTypeNone, integerValue)
 
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{
   @"auto": @(NSWritingDirectionNatural),

@@ -177,24 +177,39 @@ exports.examples = [
     );
   },
 }, {
-  title: 'StrikeThrough',
+  title: 'Text Decoration',
   render: function() {
     return (
       <View>
-        <Text style={{strikeThrough: 'none'}}>
-          None strikeThrough line
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'solid'}}>
+          Solid underline
         </Text>
-        <Text style={{strikeThrough: 'solid'}}>
-          Single strikeThrough line
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'double', textDecorationColor: '#ff0000'}}>
+          Double underline line with custom color
         </Text>
-        <Text style={{strikeThrough: 'double', strikeThroughColor: '#00ffff'}}>
-          Double strikeThrough line with custom color
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'dashed', textDecorationColor: '#9CDC40'}}>
+          Dashed underline with custom color
         </Text>
-        <Text style={{strikeThrough: 'dashed', strikeThroughColor: 'red'}}>
-          Dashed strikeThrough line with custom color
-        </Text>
-        <Text style={{strikeThrough: 'dotted', strikeThroughColor: 'blue'}}>
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'dotted', textDecorationColor: 'blue'}}>
           Dotted strikeThrough line with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'none'}}>
+          None textDecoration line
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'solid'}}>
+          Solid line-through
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'double', textDecorationColor: '#ff0000'}}>
+          Double line-through line with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'dashed', textDecorationColor: '#9CDC40'}}>
+          Dashed line-through with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'dotted', textDecorationColor: 'blue'}}>
+          Dotted line-through line with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'underline line-through'}}>
+          Both underline and line-through
         </Text>
       </View>
     );

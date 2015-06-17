@@ -251,11 +251,19 @@ static css_dim_t RCTMeasure(void *context, float width)
                              range:(NSRange){0, attributedString.length}];
   }
   
-  //line-through
-  self.strikeThrough = _strikeThrough ?: NSUnderlineStyleNone;
-  [self _addAttribute: NSStrikethroughStyleAttributeName withValue:[NSNumber numberWithInt:self.strikeThrough] toAttributedString:attributedString];
-  if(_strikeThroughColor) {
-    [self _addAttribute: NSStrikethroughColorAttributeName withValue: _strikeThroughColor toAttributedString:attributedString];
+ 
+  //underline and line-through
+  _textDecorationStyle = _textDecorationStyle ? : NSUnderlineStyleSingle;
+  if(_textDecorationLine == RCTTextDecorationTypeUnderline || _textDecorationLine == RCTTextDecorationTypeUnderlineStrikethrough) {
+    [self _addAttribute: NSUnderlineStyleAttributeName withValue:[NSNumber numberWithInt:_textDecorationStyle] toAttributedString:attributedString];
+  }
+  if(_textDecorationLine == RCTTextDecorationTypeStrikethrough || _textDecorationLine == RCTTextDecorationTypeUnderlineStrikethrough){
+    [self _addAttribute: NSStrikethroughStyleAttributeName withValue:[NSNumber numberWithInt:_textDecorationStyle] toAttributedString:attributedString];
+  }
+  
+  if(_textDecorationColor) {
+    [self _addAttribute: NSStrikethroughColorAttributeName withValue: _textDecorationColor toAttributedString:attributedString];
+    [self _addAttribute: NSUnderlineColorAttributeName withValue: _textDecorationColor toAttributedString:attributedString];
   }
   
 }
@@ -299,7 +307,8 @@ RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
 RCT_TEXT_PROPERTY(TextBackgroundColor, _textBackgroundColor, UIColor *)
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
-RCT_TEXT_PROPERTY(StrikeThrough, _strikeThrough, NSUnderlineStyle);
-RCT_TEXT_PROPERTY(StrikeThroughColor, _strikeThroughColor, UIColor *);
+RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
+RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
+RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationType);
 
 @end
