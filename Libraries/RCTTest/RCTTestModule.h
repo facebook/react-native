@@ -12,6 +12,12 @@
 #import "RCTBridgeModule.h"
 #import "RCTDefines.h"
 
+typedef NS_ENUM(NSInteger, RCTTestStatus) {
+  RCTTestStatusPending = 0,
+  RCTTestStatusPassed,
+  RCTTestStatusFailed
+};
+
 @class FBSnapshotTestController;
 
 @interface RCTTestModule : NSObject <RCTBridgeModule>
@@ -32,8 +38,8 @@
 @property (nonatomic, assign) SEL testSelector;
 
 /**
- * This is typically polled while running the runloop until true.
+ * This is polled while running the runloop until true.
  */
-@property (nonatomic, readonly, getter=isDone) BOOL done;
+@property (nonatomic, readonly) RCTTestStatus status;
 
 @end

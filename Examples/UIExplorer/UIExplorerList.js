@@ -115,7 +115,7 @@ COMPONENTS.concat(APIS).forEach((Example) => {
         // View is still blank after first RAF :\
         global.requestAnimationFrame(() =>
           global.requestAnimationFrame(() => TestModule.verifySnapshot(
-            TestModule.markTestCompleted
+            TestModule.markTestPassed
           )
         ));
       },
