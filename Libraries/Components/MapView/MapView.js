@@ -38,16 +38,9 @@ var MapView = React.createClass({
   checkAnnotationIds: function (annotations: Array<Object>) {
 
     var newAnnotations = annotations.map(function (annotation) {
-      // If no ID has been set, generate a unique one to make sure annotation
-      // events are being dispatched correctly
-      // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
       if (!annotation['id']) {
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-          return v.toString(16);
-        });
-
-        annotation['id'] = uuid;
+        // TODO: add a base64 (or similar) encoder here
+        annotation['id'] = encodeURIComponent(JSON.stringify(annotation));
       }
 
       return annotation;
