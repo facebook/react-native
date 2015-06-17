@@ -600,7 +600,8 @@ describe('HasteDependencyResolver', function() {
         'require("Y")',
         'require( \'z\' )',
         'require( "a")',
-        'require("b" )});',
+        'require("b" )',
+        '});',
       ].join('\n'));
     });
   });

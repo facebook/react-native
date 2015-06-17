@@ -68,8 +68,8 @@ type Event = Object;
 
 /**
  * A foundational component for inputting text into the app via a
- * keyboard.  Props provide configurability for several features, such as auto-
- * correction, auto-capitalization, placeholder text, and different keyboard
+ * keyboard. Props provide configurability for several features, such as
+ * auto-correction, auto-capitalization, placeholder text, and different keyboard
  * types, such as a numeric keypad.
  *
  * The simplest use case is to plop down a `TextInput` and subscribe to the
