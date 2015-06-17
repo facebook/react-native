@@ -979,7 +979,9 @@ RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point call
   [_pendingUIBlocksLock unlock];
 
   // Execute the previously queued UI blocks
+  RCTProfileBeginFlowEvent();
   dispatch_async(dispatch_get_main_queue(), ^{
+    RCTProfileEndFlowEvent();
     RCTProfileBeginEvent();
     for (dispatch_block_t block in previousPendingUIBlocks) {
       block();
