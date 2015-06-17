@@ -746,7 +746,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
               size:(id)size weight:(id)weight style:(id)style
 {
   // Defaults
-  NSString *const RCTDefaultFontFamily = @"Helvetica Neue";
+  NSString *const RCTDefaultFontFamily = @"System";
   const RCTFontWeight RCTDefaultFontWeight = UIFontWeightRegular;
   const CGFloat RCTDefaultFontSize = 14;
 
@@ -756,6 +756,11 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   NSString *familyName = RCTDefaultFontFamily;
   BOOL isItalic = NO;
   BOOL isCondensed = NO;
+
+  if ([[self NSString:family] isEqualToString:RCTDefaultFontFamily] ||
+      (!family && !font)) {
+    font = [UIFont systemFontOfSize:fontSize];
+  }
 
   if (font) {
     familyName = font.familyName ?: RCTDefaultFontFamily;
