@@ -197,7 +197,7 @@ var nativeOnlyProps = {
   defaultImageSrc: true,
   imageTag: true,
   contentMode: true,
-  assetThumb:true,
+  assetThumbnail:true,
 };
 if (__DEV__) {
   verifyPropTypes(Image, RCTStaticImage.viewConfig, nativeOnlyProps);
