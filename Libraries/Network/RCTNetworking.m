@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDataManager.h"
+#import "RCTNetworking.h"
 
 #import "RCTAssert.h"
 #import "RCTConvert.h"
@@ -19,7 +19,7 @@
 
 typedef void (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
 
-@interface RCTDataManager ()<RCTURLRequestDelegate>
+@interface RCTNetworking ()<RCTURLRequestDelegate>
 
 - (void)processDataForHTTPQuery:(NSDictionary *)data callback:(void (^)(NSError *error, NSDictionary *result))callback;
 
@@ -30,7 +30,7 @@ typedef void (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
  */
 @interface RCTHTTPFormDataHelper : NSObject
 
-@property (nonatomic, weak) RCTDataManager *dataManager;
+@property (nonatomic, weak) RCTNetworking *dataManager;
 
 @end
 
@@ -207,7 +207,7 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
 /**
  * Bridge module that provides the JS interface to the network stack.
  */
-@implementation RCTDataManager
+@implementation RCTNetworking
 {
   NSInteger _currentRequestID;
   NSMapTable *_activeRequests;

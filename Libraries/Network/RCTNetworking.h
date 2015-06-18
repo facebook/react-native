@@ -11,7 +11,7 @@
 
 #import "RCTBridgeModule.h"
 
-@interface RCTDataManager : NSObject <RCTBridgeModule>
+@interface RCTNetworking : NSObject <RCTBridgeModule>
 
 @end
 
