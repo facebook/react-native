@@ -22,6 +22,9 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
+# AppCode
+.idea
+
 # OS X
 .DS_Store
 
