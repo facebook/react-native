@@ -10,7 +10,7 @@ hierarchy and reconciling many views. <code>setNativeProps</code> is imperative
 and stores state in the native layer (DOM, UIView, etc.) and not
 within your React components, which makes your code more difficult to
 reason about. Before you use it, try to solve your problem with <code>setState</code>
-and <a href="react-native/docs/direct-manipulation.html#setnativeprops-shouldcomponentupdate" target="_blank">shouldComponent</a>.</p></blockquote><h2><a class="anchor" name="setnativeprops-with-touchableopacity"></a>setNativeProps with TouchableOpacity <a class="hash-link" href="#setnativeprops-with-touchableopacity">#</a></h2><p><a href="https://github.com/facebook/react-native/blob/master/Libraries/Components/Touchable/TouchableOpacity.js" target="_blank">TouchableOpacity</a>
+and <a href="react-native/docs/direct-manipulation.html#setnativeprops-shouldcomponentupdate" target="_blank">shouldComponentUpdate</a>.</p></blockquote><h2><a class="anchor" name="setnativeprops-with-touchableopacity"></a>setNativeProps with TouchableOpacity <a class="hash-link" href="#setnativeprops-with-touchableopacity">#</a></h2><p><a href="https://github.com/facebook/react-native/blob/master/Libraries/Components/Touchable/TouchableOpacity.js" target="_blank">TouchableOpacity</a>
 uses <code>setNativeProps</code> internally to update the opacity of its child
 component:</p><div class="prism language-javascript">setOpacityTo<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
  <span class="token comment" spellcheck="true"> // Redacted: animation related code
