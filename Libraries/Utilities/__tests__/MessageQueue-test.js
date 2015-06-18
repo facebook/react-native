@@ -8,9 +8,12 @@
  */
 'use strict';
 
-jest.dontMock('MessageQueue');
+jest.setMock('ReactUpdates', {
+  batchedUpdates: fn => fn()
+});
 
-var ReactUpdates = require('ReactUpdates');
+jest.dontMock('MessageQueue');
+jest.dontMock('keyMirror');
 var MessageQueue = require('MessageQueue');
 
 let MODULE_IDS = 0;
@@ -94,10 +97,6 @@ describe('MessageQueue', () => {
   });
 
   describe('processBatch', () => {
-
-    beforeEach(() => {
-      ReactUpdates.batchedUpdates = (fn) => fn();
-    });
 
     it('should call __invokeCallback for invokeCallbackAndReturnFlushedQueue', () => {
       queue.__invokeCallback = jasmine.createSpy();
