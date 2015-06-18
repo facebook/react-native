@@ -23,7 +23,7 @@ properties directly on a DOM node.
 > and stores state in the native layer (DOM, UIView, etc.) and not
 > within your React components, which makes your code more difficult to
 > reason about. Before you use it, try to solve your problem with `setState`
-> and [shouldComponent](react-native/docs/direct-manipulation.html#setnativeprops-shouldcomponentupdate).
+> and [shouldComponentUpdate](react-native/docs/direct-manipulation.html#setnativeprops-shouldcomponentupdate).
 
 ## setNativeProps with TouchableOpacity
 
