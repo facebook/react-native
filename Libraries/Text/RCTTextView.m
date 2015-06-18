@@ -153,10 +153,6 @@
 
 - (void)setMaximumNumberOfLines:(NSUInteger)maximumNumberOfLines
 {
-  if (maximumNumberOfLines < 1) {
-    maximumNumberOfLines = 1;
-  }
-
   _textView.textContainer.maximumNumberOfLines = maximumNumberOfLines;
   if (_placeholderView) {
     _placeholderView.textContainer.maximumNumberOfLines = maximumNumberOfLines;
