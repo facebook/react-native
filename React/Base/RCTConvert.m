@@ -759,10 +759,57 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
   if ([[self NSString:family] isEqualToString:RCTDefaultFontFamily] ||
       (!family && !font)) {
+    if (font) {
+      fontSize = font.pointSize ?: RCTDefaultFontSize;
+      fontWeight = RCTWeightOfFont(font);
+      isItalic = RCTFontIsItalic(font);
+    }
+
+    fontSize = [self CGFloat:size] ?: fontSize;
+
+    if (weight) {
+      fontWeight = [self RCTFontWeight:weight];
+    }
+
     font = [UIFont systemFontOfSize:fontSize];
+
+    if (ABS(fontWeight - RCTDefaultFontWeight) <  0.01) {
+      UIFontDescriptor *fontDescriptor = [font fontDescriptor];
+      UIFontDescriptorSymbolicTraits symbolicTraits =
+        fontDescriptor.symbolicTraits;
+
+      if (style) {
+        isItalic = [self RCTFontStyle:style];
+      }
+      if (isItalic) {
+        symbolicTraits |= UIFontDescriptorTraitItalic;
+        fontDescriptor =
+          [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
+      }
+      return [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
+    }
   }
 
   if (font) {
+    if (!family && !weight) {
+      fontSize = font.pointSize ?: RCTDefaultFontSize;
+      fontSize = [self CGFloat:size] ?: fontSize;
+
+      UIFontDescriptor *fontDescriptor = [font fontDescriptor];
+      UIFontDescriptorSymbolicTraits symbolicTraits =
+        fontDescriptor.symbolicTraits;
+
+      if (style) {
+        isItalic = [self RCTFontStyle:style];
+      }
+      if (isItalic) {
+        symbolicTraits |= UIFontDescriptorTraitItalic;
+        fontDescriptor =
+          [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
+      }
+      return [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
+    }
+
     familyName = font.familyName ?: RCTDefaultFontFamily;
     fontSize = font.pointSize ?: RCTDefaultFontSize;
     fontWeight = RCTWeightOfFont(font);
