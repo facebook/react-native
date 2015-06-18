@@ -804,6 +804,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
 
 RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
                   viewName:(NSString *)viewName
+                  rootTag:(NSNumber *)rootTag
                   props:(NSDictionary *)props)
 {
   RCTViewManager *manager = _viewManagers[viewName];
