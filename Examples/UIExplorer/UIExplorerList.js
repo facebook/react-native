@@ -39,6 +39,7 @@ var createExamplePage = require('./createExamplePage');
 var COMMON_COMPONENTS = [
   require('./ImageExample'),
   require('./ListViewExample'),
+  require('./ListViewGridLayoutExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
   require('./Navigator/NavigatorExample'),
