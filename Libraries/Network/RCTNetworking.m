@@ -211,10 +211,10 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
 {
   NSInteger _currentRequestID;
   NSMapTable *_activeRequests;
-  dispatch_queue_t _methodQueue;
 }
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
@@ -222,17 +222,11 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _currentRequestID = 0;
-    _methodQueue = dispatch_queue_create("com.facebook.React.RCTDataManager", DISPATCH_QUEUE_SERIAL);
     _activeRequests = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                                 valueOptions:NSPointerFunctionsStrongMemory
                                                     capacity:0];
   }
   return self;
-}
-
-- (dispatch_queue_t)methodQueue
-{
-  return _methodQueue;
 }
 
 - (void)buildRequest:(NSDictionary *)query

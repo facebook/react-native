@@ -31,8 +31,6 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 
-dispatch_queue_t const RCTJSThread = nil;
-
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
@@ -163,7 +161,6 @@ static NSDictionary *RCTJSErrorFromNSError(NSError *error)
   SEL _selector;
   NSMethodSignature *_methodSignature;
   NSArray *_argumentBlocks;
-  dispatch_block_t _methodQueue;
 }
 
 - (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
@@ -567,14 +564,19 @@ static NSDictionary *RCTRemoteModulesConfig(NSDictionary *modulesByName)
 @implementation RCTBridge
 
 static id<RCTJavaScriptExecutor> _latestJSExecutor;
-
-#if RCT_DEBUG
+dispatch_queue_t RCTJSThread;
 
 + (void)initialize
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
 
+    // Set up JS thread
+    RCTJSThread = (id)kCFNull;
+
+#if RCT_DEBUG
+
+    // Set up module classes
     static unsigned int classCount;
     Class *classes = objc_copyClassList(&classCount);
 
@@ -587,7 +589,8 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
         if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
         {
           if (![RCTModuleClassesByID containsObject:cls]) {
-            RCTLogError(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", NSStringFromClass(cls));
+            RCTLogError(@"Class %@ was not exported. Did you forget to use "
+                        "RCT_EXPORT_MODULE()?", NSStringFromClass(cls));
           }
           break;
         }
@@ -597,10 +600,10 @@ static id<RCTJavaScriptExecutor> _latestJSExecutor;
 
     free(classes);
 
+#endif
+
   });
 }
-
-#endif
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
@@ -741,7 +744,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
   RCTSparseArray *_modulesByID;
   RCTSparseArray *_queuesByID;
-  dispatch_queue_t _methodQueue;
   NSDictionary *_modulesByName;
   CADisplayLink *_mainDisplayLink;
   CADisplayLink *_jsDisplayLink;
@@ -783,7 +785,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
      * Initialize and register bridge modules *before* adding the display link
      * so we don't have threading issues
      */
-    _methodQueue = dispatch_queue_create("com.facebook.React.BridgeMethodQueue", DISPATCH_QUEUE_SERIAL);
     [self registerModules];
 
     /**
@@ -896,21 +897,49 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
     }
   }
 
-  // Get method queues
-  [_modulesByID enumerateObjectsUsingBlock:
-   ^(id<RCTBridgeModule> module, NSNumber *moduleID, __unused BOOL *stop) {
-    if ([module respondsToSelector:@selector(methodQueue)]) {
-      dispatch_queue_t queue = [module methodQueue];
-      if (queue) {
-        _queuesByID[moduleID] = queue;
-      } else {
-        _queuesByID[moduleID] = (id)kCFNull;
+  // Set/get method queues
+  [_modulesByID enumerateObjectsUsingBlock:^(id<RCTBridgeModule> module, NSNumber *moduleID, __unused BOOL *stop) {
+
+    dispatch_queue_t queue = nil;
+    BOOL implementsMethodQueue = [module respondsToSelector:@selector(methodQueue)];
+    if (implementsMethodQueue) {
+      queue = [module methodQueue];
+    }
+    if (!queue) {
+
+      // Need to cache queueNames because they aren't retained by dispatch_queue
+      static NSMutableDictionary *queueNames;
+      if (!queueNames) {
+        queueNames = [[NSMutableDictionary alloc] init];
+      }
+      NSString *moduleName = RCTBridgeModuleNameForClass([module class]);
+      NSString *queueName = queueNames[moduleName];
+      if (!queueName) {
+        queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", moduleName];
+        queueNames[moduleName] = queueName;
+      }
+
+      // Create new queue
+      queue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+
+      // assign it to the module
+      if (implementsMethodQueue) {
+        @try {
+          [(id)module setValue:queue forKey:@"methodQueue"];
+        }
+        @catch (NSException *exception) {
+          RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
+                      "permitted. You must either return a pre-initialized "
+                      "queue, or @synthesize the methodQueue to let the bridge "
+                      "create a queue for you.", moduleName);
+        }
       }
     }
+    _queuesByID[moduleID] = queue;
 
     if ([module conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:module];
-   }
+    }
   }];
 }
 
@@ -1166,10 +1195,10 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
     queue = _queuesByID[moduleID];
   }
 
-  if (queue == (id)kCFNull) {
+  if (queue == RCTJSThread) {
     [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
-  } else {
-    dispatch_async(queue ?: _methodQueue, block);
+  } else if (queue) {
+    dispatch_async(queue, block);
   }
 }
 
@@ -1309,9 +1338,9 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
       RCTProfileEndEvent(RCTCurrentThreadName(), @"objc_call,dispatch_async", @{ @"calls": @(calls.count) });
     };
 
-    if (queue == (id)kCFNull) {
+    if (queue == RCTJSThread) {
       [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
-    } else {
+    } else if (queue) {
       dispatch_async(queue, block);
     }
   }
