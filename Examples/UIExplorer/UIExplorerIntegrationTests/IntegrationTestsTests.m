@@ -26,7 +26,7 @@
 - (void)setUp
 {
 #if __LP64__
-  #error Tests should be run on 32-bit device simulators (e.g. iPhone 5)
+  RCTAssert(false, @"Tests should be run on 32-bit device simulators (e.g. iPhone 5)");
 #endif
 
   NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
