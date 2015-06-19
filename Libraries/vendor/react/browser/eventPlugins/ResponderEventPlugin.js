@@ -55,13 +55,14 @@ var trackedTouchCount = 0;
  */
 var previousActiveTouches = 0;
 
-var changeResponder = function(nextResponderID) {
+var changeResponder = function(nextResponderID, blockNativeResponder) {
   var oldResponderID = responderID;
   responderID = nextResponderID;
   if (ResponderEventPlugin.GlobalResponderHandler !== null) {
     ResponderEventPlugin.GlobalResponderHandler.onChange(
       oldResponderID,
-      nextResponderID
+      nextResponderID,
+      blockNativeResponder
     );
   }
 };
@@ -379,6 +380,7 @@ function setResponderAndExtractTransfer(
   grantEvent.touchHistory = ResponderTouchHistoryStore.touchHistory;
 
   EventPropagators.accumulateDirectDispatches(grantEvent);
+  var blockNativeResponder = executeDirectDispatch(grantEvent) === true;
   if (responderID) {
 
     var terminationRequestEvent = ResponderSyntheticEvent.getPooled(
@@ -404,7 +406,7 @@ function setResponderAndExtractTransfer(
       terminateEvent.touchHistory = ResponderTouchHistoryStore.touchHistory;
       EventPropagators.accumulateDirectDispatches(terminateEvent);
       extracted = accumulate(extracted, [grantEvent, terminateEvent]);
-      changeResponder(wantsResponderID);
+      changeResponder(wantsResponderID, blockNativeResponder);
     } else {
       var rejectEvent = ResponderSyntheticEvent.getPooled(
         eventTypes.responderReject,
@@ -417,7 +419,7 @@ function setResponderAndExtractTransfer(
     }
   } else {
     extracted = accumulate(extracted, grantEvent);
-    changeResponder(wantsResponderID);
+    changeResponder(wantsResponderID, blockNativeResponder);
   }
   return extracted;
 }

@@ -1215,7 +1215,8 @@ RCT_EXPORT_METHOD(zoomToRect:(NSNumber *)reactTag
  * JS sets what *it* considers to be the responder. Later, scroll views can use
  * this in order to determine if scrolling is appropriate.
  */
-RCT_EXPORT_METHOD(setJSResponder:(NSNumber *)reactTag)
+RCT_EXPORT_METHOD(setJSResponder:(NSNumber *)reactTag
+                  blockNativeResponder:(BOOL)blockNativeResponder)
 {
   [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
