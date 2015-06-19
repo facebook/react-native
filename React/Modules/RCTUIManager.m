@@ -804,6 +804,7 @@ static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView
 
 RCT_EXPORT_METHOD(createView:(NSNumber *)reactTag
                   viewName:(NSString *)viewName
+                  rootTag:(NSNumber *)rootTag
                   props:(NSDictionary *)props)
 {
   RCTViewManager *manager = _viewManagers[viewName];
@@ -979,7 +980,9 @@ RCT_EXPORT_METHOD(findSubviewIn:(NSNumber *)reactTag atPoint:(CGPoint)point call
   [_pendingUIBlocksLock unlock];
 
   // Execute the previously queued UI blocks
+  RCTProfileBeginFlowEvent();
   dispatch_async(dispatch_get_main_queue(), ^{
+    RCTProfileEndFlowEvent();
     RCTProfileBeginEvent();
     for (dispatch_block_t block in previousPendingUIBlocks) {
       block();
@@ -1329,7 +1332,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
   } mutableCopy];
 
-  for (RCTViewManager *manager in _viewManagers) {
+  for (RCTViewManager *manager in _viewManagers.allValues) {
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customBubblingEventTypes))) {
       NSDictionary *eventTypes = [manager customBubblingEventTypes];
       for (NSString *eventName in eventTypes) {
@@ -1390,7 +1393,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
   } mutableCopy];
 
-  for (RCTViewManager *manager in _viewManagers) {
+  for (RCTViewManager *manager in _viewManagers.allValues) {
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customDirectEventTypes))) {
       NSDictionary *eventTypes = [manager customDirectEventTypes];
       for (NSString *eventName in eventTypes) {

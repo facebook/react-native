@@ -16,7 +16,7 @@
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
 
-#define TIMEOUT_SECONDS 240
+#define TIMEOUT_SECONDS 60
 
 @interface RCTBridge (RCTTestRunner)
 
@@ -93,7 +93,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
-  while ([date timeIntervalSinceNow] > 0 && ![testModule isDone] && error == nil) {
+  while ([date timeIntervalSinceNow] > 0 && testModule.status == RCTTestStatusPending && error == nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
@@ -104,11 +104,12 @@ RCT_NOT_IMPLEMENTED(-init)
   [[RCTRedBox sharedInstance] dismiss];
   if (expectErrorBlock) {
     RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
-  } else if (error) {
-    RCTAssert(error == nil, @"RedBox error: %@", error);
   } else {
-    RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
+    RCTAssert(error == nil, @"RedBox error: %@", error);
+    RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
+    RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
   }
+  RCTAssert(self.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");
 }
 
 @end

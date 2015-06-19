@@ -40,9 +40,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
   RCTBridgeFieldParamss,
-  RCTBridgeFieldResponseCBIDs,
-  RCTBridgeFieldResponseReturnValues,
-  RCTBridgeFieldFlushDateMillis
 };
 
 typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
@@ -954,8 +951,10 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
     });
   } else {
 
+    RCTProfileBeginEvent();
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
+      RCTProfileEndEvent(@"JavaScript dowload", @"init,download", @[]);
 
       _loading = NO;
       if (!self.isValid) {
@@ -1122,12 +1121,11 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 {
   RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
 
-  RCTProfileBeginEvent();
-
+  RCTProfileBeginFlowEvent();
   [_javaScriptExecutor executeApplicationScript:script sourceURL:url onComplete:^(NSError *scriptLoadError) {
+    RCTProfileEndFlowEvent();
     RCTAssertJSThread();
 
-    RCTProfileEndEvent(@"ApplicationScript", @"js_call,init", scriptLoadError);
     if (scriptLoadError) {
       onComplete(scriptLoadError);
       return;
@@ -1255,14 +1253,6 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 
   if (![buffer isKindOfClass:[NSArray class]]) {
     RCTLogError(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
-    return;
-  }
-
-  NSUInteger bufferRowCount = [requestsArray count];
-  NSUInteger expectedFieldsCount = RCTBridgeFieldResponseReturnValues + 1;
-
-  if (bufferRowCount != expectedFieldsCount) {
-    RCTLogError(@"Must pass all fields to buffer - expected %zd, saw %zd", expectedFieldsCount, bufferRowCount);
     return;
   }
 
