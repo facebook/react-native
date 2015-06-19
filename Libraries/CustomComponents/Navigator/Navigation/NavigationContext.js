@@ -23,25 +23,34 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule NavigationContext
- * @flow
  */
 'use strict';
 
 var NavigationEventEmitter = require('NavigationEventEmitter');
-var emptyFunction = require('emptyFunction');
 
-type EventSubscription = {
-  remove: Function
-};
+var emptyFunction = require('emptyFunction');
+var invariant = require('invariant');
+
+import type * as NavigationEvent from 'NavigationEvent';
+import type * as EventSubscription from 'EventSubscription';
 
 /**
  * Class that contains the info and methods for app navigation.
  */
 class NavigationContext {
   _eventEmitter: ?NavigationEventEmitter;
+  _currentRoute: any;
 
   constructor() {
     this._eventEmitter = new NavigationEventEmitter(this);
+    this._currentRoute = null;
+    this.addListener('didfocus', this._onDidFocus, this);
+  }
+
+  // TODO: @flow does not like this getter. Will add @flow check back once
+  // getter/setter is supported.
+  get currentRoute(): any {
+    return this._currentRoute;
   }
 
   addListener(
@@ -64,12 +73,22 @@ class NavigationContext {
     }
   }
 
-  dispose() {
+  dispose(): void {
     var emitter = this._eventEmitter;
     if (emitter) {
+      // clean up everything.
       emitter.removeAllListeners();
       this._eventEmitter = null;
+      this._currentRoute = null;
     }
+  }
+
+  _onDidFocus(event: NavigationEvent): void {
+    invariant(
+      event.data && event.data.hasOwnProperty('route'),
+      'didfocus event should provide route'
+    );
+    this._currentRoute = event.data.route;
   }
 }
 
