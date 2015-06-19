@@ -143,7 +143,7 @@ class XMLHttpRequestBase {
       return;
     }
     this.status = status;
-    this.setResponseHeaders(responseHeaders);
+    this.setResponseHeaders(responseHeaders || {});
     this.responseText = responseText;
     this.setReadyState(this.DONE);
   }
