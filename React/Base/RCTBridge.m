@@ -20,6 +20,7 @@
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTPerfStats.h"
+#import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
@@ -612,6 +613,8 @@ dispatch_queue_t RCTJSThread;
   RCTAssertMainThread();
 
   if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLTTI);
+
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
@@ -981,8 +984,10 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
   } else {
 
     RCTProfileBeginEvent();
+    RCTPerformanceLoggerStart(RCTPLScriptDownload);
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
+      RCTPerformanceLoggerEnd(RCTPLScriptDownload);
       RCTProfileEndEvent(@"JavaScript dowload", @"init,download", @[]);
 
       _loading = NO;
