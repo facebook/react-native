@@ -1332,7 +1332,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
   } mutableCopy];
 
-  for (RCTViewManager *manager in _viewManagers) {
+  for (RCTViewManager *manager in _viewManagers.allValues) {
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customBubblingEventTypes))) {
       NSDictionary *eventTypes = [manager customBubblingEventTypes];
       for (NSString *eventName in eventTypes) {
@@ -1393,7 +1393,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
   } mutableCopy];
 
-  for (RCTViewManager *manager in _viewManagers) {
+  for (RCTViewManager *manager in _viewManagers.allValues) {
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customDirectEventTypes))) {
       NSDictionary *eventTypes = [manager customDirectEventTypes];
       for (NSString *eventName in eventTypes) {
