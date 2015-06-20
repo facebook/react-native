@@ -237,7 +237,7 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
     }, this)).then(
       function() { res.end(ret); },
       function(e) {
-        res.wrteHead(500);
+        res.writeHead(500);
         res.end('Internal Error');
         console.log(e.stack);
       }
