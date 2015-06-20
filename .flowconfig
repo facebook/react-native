@@ -36,5 +36,12 @@ Examples/UIExplorer/ImageMocks.js
 [options]
 module.system=haste
 
+suppress_type=$FlowIssue
+suppress_type=$FlowFixMe
+suppress_type=$FixMe
+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue #[0-9]+
+
 [version]
-0.11.0
+0.12.0

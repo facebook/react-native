@@ -117,11 +117,12 @@
   }
 
   var _now = _performance ?
-    _performance.now.bind(_performance) : function(){return 0;};
+    _performance.now.bind(_performance) : function(){ return 0; };
 
   var _factoryStackCount = 0;
   var _factoryTime = 0;
   var _totalFactories = 0;
+  var _inGuard = false;
 
   /**
   * The require function conforming to CommonJS spec:
@@ -188,9 +189,15 @@
       }
       return module.exports;
     }
-
-    if (global.ErrorUtils && !global.ErrorUtils.inGuard()) {
-      return ErrorUtils.applyWithGuard(require, this, arguments);
+    if (global.ErrorUtils && !_inGuard) {
+      _inGuard = true;
+      try {
+        var ret = require.apply(this, arguments);
+      } catch(e) {
+        global.ErrorUtils.reportFatalError(e);
+      }
+      _inGuard = false;
+      return ret;
     }
 
     if (!module) {

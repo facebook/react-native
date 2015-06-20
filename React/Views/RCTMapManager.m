@@ -41,6 +41,7 @@ RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
 RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
@@ -63,7 +64,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
-- (void)mapView:(RCTMap *)mapView regionWillChangeAnimated:(BOOL)animated
+- (void)mapView:(RCTMap *)mapView regionWillChangeAnimated:(__unused BOOL)animated
 {
   [self _regionChanged:mapView];
 
@@ -76,7 +77,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
 }
 
-- (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(BOOL)animated
+- (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(__unused BOOL)animated
 {
   [mapView.regionChangeObserveTimer invalidate];
   mapView.regionChangeObserveTimer = nil;

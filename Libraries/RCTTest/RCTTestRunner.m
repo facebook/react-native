@@ -10,6 +10,7 @@
 #import "RCTTestRunner.h"
 
 #import "FBSnapshotTestController.h"
+#import "RCTAssert.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
@@ -30,15 +31,24 @@
 
 - (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir
 {
+  RCTAssertParam(app);
+  RCTAssertParam(referenceDir);
+
   if ((self = [super init])) {
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
     _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
     _testController.referenceImagesDirectory = referenceDir;
+#if RUNNING_ON_CI
+    _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+#else
     _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
+#endif
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setRecordMode:(BOOL)recordMode
 {

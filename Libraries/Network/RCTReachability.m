@@ -9,6 +9,7 @@
 
 #import "RCTReachability.h"
 
+#import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 
@@ -59,9 +60,12 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
 - (instancetype)initWithHost:(NSString *)host
 {
+  RCTAssertParam(host);
+  RCTAssert(![host hasPrefix:@"http"], @"Host value should just contain the domain, not the URL scheme.");
+
   if ((self = [super init])) {
     _status = RCTReachabilityStateUnknown;
-    _reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, [host UTF8String]);
+    _reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, host.UTF8String);
     SCNetworkReachabilityContext context = { 0, ( __bridge void *)self, NULL, NULL, NULL };
     SCNetworkReachabilitySetCallback(_reachability, RCTReachabilityCallback, &context);
     SCNetworkReachabilityScheduleWithRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);

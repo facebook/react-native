@@ -40,7 +40,7 @@ var invariant = require('invariant');
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');
 require('RCTLog');
-require('RCTJSTimers');
+require('JSTimersExecution');
 
 function inject() {
   /**

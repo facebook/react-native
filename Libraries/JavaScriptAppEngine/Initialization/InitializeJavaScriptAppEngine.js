@@ -85,7 +85,7 @@ function setUpAlert() {
       var alertOpts = {
         title: 'Alert',
         message: '' + text,
-        buttons: [{'cancel': 'Okay'}],
+        buttons: [{'cancel': 'OK'}],
       };
       RCTAlertManager.alertWithArgs(alertOpts, null);
     };
@@ -102,6 +102,7 @@ function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
   GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
+  GLOBAL.FormData = require('FormData');
 
   var fetchPolyfill = require('fetch');
   GLOBAL.fetch = fetchPolyfill.fetch;
@@ -122,6 +123,7 @@ function setUpWebSockets() {
 function setupProfile() {
   console.profile = console.profile || GLOBAL.consoleProfile || function () {};
   console.profileEnd = console.profileEnd || GLOBAL.consoleProfileEnd || function () {};
+  require('BridgeProfiling').swizzleReactPerf();
 }
 
 setUpRedBoxErrorHandler();

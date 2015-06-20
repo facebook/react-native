@@ -20,8 +20,7 @@ var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactNativeComponentClass =
-  require('createReactNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 var merge = require('merge');
 
 var PICKER = 'picker';
@@ -60,7 +59,7 @@ var PickerIOS = React.createClass({
       <View style={this.props.style}>
         <RCTPickerIOS
           ref={PICKER}
-          style={styles.rkPickerIOS}
+          style={styles.pickerIOS}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
@@ -104,7 +103,7 @@ PickerIOS.Item = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  rkPickerIOS: {
+  pickerIOS: {
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
     // surrounding view to ensure it gets rendered.
@@ -112,14 +111,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var rkPickerIOSAttributes = merge(ReactNativeViewAttributes.UIView, {
-  items: true,
-  selectedIndex: true,
-});
-
-var RCTPickerIOS = createReactNativeComponentClass({
-  validAttributes: rkPickerIOSAttributes,
-  uiViewClassName: 'RCTPicker',
-});
+var RCTPickerIOS = requireNativeComponent('RCTPicker', null);
 
 module.exports = PickerIOS;

@@ -172,6 +172,7 @@ var components = [
 ];
 
 var apis = [
+  '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/Utilities/AlertIOS.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',

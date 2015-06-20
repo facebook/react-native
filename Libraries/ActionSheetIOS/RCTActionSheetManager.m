@@ -10,6 +10,7 @@
 #import "RCTActionSheetManager.h"
 
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
 
@@ -36,7 +37,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
-                  failureCallback:(RCTResponseSenderBlock)failureCallback
+                  failureCallback:(__unused RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
   UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
@@ -85,34 +86,29 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
   UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
   UIViewController *ctrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-  if ([share respondsToSelector:@selector(setCompletionWithItemsHandler:)]) {
-    share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
-      if (activityError) {
-        failureCallback(@[[activityError localizedDescription]]);
-      } else {
-        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-      }
-    };
-  } else {
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
-    if (![UIActivityViewController instancesRespondToSelector:@selector(completionWithItemsHandler)]) {
-      // Legacy iOS 7 implementation
-      share.completionHandler = ^(NSString *activityType, BOOL completed) {
-        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-      };
-    } else
+  if (![UIActivityViewController instancesRespondToSelector:@selector(setCompletionWithItemsHandler:)]) {
+    // Legacy iOS 7 implementation
+    share.completionHandler = ^(NSString *activityType, BOOL completed) {
+      successCallback(@[@(completed), RCTNullIfNil(activityType)]);
+    };
+  } else
 
 #endif
 
-    {
-      // iOS 8 version
-      share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
-        successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-      };
-    }
+  {
+    // iOS 8 version
+    share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
+      if (activityError) {
+        failureCallback(@[RCTNullIfNil(activityError.localizedDescription)]);
+      } else {
+        successCallback(@[@(completed), RCTNullIfNil(activityType)]);
+      }
+    };
   }
+
   [ctrl presentViewController:share animated:YES completion:nil];
 }
 

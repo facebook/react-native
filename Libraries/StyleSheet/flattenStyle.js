@@ -13,7 +13,6 @@
 
 var StyleSheetRegistry = require('StyleSheetRegistry');
 var invariant = require('invariant');
-var mergeIntoFast = require('mergeIntoFast');
 
 type Atom = number | bool | Object | Array<?Atom>
 type StyleObj = Atom | Array<?StyleObj>
@@ -25,10 +24,7 @@ function getStyle(style) {
   return style;
 }
 
-// TODO: Flow 0.7.0 doesn't refine bools properly so we have to use `any` to
-// tell it that this can't be a bool anymore. Should be fixed in 0.8.0,
-// after which this can take a ?StyleObj.
-function flattenStyle(style: any): ?Object {
+function flattenStyle(style: ?StyleObj): ?Object {
   if (!style) {
     return undefined;
   }
@@ -42,7 +38,13 @@ function flattenStyle(style: any): ?Object {
   for (var i = 0; i < style.length; ++i) {
     var computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
-      mergeIntoFast(result, computedStyle);
+      for (var key in computedStyle) {
+        result[key] = computedStyle[key];
+
+        if (__DEV__) {
+          var value = computedStyle[key];
+        }
+      }
     }
   }
   return result;

@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var Map = require('Map');
 var NativeModules = require('NativeModules');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
@@ -140,30 +141,32 @@ type ConnectivityStateAndroid = $Enum<{
  * ```
  */
 
-var _subscriptions = {};
+var _subscriptions = new Map();
 
 var NetInfo = {
   addEventListener: function (
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    _subscriptions[handler] = RCTDeviceEventEmitter.addListener(
+    var listener = RCTDeviceEventEmitter.addListener(
       DEVICE_REACHABILITY_EVENT,
       (appStateData) => {
         handler(appStateData.network_reachability);
       }
     );
+    _subscriptions.set(handler, listener);
   },
 
   removeEventListener: function(
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    if (!_subscriptions[handler]) {
+    var listener = _subscriptions.get(handler);
+    if (!listener) {
       return;
     }
-    _subscriptions[handler].remove();
-    _subscriptions[handler] = null;
+    listener.remove();
+    _subscriptions.delete(handler);
   },
 
   fetch: function(): Promise {
@@ -197,19 +200,20 @@ if (Platform.OS === 'ios') {
   };
 }
 
-var _isConnectedSubscriptions = {};
+var _isConnectedSubscriptions = new Map();
 
 NetInfo.isConnected = {
   addEventListener: function (
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    _isConnectedSubscriptions[handler] = (connection) => {
+    var listener = (connection) => {
       handler(_isConnected(connection));
     };
+    _isConnectedSubscriptions.set(handler, listener);
     NetInfo.addEventListener(
       eventName,
-      _isConnectedSubscriptions[handler]
+      listener
     );
   },
 
@@ -217,10 +221,12 @@ NetInfo.isConnected = {
     eventName: ChangeEventName,
     handler: Function
   ): void {
+    var listener = _isConnectedSubscriptions.get(handler);
     NetInfo.removeEventListener(
       eventName,
-      _isConnectedSubscriptions[handler]
+      listener
     );
+    _isConnectedSubscriptions.delete(handler);
   },
 
   fetch: function(): Promise {

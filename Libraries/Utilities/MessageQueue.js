@@ -305,10 +305,12 @@ var MessageQueueMixin = {
     return guardReturn(this._callFunction, [moduleID, methodID, params], null, this);
   },
 
-  _callFunction: function(moduleID, methodID, params) {
-    var moduleName = this._localModuleIDToModuleName[moduleID];
+  _callFunction: function(moduleName, methodName, params) {
+    if (isFinite(moduleName)) {
+      moduleName = this._localModuleIDToModuleName[moduleName];
+      methodName = this._localModuleNameToMethodIDToName[moduleName][methodName];
+    }
 
-    var methodName = this._localModuleNameToMethodIDToName[moduleName][methodID];
     if (DEBUG_SPY_MODE) {
       console.log(
         'N->JS: ' + moduleName + '.' + methodName +
@@ -514,10 +516,10 @@ var MessageQueueMixin = {
     );
     // Store callback _before_ sending the request, just in case the MailBox
     // returns the response in a blocking manner.
-    if (onSucc) {
+    if (onFail || onSucc) {
       this._storeCallbacksInCurrentThread(onFail, onSucc, scope, this._POOLED_CBIDS);
       onFail && params.push(this._POOLED_CBIDS.errorCallbackID);
-      params.push(this._POOLED_CBIDS.successCallbackID);
+      onSucc && params.push(this._POOLED_CBIDS.successCallbackID);
     }
     var moduleID = this._remoteModuleNameToModuleID[moduleName];
     if (moduleID === undefined || moduleID === null) {

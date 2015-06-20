@@ -79,12 +79,12 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
 {
   return nil;
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused RCTSparseArray *)shadowViewRegistry
 {
   return nil;
 }
@@ -169,11 +169,11 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
     view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(onAccessibilityTap, BOOL, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(onAccessibilityTap, BOOL, __unused RCTView)
 {
   view.accessibilityTapHandler = [self eventHandlerWithName:@"topAccessibilityTap" json:json];
 }
-RCT_CUSTOM_VIEW_PROPERTY(onMagicTap, BOOL, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(onMagicTap, BOOL, __unused RCTView)
 {
   view.magicTapHandler = [self eventHandlerWithName:@"topMagicTap" json:json];
 }
@@ -239,7 +239,7 @@ RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat)
-RCT_CUSTOM_SHADOW_PROPERTY(borderWidth, CGFloat, RCTShadowView) {
+RCT_CUSTOM_SHADOW_PROPERTY(borderWidth, CGFloat, __unused RCTShadowView) {
   [view setBorderWidth:[RCTConvert CGFloat:json]];
 }
 

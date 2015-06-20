@@ -13,6 +13,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTSRWebSocket.h"
 #import "RCTSparseArray.h"
+#import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
 
@@ -107,7 +108,7 @@ RCT_EXPORT_METHOD(close:(NSNumber *)socketID)
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketClosed" body:@{
     @"code": @(code),
-    @"reason": reason,
+    @"reason": RCTNullIfNil(reason),
     @"clean": @(wasClean),
     @"id": webSocket.reactTag
   }];

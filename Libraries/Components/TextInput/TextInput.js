@@ -19,7 +19,6 @@ var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
@@ -29,40 +28,7 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
-var merge = require('merge');
-
-var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
-var keyboardTypeConsts = RCTUIManager.UIKeyboardType;
-var returnKeyTypeConsts = RCTUIManager.UIReturnKeyType;
-
-var RCTTextViewAttributes = merge(ReactNativeViewAttributes.UIView, {
-  autoCorrect: true,
-  autoCapitalize: true,
-  clearTextOnFocus: true,
-  color: true,
-  editable: true,
-  fontFamily: true,
-  fontSize: true,
-  fontStyle: true,
-  fontWeight: true,
-  keyboardType: true,
-  returnKeyType: true,
-  enablesReturnKeyAutomatically: true,
-  secureTextEntry: true,
-  selectTextOnFocus: true,
-  mostRecentEventCounter: true,
-  placeholder: true,
-  placeholderTextColor: true,
-  text: true,
-});
-
-var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
-  caretHidden: true,
-  enabled: true,
-  clearButtonMode: true,
-  clearTextOnFocus: true,
-  selectTextOnFocus: true,
-});
+var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
   onSelectionChange: true,
@@ -86,19 +52,13 @@ var AndroidTextInputAttributes = {
   testID: true,
 };
 
-var viewConfigIOS = {
-  uiViewClassName: 'RCTTextField',
-  validAttributes: RCTTextFieldAttributes,
-};
-
 var viewConfigAndroid = {
   uiViewClassName: 'AndroidTextInput',
   validAttributes: AndroidTextInputAttributes,
 };
 
-var crossPlatformKeyboardTypeMap = {
-  'numeric': 'decimal-pad',
-};
+var RCTTextView = requireNativeComponent('RCTTextView', null);
+var RCTTextField = requireNativeComponent('RCTTextField', null);
 
 type DefaultProps = {
   bufferDelay: number;
@@ -171,8 +131,11 @@ var TextInput = React.createClass({
      * Determines which keyboard to open, e.g.`numeric`.
      */
     keyboardType: PropTypes.oneOf([
+      // Cross-platform
       'default',
-      // iOS
+      'numeric',
+      'email-address',
+      // iOS-only
       'ascii-capable',
       'numbers-and-punctuation',
       'url',
@@ -182,9 +145,6 @@ var TextInput = React.createClass({
       'decimal-pad',
       'twitter',
       'web-search',
-      // Cross-platform
-      'numeric',
-      'email-address',
     ]),
     /**
      * Determines how the return key should look.
@@ -223,6 +183,10 @@ var TextInput = React.createClass({
      * Callback that is called when the text input's text changes.
      */
     onChange: PropTypes.func,
+    /**
+     * Callback that is called when the text input's text changes.
+     * Changed text is passed as an argument to the callback handler.
+     */
     onChangeText: PropTypes.func,
     /**
      * Callback that is called when text input ends.
@@ -304,7 +268,7 @@ var TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig: ((Platform.OS === 'ios' ? viewConfigIOS :
+  viewConfig: ((Platform.OS === 'ios' ? RCTTextField.viewConfig :
     (Platform.OS === 'android' ? viewConfigAndroid : {})) : Object),
 
   isFocused: function(): boolean {
@@ -426,18 +390,12 @@ var TextInput = React.createClass({
   _renderIOS: function() {
     var textContainer;
 
-    var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
-    var clearButtonMode = RCTUIManager.UITextField.clearButtonMode[this.props.clearButtonMode];
+    var props = this.props;
+    props.style = [styles.input, this.props.style];
 
-    var keyboardType = keyboardTypeConsts[
-      crossPlatformKeyboardTypeMap[this.props.keyboardType] ||
-      this.props.keyboardType
-    ];
-    var returnKeyType = returnKeyTypeConsts[this.props.returnKeyType];
-
-    if (!this.props.multiline) {
+    if (!props.multiline) {
       for (var propKey in onlyMultiline) {
-        if (this.props[propKey]) {
+        if (props[propKey]) {
           throw new Error(
             'TextInput prop `' + propKey + '` is only supported with multiline.'
           );
@@ -446,77 +404,48 @@ var TextInput = React.createClass({
       textContainer =
         <RCTTextField
           ref="input"
-          style={[styles.input, this.props.style]}
-          enabled={this.props.editable}
-          keyboardType={keyboardType}
-          returnKeyType={returnKeyType}
-          enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
-          secureTextEntry={this.props.password || this.props.secureTextEntry}
+          {...props}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onEndEditing={this.props.onEndEditing}
-          onSubmitEditing={this.props.onSubmitEditing}
           onSelectionChangeShouldSetResponder={() => true}
-          onLayout={this.props.onLayout}
-          placeholder={this.props.placeholder}
-          placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={this.props.autoCorrect}
-          clearButtonMode={clearButtonMode}
-          clearTextOnFocus={this.props.clearTextOnFocus}
-          selectTextOnFocus={this.props.selectTextOnFocus}
         />;
     } else {
       for (var propKey in notMultiline) {
-        if (this.props[propKey]) {
+        if (props[propKey]) {
           throw new Error(
             'TextInput prop `' + propKey + '` cannot be used with multiline.'
           );
         }
       }
 
-      var children = this.props.children;
+      var children = props.children;
       var childCount = 0;
       ReactChildren.forEach(children, () => ++childCount);
       invariant(
-        !(this.props.value && childCount),
+        !(props.value && childCount),
         'Cannot specify both value and children.'
       );
       if (childCount > 1) {
         children = <Text>{children}</Text>;
       }
-      if (this.props.inputView) {
-        children = [children, this.props.inputView];
+      if (props.inputView) {
+        children = [children, props.inputView];
       }
       textContainer =
         <RCTTextView
           ref="input"
-          style={[styles.input, this.props.style]}
+          {...props}
           children={children}
           mostRecentEventCounter={this.state.mostRecentEventCounter}
-          editable={this.props.editable}
-          keyboardType={keyboardType}
-          returnKeyType={returnKeyType}
-          enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
-          secureTextEntry={this.props.password || this.props.secureTextEntry}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onEndEditing={this.props.onEndEditing}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
-          onLayout={this.props.onLayout}
-          placeholder={this.props.placeholder}
-          placeholderTextColor={this.props.placeholderTextColor}
           text={this.state.bufferedValue}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={this.props.autoCorrect}
-          clearButtonMode={clearButtonMode}
-          selectTextOnFocus={this.props.selectTextOnFocus}
-          clearTextOnFocus={this.props.clearTextOnFocus}
         />;
     }
 
@@ -524,14 +453,14 @@ var TextInput = React.createClass({
       <TouchableWithoutFeedback
         onPress={this._onPress}
         rejectResponderTermination={true}
-        testID={this.props.testID}>
+        testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
     );
   },
 
   _renderAndroid: function() {
-    var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
+    var autoCapitalize = RCTUIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);
@@ -553,6 +482,7 @@ var TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
         onLayout={this.props.onLayout}
@@ -617,16 +547,6 @@ var styles = StyleSheet.create({
   input: {
     alignSelf: 'stretch',
   },
-});
-
-var RCTTextView = createReactNativeComponentClass({
-  validAttributes: RCTTextViewAttributes,
-  uiViewClassName: 'RCTTextView',
-});
-
-var RCTTextField = createReactNativeComponentClass({
-  validAttributes: RCTTextFieldAttributes,
-  uiViewClassName: 'RCTTextField',
 });
 
 var AndroidTextInput = createReactNativeComponentClass({

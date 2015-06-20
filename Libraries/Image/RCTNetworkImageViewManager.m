@@ -22,13 +22,11 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTNetworkImageView *view = [[RCTNetworkImageView alloc] initWithFrame:CGRectZero imageDownloader:[RCTImageDownloader sharedInstance]];
-  view.contentMode = UIViewContentModeScaleAspectFill;
-  return view;
+  return [[RCTNetworkImageView alloc] initWithImageDownloader:[RCTImageDownloader sharedInstance]];
 }
 
 RCT_REMAP_VIEW_PROPERTY(defaultImageSrc, defaultImage, UIImage)
 RCT_REMAP_VIEW_PROPERTY(src, imageURL, NSURL)
-RCT_EXPORT_VIEW_PROPERTY(contentMode, UIViewContentMode)
+RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
 
 @end

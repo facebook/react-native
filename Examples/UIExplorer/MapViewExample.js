@@ -163,8 +163,8 @@ var MapViewExample = React.createClass({
           style={styles.map}
           onRegionChange={this._onRegionChange}
           onRegionChangeComplete={this._onRegionChangeComplete}
-          region={this.state.mapRegion}
-          annotations={this.state.annotations}
+          region={this.state.mapRegion || undefined}
+          annotations={this.state.annotations || undefined}
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}

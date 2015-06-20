@@ -118,7 +118,7 @@
  */
 - (void)reactWillMakeFirstResponder {};
 - (void)reactDidMakeFirstResponder {};
-- (BOOL)reactRespondsToTouch:(UITouch *)touch
+- (BOOL)reactRespondsToTouch:(__unused UITouch *)touch
 {
   return YES;
 }

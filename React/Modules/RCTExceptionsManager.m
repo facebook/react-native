@@ -44,7 +44,7 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
     [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
     return;
   }
-  // JS already logs the error via console.
+  [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message

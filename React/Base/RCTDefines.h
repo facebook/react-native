@@ -59,3 +59,21 @@
 #define RCT_NSASSERT 0
 #endif
 #endif
+
+/**
+ * Concat two literals. Supports macro expansions,
+ * e.g. RCT_CONCAT(foo, __FILE__).
+ */
+#define RCT_CONCAT2(A, B) A ## B
+#define RCT_CONCAT(A, B) RCT_CONCAT2(A, B)
+
+/**
+ * Throw an assertion for unimplemented methods.
+ */
+#define RCT_NOT_IMPLEMENTED(method) \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wmissing-method-return-type\"") \
+_Pragma("clang diagnostic ignored \"-Wunused-parameter\"") \
+RCT_EXTERN NSException *_RCTNotImplementedException(SEL, Class); \
+method NS_UNAVAILABLE { @throw _RCTNotImplementedException(_cmd, [self class]); } \
+_Pragma("clang diagnostic pop")

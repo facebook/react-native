@@ -164,7 +164,6 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       renderToHardwareTextureAndroid: renderToHardwareTexture,
     };
 
-    this.refs['crumb_' + index].setNativeProps(props);
     this.refs['icon_' + index].setNativeProps(props);
     this.refs['separator_' + index].setNativeProps(props);
     this.refs['title_' + index].setNativeProps(props);
