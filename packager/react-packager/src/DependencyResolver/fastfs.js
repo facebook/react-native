@@ -11,6 +11,7 @@ const path = require('path');
 const readDir = Promise.promisify(fs.readdir);
 const readFile = Promise.promisify(fs.readFile);
 const stat = Promise.promisify(fs.stat);
+const hasOwn = Object.prototype.hasOwnProperty;
 
 class Fastfs extends EventEmitter {
   constructor(roots, fileWatcher, {ignore, pattern}) {
@@ -19,6 +20,7 @@ class Fastfs extends EventEmitter {
     this._ignore = ignore;
     this._pattern = pattern;
     this._roots = roots.map(root => new File(root, { isDir: true }));
+    this._fastPaths = Object.create(null);
   }
 
   build() {
@@ -120,7 +122,12 @@ class Fastfs extends EventEmitter {
   }
 
   _getFile(filePath) {
-    return this._getAndAssertRoot(filePath).getFileFromPath(filePath);
+    filePath = path.normalize(filePath);
+    if (!hasOwn.call(this._fastPaths, filePath)) {
+      this._fastPaths[filePath] = this._getAndAssertRoot(filePath).getFileFromPath(filePath);
+    }
+
+    return this._fastPaths[filePath];
   }
 
   _add(file) {
@@ -161,7 +168,6 @@ class Fastfs extends EventEmitter {
     }
 
     // Make sure this event belongs to one of our roots.
-
     if (!this._getRoot(absPath)) {
       return;
     }
@@ -172,6 +178,8 @@ class Fastfs extends EventEmitter {
         file.remove();
       }
     }
+
+    delete this._fastPaths[path.normalize(absPath)];
 
     if (type !== 'delete') {
       this._add(new File(absPath, {
