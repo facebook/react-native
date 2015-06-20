@@ -101,7 +101,7 @@ describe('Packager', function() {
       });
 
     wrapModule.mockImpl(function(module, code) {
-      return 'lol ' + code + ' lol';
+      return Promise.resolve('lol ' + code + ' lol');
     });
 
     require('image-size').mockImpl(function(path, cb) {

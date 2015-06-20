@@ -11,7 +11,6 @@
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  __dirname,
   'website',
   'node_modules/react-tools/src/utils/ImmutableObject.js',
   'node_modules/react-tools/src/core/ReactInstanceHandles.js',

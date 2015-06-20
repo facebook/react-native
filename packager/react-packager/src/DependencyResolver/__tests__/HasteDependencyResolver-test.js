@@ -9,9 +9,8 @@
 'use strict';
 
 jest.dontMock('../')
-    .dontMock('q')
-    .dontMock('../replacePatterns')
-    .setMock('../../ModuleDescriptor', function(data) {return data;});
+  .dontMock('q')
+  .dontMock('../replacePatterns');
 
 jest.mock('path');
 
@@ -19,6 +18,11 @@ var Promise = require('bluebird');
 
 describe('HasteDependencyResolver', function() {
   var HasteDependencyResolver;
+
+  function createModule(o) {
+    o.getPlainObject = () => Promise.resolve(o);
+    return o;
+  }
 
   beforeEach(function() {
     // For the polyfillDeps
@@ -30,7 +34,10 @@ describe('HasteDependencyResolver', function() {
 
   describe('getDependencies', function() {
     pit('should get dependencies with polyfills', function() {
-      var module = {id: 'index', path: '/root/index.js', dependencies: ['a']};
+      var module = createModule({
+        id: 'index',
+        path: '/root/index.js', dependencies: ['a']
+      });
       var deps = [module];
 
       var depResolver = new HasteDependencyResolver({
@@ -40,7 +47,7 @@ describe('HasteDependencyResolver', function() {
       // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
       depGraph.getOrderedDependencies.mockImpl(function() {
-        return deps;
+        return Promise.resolve(deps);
       });
       depGraph.load.mockImpl(function() {
         return Promise.resolve();
@@ -113,7 +120,12 @@ describe('HasteDependencyResolver', function() {
     });
 
     pit('should get dependencies with polyfills', function() {
-      var module = {id: 'index', path: '/root/index.js', dependencies: ['a']};
+      var module = createModule({
+        id: 'index',
+        path: '/root/index.js',
+        dependencies: ['a'],
+      });
+
       var deps = [module];
 
       var depResolver = new HasteDependencyResolver({
@@ -123,7 +135,7 @@ describe('HasteDependencyResolver', function() {
       // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
       depGraph.getOrderedDependencies.mockImpl(function() {
-        return deps;
+        return Promise.resolve(deps);
       });
       depGraph.load.mockImpl(function() {
         return Promise.resolve();
@@ -196,7 +208,11 @@ describe('HasteDependencyResolver', function() {
     });
 
     pit('should pass in more polyfills', function() {
-      var module = {id: 'index', path: '/root/index.js', dependencies: ['a']};
+      var module = createModule({
+        id: 'index',
+        path: '/root/index.js',
+        dependencies: ['a']
+      });
       var deps = [module];
 
       var depResolver = new HasteDependencyResolver({
@@ -207,7 +223,7 @@ describe('HasteDependencyResolver', function() {
       // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
       depGraph.getOrderedDependencies.mockImpl(function() {
-        return deps;
+        return Promise.resolve(deps);
       });
       depGraph.load.mockImpl(function() {
         return Promise.resolve();
@@ -294,7 +310,7 @@ describe('HasteDependencyResolver', function() {
   });
 
   describe('wrapModule', function() {
-    it('should resolve modules', function() {
+    pit('should resolve modules', function() {
       var depResolver = new HasteDependencyResolver({
         projectRoot: '/root',
       });
@@ -446,163 +462,165 @@ describe('HasteDependencyResolver', function() {
 
       depGraph.resolveDependency.mockImpl(function(fromModule, toModuleName) {
         if (toModuleName === 'x') {
-          return {
+          return Promise.resolve(createModule({
             id: 'changed'
-          };
+          }));
         } else if (toModuleName === 'y') {
-          return { id: 'Y' };
+          return Promise.resolve(createModule({ id: 'Y' }));
         }
-        return null;
+
+        return Promise.resolve(null);
       });
 
-      var processedCode = depResolver.wrapModule({
+      return depResolver.wrapModule({
         id: 'test module',
         path: '/root/test.js',
         dependencies: dependencies
-      }, code);
+      }, code).then(processedCode => {
 
-      expect(processedCode).toEqual([
-        '__d(\'test module\',["changed","Y"],function(global,' +
-        ' require, requireDynamic, requireLazy, module, exports) {  ' +
-        "import'x';",
-        "import 'changed';",
-        "import 'changed' ;",
-        "import Default from 'changed';",
-        "import * as All from 'changed';",
-        "import {} from 'changed';",
-        "import { } from 'changed';",
-        "import {Foo} from 'changed';",
-        "import { Foo } from 'changed';",
-        "import { Foo, } from 'changed';",
-        "import {Foo as Bar} from 'changed';",
-        "import { Foo as Bar } from 'changed';",
-        "import { Foo as Bar, } from 'changed';",
-        "import { Foo, Bar } from 'changed';",
-        "import { Foo, Bar, } from 'changed';",
-        "import { Foo as Bar, Baz } from 'changed';",
-        "import { Foo as Bar, Baz, } from 'changed';",
-        "import { Foo, Bar as Baz } from 'changed';",
-        "import { Foo, Bar as Baz, } from 'changed';",
-        "import { Foo as Bar, Baz as Qux } from 'changed';",
-        "import { Foo as Bar, Baz as Qux, } from 'changed';",
-        "import { Foo, Bar, Baz } from 'changed';",
-        "import { Foo, Bar, Baz, } from 'changed';",
-        "import { Foo as Bar, Baz, Qux } from 'changed';",
-        "import { Foo as Bar, Baz, Qux, } from 'changed';",
-        "import { Foo, Bar as Baz, Qux } from 'changed';",
-        "import { Foo, Bar as Baz, Qux, } from 'changed';",
-        "import { Foo, Bar, Baz as Qux } from 'changed';",
-        "import { Foo, Bar, Baz as Qux, } from 'changed';",
-        "import { Foo as Bar, Baz as Qux, Norf } from 'changed';",
-        "import { Foo as Bar, Baz as Qux, Norf, } from 'changed';",
-        "import { Foo as Bar, Baz, Qux as Norf } from 'changed';",
-        "import { Foo as Bar, Baz, Qux as Norf, } from 'changed';",
-        "import { Foo, Bar as Baz, Qux as Norf } from 'changed';",
-        "import { Foo, Bar as Baz, Qux as Norf, } from 'changed';",
-        "import { Foo as Bar, Baz as Qux, Norf as Enuf } from 'changed';",
-        "import { Foo as Bar, Baz as Qux, Norf as Enuf, } from 'changed';",
-        "import Default, * as All from 'changed';",
-        "import Default, { } from 'changed';",
-        "import Default, { Foo } from 'changed';",
-        "import Default, { Foo, } from 'changed';",
-        "import Default, { Foo as Bar } from 'changed';",
-        "import Default, { Foo as Bar, } from 'changed';",
-        "import Default, { Foo, Bar } from 'changed';",
-        "import Default, { Foo, Bar, } from 'changed';",
-        "import Default, { Foo as Bar, Baz } from 'changed';",
-        "import Default, { Foo as Bar, Baz, } from 'changed';",
-        "import Default, { Foo, Bar as Baz } from 'changed';",
-        "import Default, { Foo, Bar as Baz, } from 'changed';",
-        "import Default, { Foo as Bar, Baz as Qux } from 'changed';",
-        "import Default, { Foo as Bar, Baz as Qux, } from 'changed';",
-        "import Default, { Foo, Bar, Baz } from 'changed';",
-        "import Default, { Foo, Bar, Baz, } from 'changed';",
-        "import Default, { Foo as Bar, Baz, Qux } from 'changed';",
-        "import Default, { Foo as Bar, Baz, Qux, } from 'changed';",
-        "import Default, { Foo, Bar as Baz, Qux } from 'changed';",
-        "import Default, { Foo, Bar as Baz, Qux, } from 'changed';",
-        "import Default, { Foo, Bar, Baz as Qux } from 'changed';",
-        "import Default, { Foo, Bar, Baz as Qux, } from 'changed';",
-        "import Default, { Foo as Bar, Baz as Qux, Norf } from 'changed';",
-        "import Default, { Foo as Bar, Baz as Qux, Norf, } from 'changed';",
-        "import Default, { Foo as Bar, Baz, Qux as Norf } from 'changed';",
-        "import Default, { Foo as Bar, Baz, Qux as Norf, } from 'changed';",
-        "import Default, { Foo, Bar as Baz, Qux as Norf } from 'changed';",
-        "import Default, { Foo, Bar as Baz, Qux as Norf, } from 'changed';",
-        "import Default, { Foo as Bar, Baz as Qux, Norf as NoMore } from 'changed';",
-        "import Default, { Foo as Bar, Baz as Qux, Norf as NoMore, } from 'changed';",
-        "import Default , { } from 'changed';",
-        'import "changed";',
-        'import Default from "changed";',
-        'import * as All from "changed";',
-        'import { } from "changed";',
-        'import { Foo } from "changed";',
-        'import { Foo, } from "changed";',
-        'import { Foo as Bar } from "changed";',
-        'import { Foo as Bar, } from "changed";',
-        'import { Foo, Bar } from "changed";',
-        'import { Foo, Bar, } from "changed";',
-        'import { Foo as Bar, Baz } from "changed";',
-        'import { Foo as Bar, Baz, } from "changed";',
-        'import { Foo, Bar as Baz } from "changed";',
-        'import { Foo, Bar as Baz, } from "changed";',
-        'import { Foo as Bar, Baz as Qux } from "changed";',
-        'import { Foo as Bar, Baz as Qux, } from "changed";',
-        'import { Foo, Bar, Baz } from "changed";',
-        'import { Foo, Bar, Baz, } from "changed";',
-        'import { Foo as Bar, Baz, Qux } from "changed";',
-        'import { Foo as Bar, Baz, Qux, } from "changed";',
-        'import { Foo, Bar as Baz, Qux } from "changed";',
-        'import { Foo, Bar as Baz, Qux, } from "changed";',
-        'import { Foo, Bar, Baz as Qux } from "changed";',
-        'import { Foo, Bar, Baz as Qux, } from "changed";',
-        'import { Foo as Bar, Baz as Qux, Norf } from "changed";',
-        'import { Foo as Bar, Baz as Qux, Norf, } from "changed";',
-        'import { Foo as Bar, Baz, Qux as Norf } from "changed";',
-        'import { Foo as Bar, Baz, Qux as Norf, } from "changed";',
-        'import { Foo, Bar as Baz, Qux as Norf } from "changed";',
-        'import { Foo, Bar as Baz, Qux as Norf, } from "changed";',
-        'import { Foo as Bar, Baz as Qux, Norf as NoMore } from "changed";',
-        'import { Foo as Bar, Baz as Qux, Norf as NoMore, } from "changed";',
-        'import Default, * as All from "changed";',
-        'import Default, { } from "changed";',
-        'import Default, { Foo } from "changed";',
-        'import Default, { Foo, } from "changed";',
-        'import Default, { Foo as Bar } from "changed";',
-        'import Default, { Foo as Bar, } from "changed";',
-        'import Default, { Foo, Bar } from "changed";',
-        'import Default, { Foo, Bar, } from "changed";',
-        'import Default, { Foo as Bar, Baz } from "changed";',
-        'import Default, { Foo as Bar, Baz, } from "changed";',
-        'import Default, { Foo, Bar as Baz } from "changed";',
-        'import Default, { Foo, Bar as Baz, } from "changed";',
-        'import Default, { Foo as Bar, Baz as Qux } from "changed";',
-        'import Default, { Foo as Bar, Baz as Qux, } from "changed";',
-        'import Default, { Foo, Bar, Baz } from "changed";',
-        'import Default, { Foo, Bar, Baz, } from "changed";',
-        'import Default, { Foo as Bar, Baz, Qux } from "changed";',
-        'import Default, { Foo as Bar, Baz, Qux, } from "changed";',
-        'import Default, { Foo, Bar as Baz, Qux } from "changed";',
-        'import Default, { Foo, Bar as Baz, Qux, } from "changed";',
-        'import Default, { Foo, Bar, Baz as Qux } from "changed";',
-        'import Default, { Foo, Bar, Baz as Qux, } from "changed";',
-        'import Default, { Foo as Bar, Baz as Qux, Norf } from "changed";',
-        'import Default, { Foo as Bar, Baz as Qux, Norf, } from "changed";',
-        'import Default, { Foo as Bar, Baz, Qux as Norf } from "changed";',
-        'import Default, { Foo as Bar, Baz, Qux as Norf, } from "changed";',
-        'import Default, { Foo, Bar as Baz, Qux as Norf } from "changed";',
-        'import Default, { Foo, Bar as Baz, Qux as Norf, } from "changed";',
-        'import Default, { Foo as Bar, Baz as Qux, Norf as Enuf } from "changed";',
-        'import Default, { Foo as Bar, Baz as Qux, Norf as Enuf, } from "changed";',
-        'import Default from "Y";',
-        'import * as All from \'z\';',
-        'require("changed")',
-        'require("Y")',
-        'require( \'z\' )',
-        'require( "a")',
-        'require("b" )',
-        '});',
-      ].join('\n'));
+        expect(processedCode).toEqual([
+          '__d(\'test module\',["changed","Y"],function(global,' +
+            ' require, requireDynamic, requireLazy, module, exports) {  ' +
+            "import'x';",
+          "import 'changed';",
+          "import 'changed' ;",
+          "import Default from 'changed';",
+          "import * as All from 'changed';",
+          "import {} from 'changed';",
+          "import { } from 'changed';",
+          "import {Foo} from 'changed';",
+          "import { Foo } from 'changed';",
+          "import { Foo, } from 'changed';",
+          "import {Foo as Bar} from 'changed';",
+          "import { Foo as Bar } from 'changed';",
+          "import { Foo as Bar, } from 'changed';",
+          "import { Foo, Bar } from 'changed';",
+          "import { Foo, Bar, } from 'changed';",
+          "import { Foo as Bar, Baz } from 'changed';",
+          "import { Foo as Bar, Baz, } from 'changed';",
+          "import { Foo, Bar as Baz } from 'changed';",
+          "import { Foo, Bar as Baz, } from 'changed';",
+          "import { Foo as Bar, Baz as Qux } from 'changed';",
+          "import { Foo as Bar, Baz as Qux, } from 'changed';",
+          "import { Foo, Bar, Baz } from 'changed';",
+          "import { Foo, Bar, Baz, } from 'changed';",
+          "import { Foo as Bar, Baz, Qux } from 'changed';",
+          "import { Foo as Bar, Baz, Qux, } from 'changed';",
+          "import { Foo, Bar as Baz, Qux } from 'changed';",
+          "import { Foo, Bar as Baz, Qux, } from 'changed';",
+          "import { Foo, Bar, Baz as Qux } from 'changed';",
+          "import { Foo, Bar, Baz as Qux, } from 'changed';",
+          "import { Foo as Bar, Baz as Qux, Norf } from 'changed';",
+          "import { Foo as Bar, Baz as Qux, Norf, } from 'changed';",
+          "import { Foo as Bar, Baz, Qux as Norf } from 'changed';",
+          "import { Foo as Bar, Baz, Qux as Norf, } from 'changed';",
+          "import { Foo, Bar as Baz, Qux as Norf } from 'changed';",
+          "import { Foo, Bar as Baz, Qux as Norf, } from 'changed';",
+          "import { Foo as Bar, Baz as Qux, Norf as Enuf } from 'changed';",
+          "import { Foo as Bar, Baz as Qux, Norf as Enuf, } from 'changed';",
+          "import Default, * as All from 'changed';",
+          "import Default, { } from 'changed';",
+          "import Default, { Foo } from 'changed';",
+          "import Default, { Foo, } from 'changed';",
+          "import Default, { Foo as Bar } from 'changed';",
+          "import Default, { Foo as Bar, } from 'changed';",
+          "import Default, { Foo, Bar } from 'changed';",
+          "import Default, { Foo, Bar, } from 'changed';",
+          "import Default, { Foo as Bar, Baz } from 'changed';",
+          "import Default, { Foo as Bar, Baz, } from 'changed';",
+          "import Default, { Foo, Bar as Baz } from 'changed';",
+          "import Default, { Foo, Bar as Baz, } from 'changed';",
+          "import Default, { Foo as Bar, Baz as Qux } from 'changed';",
+          "import Default, { Foo as Bar, Baz as Qux, } from 'changed';",
+          "import Default, { Foo, Bar, Baz } from 'changed';",
+          "import Default, { Foo, Bar, Baz, } from 'changed';",
+          "import Default, { Foo as Bar, Baz, Qux } from 'changed';",
+          "import Default, { Foo as Bar, Baz, Qux, } from 'changed';",
+          "import Default, { Foo, Bar as Baz, Qux } from 'changed';",
+          "import Default, { Foo, Bar as Baz, Qux, } from 'changed';",
+          "import Default, { Foo, Bar, Baz as Qux } from 'changed';",
+          "import Default, { Foo, Bar, Baz as Qux, } from 'changed';",
+          "import Default, { Foo as Bar, Baz as Qux, Norf } from 'changed';",
+          "import Default, { Foo as Bar, Baz as Qux, Norf, } from 'changed';",
+          "import Default, { Foo as Bar, Baz, Qux as Norf } from 'changed';",
+          "import Default, { Foo as Bar, Baz, Qux as Norf, } from 'changed';",
+          "import Default, { Foo, Bar as Baz, Qux as Norf } from 'changed';",
+          "import Default, { Foo, Bar as Baz, Qux as Norf, } from 'changed';",
+          "import Default, { Foo as Bar, Baz as Qux, Norf as NoMore } from 'changed';",
+          "import Default, { Foo as Bar, Baz as Qux, Norf as NoMore, } from 'changed';",
+          "import Default , { } from 'changed';",
+          'import "changed";',
+          'import Default from "changed";',
+          'import * as All from "changed";',
+          'import { } from "changed";',
+          'import { Foo } from "changed";',
+          'import { Foo, } from "changed";',
+          'import { Foo as Bar } from "changed";',
+          'import { Foo as Bar, } from "changed";',
+          'import { Foo, Bar } from "changed";',
+          'import { Foo, Bar, } from "changed";',
+          'import { Foo as Bar, Baz } from "changed";',
+          'import { Foo as Bar, Baz, } from "changed";',
+          'import { Foo, Bar as Baz } from "changed";',
+          'import { Foo, Bar as Baz, } from "changed";',
+          'import { Foo as Bar, Baz as Qux } from "changed";',
+          'import { Foo as Bar, Baz as Qux, } from "changed";',
+          'import { Foo, Bar, Baz } from "changed";',
+          'import { Foo, Bar, Baz, } from "changed";',
+          'import { Foo as Bar, Baz, Qux } from "changed";',
+          'import { Foo as Bar, Baz, Qux, } from "changed";',
+          'import { Foo, Bar as Baz, Qux } from "changed";',
+          'import { Foo, Bar as Baz, Qux, } from "changed";',
+          'import { Foo, Bar, Baz as Qux } from "changed";',
+          'import { Foo, Bar, Baz as Qux, } from "changed";',
+          'import { Foo as Bar, Baz as Qux, Norf } from "changed";',
+          'import { Foo as Bar, Baz as Qux, Norf, } from "changed";',
+          'import { Foo as Bar, Baz, Qux as Norf } from "changed";',
+          'import { Foo as Bar, Baz, Qux as Norf, } from "changed";',
+          'import { Foo, Bar as Baz, Qux as Norf } from "changed";',
+          'import { Foo, Bar as Baz, Qux as Norf, } from "changed";',
+          'import { Foo as Bar, Baz as Qux, Norf as NoMore } from "changed";',
+          'import { Foo as Bar, Baz as Qux, Norf as NoMore, } from "changed";',
+          'import Default, * as All from "changed";',
+          'import Default, { } from "changed";',
+          'import Default, { Foo } from "changed";',
+          'import Default, { Foo, } from "changed";',
+          'import Default, { Foo as Bar } from "changed";',
+          'import Default, { Foo as Bar, } from "changed";',
+          'import Default, { Foo, Bar } from "changed";',
+          'import Default, { Foo, Bar, } from "changed";',
+          'import Default, { Foo as Bar, Baz } from "changed";',
+          'import Default, { Foo as Bar, Baz, } from "changed";',
+          'import Default, { Foo, Bar as Baz } from "changed";',
+          'import Default, { Foo, Bar as Baz, } from "changed";',
+          'import Default, { Foo as Bar, Baz as Qux } from "changed";',
+          'import Default, { Foo as Bar, Baz as Qux, } from "changed";',
+          'import Default, { Foo, Bar, Baz } from "changed";',
+          'import Default, { Foo, Bar, Baz, } from "changed";',
+          'import Default, { Foo as Bar, Baz, Qux } from "changed";',
+          'import Default, { Foo as Bar, Baz, Qux, } from "changed";',
+          'import Default, { Foo, Bar as Baz, Qux } from "changed";',
+          'import Default, { Foo, Bar as Baz, Qux, } from "changed";',
+          'import Default, { Foo, Bar, Baz as Qux } from "changed";',
+          'import Default, { Foo, Bar, Baz as Qux, } from "changed";',
+          'import Default, { Foo as Bar, Baz as Qux, Norf } from "changed";',
+          'import Default, { Foo as Bar, Baz as Qux, Norf, } from "changed";',
+          'import Default, { Foo as Bar, Baz, Qux as Norf } from "changed";',
+          'import Default, { Foo as Bar, Baz, Qux as Norf, } from "changed";',
+          'import Default, { Foo, Bar as Baz, Qux as Norf } from "changed";',
+          'import Default, { Foo, Bar as Baz, Qux as Norf, } from "changed";',
+          'import Default, { Foo as Bar, Baz as Qux, Norf as Enuf } from "changed";',
+          'import Default, { Foo as Bar, Baz as Qux, Norf as Enuf, } from "changed";',
+          'import Default from "Y";',
+          'import * as All from \'z\';',
+          'require("changed")',
+          'require("Y")',
+          'require( \'z\' )',
+          'require( "a")',
+          'require("b" )',
+          '});',
+        ].join('\n'));
+      });
     });
   });
 });

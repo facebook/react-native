@@ -15,7 +15,7 @@ var Promise = require('bluebird');
 var fs = require('fs');
 var crypto = require('crypto');
 
-var lstat = Promise.promisify(fs.lstat);
+var stat = Promise.promisify(fs.stat);
 var readDir = Promise.promisify(fs.readdir);
 var readFile = Promise.promisify(fs.readFile);
 
@@ -98,14 +98,14 @@ AssetServer.prototype.getAssetData = function(assetPath) {
 
     return Promise.all(
       record.files.map(function(file) {
-        return lstat(file);
+        return stat(file);
       })
     );
   }).then(function(stats) {
     var hash = crypto.createHash('md5');
 
-    stats.forEach(function(stat) {
-      hash.update(stat.mtime.getTime().toString());
+    stats.forEach(function(fstat) {
+      hash.update(fstat.mtime.getTime().toString());
     });
 
     data.hash = hash.digest('hex');
@@ -117,18 +117,18 @@ function findRoot(roots, dir) {
   return Promise.some(
     roots.map(function(root) {
       var absPath = path.join(root, dir);
-      return lstat(absPath).then(function(stat) {
-        if (!stat.isDirectory()) {
+      return stat(absPath).then(function(fstat) {
+        if (!fstat.isDirectory()) {
           throw new Error('Looking for dirs');
         }
-        stat._path = absPath;
-        return stat;
+        fstat._path = absPath;
+        return fstat;
       });
     }),
     1
   ).spread(
-    function(stat) {
-      return stat._path;
+    function(fstat) {
+      return fstat._path;
     }
   );
 }

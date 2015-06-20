@@ -8,6 +8,10 @@
  */
 'use strict';
 
+require('babel/register')({
+  only: /react-packager\/src/
+});
+
 useGracefulFs();
 
 var Activity = require('./src/Activity');

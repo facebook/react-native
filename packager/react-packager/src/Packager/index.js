@@ -159,16 +159,17 @@ Packager.prototype._transformModule = function(ppackage, module) {
   }
 
   var resolver = this._resolver;
-  return transform.then(function(transformed) {
-    var code = resolver.wrapModule(module, transformed.code);
-    return new ModuleTransport({
-      code: code,
-      map: transformed.map,
-      sourceCode: transformed.sourceCode,
-      sourcePath: transformed.sourcePath,
-      virtual: transformed.virtual,
-    });
-  });
+  return transform.then(
+    transformed => resolver.wrapModule(module, transformed.code).then(
+      code => new ModuleTransport({
+        code: code,
+        map: transformed.map,
+        sourceCode: transformed.sourceCode,
+        sourcePath: transformed.sourcePath,
+        virtual: transformed.virtual,
+      })
+    )
+  );
 };
 
 Packager.prototype.getGraphDebugInfo = function() {
