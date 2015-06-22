@@ -70,4 +70,5 @@ flow --retries 10
 
 node ./node_modules/react-native/packager/packager.js --nonPersistent &
 SERVER_PID=$!
+curl http://localhost:8081/index.ios.bundle &> /dev/null &
 xctool -scheme EndToEndTest -sdk iphonesimulator test
