@@ -96,6 +96,26 @@ static void RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
   }
 }
 
+static dispatch_queue_t RCTGetMethodQueue()
+{
+  // We want all instances to share the same queue since they will be reading/writing the same files.
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
+  });
+  return queue;
+}
+
+static BOOL RCTHasCreatedStorageDirectory = NO;
+static NSError *RCTDeleteStorageDirectory()
+{
+  NSError *error;
+  [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDir() error:&error];
+  RCTHasCreatedStorageDirectory = NO;
+  return error;
+}
+
 #pragma mark - RCTAsyncLocalStorage
 
 @implementation RCTAsyncLocalStorage
@@ -113,26 +133,20 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
-  // We want all instances to share the same queue since they will be reading/writing the same files.
-  static dispatch_queue_t queue;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    queue = dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
-  });
-  return queue;
+  return RCTGetMethodQueue();
 }
 
-+ (NSError *)clearAllData
++ (void)clearAllData
 {
-  NSError *error;
-  [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDir() error:&error];
-  return error;
+  dispatch_async(RCTGetMethodQueue(), ^{
+    RCTDeleteStorageDirectory();
+  });
 }
 
 - (void)invalidate
 {
   if (_clearOnInvalidate) {
-    [RCTAsyncLocalStorage clearAllData];
+    RCTDeleteStorageDirectory();
   }
   _clearOnInvalidate = NO;
   _manifest = [[NSMutableDictionary alloc] init];
@@ -156,27 +170,31 @@ RCT_EXPORT_MODULE()
 
 - (id)_ensureSetup
 {
-  if (_haveSetup) {
-    return nil;
+  RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
+
+  NSError *error = nil;
+  if (!RCTHasCreatedStorageDirectory) {
+    _storageDirectory = RCTGetStorageDir();
+    [[NSFileManager defaultManager] createDirectoryAtPath:_storageDirectory
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    if (error) {
+      return RCTMakeError(@"Failed to create storage directory.", error, nil);
+    }
+    RCTHasCreatedStorageDirectory = YES;
   }
-  _storageDirectory = RCTGetStorageDir();
-  NSError *error;
-  [[NSFileManager defaultManager] createDirectoryAtPath:_storageDirectory
-                            withIntermediateDirectories:YES
-                                             attributes:nil
-                                                  error:&error];
-  if (error) {
-    return RCTMakeError(@"Failed to create storage directory.", error, nil);
+  if (!_haveSetup) {
+    _manifestPath = [_storageDirectory stringByAppendingPathComponent:kManifestFilename];
+    NSDictionary *errorOut;
+    NSString *serialized = RCTReadFile(_manifestPath, nil, &errorOut);
+    _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [[NSMutableDictionary alloc] init];
+    if (error) {
+      RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
+      _manifest = [[NSMutableDictionary alloc] init];
+    }
+    _haveSetup = YES;
   }
-  _manifestPath = [_storageDirectory stringByAppendingPathComponent:kManifestFilename];
-  NSDictionary *errorOut;
-  NSString *serialized = RCTReadFile(_manifestPath, nil, &errorOut);
-  _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [[NSMutableDictionary alloc] init];
-  if (error) {
-    RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
-    _manifest = [[NSMutableDictionary alloc] init];
-  }
-  _haveSetup = YES;
   return nil;
 }
 
@@ -349,7 +367,7 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
   _manifest = [[NSMutableDictionary alloc] init];
-  NSError *error = [RCTAsyncLocalStorage clearAllData];
+  NSError *error = RCTDeleteStorageDirectory();
   if (callback) {
     callback(@[RCTNullIfNil(error)]);
   }

@@ -32,6 +32,6 @@
 - (void)getAllKeys:(RCTResponseSenderBlock)callback;
 
 // For clearing data when the bridge may not exist, e.g. when logging out.
-+ (NSError *)clearAllData;
++ (void)clearAllData;
 
 @end
