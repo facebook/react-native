@@ -26,6 +26,7 @@ trap cleanup EXIT
 
 node ./packager/packager.js --nonPersistent &
 SERVER_PID=$!
+curl http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle &> /dev/null &
 xctool \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
   -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.3' \
