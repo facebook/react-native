@@ -44,7 +44,8 @@ class NavigationContext {
   constructor() {
     this._eventEmitter = new NavigationEventEmitter(this);
     this._currentRoute = null;
-    this.addListener('didfocus', this._onDidFocus, this);
+    this.addListener('willfocus', this._onFocus, this);
+    this.addListener('didfocus', this._onFocus, this);
   }
 
   // TODO: @flow does not like this getter. Will add @flow check back once
@@ -83,7 +84,7 @@ class NavigationContext {
     }
   }
 
-  _onDidFocus(event: NavigationEvent): void {
+  _onFocus(event: NavigationEvent): void {
     invariant(
       event.data && event.data.hasOwnProperty('route'),
       'didfocus event should provide route'
