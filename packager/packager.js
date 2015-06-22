@@ -86,7 +86,9 @@ if (options.root) {
 
 if (options.assetRoots) {
   if (!Array.isArray(options.assetRoots)) {
-    options.assetRoots = options.assetRoots.split(',');
+    options.assetRoots = options.assetRoots.split(',').map(function (dir) {
+      return path.resolve(process.cwd(), dir);
+    });
   }
 } else {
   if (__dirname.match(/node_modules\/react-native\/packager$/)) {
