@@ -32,6 +32,7 @@ function transform(srcTxt, filename, options) {
       'es7.objectRestSpread',
       'flow',
       'react',
+      'react.displayName',
     ],
     sourceFileName: filename,
     sourceMaps: false,
