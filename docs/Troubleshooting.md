@@ -61,3 +61,23 @@ sudo chown -R $USER /usr/local/lib/node_modules
 
 ## Debugging in Chrome hangs and/or does not work well
 It is possible that one of your Chrome extensions is interacting in unexpected ways with the debugger. If you are having this issue, try disabling all of your extensions and re-enabling them one-by-one until you find the problematic extension.
+
+## Xcode Build Failures
+
+To see the exact error what is causing your build to fail, go into the Issues Navigator in the left sidebar.
+
+##### React libraries missing
+If you are using CocoaPods, verify that you have added React along with the subspecs to the `Podfile`. For example, if you were using the `<Text />`, `<Image />` and `fetch()` APIs, you would need to add these in your `Podfile`:
+```
+pod 'React'
+pod 'React/RCTText'
+pod 'React/RCTImage'
+pod 'React/RCTNetwork'
+```
+Next, make sure you have run `pod install` and that a `Pods/` directory has been created in your project with React installed. CocoaPods will instruct you to use the generated `.xcworkspace` file henceforth to be able to use these installed dependencies.
+
+If you are adding React manually, make sure you have included all the relevant dependancies, like `RCTText.xcodeproj`, `RCTImage.xcodeproj` depending on the ones you are using. Next, the binaries built by these dependencies have to be linked to your app binary. Use the `Linked Frameworks and Binaries` section in the Xcode project settings. More detailed steps are here: [Linking Libraries](https://facebook.github.io/react-native/docs/linking-libraries.html#content).
+
+##### Argument list too long: recursive header expansion failed
+
+This error occurs when Xcode ends up recursing very deeply into a folder that has been configured for it to search for `#import` files. In your project and target build settings, search for 'Header Search Paths' and 'User Search Header Paths' and make sure that you are not making Xcode recurse over a very large set of files and folders recursively. You might have overwritten the default config by CocoaPods added there - simply select and hit delete to go back to the CocoaPods default.
