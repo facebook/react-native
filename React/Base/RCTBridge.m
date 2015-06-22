@@ -1529,6 +1529,12 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
      ^(__unused NSData *data, __unused NSURLResponse *response, NSError *error) {
        if (error) {
          RCTLogError(@"%@", error.localizedDescription);
+       } else {
+         [[[UIAlertView alloc] initWithTitle:@"Profile"
+                                     message:@"The profile has been generated, check the dev server log for instructions."
+                                    delegate:nil
+                           cancelButtonTitle:@"OK"
+                           otherButtonTitles:nil] show];
        }
      }];
 

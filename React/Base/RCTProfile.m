@@ -172,6 +172,8 @@ static void RCTProfileHookModules(RCTBridge *bridge)
       }
       free(methods);
 
+      class_replaceMethod(object_getClass(proxyClass), @selector(initialize), imp_implementationWithBlock(^{}), "v@:");
+
       for (Class cls in @[proxyClass, object_getClass(proxyClass)]) {
         Method oldImp = class_getInstanceMethod(cls, @selector(class));
         class_replaceMethod(cls, @selector(class), imp_implementationWithBlock(^{ return moduleClass; }), method_getTypeEncoding(oldImp));
