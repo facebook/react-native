@@ -289,6 +289,9 @@ var Navigator = React.createClass({
   },
 
   componentWillMount: function() {
+    // TODO(t7489503): Don't need this once ES6 Class landed.
+    this.__defineGetter__('navigationContext', this._getNavigationContext);
+
     this._subRouteFocus = [];
     this.parentNavigator = this.props.navigator;
     this._handlers = {};
@@ -1153,8 +1156,7 @@ var Navigator = React.createClass({
     );
   },
 
-  // Getter for `navigationContext`.
-  get navigationContext() {
+  _getNavigationContext: function() {
     if (!this._navigationContext) {
       this._navigationContext = new NavigationContext();
     }
