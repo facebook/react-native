@@ -995,6 +995,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
         return;
       }
 
+      [[RCTRedBox sharedInstance] dismiss];
+
       RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
       sourceCodeModule.scriptURL = bundleURL;
       sourceCodeModule.scriptText = script;
