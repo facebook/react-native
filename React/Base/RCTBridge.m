@@ -1042,11 +1042,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 
 - (NSDictionary *)modules
 {
-  if (!self.isValid) {
-    return nil;
-  }
-
-  RCTAssert(_modulesByName != nil, @"Bridge modules have not yet been initialized. "
+  RCTAssert(!self.isValid || _modulesByName != nil, @"Bridge modules have not yet been initialized. "
             "You may be trying to access a module too early in the startup procedure.");
 
   return _modulesByName;
@@ -1074,19 +1070,21 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
     _mainDisplayLink = nil;
 
     // Invalidate modules
+    dispatch_group_t group = dispatch_group_create();
     for (id target in _modulesByID.allObjects) {
       if ([target respondsToSelector:@selector(invalidate)]) {
         [self dispatchBlock:^{
           [(id<RCTInvalidating>)target invalidate];
-        } forModule:target];
+        } forModule:target dispatchGroup:group];
       }
+      _queuesByID[RCTModuleIDsByName[RCTBridgeModuleNameForClass([target class])]] = nil;
     }
-
-    // Release modules (breaks retain cycle if module has strong bridge reference)
-    _frameUpdateObservers = nil;
-    _modulesByID = nil;
-    _queuesByID = nil;
-    _modulesByName = nil;
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+      _queuesByID = nil;
+      _modulesByID = nil;
+      _modulesByName = nil;
+      _frameUpdateObservers = nil;
+    });
   };
 
   if (!_javaScriptExecutor) {
@@ -1185,13 +1183,30 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 }
 
 #pragma mark - Payload Generation
-
-- (void)dispatchBlock:(dispatch_block_t)block forModule:(id<RCTBridgeModule>)module
+- (void)dispatchBlock:(dispatch_block_t)block
+            forModule:(id<RCTBridgeModule>)module
 {
-  [self dispatchBlock:block forModuleID:RCTModuleIDsByName[RCTBridgeModuleNameForClass([module class])]];
+  [self dispatchBlock:block forModule:module dispatchGroup:NULL];
 }
 
-- (void)dispatchBlock:(dispatch_block_t)block forModuleID:(NSNumber *)moduleID
+- (void)dispatchBlock:(dispatch_block_t)block
+            forModule:(id<RCTBridgeModule>)module
+        dispatchGroup:(dispatch_group_t)group
+{
+  [self dispatchBlock:block
+          forModuleID:RCTModuleIDsByName[RCTBridgeModuleNameForClass([module class])]
+        dispatchGroup:group];
+}
+
+- (void)dispatchBlock:(dispatch_block_t)block
+          forModuleID:(NSNumber *)moduleID
+{
+  [self dispatchBlock:block forModuleID:moduleID dispatchGroup:NULL];
+}
+
+- (void)dispatchBlock:(dispatch_block_t)block
+          forModuleID:(NSNumber *)moduleID
+        dispatchGroup:(dispatch_group_t)group
 {
   RCTAssertJSThread();
 
@@ -1203,7 +1218,11 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
   if (queue == RCTJSThread) {
     [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
   } else if (queue) {
-    dispatch_async(queue, block);
+    if (group != NULL) {
+      dispatch_group_async(group, queue, block);
+    } else {
+      dispatch_async(queue, block);
+    }
   }
 }
 
