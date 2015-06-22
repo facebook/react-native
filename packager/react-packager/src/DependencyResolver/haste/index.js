@@ -20,8 +20,7 @@ var DEFINE_MODULE_CODE = [
   '_deps_,',
   'function(global, require, requireDynamic, requireLazy, module, exports) {',
   '  _code_',
-  '}',
-  ');',
+  '\n});',
 ].join('');
 
 var DEFINE_MODULE_REPLACE_RE = /_moduleName_|_code_|_deps_/g;

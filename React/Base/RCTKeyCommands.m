@@ -13,11 +13,58 @@
 
 #import "RCTUtils.h"
 
+@interface RCTKeyCommand : NSObject <NSCopying>
+
+@property (nonatomic, strong) UIKeyCommand *keyCommand;
+@property (nonatomic, copy) void (^block)(UIKeyCommand *);
+
+@end
+
+@implementation RCTKeyCommand
+
+- (instancetype)initWithKeyCommand:(UIKeyCommand *)keyCommand
+                             block:(void (^)(UIKeyCommand *))block
+{
+  if ((self = [super init])) {
+    _keyCommand = keyCommand;
+    _block = block ?: ^(__unused UIKeyCommand *cmd) {};
+  }
+  return self;
+}
+
+RCT_NOT_IMPLEMENTED(-init)
+
+- (id)copyWithZone:(__unused NSZone *)zone
+{
+  return self;
+}
+
+- (NSUInteger)hash
+{
+  return _keyCommand.input.hash ^ _keyCommand.modifierFlags;
+}
+
+- (BOOL)isEqual:(RCTKeyCommand *)object
+{
+  if (![object isKindOfClass:[RCTKeyCommand class]]) {
+    return NO;
+  }
+  return [self matchesInput:object.keyCommand.input
+                      flags:object.keyCommand.modifierFlags];
+}
+
+- (BOOL)matchesInput:(NSString *)input flags:(UIKeyModifierFlags)flags
+{
+  return [_keyCommand.input isEqual:input] && _keyCommand.modifierFlags == flags;
+}
+
+@end
+
 @interface RCTKeyCommands ()
 
-@property (nonatomic, strong) NSMutableDictionary *commandBindings;
+@property (nonatomic, strong) NSMutableSet *commands;
 
-- (void)RCT_handleKeyCommand:(UIKeyCommand *)key;
+- (BOOL)RCT_handleKeyCommand:(UIKeyCommand *)key;
 
 @end
 
@@ -25,15 +72,15 @@
 
 - (NSArray *)RCT_keyCommands
 {
-  NSDictionary *commandBindings = [RCTKeyCommands sharedInstance].commandBindings;
-  return [[self RCT_keyCommands] arrayByAddingObjectsFromArray:[commandBindings allKeys]];
+  NSSet *commands = [RCTKeyCommands sharedInstance].commands;
+  return [[self RCT_keyCommands] arrayByAddingObjectsFromArray:
+          [[commands valueForKeyPath:@"keyCommand"] allObjects]];
 }
 
 - (BOOL)RCT_sendAction:(SEL)action to:(id)target from:(id)sender forEvent:(UIEvent *)event
 {
   if (action == @selector(RCT_handleKeyCommand:)) {
-    [[RCTKeyCommands sharedInstance] RCT_handleKeyCommand:sender];
-    return YES;
+    return [[RCTKeyCommands sharedInstance] RCT_handleKeyCommand:sender];
   }
   return [self RCT_sendAction:action to:target from:sender forEvent:event];
 }
@@ -49,8 +96,6 @@
   RCTSwapInstanceMethods([UIApplication class], @selector(sendAction:to:from:forEvent:), @selector(RCT_sendAction:to:from:forEvent:));
 }
 
-static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
-
 + (instancetype)sharedInstance
 {
   static RCTKeyCommands *sharedInstance;
@@ -65,23 +110,9 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _commandBindings = [[NSMutableDictionary alloc] init];
+    _commands = [[NSMutableSet alloc] init];
   }
   return self;
-}
-
-- (void)RCT_handleKeyCommand:(UIKeyCommand *)key
-{
-  // NOTE: We should just be able to do commandBindings[key] here, but curiously, the
-  // lookup seems to return nil sometimes, even if the key is found in the dictionary.
-  // To fix this, we use a linear search, since there won't be many keys anyway
-
-  [_commandBindings enumerateKeysAndObjectsUsingBlock:
-   ^(UIKeyCommand *k, void (^block)(UIKeyCommand *), __unused BOOL *stop) {
-    if ([key.input isEqualToString:k.input] && key.modifierFlags == k.modifierFlags) {
-      block(key);
-    }
-  }];
 }
 
 - (void)registerKeyCommandWithInput:(NSString *)input
@@ -105,7 +136,19 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
                                               modifierFlags:flags
                                                      action:@selector(RCT_handleKeyCommand:)];
 
-  _commandBindings[command] = block ?: ^(__unused UIKeyCommand *cmd) {};
+  [_commands addObject:[[RCTKeyCommand alloc] initWithKeyCommand:command block:block]];
+}
+
+- (BOOL)RCT_handleKeyCommand:(UIKeyCommand *)key
+{
+  for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
+    if ([command.keyCommand.input isEqualToString:key.input] &&
+        command.keyCommand.modifierFlags == key.modifierFlags) {
+      command.block(key);
+      return YES;
+    }
+  }
+  return NO;
 }
 
 - (void)unregisterKeyCommandWithInput:(NSString *)input
@@ -113,9 +156,9 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
 {
   RCTAssertMainThread();
 
-  for (UIKeyCommand *key in [_commandBindings allKeys]) {
-    if ([key.input isEqualToString:input] && key.modifierFlags == flags) {
-      [_commandBindings removeObjectForKey:key];
+  for (RCTKeyCommand *command in _commands.allObjects) {
+    if ([command matchesInput:input flags:flags]) {
+      [_commands removeObject:command];
       break;
     }
   }
@@ -126,8 +169,8 @@ static RCTKeyCommands *RKKeyCommandsSharedInstance = nil;
 {
   RCTAssertMainThread();
 
-  for (UIKeyCommand *key in [_commandBindings allKeys]) {
-    if ([key.input isEqualToString:input] && key.modifierFlags == flags) {
+  for (RCTKeyCommand *command in _commands) {
+    if ([command matchesInput:input flags:flags]) {
       return YES;
     }
   }

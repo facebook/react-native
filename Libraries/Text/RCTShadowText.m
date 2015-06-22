@@ -131,7 +131,8 @@ static css_dim_t RCTMeasure(void *context, float width)
                                       fontSize:nil
                                     fontWeight:nil
                                      fontStyle:nil
-                                 letterSpacing:nil];
+                                 letterSpacing:nil
+                            useBackgroundColor:NO];
 }
 
 - (NSAttributedString *)_attributedStringWithFontFamily:(NSString *)fontFamily
@@ -139,6 +140,7 @@ static css_dim_t RCTMeasure(void *context, float width)
                                              fontWeight:(NSString *)fontWeight
                                               fontStyle:(NSString *)fontStyle
                                           letterSpacing:(NSNumber *)letterSpacing
+                                     useBackgroundColor:(BOOL)useBackgroundColor
 {
   if (![self isTextDirty] && _cachedAttributedString) {
     return _cachedAttributedString;
@@ -166,7 +168,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   for (RCTShadowView *child in [self reactSubviews]) {
     if ([child isKindOfClass:[RCTShadowText class]]) {
       RCTShadowText *shadowText = (RCTShadowText *)child;
-      [attributedString appendAttributedString:[shadowText _attributedStringWithFontFamily:fontFamily fontSize:fontSize fontWeight:fontWeight fontStyle:fontStyle letterSpacing:letterSpacing]];
+      [attributedString appendAttributedString:[shadowText _attributedStringWithFontFamily:fontFamily fontSize:fontSize fontWeight:fontWeight fontStyle:fontStyle letterSpacing:letterSpacing useBackgroundColor:YES]];
     } else if ([child isKindOfClass:[RCTShadowRawText class]]) {
       RCTShadowRawText *shadowRawText = (RCTShadowRawText *)child;
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[shadowRawText text] ?: @""]];
@@ -183,8 +185,8 @@ static css_dim_t RCTMeasure(void *context, float width)
   if (_isHighlighted) {
     [self _addAttribute:RCTIsHighlightedAttributeName withValue:@YES toAttributedString:attributedString];
   }
-  if (_textBackgroundColor) {
-    [self _addAttribute:NSBackgroundColorAttributeName withValue:_textBackgroundColor toAttributedString:attributedString];
+  if (useBackgroundColor && self.backgroundColor) {
+    [self _addAttribute:NSBackgroundColorAttributeName withValue:self.backgroundColor toAttributedString:attributedString];
   }
 
   UIFont *font = [RCTConvert UIFont:nil withFamily:fontFamily size:fontSize weight:fontWeight style:fontStyle];
@@ -271,6 +273,12 @@ static css_dim_t RCTMeasure(void *context, float width)
   [self cssNode]->children_count = 0;
 }
 
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  super.backgroundColor = backgroundColor;
+  [self dirtyText];
+}
+
 #define RCT_TEXT_PROPERTY(setProp, ivar, type) \
 - (void)set##setProp:(type)value;              \
 {                                              \
@@ -289,7 +297,6 @@ RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
 RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
-RCT_TEXT_PROPERTY(TextBackgroundColor, _textBackgroundColor, UIColor *)
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
 
 @end

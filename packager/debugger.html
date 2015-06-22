@@ -48,10 +48,11 @@ var messageHandlers = {
     loadScript(message.url, sendReply.bind(null, null));
   },
   'executeJSCall': function(message, sendReply) {
-    var returnValue = [[], [], [], [], []];
+    var returnValue = null;
     try {
       if (window && window.require) {
-        returnValue = window.require(message.moduleName)[message.moduleMethod].apply(null, message.arguments);
+        var module = window.require(message.moduleName);
+        returnValue = module[message.moduleMethod].apply(module, message.arguments);
       }
     } finally {
       sendReply(JSON.stringify(returnValue));
