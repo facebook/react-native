@@ -412,13 +412,11 @@ var Navigator = React.createClass({
       );
     } else if (this.state.activeGesture != null) {
       var presentedToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
-      if (presentedToIndex > -1) {
-        this._transitionBetween(
-          this.state.presentedIndex,
-          presentedToIndex,
-          this.spring.getCurrentValue()
-        );
-      }
+      this._transitionBetween(
+        this.state.presentedIndex,
+        presentedToIndex,
+        this.spring.getCurrentValue()
+      );
     }
   },
 
@@ -822,7 +820,7 @@ var Navigator = React.createClass({
     this._transitionSceneStyle(fromIndex, toIndex, progress, fromIndex);
     this._transitionSceneStyle(fromIndex, toIndex, progress, toIndex);
     var navBar = this._navBar;
-    if (navBar && navBar.updateProgress) {
+    if (navBar && navBar.updateProgress && toIndex >= 0 && fromIndex >= 0) {
       navBar.updateProgress(progress, fromIndex, toIndex);
     }
   },
