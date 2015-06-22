@@ -73,6 +73,11 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *         // Another component has become the responder, so this gesture
  *         // should be cancelled
  *       },
+ *       onShouldBlockNativeResponder: (evt, gestureState) => {
+ *         // Returns whether this component should block native components from becoming the JS
+ *         // responder. Returns true by default. Is currently only supported on android.
+ *         return true;
+ *       },
  *     });
  *   },
  *
@@ -241,6 +246,7 @@ var PanResponder = {
    *  - `onPanResponderMove: (e, gestureState) => {...}`
    *  - `onPanResponderTerminate: (e, gestureState) => {...}`
    *  - `onPanResponderTerminationRequest: (e, gestureState) => {...}`
+   *  - 'onShouldBlockNativeResponder: (e, gestureState) => {...}'
    *
    *  In general, for events that have capture equivalents, we update the
    *  gestureState once in the capture phase and can use it in the bubble phase
@@ -298,6 +304,9 @@ var PanResponder = {
         gestureState.dx = 0;
         gestureState.dy = 0;
         config.onPanResponderGrant && config.onPanResponderGrant(e, gestureState);
+        // TODO: t7467124 investigate if this can be removed
+        return config.onShouldBlockNativeResponder === undefined ? true :
+          config.onShouldBlockNativeResponder();
       },
 
       onResponderReject: function(e) {

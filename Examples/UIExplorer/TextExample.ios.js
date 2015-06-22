@@ -25,7 +25,7 @@ var {
 var Entity = React.createClass({
   render: function() {
     return (
-      <Text style={styles.entity}>
+      <Text style={{fontWeight: '500', color: '#527fe4'}}>
         {this.props.children}
       </Text>
     );
@@ -34,7 +34,12 @@ var Entity = React.createClass({
 
 var AttributeToggler = React.createClass({
   getInitialState: function() {
-    return {fontWeight: '500', fontSize: 15};
+    return {fontWeight: 'bold', fontSize: 15};
+  },
+  toggleWeight: function() {
+    this.setState({
+      fontWeight: this.state.fontWeight === 'bold' ? 'normal' : 'bold'
+    });
   },
   increaseSize: function() {
     this.setState({
@@ -42,22 +47,26 @@ var AttributeToggler = React.createClass({
     });
   },
   render: function() {
-    var curStyle = {fontSize: this.state.fontSize};
+    var curStyle = {fontWeight: this.state.fontWeight, fontSize: this.state.fontSize};
     return (
-      <Text>
+      <View>
         <Text style={curStyle}>
           Tap the controls below to change attributes.
         </Text>
         <Text>
-          See how it will even work on{' '}
-          <Text style={curStyle}>
-            this nested text
-          </Text>
-          <Text onPress={this.increaseSize}>
-            {'>> Increase Size <<'}
-          </Text>
+          <Text>See how it will even work on <Text style={curStyle}>this nested text</Text></Text>
         </Text>
-      </Text>
+        <Text
+          style={{backgroundColor: '#ffaaaa', marginTop: 5}}
+          onPress={this.toggleWeight}>
+          Toggle Weight
+        </Text>
+        <Text
+          style={{backgroundColor: '#aaaaff', marginTop: 5}}
+          onPress={this.increaseSize}>
+          Increase Size
+        </Text>
+      </View>
     );
   }
 });
@@ -206,6 +215,12 @@ exports.examples = [
   render: function() {
     return (
       <View>
+        <Text>
+          auto (default) - english LTR
+        </Text>
+        <Text>
+          أحب اللغة العربية auto (default) - arabic RTL
+        </Text>
         <Text style={{textAlign: 'left'}}>
           left left left left left left left left left left left left left left left
         </Text>
@@ -282,43 +297,21 @@ exports.examples = [
   description: 'backgroundColor is inherited from all types of views.',
   render: function() {
     return (
-      <View style={{backgroundColor: 'yellow'}}>
-        <Text>
-          Yellow background inherited from View parent,
-          <Text style={{backgroundColor: '#ffaaaa'}}>
-            {' '}red background,
-            <Text style={{backgroundColor: '#aaaaff'}}>
-              {' '}blue background,
-              <Text>
-                {' '}inherited blue background,
-                <Text style={{backgroundColor: '#aaffaa'}}>
-                  {' '}nested green background.
-                </Text>
+      <Text style={{backgroundColor: 'yellow'}}>
+        Yellow container background,
+        <Text style={{backgroundColor: '#ffaaaa'}}>
+          {' '}red background,
+          <Text style={{backgroundColor: '#aaaaff'}}>
+            {' '}blue background,
+            <Text>
+              {' '}inherited blue background,
+              <Text style={{backgroundColor: '#aaffaa'}}>
+                {' '}nested green background.
               </Text>
             </Text>
           </Text>
         </Text>
-      </View>
-    );
-  },
-}, {
-  title: 'containerBackgroundColor attribute',
-  render: function() {
-    return (
-      <View style={{backgroundColor: 'yellow'}}>
-        <View style={{flexDirection: 'row', position: 'absolute', height: 80}}>
-          <View style={{backgroundColor: '#ffaaaa', width: 140}} />
-          <View style={{backgroundColor: '#aaaaff', width: 140}} />
-        </View>
-        <Text style={styles.backgroundColorText}>
-          Default containerBackgroundColor (inherited) + backgroundColor wash
-        </Text>
-        <Text style={[
-          styles.backgroundColorText,
-          {marginBottom: 5, containerBackgroundColor: 'transparent'}]}>
-          {"containerBackgroundColor: 'transparent' + backgroundColor wash"}
-        </Text>
-      </View>
+      </Text>
     );
   },
 }, {
@@ -345,9 +338,5 @@ var styles = StyleSheet.create({
     margin: 5,
     marginBottom: 0,
     backgroundColor: 'rgba(100, 100, 100, 0.3)'
-  },
-  entity: {
-    fontWeight: '500',
-    color: '#527fe4',
   },
 });

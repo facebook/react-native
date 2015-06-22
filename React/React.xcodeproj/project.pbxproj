@@ -48,6 +48,7 @@
 		13E067591A70F44B002CDEE1 /* UIView+React.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067541A70F44B002CDEE1 /* UIView+React.m */; };
 		1403F2B31B0AE60700C2A9A4 /* RCTPerfStats.m in Sources */ = {isa = PBXBuildFile; fileRef = 1403F2B21B0AE60700C2A9A4 /* RCTPerfStats.m */; };
 		14200DAA1AC179B3008EE6BA /* RCTJavaScriptLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 14200DA91AC179B3008EE6BA /* RCTJavaScriptLoader.m */; };
+		142014191B32094000CC17BA /* RCTPerformanceLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 142014171B32094000CC17BA /* RCTPerformanceLogger.m */; };
 		14435CE51AAC4AE100FC20F4 /* RCTMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 14435CE21AAC4AE100FC20F4 /* RCTMap.m */; };
 		14435CE61AAC4AE100FC20F4 /* RCTMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14435CE41AAC4AE100FC20F4 /* RCTMapManager.m */; };
 		146459261B06C49500B389AA /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 146459251B06C49500B389AA /* RCTFPSGraph.m */; };
@@ -177,6 +178,8 @@
 		1403F2B21B0AE60700C2A9A4 /* RCTPerfStats.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerfStats.m; sourceTree = "<group>"; };
 		14200DA81AC179B3008EE6BA /* RCTJavaScriptLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJavaScriptLoader.h; sourceTree = "<group>"; };
 		14200DA91AC179B3008EE6BA /* RCTJavaScriptLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJavaScriptLoader.m; sourceTree = "<group>"; };
+		142014171B32094000CC17BA /* RCTPerformanceLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerformanceLogger.m; sourceTree = "<group>"; };
+		142014181B32094000CC17BA /* RCTPerformanceLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPerformanceLogger.h; sourceTree = "<group>"; };
 		1436DD071ADE7AA000A5ED7D /* RCTFrameUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTFrameUpdate.h; sourceTree = "<group>"; };
 		14435CE11AAC4AE100FC20F4 /* RCTMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTMap.h; sourceTree = "<group>"; };
 		14435CE21AAC4AE100FC20F4 /* RCTMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMap.m; sourceTree = "<group>"; };
@@ -439,6 +442,8 @@
 				146459251B06C49500B389AA /* RCTFPSGraph.m */,
 				1403F2B11B0AE60700C2A9A4 /* RCTPerfStats.h */,
 				1403F2B21B0AE60700C2A9A4 /* RCTPerfStats.m */,
+				142014171B32094000CC17BA /* RCTPerformanceLogger.m */,
+				142014181B32094000CC17BA /* RCTPerformanceLogger.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -551,6 +556,7 @@
 				134FCB3D1A6E7F0800051CC8 /* RCTContextExecutor.m in Sources */,
 				13E067591A70F44B002CDEE1 /* UIView+React.m in Sources */,
 				14F484561AABFCE100FDF6B9 /* RCTSliderManager.m in Sources */,
+				142014191B32094000CC17BA /* RCTPerformanceLogger.m in Sources */,
 				83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */,
 				83CBBA521A601E3B00E9B192 /* RCTLog.m in Sources */,
 				13B0801D1A69489C00A75B9A /* RCTNavItemManager.m in Sources */,

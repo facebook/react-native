@@ -41,7 +41,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTFPSGraph *)jsGraph
 {
-  if (!_jsGraph) {
+  if (!_jsGraph && _container) {
     UIColor *jsColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
     _jsGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(2, 2, 124, 34)
                                     graphPosition:RCTFPSGraphPositionRight
@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTFPSGraph *)uiGraph
 {
-  if (!_uiGraph) {
+  if (!_uiGraph && _container) {
     UIColor *uiColor = [UIColor colorWithRed:0 green:1 blue:1 alpha:1];
     _uiGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(2, 2, 124, 34)
                                     graphPosition:RCTFPSGraphPositionLeft
