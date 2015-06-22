@@ -17,7 +17,7 @@ const isAbsolutePath = require('absolute-path');
 const debug = require('debug')('DependencyGraph');
 const getAssetDataFromName = require('../../lib/getAssetDataFromName');
 const util = require('util');
-const Promise = require('bluebird');
+const Promise = require('promise');
 const _ = require('underscore');
 
 const validateOpts = declareOpts({

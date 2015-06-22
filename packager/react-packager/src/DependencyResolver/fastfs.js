@@ -1,6 +1,6 @@
 'use strict';
 
-const Promise = require('bluebird');
+const Promise = require('promise');
 const {EventEmitter} = require('events');
 
 const _ = require('underscore');
@@ -8,9 +8,9 @@ const debug = require('debug')('DependencyGraph');
 const fs = require('fs');
 const path = require('path');
 
-const readDir = Promise.promisify(fs.readdir);
-const readFile = Promise.promisify(fs.readFile);
-const stat = Promise.promisify(fs.stat);
+const readDir = Promise.denodeify(fs.readdir);
+const readFile = Promise.denodeify(fs.readFile);
+const stat = Promise.denodeify(fs.stat);
 const hasOwn = Object.prototype.hasOwnProperty;
 
 class Fastfs extends EventEmitter {

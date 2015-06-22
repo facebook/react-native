@@ -17,7 +17,7 @@ jest
 
 jest.mock('fs');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('Packager', function() {
   var getDependencies;

@@ -14,7 +14,7 @@ jest.dontMock('../')
 
 jest.mock('path');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('HasteDependencyResolver', function() {
   var HasteDependencyResolver;

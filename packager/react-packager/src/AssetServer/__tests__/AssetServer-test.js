@@ -8,7 +8,7 @@ jest
   .mock('crypto')
   .mock('fs');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('AssetServer', function() {
   var AssetServer;

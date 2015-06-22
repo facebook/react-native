@@ -1,6 +1,6 @@
 'use strict';
 
-const Promise = require('bluebird');
+const Promise = require('promise');
 const docblock = require('./DependencyGraph/docblock');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');

@@ -1,7 +1,7 @@
 'use strict';
 
 const Module = require('./Module');
-const Promise = require('bluebird');
+const Promise = require('promise');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
 class AssetModule_DEPRECATED extends Module {

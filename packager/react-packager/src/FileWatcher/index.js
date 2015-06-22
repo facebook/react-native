@@ -10,7 +10,7 @@
 
 var EventEmitter  = require('events').EventEmitter;
 var sane = require('sane');
-var Promise = require('bluebird');
+var Promise = require('promise');
 var util = require('util');
 var exec = require('child_process').exec;
 
@@ -57,7 +57,7 @@ util.inherits(FileWatcher, EventEmitter);
 FileWatcher.prototype.end = function() {
   return this._loading.then(function(watchers) {
     watchers.forEach(function(watcher) {
-      return Promise.promisify(watcher.close, watcher)();
+      return Promise.denodeify(watcher.close).call(watcher);
     });
   });
 };

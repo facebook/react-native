@@ -12,7 +12,7 @@ var path = require('path');
 var DependencyGraph = require('./DependencyGraph');
 var replacePatterns = require('./replacePatterns');
 var declareOpts = require('../lib/declareOpts');
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 var validateOpts = declareOpts({
   projectRoots: {

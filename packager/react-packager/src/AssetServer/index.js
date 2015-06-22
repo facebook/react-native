@@ -11,13 +11,13 @@
 var declareOpts = require('../lib/declareOpts');
 var getAssetDataFromName = require('../lib/getAssetDataFromName');
 var path = require('path');
-var Promise = require('bluebird');
+var Promise = require('promise');
 var fs = require('fs');
 var crypto = require('crypto');
 
-var stat = Promise.promisify(fs.stat);
-var readDir = Promise.promisify(fs.readdir);
-var readFile = Promise.promisify(fs.readFile);
+var stat = Promise.denodeify(fs.stat);
+var readDir = Promise.denodeify(fs.readdir);
+var readFile = Promise.denodeify(fs.readFile);
 
 module.exports = AssetServer;
 
@@ -56,12 +56,15 @@ AssetServer.prototype._getAssetRecord = function(assetPath) {
     this._roots,
     path.dirname(assetPath)
   ).then(function(dir) {
-    return [
+    return Promise.all([
       dir,
       readDir(dir),
-    ];
-  }).spread(function(dir, files) {
+    ]);
+  }).then(function(res) {
+    var dir = res[0];
+    var files = res[1];
     var assetData = getAssetDataFromName(filename);
+
     var map = buildAssetMap(dir, files);
     var record = map[assetData.assetName];
 
@@ -114,21 +117,23 @@ AssetServer.prototype.getAssetData = function(assetPath) {
 };
 
 function findRoot(roots, dir) {
-  return Promise.some(
+  return Promise.all(
     roots.map(function(root) {
       var absPath = path.join(root, dir);
       return stat(absPath).then(function(fstat) {
-        if (!fstat.isDirectory()) {
-          throw new Error('Looking for dirs');
-        }
-        fstat._path = absPath;
-        return fstat;
+        return {path: absPath, isDirectory: fstat.isDirectory()};
+      }, function (err) {
+        return {path: absPath, isDirectory: false};
       });
-    }),
-    1
-  ).spread(
-    function(fstat) {
-      return fstat._path;
+    })
+  ).then(
+    function(stats) {
+      for (var i = 0; i < stats.length; i++) {
+        if (stats[i].isDirectory) {
+          return stats[i].path;
+        }
+      }
+      throw new Error('Could not find any directories');
     }
   );
 }
