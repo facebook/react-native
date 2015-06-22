@@ -51,16 +51,7 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
                                              selector:_testSelector
                                            identifier:_snapshotCounter[testName]
                                                 error:&error];
-
-    RCTAssert(success, @"Snapshot comparison failed: %@", error);
-    callback(@[]);
-  }];
-}
-
-RCT_EXPORT_METHOD(markTestCompleted)
-{
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    _done = YES;
+    callback(@[@(success)]);
   }];
 }
 
@@ -79,11 +70,16 @@ RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)reso
   reject(nil);
 }
 
-RCT_EXPORT_METHOD(finish:(BOOL)success)
+RCT_EXPORT_METHOD(markTestCompleted)
 {
-  RCTAssert(success, @"RCTTestModule finished without success");
-  [self markTestCompleted];
+  [self markTestPassed:YES];
 }
 
+RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
+{
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    _status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
+  }];
+}
 
 @end
