@@ -55,34 +55,23 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
 
 
-- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
   if (![view.annotation isKindOfClass:[MKUserLocation class]]) {
     
     RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
-    
-    NSString *title;
-    if (view.annotation.title == nil) {
-      title = @"";
-    } else {
-      title = annotation.title;
-    }
-    
-    NSString *subtitle;
-    if (view.annotation.subtitle == nil) {
-      subtitle = @"";
-    } else {
-      subtitle = annotation.subtitle;
-    }
+    NSString *title = view.annotation.title ?: @"";
+    NSString *subtitle = view.annotation.subtitle ?: @"";
     
     NSDictionary *event = @{
-                            @"target": [mapView reactTag],
+                            @"target": mapView.reactTag,
                             @"action": @"annotation-click",
                             @"annotation": @{
                                 @"id": annotation.identifier,
                                 @"title": title,
                                 @"subtitle": subtitle,
-                                @"latitude": [NSNumber numberWithDouble: annotation.coordinate.latitude],
-                                @"longitude": [NSNumber numberWithDouble: annotation.coordinate.longitude]
+                                @"latitude": @(annotation.coordinate.latitude),
+                                @"longitude": @(annotation.coordinate.longitude)
                                 }
                             };
     
@@ -92,21 +81,21 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
 {
-  if ([annotation isKindOfClass:[MKUserLocation class]])
+  if ([annotation isKindOfClass:[MKUserLocation class]]) {
     return nil;
+  }
 
   MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"RCTAnnotation"];
   
   annotationView.canShowCallout = true;
-  
-  if (annotation.animateDrop) {
-    annotationView.animatesDrop = true;
-  }
+  annotationView.animatesDrop = annotation.animateDrop;
 
+  annotationView.leftCalloutAccessoryView = nil;
   if (annotation.hasLeftCallout) {
     annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   }
 
+  annotationView.rightCalloutAccessoryView = nil;
   if (annotation.hasRightCallout) {
     annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   }
@@ -118,16 +107,10 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   // Pass to js
   RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
-  NSString *side;
-  if (control == view.leftCalloutAccessoryView) {
-    side = @"left";
-  }
-  else if (control == view.rightCalloutAccessoryView) {
-    side = @"right";
-  }
+  NSString *side = (control == view.leftCalloutAccessoryView) ? @"left" : @"right";
 
   NSDictionary *event = @{
-      @"target": [mapView reactTag],
+      @"target": mapView.reactTag,
       @"side": side,
       @"action": @"callout-click",
       @"annotationId": annotation.identifier
@@ -230,7 +213,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 #define FLUSH_NAN(value) (isnan(value) ? 0 : value)
 
   NSDictionary *event = @{
-    @"target": [mapView reactTag],
+    @"target": mapView.reactTag,
     @"continuous": @(continuous),
     @"region": @{
       @"latitude": @(FLUSH_NAN(region.center.latitude)),
