@@ -9,9 +9,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTDefines.h"
 #import "RCTBridgeModule.h"
 
-@interface RCTDataManager : NSObject <RCTBridgeModule>
+typedef NS_ENUM(NSUInteger, RCTPLTag) {
+  RCTPLScriptDownload = 0,
+  RCTPLAppScriptExecution,
+  RCTPLTTI,
+  RCTPLSize
+};
 
-@end
-
+void RCTPerformanceLoggerStart(RCTPLTag tag);
+void RCTPerformanceLoggerEnd(RCTPLTag tag);
+NSArray *RCTPerformanceLoggerOutput(void);

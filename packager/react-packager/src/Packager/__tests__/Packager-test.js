@@ -17,12 +17,15 @@ jest
 
 jest.mock('fs');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('Packager', function() {
   var getDependencies;
   var wrapModule;
   var Packager;
+  var packager;
+  var assetServer;
+  var modules;
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
@@ -35,30 +38,27 @@ describe('Packager', function() {
     });
 
     Packager = require('../');
-  });
 
-  pit('create a package', function() {
     require('fs').statSync.mockImpl(function() {
       return {
-        isDirectory: function() {return true;}
+        isDirectory: () => true
       };
     });
-
 
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, '{"json":true}');
     });
 
-    var assetServer = {
+    assetServer = {
       getAssetData: jest.genMockFn(),
     };
 
-    var packager = new Packager({
+    packager = new Packager({
       projectRoots: ['/root'],
       assetServer: assetServer,
     });
 
-    var modules = [
+    modules = [
       {id: 'foo', path: '/root/foo.js', dependencies: []},
       {id: 'bar', path: '/root/bar.js', dependencies: []},
       {
@@ -101,7 +101,7 @@ describe('Packager', function() {
       });
 
     wrapModule.mockImpl(function(module, code) {
-      return 'lol ' + code + ' lol';
+      return Promise.resolve('lol ' + code + ' lol');
     });
 
     require('image-size').mockImpl(function(path, cb) {
@@ -116,7 +116,9 @@ describe('Packager', function() {
         type: 'png',
       };
     });
+  });
 
+  pit('create a package', function() {
     return packager.package('/root/foo.js', true, 'source_map_url')
       .then(function(p) {
         expect(p.addModule.mock.calls[0][0]).toEqual({
@@ -197,6 +199,44 @@ describe('Packager', function() {
 
         expect(p.addAsset.mock.calls[1]).toEqual([
           imgModule
+        ]);
+      });
+  });
+
+  pit('gets the list of dependencies', function() {
+    return packager.getDependencies('/root/foo.js', true)
+      .then(({dependencies}) => {
+        expect(dependencies).toEqual([
+          {
+            dependencies: [],
+            id: 'foo',
+            path: '/root/foo.js',
+          },
+          {
+            dependencies: [],
+            id: 'bar',
+            path: '/root/bar.js',
+          },
+          {
+            dependencies: [],
+            id: 'image!img',
+            isAsset_DEPRECATED: true,
+            path: '/root/img/img.png',
+            resolution: 2,
+          },
+          {
+            dependencies: [],
+            id: 'new_image.png',
+            isAsset: true,
+            path: '/root/img/new_image.png',
+            resolution: 2,
+          },
+          {
+            dependencies: [],
+            id: 'package/file.json',
+            isJSON: true,
+            path: '/root/file.json',
+          },
         ]);
       });
   });

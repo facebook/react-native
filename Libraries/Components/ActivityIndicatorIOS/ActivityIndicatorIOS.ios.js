@@ -88,9 +88,11 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sizeSmall: {
+    width: 20,
     height: 20,
   },
   sizeLarge: {
+    width: 36,
     height: 36,
   }
 });

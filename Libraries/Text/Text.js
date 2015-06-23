@@ -97,7 +97,7 @@ var Text = React.createClass({
     /**
      * Invoked on mount and layout changes with
      *
-     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     *   {nativeEvent: {layout: {x, y, width, height}}}.
      */
      onLayout: React.PropTypes.func,
   },
