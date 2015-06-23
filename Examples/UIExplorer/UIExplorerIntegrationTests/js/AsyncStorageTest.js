@@ -54,6 +54,9 @@ function expectEqual(lhs, rhs, testname) {
 }
 
 function expectAsyncNoError(place, err) {
+  if (err instanceof Error) {
+    err = err.message;
+  }
   expectTrue(err === null, 'Unexpected error in ' + place + ': ' + JSON.stringify(err));
 }
 
