@@ -79,24 +79,18 @@ RCT_EXPORT_MODULE()
 {
   RCTBridge *_bridge;
   BOOL _testMethodCalled;
-  dispatch_queue_t _queue;
 }
 @end
 
 @implementation RCTBridgeTests
 
-RCT_EXPORT_MODULE(TestModule)
+@synthesize methodQueue = _methodQueue;
 
-- (dispatch_queue_t)methodQueue
-{
-  return _queue;
-}
+RCT_EXPORT_MODULE(TestModule)
 
 - (void)setUp
 {
   [super setUp];
-
-  _queue = dispatch_queue_create("com.facebook.React.TestQueue", DISPATCH_QUEUE_SERIAL);
 
   _bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                   moduleProvider:^{ return @[self]; }
@@ -151,7 +145,7 @@ RCT_EXPORT_MODULE(TestModule)
 
   [_bridge.batchedBridge _handleBuffer:buffer context:RCTGetExecutorID(executor)];
 
-  dispatch_sync(_queue, ^{
+  dispatch_sync(_methodQueue, ^{
     // clear the queue
     XCTAssertTrue(_testMethodCalled);
   });

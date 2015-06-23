@@ -61,6 +61,13 @@ static id RCTReadFile(NSString *filePath, NSString *key, NSDictionary **errorOut
   return nil;
 }
 
+static NSString *RCTGetStorageDir()
+{
+  NSString *documentDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+  NSURL *homeURL = [NSURL fileURLWithPath:documentDirectory isDirectory:YES];
+  return [[homeURL URLByAppendingPathComponent:kStorageDir isDirectory:YES] path];
+}
+
 // Only merges objects - all other types are just clobbered (including arrays)
 static void RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
 {
@@ -106,7 +113,39 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
-  return dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
+  // We want all instances to share the same queue since they will be reading/writing the same files.
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
+  });
+  return queue;
+}
+
++ (NSError *)clearAllData
+{
+  NSError *error;
+  [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDir() error:&error];
+  return error;
+}
+
+- (void)invalidate
+{
+  if (_clearOnInvalidate) {
+    [RCTAsyncLocalStorage clearAllData];
+  }
+  _clearOnInvalidate = NO;
+  _manifest = [[NSMutableDictionary alloc] init];
+  _haveSetup = NO;
+}
+- (BOOL)isValid
+{
+  return _haveSetup;
+}
+
+- (void)dealloc
+{
+  [self invalidate];
 }
 
 - (NSString *)_filePathForKey:(NSString *)key
@@ -120,10 +159,7 @@ RCT_EXPORT_MODULE()
   if (_haveSetup) {
     return nil;
   }
-  NSString *documentDirectory =
-  [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-  NSURL *homeURL = [NSURL fileURLWithPath:documentDirectory isDirectory:YES];
-  _storageDirectory = [[homeURL URLByAppendingPathComponent:kStorageDir isDirectory:YES] path];
+  _storageDirectory = RCTGetStorageDir();
   NSError *error;
   [[NSFileManager defaultManager] createDirectoryAtPath:_storageDirectory
                             withIntermediateDirectories:YES
@@ -135,10 +171,10 @@ RCT_EXPORT_MODULE()
   _manifestPath = [_storageDirectory stringByAppendingPathComponent:kManifestFilename];
   NSDictionary *errorOut;
   NSString *serialized = RCTReadFile(_manifestPath, nil, &errorOut);
-  _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [NSMutableDictionary new];
+  _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [[NSMutableDictionary alloc] init];
   if (error) {
     RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
-    _manifest = [NSMutableDictionary new];
+    _manifest = [[NSMutableDictionary alloc] init];
   }
   _haveSetup = YES;
   return nil;
@@ -312,18 +348,10 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
 
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
-  id errorOut = [self _ensureSetup];
-  if (!errorOut) {
-    NSError *error;
-    for (NSString *key in _manifest) {
-      NSString *filePath = [self _filePathForKey:key];
-      [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-    }
-    [_manifest removeAllObjects];
-    errorOut = [self _writeManifest:nil];
-  }
+  _manifest = [[NSMutableDictionary alloc] init];
+  NSError *error = [RCTAsyncLocalStorage clearAllData];
   if (callback) {
-    callback(@[RCTNullIfNil(errorOut)]);
+    callback(@[RCTNullIfNil(error)]);
   }
 }
 

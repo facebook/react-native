@@ -25,7 +25,6 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) NSUInteger numberOfLines;
 @property (nonatomic, assign) CGSize shadowOffset;
 @property (nonatomic, assign) NSTextAlignment textAlign;
-@property (nonatomic, strong) UIColor *textBackgroundColor;
 @property (nonatomic, assign) NSWritingDirection writingDirection;
 
 - (void)recomputeText;

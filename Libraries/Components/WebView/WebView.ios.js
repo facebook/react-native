@@ -95,6 +95,11 @@ var WebView = React.createClass({
      * Used for android only, JS is enabled by default for WebView on iOS
      */
     javaScriptEnabledAndroid: PropTypes.bool,
+    /**
+     * Used for iOS only, sets whether the webpage scales to fit the view and the
+     * user can change the scale
+     */
+    scalesPageToFit: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -155,6 +160,7 @@ var WebView = React.createClass({
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        scalesPageToFit={this.props.scalesPageToFit}
       />;
 
     return (
