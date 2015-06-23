@@ -17,20 +17,21 @@ Accessibility on iOS encompasses many topics, but for many, accessibility is syn
 
 #### accessible
 
-When true, indicates that the view is an accessibility element. When a view is an accessibility element, it groups its children into a single selectable component. By default, all touchable elements are accessible.
+When `true`, indicates that the view is an accessibility element. When a view is an accessibility element, it groups its children into a single selectable component. By default, all touchable elements are accessible.
 
 #### accessibilityLabel
 
 When a view is marked as accessible, it is a good practice to set an accessibilityLabel on the view, so that people who use VoiceOver know what element they have selected. VoiceOver will read this string when a user selects the associated element.
 
-To use, simply set the `accessibilityLabel` property to a custom string on your View:
+To use, set the `accessibilityLabel` property to a custom string on your View:
 
 ```javascript
 <TouchableOpacity accessible={true} accessibilityLabel={'Tap me!'} onPress={this._onPress}>
   <View style={styles.button}>
     <Text style={styles.buttonText}>Press me!</Text>
   </View>
-</TouchableOpacity>```
+</TouchableOpacity>
+```
 
 In the above example, the `accessibilityLabel` on the TouchableOpacity element would default to "Press me!". The label is constructed by concatenating all Text node children separated by spaces.
 
