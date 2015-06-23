@@ -40,6 +40,9 @@ RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
 #pragma mark - Shadow properties
 
 RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationStyle, NSUnderlineStyle)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationColor, UIColor)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationLine, RCTTextDecorationType)
 RCT_EXPORT_SHADOW_PROPERTY(color, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(fontFamily, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(fontSize, CGFloat)
