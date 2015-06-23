@@ -17,6 +17,7 @@ var loadSourceMap = require('loadSourceMap');
 var parseErrorStack = require('parseErrorStack');
 var stringifySafe = require('stringifySafe');
 
+var nextExceptionId = 0;
 var sourceMapPromise;
 
 type Exception = {
@@ -27,19 +28,24 @@ type Exception = {
 
 function reportException(e: Exception, isFatal: bool, stack?: any) {
   if (RCTExceptionsManager) {
+    var exceptionId = nextExceptionId++;
     if (!stack) {
       stack = parseErrorStack(e);
     }
     if (isFatal) {
-      RCTExceptionsManager.reportFatalException(e.message, stack);
+      RCTExceptionsManager.reportFatalException(exceptionId, e.message, stack);
     } else {
-      RCTExceptionsManager.reportSoftException(e.message, stack);
+      RCTExceptionsManager.reportSoftException(exceptionId, e.message, stack);
     }
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
+          RCTExceptionsManager.updateException(
+            exceptionId,
+            e.message,
+            prettyStack,
+          );
         })
         .catch(error => {
           // This can happen in a variety of normal situations, such as

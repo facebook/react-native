@@ -13,9 +13,9 @@
 
 @protocol RCTExceptionsManagerDelegate <NSObject>
 
-- (void)handleSoftJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
-- (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
-- (void)updateJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
+- (void)handleSoftJSExceptionWithID:(NSNumber *)exceptionID message:(NSString *)message stack:(NSArray *)stack;
+- (void)handleFatalJSExceptionWithID:(NSNumber *)exceptionID message:(NSString *)message stack:(NSArray *)stack;
+- (void)updateJSExceptionWithID:(NSNumber *)exceptionID message:(NSString *)message stack:(NSArray *)stack;
 
 @end
 
