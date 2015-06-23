@@ -122,6 +122,20 @@ RCT_CONVERTER(NSString *, NSString, description)
   return URL ? [NSURLRequest requestWithURL:URL] : nil;
 }
 
++ (RCTFileURL *)RCTFileURL:(id)json
+{
+  NSURL *fileURL = [self NSURL:json];
+  if (![fileURL isFileURL]) {
+    RCTLogError(@"URI must be a local file, '%@' isn't.", fileURL);
+    return nil;
+  }
+  if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path]) {
+    RCTLogError(@"File '%@' could not be found.", fileURL);
+    return nil;
+  }
+  return fileURL;
+}
+
 + (NSDate *)NSDate:(id)json
 {
   if ([json isKindOfClass:[NSNumber class]]) {
@@ -854,6 +868,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
 RCT_ARRAY_CONVERTER(NSString)
 RCT_ARRAY_CONVERTER(NSDictionary)
 RCT_ARRAY_CONVERTER(NSURL)
+RCT_ARRAY_CONVERTER(RCTFileURL)
 RCT_ARRAY_CONVERTER(NSNumber)
 RCT_ARRAY_CONVERTER(UIColor)
 
