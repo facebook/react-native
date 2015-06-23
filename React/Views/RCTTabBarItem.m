@@ -25,7 +25,7 @@
   return _barItem;
 }
 
-- (void)setIcon:(NSString *)icon
+- (void)setIcon:(id)icon
 {
   static NSDictionary *systemIcons;
   static dispatch_once_t onceToken;
@@ -48,13 +48,15 @@
 
   // Update icon
   BOOL wasSystemIcon = (systemIcons[_icon] != nil);
-  _icon = [icon copy];
+  if ([icon isKindOfClass:[NSString class]]) {
+    _icon = [icon copy];
+  }
 
   // Check if string matches any custom images first
-  UIImage *image = [RCTConvert UIImage:_icon];
+  UIImage *image = [RCTConvert UIImage:icon];
   UITabBarItem *oldItem = _barItem;
   if (image) {
-
+    
     // Recreate barItem if previous item was a system icon
     if (wasSystemIcon) {
       _barItem = nil;
@@ -67,7 +69,7 @@
   } else {
 
     // Not a custom image, may be a system item?
-    NSNumber *systemIcon = systemIcons[icon];
+    NSNumber *systemIcon = systemIcons[_icon];
     if (!systemIcon) {
       RCTLogError(@"The tab bar icon '%@' did not match any known image or system icon", icon);
       return;
