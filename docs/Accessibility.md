@@ -1,5 +1,5 @@
 ---
-id: accesibility
+id: accessibility
 title: Accessibility
 layout: docs
 category: Guides
