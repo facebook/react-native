@@ -26,16 +26,12 @@
 - (void)setUp
 {
 #if __LP64__
-  #error Tests should be run on 32-bit device simulators (e.g. iPhone 5)
+  RCTAssert(false, @"Tests should be run on 32-bit device simulators (e.g. iPhone 5)");
 #endif
 
   NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
   RCTAssert(version.majorVersion == 8 || version.minorVersion == 3, @"Tests should be run on iOS 8.3, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp");
-
-  // If tests have changes, set recordMode = YES below and run the affected
-  // tests on an iPhone5, iOS 8.3 simulator.
-  _runner.recordMode = NO;
 }
 
 #pragma mark Logic Tests
@@ -53,8 +49,7 @@
   expectErrorBlock:nil];
 }
 
-// TODO: this seems to stall forever - figure out why
-- (void)DISABLED_testTheTester_ExpectError
+- (void)testTheTester_ExpectError
 {
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
@@ -91,12 +86,9 @@
 
 - (void)testSimpleSnapshot
 {
+  // If tests have changes, set recordMode = YES below and re-run
+  _runner.recordMode = NO;
   [_runner runTest:_cmd module:@"SimpleSnapshotTest"];
-}
-
-- (void)testZZZ_NotInRecordMode
-{
-  RCTAssert(_runner.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");
 }
 
 @end

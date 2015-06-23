@@ -18,16 +18,13 @@ module.exports = {
   transformSource: transformSource,
 
   process: function(src, fileName) {
-    if (fileName.match(/node_modules/)) {
-      return src;
-    }
-
     try {
       return transformSource(src, fileName);
     } catch(e) {
-      throw new Error('\nError transforming file:\n  js/' +
+      console.error('\nError transforming file:\n  js/' +
         (fileName.split('/js/')[1] || fileName) + ':' + e.lineNumber + ': \'' +
         e.message + '\'\n');
+      return src;
     }
   }
 };

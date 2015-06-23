@@ -12,7 +12,7 @@
 'use strict';
 
 var FormData = require('FormData');
-var RCTDataManager = require('NativeModules').DataManager;
+var RCTNetworking = require('NativeModules').Networking;
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var XMLHttpRequestBase = require('XMLHttpRequestBase');
@@ -89,7 +89,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
     if (data instanceof FormData) {
       data = {formData: data.getParts()};
     }
-    RCTDataManager.sendRequest(
+    RCTNetworking.sendRequest(
       {
         method,
         url,
@@ -103,7 +103,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
 
   abortImpl(): void {
     if (this._requestId) {
-      RCTDataManager.cancelRequest(this._requestId);
+      RCTNetworking.cancelRequest(this._requestId);
       this._clearSubscriptions();
       this._requestId = null;
     }

@@ -24,8 +24,8 @@ var SimpleSnapshotTest = React.createClass({
     requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
   },
 
-  done() {
-    TestModule.markTestCompleted();
+  done(success) {
+    TestModule.markTestPassed(success);
   },
 
   render() {
