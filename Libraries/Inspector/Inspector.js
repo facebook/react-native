@@ -26,6 +26,7 @@ class Inspector extends React.Component {
     this.state = {
       panelPos: 'bottom',
       inspecting: true,
+      perfing: false,
       inspected: null,
     };
   }
@@ -59,9 +60,18 @@ class Inspector extends React.Component {
     });
   }
 
+  setPerfing(val: bool) {
+    this.setState({
+      perfing: val,
+      inspecting: false,
+      inspected: null,
+    });
+  }
+
   setInspecting(val: bool) {
     this.setState({
       inspecting: val,
+      inspected: null
     });
   }
 
@@ -79,6 +89,8 @@ class Inspector extends React.Component {
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
             inspecting={this.state.inspecting}
+            perfing={this.state.perfing}
+            setPerfing={this.setPerfing.bind(this)}
             setInspecting={this.setInspecting.bind(this)}
             inspected={this.state.inspected}
             hierarchy={this.state.hierarchy}
