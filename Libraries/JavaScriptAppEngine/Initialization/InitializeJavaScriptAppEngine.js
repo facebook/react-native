@@ -24,6 +24,7 @@
 
 // Just to make sure the JS gets packaged up.
 require('RCTDeviceEventEmitter');
+require('PerformanceLogger');
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;

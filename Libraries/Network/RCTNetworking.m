@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDataManager.h"
+#import "RCTNetworking.h"
 
 #import "RCTAssert.h"
 #import "RCTConvert.h"
@@ -19,7 +19,7 @@
 
 typedef void (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
 
-@interface RCTDataManager ()<RCTURLRequestDelegate>
+@interface RCTNetworking ()<RCTURLRequestDelegate>
 
 - (void)processDataForHTTPQuery:(NSDictionary *)data callback:(void (^)(NSError *error, NSDictionary *result))callback;
 
@@ -30,7 +30,7 @@ typedef void (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
  */
 @interface RCTHTTPFormDataHelper : NSObject
 
-@property (nonatomic, weak) RCTDataManager *dataManager;
+@property (nonatomic, weak) RCTNetworking *dataManager;
 
 @end
 
@@ -207,14 +207,14 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
 /**
  * Bridge module that provides the JS interface to the network stack.
  */
-@implementation RCTDataManager
+@implementation RCTNetworking
 {
   NSInteger _currentRequestID;
   NSMapTable *_activeRequests;
-  dispatch_queue_t _methodQueue;
 }
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
@@ -222,17 +222,11 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _currentRequestID = 0;
-    _methodQueue = dispatch_queue_create("com.facebook.React.RCTDataManager", DISPATCH_QUEUE_SERIAL);
     _activeRequests = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                                 valueOptions:NSPointerFunctionsStrongMemory
                                                     capacity:0];
   }
   return self;
-}
-
-- (dispatch_queue_t)methodQueue
-{
-  return _methodQueue;
 }
 
 - (void)buildRequest:(NSDictionary *)query
