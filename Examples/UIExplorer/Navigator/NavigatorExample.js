@@ -132,6 +132,7 @@ var TabBarExample = React.createClass({
   render: function() {
     return (
       <Navigator
+        ref={this._setNavigatorRef}
         style={styles.container}
         initialRoute={{ message: "First Scene", }}
         renderScene={this.renderScene}
@@ -145,6 +146,34 @@ var TabBarExample = React.createClass({
     );
   },
 
+
+  componentWillUnmount: function() {
+    this._listeners && this._listeners.forEach(listener => listener.remove());
+  },
+
+  _setNavigatorRef: function(navigator) {
+    if (navigator !== this._navigator) {
+      this._navigator = navigator;
+
+      if (navigator) {
+        var callback = (event) => {
+          console.log(
+            `TabBarExample: event ${event.type}`,
+            {
+              route: JSON.stringify(event.data.route),
+              target: event.target,
+              type: event.type,
+            }
+          );
+        };
+        // Observe focus change events from the owner.
+        this._listeners = [
+          navigator.navigationContext.addListener('willfocus', callback),
+          navigator.navigationContext.addListener('didfocus', callback),
+        ];
+      }
+    }
+  },
 });
 
 var styles = StyleSheet.create({

@@ -32,11 +32,6 @@ RCT_EXPORT_MODULE()
   return [[RCTShadowText alloc] init];
 }
 
-#pragma mark - View properties
-
-RCT_IGNORE_VIEW_PROPERTY(backgroundColor);
-RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
-
 #pragma mark - Shadow properties
 
 RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
@@ -50,8 +45,6 @@ RCT_EXPORT_SHADOW_PROPERTY(letterSpacing, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(lineHeight, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(shadowOffset, CGSize)
 RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
-RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textBackgroundColor, UIColor)
-RCT_REMAP_SHADOW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry

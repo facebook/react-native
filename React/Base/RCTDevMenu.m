@@ -142,7 +142,7 @@ RCT_EXPORT_MODULE()
     [commands registerKeyCommandWithInput:@"i"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [_bridge.eventDispatcher
+                                     [weakSelf.bridge.eventDispatcher
                                       sendDeviceEventWithName:@"toggleElementInspector"
                                       body:nil];
                                    }];

@@ -20,8 +20,8 @@
  * before before using it.
  */
 
-NSString *const RCTProfileDidStartProfiling;
-NSString *const RCTProfileDidEndProfiling;
+RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
+RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 
 #if RCT_DEV
 

@@ -17,6 +17,7 @@
 #import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
+#import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -446,12 +447,14 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     if (!strongSelf || !strongSelf.isValid) {
       return;
     }
+    RCTPerformanceLoggerStart(RCTPLAppScriptExecution);
     JSValueRef jsError = NULL;
     JSStringRef execJSString = JSStringCreateWithCFString((__bridge CFStringRef)script);
     JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);
     JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, &jsError);
     JSStringRelease(jsURL);
     JSStringRelease(execJSString);
+    RCTPerformanceLoggerEnd(RCTPLAppScriptExecution);
 
     if (onComplete) {
       NSError *error;
