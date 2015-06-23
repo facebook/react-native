@@ -178,7 +178,6 @@ var nativeOnlyProps = {
   src: true,
   defaultImageSrc: true,
   imageTag: true,
-  resizeMode: true,
 };
 if (__DEV__) {
   verifyPropTypes(Image, RCTStaticImage.viewConfig, nativeOnlyProps);
