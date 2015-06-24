@@ -17,7 +17,7 @@ jest
   .mock('os')
   .mock('fs');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('JSTransformer Cache', function() {
   var Cache;

@@ -251,7 +251,14 @@ ReactNativeBaseComponent.Mixin = {
       this._currentElement.props, // next props
       this.viewConfig.validAttributes
     );
-    RCTUIManager.createView(tag, this.viewConfig.uiViewClassName, updatePayload);
+
+    var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
+    RCTUIManager.createView(
+      tag,
+      this.viewConfig.uiViewClassName,
+      nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,
+      updatePayload
+    );
 
     this._registerListenersUponCreation(this._currentElement.props);
     this.initializeChildren(

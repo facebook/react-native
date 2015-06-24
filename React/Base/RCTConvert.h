@@ -46,6 +46,9 @@
 + (NSURL *)NSURL:(id)json;
 + (NSURLRequest *)NSURLRequest:(id)json;
 
+typedef NSURL RCTFileURL;
++ (RCTFileURL *)RCTFileURL:(id)json;
+
 + (NSDate *)NSDate:(id)json;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
@@ -94,6 +97,9 @@ typedef NSArray NSDictionaryArray;
 
 typedef NSArray NSURLArray;
 + (NSURLArray *)NSURLArray:(id)json;
+
+typedef NSArray RCTFileURLArray;
++ (RCTFileURLArray *)RCTFileURLArray:(id)json;
 
 typedef NSArray NSNumberArray;
 + (NSNumberArray *)NSNumberArray:(id)json;

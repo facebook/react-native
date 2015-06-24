@@ -11,7 +11,6 @@ on run argv
   set theURL to item 1 of argv
 
   tell application "Chrome"
-    activate
 
     if (count every window) = 0 then
       make new window
@@ -40,6 +39,7 @@ on run argv
       set theWindow's active tab index to theTabIndex
     else
       tell window 1
+        activate
         make new tab with properties {URL:theURL}
       end tell
     end if

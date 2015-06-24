@@ -25,6 +25,7 @@ var {
 
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 
+exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<Image>';
 exports.description = 'Base component for displaying different types of images.';

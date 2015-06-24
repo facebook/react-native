@@ -22,7 +22,7 @@ var PromiseTest = React.createClass({
     Promise.all([
       this.testShouldResolve(),
       this.testShouldReject(),
-    ]).then(() => RCTTestModule.finish(
+    ]).then(() => RCTTestModule.markTestPassed(
       this.shouldResolve && this.shouldReject
     ));
   },
@@ -42,9 +42,11 @@ var PromiseTest = React.createClass({
   },
 
   render() {
-      return <React.View />;
+    return <React.View />;
   }
 
 });
+
+PromiseTest.displayName = 'PromiseTest';
 
 module.exports = PromiseTest;
