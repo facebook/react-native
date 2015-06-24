@@ -18,6 +18,7 @@
       "js"
     ],
     "unmockedModulePathPatterns": [
+      "promise",
       "source-map"
     ]
   },
