@@ -187,7 +187,7 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
   }
   id value = mapping[json];
   if (!value && [json description].length > 0) {
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [mapping allKeys]);
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [[mapping allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)]);
   }
   return value ?: defaultValue;
 }
