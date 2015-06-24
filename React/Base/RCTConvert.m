@@ -187,7 +187,7 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
   }
   id value = mapping[json];
   if (!value && [json description].length > 0) {
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [mapping allKeys]);
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [[mapping allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)]);
   }
   return value ?: defaultValue;
 }
@@ -550,27 +550,29 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
 
     // Parse color
-    uint32_t red = 0, green = 0, blue = 0;
-    CGFloat alpha = 1.0;
+    double red = 0, green = 0, blue = 0;
+    double alpha = 1.0;
     if ([colorString hasPrefix:@"#"]) {
+      uint32_t redInt = 0, greenInt = 0, blueInt = 0;
       if (colorString.length == 4) { // 3 digit hex
-        sscanf([colorString UTF8String], "#%01x%01x%01x", &red, &green, &blue);
+        sscanf([colorString UTF8String], "#%01x%01x%01x", &redInt, &greenInt, &blueInt);
         // expand to 6 digit hex
-        red = red | (red << 4);
-        green = green | (green << 4);
-        blue = blue | (blue << 4);
+        red = redInt | (redInt << 4);
+        green = greenInt | (greenInt << 4);
+        blue = blueInt | (blueInt << 4);
       } else if (colorString.length == 7) { // 6 digit hex
-        sscanf(colorString.UTF8String, "#%02x%02x%02x", &red, &green, &blue);
+        sscanf(colorString.UTF8String, "#%02x%02x%02x", &redInt, &greenInt, &blueInt);
+        red = redInt;
+        green = greenInt;
+        blue = blueInt;
       } else {
         RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long.", colorString);
         alpha = -1;
       }
     } else if ([colorString hasPrefix:@"rgba("]) {
-      double tmpAlpha;
-      sscanf(colorString.UTF8String, "rgba(%u,%u,%u,%lf)", &red, &green, &blue, &tmpAlpha);
-      alpha = tmpAlpha;
+      sscanf(colorString.UTF8String, "rgba(%lf,%lf,%lf,%lf)", &red, &green, &blue, &alpha);
     } else if ([colorString hasPrefix:@"rgb("]) {
-      sscanf(colorString.UTF8String, "rgb(%u,%u,%u)", &red, &green, &blue);
+      sscanf(colorString.UTF8String, "rgb(%lf,%lf,%lf)", &red, &green, &blue);
     } else {
       RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb or a valid CSS color name.", colorString);
       alpha = -1;

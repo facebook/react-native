@@ -73,6 +73,7 @@ function renderApplication<D, P, S>(
     <AppContainer rootTag={rootTag}>
       <RootComponent
         {...initialProps}
+        rootTag={rootTag}
       />
     </AppContainer>,
     rootTag
