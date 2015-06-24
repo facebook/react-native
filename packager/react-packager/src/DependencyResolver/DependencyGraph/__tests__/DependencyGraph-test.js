@@ -2171,6 +2171,65 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should not be confused by prev occuring whitelisted names', function() {
+      var root = '/react-tools';
+      fs.__setMockFilesystem({
+        'react-tools': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("shouldWork");',
+          ].join('\n'),
+          'node_modules': {
+            'react-tools': {
+              'package.json': JSON.stringify({
+                name: 'react-tools',
+                main: 'main.js',
+              }),
+              'main.js': [
+                '/**',
+                ' * @providesModule shouldWork',
+                ' */',
+              ].join('\n'),
+            },
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+      });
+      return dgraph.getOrderedDependencies('/react-tools/index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/react-tools/index.js',
+              dependencies: ['shouldWork'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'shouldWork',
+              path: '/react-tools/node_modules/react-tools/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
+
+
     pit('should ignore modules it cant find (assumes own require system)', function() {
       // For example SourceMap.js implements it's own require system.
       var root = '/root';
