@@ -64,12 +64,12 @@ var Image = React.createClass({
      */
     source: PropTypes.shape({
       uri: PropTypes.string,
+      /**
+       * Force display of the ALAsset in thumbnail format 
+       * This property reduce the memory size and only works with ALAsset
+       */
+      assetThumbnail: PropTypes.bool,
     }),
-    /**
-     * Force display of the ALAsset in thumbnail format 
-     * This property reduce the memory size and only work with ALAsset
-     */
-    assetThumbnail: PropTypes.bool,
     /**
      * A static image to display while downloading the final image off the
      * network.
@@ -159,7 +159,7 @@ var Image = React.createClass({
       tintColor: style.tintColor,
     });
     if (isStored) {
-      if (this.props.assetThumbnail === true){
+      if (this.props.source.assetThumbnail === true){
         nativeProps.assetThumbnail = source.uri;
       }else{
         nativeProps.imageTag = source.uri;
