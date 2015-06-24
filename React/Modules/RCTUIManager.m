@@ -359,6 +359,12 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
   });
 }
 
+- (UIView *)viewForReactTag:(NSNumber *)reactTag
+{
+  RCTAssertMainThread();
+  return _viewRegistry[reactTag];
+}
+
 - (void)setFrame:(CGRect)frame forRootView:(UIView *)rootView
 {
   RCTAssertMainThread();
