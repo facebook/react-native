@@ -414,18 +414,20 @@ class DependencyGraph {
   }
 
   _isNodeModulesDir(file) {
-    const inNodeModules = file.indexOf('/node_modules/') !== -1;
+    let parts = path.normalize(file).split(path.sep);
+    const indexOfNodeModules = parts.lastIndexOf('node_modules');
 
-    if (!inNodeModules) {
+    if (indexOfNodeModules === -1) {
       return false;
     }
+
+    parts = parts.slice(indexOfNodeModules + 1);
 
     const dirs = this._opts.providesModuleNodeModules;
 
     for (let i = 0; i < dirs.length; i++) {
-      const index = file.indexOf(dirs[i]);
-      if (index !== -1) {
-        return file.slice(index).indexOf('/node_modules/') !== -1;
+      if (parts.indexOf(dirs[i]) > -1) {
+        return false;
       }
     }
 
