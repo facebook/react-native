@@ -48,12 +48,10 @@
 
   // Update icon
   BOOL wasSystemIcon = (systemIcons[_icon] != nil);
-  if ([icon isKindOfClass:[NSString class]]) {
-    _icon = [icon copy];
-  }
+  _icon = [icon copy];
 
   // Check if string matches any custom images first
-  UIImage *image = [RCTConvert UIImage:icon];
+  UIImage *image = [RCTConvert UIImage:_icon];
   UITabBarItem *oldItem = _barItem;
   if (image) {
     
@@ -69,7 +67,7 @@
   } else {
 
     // Not a custom image, may be a system item?
-    NSNumber *systemIcon = systemIcons[_icon];
+    NSNumber *systemIcon = systemIcons[icon];
     if (!systemIcon) {
       RCTLogError(@"The tab bar icon '%@' did not match any known image or system icon", icon);
       return;

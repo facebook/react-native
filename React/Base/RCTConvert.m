@@ -633,7 +633,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
     path = json;
   } else {
-    path = json[@"path"];
+    path = [self NSString:json[@"uri"]];
     scale = [self CGFloat:json[@"scale"]];
   }
 
