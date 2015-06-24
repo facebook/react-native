@@ -48,7 +48,9 @@ var NavigatorIOSExample = React.createClass({
     title: '<NavigatorIOS>',
     description: 'iOS navigation capabilities',
   },
-
+  componentDidMount:function(){
+    this.counter = 10;
+  },
   render: function() {
     var recurseTitle = 'Recurse Navigation';
     if (!this.props.topExampleRoute) {
@@ -81,6 +83,12 @@ var NavigatorIOSExample = React.createClass({
               title: 'Very Long Custom View Example Title',
               component: createExamplePage(null, ViewExample),
             });
+          })}
+          {this._renderRow('Change rightButtonTitle', () => {
+            this.props.navigator.updateNavBar({rightButtonTitle:this.counter++,onRightButtonPress:()=>{
+              this.counter = 10;
+              this.props.navigator.updateNavBar({rightButtonTitle:null});
+            }});
           })}
           {this._renderRow('Custom Right Button', () => {
             this.props.navigator.push({
