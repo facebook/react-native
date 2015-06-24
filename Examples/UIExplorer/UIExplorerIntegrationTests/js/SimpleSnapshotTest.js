@@ -53,4 +53,6 @@ var styles = StyleSheet.create({
   },
 });
 
+SimpleSnapshotTest.displayName = 'SimpleSnapshotTest';
+
 module.exports = SimpleSnapshotTest;

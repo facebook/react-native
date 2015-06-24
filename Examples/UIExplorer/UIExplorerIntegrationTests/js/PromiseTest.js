@@ -47,4 +47,6 @@ var PromiseTest = React.createClass({
 
 });
 
+PromiseTest.displayName = 'PromiseTest';
+
 module.exports = PromiseTest;

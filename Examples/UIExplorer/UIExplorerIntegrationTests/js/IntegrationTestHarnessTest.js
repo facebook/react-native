@@ -59,4 +59,6 @@ var IntegrationTestHarnessTest = React.createClass({
   }
 });
 
+IntegrationTestHarnessTest.displayName = 'IntegrationTestHarnessTest';
+
 module.exports = IntegrationTestHarnessTest;

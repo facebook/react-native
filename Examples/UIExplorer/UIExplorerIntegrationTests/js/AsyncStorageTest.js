@@ -176,4 +176,6 @@ var AsyncStorageTest = React.createClass({
   }
 });
 
+AsyncStorageTest.displayName = 'AsyncStorageTest';
+
 module.exports = AsyncStorageTest;
