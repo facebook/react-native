@@ -275,6 +275,10 @@ var ListView = React.createClass({
     }
   },
 
+  componentDidUpdate: function() {
+    this._measureAndUpdateScrollProps();
+  },
+
   onRowHighlighted: function(sectionID, rowID) {
     this.setState({highlightedRow: {sectionID, rowID}});
   },
@@ -368,7 +372,6 @@ var ListView = React.createClass({
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
-
     return (
       <ScrollView {...props}
         ref={SCROLLVIEW_REF}>

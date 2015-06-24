@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1372B7371AB03E7B00659ED6 /* RCTReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 1372B7361AB03E7B00659ED6 /* RCTReachability.m */; };
 		352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */; };
-		58B512081A9E6CE300147676 /* RCTDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTDataManager.m */; };
+		58B512081A9E6CE300147676 /* RCTNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,8 +30,8 @@
 		352DA0B71B17855800AA15A8 /* RCTHTTPRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTHTTPRequestHandler.h; sourceTree = "<group>"; };
 		352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTHTTPRequestHandler.m; sourceTree = "<group>"; };
 		58B511DB1A9E6C8500147676 /* libRCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		58B512061A9E6CE300147676 /* RCTDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDataManager.h; sourceTree = "<group>"; };
-		58B512071A9E6CE300147676 /* RCTDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDataManager.m; sourceTree = "<group>"; };
+		58B512061A9E6CE300147676 /* RCTNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworking.h; sourceTree = "<group>"; };
+		58B512071A9E6CE300147676 /* RCTNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNetworking.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,8 +48,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				58B512061A9E6CE300147676 /* RCTDataManager.h */,
-				58B512071A9E6CE300147676 /* RCTDataManager.m */,
+				58B512061A9E6CE300147676 /* RCTNetworking.h */,
+				58B512071A9E6CE300147676 /* RCTNetworking.m */,
 				352DA0B71B17855800AA15A8 /* RCTHTTPRequestHandler.h */,
 				352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */,
 				1372B7351AB03E7B00659ED6 /* RCTReachability.h */,
@@ -125,7 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1372B7371AB03E7B00659ED6 /* RCTReachability.m in Sources */,
-				58B512081A9E6CE300147676 /* RCTDataManager.m in Sources */,
+				58B512081A9E6CE300147676 /* RCTNetworking.m in Sources */,
 				352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -21,8 +21,6 @@
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 
-#define TIMEOUT_SECONDS 240
-
 @interface UIExplorerTests : XCTestCase
 {
   RCTTestRunner *_runner;
@@ -40,52 +38,6 @@
   NSString *version = [[UIDevice currentDevice] systemVersion];
   RCTAssert([version isEqualToString:@"8.3"], @"Snapshot tests should be run on iOS 8.3, found %@", version);
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios");
-
-  // If tests have changes, set recordMode = YES below and run the affected
-  // tests on an iPhone5, iOS 8.3 simulator.
-  _runner.recordMode = NO;
-}
-
-- (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
-{
-  if (test(view)) {
-    return YES;
-  }
-  for (UIView *subview in [view subviews]) {
-    if ([self findSubviewInView:subview matching:test]) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
-// Make sure this test runs first because the other tests will tear out the rootView
-- (void)testAAA_RootViewLoadsAndRenders
-{
-  // TODO (t7296305) Fix and Re-Enable this UIExplorer Test
-  return;
-
-  UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
-  RCTAssert([vc.view isKindOfClass:[RCTRootView class]], @"This test must run first.");
-  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
-  BOOL foundElement = NO;
-  NSString *redboxError = nil;
-
-  while ([date timeIntervalSinceNow] > 0 && !foundElement && !redboxError) {
-    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-
-    redboxError = [[RCTRedBox sharedInstance] currentErrorMessage];
-    foundElement = [self findSubviewInView:vc.view matching:^(UIView *view) {
-      if ([view.accessibilityLabel isEqualToString:@"<View>"]) {
-        return YES;
-      }
-      return NO;
-    }];
-  }
-
-  XCTAssertNil(redboxError, @"RedBox error: %@", redboxError);
-  XCTAssertTrue(foundElement, @"Couldn't find element with '<View>' text in %d seconds", TIMEOUT_SECONDS);
 }
 
 #define RCT_SNAPSHOT_TEST(name, reRecord) \
@@ -101,11 +53,5 @@ RCT_SNAPSHOT_TEST(TextExample, NO)
 RCT_SNAPSHOT_TEST(SwitchExample, NO)
 RCT_SNAPSHOT_TEST(SliderExample, NO)
 RCT_SNAPSHOT_TEST(TabBarExample, NO)
-
-// Make sure this test runs last
-- (void)testZZZ_NotInRecordMode
-{
-  RCTAssert(_runner.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");
-}
 
 @end

@@ -66,14 +66,9 @@ class Inspector extends React.Component {
   }
 
   render() {
-    var panelPosition;
-    if (this.state.panelPos === 'bottom') {
-      panelPosition = {bottom: -Dimensions.get('window').height};
-    } else {
-      panelPosition = {top: 0};
-    }
+    var panelContainerStyle = (this.state.panelPos === 'bottom') ? {bottom: 0} : {top: 0};
     return (
-      <View style={styles.container}>
+      <View style={styles.container} pointerEvents="box-none">
         {this.state.inspecting &&
           <InspectorOverlay
             rootTag={this.props.rootTag}
@@ -81,7 +76,7 @@ class Inspector extends React.Component {
             inspectedViewTag={this.props.inspectedViewTag}
             onTouchInstance={this.onTouchInstance.bind(this)}
           />}
-        <View style={[styles.panelContainer, panelPosition]}>
+        <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
             inspecting={this.state.inspecting}
             setInspecting={this.setInspecting.bind(this)}
@@ -103,7 +98,7 @@ var styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 0,
+    bottom: 0,
   },
   panelContainer: {
     position: 'absolute',

@@ -8,6 +8,7 @@
  */
 
 #import "RCTBridgeModule.h"
+#import "RCTInvalidating.h"
 
 /**
  * A simple, asynchronous, persistent, key-value storage system designed as a
@@ -20,12 +21,17 @@
  *
  * Keys and values must always be strings or an error is returned.
  */
-@interface RCTAsyncLocalStorage : NSObject <RCTBridgeModule>
+@interface RCTAsyncLocalStorage : NSObject <RCTBridgeModule,RCTInvalidating>
+
+@property (nonatomic, assign) BOOL clearOnInvalidate;
 
 - (void)multiGet:(NSArray *)keys callback:(RCTResponseSenderBlock)callback;
 - (void)multiSet:(NSArray *)kvPairs callback:(RCTResponseSenderBlock)callback;
 - (void)multiRemove:(NSArray *)keys callback:(RCTResponseSenderBlock)callback;
 - (void)clear:(RCTResponseSenderBlock)callback;
 - (void)getAllKeys:(RCTResponseSenderBlock)callback;
+
+// For clearing data when the bridge may not exist, e.g. when logging out.
++ (void)clearAllData;
 
 @end

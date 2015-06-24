@@ -60,6 +60,7 @@ var ProgressViewExample = React.createClass({
   },
 });
 
+exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'ProgressViewIOS';
 exports.description = 'ProgressViewIOS';

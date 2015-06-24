@@ -53,15 +53,15 @@ function expectEqual(lhs, rhs, testname) {
   );
 }
 
-function expectAsyncNoError(err) {
-  expectTrue(err === null, 'Unexpected Async error: ' + JSON.stringify(err));
+function expectAsyncNoError(place, err) {
+  expectTrue(err === null, 'Unexpected error in ' + place + ': ' + JSON.stringify(err));
 }
 
 function testSetAndGet() {
   AsyncStorage.setItem(KEY_1, VAL_1, (err1) => {
-    expectAsyncNoError(err1);
+    expectAsyncNoError('testSetAndGet/setItem', err1);
     AsyncStorage.getItem(KEY_1, (err2, result) => {
-      expectAsyncNoError(err2);
+      expectAsyncNoError('testSetAndGet/getItem', err2);
       expectEqual(result, VAL_1, 'testSetAndGet setItem');
       updateMessage('get(key_1) correctly returned ' + result);
       runTestCase('should get null for missing key', testMissingGet);
@@ -71,7 +71,7 @@ function testSetAndGet() {
 
 function testMissingGet() {
   AsyncStorage.getItem(KEY_2, (err, result) => {
-    expectAsyncNoError(err);
+    expectAsyncNoError('testMissingGet/setItem', err);
     expectEqual(result, null, 'testMissingGet');
     updateMessage('missing get(key_2) correctly returned ' + result);
     runTestCase('check set twice results in a single key', testSetTwice);
@@ -82,7 +82,7 @@ function testSetTwice() {
   AsyncStorage.setItem(KEY_1, VAL_1, ()=>{
     AsyncStorage.setItem(KEY_1, VAL_1, ()=>{
       AsyncStorage.getItem(KEY_1, (err, result) => {
-        expectAsyncNoError(err);
+        expectAsyncNoError('testSetTwice/setItem', err);
         expectEqual(result, VAL_1, 'testSetTwice');
         updateMessage('setTwice worked as expected');
         runTestCase('test removeItem', testRemoveItem);
@@ -95,17 +95,17 @@ function testRemoveItem() {
   AsyncStorage.setItem(KEY_1, VAL_1, ()=>{
     AsyncStorage.setItem(KEY_2, VAL_2, ()=>{
       AsyncStorage.getAllKeys((err, result) => {
-        expectAsyncNoError(err);
+        expectAsyncNoError('testRemoveItem/getAllKeys', err);
         expectTrue(
           result.indexOf(KEY_1) >= 0 && result.indexOf(KEY_2) >= 0,
           'Missing KEY_1 or KEY_2 in ' + '(' + result + ')'
         );
         updateMessage('testRemoveItem - add two items');
         AsyncStorage.removeItem(KEY_1, (err2) => {
-          expectAsyncNoError(err2);
+          expectAsyncNoError('testRemoveItem/removeItem', err2);
           updateMessage('delete successful ');
           AsyncStorage.getItem(KEY_1, (err3, result2) => {
-            expectAsyncNoError(err3);
+            expectAsyncNoError('testRemoveItem/getItem', err3);
             expectEqual(
               result2,
               null,
@@ -113,7 +113,7 @@ function testRemoveItem() {
             );
             updateMessage('key properly removed ');
             AsyncStorage.getAllKeys((err4, result3) => {
-             expectAsyncNoError(err4);
+             expectAsyncNoError('testRemoveItem/getAllKeys', err4);
              expectTrue(
                result3.indexOf(KEY_1) === -1,
                'Unexpected: KEY_1 present in ' + result3
@@ -130,11 +130,11 @@ function testRemoveItem() {
 
 function testMerge() {
   AsyncStorage.setItem(KEY_MERGE, JSON.stringify(VAL_MERGE_1), (err1) => {
-    expectAsyncNoError(err1);
+    expectAsyncNoError('testMerge/setItem', err1);
     AsyncStorage.mergeItem(KEY_MERGE, JSON.stringify(VAL_MERGE_2), (err2) => {
-      expectAsyncNoError(err2);
+      expectAsyncNoError('testMerge/mergeItem', err2);
       AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
-        expectAsyncNoError(err3);
+        expectAsyncNoError('testMerge/setItem', err3);
         expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
         updateMessage('objects deeply merged\nDone!');
         done();

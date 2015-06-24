@@ -30,11 +30,11 @@
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
+var NavigationContext = require('NavigationContext');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 var NavigatorNavigationBar = require('NavigatorNavigationBar');
 var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
 var PanResponder = require('PanResponder');
-var Platform = require('Platform');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
@@ -203,11 +203,17 @@ var Navigator = React.createClass({
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
     /**
+     * @deprecated
+     * Use `navigationContext.addListener('willfocus', callback)` instead.
+     *
      * Will emit the target route upon mounting and before each nav transition
      */
     onWillFocus: PropTypes.func,
 
     /**
+     * @deprecated
+     * Use `navigationContext.addListener('didfocus', callback)` instead.
+     *
      * Will be called with the new route of each scene after the transition is
      * complete or after the initial mounting
      */
@@ -283,6 +289,9 @@ var Navigator = React.createClass({
   },
 
   componentWillMount: function() {
+    // TODO(t7489503): Don't need this once ES6 Class landed.
+    this.__defineGetter__('navigationContext', this._getNavigationContext);
+
     this._subRouteFocus = [];
     this.parentNavigator = this.props.navigator;
     this._handlers = {};
@@ -321,7 +330,10 @@ var Navigator = React.createClass({
   },
 
   componentWillUnmount: function() {
-
+    if (this._navigationContext) {
+      this._navigationContext.dispose();
+      this._navigationContext = null;
+    }
   },
 
   /**
@@ -400,13 +412,11 @@ var Navigator = React.createClass({
       );
     } else if (this.state.activeGesture != null) {
       var presentedToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
-      if (presentedToIndex > -1) {
-        this._transitionBetween(
-          this.state.presentedIndex,
-          presentedToIndex,
-          this.spring.getCurrentValue()
-        );
-      }
+      this._transitionBetween(
+        this.state.presentedIndex,
+        presentedToIndex,
+        this.spring.getCurrentValue()
+      );
     }
   },
 
@@ -461,12 +471,16 @@ var Navigator = React.createClass({
   },
 
   _emitDidFocus: function(route) {
+    this.navigationContext.emit('didfocus', {route: route});
+
     if (this.props.onDidFocus) {
       this.props.onDidFocus(route);
     }
   },
 
   _emitWillFocus: function(route) {
+    this.navigationContext.emit('willfocus', {route: route});
+
     var navBar = this._navBar;
     if (navBar && navBar.handleWillFocus) {
       navBar.handleWillFocus(route);
@@ -806,7 +820,7 @@ var Navigator = React.createClass({
     this._transitionSceneStyle(fromIndex, toIndex, progress, fromIndex);
     this._transitionSceneStyle(fromIndex, toIndex, progress, toIndex);
     var navBar = this._navBar;
-    if (navBar && navBar.updateProgress) {
+    if (navBar && navBar.updateProgress && toIndex >= 0 && fromIndex >= 0) {
       navBar.updateProgress(progress, fromIndex, toIndex);
     }
   },
@@ -1139,6 +1153,13 @@ var Navigator = React.createClass({
       </View>
     );
   },
+
+  _getNavigationContext: function() {
+    if (!this._navigationContext) {
+      this._navigationContext = new NavigationContext();
+    }
+    return this._navigationContext;
+  }
 });
 
 module.exports = Navigator;
