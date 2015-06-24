@@ -20,6 +20,10 @@ var ModuleTransport = require('../lib/ModuleTransport');
 var declareOpts = require('../lib/declareOpts');
 var imageSize = require('image-size');
 
+var windowsPath = require('../lib/windows');
+// if running on windows use a special version of the path module that converts directory separators
+if (windowsPath.isWindows()) path = windowsPath.path;
+
 var sizeOf = Promise.promisify(imageSize);
 var readFile = Promise.promisify(fs.readFile);
 

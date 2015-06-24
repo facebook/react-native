@@ -14,7 +14,11 @@ var Promise = require('bluebird');
 var util = require('util');
 var exec = require('child_process').exec;
 
+var windowsPath = require('../lib/windows');
+
 var detectingWatcherClass = new Promise(function(resolve) {
+  // if running on Windows override the detection and use NodeWatcher
+  if (windowsPath.isWindows()) return resolve(sane.NodeWatcher);
   exec('which watchman', function(err, out) {
     if (err || out.length === 0) {
       resolve(sane.NodeWatcher);
@@ -44,6 +48,10 @@ function FileWatcher(rootConfigs) {
   ).then(function(watchers) {
     watchers.forEach(function(watcher) {
       watcher.on('all', function(type, filepath, root, stat) {
+        if (windowsPath.isWindows()) {
+          filepath = windowsPath.convertPath(filepath);
+          root = windowsPath.convertPath(root);
+        }
         fileWatcher.emit('all', type, filepath, root, stat);
       });
     });

@@ -8,11 +8,14 @@
  */
 'use strict';
 
+var windowsPath = require('./react-packager/src/lib/windows');
+
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  __dirname,
+  windowsPath.isWindows() ? __dirname : windowsPath.convertPath( __dirname),
   'website',
+  '/.git',             // added because nodeWatcher does not ignore hidden files
   'node_modules/react-tools/src/utils/ImmutableObject.js',
   'node_modules/react-tools/src/core/ReactInstanceHandles.js',
   'node_modules/react-tools/src/event/EventPropagators.js'

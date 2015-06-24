@@ -20,6 +20,10 @@ var util = require('util');
 var declareOpts = require('../../../lib/declareOpts');
 var getAssetDataFromName = require('../../../lib/getAssetDataFromName');
 
+var windowsPath = require('../../../lib/windows');
+// if running on windows use a special version of the path module that converts directory separators
+if (windowsPath.isWindows()) path = windowsPath.path;
+
 var readFile = Promise.promisify(fs.readFile);
 var readDir = Promise.promisify(fs.readdir);
 var lstat = Promise.promisify(fs.lstat);
@@ -734,6 +738,7 @@ function readAndStatDir(dir) {
       files = files.filter(function(f) {
         return !!f;
       });
+      if (windowsPath.isWindows()) files = files.map(windowsPath.convertPath)
 
       var stats = files.map(function(filePath) {
         return lstat(filePath).catch(handleBrokenLink);

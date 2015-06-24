@@ -19,6 +19,10 @@ var lstat = Promise.promisify(fs.lstat);
 var readDir = Promise.promisify(fs.readdir);
 var readFile = Promise.promisify(fs.readFile);
 
+var windowsPath = require('../lib/windows');
+// if running on windows use a special version of the path module that converts directory separators
+if (windowsPath.isWindows()) path = windowsPath.path;
+
 module.exports = AssetServer;
 
 var validateOpts = declareOpts({
@@ -61,6 +65,10 @@ AssetServer.prototype._getAssetRecord = function(assetPath) {
       readDir(dir),
     ];
   }).spread(function(dir, files) {
+    if (windowsPath.isWindows()) {
+      dir = windowsPath.convertPath(dir);
+      files = files.map( windowsPath.convertPath );
+    }
     var assetData = getAssetDataFromName(filename);
     var map = buildAssetMap(dir, files);
     var record = map[assetData.assetName];

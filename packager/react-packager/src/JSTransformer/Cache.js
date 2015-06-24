@@ -18,6 +18,10 @@ var Promise = require('bluebird');
 var tmpdir = require('os').tmpDir();
 var version = require('../../../../package.json').version;
 
+var windowsPath = require('../lib/windows');
+// if running on windows use a special version of the path module that converts directory separators
+if (windowsPath.isWindows()) path = windowsPath.path;
+
 var validateOpts = declareOpts({
   resetCache: {
     type: 'boolean',
