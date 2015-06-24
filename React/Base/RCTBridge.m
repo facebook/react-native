@@ -1438,7 +1438,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
   RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self.perfStats.jsGraph tick:displayLink.timestamp];
+    [self.perfStats.jsGraph onTick:displayLink.timestamp];
   });
 }
 
@@ -1448,7 +1448,7 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 
   RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
 
-  [self.perfStats.uiGraph tick:displayLink.timestamp];
+  [self.perfStats.uiGraph onTick:displayLink.timestamp];
 }
 
 - (void)startProfiling
