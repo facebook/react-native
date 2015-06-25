@@ -279,7 +279,6 @@ var ScrollView = React.createClass({
 
     var contentContainer =
       <View
-        collapsible={false}
         ref={INNERVIEW}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}>

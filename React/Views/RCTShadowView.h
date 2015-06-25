@@ -41,12 +41,6 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
 @property (nonatomic, assign) BOOL hasOnLayout;
 
-@property (nonatomic, assign, readonly, getter=isLayoutOnly) BOOL layoutOnly;
-@property (nonatomic, copy) NSDictionary *allProps;
-
-/// `frame` adjusted for recursive superview `layoutOnly` status.
-@property (nonatomic, assign, readonly) CGRect adjustedFrame;
-
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
  * set to NO in RCTUIManager after the layout pass is done and all frames have been extracted to be applied to the
