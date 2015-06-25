@@ -635,17 +635,24 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     return nil;
   }
 
-  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]]) {
+  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]] && ![json isKindOfClass:[NSDictionary class]]) {
     RCTLogConvertError(json, "an image");
     return nil;
   }
 
-  if ([json length] == 0) {
-    return nil;
+  UIImage *image;
+  NSString *path;
+  CGFloat scale = 0.0;
+  if ([json isKindOfClass:[NSString class]]) {
+    if ([json length] == 0) {
+      return nil;
+    }
+    path = json;
+  } else {
+    path = [self NSString:json[@"uri"]];
+    scale = [self CGFloat:json[@"scale"]];
   }
 
-  UIImage *image = nil;
-  NSString *path = json;
   if ([path hasPrefix:@"data:"]) {
     NSURL *url = [NSURL URLWithString:path];
     NSData *imageData = [NSData dataWithContentsOfURL:url];
@@ -658,6 +665,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
       image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
     }
   }
+  
+  if (scale > 0) {
+    image = [UIImage imageWithCGImage:image.CGImage scale:scale orientation:image.imageOrientation];
+  }
+  
   // NOTE: we don't warn about nil images because there are legitimate
   // case where we find out if a string is an image by using this method
   return image;

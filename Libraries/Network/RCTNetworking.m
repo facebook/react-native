@@ -285,7 +285,7 @@ RCT_EXPORT_MODULE()
   }];
   id<RCTURLRequestHandler> handler = [handlers lastObject];
   if (!handler) {
-    RCTLogError(@"No suitable request handler found for %@", request);
+    RCTLogError(@"No suitable request handler found for %@", request.URL);
   }
   return handler;
 }
@@ -322,6 +322,9 @@ RCT_EXPORT_MODULE()
   NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
   if (request) {
     id<RCTURLRequestHandler> handler = [self handlerForRequest:request];
+    if (!handler) {
+      return;
+    }
     (void)[[RCTDataLoader alloc] initWithRequest:request handler:handler callback:^(NSData *data, NSString *MIMEType, NSError *error) {
       if (data) {
         callback(nil, @{@"body": data, @"contentType": MIMEType});

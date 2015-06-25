@@ -8,17 +8,19 @@
  */
 'use strict';
 
-const path = require('path');
+const Activity = require('../../Activity');
+const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
 const Fastfs = require('../fastfs');
 const ModuleCache = require('../ModuleCache');
-const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
-const declareOpts = require('../../lib/declareOpts');
-const isAbsolutePath = require('absolute-path');
-const debug = require('debug')('DependencyGraph');
-const getAssetDataFromName = require('../../lib/getAssetDataFromName');
-const util = require('util');
 const Promise = require('promise');
 const _ = require('underscore');
+const crawl = require('../crawlers');
+const debug = require('debug')('DependencyGraph');
+const declareOpts = require('../../lib/declareOpts');
+const getAssetDataFromName = require('../../lib/getAssetDataFromName');
+const isAbsolutePath = require('absolute-path');
+const path = require('path');
+const util = require('util');
 
 const validateOpts = declareOpts({
   roots: {
@@ -68,13 +70,18 @@ class DependencyGraph {
       return this._loading;
     }
 
-    const modulePattern = new RegExp(
-      '\.(' + ['js', 'json'].concat(this._assetExts).join('|') + ')$'
-    );
+    const crawlActivity = Activity.startEvent('fs crawl');
+    const allRoots = this._opts.roots.concat(this._opts.assetRoots_DEPRECATED);
+    this._crawling = crawl(allRoots, {
+      ignore: this._opts.ignoreFilePath,
+      exts: ['js', 'json'].concat(this._opts.assetExts),
+      fileWatcher: this._opts.fileWatcher,
+    });
+    this._crawling.then((files) => Activity.endEvent(crawlActivity));
 
     this._fastfs = new Fastfs(this._opts.roots,this._opts.fileWatcher, {
-      pattern: modulePattern,
       ignore: this._opts.ignoreFilePath,
+      crawling: this._crawling,
     });
 
     this._fastfs.on('change', this._processFileChange.bind(this));
@@ -454,14 +461,10 @@ class DependencyGraph {
 
     this._assetMap_DEPRECATED = Object.create(null);
 
-    const pattern = new RegExp(
-      '\.(' + this._opts.assetExts.join('|') + ')$'
-    );
-
     const fastfs = new Fastfs(
       this._opts.assetRoots_DEPRECATED,
       this._opts.fileWatcher,
-      { pattern, ignore: this._opts.ignoreFilePath }
+      { ignore: this._opts.ignoreFilePath, crawling: this._crawling }
     );
 
     fastfs.on('change', this._processAssetChange_DEPRECATED.bind(this));

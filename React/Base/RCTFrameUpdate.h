@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <Foundation/Foundation.h>
+
+@class CADisplayLink;
+
 /**
  * Interface containing the information about the last screen refresh.
  */
@@ -21,6 +25,8 @@
  * Time since the last frame update ( >= 16.6ms )
  */
 @property (nonatomic, readonly) NSTimeInterval deltaTime;
+
+- (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink NS_DESIGNATED_INITIALIZER;
 
 @end
 

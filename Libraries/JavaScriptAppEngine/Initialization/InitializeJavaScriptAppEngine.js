@@ -23,6 +23,7 @@
 /* globals GLOBAL: true, window: true */
 
 // Just to make sure the JS gets packaged up.
+require('RCTDebugComponentOwnership');
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
 

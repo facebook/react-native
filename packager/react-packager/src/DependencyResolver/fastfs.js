@@ -4,28 +4,46 @@ const Promise = require('promise');
 const {EventEmitter} = require('events');
 
 const _ = require('underscore');
-const debug = require('debug')('DependencyGraph');
 const fs = require('fs');
 const path = require('path');
 
-const readDir = Promise.denodeify(fs.readdir);
 const readFile = Promise.denodeify(fs.readFile);
 const stat = Promise.denodeify(fs.stat);
+
 const hasOwn = Object.prototype.hasOwnProperty;
 
 class Fastfs extends EventEmitter {
-  constructor(roots, fileWatcher, {ignore, pattern}) {
+  constructor(roots, fileWatcher, {ignore, crawling}) {
     super();
     this._fileWatcher = fileWatcher;
     this._ignore = ignore;
-    this._pattern = pattern;
     this._roots = roots.map(root => new File(root, { isDir: true }));
     this._fastPaths = Object.create(null);
+    this._crawling = crawling;
   }
 
   build() {
-    const queue = this._roots.slice();
-    return this._search(queue).then(() => {
+    const rootsPattern = new RegExp(
+      '^(' + this._roots.map(root => escapeRegExp(root.path)).join('|') + ')'
+    );
+
+    return this._crawling.then(files => {
+      files.forEach(filePath => {
+        if (filePath.match(rootsPattern)) {
+          const newFile = new File(filePath, { isDir: false });
+          const parent = this._fastPaths[path.dirname(filePath)];
+          if (parent) {
+            parent.addChild(newFile);
+          } else {
+            this._add(newFile);
+            for (let file = newFile; file; file = file.parent) {
+              if (!this._fastPaths[file.path]) {
+                this._fastPaths[file.path] = file;
+              }
+            }
+          }
+        }
+      });
       this._fileWatcher.on('all', this._processFileChange.bind(this));
     });
   }
@@ -134,32 +152,6 @@ class Fastfs extends EventEmitter {
     this._getAndAssertRoot(file.path).addChild(file);
   }
 
-  _search(queue) {
-    const dir = queue.shift();
-    if (!dir) {
-      return Promise.resolve();
-    }
-
-    return readAndStatDir(dir.path).then(([filePaths, stats]) => {
-      filePaths.forEach((filePath, i) => {
-        if (this._ignore(filePath)) {
-          return;
-        }
-
-        if (stats[i].isDirectory()) {
-          queue.push(
-            new File(filePath, { isDir: true, fstat: stats[i] })
-          );
-          return;
-        }
-
-        if (filePath.match(this._pattern)) {
-          this._add(new File(filePath, { fstat: stats[i] }));
-        }
-      });
-      return this._search(queue);
-    });
-  }
 
   _processFileChange(type, filePath, root, fstat) {
     const absPath = path.join(root, filePath);
@@ -182,10 +174,7 @@ class Fastfs extends EventEmitter {
     delete this._fastPaths[path.normalize(absPath)];
 
     if (type !== 'delete') {
-      this._add(new File(absPath, {
-        isDir: false,
-        fstat
-      }));
+      this._add(new File(absPath, { isDir: false }));
     }
 
     this.emit('change', type, filePath, root, fstat);
@@ -193,15 +182,11 @@ class Fastfs extends EventEmitter {
 }
 
 class File {
-  constructor(filePath, {isDir, fstat}) {
+  constructor(filePath, { isDir }) {
     this.path = filePath;
     this.isDir = Boolean(isDir);
     if (this.isDir) {
       this.children = Object.create(null);
-    }
-
-    if (fstat) {
-      this._stat = Promise.resolve(fstat);
     }
   }
 
@@ -290,21 +275,8 @@ function isDescendant(root, child) {
   return path.relative(root, child).indexOf('..') !== 0;
 }
 
-function readAndStatDir(dir) {
-  return readDir(dir)
-    .then(files => Promise.all(files.map(f => path.join(dir, f))))
-    .then(files => Promise.all(
-      files.map(f => stat(f).catch(handleBrokenLink))
-    ).then(stats => [
-      // Remove broken links.
-      files.filter((file, i ) => !!stats[i]),
-      stats.filter(Boolean),
-    ]));
-}
-
-function handleBrokenLink(e) {
-  debug('WARNING: error stating, possibly broken symlink', e.message);
-  return Promise.resolve();
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
 
 module.exports = Fastfs;

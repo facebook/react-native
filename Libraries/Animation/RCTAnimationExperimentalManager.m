@@ -217,6 +217,11 @@ RCT_EXPORT_METHOD(startAnimation:(NSNumber *)reactTag
       }
 
       NSValue *fromValue = [view.layer.presentationLayer valueForKeyPath:keypath];
+#if !CGFLOAT_IS_DOUBLE
+      if ([fromValue isKindOfClass:[NSNumber class]]) {
+        fromValue = [NSNumber numberWithFloat:[(NSNumber *)fromValue doubleValue]];
+      }
+#endif
       CGFloat fromFields[count];
       [fromValue getValue:fromFields];
 

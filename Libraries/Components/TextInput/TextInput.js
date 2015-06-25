@@ -50,6 +50,7 @@ var AndroidTextInputAttributes = {
   multiline: true,
   password: true,
   placeholder: true,
+  placeholderTextColor: true,
   text: true,
   testID: true,
   underlineColorAndroid: true,
@@ -514,6 +515,7 @@ var TextInput = React.createClass({
         onLayout={this.props.onLayout}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
+        placeholderTextColor={this.props.placeholderTextColor}
         text={this.state.bufferedValue}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}

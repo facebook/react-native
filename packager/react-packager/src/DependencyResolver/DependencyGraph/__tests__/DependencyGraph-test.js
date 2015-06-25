@@ -13,6 +13,8 @@ jest
   .dontMock('crypto')
   .dontMock('absolute-path')
   .dontMock('../docblock')
+  .dontMock('../../crawlers')
+  .dontMock('../../crawlers/node')
   .dontMock('../../replacePatterns')
   .dontMock('../../../lib/getAssetDataFromName')
   .dontMock('../../fastfs')
@@ -21,6 +23,8 @@ jest
   .dontMock('../../Module')
   .dontMock('../../Package')
   .dontMock('../../ModuleCache');
+
+const Promise = require('promise');
 
 jest.mock('fs');
 
@@ -36,7 +40,8 @@ describe('DependencyGraph', function() {
     fileWatcher = {
       on: function() {
         return this;
-      }
+      },
+      isWatchman: () => Promise.resolve(false)
     };
   });
 
