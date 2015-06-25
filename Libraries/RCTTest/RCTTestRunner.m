@@ -99,7 +99,14 @@ RCT_NOT_IMPLEMENTED(-init)
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
   [rootView removeFromSuperview];
-  RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
+
+
+  NSArray *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
+    return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
+  }]];
+  RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
+
+
   vc.view = nil;
   [[RCTRedBox sharedInstance] dismiss];
   if (expectErrorBlock) {
