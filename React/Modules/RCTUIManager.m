@@ -69,6 +69,9 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
       return UIViewAnimationCurveEaseOut;
     case RCTAnimationTypeEaseInEaseOut:
       return UIViewAnimationCurveEaseInOut;
+    case RCTAnimationTypeKeyboard:
+      // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
+      return (UIViewAnimationCurve) (7 << 16);
     default:
       RCTLogError(@"Unsupported animation type %zd", type);
       return UIViewAnimationCurveEaseInOut;
