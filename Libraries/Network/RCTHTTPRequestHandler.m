@@ -11,7 +11,6 @@
 
 #import "RCTAssert.h"
 #import "RCTConvert.h"
-#import "RCTLog.h"
 #import "RCTUtils.h"
 
 @interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate>
