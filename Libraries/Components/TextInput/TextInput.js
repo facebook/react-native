@@ -44,12 +44,16 @@ var AndroidTextInputAttributes = {
   autoCapitalize: true,
   autoCorrect: true,
   autoFocus: true,
+  textAlign: true,
+  textAlignVertical: true,
   keyboardType: true,
   multiline: true,
   password: true,
   placeholder: true,
+  placeholderTextColor: true,
   text: true,
   testID: true,
+  underlineColorAndroid: true,
 };
 
 var viewConfigAndroid = {
@@ -68,8 +72,8 @@ type Event = Object;
 
 /**
  * A foundational component for inputting text into the app via a
- * keyboard.  Props provide configurability for several features, such as auto-
- * correction, auto-capitalization, placeholder text, and different keyboard
+ * keyboard. Props provide configurability for several features, such as
+ * auto-correction, auto-capitalization, placeholder text, and different keyboard
  * types, such as a numeric keypad.
  *
  * The simplest use case is to plop down a `TextInput` and subscribe to the
@@ -123,6 +127,19 @@ var TextInput = React.createClass({
      * If true, focuses the input on componentDidMount. Default value is false.
      */
     autoFocus: PropTypes.bool,
+    /**
+     * Set the position of the cursor from where editing will begin.
+     */
+    textAlign: PropTypes.oneOf([
+      'start',
+      'center',
+      'end',
+    ]),
+    textAlignVertical: PropTypes.oneOf([
+      'top',
+      'center',
+      'bottom',
+    ]),
     /**
      * If false, text is not editable. Default value is true.
      */
@@ -260,6 +277,10 @@ var TextInput = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * The color of the textInput underline. Is only supported on Android.
+     */
+    underlineColorAndroid: PropTypes.string,
   },
 
   /**
@@ -461,6 +482,10 @@ var TextInput = React.createClass({
 
   _renderAndroid: function() {
     var autoCapitalize = RCTUIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
+    var textAlign =
+      RCTUIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
+    var textAlignVertical =
+      RCTUIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);
@@ -477,6 +502,8 @@ var TextInput = React.createClass({
         style={[this.props.style]}
         autoCapitalize={autoCapitalize}
         autoCorrect={this.props.autoCorrect}
+        textAlign={textAlign}
+        textAlignVertical={textAlignVertical}
         keyboardType={this.props.keyboardType}
         multiline={this.props.multiline}
         onFocus={this._onFocus}
@@ -488,7 +515,9 @@ var TextInput = React.createClass({
         onLayout={this.props.onLayout}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
+        placeholderTextColor={this.props.placeholderTextColor}
         text={this.state.bufferedValue}
+        underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
       />;
 

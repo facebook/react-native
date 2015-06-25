@@ -26,6 +26,7 @@ var {
   View,
 } = React;
 
+exports.displayName = (undefined: ?string);
 exports.title = '<Touchable*> and onPress';
 exports.examples = [
 {

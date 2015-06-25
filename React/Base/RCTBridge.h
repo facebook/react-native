@@ -119,6 +119,11 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, readonly, getter=isLoading) BOOL loading;
 
 /**
+ * The block passed in the constructor with pre-initialized modules
+ */
+@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
+
+/**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
 - (void)reload;

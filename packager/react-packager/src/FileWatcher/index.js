@@ -8,13 +8,14 @@
  */
 'use strict';
 
-var EventEmitter  = require('events').EventEmitter;
-var sane = require('sane');
-var Promise = require('bluebird');
-var util = require('util');
-var exec = require('child_process').exec;
+const EventEmitter  = require('events').EventEmitter;
+const sane = require('sane');
+const Promise = require('promise');
+const exec = require('child_process').exec;
 
-var detectingWatcherClass = new Promise(function(resolve) {
+const MAX_WAIT_TIME = 25000;
+
+const detectingWatcherClass = new Promise(function(resolve) {
   exec('which watchman', function(err, out) {
     if (err || out.length === 0) {
       resolve(sane.NodeWatcher);
@@ -24,53 +25,76 @@ var detectingWatcherClass = new Promise(function(resolve) {
   });
 });
 
-module.exports = FileWatcher;
+let inited = false;
 
-var MAX_WAIT_TIME = 25000;
+class FileWatcher extends EventEmitter {
 
-// Singleton
-var fileWatcher = null;
+  constructor(rootConfigs) {
+    if (inited) {
+      throw new Error('FileWatcher can only be instantiated once');
+    }
+    inited = true;
 
-function FileWatcher(rootConfigs) {
-  if (fileWatcher) {
-    // This allows us to optimize watching in the future by merging roots etc.
-    throw new Error('FileWatcher can only be instantiated once');
+    super();
+    this._watcherByRoot = Object.create(null);
+
+    this._loading = Promise.all(
+      rootConfigs.map(createWatcher)
+    ).then(watchers => {
+      watchers.forEach((watcher, i) => {
+        this._watcherByRoot[rootConfigs[i].dir] = watcher;
+        watcher.on(
+          'all',
+          // args = (type, filePath, root, stat)
+          (...args) => this.emit('all', ...args)
+        );
+      });
+      return watchers;
+    });
+
+    this._loading.done();
   }
 
-  fileWatcher = this;
+  getWatchers() {
+    return this._loading;
+  }
 
-  this._loading = Promise.all(
-    rootConfigs.map(createWatcher)
-  ).then(function(watchers) {
-    watchers.forEach(function(watcher) {
-      watcher.on('all', function(type, filepath, root, stat) {
-        fileWatcher.emit('all', type, filepath, root, stat);
-      });
-    });
-    return watchers;
-  });
-  this._loading.done();
+  getWatcherForRoot(root) {
+    return this._loading.then(() => this._watcherByRoot[root]);
+  }
+
+  isWatchman() {
+    return detectingWatcherClass.then(
+      Watcher => Watcher === sane.WatchmanWatcher
+    );
+  }
+
+  end() {
+    return this._loading.then(
+      (watchers) => watchers.map(
+        watcher => Promise.denodeify(watcher.close).call(watcher)
+      )
+    );
+  }
+
+  static createDummyWatcher() {
+    const ev = new EventEmitter();
+    ev.end = function() {
+      return Promise.resolve();
+    };
+    return ev;
+  }
 }
-
-util.inherits(FileWatcher, EventEmitter);
-
-FileWatcher.prototype.end = function() {
-  return this._loading.then(function(watchers) {
-    watchers.forEach(function(watcher) {
-      return Promise.promisify(watcher.close, watcher)();
-    });
-  });
-};
 
 function createWatcher(rootConfig) {
   return detectingWatcherClass.then(function(Watcher) {
-    var watcher = new Watcher(rootConfig.dir, {
+    const watcher = new Watcher(rootConfig.dir, {
       glob: rootConfig.globs,
       dot: false,
     });
 
     return new Promise(function(resolve, reject) {
-      var rejectTimeout = setTimeout(function() {
+      const rejectTimeout = setTimeout(function() {
         reject(new Error([
           'Watcher took too long to load',
           'Try running `watchman version` from your terminal',
@@ -86,10 +110,4 @@ function createWatcher(rootConfig) {
   });
 }
 
-FileWatcher.createDummyWatcher = function() {
-  var ev = new EventEmitter();
-  ev.end = function() {
-    return Promise.resolve();
-  };
-  return ev;
-};
+module.exports = FileWatcher;

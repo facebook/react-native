@@ -16,6 +16,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 var ElementProperties = require('ElementProperties');
+var PerformanceOverlay = require('PerformanceOverlay');
 var TouchableHighlight = require('TouchableHighlight');
 
 var PropTypes = React.PropTypes;
@@ -44,6 +45,10 @@ class InspectorPanel extends React.Component {
           setSelection={this.props.setSelection}
         />
       );
+    } else if (this.props.perfing) {
+      contents = (
+        <PerformanceOverlay />
+      );
     } else {
       contents = (
         <View style={styles.waiting}>
@@ -58,7 +63,12 @@ class InspectorPanel extends React.Component {
           <Button
             title={'Inspect'}
             pressed={this.props.inspecting}
-            onClick={this.props.setInspecting}/>
+            onClick={this.props.setInspecting}
+          />
+          <Button title={'Perf'}
+            pressed={this.props.perfing}
+            onClick={this.props.setPerfing}
+          />
         </View>
       </View>
     );
@@ -69,6 +79,8 @@ InspectorPanel.propTypes = {
   inspecting: PropTypes.bool,
   setInspecting: PropTypes.func,
   inspected: PropTypes.object,
+  perfing: PropTypes.bool,
+  setPerfing: PropTypes.func,
 };
 
 class Button extends React.Component {

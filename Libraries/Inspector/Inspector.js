@@ -26,6 +26,7 @@ class Inspector extends React.Component {
     this.state = {
       panelPos: 'bottom',
       inspecting: true,
+      perfing: false,
       inspected: null,
     };
   }
@@ -59,21 +60,25 @@ class Inspector extends React.Component {
     });
   }
 
+  setPerfing(val: bool) {
+    this.setState({
+      perfing: val,
+      inspecting: false,
+      inspected: null,
+    });
+  }
+
   setInspecting(val: bool) {
     this.setState({
       inspecting: val,
+      inspected: null
     });
   }
 
   render() {
-    var panelPosition;
-    if (this.state.panelPos === 'bottom') {
-      panelPosition = {bottom: -Dimensions.get('window').height};
-    } else {
-      panelPosition = {top: 0};
-    }
+    var panelContainerStyle = (this.state.panelPos === 'bottom') ? {bottom: 0} : {top: 0};
     return (
-      <View style={styles.container}>
+      <View style={styles.container} pointerEvents="box-none">
         {this.state.inspecting &&
           <InspectorOverlay
             rootTag={this.props.rootTag}
@@ -81,9 +86,11 @@ class Inspector extends React.Component {
             inspectedViewTag={this.props.inspectedViewTag}
             onTouchInstance={this.onTouchInstance.bind(this)}
           />}
-        <View style={[styles.panelContainer, panelPosition]}>
+        <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
             inspecting={this.state.inspecting}
+            perfing={this.state.perfing}
+            setPerfing={this.setPerfing.bind(this)}
             setInspecting={this.setInspecting.bind(this)}
             inspected={this.state.inspected}
             hierarchy={this.state.hierarchy}
@@ -103,7 +110,7 @@ var styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 0,
+    bottom: 0,
   },
   panelContainer: {
     position: 'absolute',

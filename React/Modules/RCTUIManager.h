@@ -35,6 +35,11 @@
 - (void)registerRootView:(UIView *)rootView;
 
 /**
+ * Gets the view associated with a reactTag.
+ */
+- (UIView *)viewForReactTag:(NSNumber *)reactTag;
+
+/**
  * Update the frame of a root view. This might be in response to a screen rotation
  * or some other layout event outside of the React-managed view hierarchy.
  */

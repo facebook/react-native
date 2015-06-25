@@ -9,14 +9,14 @@
 'use strict';
 
 var fs = require('fs');
-var Promise = require('bluebird');
+var Promise = require('promise');
 var Cache = require('./Cache');
 var workerFarm = require('worker-farm');
 var declareOpts = require('../lib/declareOpts');
 var util = require('util');
 var ModuleTransport = require('../lib/ModuleTransport');
 
-var readFile = Promise.promisify(fs.readFile);
+var readFile = Promise.denodeify(fs.readFile);
 
 module.exports = Transformer;
 Transformer.TransformError = TransformError;
@@ -69,7 +69,7 @@ function Transformer(options) {
       options.transformModulePath
     );
 
-    this._transform = Promise.promisify(this._workers);
+    this._transform = Promise.denodeify(this._workers);
   }
 }
 

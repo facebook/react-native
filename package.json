@@ -47,6 +47,7 @@
   "dependencies": {
     "absolute-path": "0.0.0",
     "babel": "5.4.3",
+    "babel-core": "^5.6.4",
     "bluebird": "^2.9.21",
     "chalk": "^1.0.0",
     "connect": "2.8.3",
@@ -57,7 +58,7 @@
     "jstransform": "11.0.1",
     "module-deps": "3.5.6",
     "optimist": "0.6.1",
-    "promise": "^7.0.0",
+    "promise": "^7.0.3",
     "react-timer-mixin": "^0.13.1",
     "react-tools": "0.13.2",
     "rebound": "^0.0.12",

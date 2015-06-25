@@ -34,6 +34,14 @@
   return self;
 }
 
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  NSRange semicolonRange = [superDescription rangeOfString:@";"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@", self.reactTag, self.textStorage.string];
+  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+}
+
 - (void)reactSetFrame:(CGRect)frame
 {
   // Text looks super weird if its frame is animated.

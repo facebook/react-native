@@ -71,6 +71,11 @@ var getPhotosParamChecker = createStrictShapeTypeChecker({
   * Specifies filter on asset type
   */
   assetType: ReactPropTypes.oneOf(ASSET_TYPE_OPTIONS),
+
+  /**
+   * Filter by mimetype (e.g. image/jpeg).
+   */
+  mimeTypes: ReactPropTypes.arrayOf(ReactPropTypes.string),
 });
 
 /**

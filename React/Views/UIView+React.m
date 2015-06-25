@@ -13,7 +13,6 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
-#import "RCTWrapperViewController.h"
 
 @implementation UIView (React)
 
@@ -91,8 +90,11 @@
 - (UIViewController *)backingViewController
 {
   id responder = [self nextResponder];
-  if ([responder isKindOfClass:[RCTWrapperViewController class]]) {
-    return responder;
+  while (responder) {
+    if ([responder isKindOfClass:[UIViewController class]]) {
+      return responder;
+    }
+    responder = [responder nextResponder];
   }
   return nil;
 }

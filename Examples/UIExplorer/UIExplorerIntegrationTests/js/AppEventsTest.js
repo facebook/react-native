@@ -53,6 +53,8 @@ var AppEventsTest = React.createClass({
   }
 });
 
+AppEventsTest.displayName = 'AppEventsTest';
+
 var styles = StyleSheet.create({
   container: {
     margin: 40,
