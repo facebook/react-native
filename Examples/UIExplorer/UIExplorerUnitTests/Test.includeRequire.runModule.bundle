@@ -1,0 +1,1120 @@
+__DEV__ = 
+true;
+(
+function(global){
+
+
+if(global.require){
+return;}
+
+
+var __DEV__=global.__DEV__;
+
+var toString=Object.prototype.toString;
+
+
+
+
+
+
+
+
+
+
+
+
+
+var modulesMap={}, 
+
+
+
+
+
+
+dependencyMap={}, 
+
+
+
+predefinedRefCounts={}, 
+
+_counter=0, 
+
+REQUIRE_WHEN_READY=1, 
+USED_AS_TRANSPORT=2, 
+
+hop=Object.prototype.hasOwnProperty;
+
+function _debugUnresolvedDependencies(names){
+var unresolved=Array.prototype.slice.call(names);
+var visited={};
+var ii, name, module, dependency;
+
+while(unresolved.length) {
+name = unresolved.shift();
+if(visited[name]){
+continue;}
+
+visited[name] = true;
+
+module = modulesMap[name];
+if(!module || !module.waiting){
+continue;}
+
+
+for(ii = 0; ii < module.dependencies.length; ii++) {
+dependency = module.dependencies[ii];
+if(!modulesMap[dependency] || modulesMap[dependency].waiting){
+unresolved.push(dependency);}}}
+
+
+
+
+for(name in visited) if(hop.call(visited, name)){
+unresolved.push(name);}
+
+
+var messages=[];
+for(ii = 0; ii < unresolved.length; ii++) {
+name = unresolved[ii];
+var message=name;
+module = modulesMap[name];
+if(!module){
+message += ' is not defined';}else 
+if(!module.waiting){
+message += ' is ready';}else 
+{
+var unresolvedDependencies=[];
+for(var jj=0; jj < module.dependencies.length; jj++) {
+dependency = module.dependencies[jj];
+if(!modulesMap[dependency] || modulesMap[dependency].waiting){
+unresolvedDependencies.push(dependency);}}
+
+
+message += ' is waiting for ' + unresolvedDependencies.join(', ');}
+
+messages.push(message);}
+
+return messages.join('\n');}
+
+
+
+
+
+function ModuleError(msg){
+this.name = 'ModuleError';
+this.message = msg;
+this.stack = Error(msg).stack;
+this.framesToPop = 2;}
+
+ModuleError.prototype = Object.create(Error.prototype);
+ModuleError.prototype.constructor = ModuleError;
+
+var _performance=
+global.performance || 
+global.msPerformance || 
+global.webkitPerformance || {};
+
+if(!_performance.now){
+_performance = global.Date;}
+
+
+var _now=_performance?
+_performance.now.bind(_performance):function(){return 0;};
+
+var _factoryStackCount=0;
+var _factoryTime=0;
+var _totalFactories=0;
+var _inGuard=false;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function require(id){
+var module=modulesMap[id], dep, i, msg;
+if(module && module.exports){
+
+
+if(module.refcount-- === 1){
+delete modulesMap[id];}
+
+return module.exports;}
+
+if(global.ErrorUtils && !_inGuard){
+_inGuard = true;
+try{
+var ret=require.apply(this, arguments);}
+catch(e) {
+global.ErrorUtils.reportFatalError(e);}
+
+_inGuard = false;
+return ret;}
+
+
+if(!module){
+msg = 'Requiring unknown module "' + id + '"';
+if(__DEV__){
+msg += '. If you are sure the module is there, try restarting the packager.';}
+
+throw new ModuleError(msg);}
+
+
+if(module.hasError){
+throw new ModuleError(
+'Requiring module "' + id + '" which threw an exception');}
+
+
+
+if(module.waiting){
+throw new ModuleError(
+'Requiring module "' + id + '" with unresolved dependencies: ' + 
+_debugUnresolvedDependencies([id]));}
+
+
+
+var exports=module.exports = {};
+var factory=module.factory;
+if(toString.call(factory) === '[object Function]'){
+var args=[], 
+dependencies=module.dependencies, 
+length=dependencies.length, 
+ret;
+if(module.special & USED_AS_TRANSPORT){
+length = Math.min(length, factory.length);}
+
+try{
+for(i = 0; args.length < length; i++) {
+dep = dependencies[i];
+if(!module.inlineRequires[dep]){
+args.push(dep === 'module'?module:
+dep === 'exports'?exports:
+require.call(null, dep));}}
+
+
+
+++_totalFactories;
+if(_factoryStackCount++ === 0){
+_factoryTime -= _now();}
+
+try{
+ret = factory.apply(module.context || global, args);}
+catch(e) {
+if(modulesMap.ex && modulesMap.erx){
+
+
+var ex=require.call(null, 'ex');
+var erx=require.call(null, 'erx');
+var messageWithParams=erx(e.message);
+if(messageWithParams[0].indexOf(' from module "%s"') < 0){
+messageWithParams[0] += ' from module "%s"';
+messageWithParams[messageWithParams.length] = id;}
+
+e.message = ex.apply(null, messageWithParams);}
+
+throw e;}finally 
+{
+if(--_factoryStackCount === 0){
+_factoryTime += _now();}}}
+
+
+catch(e) {
+module.hasError = true;
+module.exports = null;
+throw e;}
+
+if(ret){
+if(__DEV__){
+if(typeof ret != 'object' && typeof ret != 'function'){
+throw new ModuleError(
+'Factory for module "' + id + '" returned ' + 
+'an invalid value "' + ret + '". ' + 
+'Returned value should be either a function or an object.');}}
+
+
+
+module.exports = ret;}}else 
+
+{
+module.exports = factory;}
+
+
+
+
+if(module.refcount-- === 1){
+delete modulesMap[id];}
+
+return module.exports;}
+
+
+require.__getFactoryTime = function(){
+return (_factoryStackCount?_now():0) + _factoryTime;};
+
+
+require.__getTotalFactories = function(){
+return _totalFactories;};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function define(id, dependencies, factory, 
+_special, _context, _refCount, _inlineRequires){
+if(dependencies === undefined){
+dependencies = [];
+factory = id;
+id = _uid();}else 
+if(factory === undefined){
+factory = dependencies;
+if(toString.call(id) === '[object Array]'){
+dependencies = id;
+id = _uid();}else 
+{
+dependencies = [];}}
+
+
+
+
+
+var canceler={cancel:_undefine.bind(this, id)};
+
+var record=modulesMap[id];
+
+
+
+
+
+
+if(record){
+if(_refCount){
+record.refcount += _refCount;}
+
+
+return canceler;}else 
+if(!dependencies && !factory && _refCount){
+
+
+predefinedRefCounts[id] = (predefinedRefCounts[id] || 0) + _refCount;
+return canceler;}else 
+{
+
+record = {id:id};
+record.refcount = (predefinedRefCounts[id] || 0) + (_refCount || 0);
+delete predefinedRefCounts[id];}
+
+
+if(__DEV__){
+if(
+!factory || 
+typeof factory != 'object' && typeof factory != 'function' && 
+typeof factory != 'string'){
+throw new ModuleError(
+'Invalid factory "' + factory + '" for module "' + id + '". ' + 
+'Factory should be either a function or an object.');}
+
+
+
+if(toString.call(dependencies) !== '[object Array]'){
+throw new ModuleError(
+'Invalid dependencies for module "' + id + '". ' + 
+'Dependencies must be passed as an array.');}}
+
+
+
+
+record.factory = factory;
+record.dependencies = dependencies;
+record.context = _context;
+record.special = _special;
+record.inlineRequires = _inlineRequires || {};
+record.waitingMap = {};
+record.waiting = 0;
+record.hasError = false;
+modulesMap[id] = record;
+_initDependencies(id);
+
+return canceler;}
+
+
+function _undefine(id){
+if(!modulesMap[id]){
+return;}
+
+
+var module=modulesMap[id];
+delete modulesMap[id];
+
+for(var dep in module.waitingMap) {
+if(module.waitingMap[dep]){
+delete dependencyMap[dep][id];}}
+
+
+
+for(var ii=0; ii < module.dependencies.length; ii++) {
+dep = module.dependencies[ii];
+if(modulesMap[dep]){
+if(modulesMap[dep].refcount-- === 1){
+_undefine(dep);}}else 
+
+if(predefinedRefCounts[dep]){
+predefinedRefCounts[dep]--;}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function requireLazy(dependencies, factory, context){
+return define(
+dependencies, 
+factory, 
+undefined, 
+REQUIRE_WHEN_READY, 
+context, 
+1);}
+
+
+
+function _uid(){
+return '__mod__' + _counter++;}
+
+
+function _addDependency(module, dep){
+
+if(!module.waitingMap[dep] && module.id !== dep){
+module.waiting++;
+module.waitingMap[dep] = 1;
+dependencyMap[dep] || (dependencyMap[dep] = {});
+dependencyMap[dep][module.id] = 1;}}
+
+
+
+function _initDependencies(id){
+var modulesToRequire=[];
+var module=modulesMap[id];
+var dep, i, subdep;
+
+
+for(i = 0; i < module.dependencies.length; i++) {
+dep = module.dependencies[i];
+if(!modulesMap[dep]){
+_addDependency(module, dep);}else 
+if(modulesMap[dep].waiting){
+for(subdep in modulesMap[dep].waitingMap) {
+if(modulesMap[dep].waitingMap[subdep]){
+_addDependency(module, subdep);}}}}
+
+
+
+
+if(module.waiting === 0 && module.special & REQUIRE_WHEN_READY){
+modulesToRequire.push(id);}
+
+
+
+if(dependencyMap[id]){
+var deps=dependencyMap[id];
+var submodule;
+dependencyMap[id] = undefined;
+for(dep in deps) {
+submodule = modulesMap[dep];
+
+
+for(subdep in module.waitingMap) {
+if(module.waitingMap[subdep]){
+_addDependency(submodule, subdep);}}
+
+
+
+if(submodule.waitingMap[id]){
+submodule.waitingMap[id] = undefined;
+submodule.waiting--;}
+
+if(submodule.waiting === 0 && 
+submodule.special & REQUIRE_WHEN_READY){
+modulesToRequire.push(dep);}}}
+
+
+
+
+
+for(i = 0; i < modulesToRequire.length; i++) {
+require.call(null, modulesToRequire[i]);}}
+
+
+
+function _register(id, exports){
+var module=modulesMap[id] = {id:id};
+module.exports = exports;
+module.refcount = 0;}
+
+
+
+
+_register('module', 0);
+_register('exports', 0);
+
+_register('global', global);
+_register('require', require);
+_register('requireDynamic', require);
+_register('requireLazy', requireLazy);
+
+global.require = require;
+global.requireDynamic = require;
+global.requireLazy = requireLazy;
+
+require.__debug = {
+modules:modulesMap, 
+deps:dependencyMap, 
+printDependencyInfo:function(){
+if(!global.console){
+return;}
+
+var names=Object.keys(require.__debug.deps);
+global.console.log(_debugUnresolvedDependencies(names));}};
+
+
+
+
+
+
+
+
+
+global.__d = function(id, deps, factory, _special, _inlineRequires){
+var defaultDeps=['global', 'require', 'requireDynamic', 'requireLazy', 
+'module', 'exports'];
+define(id, defaultDeps.concat(deps), factory, _special || USED_AS_TRANSPORT, 
+null, null, _inlineRequires);};})(
+
+
+this);
+Object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+assign = function(target, sources){
+if(__DEV__){
+if(target == null){
+throw new TypeError('Object.assign target cannot be null or undefined');}
+
+if(typeof target !== 'object' && typeof target !== 'function'){
+throw new TypeError(
+'In this environment the target of assign MUST be an object.' + 
+'This error is a performance optimization and not spec compliant.');}}
+
+
+
+
+for(var nextIndex=1; nextIndex < arguments.length; nextIndex++) {
+var nextSource=arguments[nextIndex];
+if(nextSource == null){
+continue;}
+
+
+if(__DEV__){
+if(typeof nextSource !== 'object' && 
+typeof nextSource !== 'function'){
+throw new TypeError(
+'In this environment the target of assign MUST be an object.' + 
+'This error is a performance optimization and not spec compliant.');}}
+
+
+
+
+
+
+
+
+for(var key in nextSource) {
+if(__DEV__){
+var hasOwnProperty=Object.prototype.hasOwnProperty;
+if(!hasOwnProperty.call(nextSource, key)){
+throw new TypeError(
+'One of the sources to assign has an enumerable key on the ' + 
+'prototype chain. This is an edge case that we do not support. ' + 
+'This error is a performance optimization and not spec compliant.');}}
+
+
+
+target[key] = nextSource[key];}}
+
+
+
+return target;};
+(
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function(global){
+'use strict';
+
+var OBJECT_COLUMN_NAME='(index)';
+var LOG_LEVELS={
+trace:0, 
+log:1, 
+info:2, 
+warn:3, 
+error:4};
+
+
+function setupConsole(global){
+
+if(!global.nativeLoggingHook){
+return;}
+
+
+function getNativeLogFunction(level){
+return function(){
+var str=Array.prototype.map.call(arguments, function(arg){
+var ret;
+var type=typeof arg;
+if(arg === null){
+ret = 'null';}else 
+if(arg === undefined){
+ret = 'undefined';}else 
+if(type === 'string'){
+ret = '"' + arg + '"';}else 
+if(type === 'function'){
+try{
+ret = arg.toString();}
+catch(e) {
+ret = '[function unknown]';}}else 
+
+{
+
+
+try{
+ret = JSON.stringify(arg);}
+catch(e) {
+if(typeof arg.toString === 'function'){
+try{
+ret = arg.toString();}
+catch(E) {}}}}
+
+
+
+return ret || '["' + type + '" failed to stringify]';}).
+join(', ');
+global.nativeLoggingHook(str, level);};}
+
+
+
+var repeat=function(element, n){
+return Array.apply(null, Array(n)).map(function(){return element;});};
+
+
+function consoleTablePolyfill(rows){
+
+if(!Array.isArray(rows)){
+var data=rows;
+rows = [];
+for(var key in data) {
+if(data.hasOwnProperty(key)){
+var row=data[key];
+row[OBJECT_COLUMN_NAME] = key;
+rows.push(row);}}}
+
+
+
+if(rows.length === 0){
+global.nativeLoggingHook('', LOG_LEVELS.log);
+return;}
+
+
+var columns=Object.keys(rows[0]).sort();
+var stringRows=[];
+var columnWidths=[];
+
+
+
+columns.forEach(function(k, i){
+columnWidths[i] = k.length;
+for(var j=0; j < rows.length; j++) {
+var cellStr=rows[j][k].toString();
+stringRows[j] = stringRows[j] || [];
+stringRows[j][i] = cellStr;
+columnWidths[i] = Math.max(columnWidths[i], cellStr.length);}});
+
+
+
+
+
+var joinRow=function(row, space){
+var cells=row.map(function(cell, i){
+var extraSpaces=repeat(' ', columnWidths[i] - cell.length).join('');
+return cell + extraSpaces;});
+
+space = space || ' ';
+return cells.join(space + '|' + space);};
+
+
+var separators=columnWidths.map(function(columnWidth){
+return repeat('-', columnWidth).join('');});
+
+var separatorRow=joinRow(separators, '-');
+var header=joinRow(columns);
+var table=[header, separatorRow];
+
+for(var i=0; i < rows.length; i++) {
+table.push(joinRow(stringRows[i]));}
+
+
+
+
+
+
+global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.log);}
+
+
+global.console = {
+error:getNativeLogFunction(LOG_LEVELS.error), 
+info:getNativeLogFunction(LOG_LEVELS.info), 
+log:getNativeLogFunction(LOG_LEVELS.log), 
+warn:getNativeLogFunction(LOG_LEVELS.warn), 
+trace:getNativeLogFunction(LOG_LEVELS.trace), 
+table:consoleTablePolyfill};}
+
+
+
+
+if(typeof module !== 'undefined'){
+module.exports = setupConsole;}else 
+{
+setupConsole(global);}})(
+
+
+this);
+(
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function(global){
+var ErrorUtils={
+_inGuard:0, 
+_globalHandler:null, 
+setGlobalHandler:function(fun){
+ErrorUtils._globalHandler = fun;}, 
+
+reportError:function(error){
+ErrorUtils._globalHandler && ErrorUtils._globalHandler(error);}, 
+
+reportFatalError:function(error){
+ErrorUtils._globalHandler && ErrorUtils._globalHandler(error, true);}, 
+
+applyWithGuard:function(fun, context, args){
+try{
+ErrorUtils._inGuard++;
+return fun.apply(context, args);}
+catch(e) {
+ErrorUtils.reportError(e);}finally 
+{
+ErrorUtils._inGuard--;}}, 
+
+
+applyWithGuardIfNeeded:function(fun, context, args){
+if(ErrorUtils.inGuard()){
+return fun.apply(context, args);}else 
+{
+ErrorUtils.applyWithGuard(fun, context, args);}}, 
+
+
+inGuard:function(){
+return ErrorUtils._inGuard;}, 
+
+guard:function(fun, name, context){
+if(typeof fun !== 'function'){
+console.warn('A function must be passed to ErrorUtils.guard, got ', fun);
+return null;}
+
+name = name || fun.name || '<generated guard>';
+function guarded(){
+return (
+ErrorUtils.applyWithGuard(
+fun, 
+context || this, 
+arguments, 
+null, 
+name));}
+
+
+
+
+return guarded;}};
+
+
+global.ErrorUtils = ErrorUtils;
+
+
+
+
+
+function setupErrorGuard(){
+var onError=function(e){
+global.console.error(
+'Error: ' + 
+'\n stack: ' + e.stack + 
+'\n line: ' + e.line + 
+'\n message: ' + e.message, 
+e);};
+
+
+global.ErrorUtils.setGlobalHandler(onError);}
+
+
+setupErrorGuard();})(
+this);
+if(
+
+
+
+
+
+
+
+
+
+
+
+!String.prototype.startsWith){
+String.prototype.startsWith = function(search){
+'use strict';
+if(this == null){
+throw TypeError();}
+
+var string=String(this);
+var pos=arguments.length > 1?
+Number(arguments[1]) || 0:0;
+var start=Math.min(Math.max(pos, 0), string.length);
+return string.indexOf(String(search), pos) === start;};}
+
+
+
+if(!String.prototype.endsWith){
+String.prototype.endsWith = function(search){
+'use strict';
+if(this == null){
+throw TypeError();}
+
+var string=String(this);
+var stringLength=string.length;
+var searchString=String(search);
+var pos=arguments.length > 1?
+Number(arguments[1]) || 0:stringLength;
+var end=Math.min(Math.max(pos, 0), stringLength);
+var start=end - searchString.length;
+if(start < 0){
+return false;}
+
+return string.lastIndexOf(searchString, start) === start;};}
+
+
+
+if(!String.prototype.contains){
+String.prototype.contains = function(search){
+'use strict';
+if(this == null){
+throw TypeError();}
+
+var string=String(this);
+var pos=arguments.length > 1?
+Number(arguments[1]) || 0:0;
+return string.indexOf(String(search), pos) !== -1;};}
+
+
+
+if(!String.prototype.repeat){
+String.prototype.repeat = function(count){
+'use strict';
+if(this == null){
+throw TypeError();}
+
+var string=String(this);
+count = Number(count) || 0;
+if(count < 0 || count === Infinity){
+throw RangeError();}
+
+if(count === 1){
+return string;}
+
+var result='';
+while(count) {
+if(count & 1){
+result += string;}
+
+if(count >>= 1){
+string += string;}}
+
+
+return result;};}
+(
+
+
+
+
+
+
+
+
+
+function(undefined){
+
+function findIndex(predicate, context){
+if(this == null){
+throw new TypeError(
+'Array.prototype.findIndex called on null or undefined');}
+
+
+if(typeof predicate !== 'function'){
+throw new TypeError('predicate must be a function');}
+
+var list=Object(this);
+var length=list.length >>> 0;
+for(var i=0; i < length; i++) {
+if(predicate.call(context, list[i], i, list)){
+return i;}}
+
+
+return -1;}
+
+
+if(!Array.prototype.findIndex){
+Object.defineProperty(Array.prototype, 'findIndex', {
+enumerable:false, 
+writable:true, 
+configurable:true, 
+value:findIndex});}
+
+
+
+
+if(!Array.prototype.find){
+Object.defineProperty(Array.prototype, 'find', {
+enumerable:false, 
+writable:true, 
+configurable:true, 
+value:function(predicate, context){
+if(this == null){
+throw new TypeError(
+'Array.prototype.find called on null or undefined');}
+
+
+var index=findIndex.call(this, predicate, context);
+return index === -1?undefined:this[index];}});}})();
+(
+function(GLOBAL){
+
+
+
+
+
+
+
+function getInvalidGlobalUseError(name){
+return new Error(
+'You are trying to render the global ' + name + ' variable as a ' + 
+'React element. You probably forgot to require ' + name + '.');}
+
+
+GLOBAL.Text = {
+get defaultProps() {
+throw getInvalidGlobalUseError('Text');}};
+
+
+GLOBAL.Image = {
+get defaultProps() {
+throw getInvalidGlobalUseError('Image');}};
+
+
+
+if(GLOBAL.document){
+GLOBAL.document.createElement = null;}
+
+
+
+
+GLOBAL.MutationObserver = undefined;})(
+this);
+__d('react-native/Examples/UIExplorer/UIExplorerUnitTests/Test.js',[],function(global, require, requireDynamic, requireLazy, module, exports) {  
+});
+;require("react-native/Examples/UIExplorer/UIExplorerUnitTests/Test.js");
+//@ sourceMappingURL=/Examples/UIExplorer/UIExplorerUnitTests/Test.includeRequire.runModule.map

@@ -367,8 +367,10 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 - (NSString *)description
 {
   NSString *description = super.description;
-  description = [[description substringToIndex:description.length - 1] stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>", self.viewName, self.reactTag, NSStringFromCGRect(self.frame)];
-  return description;
+  if (self.layoutOnly) {
+    description = [@"* " stringByAppendingString:description];
+  }
+  return [[description substringToIndex:description.length - 1] stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>", self.viewName, self.reactTag, NSStringFromCGRect(self.frame)];
 }
 
 - (void)addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
@@ -390,6 +392,82 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   NSMutableString *description = [NSMutableString string];
   [self addRecursiveDescriptionToString:description atLevel:0];
   return description;
+}
+
+- (BOOL)isLayoutOnly
+{
+  if (![self.viewName isEqualToString:@"RCTView"]) {
+    // For now, only `RCTView`s can be layout-only.
+    return NO;
+  }
+
+  // dispatch_once is unnecessary because this property SHOULD only be accessed
+  // on the shadow queue
+  static NSSet *layoutKeys;
+  if (!layoutKeys) {
+    // Taken from LayoutPropTypes.js with the exception that borderWidth,
+    // borderTopWidth, borderBottomWidth, borderLeftWidth, and borderRightWidth
+    // were removed because black color is assumed
+    static NSString *const keys[] = {
+      @"width",
+      @"height",
+      @"top",
+      @"left",
+      @"right",
+      @"bottom",
+      @"margin",
+      @"marginVertical",
+      @"marginHorizontal",
+      @"marginTop",
+      @"marginBottom",
+      @"marginLeft",
+      @"marginRight",
+      @"padding",
+      @"paddingVertical",
+      @"paddingHorizontal",
+      @"paddingTop",
+      @"paddingBottom",
+      @"paddingLeft",
+      @"paddingRight",
+      @"position",
+      @"flexDirection",
+      @"flexWrap",
+      @"justifyContent",
+      @"alignItems",
+      @"alignSelf",
+      @"flex",
+
+      // Special case is handled below.
+      @"collapsible",
+    };
+    layoutKeys = [NSSet setWithObjects:keys count:sizeof(keys)/sizeof(*keys)];
+  }
+
+  NSNumber *collapsible = self.allProps[@"collapsible"];
+  if (collapsible && !collapsible.boolValue) {
+    return NO;
+  }
+
+  for (NSString *key in self.allProps) {
+    if (![layoutKeys containsObject:key]) {
+      return NO;
+    }
+  }
+
+  return YES;
+}
+
+- (CGRect)adjustedFrame
+{
+  CGRect frame = self.frame;
+  RCTShadowView *superview = self;
+  while ((superview = superview.superview) && superview.layoutOnly) {
+    const CGRect superviewFrame = superview.frame;
+    frame.origin.x += superviewFrame.origin.x;
+    frame.origin.y += superviewFrame.origin.y;
+  }
+
+  return frame;
 }
 
 // Margin
