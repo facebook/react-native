@@ -16,6 +16,8 @@ var RCTWebSocketManager = require('NativeModules').WebSocketManager;
 
 var WebSocketBase = require('WebSocketBase');
 
+var base64 = require('base64-js');
+
 var WebSocketId = 0;
 
 class WebSocket extends WebSocketBase {
@@ -58,9 +60,20 @@ class WebSocket extends WebSocketBase {
           if (ev.id !== id) {
             return;
           }
-          this.onmessage && this.onmessage({
-            data: ev.data
-          });
+
+          var message;
+
+          if (ev.type === 'text') {
+            message = {
+              data: ev.data
+            };
+          } else if (ev.type === 'binary') {
+            message = {
+              data: base64.toByteArray(ev.data).buffer
+            };
+          }
+
+          this.onmessage && this.onmessage(message);
         }.bind(this)
       ),
       RCTDeviceEventEmitter.addListener(
