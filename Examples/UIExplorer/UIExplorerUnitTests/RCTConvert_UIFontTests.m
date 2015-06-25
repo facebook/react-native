@@ -41,7 +41,7 @@
 - (void)testSize
 {
   {
-    UIFont *expected = [UIFont fontWithName:@"HelveticaNeue" size:18.5];
+    UIFont *expected = [UIFont systemFontOfSize:18.5];
     UIFont *result = [RCTConvert UIFont:@{@"fontSize": @18.5}];
     RCTAssertEqualFonts(expected, result);
   }
@@ -69,12 +69,19 @@
 - (void)testStyle
 {
   {
-    UIFont *expected = [UIFont fontWithName:@"HelveticaNeue-Italic" size:14];
+    UIFont *font = [UIFont systemFontOfSize:14];
+    UIFontDescriptor *fontDescriptor = [font fontDescriptor];
+    UIFontDescriptorSymbolicTraits symbolicTraits =
+      fontDescriptor.symbolicTraits;
+    symbolicTraits |= UIFontDescriptorTraitItalic;
+    fontDescriptor =
+      [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
+    UIFont *expected = [UIFont fontWithDescriptor:fontDescriptor size:14];
     UIFont *result = [RCTConvert UIFont:@{@"fontStyle": @"italic"}];
     RCTAssertEqualFonts(expected, result);
   }
   {
-    UIFont *expected = [UIFont fontWithName:@"HelveticaNeue" size:14];
+    UIFont *expected = [UIFont systemFontOfSize:14];
     UIFont *result = [RCTConvert UIFont:@{@"fontStyle": @"normal"}];
     RCTAssertEqualFonts(expected, result);
   }
