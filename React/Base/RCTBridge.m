@@ -956,6 +956,8 @@ RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
 
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
     [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
+      
+      [[RCTRedBox sharedInstance] dismiss];
 
       _loading = NO;
       if (!self.isValid) {

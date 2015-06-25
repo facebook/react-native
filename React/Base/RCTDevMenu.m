@@ -118,6 +118,11 @@ RCT_EXPORT_MODULE()
                            selector:@selector(jsLoaded:)
                                name:RCTJavaScriptDidLoadNotification
                              object:nil];
+    
+    [notificationCenter addObserver:self
+                           selector:@selector(jsLoaded:)
+                               name:RCTJavaScriptDidFailToLoadNotification
+                             object:nil];
 
     _defaults = [NSUserDefaults standardUserDefaults];
     _settings = [[NSMutableDictionary alloc] init];
