@@ -7,15 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
+#import "RCTPointAnnotation.h"
 
-@class RCTEventDispatcher;
-
-@interface RCTSegmentedControl : UISegmentedControl
-
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
-
-@property (nonatomic, copy) NSArray *values;
-@property (nonatomic, assign) NSInteger selectedIndex;
+@implementation RCTPointAnnotation
 
 @end

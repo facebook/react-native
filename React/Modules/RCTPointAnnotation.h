@@ -7,15 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
 
-@class RCTEventDispatcher;
+@interface RCTPointAnnotation : MKPointAnnotation <MKAnnotation>
 
-@interface RCTSegmentedControl : UISegmentedControl
-
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
-
-@property (nonatomic, copy) NSArray *values;
-@property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, copy) NSString *identifier;
+@property (nonatomic, assign) BOOL hasLeftCallout;
+@property (nonatomic, assign) BOOL hasRightCallout;
+@property (nonatomic, assign) BOOL animateDrop;
 
 @end
