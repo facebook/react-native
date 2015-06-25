@@ -25,7 +25,7 @@
   return _barItem;
 }
 
-- (void)setIcon:(NSString *)icon
+- (void)setIcon:(id)icon
 {
   static NSDictionary *systemIcons;
   static dispatch_once_t onceToken;
@@ -54,7 +54,7 @@
   UIImage *image = [RCTConvert UIImage:_icon];
   UITabBarItem *oldItem = _barItem;
   if (image) {
-
+    
     // Recreate barItem if previous item was a system icon
     if (wasSystemIcon) {
       _barItem = nil;

@@ -22,7 +22,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(selected, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(icon, NSString);
+RCT_EXPORT_VIEW_PROPERTY(icon, id);
 RCT_REMAP_VIEW_PROPERTY(selectedIcon, barItem.selectedImage, UIImage);
 RCT_REMAP_VIEW_PROPERTY(badge, barItem.badgeValue, NSString);
 RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
