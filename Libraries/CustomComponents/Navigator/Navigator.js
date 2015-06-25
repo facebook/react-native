@@ -392,7 +392,6 @@ var Navigator = React.createClass({
     this.spring.getSpringConfig().tension = sceneConfig.springTension;
     this.spring.setVelocity(velocity || sceneConfig.defaultTransitionVelocity);
     this.spring.setEndValue(1);
-    this._emitWillFocus(this.state.routeStack[this.state.presentedIndex]);
   },
 
   /**
@@ -458,6 +457,7 @@ var Navigator = React.createClass({
     if (this.state.transitionQueue.length) {
       var queuedTransition = this.state.transitionQueue.shift();
       this._enableScene(queuedTransition.destIndex);
+      this._emitWillFocus(this.state.routeStack[queuedTransition.destIndex]);
       this._transitionTo(
         queuedTransition.destIndex,
         queuedTransition.velocity,
@@ -657,6 +657,7 @@ var Navigator = React.createClass({
       }
     } else {
       // The gesture has enough velocity to complete, so we transition to the gesture's destination
+      this._emitWillFocus(this.state.routeStack[destIndex]);
       this._transitionTo(
         destIndex,
         transitionVelocity,
@@ -844,6 +845,7 @@ var Navigator = React.createClass({
   _jumpN: function(n) {
     var destIndex = this._getDestIndexWithinBounds(n);
     this._enableScene(destIndex);
+    this._emitWillFocus(this.state.routeStack[destIndex]);
     this._transitionTo(destIndex);
   },
 
@@ -876,6 +878,7 @@ var Navigator = React.createClass({
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
       this.props.configureScene(route),
     ]);
+    this._emitWillFocus(nextStack[destIndex]);
     this.setState({
       idStack: nextIDStack,
       routeStack: nextStack,
@@ -896,6 +899,7 @@ var Navigator = React.createClass({
     );
     var popIndex = this.state.presentedIndex - n;
     this._enableScene(popIndex);
+    this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
       popIndex,
       null, // default velocity
@@ -935,13 +939,15 @@ var Navigator = React.createClass({
     nextRouteStack[index] = route;
     nextAnimationModeStack[index] = this.props.configureScene(route);
 
+    if (index === this.state.presentedIndex) {
+      this._emitWillFocus(route);
+    }
     this.setState({
       idStack: nextIDStack,
       routeStack: nextRouteStack,
       sceneConfigStack: nextAnimationModeStack,
     }, () => {
       if (index === this.state.presentedIndex) {
-        this._emitWillFocus(route);
         this._emitDidFocus(route);
       }
       cb && cb();
