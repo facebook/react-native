@@ -69,8 +69,9 @@ if (options.projectRoots) {
     options.projectRoots = options.projectRoots.split(',');
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
-    // packager is running from node_modules of another project
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
+     // packager is running from node_modules of another project
     options.projectRoots = [path.resolve(__dirname, '../../..')];
   } else if (__dirname.match(/Pods\/React\/packager$/)) {
     // packager is running from node_modules of another project
@@ -97,7 +98,8 @@ if (options.assetRoots) {
     });
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];
   } else if (__dirname.match(/Pods\/React\/packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];

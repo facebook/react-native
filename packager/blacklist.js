@@ -8,6 +8,8 @@
  */
 'use strict';
 
+var path = require('path');
+
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
@@ -39,7 +41,9 @@ var platformBlacklists = {
 };
 
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  var escaped = str.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  // convert the '/' into an escaped local file separator
+  return escaped.replace(/\//g,'\\' + path.sep);
 }
 
 function blacklist(platform, additionalBlacklist) {
