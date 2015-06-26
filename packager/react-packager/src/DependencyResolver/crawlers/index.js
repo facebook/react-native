@@ -1,21 +1,11 @@
 'use strict';
 
 const nodeCrawl = require('./node');
-//const watchmanCrawl = require('./watchman');
+const watchmanCrawl = require('./watchman');
 
 function crawl(roots, options) {
-  return nodeCrawl(roots, options);
-
-  // Although, in theory, watchman should be much faster;
-  // there is currently a bottleneck somewhere in the
-  // encoding/decoding that is causing it to be slower
-  // than node crawling. However, this should be fixed soon.
-  // https://github.com/facebook/watchman/issues/113
-  /*
   const {fileWatcher} = options;
   return fileWatcher.isWatchman().then(isWatchman => {
-
-    console.log(isWatchman);
     if (!isWatchman) {
       return false;
     }
@@ -30,7 +20,7 @@ function crawl(roots, options) {
     }
 
     return nodeCrawl(roots, options);
-  });*/
+  });
 }
 
 module.exports = crawl;

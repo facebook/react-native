@@ -24,7 +24,7 @@ var platformBlacklists = {
   ios: [
     'node_modules/react-tools/src/browser/ui/React.js',
     'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
-    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
+    'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
     '.web.js',
     '.android.js',
   ],
@@ -32,7 +32,7 @@ var platformBlacklists = {
     'node_modules/react-tools/src/browser/ui/React.js',
     'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
     'node_modules/react-tools/src/browser/ReactTextComponent.js',
-    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
+    'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
     '.web.js',
     '.ios.js',
   ],
