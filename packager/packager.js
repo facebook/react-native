@@ -12,6 +12,7 @@ var fs = require('fs');
 var path = require('path');
 var execFile = require('child_process').execFile;
 var http = require('http');
+var isAbsolutePath = require('absolute-path');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
@@ -56,6 +57,11 @@ var options = parseCommandLine([{
 }, {
   command: 'nonPersistent',
   description: 'Disable file watcher'
+}, {
+  command: 'transformer',
+  type: 'string',
+  default: require.resolve('./transformer.js'),
+  description: 'Specify a custom transformer to be used (absolute path)'
 }]);
 
 if (options.projectRoots) {
@@ -208,12 +214,17 @@ function statusPageMiddleware(req, res, next) {
 }
 
 function getAppMiddleware(options) {
+  var transformerPath = options.transformer;
+  if (!isAbsolutePath(transformerPath)) {
+    transformerPath = path.resolve(process.cwd(), transformerPath);
+  }
+
   return ReactPackager.middleware({
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(options.platform),
     cacheVersion: '2',
-    transformModulePath: require.resolve('./transformer.js'),
+    transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
     polyfillModuleNames: [
