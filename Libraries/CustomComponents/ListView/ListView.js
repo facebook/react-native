@@ -276,7 +276,9 @@ var ListView = React.createClass({
   },
 
   componentDidUpdate: function() {
-    this._measureAndUpdateScrollProps();
+    this.requestAnimationFrame(() => {
+      this._measureAndUpdateScrollProps();
+    });
   },
 
   onRowHighlighted: function(sectionID, rowID) {
