@@ -58,20 +58,23 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
 
 @implementation RCTAnimation
 
-static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimationType type)
+static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnimationType type)
 {
   switch (type) {
     case RCTAnimationTypeLinear:
-      return UIViewAnimationCurveLinear;
+      return UIViewAnimationOptionCurveLinear;
     case RCTAnimationTypeEaseIn:
-      return UIViewAnimationCurveEaseIn;
+      return UIViewAnimationOptionCurveEaseIn;
     case RCTAnimationTypeEaseOut:
-      return UIViewAnimationCurveEaseOut;
+      return UIViewAnimationOptionCurveEaseOut;
     case RCTAnimationTypeEaseInEaseOut:
-      return UIViewAnimationCurveEaseInOut;
+      return UIViewAnimationOptionCurveEaseInOut;
+    case RCTAnimationTypeKeyboard:
+      // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
+      return (UIViewAnimationOptions)(7 << 16);
     default:
       RCTLogError(@"Unsupported animation type %zd", type);
-      return UIViewAnimationCurveEaseInOut;
+      return UIViewAnimationOptionCurveEaseInOut;
   }
 }
 
@@ -123,7 +126,7 @@ static UIViewAnimationCurve UIViewAnimationCurveFromRCTAnimationType(RCTAnimatio
   } else {
 
     UIViewAnimationOptions options = UIViewAnimationOptionBeginFromCurrentState |
-      UIViewAnimationCurveFromRCTAnimationType(_animationType);
+      UIViewAnimationOptionsFromRCTAnimationType(_animationType);
 
     [UIView animateWithDuration:_duration
                           delay:_delay

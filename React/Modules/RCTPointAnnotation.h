@@ -7,13 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#import <MapKit/MapKit.h>
 
-typedef NS_ENUM(NSInteger, RCTAnimationType) {
-  RCTAnimationTypeSpring = 0,
-  RCTAnimationTypeLinear,
-  RCTAnimationTypeEaseIn,
-  RCTAnimationTypeEaseOut,
-  RCTAnimationTypeEaseInEaseOut,
-  RCTAnimationTypeKeyboard,
-};
+@interface RCTPointAnnotation : MKPointAnnotation <MKAnnotation>
+
+@property (nonatomic, copy) NSString *identifier;
+@property (nonatomic, assign) BOOL hasLeftCallout;
+@property (nonatomic, assign) BOOL hasRightCallout;
+@property (nonatomic, assign) BOOL animateDrop;
+
+@end

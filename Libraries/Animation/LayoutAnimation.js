@@ -23,6 +23,7 @@ var TypesEnum = {
   easeInEaseOut: true,
   easeIn: true,
   easeOut: true,
+  keyboard: true,
 };
 var Types = keyMirror(TypesEnum);
 
@@ -112,5 +113,11 @@ var LayoutAnimation = {
     },
   }
 };
+
+for (var key in LayoutAnimation.Presets) {
+  LayoutAnimation[key] = LayoutAnimation.configureNext.bind(
+    null, LayoutAnimation.Presets[key]
+  );
+}
 
 module.exports = LayoutAnimation;

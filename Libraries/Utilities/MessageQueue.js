@@ -76,15 +76,17 @@ class MessageQueue {
    * Public APIs
    */
   processBatch(batch) {
-    ReactUpdates.batchedUpdates(() => {
-      batch.forEach((call) => {
-        let method = call.method === 'callFunctionReturnFlushedQueue' ?
-          '__callFunction' : '__invokeCallback';
-        guard(() => this[method].apply(this, call.args));
+    guard(() => {
+      ReactUpdates.batchedUpdates(() => {
+        batch.forEach((call) => {
+          let method = call.method === 'callFunctionReturnFlushedQueue' ?
+            '__callFunction' : '__invokeCallback';
+          guard(() => this[method].apply(this, call.args));
+        });
+        BridgeProfiling.profile('ReactUpdates.batchedUpdates()');
       });
-      BridgeProfiling.profile('ReactUpdates.batchedUpdates()');
+      BridgeProfiling.profileEnd();
     });
-    BridgeProfiling.profileEnd();
     return this.flushedQueue();
   }
 
