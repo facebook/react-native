@@ -261,6 +261,7 @@ if (Platform.OS === 'android') {
   var RCTMap = createReactNativeComponentClass({
     validAttributes: merge(
       ReactNativeViewAttributes.UIView, {
+        active: true,
         showsUserLocation: true,
         zoomEnabled: true,
         rotateEnabled: true,
