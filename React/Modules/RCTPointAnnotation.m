@@ -7,13 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#import "RCTPointAnnotation.h"
 
-typedef NS_ENUM(NSInteger, RCTAnimationType) {
-  RCTAnimationTypeSpring = 0,
-  RCTAnimationTypeLinear,
-  RCTAnimationTypeEaseIn,
-  RCTAnimationTypeEaseOut,
-  RCTAnimationTypeEaseInEaseOut,
-  RCTAnimationTypeKeyboard,
-};
+@implementation RCTPointAnnotation
+
+@end
