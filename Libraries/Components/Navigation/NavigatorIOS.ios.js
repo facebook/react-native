@@ -60,6 +60,7 @@ var RCTNavigatorItem = createReactNativeComponentClass({
     navigationBarHidden: true,
     titleTextColor: true,
     style: true,
+    fontFamily: true,
   },
   uiViewClassName: 'RCTNavItem',
 });
@@ -299,6 +300,11 @@ var NavigatorIOS = React.createClass({
      * The text color of the navigation bar title
      */
     titleTextColor: PropTypes.string,
+
+    /**
+     * The font family of the navigation bar title
+     */
+    fontFamily: PropTypes.string,
 
   },
 
@@ -609,7 +615,8 @@ var NavigatorIOS = React.createClass({
           navigationBarHidden={this.props.navigationBarHidden}
           tintColor={this.props.tintColor}
           barTintColor={this.props.barTintColor}
-          titleTextColor={this.props.titleTextColor}>
+          titleTextColor={this.props.titleTextColor}
+          fontFamily={this.props.fontFamily}>
           <Component
             navigator={this.navigator}
             route={route}

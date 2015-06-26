@@ -81,8 +81,18 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     UINavigationBar *bar = self.navigationController.navigationBar;
     bar.barTintColor = _navItem.barTintColor;
     bar.tintColor = _navItem.tintColor;
-    if (_navItem.titleTextColor) {
-      [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
+
+    if (_navItem.titleTextColor && _navItem.fontFamily) {
+      [bar setTitleTextAttributes:@{
+                                    NSForegroundColorAttributeName : _navItem.titleTextColor,
+                                    NSFontAttributeName: [UIFont fontWithName:_navItem.fontFamily size:20.0f]
+                                    }];
+    } else if(_navItem.titleTextColor){
+      [bar setTitleTextAttributes:@{
+                                    NSForegroundColorAttributeName : _navItem.titleTextColor,
+                                    }];
+    } else if(_navItem.fontFamily){
+      [bar setTitleTextAttributes:@{NSFontAttributeName: [UIFont fontWithName:_navItem.fontFamily size:20.0f]}];
     }
 
     UINavigationItem *item = self.navigationItem;
