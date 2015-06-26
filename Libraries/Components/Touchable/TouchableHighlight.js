@@ -79,6 +79,10 @@ var TouchableHighlight = React.createClass({
      * Called immediately after the underlay is hidden
      */
     onHideUnderlay: React.PropTypes.func,
+    /**
+     * Whether or not touches are enabled
+     */
+    disabled: React.PropTypes.bool,
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -94,11 +98,12 @@ var TouchableHighlight = React.createClass({
         }
       },
       activeUnderlayProps: {
-        style: {
+        style: props.underlayColor && {
           backgroundColor: props.underlayColor,
         }
       },
       underlayStyle: [
+        TOUCHABLE_PROPS.style,
         INACTIVE_UNDERLAY_PROPS.style,
         props.style,
       ]
@@ -139,6 +144,9 @@ var TouchableHighlight = React.createClass({
    * defined on your component.
    */
   touchableHandleActivePressIn: function() {
+    if (this.props.disabled) {
+      return;
+    }
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     this._showUnderlay();
@@ -146,6 +154,9 @@ var TouchableHighlight = React.createClass({
   },
 
   touchableHandleActivePressOut: function() {
+    if (this.props.disabled) {
+      return;
+    }
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
@@ -153,6 +164,9 @@ var TouchableHighlight = React.createClass({
   },
 
   touchableHandlePress: function() {
+    if (this.props.disabled) {
+      return;
+    }
     this.clearTimeout(this._hideTimeout);
     this._showUnderlay();
     this._hideTimeout = this.setTimeout(this._hideUnderlay,
@@ -161,6 +175,9 @@ var TouchableHighlight = React.createClass({
   },
 
   touchableHandleLongPress: function() {
+    if (this.props.disabled) {
+      return;
+    }
     this.props.onLongPress && this.props.onLongPress();
   },
 
@@ -213,7 +230,10 @@ var TouchableHighlight = React.createClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
+        onResponderTerminate={this.touchableHandleResponderTerminate}
+        onMouseEnter={this._showUnderlay}
+        onMouseLeave={this._hideUnderlay}
+        {...this.props}>
         {cloneWithProps(
           onlyChild(this.props.children),
           {
@@ -235,6 +255,9 @@ var INACTIVE_CHILD_PROPS = {
 };
 var INACTIVE_UNDERLAY_PROPS = {
   style: StyleSheet.create({x: {backgroundColor: 'transparent'}}).x,
+};
+var TOUCHABLE_PROPS = {
+  style: StyleSheet.create({x: {cursor: 'pointer'}}).x,
 };
 
 module.exports = TouchableHighlight;

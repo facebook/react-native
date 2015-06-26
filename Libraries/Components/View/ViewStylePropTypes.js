@@ -35,13 +35,20 @@ var ViewStylePropTypes = {
   borderBottomRightRadius: ReactPropTypes.number,
   borderStyle: ReactPropTypes.oneOf(['solid', 'dotted', 'dashed']),
   opacity: ReactPropTypes.number,
-  overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
+  // overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
   shadowColor: ReactPropTypes.string,
   shadowOffset: ReactPropTypes.shape(
     {width: ReactPropTypes.number, height: ReactPropTypes.number}
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
+
+  // web
+  overflow: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
+  overflowX: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
+  overflowY: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
+  background: ReactPropTypes.string,
+  cursor: ReactPropTypes.string,
 };
 
 module.exports = ViewStylePropTypes;

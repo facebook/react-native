@@ -54,6 +54,8 @@ const validateOpts = declareOpts({
       // should work after this release and we can
       // remove it from here.
       'parse',
+      // Hack - how to handle properly?
+      'even-client',
     ],
   },
 });

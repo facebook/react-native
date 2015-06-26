@@ -14,6 +14,10 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
+@interface RCTTextField ()<UITextFieldDelegate>
+
+@end
+
 @implementation RCTTextField
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -30,7 +34,7 @@
     [self addTarget:self action:@selector(_textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(_textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
-    [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
+    self.delegate = self;
     _reactSubviews = [[NSMutableArray alloc] init];
     self.delegate = self;
   }
@@ -176,6 +180,15 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                  reactTag:self.reactTag
                                      text:self.text
                                eventCount:_nativeEventCount];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                 reactTag:self.reactTag
+                                     text:self.text
+                               eventCount:_nativeEventCount];
+  return NO;
 }
 
 - (void)_textFieldBeginEditing

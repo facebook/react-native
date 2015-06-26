@@ -118,7 +118,8 @@ var TouchableWithoutFeedback = React.createClass({
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
-      onResponderTerminate: this.touchableHandleResponderTerminate
+      onResponderTerminate: this.touchableHandleResponderTerminate,
+      onClick: this.touchableHandlePress,
     });
   }
 });
