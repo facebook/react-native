@@ -15,10 +15,12 @@
     "es6.properties.shorthand",
     "es6.spread",
     "es6.templateLiterals",
+    "es7.asyncFunctions",
     "es7.trailingFunctionCommas",
     "es7.objectRestSpread",
     "flow",
-    "react"
+    "react",
+    "regenerator"
   ],
   "sourceMaps": false
 }

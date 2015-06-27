@@ -62,6 +62,7 @@
     "react-timer-mixin": "^0.13.1",
     "react-tools": "^0.13.2",
     "rebound": "^0.0.12",
+    "regenerator": "^0.8.31",
     "sane": "^1.1.2",
     "source-map": "^0.1.31",
     "stacktrace-parser": "frantic/stacktrace-parser#493c5e5638",
