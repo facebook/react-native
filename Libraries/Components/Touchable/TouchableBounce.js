@@ -20,6 +20,12 @@ var Touchable = require('Touchable');
 var merge = require('merge');
 var onlyChild = require('onlyChild');
 
+var invariant = require('invariant');
+invariant(
+   AnimationExperimental || POPAnimation,
+   'Please add the RCTAnimationExperimental framework to your project, or add //Libraries/FBReactKit:RCTPOPAnimation to your BUCK file if running internally within Facebook.'
+);
+
 type State = {
   animationID: ?number;
 };
