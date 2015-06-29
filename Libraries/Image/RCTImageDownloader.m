@@ -9,25 +9,27 @@
 
 #import "RCTImageDownloader.h"
 
-#import "RCTCache.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
 typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *error);
 
+CGSize RCTTargetSizeForClipRect(CGRect);
+CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
+
 @implementation RCTImageDownloader
 {
-  RCTCache *_cache;
+  NSURLCache *_cache;
   dispatch_queue_t _processingQueue;
   NSMutableDictionary *_pendingBlocks;
 }
 
-+ (instancetype)sharedInstance
++ (RCTImageDownloader *)sharedInstance
 {
   static RCTImageDownloader *sharedInstance;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
+    sharedInstance = [[RCTImageDownloader alloc] init];
   });
   return sharedInstance;
 }
@@ -35,27 +37,22 @@ typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *e
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _cache = [[RCTCache alloc] initWithName:@"RCTImageDownloader"];
+    _cache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 diskCapacity:200 * 1024 * 1024 diskPath:@"React/RCTImageDownloader"];
     _processingQueue = dispatch_queue_create("com.facebook.React.DownloadProcessingQueue", DISPATCH_QUEUE_SERIAL);
     _pendingBlocks = [[NSMutableDictionary alloc] init];
   }
-  return self;
-}
 
-static NSString *RCTCacheKeyForURL(NSURL *url)
-{
-  return url.absoluteString;
+  return self;
 }
 
 - (id)_downloadDataForURL:(NSURL *)url block:(RCTCachedDataDownloadBlock)block
 {
-  NSString *cacheKey = RCTCacheKeyForURL(url);
+  NSString *cacheKey = url.absoluteString;
 
   __block BOOL cancelled = NO;
   __block NSURLSessionDataTask *task = nil;
 
   dispatch_block_t cancel = ^{
-
     cancelled = YES;
 
     dispatch_async(_processingQueue, ^{
@@ -88,21 +85,28 @@ static NSString *RCTCacheKeyForURL(NSURL *url)
         });
       };
 
-      if ([_cache hasDataForKey:cacheKey]) {
-        [_cache fetchDataForKey:cacheKey completionHandler:^(NSData *data) {
-          if (!cancelled) {
-            runBlocks(YES, data, nil);
-          }
-        }];
-      } else {
-        task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-          if (!cancelled) {
-            runBlocks(NO, data, error);
-          }
-        }];
+      task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (!cancelled) {
+          runBlocks(NO, data, error);
+        }
 
-        [task resume];
-      }
+        RCTImageDownloader *strongSelf = weakSelf;
+        NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
+        [strongSelf->_cache storeCachedResponse:cachedResponse forDataTask:task];
+        task = nil;
+      }];
+
+      [_cache getCachedResponseForDataTask:task completionHandler:^(NSCachedURLResponse *cachedResponse) {
+        if (cancelled) {
+          return;
+        }
+
+        if (cachedResponse) {
+          runBlocks(YES, cachedResponse.data, nil);
+        } else {
+          [task resume];
+        }
+      }];
     }
   });
 
@@ -111,22 +115,78 @@ static NSString *RCTCacheKeyForURL(NSURL *url)
 
 - (id)downloadDataForURL:(NSURL *)url block:(RCTDataDownloadBlock)block
 {
-  NSString *cacheKey = RCTCacheKeyForURL(url);
-  __weak RCTImageDownloader *weakSelf = self;
   return [self _downloadDataForURL:url block:^(BOOL cached, NSData *data, NSError *error) {
-    if (!cached) {
-      RCTImageDownloader *strongSelf = weakSelf;
-      [strongSelf->_cache setData:data forKey:cacheKey];
-    }
     block(data, error);
   }];
 }
+
+- (id)downloadImageForURL:(NSURL *)url
+                     size:(CGSize)size
+                    scale:(CGFloat)scale
+               resizeMode:(UIViewContentMode)resizeMode
+          backgroundColor:(UIColor *)backgroundColor
+                    block:(RCTImageDownloadBlock)block
+{
+  return [self downloadDataForURL:url block:^(NSData *data, NSError *error) {
+    if (!data || error) {
+      block(nil, error);
+      return;
+    }
+
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+      // Target size wasn't available yet, so abort image drawing
+      block(nil, nil);
+      return;
+    }
+
+    UIImage *image = [UIImage imageWithData:data scale:scale];
+    if (image) {
+
+      // Get scale and size
+      CGFloat destScale = scale ?: RCTScreenScale();
+      CGRect imageRect = RCTClipRect(image.size, image.scale, size, destScale, resizeMode);
+      CGSize destSize = RCTTargetSizeForClipRect(imageRect);
+
+      // Opacity optimizations
+      UIColor *blendColor = nil;
+      BOOL opaque = !RCTImageHasAlpha(image.CGImage);
+      if (!opaque && backgroundColor) {
+        CGFloat alpha;
+        [backgroundColor getRed:NULL green:NULL blue:NULL alpha:&alpha];
+        if (alpha > 0.999) { // no benefit to blending if background is translucent
+          opaque = YES;
+          blendColor = backgroundColor;
+        }
+      }
+
+      // Decompress image at required size
+      UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
+      if (blendColor) {
+        [blendColor setFill];
+        UIRectFill((CGRect){CGPointZero, destSize});
+      }
+      [image drawInRect:imageRect];
+      image = UIGraphicsGetImageFromCurrentImageContext();
+      UIGraphicsEndImageContext();
+    }
+
+    block(image, nil);
+  }];
+}
+
+- (void)cancelDownload:(id)downloadToken
+{
+  if (downloadToken) {
+    ((dispatch_block_t)downloadToken)();
+  }
+}
+
+@end
 
 /**
  * Returns the optimal context size for an image drawn using the clip rect
  * returned by RCTClipRect.
  */
-CGSize RCTTargetSizeForClipRect(CGRect);
 CGSize RCTTargetSizeForClipRect(CGRect clipRect)
 {
   return (CGSize){
@@ -141,7 +201,6 @@ CGSize RCTTargetSizeForClipRect(CGRect clipRect)
  * then calculates the optimal rectangle to draw the image into so that it will
  * be sized and positioned correctly if drawn using the specified content mode.
  */
-CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
 CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
                    CGSize destSize, CGFloat destScale,
                    UIViewContentMode resizeMode)
@@ -202,66 +261,3 @@ CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
       return (CGRect){CGPointZero, destSize};
   }
 }
-
-- (id)downloadImageForURL:(NSURL *)url
-                     size:(CGSize)size
-                    scale:(CGFloat)scale
-               resizeMode:(UIViewContentMode)resizeMode
-          backgroundColor:(UIColor *)backgroundColor
-                    block:(RCTImageDownloadBlock)block
-{
-  return [self downloadDataForURL:url block:^(NSData *data, NSError *error) {
-
-    if (!data || error) {
-      block(nil, error);
-      return;
-    }
-
-    if (CGSizeEqualToSize(size, CGSizeZero)) {
-      // Target size wasn't available yet, so abort image drawing
-      block(nil, nil);
-      return;
-    }
-
-    UIImage *image = [UIImage imageWithData:data scale:scale];
-    if (image) {
-
-      // Get scale and size
-      CGFloat destScale = scale ?: RCTScreenScale();
-      CGRect imageRect = RCTClipRect(image.size, image.scale, size, destScale, resizeMode);
-      CGSize destSize = RCTTargetSizeForClipRect(imageRect);
-
-      // Opacity optimizations
-      UIColor *blendColor = nil;
-      BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-      if (!opaque && backgroundColor) {
-        CGFloat alpha;
-        [backgroundColor getRed:NULL green:NULL blue:NULL alpha:&alpha];
-        if (alpha > 0.999) { // no benefit to blending if background is translucent
-          opaque = YES;
-          blendColor = backgroundColor;
-        }
-      }
-
-      // Decompress image at required size
-      UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
-      if (blendColor) {
-        [blendColor setFill];
-        UIRectFill((CGRect){CGPointZero, destSize});
-      }
-      [image drawInRect:imageRect];
-      image = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
-    }
-    block(image, nil);
-  }];
-}
-
-- (void)cancelDownload:(id)downloadToken
-{
-  if (downloadToken) {
-    ((dispatch_block_t)downloadToken)();
-  }
-}
-
-@end
