@@ -397,7 +397,9 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth) {
           getPaddingAndBorderAxis(node, CSS_FLEX_DIRECTION_COLUMN);
       }
     }
-    return;
+    if (node->children_count == 0) {
+      return;
+    }
   }
 
   // Pre-fill some dimensions straight from the parent
