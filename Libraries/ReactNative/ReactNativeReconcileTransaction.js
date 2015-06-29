@@ -9,8 +9,7 @@
  * @providesModule ReactNativeReconcileTransaction
  * @flow
  */
-
-"use strict";
+'use strict';
 
 var CallbackQueue = require('CallbackQueue');
 var PooledClass = require('PooledClass');

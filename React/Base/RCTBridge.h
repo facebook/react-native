@@ -21,17 +21,17 @@
 /**
  * This notification triggers a reload of all bridges currently running.
  */
-extern NSString *const RCTReloadNotification;
+RCT_EXTERN NSString *const RCTReloadNotification;
 
 /**
  * This notification fires when the bridge has finished loading.
  */
-extern NSString *const RCTJavaScriptDidLoadNotification;
+RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
  * This notification fires when the bridge failed to load.
  */
-extern NSString *const RCTJavaScriptDidFailToLoadNotification;
+RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
 /**
  * This block can be used to instantiate modules that require additional
@@ -42,6 +42,13 @@ extern NSString *const RCTJavaScriptDidFailToLoadNotification;
  * module instances should not be shared between bridges.
  */
 typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
+
+/**
+ * Register the given class as a bridge module. All modules must be registered
+ * prior to the first bridge initialization.
+ *
+ */
+RCT_EXTERN void RCTRegisterModule(Class);
 
 /**
  * This function returns the module name for a given class.
@@ -68,22 +75,15 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 /**
  * This method is used to call functions in the JavaScript application context.
  * It is primarily intended for use by modules that require two-way communication
- * with the JavaScript code. Method should be registered using the
- * RCT_IMPORT_METHOD macro below. Attempting to call a method that has not been
- * registered will result in an error. Safe to call from any thread.
+ * with the JavaScript code. Safe to call from any thread.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 
 /**
- * This macro is used to register a JS method to be called via the enqueueJSCall
- * bridge method. You should place this macro inside any file that uses the
- * imported method. If a method has already been registered by another class, it
- * is not necessary to register it again, but it is good practice. Registering
- * the same method more than once will not result in an error.
+ * DEPRECATED: Do not use.
  */
 #define RCT_IMPORT_METHOD(module, method) \
-__attribute__((used, section("__DATA,RCTImport"))) \
-static const char *__rct_import_##module##_##method##__ = #module"."#method;
+  _Pragma("message(\"This macro is no longer required\")")
 
 /**
  * URL of the script that was loaded into the bridge.
@@ -95,6 +95,11 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
 /**
  * The event dispatcher is a wrapper around -enqueueJSCall:args: that provides a
  * higher-level interface for sending UI events such as touches and text input.
+ *
+ * NOTE: RCTEventDispatcher is now a bridge module, this is implemented as a
+ * category but remains declared in the bridge to avoid breaking changes
+ *
+ * To be moved.
  */
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 
@@ -112,6 +117,11 @@ static const char *__rct_import_##module##_##method##__ = #module"."#method;
  * Use this to check if the bridge is currently loading.
  */
 @property (nonatomic, readonly, getter=isLoading) BOOL loading;
+
+/**
+ * The block passed in the constructor with pre-initialized modules
+ */
+@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
 /**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.

@@ -18,6 +18,8 @@
 // Utility functions for JSON object <-> string serialization/deserialization
 RCT_EXTERN NSString *RCTJSONStringify(id jsonObject, NSError **error);
 RCT_EXTERN id RCTJSONParse(NSString *jsonString, NSError **error);
+RCT_EXTERN id RCTJSONParseMutable(NSString *jsonString, NSError **error);
+RCT_EXTERN id RCTJSONParseWithOptions(NSString *jsonString, NSError **error, NSJSONReadingOptions options);
 
 // Strip non JSON-safe values from an object graph
 RCT_EXTERN id RCTJSONClean(id object);
@@ -34,9 +36,6 @@ RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
 
-// Get current time, for precise performance metrics
-RCT_EXTERN NSTimeInterval RCTTGetAbsoluteTime(void);
-
 // Method swizzling
 RCT_EXTERN void RCTSwapClassMethods(Class cls, SEL original, SEL replacement);
 RCT_EXTERN void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);
@@ -52,3 +51,15 @@ RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, N
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
+
+// Return YES if image has an alpha component
+RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
+
+// Create an NSError in the NCTErrorDomain
+RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
+
+// Convert nil values to NSNull, and vice-versa
+RCT_EXTERN id RCTNullIfNil(id value);
+RCT_EXTERN id RCTNilIfNull(id value);
+
+RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);

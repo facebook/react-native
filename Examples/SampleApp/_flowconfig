@@ -16,7 +16,7 @@
 .*/node_modules/react-tools/src/event/EventPropagators.js
 
 # Ignore commoner tests
-.*/node_modules/react-tools/node_modules/commoner/test/.*
+.*/node_modules/commoner/test/.*
 
 # See https://github.com/facebook/flow/issues/442
 .*/react-tools/node_modules/commoner/lib/reader.js
@@ -33,4 +33,4 @@ node_modules/react-native/Libraries/react-native/react-native-interface.js
 module.system=haste
 
 [version]
-0.11.0
+0.12.0

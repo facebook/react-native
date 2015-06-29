@@ -29,14 +29,15 @@
   NSArray *_lastStackTrace;
 
   UITableViewCell *_cachedMessageCell;
+  UIColor *_redColor;
 }
 
 - (id)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-
+    _redColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
     self.windowLevel = UIWindowLevelStatusBar + 5;
-    self.backgroundColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
+    self.backgroundColor = _redColor;
     self.hidden = YES;
 
     UIViewController *rootController = [[UIViewController alloc] init];
@@ -58,6 +59,7 @@
     [_rootView addSubview:_stackTraceTableView];
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    dismissButton.accessibilityIdentifier = @"redbox-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
     [dismissButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
@@ -65,6 +67,7 @@
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
 
     UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    reloadButton.accessibilityIdentifier = @"redbox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
     [reloadButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
@@ -83,14 +86,11 @@
                            selector:@selector(dismiss)
                                name:RCTReloadNotification
                              object:nil];
-
-    [notificationCenter addObserver:self
-                           selector:@selector(dismiss)
-                               name:RCTJavaScriptDidLoadNotification
-                             object:nil];
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dealloc
 {
@@ -135,6 +135,7 @@
 - (void)dismiss
 {
   self.hidden = YES;
+  self.backgroundColor = _redColor;
   [self resignFirstResponder];
   [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
 }
@@ -146,12 +147,12 @@
 
 #pragma mark - TableView
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView
 {
   return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(__unused UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
   return section == 0 ? 1 : [_lastStackTrace count];
 }
@@ -172,6 +173,7 @@
 {
   if (!cell) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"msg-cell"];
+    cell.textLabel.accessibilityIdentifier = @"redbox-error";
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.textLabel.font = [UIFont boldSystemFontOfSize:16];
     cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -263,6 +265,7 @@
 @implementation RCTRedBox
 {
   RCTRedBoxWindow *_window;
+  UIColor *_nextBackgroundColor;
 }
 
 + (instancetype)sharedInstance
@@ -273,6 +276,11 @@
     _sharedInstance = [[RCTRedBox alloc] init];
   });
   return _sharedInstance;
+}
+
+- (void)setNextBackgroundColor:(UIColor *)color
+{
+  _nextBackgroundColor = color;
 }
 
 - (void)showErrorMessage:(NSString *)message
@@ -306,6 +314,10 @@
       _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     }
     [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
+    if (_nextBackgroundColor) {
+      _window.backgroundColor = _nextBackgroundColor;
+      _nextBackgroundColor = nil;
+    }
   });
 }
 
@@ -336,6 +348,7 @@
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow {}
 - (NSString *)currentErrorMessage { return nil; }
+- (void)setNextBackgroundColor:(UIColor *)color {}
 - (void)dismiss {}
 
 @end

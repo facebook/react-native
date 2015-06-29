@@ -12,47 +12,36 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowRawText.h"
+#import "RCTSparseArray.h"
+#import "RCTText.h"
 #import "RCTUtils.h"
 
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
 NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 
+@implementation RCTShadowText
+{
+  NSTextStorage *_cachedTextStorage;
+  CGFloat _cachedTextStorageWidth;
+  NSAttributedString *_cachedAttributedString;
+  CGFloat _effectiveLetterSpacing;
+}
+
 static css_dim_t RCTMeasure(void *context, float width)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
-
-  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:[shadowText attributedString]];
-  NSTextStorage *previousTextStorage = shadowText.layoutManager.textStorage;
-  if (previousTextStorage) {
-    [previousTextStorage removeLayoutManager:shadowText.layoutManager];
-  }
-  [textStorage addLayoutManager:shadowText.layoutManager];
-
-  shadowText.textContainer.size = CGSizeMake(isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX);
-  [shadowText.layoutManager ensureLayoutForTextContainer:shadowText.textContainer];
-
-  CGSize computedSize = [shadowText.layoutManager usedRectForTextContainer:shadowText.textContainer].size;
-
-  [textStorage removeLayoutManager:shadowText.layoutManager];
-  if (previousTextStorage) {
-    [previousTextStorage addLayoutManager:shadowText.layoutManager];
-  }
+  NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
+  NSLayoutManager *layoutManager = [textStorage.layoutManagers firstObject];
+  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
+  CGSize computedSize = [layoutManager usedRectForTextContainer:textContainer].size;
 
   css_dim_t result;
   result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
-  if (shadowText.effectiveLetterSpacing < 0) {
-    result.dimensions[CSS_WIDTH] -= shadowText.effectiveLetterSpacing;
+  if (shadowText->_effectiveLetterSpacing < 0) {
+    result.dimensions[CSS_WIDTH] -= shadowText->_effectiveLetterSpacing;
   }
   result.dimensions[CSS_HEIGHT] = RCTCeilPixelValue(computedSize.height);
   return result;
-}
-
-@implementation RCTShadowText
-{
-  NSLayoutManager *_layoutManager;
-  NSTextContainer *_textContainer;
-  NSAttributedString *_cachedAttributedString;
-  UIFont *_font;
 }
 
 - (instancetype)init
@@ -61,16 +50,79 @@ static css_dim_t RCTMeasure(void *context, float width)
     _fontSize = NAN;
     _letterSpacing = NAN;
     _isHighlighted = NO;
+  }
+  return self;
+}
 
-    _textContainer = [[NSTextContainer alloc] init];
-    _textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
-    _textContainer.lineFragmentPadding = 0.0;
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; text: %@>", [self attributedString].string];
+}
 
-    _layoutManager = [[NSLayoutManager alloc] init];
-    [_layoutManager addTextContainer:_textContainer];
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+                          parentProperties:(NSDictionary *)parentProperties
+{
+  parentProperties = [super processUpdatedProperties:applierBlocks
+                                    parentProperties:parentProperties];
+
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width];
+  [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
+    RCTText *view = viewRegistry[self.reactTag];
+    view.textStorage = textStorage;
+  }];
+
+  return parentProperties;
+}
+
+- (void)applyLayoutNode:(css_node_t *)node
+      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+       absolutePosition:(CGPoint)absolutePosition
+{
+  [super applyLayoutNode:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+  [self dirtyPropagation];
+}
+
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width
+{
+  UIEdgeInsets padding = self.paddingAsInsets;
+  width -= (padding.left + padding.right);
+
+  if (_cachedTextStorage && width == _cachedTextStorageWidth) {
+    return _cachedTextStorage;
   }
 
-  return self;
+  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:self.attributedString];
+  [textStorage addLayoutManager:layoutManager];
+
+  NSTextContainer *textContainer = [[NSTextContainer alloc] init];
+  textContainer.lineFragmentPadding = 0.0;
+  textContainer.lineBreakMode = _numberOfLines > 0 ? NSLineBreakByTruncatingTail : NSLineBreakByClipping;
+  textContainer.maximumNumberOfLines = _numberOfLines;
+  textContainer.size = (CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX};
+
+  [layoutManager addTextContainer:textContainer];
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+
+  _cachedTextStorageWidth = width;
+  _cachedTextStorage = textStorage;
+
+  return textStorage;
+}
+
+- (void)dirtyText
+{
+  [super dirtyText];
+  _cachedTextStorage = nil;
+}
+
+- (void)recomputeText
+{
+  [self attributedString];
+  [self setTextComputed];
+  [self dirtyPropagation];
 }
 
 - (NSAttributedString *)attributedString
@@ -79,7 +131,8 @@ static css_dim_t RCTMeasure(void *context, float width)
                                       fontSize:nil
                                     fontWeight:nil
                                      fontStyle:nil
-                                 letterSpacing:nil];
+                                 letterSpacing:nil
+                            useBackgroundColor:NO];
 }
 
 - (NSAttributedString *)_attributedStringWithFontFamily:(NSString *)fontFamily
@@ -87,6 +140,7 @@ static css_dim_t RCTMeasure(void *context, float width)
                                              fontWeight:(NSString *)fontWeight
                                               fontStyle:(NSString *)fontStyle
                                           letterSpacing:(NSNumber *)letterSpacing
+                                     useBackgroundColor:(BOOL)useBackgroundColor
 {
   if (![self isTextDirty] && _cachedAttributedString) {
     return _cachedAttributedString;
@@ -114,7 +168,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   for (RCTShadowView *child in [self reactSubviews]) {
     if ([child isKindOfClass:[RCTShadowText class]]) {
       RCTShadowText *shadowText = (RCTShadowText *)child;
-      [attributedString appendAttributedString:[shadowText _attributedStringWithFontFamily:fontFamily fontSize:fontSize fontWeight:fontWeight fontStyle:fontStyle letterSpacing:letterSpacing]];
+      [attributedString appendAttributedString:[shadowText _attributedStringWithFontFamily:fontFamily fontSize:fontSize fontWeight:fontWeight fontStyle:fontStyle letterSpacing:letterSpacing useBackgroundColor:YES]];
     } else if ([child isKindOfClass:[RCTShadowRawText class]]) {
       RCTShadowRawText *shadowRawText = (RCTShadowRawText *)child;
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[shadowRawText text] ?: @""]];
@@ -126,17 +180,17 @@ static css_dim_t RCTMeasure(void *context, float width)
   }
 
   if (_color) {
-    [self _addAttribute:NSForegroundColorAttributeName withValue:self.color toAttributedString:attributedString];
+    [self _addAttribute:NSForegroundColorAttributeName withValue:_color toAttributedString:attributedString];
   }
   if (_isHighlighted) {
     [self _addAttribute:RCTIsHighlightedAttributeName withValue:@YES toAttributedString:attributedString];
   }
-  if (_textBackgroundColor) {
-    [self _addAttribute:NSBackgroundColorAttributeName withValue:self.textBackgroundColor toAttributedString:attributedString];
+  if (useBackgroundColor && self.backgroundColor) {
+    [self _addAttribute:NSBackgroundColorAttributeName withValue:self.backgroundColor toAttributedString:attributedString];
   }
 
-  _font = [RCTConvert UIFont:nil withFamily:fontFamily size:fontSize weight:fontWeight style:fontStyle];
-  [self _addAttribute:NSFontAttributeName withValue:_font toAttributedString:attributedString];
+  UIFont *font = [RCTConvert UIFont:nil withFamily:fontFamily size:fontSize weight:fontWeight style:fontStyle];
+  [self _addAttribute:NSFontAttributeName withValue:font toAttributedString:attributedString];
   [self _addAttribute:NSKernAttributeName withValue:letterSpacing toAttributedString:attributedString];
   [self _addAttribute:RCTReactTagAttributeName withValue:self.reactTag toAttributedString:attributedString];
   [self _setParagraphStyleOnAttributedString:attributedString];
@@ -146,11 +200,6 @@ static css_dim_t RCTMeasure(void *context, float width)
   [self dirtyLayout];
 
   return _cachedAttributedString;
-}
-
-- (UIFont *)font
-{
-  return _font ?: [RCTConvert UIFont:nil withFamily:_fontFamily size:@(_fontSize) weight:_fontWeight style:_fontStyle];
 }
 
 - (void)_addAttribute:(NSString *)attribute withValue:(id)attributeValue toAttributedString:(NSMutableAttributedString *)attributedString
@@ -224,6 +273,12 @@ static css_dim_t RCTMeasure(void *context, float width)
   [self cssNode]->children_count = 0;
 }
 
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  super.backgroundColor = backgroundColor;
+  [self dirtyText];
+}
+
 #define RCT_TEXT_PROPERTY(setProp, ivar, type) \
 - (void)set##setProp:(type)value;              \
 {                                              \
@@ -231,38 +286,17 @@ static css_dim_t RCTMeasure(void *context, float width)
   [self dirtyText];                            \
 }
 
-RCT_TEXT_PROPERTY(TextBackgroundColor, _textBackgroundColor, UIColor *);
-RCT_TEXT_PROPERTY(Color, _color, UIColor *);
-RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *);
-RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat);
-RCT_TEXT_PROPERTY(FontWeight, _fontWeight, NSString *);
-RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat);
-RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat);
-RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize);
-RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment);
-RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL);
-RCT_TEXT_PROPERTY(Font, _font, UIFont *);
-
-- (NSLineBreakMode)truncationMode
-{
-  return _textContainer.lineBreakMode;
-}
-
-- (void)setTruncationMode:(NSLineBreakMode)truncationMode
-{
-  _textContainer.lineBreakMode = truncationMode;
-  [self dirtyText];
-}
-
-- (NSUInteger)maximumNumberOfLines
-{
-  return _textContainer.maximumNumberOfLines;
-}
-
-- (void)setMaximumNumberOfLines:(NSUInteger)maximumNumberOfLines
-{
-  _textContainer.maximumNumberOfLines = maximumNumberOfLines;
-  [self dirtyText];
-}
+RCT_TEXT_PROPERTY(Color, _color, UIColor *)
+RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *)
+RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat)
+RCT_TEXT_PROPERTY(FontWeight, _fontWeight, NSString *)
+RCT_TEXT_PROPERTY(FontStyle, _fontStyle, NSString *)
+RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
+RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
+RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
+RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
+RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
+RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
+RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
 
 @end

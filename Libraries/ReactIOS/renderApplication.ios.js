@@ -7,16 +7,58 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule renderApplication
- * @flow
  */
 'use strict';
 
+var Inspector = require('Inspector');
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var Subscribable = require('Subscribable');
 var View = require('View');
 var WarningBox = require('WarningBox');
 
 var invariant = require('invariant');
+
+var AppContainer = React.createClass({
+  mixins: [Subscribable.Mixin],
+
+  getInitialState: function() {
+    return { inspector: null };
+  },
+
+  toggleElementInspector: function() {
+    var inspector = this.state.inspector
+      ? null
+      : <Inspector
+          rootTag={this.props.rootTag}
+          inspectedViewTag={React.findNodeHandle(this.refs.main)}
+        />;
+    this.setState({inspector});
+  },
+
+  componentDidMount: function() {
+    this.addListenerOn(
+      RCTDeviceEventEmitter,
+      'toggleElementInspector',
+      this.toggleElementInspector
+    );
+  },
+
+  render: function() {
+    var shouldRenderWarningBox = __DEV__ && console.yellowBoxEnabled;
+    var warningBox = shouldRenderWarningBox ? <WarningBox /> : null;
+    return (
+      <View style={styles.appContainer}>
+        <View style={styles.appContainer} ref="main">
+          {this.props.children}
+        </View>
+        {warningBox}
+        {this.state.inspector}
+      </View>
+    );
+  }
+});
 
 function renderApplication<D, P, S>(
   RootComponent: ReactClass<D, P, S>,
@@ -27,15 +69,13 @@ function renderApplication<D, P, S>(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
-  var shouldRenderWarningBox = __DEV__ && console.yellowBoxEnabled;
-  var warningBox = shouldRenderWarningBox ? <WarningBox /> : null;
   React.render(
-    <View style={styles.appContainer}>
+    <AppContainer rootTag={rootTag}>
       <RootComponent
         {...initialProps}
+        rootTag={rootTag}
       />
-      {warningBox}
-    </View>,
+    </AppContainer>,
     rootTag
   );
 }

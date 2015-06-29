@@ -11,6 +11,7 @@
  *
  * @nolint
  */
+/* eslint-disable */
 
 (function() {
   var define = null; // Hack to make it work with our packager

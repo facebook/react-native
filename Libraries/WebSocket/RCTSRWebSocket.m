@@ -246,8 +246,9 @@ static __strong NSData *CRLFCRLF;
 
 - (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray *)protocols;
 {
+  RCTAssertParam(request);
+
   if ((self = [super init])) {
-    assert(request.URL);
     _url = request.URL;
     _urlRequest = request;
 
@@ -255,23 +256,24 @@ static __strong NSData *CRLFCRLF;
 
     [self _RCTSR_commonInit];
   }
-
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-init)
 
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 {
   return [self initWithURLRequest:request protocols:nil];
 }
 
-- (instancetype)initWithURL:(NSURL *)url;
+- (instancetype)initWithURL:(NSURL *)URL;
 {
-  return [self initWithURL:url protocols:nil];
+  return [self initWithURL:URL protocols:nil];
 }
 
-- (instancetype)initWithURL:(NSURL *)url protocols:(NSArray *)protocols;
+- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray *)protocols;
 {
-  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+  NSURLRequest *request = URL ? [NSURLRequest requestWithURL:URL] : nil;
   return [self initWithURLRequest:request protocols:protocols];
 }
 
@@ -1610,12 +1612,17 @@ static NSRunLoop *networkRunLoop = nil;
     _runLoop = [NSRunLoop currentRunLoop];
     dispatch_group_leave(_waitGroup);
 
-    NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate distantFuture] interval:0.0 target:nil selector:nil userInfo:nil repeats:NO];
+    NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate distantFuture] interval:0.0 target:self selector:@selector(step) userInfo:nil repeats:NO];
     [_runLoop addTimer:timer forMode:NSDefaultRunLoopMode];
 
     while ([_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]) { }
     assert(NO);
   }
+}
+
+- (void)step
+{
+  // Does nothing
 }
 
 - (NSRunLoop *)runLoop;

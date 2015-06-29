@@ -14,13 +14,14 @@
 
 @implementation RCTTabBarManager
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTTabBar alloc] initWithEventDispatcher:_bridge.eventDispatcher];
+  return [[RCTTabBar alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
+
+RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
 
 @end

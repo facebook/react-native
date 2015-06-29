@@ -10,7 +10,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
+var execFile = require('child_process').execFile;
 var http = require('http');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
@@ -36,19 +36,26 @@ var webSocketProxy = require('./webSocketProxy.js');
 var options = parseCommandLine([{
   command: 'port',
   default: 8081,
+  type: 'string',
 }, {
   command: 'root',
+  type: 'string',
   description: 'add another root(s) to be used by the packager in this project',
 }, {
   command: 'assetRoots',
+  type: 'string',
   description: 'specify the root directories of app assets'
 }, {
   command: 'platform',
+  type: 'string',
   default: 'ios',
   description: 'Specify the platform-specific blacklist (ios, android, web).'
 }, {
   command: 'skipflow',
   description: 'Disable flow checks'
+}, {
+  command: 'nonPersistent',
+  description: 'Disable file watcher'
 }]);
 
 if (options.projectRoots) {
@@ -59,27 +66,34 @@ if (options.projectRoots) {
   if (__dirname.match(/node_modules\/react-native\/packager$/)) {
     // packager is running from node_modules of another project
     options.projectRoots = [path.resolve(__dirname, '../../..')];
+  } else if (__dirname.match(/Pods\/React\/packager$/)) {
+    // packager is running from node_modules of another project
+    options.projectRoots = [path.resolve(__dirname, '../../..')];
   } else {
     options.projectRoots = [path.resolve(__dirname, '..')];
   }
 }
 
 if (options.root) {
-  if (typeof options.root === 'string') {
-    options.projectRoots.push(path.resolve(options.root));
-  } else {
-    options.root.forEach(function(root) {
-      options.projectRoots.push(path.resolve(root));
-    });
+  if (!Array.isArray(options.root)) {
+    options.root = options.root.split(',');
   }
+
+  options.root.forEach(function(root) {
+    options.projectRoots.push(path.resolve(root));
+  });
 }
 
 if (options.assetRoots) {
   if (!Array.isArray(options.assetRoots)) {
-    options.assetRoots = options.assetRoots.split(',');
+    options.assetRoots = options.assetRoots.split(',').map(function (dir) {
+      return path.resolve(process.cwd(), dir);
+    });
   }
 } else {
   if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+    options.assetRoots = [path.resolve(__dirname, '../../..')];
+  } else if (__dirname.match(/Pods\/React\/packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];
   } else {
     options.assetRoots = [path.resolve(__dirname, '..')];
@@ -168,7 +182,7 @@ function getDevToolsLauncher(options) {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
-      exec(path.join(__dirname, script) + ' ' + debuggerURL, function(err, stdout, stderr) {
+      execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
         if (err) {
           console.log('Failed to run ' + script, err);
         }
@@ -195,6 +209,7 @@ function statusPageMiddleware(req, res, next) {
 
 function getAppMiddleware(options) {
   return ReactPackager.middleware({
+    nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(options.platform),
     cacheVersion: '2',

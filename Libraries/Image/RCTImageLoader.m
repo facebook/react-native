@@ -16,29 +16,11 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
+#import "RCTDefines.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTLog.h"
-
-static dispatch_queue_t RCTImageLoaderQueue(void)
-{
-  static dispatch_queue_t queue = NULL;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    queue = dispatch_queue_create("com.facebook.rctImageLoader", DISPATCH_QUEUE_SERIAL);
-    dispatch_set_target_queue(queue,
-                              dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
-  });
-
-  return queue;
-}
-
-static NSError *RCTErrorWithMessage(NSString *message)
-{
-  NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
-  NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
-  return error;
-}
+#import "RCTUtils.h"
 
 static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSError *error, UIImage *image)
 {
@@ -49,6 +31,17 @@ static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSEr
       callback(error, image);
     });
   }
+}
+
+static dispatch_queue_t RCTImageLoaderQueue(void)
+{
+  static dispatch_queue_t queue = NULL;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("com.facebook.rctImageLoader", DISPATCH_QUEUE_SERIAL);
+  });
+
+  return queue;
 }
 
 @implementation RCTImageLoader

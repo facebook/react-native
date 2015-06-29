@@ -127,7 +127,7 @@ function _convertToRadians(value: string): number {
 function _validateTransform(key, value, transformation) {
   invariant(
     !value.getValue,
-    'You passed an animated value or spring to a normal component. ' +
+    'You passed an Animated.Value to a normal component. ' +
     'You need to wrap that component in an Animated. For example, ' +
     'replace <View /> by <Animated.View />.'
   );

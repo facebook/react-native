@@ -28,10 +28,10 @@
  * macro instead of calling this directly.
  *
  * @param app The path to the app bundle without suffixes, e.g. IntegrationTests/IntegrationTestsApp
- * @param referencesDir The path for snapshot references images. The RCTInitRunnerForApp macro uses
+ * @param referenceDir The path for snapshot references images. The RCTInitRunnerForApp macro uses
  *        FB_REFERENCE_IMAGE_DIR for this automatically.
  */
-- (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir;
+- (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir NS_DESIGNATED_INITIALIZER;
 
 /**
  * Simplest runTest function simply mounts the specified JS module with no

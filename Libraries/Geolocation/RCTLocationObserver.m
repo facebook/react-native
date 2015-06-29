@@ -85,7 +85,9 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 
 - (void)dealloc
 {
-  [_timeoutTimer invalidate];
+  if (_timeoutTimer.valid) {
+    [_timeoutTimer invalidate];
+  }
 }
 
 @end
@@ -273,6 +275,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   // Fire all queued callbacks
   for (RCTLocationRequest *request in _pendingRequests) {
     request.successBlock(@[_lastLocationEvent]);
+    [request.timeoutTimer invalidate];
   }
   [_pendingRequests removeAllObjects];
 
@@ -311,6 +314,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   // Fire all queued error callbacks
   for (RCTLocationRequest *request in _pendingRequests) {
     request.errorBlock(@[jsError]);
+    [request.timeoutTimer invalidate];
   }
   [_pendingRequests removeAllObjects];
 

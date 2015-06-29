@@ -13,7 +13,6 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
-#import "RCTWrapperViewController.h"
 
 @implementation UIView (React)
 
@@ -83,11 +82,19 @@
   self.layer.bounds = bounds;
 }
 
+- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+{
+  self.backgroundColor = inheritedBackgroundColor;
+}
+
 - (UIViewController *)backingViewController
 {
   id responder = [self nextResponder];
-  if ([responder isKindOfClass:[RCTWrapperViewController class]]) {
-    return responder;
+  while (responder) {
+    if ([responder isKindOfClass:[UIViewController class]]) {
+      return responder;
+    }
+    responder = [responder nextResponder];
   }
   return nil;
 }
@@ -113,7 +120,7 @@
  */
 - (void)reactWillMakeFirstResponder {};
 - (void)reactDidMakeFirstResponder {};
-- (BOOL)reactRespondsToTouch:(UITouch *)touch
+- (BOOL)reactRespondsToTouch:(__unused UITouch *)touch
 {
   return YES;
 }

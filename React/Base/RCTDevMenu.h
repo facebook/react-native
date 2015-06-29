@@ -36,6 +36,11 @@
 @property (nonatomic, assign) BOOL liveReloadEnabled;
 
 /**
+ * Shows the FPS monitor for the JS and Main threads
+ */
+@property (nonatomic, assign) BOOL showFPS;
+
+/**
  * Manually show the dev menu (can be called from JS).
  */
 - (void)show;
@@ -45,6 +50,12 @@
  * directly, but can be called from JS.
  */
 - (void)reload;
+
+/**
+ * Add custom item to the development menu. The handler will be called
+ * when user selects the item.
+ */
+- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler;
 
 @end
 

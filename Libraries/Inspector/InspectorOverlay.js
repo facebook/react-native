@@ -1,0 +1,81 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule InspectorOverlay
+ * @flow
+ */
+'use strict';
+
+var Dimensions = require('Dimensions');
+var InspectorUtils = require('InspectorUtils');
+var React = require('React');
+var StyleSheet = require('StyleSheet');
+var UIManager = require('NativeModules').UIManager;
+var View = require('View');
+var ElementBox = require('ElementBox');
+
+var PropTypes = React.PropTypes;
+
+type EventLike = {
+  nativeEvent: Object;
+};
+
+var InspectorOverlay = React.createClass({
+  propTypes: {
+    inspectedViewTag: PropTypes.object,
+    onTouchInstance: PropTypes.func.isRequired,
+  },
+
+  findViewForTouchEvent: function(e: EventLike) {
+    var {locationX, locationY} = e.nativeEvent.touches[0];
+    UIManager.findSubviewIn(
+      this.props.inspectedViewTag,
+      [locationX, locationY],
+      (nativeViewTag, left, top, width, height) => {
+        var instance = InspectorUtils.findInstanceByNativeTag(this.props.rootTag, nativeViewTag);
+        if (!instance) {
+          return;
+        }
+        this.props.onTouchInstance(instance, {left, top, width, height}, locationY);
+      }
+    );
+  },
+
+  shouldSetResponser: function(e: EventLike): bool {
+    this.findViewForTouchEvent(e);
+    return true;
+  },
+
+  render: function() {
+    var content = null;
+    if (this.props.inspected) {
+      content = <ElementBox frame={this.props.inspected.frame} style={this.props.inspected.style} />;
+    }
+
+    return (
+      <View
+        onStartShouldSetResponder={this.shouldSetResponser}
+        onResponderMove={this.findViewForTouchEvent}
+        style={[styles.inspector, {height: Dimensions.get('window').height}]}>
+        {content}
+      </View>
+    );
+  }
+});
+
+var styles = StyleSheet.create({
+  inspector: {
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+  },
+});
+
+module.exports = InspectorOverlay;

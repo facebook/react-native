@@ -36,24 +36,18 @@
 
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
-  NSMutableArray *_pendingTouches;
-  NSMutableArray *_bridgeInteractionTiming;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
+  RCTAssertParam(bridge);
+
   if ((self = [super initWithTarget:nil action:NULL])) {
 
-    RCTAssert(bridge != nil, @"Expect an event dispatcher");
-
     _bridge = bridge;
-
     _nativeTouches = [[NSMutableOrderedSet alloc] init];
     _reactTouches = [[NSMutableArray alloc] init];
     _touchViews = [[NSMutableArray alloc] init];
-
-    _pendingTouches = [[NSMutableArray alloc] init];
-    _bridgeInteractionTiming = [[NSMutableArray alloc] init];
 
     // `cancelsTouchesInView` is needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
@@ -62,6 +56,8 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithTarget:(id)target action:(SEL)action)
 
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   RCTTouchEventTypeStart,
@@ -94,11 +90,11 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
       return;
     }
 
-    // Get new, unique touch id
+    // Get new, unique touch identifier for the react touch
     const NSUInteger RCTMaxTouches = 11; // This is the maximum supported by iDevices
-    NSInteger touchID = ([_reactTouches.lastObject[@"target"] integerValue] + 1) % RCTMaxTouches;
+    NSInteger touchID = ([_reactTouches.lastObject[@"identifier"] integerValue] + 1) % RCTMaxTouches;
     for (NSDictionary *reactTouch in _reactTouches) {
-      NSInteger usedID = [reactTouch[@"target"] integerValue];
+      NSInteger usedID = [reactTouch[@"identifier"] integerValue];
       if (usedID == touchID) {
         // ID has already been used, try next value
         touchID ++;
@@ -112,8 +108,8 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
     reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
-    reactTouch[@"touches"] = [NSNull null];        // We hijack this touchObj to serve both as an event
-    reactTouch[@"changedTouches"] = [NSNull null]; // and as a Touch object, so making this JIT friendly.
+    reactTouch[@"touches"] = (id)kCFNull;        // We hijack this touchObj to serve both as an event
+    reactTouch[@"changedTouches"] = (id)kCFNull; // and as a Touch object, so making this JIT friendly.
 
     // Add to arrays
     [_touchViews addObject:targetView];
@@ -153,8 +149,6 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
 }
 
-RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
-
 /**
  * Constructs information about touch events to send across the serialized
  * boundary. This data should be compliant with W3C `Touch` objects. This data
@@ -168,7 +162,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
  */
 - (void)_updateAndDispatchTouches:(NSSet *)touches
                         eventName:(NSString *)eventName
-                  originatingTime:(CFTimeInterval)originatingTime
+                  originatingTime:(__unused CFTimeInterval)originatingTime
 {
   // Update touches
   NSMutableArray *changedIndexes = [[NSMutableArray alloc] init];
@@ -274,12 +268,12 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   }
 }
 
-- (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
+- (BOOL)canPreventGestureRecognizer:(__unused UIGestureRecognizer *)preventedGestureRecognizer
 {
   return NO;
 }
 
-- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
+- (BOOL)canBePreventedByGestureRecognizer:(__unused UIGestureRecognizer *)preventingGestureRecognizer
 {
   return NO;
 }

@@ -11,16 +11,17 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
+var Map = require('Map');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
 var invariant = require('invariant');
 
-var _notifHandlers = {};
+var _notifHandlers = new Map();
 var _initialNotification = RCTPushNotificationManager &&
   RCTPushNotificationManager.initialNotification;
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
+var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -50,30 +51,86 @@ class PushNotificationIOS {
   }
 
   /**
-   * Attaches a listener to remote notifications while the app is running in the
-   * foreground or the background.
+   * Attaches a listener to remote notification events while the app is running
+   * in the foreground or the background.
    *
-   * The handler will get be invoked with an instance of `PushNotificationIOS`
+   * Valid events are:
+   *
+   * - `notification` : Fired when a remote notification is received. The
+   *   handler will be invoked with an instance of `PushNotificationIOS`.
+   * - `register`: Fired when the user registers for remote notifications. The
+   *   handler will be invoked with a hex string representing the deviceToken.
    */
   static addEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification',
-      'PushNotificationIOS only supports `notification` events'
+      type === 'notification' || type === 'register',
+      'PushNotificationIOS only supports `notification` and `register` events'
     );
-    _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
-      DEVICE_NOTIF_EVENT,
-      (notifData) => {
-        handler(new PushNotificationIOS(notifData));
-      }
-    );
+    var listener;
+    if (type === 'notification') {
+      listener =  RCTDeviceEventEmitter.addListener(
+        DEVICE_NOTIF_EVENT,
+        (notifData) => {
+          handler(new PushNotificationIOS(notifData));
+        }
+      );
+    } else if (type === 'register') {
+      listener = RCTDeviceEventEmitter.addListener(
+        NOTIF_REGISTER_EVENT,
+        (registrationInfo) => {
+          handler(registrationInfo.deviceToken);
+        }
+      );
+    }
+    _notifHandlers.set(handler, listener);
   }
 
   /**
-   * Requests all notification permissions from iOS, prompting the user's
-   * dialog box.
+   * Requests notification permissions from iOS, prompting the user's
+   * dialog box. By default, it will request all notification permissions, but
+   * a subset of these can be requested by passing a map of requested
+   * permissions.
+   * The following permissions are supported:
+   *
+   *   - `alert`
+   *   - `badge`
+   *   - `sound`
+   *
+   * If a map is provided to the method, only the permissions with truthy values
+   * will be requested.
    */
-  static requestPermissions() {
-    RCTPushNotificationManager.requestPermissions();
+  static requestPermissions(permissions?: {
+    alert?: boolean,
+    badge?: boolean,
+    sound?: boolean
+  }) {
+    var requestedPermissions = {};
+    if (permissions) {
+      requestedPermissions = {
+        alert: !!permissions.alert,
+        badge: !!permissions.badge,
+        sound: !!permissions.sound
+      };
+    } else {
+      requestedPermissions = {
+        alert: true,
+        badge: true,
+        sound: true
+      };
+    }
+    RCTPushNotificationManager.requestPermissions(requestedPermissions);
+  }
+
+  /**
+   * Unregister for all remote notifications received via Apple Push Notification service.
+   *
+   * You should call this method in rare circumstances only, such as when a new version of
+   * the app removes support for all types of remote notifications. Users can temporarily
+   * prevent apps from receiving remote notifications through the Notifications section of
+   * the Settings app. Apps unregistered through this method can always re-register.
+   */
+  static abandonPermissions() {
+    RCTPushNotificationManager.abandonPermissions();
   }
 
   /**
@@ -98,14 +155,15 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification',
-      'PushNotificationIOS only supports `notification` events'
+      type === 'notification' || type === 'register',
+      'PushNotificationIOS only supports `notification` and `register` events'
     );
-    if (!_notifHandlers[handler]) {
+    var listener = _notifHandlers.get(handler);
+    if (!listener) {
       return;
     }
-    _notifHandlers[handler].remove();
-    _notifHandlers[handler] = null;
+    listener.remove();
+    _notifHandlers.delete(handler);
   }
 
 

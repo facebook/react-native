@@ -9,10 +9,12 @@
 
 #import "RCTNetworkImageView.h"
 
+#import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTUtils.h"
+#import "UIView+React.h"
 
 @implementation RCTNetworkImageView
 {
@@ -24,33 +26,62 @@
   id _downloadToken;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame imageDownloader:(RCTImageDownloader *)imageDownloader
+- (instancetype)initWithImageDownloader:(RCTImageDownloader *)imageDownloader
 {
-  self = [super initWithFrame:frame];
-  if (self) {
+  RCTAssertParam(imageDownloader);
+
+  if ((self = [super initWithFrame:CGRectZero])) {
     _deferSentinel = 0;
     _imageDownloader = imageDownloader;
     self.userInteractionEnabled = NO;
+    self.contentMode = UIViewContentModeScaleAspectFill;
   }
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+
 - (NSURL *)imageURL
 {
-  // We clear our backing layer's imageURL when we are not in a window for a while,
+  // We clear our imageURL when we are not in a window for a while,
   // to make sure we don't consume network resources while offscreen.
   // However we don't want to expose this hackery externally.
   return _deferred ? _deferredImageURL : _imageURL;
 }
 
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  super.backgroundColor = backgroundColor;
+  [self _updateImage];
+}
+
+- (void)reactSetFrame:(CGRect)frame
+{
+  [super reactSetFrame:frame];
+  [self _updateImage];
+}
+
+- (void)_updateImage
+{
+  [self setImageURL:_imageURL resetToDefaultImageWhileLoading:NO];
+}
+
 - (void)setImageURL:(NSURL *)imageURL resetToDefaultImageWhileLoading:(BOOL)reset
 {
+  if (![_imageURL isEqual:imageURL] && _downloadToken) {
+    [_imageDownloader cancelDownload:_downloadToken];
+    _downloadToken = nil;
+  }
+
+  _imageURL = imageURL;
+
   if (_deferred) {
     _deferredImageURL = imageURL;
   } else {
-    if (_downloadToken) {
-      [_imageDownloader cancelDownload:_downloadToken];
-      _downloadToken = nil;
+    if (!imageURL) {
+      self.layer.contents = nil;
+      return;
     }
     if (reset) {
       self.layer.contentsScale = _defaultImage.scale;
@@ -62,25 +93,35 @@
       _downloadToken = [_imageDownloader downloadDataForURL:imageURL block:^(NSData *data, NSError *error) {
         if (data) {
           dispatch_async(dispatch_get_main_queue(), ^{
+            if (imageURL != self.imageURL) {
+              // Image has changed
+              return;
+            }
             CAKeyframeAnimation *animation = RCTGIFImageWithData(data);
             self.layer.contentsScale = 1.0;
             self.layer.minificationFilter = kCAFilterLinear;
             self.layer.magnificationFilter = kCAFilterLinear;
             [self.layer addAnimation:animation forKey:@"contents"];
           });
+        } else if (error) {
+          RCTLogWarn(@"Unable to download image data. Error: %@", error);
         }
-        // TODO: handle errors
       }];
     } else {
-      _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() block:^(UIImage *image, NSError *error) {
+      _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() resizeMode:self.contentMode backgroundColor:self.backgroundColor block:^(UIImage *image, NSError *error) {
         if (image) {
           dispatch_async(dispatch_get_main_queue(), ^{
+            if (imageURL != self.imageURL) {
+              // Image has changed
+              return;
+            }
             [self.layer removeAnimationForKey:@"contents"];
             self.layer.contentsScale = image.scale;
             self.layer.contents = (__bridge id)image.CGImage;
           });
+        } else if (error) {
+          RCTLogWarn(@"Unable to download image. Error: %@", error);
         }
-        // TODO: handle errors
       }];
     }
   }

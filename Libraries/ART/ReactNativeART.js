@@ -8,8 +8,7 @@
  *
  * @providesModule ReactNativeART
  */
-
-"use strict";
+'use strict';
 
 var Color = require('art/core/color');
 var Path = require('ARTSerializablePath');

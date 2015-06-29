@@ -9,7 +9,7 @@
  * @providesModule ReactNative
  * @flow
  */
-"use strict";
+'use strict';
 
 var ReactChildren = require('ReactChildren');
 var ReactClass = require('ReactClass');

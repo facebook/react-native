@@ -13,6 +13,15 @@ NSString *const RCTErrorDomain = @"RCTErrorDomain";
 
 RCTAssertFunction RCTCurrentAssertFunction = nil;
 
+NSException *_RCTNotImplementedException(SEL, Class);
+NSException *_RCTNotImplementedException(SEL cmd, Class cls)
+{
+  NSString *msg = [NSString stringWithFormat:@"%s is not implemented "
+                   "for the class %@", sel_getName(cmd), cls];
+  return [NSException exceptionWithName:@"RCTNotDesignatedInitializerException"
+                                 reason:msg userInfo:nil];
+}
+
 void _RCTAssertFormat(
   BOOL condition,
   const char *fileName,
@@ -59,4 +68,21 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
   } else {
     RCTCurrentAssertFunction = assertFunction;
   }
+}
+
+NSString *RCTCurrentThreadName(void)
+{
+  NSThread *thread = [NSThread currentThread];
+  NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
+  if (threadName.length == 0) {
+#if DEBUG // This is DEBUG not RCT_DEBUG because it *really* must not ship in RC
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
+#pragma clang diagnostic pop
+#else
+    threadName = [NSString stringWithFormat:@"%p", thread];
+#endif
+  }
+  return threadName;
 }

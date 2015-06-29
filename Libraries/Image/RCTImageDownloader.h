@@ -33,6 +33,8 @@ typedef void (^RCTImageDownloadBlock)(UIImage *image, NSError *error);
 - (id)downloadImageForURL:(NSURL *)url
                      size:(CGSize)size
                     scale:(CGFloat)scale
+               resizeMode:(UIViewContentMode)resizeMode
+          backgroundColor:(UIColor *)backgroundColor
                     block:(RCTImageDownloadBlock)block;
 
 /**

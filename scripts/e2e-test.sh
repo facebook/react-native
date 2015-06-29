@@ -31,6 +31,7 @@ function cleanup {
 
   rm $MARKER
   [ $SINOPIA_PID ] && kill -9 $SINOPIA_PID
+  [ $SERVER_PID ] && kill -9 $SERVER_PID
   [ -f ~/.npmrc.bak ] && mv ~/.npmrc.bak ~/.npmrc
 }
 trap cleanup EXIT
@@ -65,6 +66,8 @@ cd EndToEndTest
 # Make sure we installed local version of react-native
 ls `basename $MARKER` > /dev/null
 
-flow
+flow --retries 10
 
+node ./node_modules/react-native/packager/packager.js --nonPersistent &
+SERVER_PID=$!
 xctool -scheme EndToEndTest -sdk iphonesimulator test

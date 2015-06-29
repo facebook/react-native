@@ -44,6 +44,11 @@ var WebView = React.createClass({
     style: View.propTypes.style,
     javaScriptEnabledAndroid: PropTypes.bool,
     /**
+     * Sets the user-agent for this WebView. The user-agent can also be set in native through
+     * WebViewConfig, but this can and will overwrite that config.
+     */
+    userAgent: PropTypes.string,
+    /**
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
@@ -75,7 +80,7 @@ var WebView = React.createClass({
         errorEvent.code,
         errorEvent.description);
     } else if (this.state.viewState !== WebViewState.IDLE) {
-      console.error("RCTWebView invalid state encountered: " + this.state.loading);
+      console.error('RCTWebView invalid state encountered: ' + this.state.loading);
     }
 
     var webViewStyles = [styles.container, this.props.style];
@@ -91,6 +96,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        userAgent={this.props.userAgent}
         javaScriptEnabledAndroid={this.props.javaScriptEnabledAndroid}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
@@ -152,7 +158,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event) {
     event.persist(); // persist this event because we need to store it
-    console.error("encountered an error loading page", event.nativeEvent);
+    console.error('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
@@ -172,6 +178,7 @@ var RCTWebView = createReactNativeComponentClass({
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     url: true,
     javaScriptEnabledAndroid: true,
+    userAgent: true,
   }),
   uiViewClassName: 'RCTWebView',
 });

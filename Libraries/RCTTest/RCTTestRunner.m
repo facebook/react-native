@@ -10,12 +10,13 @@
 #import "RCTTestRunner.h"
 
 #import "FBSnapshotTestController.h"
+#import "RCTAssert.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
 
-#define TIMEOUT_SECONDS 240
+#define TIMEOUT_SECONDS 60
 
 @interface RCTBridge (RCTTestRunner)
 
@@ -30,15 +31,24 @@
 
 - (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir
 {
+  RCTAssertParam(app);
+  RCTAssertParam(referenceDir);
+
   if ((self = [super init])) {
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
     _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
     _testController.referenceImagesDirectory = referenceDir;
+#if RUNNING_ON_CI
+    _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+#else
     _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
+#endif
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setRecordMode:(BOOL)recordMode
 {
@@ -83,22 +93,30 @@
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
-  while ([date timeIntervalSinceNow] > 0 && ![testModule isDone] && error == nil) {
+  while ([date timeIntervalSinceNow] > 0 && testModule.status == RCTTestStatusPending && error == nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
   [rootView removeFromSuperview];
-  RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
+
+
+  NSArray *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
+    return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
+  }]];
+  RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
+
+
   vc.view = nil;
   [[RCTRedBox sharedInstance] dismiss];
   if (expectErrorBlock) {
     RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
-  } else if (error) {
-    RCTAssert(error == nil, @"RedBox error: %@", error);
   } else {
-    RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
+    RCTAssert(error == nil, @"RedBox error: %@", error);
+    RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
+    RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
   }
+  RCTAssert(self.recordMode == NO, @"Don't forget to turn record mode back to NO before commit.");
 }
 
 @end

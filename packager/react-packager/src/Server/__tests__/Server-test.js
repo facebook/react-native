@@ -20,7 +20,7 @@ jest.setMock('worker-farm', function() { return function() {}; })
     .setMock('uglify-js')
     .dontMock('../');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('processRequest', function() {
   var server;
@@ -230,7 +230,7 @@ describe('processRequest', function() {
     });
   });
 
-  describe.only('/assets endpoint', function() {
+  describe('/assets endpoint', function() {
     var AssetServer;
     beforeEach(function() {
       AssetServer = require('../../AssetServer');
@@ -255,6 +255,32 @@ describe('processRequest', function() {
 
     it('should return 404', function() {
 
+    });
+  });
+
+  describe('buildPackage(options)', function() {
+    it('Calls the packager with the correct args', function() {
+      server.buildPackage({
+        entryFile: 'foo file'
+      });
+      expect(Packager.prototype.package).toBeCalledWith(
+        'foo file',
+        true,
+        undefined,
+        true
+      );
+    });
+  });
+
+  describe('buildPackageFromUrl(options)', function() {
+    it('Calls the packager with the correct args', function() {
+      server.buildPackageFromUrl('/path/to/foo.bundle?dev=false&runModule=false');
+      expect(Packager.prototype.package).toBeCalledWith(
+        'path/to/foo.js',
+        false,
+        '/path/to/foo.map',
+        false
+      );
     });
   });
 });

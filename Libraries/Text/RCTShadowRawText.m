@@ -20,4 +20,10 @@
   }
 }
 
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; text: %@>", self.text];
+}
+
 @end

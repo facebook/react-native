@@ -21,6 +21,8 @@ void RCTLogConvertError(id json, const char *type)
               json, [json classForCoder], type);
 }
 
+RCT_CONVERTER(id, id, self)
+
 RCT_CONVERTER(BOOL, BOOL, boolValue)
 RCT_NUMBER_CONVERTER(double, doubleValue)
 RCT_NUMBER_CONVERTER(float, floatValue)
@@ -52,7 +54,7 @@ RCT_CONVERTER(NSString *, NSString, description)
       RCTLogConvertError(json, "a number");
     }
     return number;
-  } else if (json && json != [NSNull null]) {
+  } else if (json && json != (id)kCFNull) {
     RCTLogConvertError(json, "a number");
   }
   return nil;
@@ -116,7 +118,22 @@ RCT_CONVERTER(NSString *, NSString, description)
 
 + (NSURLRequest *)NSURLRequest:(id)json
 {
-  return [NSURLRequest requestWithURL:[self NSURL:json]];
+  NSURL *URL = [self NSURL:json];
+  return URL ? [NSURLRequest requestWithURL:URL] : nil;
+}
+
++ (RCTFileURL *)RCTFileURL:(id)json
+{
+  NSURL *fileURL = [self NSURL:json];
+  if (![fileURL isFileURL]) {
+    RCTLogError(@"URI must be a local file, '%@' isn't.", fileURL);
+    return nil;
+  }
+  if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path]) {
+    RCTLogError(@"File '%@' could not be found.", fileURL);
+    return nil;
+  }
+  return fileURL;
 }
 
 + (NSDate *)NSDate:(id)json
@@ -138,7 +155,7 @@ RCT_CONVERTER(NSString *, NSString, description)
                   "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
     }
     return date;
-  } else if (json && json != [NSNull null]) {
+  } else if (json && json != (id)kCFNull) {
     RCTLogConvertError(json, "a date");
   }
   return nil;
@@ -170,9 +187,25 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
   }
   id value = mapping[json];
   if (!value && [json description].length > 0) {
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [mapping allKeys]);
+    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [[mapping allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)]);
   }
   return value ?: defaultValue;
+}
+
+NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
+{
+  if ([json isKindOfClass:[NSArray class]]) {
+    if ([json count] == 0) {
+      return defaultValue;
+    }
+    long long result = 0;
+    for (id arrayElement in json) {
+      NSNumber *value = RCTConvertEnumValue(typeName, mapping, defaultValue, arrayElement);
+      result |= [value longLongValue];
+    }
+    return @(result);
+  }
+  return RCTConvertEnumValue(typeName, mapping, defaultValue, json);
 }
 
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
@@ -203,12 +236,6 @@ RCT_ENUM_CONVERTER(UITextFieldViewMode, (@{
   @"always": @(UITextFieldViewModeAlways),
 }), UITextFieldViewModeNever, integerValue)
 
-RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
-  @"none": @(UIScrollViewKeyboardDismissModeNone),
-  @"on-drag": @(UIScrollViewKeyboardDismissModeOnDrag),
-  @"interactive": @(UIScrollViewKeyboardDismissModeInteractive),
-}), UIScrollViewKeyboardDismissModeNone, integerValue)
-
 RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"default": @(UIKeyboardTypeDefault),
   @"ascii-capable": @(UIKeyboardTypeASCIICapable),
@@ -221,6 +248,8 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"decimal-pad": @(UIKeyboardTypeDecimalPad),
   @"twitter": @(UIKeyboardTypeTwitter),
   @"web-search": @(UIKeyboardTypeWebSearch),
+  // Added for Android compatibility
+  @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
 RCT_ENUM_CONVERTER(UIReturnKeyType, (@{
@@ -251,7 +280,11 @@ RCT_ENUM_CONVERTER(UIViewContentMode, (@{
   @"top-right": @(UIViewContentModeTopRight),
   @"bottom-left": @(UIViewContentModeBottomLeft),
   @"bottom-right": @(UIViewContentModeBottomRight),
-}), UIViewContentModeScaleToFill, integerValue)
+  // Cross-platform values
+  @"cover": @(UIViewContentModeScaleAspectFill),
+  @"contain": @(UIViewContentModeScaleAspectFit),
+  @"stretch": @(UIViewContentModeScaleToFill),
+}), UIViewContentModeScaleAspectFill, integerValue)
 
 RCT_ENUM_CONVERTER(UIBarStyle, (@{
   @"default": @(UIBarStyleDefault),
@@ -517,32 +550,34 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
 
     // Parse color
-    NSUInteger red = -1;
-    NSUInteger green = -1;
-    NSUInteger blue = -1;
-    CGFloat alpha = 1.0;
+    double red = 0, green = 0, blue = 0;
+    double alpha = 1.0;
     if ([colorString hasPrefix:@"#"]) {
+      uint32_t redInt = 0, greenInt = 0, blueInt = 0;
       if (colorString.length == 4) { // 3 digit hex
-        sscanf([colorString UTF8String], "#%01tX%01tX%01tX", &red, &green, &blue);
+        sscanf([colorString UTF8String], "#%01x%01x%01x", &redInt, &greenInt, &blueInt);
         // expand to 6 digit hex
-        red = red | (red << 4);
-        green = green | (green << 4);
-        blue = blue | (blue << 4);
-      } else if (colorString.length == 7) { // normal 6 digit hex
-        sscanf([colorString UTF8String], "#%02tX%02tX%02tX", &red, &green, &blue);
+        red = redInt | (redInt << 4);
+        green = greenInt | (greenInt << 4);
+        blue = blueInt | (blueInt << 4);
+      } else if (colorString.length == 7) { // 6 digit hex
+        sscanf(colorString.UTF8String, "#%02x%02x%02x", &redInt, &greenInt, &blueInt);
+        red = redInt;
+        green = greenInt;
+        blue = blueInt;
       } else {
-        RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long", colorString);
+        RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long.", colorString);
+        alpha = -1;
       }
     } else if ([colorString hasPrefix:@"rgba("]) {
-      double tmpAlpha;
-      sscanf([colorString UTF8String], "rgba(%zd,%zd,%zd,%lf)", &red, &green, &blue, &tmpAlpha);
-      alpha = tmpAlpha > 0.99 ? 1.0 : tmpAlpha;
+      sscanf(colorString.UTF8String, "rgba(%lf,%lf,%lf,%lf)", &red, &green, &blue, &alpha);
     } else if ([colorString hasPrefix:@"rgb("]) {
-      sscanf([colorString UTF8String], "rgb(%zd,%zd,%zd)", &red, &green, &blue);
+      sscanf(colorString.UTF8String, "rgb(%lf,%lf,%lf)", &red, &green, &blue);
     } else {
-      RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb", colorString);
+      RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb or a valid CSS color name.", colorString);
+      alpha = -1;
     }
-    if (red == -1 || green == -1 || blue == -1 || alpha > 1.0 || alpha < 0.0) {
+    if (alpha < 0) {
       RCTLogError(@"Invalid color string '%@'", colorString);
     } else {
       color = [UIColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:alpha];
@@ -555,19 +590,19 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     } else {
 
       // Color array
-      color = [UIColor colorWithRed:[self double:json[0]]
-                              green:[self double:json[1]]
-                               blue:[self double:json[2]]
-                              alpha:[json count] > 3 ? [self double:json[3]] : 1];
+      color = [UIColor colorWithRed:[self CGFloat:json[0]]
+                              green:[self CGFloat:json[1]]
+                               blue:[self CGFloat:json[2]]
+                              alpha:[json count] > 3 ? [self CGFloat:json[3]] : 1];
     }
 
   } else if ([json isKindOfClass:[NSDictionary class]]) {
 
     // Color dictionary
-    color = [UIColor colorWithRed:[self double:json[@"r"]]
-                            green:[self double:json[@"g"]]
-                             blue:[self double:json[@"b"]]
-                            alpha:[self double:json[@"a"] ?: @1]];
+    color = [UIColor colorWithRed:[self CGFloat:json[@"r"]]
+                            green:[self CGFloat:json[@"g"]]
+                             blue:[self CGFloat:json[@"b"]]
+                            alpha:[self CGFloat:json[@"a"] ?: @1]];
 
   }
   else if (RCT_DEBUG && json && json != (id)kCFNull) {
@@ -600,17 +635,24 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     return nil;
   }
 
-  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]]) {
+  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]] && ![json isKindOfClass:[NSDictionary class]]) {
     RCTLogConvertError(json, "an image");
     return nil;
   }
 
-  if ([json length] == 0) {
-    return nil;
+  UIImage *image;
+  NSString *path;
+  CGFloat scale = 0.0;
+  if ([json isKindOfClass:[NSString class]]) {
+    if ([json length] == 0) {
+      return nil;
+    }
+    path = json;
+  } else {
+    path = [self NSString:json[@"uri"]];
+    scale = [self CGFloat:json[@"scale"]];
   }
 
-  UIImage *image = nil;
-  NSString *path = json;
   if ([path hasPrefix:@"data:"]) {
     NSURL *url = [NSURL URLWithString:path];
     NSData *imageData = [NSData dataWithContentsOfURL:url];
@@ -623,6 +665,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
       image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
     }
   }
+  
+  if (scale > 0) {
+    image = [UIImage imageWithCGImage:image.CGImage scale:scale orientation:image.imageOrientation];
+  }
+  
   // NOTE: we don't warn about nil images because there are legitimate
   // case where we find out if a string is an image by using this method
   return image;
@@ -811,7 +858,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
 {
   __block BOOL copy = NO;
   __block NSArray *values = json = [RCTConvert NSArray:json];
-  [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, BOOL *stop) {
+  [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
     id value = ((id(*)(Class, SEL, id))objc_msgSend)([RCTConvert class], type, jsonValue);
     if (copy) {
       if (value) {
@@ -820,7 +867,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
     } else if (value != jsonValue) {
       // Converted value is different, so we'll need to copy the array
       values = [[NSMutableArray alloc] initWithCapacity:values.count];
-      for (NSInteger i = 0; i < idx; i++) {
+      for (NSUInteger i = 0; i < idx; i++) {
         [(NSMutableArray *)values addObject:json[i]];
       }
       if (value) {
@@ -835,6 +882,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
 RCT_ARRAY_CONVERTER(NSString)
 RCT_ARRAY_CONVERTER(NSDictionary)
 RCT_ARRAY_CONVERTER(NSURL)
+RCT_ARRAY_CONVERTER(RCTFileURL)
 RCT_ARRAY_CONVERTER(NSNumber)
 RCT_ARRAY_CONVERTER(UIColor)
 
@@ -857,7 +905,7 @@ static id RCTConvertPropertyListValue(id json)
   if ([json isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
     NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[json count]];
-    [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, id jsonValue, BOOL *stop) {
+    [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, id jsonValue, __unused BOOL *stop) {
       id value = RCTConvertPropertyListValue(jsonValue);
       if (value) {
         values[key] = value;
@@ -870,7 +918,7 @@ static id RCTConvertPropertyListValue(id json)
   if ([json isKindOfClass:[NSArray class]]) {
     __block BOOL copy = NO;
     __block NSArray *values = json;
-    [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, BOOL *stop) {
+    [json enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
       id value = RCTConvertPropertyListValue(jsonValue);
       if (copy) {
         if (value) {
@@ -879,7 +927,7 @@ static id RCTConvertPropertyListValue(id json)
       } else if (value != jsonValue) {
         // Converted value is different, so we'll need to copy the array
         values = [[NSMutableArray alloc] initWithCapacity:values.count];
-        for (NSInteger i = 0; i < idx; i++) {
+        for (NSUInteger i = 0; i < idx; i++) {
           [(NSMutableArray *)values addObject:json[i]];
         }
         if (value) {
@@ -900,10 +948,10 @@ static id RCTConvertPropertyListValue(id json)
   return RCTConvertPropertyListValue(json);
 }
 
-RCT_ENUM_CONVERTER(css_overflow, (@{
-  @"hidden": @NO,
-  @"visible": @YES
-}), YES, boolValue)
+RCT_ENUM_CONVERTER(css_clip_t, (@{
+  @"hidden": @YES,
+  @"visible": @NO
+}), NO, boolValue)
 
 RCT_ENUM_CONVERTER(css_flex_direction_t, (@{
   @"row": @(CSS_FLEX_DIRECTION_ROW),
@@ -949,6 +997,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   @"easeIn": @(RCTAnimationTypeEaseIn),
   @"easeOut": @(RCTAnimationTypeEaseOut),
   @"easeInEaseOut": @(RCTAnimationTypeEaseInEaseOut),
+  @"keyboard": @(RCTAnimationTypeKeyboard),
 }), RCTAnimationTypeEaseInEaseOut, integerValue)
 
 @end

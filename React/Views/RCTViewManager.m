@@ -17,6 +17,31 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
+#import "UIView+React.h"
+
+@implementation RCTConvert(UIAccessibilityTraits)
+
+RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
+                                        @"none": @(UIAccessibilityTraitNone),
+                                        @"button": @(UIAccessibilityTraitButton),
+                                        @"link": @(UIAccessibilityTraitLink),
+                                        @"header": @(UIAccessibilityTraitHeader),
+                                        @"search": @(UIAccessibilityTraitSearchField),
+                                        @"image": @(UIAccessibilityTraitImage),
+                                        @"selected": @(UIAccessibilityTraitSelected),
+                                        @"plays": @(UIAccessibilityTraitPlaysSound),
+                                        @"key": @(UIAccessibilityTraitKeyboardKey),
+                                        @"text": @(UIAccessibilityTraitStaticText),
+                                        @"summary": @(UIAccessibilityTraitSummaryElement),
+                                        @"disabled": @(UIAccessibilityTraitNotEnabled),
+                                        @"frequentUpdates": @(UIAccessibilityTraitUpdatesFrequently),
+                                        @"startsMedia": @(UIAccessibilityTraitStartsMediaSession),
+                                        @"adjustable": @(UIAccessibilityTraitAdjustable),
+                                        @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
+                                        @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
+                                        }), UIAccessibilityTraitNone, unsignedLongLongValue)
+
+@end
 
 @implementation RCTViewManager
 
@@ -54,12 +79,12 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
 {
   return nil;
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused RCTSparseArray *)shadowViewRegistry
 {
   return nil;
 }
@@ -67,6 +92,7 @@ RCT_EXPORT_MODULE()
 #pragma mark - View properties
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
+RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
@@ -76,10 +102,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, css_overflow, RCTView)
-{
-  view.clipsToBounds = json ? ![RCTConvert css_overflow:json] : defaultView.clipsToBounds;
-}
+RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
@@ -146,6 +169,27 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
     view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(onAccessibilityTap, BOOL, __unused RCTView)
+{
+  view.accessibilityTapHandler = [self eventHandlerWithName:@"topAccessibilityTap" json:json];
+}
+RCT_CUSTOM_VIEW_PROPERTY(onMagicTap, BOOL, __unused RCTView)
+{
+  view.magicTapHandler = [self eventHandlerWithName:@"topMagicTap" json:json];
+}
+
+- (RCTViewEventHandler)eventHandlerWithName:(NSString *)eventName json:(id)json
+{
+  RCTViewEventHandler handler = nil;
+  if ([RCTConvert BOOL:json]) {
+    __weak RCTViewManager *weakSelf = self;
+    handler = ^(RCTView *tappedView) {
+      NSDictionary *body = @{ @"target": tappedView.reactTag };
+      [weakSelf.bridge.eventDispatcher sendInputEventWithName:eventName body:body];
+    };
+  }
+  return handler;
+}
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, CGFloat, RCTView)         \
@@ -181,37 +225,39 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
 #pragma mark - ShadowView properties
 
-RCT_EXPORT_SHADOW_PROPERTY(top, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(right, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(bottom, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
+
+RCT_EXPORT_SHADOW_PROPERTY(top, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(right, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(bottom, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
 
-RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
 
-RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat);
-RCT_CUSTOM_SHADOW_PROPERTY(borderWidth, CGFloat, RCTShadowView) {
+RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat)
+RCT_CUSTOM_SHADOW_PROPERTY(borderWidth, CGFloat, __unused RCTShadowView) {
   [view setBorderWidth:[RCTConvert CGFloat:json]];
 }
 
-RCT_EXPORT_SHADOW_PROPERTY(marginTop, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(marginRight, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(marginBottom, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(marginLeft, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(marginVertical, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(margin, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(marginTop, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(marginRight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(marginBottom, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(marginLeft, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(marginVertical, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(margin, CGFloat)
 
-RCT_EXPORT_SHADOW_PROPERTY(paddingTop, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(paddingRight, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat);
-RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(paddingTop, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(paddingRight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(flex, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(flexDirection, css_flex_direction_t)
@@ -220,12 +266,6 @@ RCT_EXPORT_SHADOW_PROPERTY(justifyContent, css_justify_t)
 RCT_EXPORT_SHADOW_PROPERTY(alignItems, css_align_t)
 RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
 RCT_REMAP_SHADOW_PROPERTY(position, positionType, css_position_type_t)
-
-RCT_CUSTOM_SHADOW_PROPERTY(backgroundColor, UIColor, RCTShadowView)
-{
-  view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
-  view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
-}
 
 RCT_REMAP_SHADOW_PROPERTY(onLayout, hasOnLayout, BOOL)
 

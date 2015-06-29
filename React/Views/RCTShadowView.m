@@ -13,6 +13,7 @@
 #import "RCTLog.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
+#import "UIView+React.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -119,7 +120,9 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 // width = 213.5 - 106.5 = 107
 // You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
 
-- (void)applyLayoutNode:(css_node_t *)node viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame absolutePosition:(CGPoint)absolutePosition
+- (void)applyLayoutNode:(css_node_t *)node
+      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+       absolutePosition:(CGPoint)absolutePosition
 {
   if (!node->layout.should_update) {
     return;
@@ -160,28 +163,33 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
   for (int i = 0; i < node->children_count; ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
-    [child applyLayoutNode:node->get_child(node->context, i) viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+    [child applyLayoutNode:node->get_child(node->context, i)
+         viewsWithNewFrame:viewsWithNewFrame
+          absolutePosition:absolutePosition];
   }
 }
 
-- (NSDictionary *)processBackgroundColor:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+                          parentProperties:(NSDictionary *)parentProperties
 {
-  if (!_isBGColorExplicitlySet) {
+  // TODO: we always refresh all propagated properties when propagation is
+  // dirtied, but really we should track which properties have changed and
+  // only update those.
+
+  if (!_backgroundColor) {
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
-    if (parentBackgroundColor && ![_backgroundColor isEqual:parentBackgroundColor]) {
-      _backgroundColor = parentBackgroundColor;
+    if (parentBackgroundColor) {
       [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
         UIView *view = viewRegistry[_reactTag];
-        view.backgroundColor = parentBackgroundColor;
+        [view reactSetInheritedBackgroundColor:parentBackgroundColor];
       }];
     }
-  }
-  if (_isBGColorExplicitlySet) {
+  } else {
     // Update parent properties for children
     NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
     CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
-    if (alpha < 1.0 && alpha > 0.0) {
-      // If we see partial transparency, start propagating full transparency
+    if (alpha < 1.0) {
+      // If bg is non-opaque, don't propagate further
       properties[RCTBackgroundColorProp] = [UIColor clearColor];
     } else {
       properties[RCTBackgroundColorProp] = _backgroundColor;
@@ -191,20 +199,22 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return parentProperties;
 }
 
-- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties
+- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks
+                parentProperties:(NSDictionary *)parentProperties
 {
   if (_propagationLifecycle == RCTUpdateLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
     return;
   }
   _propagationLifecycle = RCTUpdateLifecycleComputed;
   _lastParentProperties = parentProperties;
-  NSDictionary *nextProps = [self processBackgroundColor:applierBlocks parentProperties:parentProperties];
+  NSDictionary *nextProps = [self processUpdatedProperties:applierBlocks parentProperties:parentProperties];
   for (RCTShadowView *child in _reactSubviews) {
     [child collectUpdatedProperties:applierBlocks parentProperties:nextProps];
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame parentConstraint:(CGSize)parentConstraint
+- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
+                parentConstraint:(__unused CGSize)parentConstraint
 {
   [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, CSS_UNDEFINED);
@@ -213,21 +223,19 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
-  CGFloat totalOffsetTop = 0.0;
-  CGFloat totalOffsetLeft = 0.0;
-  CGSize size = self.frame.size;
+  CGPoint offset = CGPointZero;
   NSInteger depth = 30; // max depth to search
   RCTShadowView *shadowView = self;
   while (depth && shadowView && shadowView != ancestor) {
-    totalOffsetTop += shadowView.frame.origin.y;
-    totalOffsetLeft += shadowView.frame.origin.x;
+    offset.x += shadowView.frame.origin.x;
+    offset.y += shadowView.frame.origin.y;
     shadowView = shadowView->_superview;
     depth--;
   }
   if (ancestor != shadowView) {
     return CGRectNull;
   }
-  return (CGRect){{totalOffsetLeft, totalOffsetTop}, size};
+  return (CGRect){offset, self.frame.size};
 }
 
 - (instancetype)init
@@ -354,6 +362,34 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     }
   }
   return self.reactTag;
+}
+
+- (NSString *)description
+{
+  NSString *description = super.description;
+  description = [[description substringToIndex:description.length - 1] stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>", self.viewName, self.reactTag, NSStringFromCGRect(self.frame)];
+  return description;
+}
+
+- (void)addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
+{
+  for (NSUInteger i = 0; i < level; i++) {
+    [string appendString:@"  | "];
+  }
+
+  [string appendString:self.description];
+  [string appendString:@"\n"];
+
+  for (RCTShadowView *subview in _reactSubviews) {
+    [subview addRecursiveDescriptionToString:string atLevel:level + 1];
+  }
+}
+
+- (NSString *)recursiveDescription
+{
+  NSMutableString *description = [NSMutableString string];
+  [self addRecursiveDescriptionToString:description atLevel:0];
+  return description;
 }
 
 // Margin

@@ -12,22 +12,82 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 
-@implementation RCTEventDispatcher
+static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
-  RCTBridge __weak *_bridge;
+  return @(
+    [event.viewTag intValue] |
+    (((uint64_t)event.eventName.hash & 0xFFFF) << 32)  |
+    (((uint64_t)event.coalescingKey) << 48)
+  );
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+@implementation RCTBaseEvent
+
+@synthesize viewTag = _viewTag;
+@synthesize eventName = _eventName;
+@synthesize body = _body;
+
+- (instancetype)initWithViewTag:(NSNumber *)viewTag
+                      eventName:(NSString *)eventName
+                           body:(NSDictionary *)body
 {
+  RCTAssertParam(eventName);
+
   if ((self = [super init])) {
-    _bridge = bridge;
+    _viewTag = viewTag;
+    _eventName = eventName;
+    _body = body;
   }
   return self;
 }
 
-RCT_IMPORT_METHOD(RCTNativeAppEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTDeviceEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
+RCT_NOT_IMPLEMENTED(-init)
+
+- (uint16_t)coalescingKey
+{
+  return 0;
+}
+
+- (BOOL)canCoalesce
+{
+  return YES;
+}
+
+- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
+{
+  return newEvent;
+}
+
++ (NSString *)moduleDotMethod
+{
+  return nil;
+}
+
+@end
+
+@interface RCTEventDispatcher() <RCTBridgeModule, RCTFrameUpdateObserver>
+
+@end
+
+@implementation RCTEventDispatcher
+{
+  NSMutableDictionary *_eventQueue;
+  NSLock *_eventQueueLock;
+}
+
+@synthesize bridge = _bridge;
+@synthesize paused = _paused;
+
+RCT_EXPORT_MODULE()
+
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    _eventQueue = [[NSMutableDictionary alloc] init];
+    _eventQueueLock = [[NSLock alloc] init];
+  }
+  return self;
+}
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
@@ -70,58 +130,62 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
   }];
 }
 
-/**
- * TODO: throttling
- * NOTE: the old system used a per-scrollview throttling
- * which would be fairly easy to re-implement if needed,
- * but this is non-optimal as it leads to degradation in
- * scroll responsiveness. A better solution would be to
- * coalesce multiple scroll events into a single batch.
- */
-- (void)sendScrollEventWithType:(RCTScrollEventType)type
-                       reactTag:(NSNumber *)reactTag
-                     scrollView:(UIScrollView *)scrollView
-                       userData:(NSDictionary *)userData
+- (void)sendEvent:(id<RCTEvent>)event
 {
-  static NSString *events[] = {
-    @"topScrollBeginDrag",
-    @"topScroll",
-    @"topScrollEndDrag",
-    @"topMomentumScrollBegin",
-    @"topMomentumScrollEnd",
-    @"topScrollAnimationEnd",
-  };
-
-  NSDictionary *body = @{
-    @"contentOffset": @{
-      @"x": @(scrollView.contentOffset.x),
-      @"y": @(scrollView.contentOffset.y)
-    },
-    @"contentInset": @{
-      @"top": @(scrollView.contentInset.top),
-      @"left": @(scrollView.contentInset.left),
-      @"bottom": @(scrollView.contentInset.bottom),
-      @"right": @(scrollView.contentInset.right)
-    },
-    @"contentSize": @{
-      @"width": @(scrollView.contentSize.width),
-      @"height": @(scrollView.contentSize.height)
-    },
-    @"layoutMeasurement": @{
-      @"width": @(scrollView.frame.size.width),
-      @"height": @(scrollView.frame.size.height)
-    },
-    @"zoomScale": @(scrollView.zoomScale ?: 1),
-    @"target": reactTag
-  };
-
-  if (userData) {
-    NSMutableDictionary *mutableBody = [body mutableCopy];
-    [mutableBody addEntriesFromDictionary:userData];
-    body = mutableBody;
+  if (!event.canCoalesce) {
+    [self dispatchEvent:event];
+    return;
   }
 
-  [self sendInputEventWithName:events[type] body:body];
+  [_eventQueueLock lock];
+
+  NSNumber *eventID = RCTGetEventID(event);
+  id<RCTEvent> previousEvent = _eventQueue[eventID];
+
+  if (previousEvent) {
+    event = [previousEvent coalesceWithEvent:event];
+  }
+
+  _eventQueue[eventID] = event;
+  _paused = NO;
+
+  [_eventQueueLock unlock];
+}
+
+- (void)dispatchEvent:(id<RCTEvent>)event
+{
+  NSMutableArray *arguments = [[NSMutableArray alloc] init];
+
+  if (event.viewTag) {
+    [arguments addObject:event.viewTag];
+  }
+
+  [arguments addObject:event.eventName];
+
+  if (event.body) {
+    [arguments addObject:event.body];
+  }
+
+  [_bridge enqueueJSCall:[[event class] moduleDotMethod]
+                    args:arguments];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return RCTJSThread;
+}
+
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
+{
+  [_eventQueueLock lock];
+   NSDictionary *eventQueue = _eventQueue;
+  _eventQueue = [[NSMutableDictionary alloc] init];
+  _paused = YES;
+  [_eventQueueLock unlock];
+
+  for (id<RCTEvent> event in eventQueue.allValues) {
+    [self dispatchEvent:event];
+  }
 }
 
 @end

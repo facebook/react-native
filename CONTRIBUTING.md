@@ -23,7 +23,7 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 5. Make sure your code lints (`node linter.js <files touched>`).
 6. If you haven't already, complete the CLA.
 
-### Contributor License Agreement ("CLA")
+### Contributor License Agreement (CLA)
 
 In order to accept your pull request, we need you to submit a CLA. You only need to do this once, so if you've done this for another Facebook open source project, you're good to go. If you are submitting a pull request for the first time, just let us know that you have completed the CLA and we can cross-check with your GitHub username.
 
@@ -37,7 +37,7 @@ We will be using GitHub Issues for our public bugs. We will keep a close eye on 
 
 ### Reporting New Issues
 
-The best way to get your bug fixed is to provide a reduced test case.
+The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [React Native Playground](https://rnplay.org/) snippet.
 
 ### Security Bugs
 

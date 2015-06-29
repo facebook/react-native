@@ -11,9 +11,16 @@
  */
 'use strict';
 
+var Map = require('Map');
 var NativeModules = require('NativeModules');
+var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTReachability = NativeModules.Reachability;
+
+if (Platform.OS === 'ios') {
+  var RCTNetInfo = NativeModules.Reachability;
+} else if (Platform.OS === 'android') {
+  var RCTNetInfo = NativeModules.NetInfo;
+}
 
 var DEVICE_REACHABILITY_EVENT = 'reachabilityDidChange';
 
@@ -28,11 +35,50 @@ type ReachabilityStateIOS = $Enum<{
   wifi: string;
 }>;
 
+type ConnectivityStateAndroid = $Enum<{
+  NONE: string;
+  MOBILE: string;
+  WIFI: string;
+  MOBILE_MMS: string;
+  MOBILE_SUPL: string;
+  MOBILE_DUN: string;
+  MOBILE_HIPRI: string;
+  WIMAX: string;
+  BLUETOOTH: string;
+  DUMMY: string;
+  ETHERNET: string;
+  MOBILE_FOTA: string;
+  MOBILE_IMS: string;
+  MOBILE_CBS: string;
+  WIFI_P2P: string;
+  MOBILE_IA: string;
+  MOBILE_EMERGENCY: string;
+  PROXY: string;
+  VPN: string;
+  UNKNOWN: string;
+}>;
 
 /**
  * NetInfo exposes info about online/offline status
  *
- * ### reachabilityIOS
+ * ```
+ * NetInfo.fetch().done((reach) => {
+ *   console.log('Initial: ' + reach);
+ * });
+ * function handleFirstConnectivityChange(reach) {
+ *   console.log('First change: ' + reach);
+ *   NetInfo.removeEventListener(
+ *     'change',
+ *     handleFirstConnectivityChange
+ *   );
+ * }
+ * NetInfo.addEventListener(
+ *   'change',
+ *   handleFirstConnectivityChange
+ * );
+ * ```
+ *
+ * ### IOS
  *
  * Asynchronously determine if the device is online and on a cellular network.
  *
@@ -41,21 +87,35 @@ type ReachabilityStateIOS = $Enum<{
  * - `cell` - device is connected via Edge, 3G, WiMax, or LTE
  * - `unknown` - error case and the network status is unknown
  *
- * ```
- * NetInfo.reachabilityIOS.fetch().done((reach) => {
- *   console.log('Initial: ' + reach);
+ * ### Android
+ *
+ * Asynchronously determine if the device is connected and details about that connection.
+ *
+ * Android Connectivity Types
+ * - `NONE` - device is offline
+ * - `BLUETOOTH` - The Bluetooth data connection.
+ * - `DUMMY` -  Dummy data connection.
+ * - `ETHERNET` - The Ethernet data connection.
+ * - `MOBILE` - The Mobile data connection.
+ * - `MOBILE_DUN` - A DUN-specific Mobile data connection.
+ * - `MOBILE_HIPRI` - A High Priority Mobile data connection.
+ * - `MOBILE_MMS` - An MMS-specific Mobile data connection.
+ * - `MOBILE_SUPL` -  A SUPL-specific Mobile data connection.
+ * - `VPN` -  A virtual network using one or more native bearers. Requires API Level 21
+ * - `WIFI` - The WIFI data connection.
+ * - `WIMAX` -  The WiMAX data connection.
+ * - `UNKNOWN` - Unknown data connection.
+ * The rest ConnectivityStates are hidden by the Android API, but can be used if necessary.
+ *
+ * ### isConnectionMetered
+ *
+ * Available on Android. Detect if the current active connection is metered or not. A network is
+ * classified as metered when the user is sensitive to heavy data usage on that connection due to
+ * monetary costs, data limitations or battery/performance issues.
+ *
+ * NetInfo.isConnectionMetered((isConnectionMetered) => {
+ *   console.log('Connection is ' + (isConnectionMetered ? 'Metered' : 'Not Metered'));
  * });
- * function handleFirstReachabilityChange(reach) {
- *   console.log('First change: ' + reach);
- *   NetInfo.reachabilityIOS.removeEventListener(
- *     'change',
- *     handleFirstReachabilityChange
- *   );
- * }
- * NetInfo.reachabilityIOS.addEventListener(
- *   'change',
- *   handleFirstReachabilityChange
- * );
  * ```
  *
  * ### isConnected
@@ -81,89 +141,106 @@ type ReachabilityStateIOS = $Enum<{
  * ```
  */
 
-var NetInfo = {};
+var _subscriptions = new Map();
 
-if (RCTReachability) {
-
-  // RCTReachability is exposed, so this is an iOS-like environment and we will
-  // expose reachabilityIOS
-
-  var _reachabilitySubscriptions = {};
-
-  NetInfo.reachabilityIOS = {
-    addEventListener: function (
-      eventName: ChangeEventName,
-      handler: Function
-    ): void {
-      _reachabilitySubscriptions[handler] = RCTDeviceEventEmitter.addListener(
-        DEVICE_REACHABILITY_EVENT,
-        (appStateData) => {
-          handler(appStateData.network_reachability);
-        }
-      );
-    },
-
-    removeEventListener: function(
-      eventName: ChangeEventName,
-      handler: Function
-    ): void {
-      if (!_reachabilitySubscriptions[handler]) {
-        return;
+var NetInfo = {
+  addEventListener: function (
+    eventName: ChangeEventName,
+    handler: Function
+  ): void {
+    var listener = RCTDeviceEventEmitter.addListener(
+      DEVICE_REACHABILITY_EVENT,
+      (appStateData) => {
+        handler(appStateData.network_reachability);
       }
-      _reachabilitySubscriptions[handler].remove();
-      _reachabilitySubscriptions[handler] = null;
-    },
+    );
+    _subscriptions.set(handler, listener);
+  },
 
-    fetch: function(): Promise {
-      return new Promise((resolve, reject) => {
-        RCTReachability.getCurrentReachability(
-          function(resp) {
-            resolve(resp.network_reachability);
-          },
-          reject
-        );
-      });
-    },
-  };
+  removeEventListener: function(
+    eventName: ChangeEventName,
+    handler: Function
+  ): void {
+    var listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
+  },
 
-  var _isConnectedSubscriptions = {};
+  fetch: function(): Promise {
+    return new Promise((resolve, reject) => {
+      RCTNetInfo.getCurrentReachability(
+        function(resp) {
+          resolve(resp.network_reachability);
+        },
+        reject
+      );
+    });
+  },
 
-  var _iosReachabilityIsConnected = function(
+  isConnected: {},
+
+  isConnectionMetered: {},
+};
+
+if (Platform.OS === 'ios') {
+  var _isConnected = function(
     reachability: ReachabilityStateIOS
   ): bool {
     return reachability !== 'none' &&
       reachability !== 'unknown';
   };
+} else if (Platform.OS === 'android') {
+  var _isConnected = function(
+      connectionType: ConnectivityStateAndroid
+    ): bool {
+    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
+  };
+}
 
-  NetInfo.isConnected = {
-    addEventListener: function (
-      eventName: ChangeEventName,
-      handler: Function
-    ): void {
-      _isConnectedSubscriptions[handler] = (reachability) => {
-        handler(_iosReachabilityIsConnected(reachability));
-      };
-      NetInfo.reachabilityIOS.addEventListener(
-        eventName,
-        _isConnectedSubscriptions[handler]
-      );
-    },
+var _isConnectedSubscriptions = new Map();
 
-    removeEventListener: function(
-      eventName: ChangeEventName,
-      handler: Function
-    ): void {
-      NetInfo.reachabilityIOS.removeEventListener(
-        eventName,
-        _isConnectedSubscriptions[handler]
-      );
-    },
+NetInfo.isConnected = {
+  addEventListener: function (
+    eventName: ChangeEventName,
+    handler: Function
+  ): void {
+    var listener = (connection) => {
+      handler(_isConnected(connection));
+    };
+    _isConnectedSubscriptions.set(handler, listener);
+    NetInfo.addEventListener(
+      eventName,
+      listener
+    );
+  },
 
-    fetch: function(): Promise {
-      return NetInfo.reachabilityIOS.fetch().then(
-        (reachability) => _iosReachabilityIsConnected(reachability)
-      );
-    },
+  removeEventListener: function(
+    eventName: ChangeEventName,
+    handler: Function
+  ): void {
+    var listener = _isConnectedSubscriptions.get(handler);
+    NetInfo.removeEventListener(
+      eventName,
+      listener
+    );
+    _isConnectedSubscriptions.delete(handler);
+  },
+
+  fetch: function(): Promise {
+    return NetInfo.fetch().then(
+      (connection) => _isConnected(connection)
+    );
+  },
+};
+
+if (Platform.OS === 'android') {
+  NetInfo.isConnectionMetered = function(callback): void {
+    RCTNetInfo.isConnectionMetered((_isMetered) => {
+      callback(_isMetered);
+    });
   };
 }
 

@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 
 NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
@@ -34,11 +35,6 @@ RCT_EXPORT_MODULE()
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_queue_create("com.facebook.React.LinkingManager", DISPATCH_QUEUE_SERIAL);
 }
 
 + (BOOL)application:(UIApplication *)application
@@ -76,7 +72,7 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
 - (NSDictionary *)constantsToExport
 {
   NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  return @{@"initialURL": [initialURL absoluteString] ?: [NSNull null]};
+  return @{@"initialURL": RCTNullIfNil([initialURL absoluteString])};
 }
 
 @end

@@ -15,11 +15,13 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var POPAnimationMixin = require('POPAnimationMixin');
 var React = require('React');
+var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
+var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
 var keyOf = require('keyOf');
 var onlyChild = require('onlyChild');
@@ -44,10 +46,13 @@ var onlyChild = require('onlyChild');
  *   );
  * },
  * ```
+ * > **NOTE**: TouchableOpacity supports only one child
+ * >
+ * > If you wish to have to have several child components, wrap them in a View.
  */
 
 var TouchableOpacity = React.createClass({
-  mixins: [Touchable.Mixin, NativeMethodsMixin, POPAnimationMixin],
+  mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin, POPAnimationMixin],
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
@@ -69,11 +74,16 @@ var TouchableOpacity = React.createClass({
   },
 
   componentDidMount: function() {
+    ensurePositiveDelayProps(this.props);
     ensureComponentIsNative(this.refs[CHILD_REF]);
   },
 
   componentDidUpdate: function() {
     ensureComponentIsNative(this.refs[CHILD_REF]);
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    ensurePositiveDelayProps(nextProps);
   },
 
   setOpacityTo: function(value) {
@@ -83,6 +93,7 @@ var TouchableOpacity = React.createClass({
       var anim = {
         type: this.AnimationTypes.linear,
         property: this.AnimationProperties.opacity,
+        duration: 0.15,
         toValue: value,
       };
       this.startAnimation(CHILD_REF, anim);
@@ -99,20 +110,26 @@ var TouchableOpacity = React.createClass({
    * defined on your component.
    */
   touchableHandleActivePressIn: function() {
-    this.refs[CHILD_REF].setNativeProps({
-      opacity: this.props.activeOpacity
-    });
+    this.clearTimeout(this._hideTimeout);
+    this._hideTimeout = null;
+    this._opacityActive();
     this.props.onPressIn && this.props.onPressIn();
   },
 
   touchableHandleActivePressOut: function() {
-    var child = onlyChild(this.props.children);
-    var childStyle = flattenStyle(child.props.style) || {};
-    this.setOpacityTo(childStyle.opacity === undefined ? 1 : childStyle.opacity);
+    if (!this._hideTimeout) {
+      this._opacityInactive();
+    }
     this.props.onPressOut && this.props.onPressOut();
   },
 
   touchableHandlePress: function() {
+    this.clearTimeout(this._hideTimeout);
+    this._opacityActive();
+    this._hideTimeout = this.setTimeout(
+      this._opacityInactive,
+      this.props.delayPressOut || 100
+    );
     this.props.onPress && this.props.onPress();
   },
 
@@ -125,7 +142,30 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableGetHighlightDelayMS: function() {
-    return 0;
+    return this.props.delayPressIn || 0;
+  },
+
+  touchableGetLongPressDelayMS: function() {
+    return this.props.delayLongPress === 0 ? 0 :
+      this.props.delayLongPress || 500;
+  },
+
+  touchableGetPressOutDelayMS: function() {
+    return this.props.delayPressOut;
+  },
+
+  _opacityActive: function() {
+    this.setOpacityTo(this.props.activeOpacity);
+  },
+
+  _opacityInactive: function() {
+    this.clearTimeout(this._hideTimeout);
+    this._hideTimeout = null;
+    var child = onlyChild(this.props.children);
+    var childStyle = flattenStyle(child.props.style) || {};
+    this.setOpacityTo(
+      childStyle.opacity === undefined ? 1 : childStyle.opacity
+    );
   },
 
   render: function() {

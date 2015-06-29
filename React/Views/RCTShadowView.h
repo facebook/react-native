@@ -20,8 +20,7 @@ typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
   RCTUpdateLifecycleDirtied,
 };
 
-// TODO: is this redundact now?
-typedef void (^RCTApplierBlock)(RCTSparseArray *);
+typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 
 /**
  * ShadowView tree mirrors RCT view tree. Every node is highly stateful.
@@ -38,7 +37,6 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
 @property (nonatomic, copy) NSString *viewName;
-@property (nonatomic, assign) BOOL isBGColorExplicitlySet; // Used to propagate to children
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
 @property (nonatomic, assign) BOOL hasOnLayout;
@@ -118,34 +116,48 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
  * on the main thread in order to update the view.
  */
-- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties;
+- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks
+                parentProperties:(NSDictionary *)parentProperties;
+
+/**
+ * Process the updated properties and apply them to view. Shadow view classes
+ * that add additional propagating properties should override this method.
+ */
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+                          parentProperties:(NSDictionary *)parentProperties NS_REQUIRES_SUPER;
 
 /**
  * Calculate all views whose frame needs updating after layout has been calculated.
  * The viewsWithNewFrame set contains the reactTags of the views that need updating.
  */
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame parentConstraint:(CGSize)parentConstraint;
+- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
+                parentConstraint:(CGSize)parentConstraint;
+
+/**
+ * Recursively apply layout to children.
+ */
+- (void)applyLayoutNode:(css_node_t *)node
+      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+       absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
 
 /**
  * The following are implementation details exposed to subclasses. Do not call them directly
  */
-- (void)fillCSSNode:(css_node_t *)node;
-- (void)dirtyLayout;
+- (void)fillCSSNode:(css_node_t *)node NS_REQUIRES_SUPER;
+- (void)dirtyLayout NS_REQUIRES_SUPER;
 - (BOOL)isLayoutDirty;
 
-// TODO: is this still needed?
-- (void)dirtyPropagation;
+- (void)dirtyPropagation NS_REQUIRES_SUPER;
 - (BOOL)isPropagationDirty;
 
-// TODO: move this to text node?
-- (void)dirtyText;
+- (void)dirtyText NS_REQUIRES_SUPER;
+- (void)setTextComputed NS_REQUIRES_SUPER;
 - (BOOL)isTextDirty;
-- (void)setTextComputed;
 
 /**
  * Triggers a recalculation of the shadow view's layout.
  */
-- (void)updateLayout;
+- (void)updateLayout NS_REQUIRES_SUPER;
 
 /**
  * Computes the recursive offset, meaning the sum of all descendant offsets -

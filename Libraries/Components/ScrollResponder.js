@@ -183,7 +183,7 @@ var ScrollResponderMixin = {
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
-      e.target != currentlyFocusedTextInput) {
+      e.target !== currentlyFocusedTextInput) {
       return true;
     }
     return this.scrollResponderIsAnimating();
@@ -244,7 +244,7 @@ var ScrollResponderMixin = {
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
-      e.target != currentlyFocusedTextInput  &&
+      e.target !== currentlyFocusedTextInput  &&
       !this.state.observedScrollSinceBecomingResponder &&
       !this.state.becameResponderWhileAnimating) {
       this.props.onScrollResponderKeyboardDismissed &&

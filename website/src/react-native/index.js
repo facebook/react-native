@@ -187,19 +187,19 @@ var React = require('react-native');
 var { NativeModules, Text } = React;
 
 var Message = React.createClass({
+  getInitialState() {
+    return { text: 'Goodbye World.' };
+  },
+  componentDidMount() {
+    NativeModules.MyCustomModule.processString(this.state.text, (text) => {
+      this.setState({text});
+    });
+  },
   render: function() {
-    getInitialState() {
-      return { text: 'Goodbye World.' };
-    },
-    componentDidMount() {
-      NativeModules.MyCustomModule.processString(this.state.text, (text) => {
-        this.setState({text});
-      });
-    },
     return (
       <Text>{this.state.text}</Text>
     );
-  },
+  }
 });`}
           </Prism>
           <p>
@@ -215,12 +215,14 @@ var Message = React.createClass({
 
 @implementation MyCustomViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 @end`}
           </Prism>
           <Prism>

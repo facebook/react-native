@@ -11,6 +11,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
+#import "RCTBridgeModule.h"
 #import "RCTInvalidating.h"
 
 typedef void (^RCTJavaScriptCompleteBlock)(NSError *error);
@@ -20,7 +21,13 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
  * Abstracts away a JavaScript execution context - we may be running code in a
  * web view (for debugging purposes), or may be running code in a `JSContext`.
  */
-@protocol RCTJavaScriptExecutor <RCTInvalidating>
+@protocol RCTJavaScriptExecutor <RCTInvalidating, RCTBridgeModule>
+
+/**
+ * Used to set up the executor after the bridge has been fully initialized.
+ * Do any expensive setup in this method instead of `-init`.
+ */
+- (void)setUp;
 
 /**
  * Executes given method with arguments on JS thread and calls the given callback
@@ -36,7 +43,7 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
  * Runs an application script, and notifies of the script load being complete via `onComplete`.
  */
 - (void)executeApplicationScript:(NSString *)script
-                       sourceURL:(NSURL *)url
+                       sourceURL:(NSURL *)sourceURL
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete;
 
 - (void)injectJSONText:(NSString *)script
@@ -61,14 +68,12 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 @end
 
 static const char *RCTJavaScriptExecutorID = "RCTJavaScriptExecutorID";
-__used static id<RCTJavaScriptExecutor> RCTCreateExecutor(Class executorClass)
+__used static void RCTSetExecutorID(id<RCTJavaScriptExecutor> executor)
 {
   static NSUInteger executorID = 0;
-  id<RCTJavaScriptExecutor> executor = [[executorClass alloc] init];
   if (executor) {
     objc_setAssociatedObject(executor, RCTJavaScriptExecutorID, @(++executorID), OBJC_ASSOCIATION_RETAIN);
   }
-  return executor;
 }
 
 __used static NSNumber *RCTGetExecutorID(id<RCTJavaScriptExecutor> executor)

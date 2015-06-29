@@ -43,7 +43,6 @@ var JSTimers = {
     var newID = JSTimersExecution.GUID++;
     var freeIndex = JSTimers._getFreeIndex();
     JSTimersExecution.timerIDs[freeIndex] = newID;
-    JSTimersExecution.callbacks[freeIndex] = func;
     JSTimersExecution.callbacks[freeIndex] = function() {
       return func.apply(undefined, args);
     };
@@ -60,7 +59,6 @@ var JSTimers = {
     var newID = JSTimersExecution.GUID++;
     var freeIndex = JSTimers._getFreeIndex();
     JSTimersExecution.timerIDs[freeIndex] = newID;
-    JSTimersExecution.callbacks[freeIndex] = func;
     JSTimersExecution.callbacks[freeIndex] = function() {
       return func.apply(undefined, args);
     };
@@ -77,7 +75,6 @@ var JSTimers = {
     var newID = JSTimersExecution.GUID++;
     var freeIndex = JSTimers._getFreeIndex();
     JSTimersExecution.timerIDs[freeIndex] = newID;
-    JSTimersExecution.callbacks[freeIndex] = func;
     JSTimersExecution.callbacks[freeIndex] = function() {
       return func.apply(undefined, args);
     };

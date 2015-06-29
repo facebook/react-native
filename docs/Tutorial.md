@@ -16,7 +16,7 @@ We assume you have experience writing websites with React. If not, you can learn
 
 ## Setup
 
-React Native requires OSX, Xcode, Homebrew, node, npm, and [watchman](https://facebook.github.io/watchman/docs/install.html). [Flow](https://github.com/facebook/flow) is optional.
+React Native requires OSX, Xcode, [Homebrew](http://brew.sh/), node (we recommend installing this via Homebrew), npm (installed automatically with node), and [watchman](https://facebook.github.io/watchman/docs/install.html). [Flow](https://github.com/facebook/flow) is optional.
 
 After installing these dependencies there are two simple commands to get a React Native project all set up for development.
 

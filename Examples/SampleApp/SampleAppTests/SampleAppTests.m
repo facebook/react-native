@@ -50,18 +50,15 @@
     redboxError = [[RCTRedBox sharedInstance] currentErrorMessage];
 
     foundElement = [self findSubviewInView:vc.view matching:^BOOL(UIView *view) {
-      if ([view respondsToSelector:@selector(attributedText)]) {
-        NSString *text = [(id)view attributedText].string;
-        if ([text isEqualToString:TEXT_TO_LOOK_FOR]) {
-          return YES;
-        }
+      if ([view.accessibilityLabel isEqualToString:TEXT_TO_LOOK_FOR]) {
+        return YES;
       }
       return NO;
     }];
   }
 
   XCTAssertNil(redboxError, @"RedBox error: %@", redboxError);
-  XCTAssertTrue(foundElement, @"Cound't find element with text '%@' in %d seconds", TEXT_TO_LOOK_FOR, TIMEOUT_SECONDS);
+  XCTAssertTrue(foundElement, @"Couldn't find element with text '%@' in %d seconds", TEXT_TO_LOOK_FOR, TIMEOUT_SECONDS);
 }
 
 

@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <AdSupport/ASIdentifierManager.h>
+
 #import "RCTAdSupport.h"
 
 @implementation RCTAdSupport

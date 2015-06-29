@@ -7,6 +7,7 @@
 /**
  * Cannot "use strict" because we must use eval in this file.
  */
+/* eslint-disable global-strict */
 
 var keyOf = require('keyOf');
 
@@ -115,7 +116,7 @@ var inline = function(func, replaceWithArgs) {
     return '\\b' + paramName + '\\b';
   }).join('|');
   var replaceRegex = new RegExp(replaceRegexStr, 'g');
-  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}') - 1);
+  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}'));
   var newFnBody = fnBody.replace(replaceRegex, function(parameterName) {
     var indexInParameterNames = parameterNames.indexOf(parameterName);
     var replacementName = replaceWithArgs[indexInParameterNames];
@@ -372,7 +373,7 @@ var MatrixOpsInitial = {
 var setNextValAndDetectChange = function(name, tmpVarName) {
   return (
     '  if (!didChange) {\n' +
-    '    var prevVal = result.' + name +';\n' +
+    '    var prevVal = result.' + name + ';\n' +
     '    result.' + name + ' = ' + tmpVarName + ';\n' +
     '    didChange = didChange  || (' + tmpVarName + ' !== prevVal);\n' +
     '  } else {\n' +

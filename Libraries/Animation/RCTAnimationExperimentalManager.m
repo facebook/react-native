@@ -217,6 +217,11 @@ RCT_EXPORT_METHOD(startAnimation:(NSNumber *)reactTag
       }
 
       NSValue *fromValue = [view.layer.presentationLayer valueForKeyPath:keypath];
+#if !CGFLOAT_IS_DOUBLE
+      if ([fromValue isKindOfClass:[NSNumber class]]) {
+        fromValue = [NSNumber numberWithFloat:[(NSNumber *)fromValue doubleValue]];
+      }
+#endif
       CGFloat fromFields[count];
       [fromValue getValue:fromFields];
 
@@ -235,7 +240,6 @@ RCT_EXPORT_METHOD(startAnimation:(NSNumber *)reactTag
       @try {
         [view.layer setValue:toValue forKey:keypath];
         NSString *animationKey = [@"RCT" stringByAppendingString:RCTJSONStringify(@{@"tag": animationTag, @"key": keypath}, nil)];
-        [view.layer addAnimation:animation forKey:animationKey];
         if (!completionBlockSet) {
           strongSelf->_callbackRegistry[animationTag] = callback;
           [CATransaction setCompletionBlock:^{
@@ -247,6 +251,7 @@ RCT_EXPORT_METHOD(startAnimation:(NSNumber *)reactTag
           }];
           completionBlockSet = YES;
         }
+        [view.layer addAnimation:animation forKey:animationKey];
       }
       @catch (NSException *exception) {
         return RCTInvalidAnimationProp(strongSelf->_callbackRegistry, animationTag, keypath, toValue);

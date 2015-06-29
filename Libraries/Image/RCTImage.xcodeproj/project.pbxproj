@@ -10,6 +10,8 @@
 		1304D5AB1AA8C4A30002E2BE /* RCTStaticImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5A81AA8C4A30002E2BE /* RCTStaticImage.m */; };
 		1304D5AC1AA8C4A30002E2BE /* RCTStaticImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTStaticImageManager.m */; };
 		1304D5B21AA8C50D0002E2BE /* RCTGIFImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5B11AA8C50D0002E2BE /* RCTGIFImage.m */; };
+		1345A8391B26592900583190 /* RCTImageRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1345A8381B26592900583190 /* RCTImageRequestHandler.m */; };
+		137620351B31C53500677FF0 /* RCTImagePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 137620341B31C53500677FF0 /* RCTImagePickerManager.m */; };
 		143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879341AAD238D00F088A5 /* RCTCameraRollManager.m */; };
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
 		58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */; };
@@ -36,6 +38,10 @@
 		1304D5AA1AA8C4A30002E2BE /* RCTStaticImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTStaticImageManager.m; sourceTree = "<group>"; };
 		1304D5B01AA8C50D0002E2BE /* RCTGIFImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTGIFImage.h; sourceTree = "<group>"; };
 		1304D5B11AA8C50D0002E2BE /* RCTGIFImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTGIFImage.m; sourceTree = "<group>"; };
+		1345A8371B26592900583190 /* RCTImageRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageRequestHandler.h; sourceTree = "<group>"; };
+		1345A8381B26592900583190 /* RCTImageRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageRequestHandler.m; sourceTree = "<group>"; };
+		137620331B31C53500677FF0 /* RCTImagePickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImagePickerManager.h; sourceTree = "<group>"; };
+		137620341B31C53500677FF0 /* RCTImagePickerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImagePickerManager.m; sourceTree = "<group>"; };
 		143879331AAD238D00F088A5 /* RCTCameraRollManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTCameraRollManager.h; sourceTree = "<group>"; };
 		143879341AAD238D00F088A5 /* RCTCameraRollManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCameraRollManager.m; sourceTree = "<group>"; };
 		143879361AAD32A300F088A5 /* RCTImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoader.h; sourceTree = "<group>"; };
@@ -71,6 +77,10 @@
 				1304D5B11AA8C50D0002E2BE /* RCTGIFImage.m */,
 				58B511891A9E6BD600147676 /* RCTImageDownloader.h */,
 				58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */,
+				137620331B31C53500677FF0 /* RCTImagePickerManager.h */,
+				137620341B31C53500677FF0 /* RCTImagePickerManager.m */,
+				1345A8371B26592900583190 /* RCTImageRequestHandler.h */,
+				1345A8381B26592900583190 /* RCTImageRequestHandler.m */,
 				58B5118B1A9E6BD600147676 /* RCTNetworkImageView.h */,
 				58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */,
 				58B5118D1A9E6BD600147676 /* RCTNetworkImageViewManager.h */,
@@ -150,8 +160,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */,
+				137620351B31C53500677FF0 /* RCTImagePickerManager.m in Sources */,
 				58B511911A9E6BD600147676 /* RCTNetworkImageViewManager.m in Sources */,
 				1304D5AC1AA8C4A30002E2BE /* RCTStaticImageManager.m in Sources */,
+				1345A8391B26592900583190 /* RCTImageRequestHandler.m in Sources */,
 				58B511901A9E6BD600147676 /* RCTNetworkImageView.m in Sources */,
 				1304D5B21AA8C50D0002E2BE /* RCTGIFImage.m in Sources */,
 				143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */,
@@ -192,6 +204,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -200,6 +213,10 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
 			};
 			name = Debug;
 		};
@@ -226,6 +243,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -234,6 +252,10 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
 			};
 			name = Release;
 		};

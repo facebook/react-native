@@ -9,10 +9,13 @@
 
 #import "RCTDevMenu.h"
 
+#import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
+#import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPerfStats.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
@@ -32,12 +35,36 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
 
 @implementation UIWindow (RCTDevMenu)
 
-- (void)RCT_motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+- (void)RCT_motionEnded:(__unused UIEventSubtype)motion withEvent:(UIEvent *)event
 {
   if (event.subtype == UIEventSubtypeMotionShake) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTShowDevMenuNotification object:nil];
   }
 }
+
+@end
+
+@interface RCTDevMenuItem : NSObject
+
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) dispatch_block_t handler;
+
+- (instancetype)initWithTitle:(NSString *)title handler:(dispatch_block_t)handler NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@implementation RCTDevMenuItem
+
+- (instancetype)initWithTitle:(NSString *)title handler:(dispatch_block_t)handler
+{
+  if ((self = [super init])) {
+    _title = [title copy];
+    _handler = [handler copy];
+  }
+  return self;
+}
+
+RCT_NOT_IMPLEMENTED(-init)
 
 @end
 
@@ -55,6 +82,8 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
   NSURLSessionDataTask *_updateTask;
   NSURL *_liveReloadURL;
   BOOL _jsLoaded;
+  NSArray *_presentedItems;
+  NSMutableArray *_extraMenuItems;
 }
 
 @synthesize bridge = _bridge;
@@ -90,8 +119,14 @@ RCT_EXPORT_MODULE()
                                name:RCTJavaScriptDidLoadNotification
                              object:nil];
 
+    [notificationCenter addObserver:self
+                           selector:@selector(jsLoaded:)
+                               name:RCTJavaScriptDidFailToLoadNotification
+                             object:nil];
+
     _defaults = [NSUserDefaults standardUserDefaults];
     _settings = [[NSMutableDictionary alloc] init];
+    _extraMenuItems = [NSMutableArray array];
 
     // Delay setup until after Bridge init
     [self settingsDidChange];
@@ -104,14 +139,23 @@ RCT_EXPORT_MODULE()
     // Toggle debug menu
     [commands registerKeyCommandWithInput:@"d"
                             modifierFlags:UIKeyModifierCommand
-                                   action:^(UIKeyCommand *command) {
+                                   action:^(__unused UIKeyCommand *command) {
                                      [weakSelf toggle];
+                                   }];
+
+    // Toggle element inspector
+    [commands registerKeyCommandWithInput:@"i"
+                            modifierFlags:UIKeyModifierCommand
+                                   action:^(__unused UIKeyCommand *command) {
+                                     [weakSelf.bridge.eventDispatcher
+                                      sendDeviceEventWithName:@"toggleElementInspector"
+                                      body:nil];
                                    }];
 
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
-                                   action:^(UIKeyCommand *command) {
+                                   action:^(__unused UIKeyCommand *command) {
                                      weakSelf.executorClass = Nil;
                                    }];
 #endif
@@ -145,6 +189,7 @@ RCT_EXPORT_MODULE()
   self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
   self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
   self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
+  self.showFPS = [_settings[@"showFPS"] ?: @NO boolValue];
   self.executorClass = NSClassFromString(_settings[@"executorClass"]);
 }
 
@@ -222,29 +267,82 @@ RCT_EXPORT_MODULE()
   }
 }
 
+- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler
+{
+  [_extraMenuItems addObject:[[RCTDevMenuItem alloc] initWithTitle:title handler:handler]];
+}
+
+- (NSArray *)menuItems
+{
+  NSMutableArray *items = [NSMutableArray array];
+
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Reload" handler:^{
+    [self reload];
+  }]];
+
+  Class chromeExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  if (!chromeExecutorClass) {
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Chrome Debugger Unavailable" handler:^{
+      [[[UIAlertView alloc] initWithTitle:@"Chrome Debugger Unavailable"
+                                  message:@"You need to include the RCTWebSocket library to enable Chrome debugging"
+                                 delegate:nil
+                        cancelButtonTitle:@"OK"
+                        otherButtonTitles:nil] show];
+    }]];
+  } else {
+    BOOL isDebuggingInChrome = _executorClass && _executorClass == chromeExecutorClass;
+    NSString *debugTitleChrome = isDebuggingInChrome ? @"Disable Chrome Debugging" : @"Debug in Chrome";
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:debugTitleChrome handler:^{
+      self.executorClass = isDebuggingInChrome ? Nil : chromeExecutorClass;
+    }]];
+  }
+
+  Class safariExecutorClass = NSClassFromString(@"RCTWebViewExecutor");
+  BOOL isDebuggingInSafari = _executorClass && _executorClass == safariExecutorClass;
+  NSString *debugTitleSafari = isDebuggingInSafari ? @"Disable Safari Debugging" : @"Debug in Safari";
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:debugTitleSafari handler:^{
+    self.executorClass = isDebuggingInSafari ? Nil : safariExecutorClass;
+  }]];
+
+  NSString *fpsMonitor = _showFPS ? @"Hide FPS Monitor" : @"Show FPS Monitor";
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:fpsMonitor handler:^{
+    self.showFPS = !_showFPS;
+  }]];
+
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Inspect Element" handler:^{
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+  }]];
+
+  if (_liveReloadURL) {
+    NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:liveReloadTitle handler:^{
+      self.liveReloadEnabled = !_liveReloadEnabled;
+    }]];
+
+    NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Profiling" : @"Start Profiling";
+    [items addObject:[[RCTDevMenuItem alloc] initWithTitle:profilingTitle handler:^{
+      self.profilingEnabled = !_profilingEnabled;
+    }]];
+  }
+
+  [items addObjectsFromArray:_extraMenuItems];
+
+  return items;
+}
+
 RCT_EXPORT_METHOD(show)
 {
   if (_actionSheet || !_bridge) {
     return;
   }
 
-  NSString *debugTitleChrome = _executorClass && _executorClass == NSClassFromString(@"RCTWebSocketExecutor") ? @"Disable Chrome Debugging" : @"Debug in Chrome";
-  NSString *debugTitleSafari = _executorClass && _executorClass == NSClassFromString(@"RCTWebViewExecutor") ? @"Disable Safari Debugging" : @"Debug in Safari";
+  UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  actionSheet.title = @"React Native: Development";
+  actionSheet.delegate = self;
 
-  UIActionSheet *actionSheet =
-  [[UIActionSheet alloc] initWithTitle:@"React Native: Development"
-                              delegate:self
-                     cancelButtonTitle:nil
-                destructiveButtonTitle:nil
-                     otherButtonTitles:@"Reload", debugTitleChrome, debugTitleSafari, nil];
-
-  if (_liveReloadURL) {
-
-    NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
-    NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Profiling" : @"Start Profiling";
-
-    [actionSheet addButtonWithTitle:liveReloadTitle];
-    [actionSheet addButtonWithTitle:profilingTitle];
+  NSArray *items = [self menuItems];
+  for (RCTDevMenuItem *item in items) {
+    [actionSheet addButtonWithTitle:item.title];
   }
 
   [actionSheet addButtonWithTitle:@"Cancel"];
@@ -253,13 +351,7 @@ RCT_EXPORT_METHOD(show)
   actionSheet.actionSheetStyle = UIBarStyleBlack;
   [actionSheet showInView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
   _actionSheet = actionSheet;
-}
-
-RCT_EXPORT_METHOD(reload)
-{
-  _jsLoaded = NO;
-  _liveReloadURL = nil;
-  [_bridge reload];
+  _presentedItems = items;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -269,40 +361,16 @@ RCT_EXPORT_METHOD(reload)
     return;
   }
 
-  switch (buttonIndex) {
-    case 0: {
-      [self reload];
-      break;
-    }
-    case 1: {
-      Class cls = NSClassFromString(@"RCTWebSocketExecutor");
-      if (!cls) {
-        [[[UIAlertView alloc] initWithTitle:@"Chrome Debugger Unavailable"
-                                    message:@"You need to include the RCTWebSocket library to enable Chrome debugging"
-                                   delegate:nil
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil] show];
-        return;
-      }
-      self.executorClass = (_executorClass == cls) ? Nil : cls;
-      break;
-    }
-    case 2: {
-      Class cls = NSClassFromString(@"RCTWebViewExecutor");
-      self.executorClass = (_executorClass == cls) ? Nil : cls;
-      break;
-    }
-    case 3: {
-      self.liveReloadEnabled = !_liveReloadEnabled;
-      break;
-    }
-    case 4: {
-      self.profilingEnabled = !_profilingEnabled;
-      break;
-    }
-    default:
-      break;
-  }
+  RCTDevMenuItem *item = _presentedItems[buttonIndex];
+  item.handler();
+  return;
+}
+
+RCT_EXPORT_METHOD(reload)
+{
+  _jsLoaded = NO;
+  _liveReloadURL = nil;
+  [_bridge reload];
 }
 
 - (void)setShakeToShow:(BOOL)shakeToShow
@@ -368,6 +436,21 @@ RCT_EXPORT_METHOD(reload)
   }
 }
 
+- (void)setShowFPS:(BOOL)showFPS
+{
+  if (_showFPS != showFPS) {
+    _showFPS = showFPS;
+
+    if (showFPS) {
+      [_bridge.perfStats show];
+    } else {
+      [_bridge.perfStats hide];
+    }
+
+    [self updateSetting:@"showFPS" value:@(showFPS)];
+  }
+}
+
 - (void)checkForUpdates
 {
   if (!_jsLoaded || !_liveReloadEnabled || !_liveReloadURL) {
@@ -381,7 +464,8 @@ RCT_EXPORT_METHOD(reload)
   }
 
   __weak RCTDevMenu *weakSelf = self;
-  _updateTask = [[NSURLSession sharedSession] dataTaskWithURL:_liveReloadURL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+  _updateTask = [[NSURLSession sharedSession] dataTaskWithURL:_liveReloadURL completionHandler:
+                 ^(__unused NSData *data, NSURLResponse *response, NSError *error) {
 
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong RCTDevMenu *strongSelf = weakSelf;
@@ -409,6 +493,7 @@ RCT_EXPORT_METHOD(reload)
 
 - (void)show {}
 - (void)reload {}
+- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 
 @end
 

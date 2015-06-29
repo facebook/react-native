@@ -15,15 +15,15 @@
 
 @implementation RCTText
 {
-  NSLayoutManager *_layoutManager;
   NSTextStorage *_textStorage;
-  NSTextContainer *_textContainer;
+  NSMutableArray *_reactSubviews;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
+    _reactSubviews = [NSMutableArray array];
 
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
@@ -31,103 +31,74 @@
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
-
   return self;
 }
 
-- (NSAttributedString *)attributedText
+- (NSString *)description
 {
-  return [_textStorage copy];
+  NSString *superDescription = super.description;
+  NSRange semicolonRange = [superDescription rangeOfString:@";"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@", self.reactTag, self.textStorage.string];
+  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
 }
 
-- (void)setAttributedText:(NSAttributedString *)attributedText
+- (void)reactSetFrame:(CGRect)frame
 {
-  for (NSLayoutManager *existingLayoutManager in _textStorage.layoutManagers) {
-    [_textStorage removeLayoutManager:existingLayoutManager];
-  }
+  // Text looks super weird if its frame is animated.
+  // This disables the frame animation, without affecting opacity, etc.
+  [UIView performWithoutAnimation:^{
+    [super reactSetFrame:frame];
+  }];
+}
 
-  _textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedText];
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  [_reactSubviews insertObject:subview atIndex:atIndex];
+}
 
-  if (_layoutManager) {
-    [_textStorage addLayoutManager:_layoutManager];
-  }
+- (void)removeReactSubview:(UIView *)subview
+{
+  [_reactSubviews removeObject:subview];
+}
 
+- (NSMutableArray *)reactSubviews
+{
+  return _reactSubviews;
+}
+
+- (void)setTextStorage:(NSTextStorage *)textStorage
+{
+  _textStorage = textStorage;
   [self setNeedsDisplay];
-}
-
-- (void)setTextContainer:(NSTextContainer *)textContainer
-{
-  if ([_textContainer isEqual:textContainer]) {
-    return;
-  }
-
-  _textContainer = textContainer;
-
-  for (NSInteger i = _layoutManager.textContainers.count - 1; i >= 0; i--) {
-    [_layoutManager removeTextContainerAtIndex:i];
-  }
-
-  if (_textContainer) {
-    [_layoutManager addTextContainer:_textContainer];
-  }
-
-  [self setNeedsDisplay];
-}
-
-- (void)setLayoutManager:(NSLayoutManager *)layoutManager
-{
-  if ([_layoutManager isEqual:layoutManager]) {
-    return;
-  }
-
-  _layoutManager = layoutManager;
-
-  for (NSLayoutManager *existingLayoutManager in _textStorage.layoutManagers) {
-    [_textStorage removeLayoutManager:existingLayoutManager];
-  }
-
-  if (_layoutManager) {
-    [_textStorage addLayoutManager:_layoutManager];
-  }
-
-  [self setNeedsDisplay];
-}
-
-- (CGRect)textFrame
-{
-  return UIEdgeInsetsInsetRect(self.bounds, _contentInset);
 }
 
 - (void)drawRect:(CGRect)rect
 {
-  CGRect textFrame = [self textFrame];
-
-  // We reset the text container size every time because RCTShadowText's
-  // RCTMeasure overrides it. The header comment for `size` says that a height
-  // of 0.0 should be enough, but it isn't.
-  _textContainer.size = CGSizeMake(textFrame.size.width, CGFLOAT_MAX);
-
-  NSRange glyphRange = [_layoutManager glyphRangeForTextContainer:_textContainer];
-  [_layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:textFrame.origin];
-  [_layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
+  NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
+  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
+  CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:textFrame.origin];
+  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
 }
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
-  CGFloat fraction;
-  NSUInteger characterIndex = [_layoutManager characterIndexForPoint:point
-                                                     inTextContainer:_textContainer
-                            fractionOfDistanceBetweenInsertionPoints:&fraction];
+  NSNumber *reactTag = self.reactTag;
 
-  NSNumber *reactTag = nil;
+  CGFloat fraction;
+  NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
+  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
+  NSUInteger characterIndex = [layoutManager characterIndexForPoint:point
+                                                    inTextContainer:textContainer
+                           fractionOfDistanceBetweenInsertionPoints:&fraction];
 
   // If the point is not before (fraction == 0.0) the first character and not
   // after (fraction == 1.0) the last character, then the attribute is valid.
   if (_textStorage.length > 0 && (fraction > 0 || characterIndex > 0) && (fraction < 1 || characterIndex < _textStorage.length - 1)) {
     reactTag = [_textStorage attribute:RCTReactTagAttributeName atIndex:characterIndex effectiveRange:NULL];
   }
-
-  return reactTag ?: self.reactTag;
+  return reactTag;
 }
 
 #pragma mark - Accessibility

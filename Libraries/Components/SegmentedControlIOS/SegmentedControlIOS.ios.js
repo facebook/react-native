@@ -108,13 +108,7 @@ var styles = StyleSheet.create({
 
 var RCTSegmentedControl = requireNativeComponent(
   'RCTSegmentedControl',
-  null
+  SegmentedControlIOS
 );
-if (__DEV__) {
-  verifyPropTypes(
-    RCTSegmentedControl,
-    RCTSegmentedControl.viewConfig
-  );
-}
 
 module.exports = SegmentedControlIOS;

@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -8,6 +9,7 @@
  *
  * @providesModule SourceMap
  * @generated
+ * @extern
  *
  * This module was generated from `node_modules/source-map` by running
  *
@@ -18,6 +20,7 @@
  * and wrapping resulting file into `wrapper` function.
  *
  */
+/*eslint-disable */
 
 var scope = {};
 wrapper.call(scope);

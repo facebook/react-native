@@ -30,8 +30,10 @@
   NSMutableArray *_tabViews;
 }
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
+  RCTAssertParam(eventDispatcher);
+
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
     _tabViews = [[NSMutableArray alloc] init];
@@ -41,6 +43,9 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (UIViewController *)backingViewController
 {
@@ -105,13 +110,34 @@
     _tabsChanged = NO;
   }
 
-  [[self reactSubviews] enumerateObjectsUsingBlock:^(RCTTabBarItem *tab, NSUInteger index, BOOL *stop) {
+  [[self reactSubviews] enumerateObjectsUsingBlock:
+   ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
     UIViewController *controller = _tabController.viewControllers[index];
     controller.tabBarItem = tab.barItem;
     if (tab.selected) {
       _tabController.selectedViewController = controller;
     }
   }];
+}
+
+- (UIColor *)barTintColor
+{
+  return _tabController.tabBar.barTintColor;
+}
+
+- (void)setBarTintColor:(UIColor *)barTintColor
+{
+  _tabController.tabBar.barTintColor = barTintColor;
+}
+
+- (UIColor *)tintColor
+{
+  return _tabController.tabBar.tintColor;
+}
+
+- (void)setTintColor:(UIColor *)tintColor
+{
+  _tabController.tabBar.tintColor = tintColor;
 }
 
 #pragma mark - UITabBarControllerDelegate

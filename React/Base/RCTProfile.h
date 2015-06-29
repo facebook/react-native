@@ -20,7 +20,24 @@
  * before before using it.
  */
 
+RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
+RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
+
 #if RCT_DEV
+
+@class RCTBridge;
+
+#define RCTProfileBeginFlowEvent() \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+NSNumber *__rct_profile_flow_id = _RCTProfileBeginFlowEvent(); \
+_Pragma("clang diagnostic pop")
+
+#define RCTProfileEndFlowEvent() \
+_RCTProfileEndFlowEvent(__rct_profile_flow_id)
+
+RCT_EXTERN NSNumber *_RCTProfileBeginFlowEvent(void);
+RCT_EXTERN void _RCTProfileEndFlowEvent(NSNumber *);
 
 /**
  * Returns YES if the profiling information is currently being collected
@@ -30,14 +47,14 @@ RCT_EXTERN BOOL RCTProfileIsProfiling(void);
 /**
  * Start collecting profiling information
  */
-RCT_EXTERN void RCTProfileInit(void);
+RCT_EXTERN void RCTProfileInit(RCTBridge *);
 
 /**
  * Stop profiling and return a JSON string of the collected data - The data
  * returned is compliant with google's trace event format - the format used
  * as input to trace-viewer
  */
-RCT_EXTERN NSString *RCTProfileEnd(void);
+RCT_EXTERN NSString *RCTProfileEnd(RCTBridge *);
 
 /**
  * Collects the initial event information for the event and returns a reference ID
@@ -87,6 +104,12 @@ RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *
 }
 
 #else
+
+#define RCTProfileBeginFlowEvent()
+#define _RCTProfileBeginFlowEvent() @0
+
+#define RCTProfileEndFlowEvent()
+#define _RCTProfileEndFlowEvent()
 
 #define RCTProfileIsProfiling(...) NO
 #define RCTProfileInit(...)

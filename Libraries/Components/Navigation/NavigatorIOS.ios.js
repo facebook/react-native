@@ -57,6 +57,7 @@ var RCTNavigatorItem = createReactNativeComponentClass({
     backButtonIcon: true,
     backButtonTitle: true,
     tintColor: true,
+    translucent: true,
     navigationBarHidden: true,
     titleTextColor: true,
     style: true,
@@ -83,16 +84,16 @@ var NavigatorTransitionerIOS = React.createClass({
 type Route = {
   component: Function;
   title: string;
-  passProps: Object;
-  backButtonTitle: string;
-  backButtonIcon: Object;
-  leftButtonTitle: string;
-  leftButtonIcon: Object;
-  onLeftButtonPress: Function;
-  rightButtonTitle: string;
-  rightButtonIcon: Object;
-  onRightButtonPress: Function;
-  wrapperStyle: any;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
 };
 
 type State = {
@@ -299,6 +300,11 @@ var NavigatorIOS = React.createClass({
      * The text color of the navigation bar title
      */
     titleTextColor: PropTypes.string,
+
+    /**
+     * A Boolean value that indicates whether the navigation bar is translucent
+     */
+    translucent: PropTypes.bool,
 
   },
 
@@ -609,6 +615,7 @@ var NavigatorIOS = React.createClass({
           navigationBarHidden={this.props.navigationBarHidden}
           tintColor={this.props.tintColor}
           barTintColor={this.props.barTintColor}
+          translucent={this.props.translucent}
           titleTextColor={this.props.titleTextColor}>
           <Component
             navigator={this.navigator}

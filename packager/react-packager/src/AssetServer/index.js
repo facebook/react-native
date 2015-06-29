@@ -11,13 +11,13 @@
 var declareOpts = require('../lib/declareOpts');
 var getAssetDataFromName = require('../lib/getAssetDataFromName');
 var path = require('path');
-var Promise = require('bluebird');
+var Promise = require('promise');
 var fs = require('fs');
 var crypto = require('crypto');
 
-var lstat = Promise.promisify(fs.lstat);
-var readDir = Promise.promisify(fs.readdir);
-var readFile = Promise.promisify(fs.readFile);
+var stat = Promise.denodeify(fs.stat);
+var readDir = Promise.denodeify(fs.readdir);
+var readFile = Promise.denodeify(fs.readFile);
 
 module.exports = AssetServer;
 
@@ -28,7 +28,7 @@ var validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: ['png'],
+    required: true,
   },
 });
 
@@ -56,12 +56,15 @@ AssetServer.prototype._getAssetRecord = function(assetPath) {
     this._roots,
     path.dirname(assetPath)
   ).then(function(dir) {
-    return [
+    return Promise.all([
       dir,
       readDir(dir),
-    ];
-  }).spread(function(dir, files) {
+    ]);
+  }).then(function(res) {
+    var dir = res[0];
+    var files = res[1];
     var assetData = getAssetDataFromName(filename);
+
     var map = buildAssetMap(dir, files);
     var record = map[assetData.assetName];
 
@@ -90,7 +93,7 @@ AssetServer.prototype.getAssetData = function(assetPath) {
   var nameData = getAssetDataFromName(assetPath);
   var data = {
     name: nameData.name,
-    type: 'png',
+    type: nameData.type,
   };
 
   return this._getAssetRecord(assetPath).then(function(record) {
@@ -98,14 +101,14 @@ AssetServer.prototype.getAssetData = function(assetPath) {
 
     return Promise.all(
       record.files.map(function(file) {
-        return lstat(file);
+        return stat(file);
       })
     );
   }).then(function(stats) {
     var hash = crypto.createHash('md5');
 
-    stats.forEach(function(stat) {
-      hash.update(stat.mtime.getTime().toString());
+    stats.forEach(function(fstat) {
+      hash.update(fstat.mtime.getTime().toString());
     });
 
     data.hash = hash.digest('hex');
@@ -114,21 +117,23 @@ AssetServer.prototype.getAssetData = function(assetPath) {
 };
 
 function findRoot(roots, dir) {
-  return Promise.some(
+  return Promise.all(
     roots.map(function(root) {
       var absPath = path.join(root, dir);
-      return lstat(absPath).then(function(stat) {
-        if (!stat.isDirectory()) {
-          throw new Error('Looking for dirs');
-        }
-        stat._path = absPath;
-        return stat;
+      return stat(absPath).then(function(fstat) {
+        return {path: absPath, isDirectory: fstat.isDirectory()};
+      }, function (err) {
+        return {path: absPath, isDirectory: false};
       });
-    }),
-    1
-  ).spread(
-    function(stat) {
-      return stat._path;
+    })
+  ).then(
+    function(stats) {
+      for (var i = 0; i < stats.length; i++) {
+        if (stats[i].isDirectory) {
+          return stats[i].path;
+        }
+      }
+      throw new Error('Could not find any directories');
     }
   );
 }

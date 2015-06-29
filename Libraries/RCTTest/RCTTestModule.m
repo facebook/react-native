@@ -11,6 +11,7 @@
 
 #import "FBSnapshotTestController.h"
 #import "RCTAssert.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUIManager.h"
 
@@ -50,16 +51,34 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
                                              selector:_testSelector
                                            identifier:_snapshotCounter[testName]
                                                 error:&error];
-
-    RCTAssert(success, @"Snapshot comparison failed: %@", error);
-    callback(@[]);
+    callback(@[@(success)]);
   }];
+}
+
+RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(id)body)
+{
+  [_bridge.eventDispatcher sendAppEventWithName:name body:body];
+}
+
+RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve(@1);
+}
+
+RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  reject(nil);
 }
 
 RCT_EXPORT_METHOD(markTestCompleted)
 {
+  [self markTestPassed:YES];
+}
+
+RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
+{
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    _done = YES;
+    _status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
   }];
 }
 

@@ -25,9 +25,9 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
   lineHeight: ReactPropTypes.number,
   color: ReactPropTypes.string,
-  containerBackgroundColor: ReactPropTypes.string,
+  // NOTE: 'justify is supported only on iOS
   textAlign: ReactPropTypes.oneOf(
-    ['auto' /*default*/, 'left', 'right', 'center']
+    ['auto' /*default*/, 'left', 'right', 'center', 'justify']
   ),
   writingDirection: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'ltr', 'rtl']

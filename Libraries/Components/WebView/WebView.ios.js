@@ -14,7 +14,6 @@
 var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
@@ -96,6 +95,11 @@ var WebView = React.createClass({
      * Used for android only, JS is enabled by default for WebView on iOS
      */
     javaScriptEnabledAndroid: PropTypes.bool,
+    /**
+     * Used for iOS only, sets whether the webpage scales to fit the view and the
+     * user can change the scale
+     */
+    scalesPageToFit: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -156,6 +160,7 @@ var WebView = React.createClass({
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        scalesPageToFit={this.props.scalesPageToFit}
       />;
 
     return (
@@ -198,7 +203,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
-    console.error("encountered an error loading page", event.nativeEvent);
+    console.error('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,

@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTDefines.h"
+
 @class RCTBridge;
 
 /**
@@ -18,6 +20,20 @@
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
+ * Block that bridge modules use to resolve the JS promise waiting for a result.
+ * Nil results are supported and are converted to JS's undefined value.
+ */
+typedef void (^RCTPromiseResolveBlock)(id result);
+
+/**
+ * Block that bridge modules use to reject the JS promise waiting for a result.
+ * The error may be nil but it is preferable to pass an NSError object for more
+ * precise error messages.
+ */
+typedef void (^RCTPromiseRejectBlock)(NSError *error);
+
+
+/**
  * This constant can be returned from +methodQueue to force module
  * methods to be called on the JavaScript thread. This can have serious
  * implications for performance, so only use this if you're sure it's what
@@ -25,7 +41,7 @@ typedef void (^RCTResponseSenderBlock)(NSArray *response);
  *
  * NOTE: RCTJSThread is not a real libdispatch queue
  */
-extern const dispatch_queue_t RCTJSThread;
+extern dispatch_queue_t RCTJSThread;
 
 /**
  * Provides the interface needed to register a bridge module.
@@ -37,9 +53,32 @@ extern const dispatch_queue_t RCTJSThread;
  * A reference to the RCTBridge. Useful for modules that require access
  * to bridge features, such as sending events or making JS calls. This
  * will be set automatically by the bridge when it initializes the module.
-* To implement this in your module, just add @synthesize bridge = _bridge;
+ * To implement this in your module, just add `@synthesize bridge = _bridge;`
  */
 @property (nonatomic, weak) RCTBridge *bridge;
+
+/**
+ * The queue that will be used to call all exported methods. If omitted, this
+ * will call on a default background queue, which is avoids blocking the main
+ * thread.
+ *
+ * If the methods in your module need to interact with UIKit methods, they will
+ * probably need to call those on the main thread, as most of UIKit is main-
+ * thread-only. You can tell React Native to call your module methods on the
+ * main thread by returning a reference to the main queue, like this:
+ *
+ * - (dispatch_queue_t)methodQueue
+ * {
+ *   return dispatch_get_main_queue();
+ * }
+ *
+ * If you don't want to specify the queue yourself, but you need to use it
+ * inside your class (e.g. if you have internal methods that need to disaptch
+ * onto that queue), you can just add `@synthesize methodQueue = _methodQueue;`
+ * and the bridge will populate the methodQueue property for you automatically
+ * when it initializes the module.
+ */
+@property (nonatomic, strong, readonly) dispatch_queue_t methodQueue;
 
 /**
  * Place this macro in your class implementation to automatically register
@@ -48,8 +87,9 @@ extern const dispatch_queue_t RCTJSThread;
  * match the Objective-C class name.
  */
 #define RCT_EXPORT_MODULE(js_name) \
-  + (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
-  ))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; }
+  RCT_EXTERN void RCTRegisterModule(Class); \
+  + (NSString *)moduleName { return @#js_name; } \
+  + (void)load { RCTRegisterModule([self class]); }
 
 /**
  * Wrap the parameter line of your method implementation with this macro to
@@ -70,6 +110,26 @@ extern const dispatch_queue_t RCTJSThread;
  * { ... }
  *
  * and is exposed to JavaScript as `NativeModules.ModuleName.doSomething`.
+ *
+ * ## Promises
+ *
+ * Bridge modules can also define methods that are exported to JavaScript as
+ * methods that return a Promise, and are compatible with JS async functions.
+ *
+ * Declare the last two parameters of your native method to be a resolver block
+ * and a rejecter block. The resolver block must precede the rejecter block.
+ *
+ * For example:
+ *
+ * RCT_EXPORT_METHOD(doSomethingAsync:(NSString *)aString
+ *                           resolver:(RCTPromiseResolveBlock)resolve
+ *                           rejecter:(RCTPromiseRejectBlock)reject
+ * { ... }
+ *
+ * Calling `NativeModules.ModuleName.doSomethingAsync(aString)` from
+ * JavaScript will return a promise that is resolved or rejected when your
+ * native method implementation calls the respective block.
+ *
  */
 #define RCT_EXPORT_METHOD(method) \
   RCT_REMAP_METHOD(, method)
@@ -118,7 +178,7 @@ extern const dispatch_queue_t RCTJSThread;
   RCT_EXTERN_REMAP_MODULE(, objc_name, objc_supername)
 
 /**
- * Similar to RCT_EXTERN_MODULE but allows setting a custom JavaScript name
+ * Like RCT_EXTERN_MODULE, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername) \
   objc_name : objc_supername \
@@ -136,54 +196,12 @@ extern const dispatch_queue_t RCTJSThread;
   RCT_EXTERN_REMAP_METHOD(, method)
 
 /**
- * Similar to RCT_EXTERN_REMAP_METHOD but allows setting a custom JavaScript name
+ * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  - (void)__rct_export__##method { \
-    __attribute__((used, section("__DATA,RCTExport"))) \
-    __attribute__((__aligned__(1))) \
-    static const char *__rct_export_entry__[] = { __func__, #method, #js_name }; \
-  }
-
-/**
- * Deprecated, do not use.
- */
-#define RCT_EXPORT(js_name) \
-  _Pragma("message(\"RCT_EXPORT is deprecated. Use RCT_EXPORT_METHOD instead.\")") \
-  __attribute__((used, section("__DATA,RCTExport"))) \
-  __attribute__((__aligned__(1))) \
-  static const char *__rct_export_entry__[] = { __func__, #js_name, NULL }
-
-/**
- * The queue that will be used to call all exported methods. If omitted, this
- * will call on the default background queue, which is avoids blocking the main
- * thread.
- *
- * If the methods in your module need to interact with UIKit methods, they will
- * probably need to call those on the main thread, as most of UIKit is main-
- * thread-only. You can tell React Native to call your module methods on the
- * main thread by returning a reference to the main queue, like this:
- *
- * - (dispatch_queue_t)methodQueue
- * {
- *   return dispatch_get_main_queue();
- * }
- *
- * If your methods perform heavy work such as synchronous filesystem or network
- * access, you probably don't want to block the default background queue, as
- * this will stall other methods. Instead, you should return a custom serial
- * queue, like this:
- *
- * - (dispatch_queue_t)methodQueue
- * {
- *   return dispatch_queue_create("com.mydomain.FileQueue", DISPATCH_QUEUE_SERIAL);
- * }
- *
- * Alternatively, if only some methods of the module should be executed on a
- * particular queue you can leave this method unimplemented, and simply
- * dispatch_async() to the required queue within the method itself.
- */
-- (dispatch_queue_t)methodQueue;
+  + (NSArray *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+    return @[@#js_name, @#method]; \
+  } \
 
 /**
  * Injects constants into JS. These constants are made accessible via

@@ -60,7 +60,7 @@ var Image = React.createClass({
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `required('image!name')` function).
+     * resource (which should be wrapped in the `require('image!name')` function).
      */
     source: PropTypes.shape({
       uri: PropTypes.string,
@@ -146,20 +146,11 @@ var Image = React.createClass({
     if (this.props.style && this.props.style.tintColor) {
       warning(RawImage === RCTStaticImage, 'tintColor style only supported on static images.');
     }
-    var resizeMode = this.props.resizeMode || style.resizeMode;
-    var contentModes = NativeModules.UIManager.UIView.ContentMode;
-    var contentMode;
-    if (resizeMode === ImageResizeMode.stretch) {
-      contentMode = contentModes.ScaleToFill;
-    } else if (resizeMode === ImageResizeMode.contain) {
-      contentMode = contentModes.ScaleAspectFit;
-    } else { // ImageResizeMode.cover or undefined
-      contentMode = contentModes.ScaleAspectFill;
-    }
+    var resizeMode = this.props.resizeMode || style.resizeMode || 'cover';
 
     var nativeProps = merge(this.props, {
       style,
-      contentMode,
+      resizeMode,
       tintColor: style.tintColor,
     });
     if (isStored) {
@@ -187,7 +178,6 @@ var nativeOnlyProps = {
   src: true,
   defaultImageSrc: true,
   imageTag: true,
-  contentMode: true,
 };
 if (__DEV__) {
   verifyPropTypes(Image, RCTStaticImage.viewConfig, nativeOnlyProps);

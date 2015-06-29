@@ -11,7 +11,7 @@
 
 @interface RCTTabBarItem : UIView
 
-@property (nonatomic, copy) NSString *icon;
+@property (nonatomic, copy) id icon;
 @property (nonatomic, assign, getter=isSelected) BOOL selected;
 @property (nonatomic, readonly) UITabBarItem *barItem;
 

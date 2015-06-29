@@ -8,7 +8,7 @@ jest
   .mock('crypto')
   .mock('fs');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('AssetServer', function() {
   var AssetServer;
@@ -44,6 +44,32 @@ describe('AssetServer', function() {
         resp.forEach(function(data) {
           expect(data).toBe('b image');
         });
+      });
+    });
+
+    pit('should work for the simple case with jpg', function() {
+      var server = new AssetServer({
+        projectRoots: ['/root'],
+        assetExts: ['png', 'jpg'],
+      });
+
+      fs.__setMockFilesystem({
+        'root': {
+          imgs: {
+            'b.png': 'png image',
+            'b.jpg': 'jpeg image',
+          }
+        }
+      });
+
+      return Promise.all([
+        server.get('imgs/b.jpg'),
+        server.get('imgs/b.png'),
+      ]).then(function(data) {
+        expect(data).toEqual([
+          'jpeg image',
+          'png image',
+        ]);
       });
     });
 
@@ -130,6 +156,46 @@ describe('AssetServer', function() {
         expect(hash.update.mock.calls.length).toBe(4);
         expect(data).toEqual({
           type: 'png',
+          name: 'b',
+          scales: [1, 2, 4, 4.5],
+          hash: 'wow such hash',
+        });
+      });
+    });
+
+    pit('should get assetData for non-png images', function() {
+      var hash = {
+        update: jest.genMockFn(),
+        digest: jest.genMockFn(),
+      };
+
+      hash.digest.mockImpl(function() {
+        return 'wow such hash';
+      });
+      crypto.createHash.mockImpl(function() {
+        return hash;
+      });
+
+      var server = new AssetServer({
+        projectRoots: ['/root'],
+        assetExts: ['png', 'jpeg'],
+      });
+
+      fs.__setMockFilesystem({
+        'root': {
+          imgs: {
+            'b@1x.jpg': 'b1 image',
+            'b@2x.jpg': 'b2 image',
+            'b@4x.jpg': 'b4 image',
+            'b@4.5x.jpg': 'b4.5 image',
+          }
+        }
+      });
+
+      return server.getAssetData('imgs/b.jpg').then(function(data) {
+        expect(hash.update.mock.calls.length).toBe(4);
+        expect(data).toEqual({
+          type: 'jpg',
           name: 'b',
           scales: [1, 2, 4, 4.5],
           hash: 'wow such hash',

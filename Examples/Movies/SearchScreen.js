@@ -77,12 +77,14 @@ var SearchScreen = React.createClass({
     var apiKey = API_KEYS[this.state.queryNumber % API_KEYS.length];
     if (query) {
       return (
+        // $FlowFixMe(>=0.13.0) - pageNumber may be null or undefined
         API_URL + 'movies.json?apikey=' + apiKey + '&q=' +
         encodeURIComponent(query) + '&page_limit=20&page=' + pageNumber
       );
     } else {
       // With no query, load latest movies
       return (
+        // $FlowFixMe(>=0.13.0) - pageNumber may be null or undefined
         API_URL + 'lists/movies/in_theaters.json?apikey=' + apiKey +
         '&page_limit=20&page=' + pageNumber
       );
@@ -237,10 +239,31 @@ var SearchScreen = React.createClass({
     return <ActivityIndicatorIOS style={styles.scrollSpinner} />;
   },
 
-  renderRow: function(movie: Object)  {
+  renderSeparator: function(
+    sectionID: number | string,
+    rowID: number | string,
+    adjacentRowHighlighted: boolean
+  ) {
+    var style = styles.rowSeparator;
+    if (adjacentRowHighlighted) {
+        style = [style, styles.rowSeparatorHide];
+    }
+    return (
+      <View key={"SEP_" + sectionID + "_" + rowID}  style={style}/>
+    );
+  },
+
+  renderRow: function(
+    movie: Object,
+    sectionID: number | string,
+    rowID: number | string,
+    highlightRowFunc: (sectionID: ?number | string, rowID: ?number | string) => void,
+  ) {
     return (
       <MovieCell
         onSelect={() => this.selectMovie(movie)}
+        onHighlight={() => highlightRowFunc(sectionID, rowID)}
+        onUnhighlight={() => highlightRowFunc(null, null)}
         movie={movie}
       />
     );
@@ -254,12 +277,13 @@ var SearchScreen = React.createClass({
       /> :
       <ListView
         ref="listview"
+        renderSeparator={this.renderSeparator}
         dataSource={this.state.dataSource}
         renderFooter={this.renderFooter}
         renderRow={this.renderRow}
         onEndReached={this.onEndReached}
         automaticallyAdjustContentInsets={false}
-        keyboardDismissMode="onDrag"
+        keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps={true}
         showsVerticalScrollIndicator={false}
       />;
@@ -351,6 +375,14 @@ var styles = StyleSheet.create({
   },
   scrollSpinner: {
     marginVertical: 20,
+  },
+  rowSeparator: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    height: 1,
+    marginLeft: 4,
+  },
+  rowSeparatorHide: {
+    opacity: 0.0,
   },
 });
 

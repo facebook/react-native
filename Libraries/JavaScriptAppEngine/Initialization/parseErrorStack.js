@@ -28,6 +28,10 @@ function resolveSourceMaps(sourceMapInstance, stackFrame) {
 }
 
 function parseErrorStack(e, sourceMapInstance) {
+  if (!e || !e.stack) {
+    return [];
+  }
+
   var stack = stacktraceParser.parse(e.stack);
 
   var framesToPop = e.framesToPop || 0;

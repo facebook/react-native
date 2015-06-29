@@ -175,7 +175,7 @@ describe('resolveAssetSource', () => {
         isStatic: true,
         width: 100,
         height: 200,
-        uri: 'assets_awesomemodule_subdir_logo1_',
+        uri: 'awesomemodule_subdir_logo1_',
       });
     });
   });

@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule POPAnimation
- * @flow
  */
 'use strict';
 
@@ -17,7 +16,7 @@ if (!RCTPOPAnimationManager) {
   // workaround to enable its availability to be determined at runtime.
   // For Flow let's pretend like we always export POPAnimation
   // so all our users don't need to do null checks
-  module.exports = ((null: any): typeof POPAnimation);
+  module.exports = null;
 } else {
 
 var ReactPropTypes = require('ReactPropTypes');

@@ -12,7 +12,6 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
@@ -89,9 +88,11 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sizeSmall: {
+    width: 20,
     height: 20,
   },
   sizeLarge: {
+    width: 36,
     height: 36,
   }
 });

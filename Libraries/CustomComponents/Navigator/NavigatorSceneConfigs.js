@@ -213,7 +213,7 @@ var FromTheLeft = {
   translateX: {
     from: -SCREEN_WIDTH,
     to: 0,
-    min: 0, 
+    min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
@@ -313,14 +313,14 @@ var FromTheFrontAndroid = {
   opacity: {
     from: 0,
     to: 1,
-    min: 0,
+    min: 0.5,
     max: 1,
     type: 'linear',
     extrapolate: false,
     round: 100,
   },
   transformTranslate: {
-    from: {x: 0, y: 50, z: 0},
+    from: {x: 0, y: 100, z: 0},
     to: {x: 0, y: 0, z: 0},
     min: 0,
     max: 1,
@@ -329,7 +329,7 @@ var FromTheFrontAndroid = {
     round: PixelRatio.get(),
   },
   translateY: {
-    from: 50,
+    from: 100,
     to: 0,
     min: 0,
     max: 1,
@@ -432,6 +432,8 @@ var NavigatorSceneConfigs = {
   FloatFromBottomAndroid: {
     ...BaseConfig,
     gestures: null,
+    defaultTransitionVelocity: 3,
+    springFriction: 20,
     animationInterpolators: {
       into: buildStyleInterpolator(FromTheFrontAndroid),
       out: buildStyleInterpolator(ToTheBackAndroid),

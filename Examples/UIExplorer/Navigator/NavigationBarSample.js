@@ -92,6 +92,31 @@ function newRandomRoute() {
 
 var NavigationBarSample = React.createClass({
 
+  componentWillMount: function() {
+    var navigator = this.props.navigator;
+
+    var callback = (event) => {
+      console.log(
+        `NavigationBarSample : event ${event.type}`,
+        {
+          route: JSON.stringify(event.data.route),
+          target: event.target,
+          type: event.type,
+        }
+      );
+    };
+
+    // Observe focus change events from this component.
+    this._listeners = [
+      navigator.navigationContext.addListener('willfocus', callback),
+      navigator.navigationContext.addListener('didfocus', callback),
+    ];
+  },
+
+  componentWillUnmount: function() {
+    this._listeners && this._listeners.forEach(listener => listener.remove());
+  },
+
   render: function() {
     return (
       <Navigator
