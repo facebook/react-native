@@ -44,6 +44,16 @@ function getExample(componentName) {
   };
 }
 
+// Determines whether a component should have a link to a runnable example
+
+function isRunnable(componentName) {
+  if (componentName === 'AlertIOS') {
+    return true;
+  }
+
+  return false;
+}
+
 // Hide a component from the sidebar by making it return false from
 // this function
 function shouldDisplayInSidebar(componentName) {
@@ -99,6 +109,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'permalink: docs/' + slugify(componentName) + '.html',
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
+    'runnable:' + isRunnable(componentName),
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
