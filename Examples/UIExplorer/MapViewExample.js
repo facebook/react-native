@@ -208,6 +208,40 @@ var MapViewExample = React.createClass({
 
 });
 
+var MapViewTypeExample = React.createClass({
+  statics: {
+    mapTypes: ['standard', 'satellite', 'hybrid']
+  },
+
+  getInitialState() {
+    return { mapType: MapViewTypeExample.mapTypes[0] }
+  },
+
+  render() {
+    return (
+      <View>
+        <MapView style={styles.map} showsUserLocation={true} mapType={this.state.mapType} />
+        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center',}}>
+          {this._renderMapTypeButtons()}
+        </View>
+      </View>
+    )
+  },
+
+  _renderMapTypeButtons() {
+    return MapViewTypeExample.mapTypes.map((mapType) => {
+      return (
+        <View style={styles.changeButton} key={mapType}>
+          <Text onPress={() => this.setState({mapType})}>
+            {mapType}
+          </Text>
+        </View>
+      )
+    })
+  },
+});
+
+
 var styles = StyleSheet.create({
   map: {
     height: 150,
@@ -248,6 +282,12 @@ exports.examples = [
     title: 'Map shows user location',
     render() {
       return  <MapView style={styles.map} showsUserLocation={true} />;
+    }
+  },
+  {
+    title: 'Map types',
+    render() {
+      return  <MapViewTypeExample />;
     }
   }
 ];

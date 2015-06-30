@@ -84,14 +84,14 @@ var MapView = React.createClass({
 
     /**
      * The map type to be displayed.
-     * 
+     *
      * - standard: standard road map (default)
      * - satellite: satellite view
      * - hybrid: satellite view with roads and points of interest overlayed
      */
     mapType: React.PropTypes.oneOf([
-      'standard', 
-      'satellite', 
+      'standard',
+      'satellite',
       'hybrid',
     ]),
 
