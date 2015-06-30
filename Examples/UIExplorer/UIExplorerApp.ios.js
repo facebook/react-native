@@ -16,6 +16,8 @@
  */
 'use strict';
 
+require('regenerator/runtime');
+
 var React = require('react-native');
 var UIExplorerList = require('./UIExplorerList');
 var {

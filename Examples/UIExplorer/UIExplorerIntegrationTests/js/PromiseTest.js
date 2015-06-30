@@ -17,13 +17,18 @@ var PromiseTest = React.createClass({
 
   shouldResolve: false,
   shouldReject: false,
+  shouldSucceedAsync: false,
+  shouldThrowAsync: false,
 
   componentDidMount() {
     Promise.all([
       this.testShouldResolve(),
       this.testShouldReject(),
+      this.testShouldSucceedAsync(),
+      this.testShouldThrowAsync(),
     ]).then(() => RCTTestModule.markTestPassed(
-      this.shouldResolve && this.shouldReject
+      this.shouldResolve && this.shouldReject &&
+      this.shouldSucceedAsync && this.shouldThrowAsync
     ));
   },
 
@@ -39,6 +44,24 @@ var PromiseTest = React.createClass({
       .shouldReject()
       .then(() => this.shouldReject = false)
       .catch(() => this.shouldReject = true);
+  },
+
+  async testShouldSucceedAsync() {
+    try {
+      await RCTTestModule.shouldResolve();
+      this.shouldSucceedAsync = true;
+    } catch (e) {
+      this.shouldSucceedAsync = false;
+    }
+  },
+
+  async testShouldThrowAsync() {
+    try {
+      await RCTTestModule.shouldReject();
+      this.shouldThrowAsync = false;
+    } catch (e) {
+      this.shouldThrowAsync = true;
+    }
   },
 
   render() {
