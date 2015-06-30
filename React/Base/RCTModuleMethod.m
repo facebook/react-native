@@ -40,10 +40,12 @@
     static NSRegularExpression *typeRegex;
     static NSRegularExpression *selectorRegex;
     if (!typeRegex) {
-      NSString *unusedPattern = @"(?:(?:__unused|__attribute__\\(\\(unused\\)\\)))";
+      NSString *unusedPattern = @"(?:__unused|__attribute__\\(\\(unused\\)\\))";
       NSString *constPattern = @"(?:const)";
-      NSString *constUnusedPattern = [NSString stringWithFormat:@"(?:(?:%@|%@)\\s*)", unusedPattern, constPattern];
-      NSString *pattern = [NSString stringWithFormat:@"\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\)", constUnusedPattern];
+      NSString *nullabilityPattern = @"(?:__nullable|__nonnull|nullable|nonnull)";
+      NSString *annotationPattern = [NSString stringWithFormat:@"(?:(?:%@|%@|%@)\\s*)",
+                                     unusedPattern, constPattern, nullabilityPattern];
+      NSString *pattern = [NSString stringWithFormat:@"\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\)", annotationPattern];
       typeRegex = [[NSRegularExpression alloc] initWithPattern:pattern options:0 error:NULL];
 
       selectorRegex = [[NSRegularExpression alloc] initWithPattern:@"(?<=:).*?(?=[a-zA-Z_]+:|$)" options:0 error:NULL];
