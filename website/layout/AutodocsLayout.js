@@ -264,6 +264,20 @@ var APIDoc = React.createClass({
 });
 
 var HeaderWithGithub = React.createClass({
+
+  renderRunnableLink: function() {
+    if (this.props.metadata && this.props.metadata.runnable) {
+      return (
+        <a
+          className="run-example"
+          target="_blank"
+          href={'https://rnplay.org/apps/l3Zi2g?route='+this.props.metadata.title+'&file=' + this.props.metadata.title+ "Example.js"}>
+          Run this example
+        </a>
+      );
+    }
+  },
+
   render: function() {
     return (
       <H level={3} toSlug={this.props.title}>
@@ -272,6 +286,7 @@ var HeaderWithGithub = React.createClass({
           href={'https://github.com/facebook/react-native/blob/master/' + this.props.path}>
           Edit on GitHub
         </a>
+        {this.renderRunnableLink()}
         {this.props.title}
       </H>
     );
@@ -296,7 +311,7 @@ var Autodocs = React.createClass({
     );
   },
 
-  renderExample: function(docs) {
+  renderExample: function(docs, metadata) {
     if (!docs.example) {
       return;
     }
@@ -306,6 +321,7 @@ var Autodocs = React.createClass({
         <HeaderWithGithub
           title="Examples"
           path={docs.example.path}
+          metadata={metadata}
         />
         <Prism>
           {docs.example.content.replace(/^[\s\S]*?\*\//, '').trim()}
@@ -330,7 +346,7 @@ var Autodocs = React.createClass({
             <h1>{metadata.title}</h1>
             {content}
             {this.renderFullDescription(docs)}
-            {this.renderExample(docs)}
+            {this.renderExample(docs, metadata)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}
