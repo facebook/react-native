@@ -50,7 +50,7 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 Now, from your JavaScript file you can call the method like this:
 
 ```javascript
-var CalendarManager = require('NativeModules').CalendarManager;
+var CalendarManager = require('react-native').NativeModules.CalendarManager;
 CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 ```
 
