@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var babel = require('babel');
+var babel = require('babel-core');
 
 function transform(srcTxt, filename, options) {
   var result = babel.transform(srcTxt, {
