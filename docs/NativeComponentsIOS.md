@@ -294,7 +294,7 @@ Since all our native react views are subclasses of `UIView`, most style attribut
 ```javascript
 // DatePickerIOS.ios.js
 
-var RCTDatePickerIOSConsts = require('NativeModules').UIManager.RCTDatePicker.Constants;
+var RCTDatePickerIOSConsts = require('react-native').NativeModules.UIManager.RCTDatePicker.Constants;
 ...
   render: function() {
     return (
