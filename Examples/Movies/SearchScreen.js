@@ -26,6 +26,8 @@ var {
 } = React;
 var TimerMixin = require('react-timer-mixin');
 
+var invariant = require('invariant');
+
 var MovieCell = require('./MovieCell');
 var MovieScreen = require('./MovieScreen');
 
@@ -73,18 +75,16 @@ var SearchScreen = React.createClass({
     this.searchMovies('');
   },
 
-  _urlForQueryAndPage: function(query: string, pageNumber: ?number): string {
+  _urlForQueryAndPage: function(query: string, pageNumber: number): string {
     var apiKey = API_KEYS[this.state.queryNumber % API_KEYS.length];
     if (query) {
       return (
-        // $FlowFixMe(>=0.13.0) - pageNumber may be null or undefined
         API_URL + 'movies.json?apikey=' + apiKey + '&q=' +
         encodeURIComponent(query) + '&page_limit=20&page=' + pageNumber
       );
     } else {
       // With no query, load latest movies
       return (
-        // $FlowFixMe(>=0.13.0) - pageNumber may be null or undefined
         API_URL + 'lists/movies/in_theaters.json?apikey=' + apiKey +
         '&page_limit=20&page=' + pageNumber
       );
@@ -176,6 +176,7 @@ var SearchScreen = React.createClass({
     });
 
     var page = resultsCache.nextPageNumberForQuery[query];
+    invariant(page != null, 'Next page number for "%s" is missing', query);
     fetch(this._urlForQueryAndPage(query, page))
       .then((response) => response.json())
       .catch((error) => {
