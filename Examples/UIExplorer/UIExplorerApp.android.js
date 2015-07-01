@@ -17,14 +17,16 @@
 'use strict';
 
 var React = require('react-native');
-var Dimensions = require('Dimensions');
-var DrawerLayoutAndroid = require('DrawerLayoutAndroid');
-var ToolbarAndroid = require('ToolbarAndroid');
-var UIExplorerList = require('./UIExplorerList');
 var {
+  Dimensions,
   StyleSheet,
   View,
 } = React;
+var UIExplorerList = require('./UIExplorerList');
+
+// TODO: these should be exposed by the 'react-native' module.
+var DrawerLayoutAndroid = require('DrawerLayoutAndroid');
+var ToolbarAndroid = require('ToolbarAndroid');
 
 var DRAWER_WIDTH_LEFT = 56;
 

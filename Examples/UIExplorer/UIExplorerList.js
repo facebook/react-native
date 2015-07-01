@@ -21,6 +21,7 @@ var {
   ListView,
   PixelRatio,
   Platform,
+  Settings,
   StyleSheet,
   Text,
   TextInput,
@@ -29,7 +30,6 @@ var {
 } = React;
 
 var { TestModule } = React.addons;
-var Settings = require('Settings');
 
 import type { ExampleModule } from 'ExampleTypes';
 
