@@ -219,6 +219,9 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
       [_frameUpdateObservers addObject:moduleData];
     }
   }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules
+                                                      object:self];
 }
 
 - (void)initJS
