@@ -229,7 +229,7 @@ describe('JSTransformer Cache', function() {
         return Promise.resolve('baz value');
       });
 
-      jest.runAllImmediates();
+      jest.runAllTicks();
       expect(fs.writeFile).toBeCalled();
     });
   });
