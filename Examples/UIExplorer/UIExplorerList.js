@@ -21,6 +21,7 @@ var {
   ListView,
   PixelRatio,
   Platform,
+  Settings,
   StyleSheet,
   Text,
   TextInput,
@@ -29,13 +30,20 @@ var {
 } = React;
 
 var { TestModule } = React.addons;
-var Settings = require('Settings');
 
 import type { ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = require('./createExamplePage');
 
 var COMMON_COMPONENTS = [
+  require('./ImageExample'),
+  require('./ListViewExample'),
+  require('./ListViewPagingExample'),
+  require('./MapViewExample'),
+  require('./Navigator/NavigatorExample'),
+  require('./ScrollViewExample'),
+  require('./TextInputExample'),
+  require('./TouchableExample'),
   require('./ViewExample'),
   require('./WebViewExample'),
 ];
@@ -51,23 +59,15 @@ if (Platform.OS === 'ios') {
   var COMPONENTS = COMMON_COMPONENTS.concat([
     require('./ActivityIndicatorIOSExample'),
     require('./DatePickerIOSExample'),
-    require('./ImageExample'),
-    require('./ListViewExample'),
-    require('./ListViewPagingExample'),
-    require('./MapViewExample'),
-    require('./Navigator/NavigatorExample'),
     require('./NavigatorIOSColorsExample'),
     require('./NavigatorIOSExample'),
     require('./PickerIOSExample'),
     require('./ProgressViewIOSExample'),
-    require('./ScrollViewExample'),
     require('./SegmentedControlIOSExample'),
     require('./SliderIOSExample'),
     require('./SwitchIOSExample'),
     require('./TabBarIOSExample'),
     require('./TextExample.ios'),
-    require('./TextInputExample'),
-    require('./TouchableExample'),
   ]);
 
   var APIS = COMMON_APIS.concat([

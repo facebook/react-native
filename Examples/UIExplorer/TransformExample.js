@@ -6,12 +6,14 @@
 'use strict';
 
 var React = require('React');
+var {
+  StyleSheet,
+  View,
+} = React;
 
-var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
-var UIExplorerBlock = require('UIExplorerBlock');
-var UIExplorerPage = require('UIExplorerPage');
-var View = require('View');
+var UIExplorerBlock = require('./UIExplorerBlock');
+var UIExplorerPage = require('./UIExplorerPage');
 
 var TransformExample = React.createClass({
 

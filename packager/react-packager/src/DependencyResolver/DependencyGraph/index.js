@@ -29,6 +29,7 @@ const validateOpts = declareOpts({
   },
   ignoreFilePath: {
     type: 'function',
+
     default: function(){}
   },
   fileWatcher: {

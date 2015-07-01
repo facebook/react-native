@@ -20,6 +20,7 @@
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
+NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
 @class RCTBatchedBridge;
 
