@@ -299,10 +299,7 @@ var styles = StyleSheet.create({
   },
   searchRow: {
     backgroundColor: '#eeeeee',
-    paddingTop: 75,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
+    padding: 10,
   },
   searchTextInput: {
     backgroundColor: 'white',
