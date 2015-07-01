@@ -35,9 +35,9 @@ var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
 
+var isEmpty = require('isEmpty');
 var logError = require('logError');
 var merge = require('merge');
-var isEmpty = require('isEmpty');
 
 var PropTypes = React.PropTypes;
 
@@ -175,6 +175,13 @@ var ListView = React.createClass({
      */
     renderSectionHeader: PropTypes.func,
     /**
+     * (props) => renderable
+     *
+     * A function that returns the scrollable component in which the list rows
+     * are rendered. Defaults to returning a ScrollView with the given props.
+     */
+    renderScrollComponent: React.PropTypes.func.isRequired,
+    /**
      * How early to start rendering rows before they come on screen, in
      * pixels.
      */
@@ -229,6 +236,7 @@ var ListView = React.createClass({
     return {
       initialListSize: DEFAULT_INITIAL_ROWS,
       pageSize: DEFAULT_PAGE_SIZE,
+      renderScrollComponent: props => <ScrollView {...props} />,
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
     };
@@ -366,23 +374,24 @@ var ListView = React.createClass({
       }
     }
 
-    var props = merge(
-      this.props, {
-        onScroll: this._onScroll,
-        stickyHeaderIndices: sectionHeaderIndices,
-      }
-    );
+    var {
+      renderScrollComponent,
+      ...props,
+    } = this.props;
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
-    return (
-      <ScrollView {...props}
-        ref={SCROLLVIEW_REF}>
-        {header}
-        {bodyComponents}
-        {footer}
-      </ScrollView>
-    );
+    Object.assign(props, {
+      onScroll: this._onScroll,
+      stickyHeaderIndices: sectionHeaderIndices,
+      children: [header, bodyComponents, footer],
+    });
+
+    // TODO(ide): Use function refs so we can compose with the scroll
+    // component's original ref instead of clobbering it
+    return React.cloneElement(renderScrollComponent(props), {
+      ref: SCROLLVIEW_REF,
+    });
   },
 
   /**
