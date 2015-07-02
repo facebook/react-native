@@ -75,7 +75,7 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
           @autoreleasepool {
             ALAssetRepresentation *representation = [asset defaultRepresentation];
             ALAssetOrientation orientation = [representation orientation];
-            UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
+            UIImage *image = [UIImage imageWithCGImage:[asset thumbnail] scale:1.0f orientation:UIImageOrientationUp];
             RCTDispatchCallbackOnMainQueue(callback, nil, image);
           }
         });
