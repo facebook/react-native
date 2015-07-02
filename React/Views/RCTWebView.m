@@ -18,6 +18,13 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
+// Special scheme that allow JS to notify the WebView to emit
+// navigation event.
+//
+// JavaScript Example:
+//   window.location.href = 'react-js-navigation://hello'
+NSString *const RCTJSNavigationScheme = @"react-js-navigation";
+
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
 
 @end
@@ -26,6 +33,7 @@
 {
   RCTEventDispatcher *_eventDispatcher;
   UIWebView *_webView;
+  NSString *_injectedJavascriptIOS;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -118,6 +126,19 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   return _webView.backgroundColor;
 }
 
+- (void)setinjectedJavascriptIOS:(NSString *)jsStr
+{
+  if (_injectedJavascriptIOS == jsStr) {
+    return;
+  }
+
+  if ([_injectedJavascriptIOS isEqualToString:jsStr]) {
+    return;
+  }
+
+  _injectedJavascriptIOS = [jsStr copy];
+}
+
 - (NSMutableDictionary *)baseEvent
 {
   NSURL *url = _webView.request.URL;
@@ -136,7 +157,6 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 #pragma mark - UIWebViewDelegate methods
 
-static NSString *const RCTJSAJAXScheme = @"react-ajax";
 
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
@@ -152,8 +172,8 @@ static NSString *const RCTJSAJAXScheme = @"react-ajax";
     [_eventDispatcher sendInputEventWithName:@"topLoadingStart" body:event];
   }
 
-  // AJAX handler
-  return ![request.URL.scheme isEqualToString:RCTJSAJAXScheme];
+  // JS Navigation handler
+  return ![request.URL.scheme isEqualToString:RCTJSNavigationScheme];
 }
 
 - (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error
@@ -177,33 +197,8 @@ static NSString *const RCTJSAJAXScheme = @"react-ajax";
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-  if (_shouldInjectAJAXHandler) {
-
-    // From http://stackoverflow.com/questions/5353278/uiwebviewdelegate-not-monitoring-xmlhttprequest
-
-    [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"\
-      var s_ajaxListener = new Object();                       \n\
-      s_ajaxListener.tempOpen = XMLHttpRequest.prototype.open; \n\
-      s_ajaxListener.tempSend = XMLHttpRequest.prototype.send; \n\
-      s_ajaxListener.callback = function() {                   \n\
-        window.location.href = '%@://' + this.url;             \n\
-      }                                                        \n\
-      XMLHttpRequest.prototype.open = function(a,b) {          \n\
-        s_ajaxListener.tempOpen.apply(this, arguments);        \n\
-        s_ajaxListener.method = a;                             \n\
-        s_ajaxListener.url = b;                                \n\
-        if (a.toLowerCase() === 'get') {                       \n\
-          s_ajaxListener.data = (b.split('?'))[1];             \n\
-        }                                                      \n\
-      }                                                        \n\
-      XMLHttpRequest.prototype.send = function(a,b) {          \n\
-        s_ajaxListener.tempSend.apply(this, arguments);        \n\
-        if (s_ajaxListener.method.toLowerCase() === 'post') {  \n\
-          s_ajaxListener.data = a;                             \n\
-        }                                                      \n\
-        s_ajaxListener.callback();                             \n\
-      }                                                        \n\
-    ", RCTJSAJAXScheme]];
+  if (_injectedJavascriptIOS != nil) {
+    [webView stringByEvaluatingJavaScriptFromString:_injectedJavascriptIOS];
   }
 
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
