@@ -15,13 +15,13 @@ install:
   - cp $(brew --prefix nvm)/nvm-exec .nvm/
   - export NVM_DIR=.nvm
   - source $(brew --prefix nvm)/nvm.sh
-  - nvm install v0.10
+  - nvm install iojs-v2
   - npm config set spin=false
   - npm install
 
 script:
 - |
-  nvm use v0.10
+  nvm use iojs-v2
 
   if [ "$TEST_TYPE" = objc ]
   then

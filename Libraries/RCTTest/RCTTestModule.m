@@ -55,7 +55,7 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
   }];
 }
 
-RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(id)body)
+RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
 {
   [_bridge.eventDispatcher sendAppEventWithName:name body:body];
 }

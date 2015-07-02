@@ -14,7 +14,7 @@ typedef void (^RCTImageDownloadBlock)(UIImage *image, NSError *error);
 
 @interface RCTImageDownloader : NSObject
 
-+ (instancetype)sharedInstance;
++ (RCTImageDownloader *)sharedInstance;
 
 /**
  * Downloads a block of raw data and returns it. Note that the callback block

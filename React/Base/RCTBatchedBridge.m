@@ -219,6 +219,9 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
       [_frameUpdateObservers addObject:moduleData];
     }
   }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules
+                                                      object:self];
 }
 
 - (void)initJS
@@ -721,7 +724,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self.perfStats.jsGraph tick:displayLink.timestamp];
+    [self.perfStats.jsGraph onTick:displayLink.timestamp];
   });
 }
 
@@ -731,7 +734,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
 
-  [self.perfStats.uiGraph tick:displayLink.timestamp];
+  [self.perfStats.uiGraph onTick:displayLink.timestamp];
 }
 
 - (void)startProfiling

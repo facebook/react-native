@@ -8,6 +8,8 @@
  */
 'use strict';
 
+var path = require('path');
+
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
@@ -24,7 +26,7 @@ var platformBlacklists = {
   ios: [
     'node_modules/react-tools/src/browser/ui/React.js',
     'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
-    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
+    'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
     '.web.js',
     '.android.js',
   ],
@@ -32,14 +34,16 @@ var platformBlacklists = {
     'node_modules/react-tools/src/browser/ui/React.js',
     'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
     'node_modules/react-tools/src/browser/ReactTextComponent.js',
-    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
+    'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
     '.web.js',
     '.ios.js',
   ],
 };
 
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  var escaped = str.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  // convert the '/' into an escaped local file separator
+  return escaped.replace(/\//g,'\\' + path.sep);
 }
 
 function blacklist(platform, additionalBlacklist) {
