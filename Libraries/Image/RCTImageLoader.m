@@ -74,7 +74,6 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
           // doesn't spike the memory up during the process.
           @autoreleasepool {
             ALAssetRepresentation *representation = [asset defaultRepresentation];
-            ALAssetOrientation orientation = [representation orientation];
             UIImage *image = [UIImage imageWithCGImage:[asset thumbnail] scale:1.0f orientation:UIImageOrientationUp];
             RCTDispatchCallbackOnMainQueue(callback, nil, image);
           }
