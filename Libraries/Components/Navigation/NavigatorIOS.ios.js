@@ -13,6 +13,7 @@
 
 var EventEmitter = require('EventEmitter');
 var Image = require('Image');
+var NavigationContext = require('NavigationContext');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
@@ -309,6 +310,7 @@ var NavigatorIOS = React.createClass({
   },
 
   navigator: (undefined: ?Object),
+  navigationContext: new NavigationContext(),
 
   componentWillMount: function() {
     // Precompute a pack of callbacks that's frequently generated and passed to
@@ -323,7 +325,18 @@ var NavigatorIOS = React.createClass({
       resetTo: this.resetTo,
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
+      navigationContext: this.navigationContext,
     };
+    this._emitWillFocus(this.state.routeStack[this.state.observedTopOfStack]);
+  },
+
+  componentDidMount: function() {
+    this._emitDidFocus(this.state.routeStack[this.state.observedTopOfStack]);
+  },
+
+  componentWillUnmount: function() {
+    this.navigationContext.dispose();
+    this.navigationContext = new NavigationContext();
   },
 
   getInitialState: function(): State {
@@ -397,6 +410,8 @@ var NavigatorIOS = React.createClass({
 
   _handleNavigatorStackChanged: function(e: Event) {
     var newObservedTopOfStack = e.nativeEvent.stackLength - 1;
+    this._emitDidFocus(this.state.routeStack[newObservedTopOfStack]);
+
     invariant(
       newObservedTopOfStack <= this.state.requestedTopOfStack,
       'No navigator item should be pushed without JS knowing about it %s %s', newObservedTopOfStack, this.state.requestedTopOfStack
@@ -448,11 +463,21 @@ var NavigatorIOS = React.createClass({
     });
   },
 
+  _emitDidFocus: function(route: Route) {
+    this.navigationContext.emit('didfocus', {route: route});
+  },
+
+  _emitWillFocus: function(route: Route) {
+    this.navigationContext.emit('willfocus', {route: route});
+  },
+
   push: function(route: Route) {
     invariant(!!route, 'Must supply route to push');
     // Make sure all previous requests are caught up first. Otherwise reject.
     if (this.state.requestedTopOfStack === this.state.observedTopOfStack) {
       this._tryLockNavigator(() => {
+        this._emitWillFocus(route);
+
         var nextStack = this.state.routeStack.concat([route]);
         var nextIDStack = this.state.idStack.concat([getuid()]);
         this.setState({
@@ -476,12 +501,11 @@ var NavigatorIOS = React.createClass({
     if (this.state.requestedTopOfStack === this.state.observedTopOfStack) {
       if (this.state.requestedTopOfStack > 0) {
         this._tryLockNavigator(() => {
-          invariant(
-            this.state.requestedTopOfStack - n >= 0,
-            'Cannot pop below 0'
-          );
+          var newRequestedTopOfStack = this.state.requestedTopOfStack - n;
+          invariant(newRequestedTopOfStack >= 0, 'Cannot pop below 0');
+          this._emitWillFocus(this.state.routeStack[newRequestedTopOfStack]);
           this.setState({
-            requestedTopOfStack: this.state.requestedTopOfStack - n,
+            requestedTopOfStack: newRequestedTopOfStack,
             makingNavigatorRequest: true,
             // Not actually updating the indices yet until we get the native
             // `onNavigationComplete`.
@@ -525,6 +549,9 @@ var NavigatorIOS = React.createClass({
       makingNavigatorRequest: false,
       updatingAllIndicesAtOrBeyond: index,
     });
+
+    this._emitWillFocus(route);
+    this._emitDidFocus(route);
   },
 
   /**
@@ -659,7 +686,7 @@ var NavigatorIOS = React.createClass({
         {this.renderNavigationStackItems()}
       </View>
     );
-  }
+  },
 });
 
 var styles = StyleSheet.create({
