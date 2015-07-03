@@ -537,7 +537,9 @@ var TextInput = React.createClass({
   },
 
   _onPress: function(event: Event) {
-    this.focus();
+    if (this.props.editable || this.props.editable === undefined) {
+      this.focus();
+    }
   },
 
   _onChange: function(event: Event) {
