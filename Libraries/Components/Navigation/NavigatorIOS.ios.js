@@ -642,7 +642,7 @@ var NavigatorIOS = React.createClass({
           navigationBarHidden={this.props.navigationBarHidden}
           tintColor={this.props.tintColor}
           barTintColor={this.props.barTintColor}
-          translucent={this.props.translucent}
+          translucent={this.props.translucent !== false}
           titleTextColor={this.props.titleTextColor}>
           <Component
             navigator={this.navigator}
