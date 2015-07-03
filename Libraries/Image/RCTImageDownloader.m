@@ -90,9 +90,11 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
           runBlocks(NO, data, error);
         }
 
-        RCTImageDownloader *strongSelf = weakSelf;
-        NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
-        [strongSelf->_cache storeCachedResponse:cachedResponse forDataTask:task];
+        if (response) {
+          RCTImageDownloader *strongSelf = weakSelf;
+          NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
+          [strongSelf->_cache storeCachedResponse:cachedResponse forDataTask:task];
+        }
         task = nil;
       }];
 

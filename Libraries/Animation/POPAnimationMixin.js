@@ -120,7 +120,10 @@ var POPAnimationMixin = {
       }
       doneCallback && doneCallback(finished);
     };
-    POPAnimation.addAnimation(nodeHandle, animID, cleanupWrapper);
+    // Hack to aviod race condition. This delay should be imperceptible:
+    setTimeout(() => {
+      POPAnimation.addAnimation(nodeHandle, animID, cleanupWrapper);
+    }, 10);
   },
 
   /**
