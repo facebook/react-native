@@ -169,6 +169,30 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
     view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(backgroundImage, NSString, RCTView)
+{
+  if ([view respondsToSelector:@selector(setBackgroundImage:)]) {
+    view.backgroundImage = json ?: defaultView.backgroundImage;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(backgroundSize, CGSize, RCTView)
+{
+  if ([view respondsToSelector:@selector(setBackgroundSize:)]) {
+    view.backgroundSize = json ? [RCTConvert CGSize:json] : defaultView.backgroundSize;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(backgroundPosition, CGPoint, RCTView)
+{
+  if ([view respondsToSelector:@selector(setBackgroundPosition:)]) {
+    view.backgroundPosition = json ? [RCTConvert CGPoint:json] : defaultView.backgroundPosition;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(backgroundRepeat, RCTBackgroundRepeatType, RCTView)
+{
+  if ([view respondsToSelector:@selector(setBackgroundRepeat:)]) {
+    view.backgroundRepeat = json ? [RCTConvert RCTBackgroundRepeatType:json] : defaultView.backgroundRepeat;
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(onAccessibilityTap, BOOL, __unused RCTView)
 {
   view.accessibilityTapHandler = [self eventHandlerWithName:@"topAccessibilityTap" json:json];

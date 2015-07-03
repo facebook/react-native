@@ -1000,6 +1000,13 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   @"keyboard": @(RCTAnimationTypeKeyboard),
 }), RCTAnimationTypeEaseInEaseOut, integerValue)
 
+RCT_ENUM_CONVERTER(RCTBackgroundRepeatType, (@{
+  @"repeat": @(RCTBackgroundRepeatTypeRepeat),
+  @"repeat-x": @(RCTBackgroundRepeatTypeRepeatX),
+  @"repeat-y": @(RCTBackgroundRepeatTypeRepeatY),
+  @"no-repeat": @(RCTBackgroundRepeatTypeNoRepeat)
+}), RCTBackgroundRepeatTypeRepeat, integerValue)
+
 @end
 
 BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json)

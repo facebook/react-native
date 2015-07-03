@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTPointerEvents.h"
+#import "RCTBackgroundRepeatType.h"
 
 @protocol RCTAutoInsetsProtocol;
 
@@ -80,5 +81,13 @@ typedef void (^RCTViewEventHandler)(RCTView *view);
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
 @property (nonatomic, assign) CGFloat borderWidth;
+
+/**
+ * Background Image.
+ */
+@property (nonatomic, strong) NSString *backgroundImage;
+@property (nonatomic, assign) CGPoint backgroundPosition;
+@property (nonatomic, assign) CGSize backgroundSize;
+@property (nonatomic, assign) RCTBackgroundRepeatType backgroundRepeat;
 
 @end

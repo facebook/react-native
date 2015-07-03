@@ -108,6 +108,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   NSMutableArray *_reactSubviews;
   UIColor *_backgroundColor;
+  NSString *_backgroundImage;
+  CGPoint _backgroundPosition;
+  CGSize _backgroundSize;
+  RCTBackgroundRepeatType _backgroundRepeat;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -489,6 +493,11 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
   const RCTBorderColors borderColors = [self borderColors];
+  
+  const CGRect bgRect = CGRectMake(borderInsets.left, borderInsets.top,
+    self.bounds.size.width - borderInsets.left - borderInsets.right,
+    self.bounds.size.height - borderInsets.top - borderInsets.bottom);
+  UIImage *bgImage = [self drawBackground:bgRect];
 
   BOOL useIOSBorderRendering =
   !RCTRunningInTestEnvironment() &&
@@ -511,7 +520,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     layer.borderColor = borderColors.left;
     layer.borderWidth = borderInsets.left;
     layer.backgroundColor = _backgroundColor.CGColor;
-    layer.contents = nil;
+    layer.contents = (id)bgImage.CGImage ?: nil;
     layer.needsDisplayOnBoundsChange = NO;
     layer.mask = nil;
     return;
@@ -533,6 +542,15 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
       1.0 / size.height
     );
   });
+  
+  if(bgImage){
+    const CGSize size = self.bounds.size;
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+    [image drawInRect:self.bounds];
+    [bgImage drawAsPatternInRect:bgRect];
+    image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+  }
 
   if (RCTRunningInTestEnvironment()) {
     const CGSize size = self.bounds.size;
@@ -576,6 +594,75 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
 
   layer.cornerRadius = cornerRadius;
   layer.mask = mask;
+}
+
+- (UIImage *)drawBackground:(CGRect)bgRect
+{
+  if(!_backgroundImage) return nil;
+  
+  UIImage *bgImage = nil;
+  if([_backgroundImage hasPrefix:@"data:"]){
+    NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:_backgroundImage]];
+    bgImage = [UIImage imageWithData:imageData];
+  }else if([_backgroundImage isAbsolutePath]){
+    bgImage = [UIImage imageWithContentsOfFile:_backgroundImage];
+  }else{
+    bgImage = [UIImage imageNamed:_backgroundImage];
+    if(!bgImage){
+      bgImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:_backgroundImage ofType:nil]];
+    }
+  }
+  
+  UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, 0);
+  CGContextRef ctx = UIGraphicsGetCurrentContext();
+  CGColorSpaceRef patternSpace = CGColorSpaceCreatePattern(NULL);
+  CGContextSetFillColorSpace(ctx, patternSpace);
+  CGSize phase = CGSizeMake(bgRect.origin.x, bgRect.origin.y);
+  CGContextSetPatternPhase(ctx, phase);
+  
+  const CGRect rect = {.size = bgImage.size};
+  CGAffineTransform transform = CGAffineTransformMake(1, 0, 0, 1, _backgroundPosition.x, _backgroundPosition.y);
+  
+  CGFloat scaleX = 1;
+  CGFloat scaleY = 1;
+  if(!CGSizeEqualToSize(_backgroundSize, CGSizeZero)
+     && (_backgroundSize.width != rect.size.width
+         || _backgroundSize.height != rect.size.height)){
+       scaleX = _backgroundSize.width / rect.size.width;
+       scaleY = _backgroundSize.height / rect.size.height;
+       transform = CGAffineTransformScale(transform, scaleX, scaleY);
+     }
+  
+  CGFloat patternStepX = rect.size.width;
+  CGFloat patternStepY = rect.size.height;
+  if(_backgroundRepeat == RCTBackgroundRepeatTypeRepeatX){
+    patternStepY = self.bounds.size.height / scaleY;
+  }else if(_backgroundRepeat == RCTBackgroundRepeatTypeRepeatY){
+    patternStepX = self.bounds.size.width / scaleX;
+  }else if(_backgroundRepeat == RCTBackgroundRepeatTypeNoRepeat){
+    patternStepX = self.bounds.size.width / scaleX;
+    patternStepY = self.bounds.size.height / scaleY;
+  }
+  
+  static const CGPatternCallbacks callbacks = {0, &drawBackgroundPattern, NULL};
+  CGPatternRef pattern = CGPatternCreate(bgImage.CGImage, rect, transform,
+    patternStepX, patternStepY, kCGPatternTilingConstantSpacing, false, &callbacks);
+  const CGFloat alpha = 1.0;
+  CGContextSetFillPattern(ctx, pattern, &alpha);
+  CGContextFillRect(ctx, self.bounds);
+  
+  bgImage = UIGraphicsGetImageFromCurrentImageContext();
+  CGColorSpaceRelease(patternSpace);
+  CGPatternRelease(pattern);
+  UIGraphicsEndImageContext();
+  
+  return bgImage;
+}
+
+static void drawBackgroundPattern(void *info, CGContextRef ctx)
+{
+  CGImageRef image = (CGImageRef)info;
+  CGContextDrawImage(ctx, CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image)), image);
 }
 
 #pragma mark Border Color
@@ -629,5 +716,47 @@ setBorderRadius(TopLeft)
 setBorderRadius(TopRight)
 setBorderRadius(BottomLeft)
 setBorderRadius(BottomRight)
+
+#pragma mark - Background Image
+
+- (void)setBackgroundImage:(NSString *)backgroundImage
+{
+  if([_backgroundImage isEqualToString:backgroundImage]){
+    return;
+  }
+  
+  _backgroundImage = backgroundImage;
+  [self.layer setNeedsDisplay];
+}
+
+- (void)setBackgroundPosition:(CGPoint)backgroundPosition
+{
+  if(CGPointEqualToPoint(_backgroundPosition, backgroundPosition)){
+    return;
+  }
+  
+  _backgroundPosition = backgroundPosition;
+  [self.layer setNeedsDisplay];
+}
+
+- (void)setBackgroundSize:(CGSize)backgroundSize
+{
+  if(CGSizeEqualToSize(_backgroundSize, backgroundSize)){
+    return;
+  }
+  
+  _backgroundSize = backgroundSize;
+  [self.layer setNeedsDisplay];
+}
+
+- (void)setBackgroundRepeat:(RCTBackgroundRepeatType)backgroundRepeat
+{
+  if(_backgroundRepeat == backgroundRepeat){
+    return;
+  }
+  
+  _backgroundRepeat = backgroundRepeat;
+  [self.layer setNeedsDisplay];
+}
 
 @end
