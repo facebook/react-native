@@ -411,10 +411,8 @@ var TextInput = React.createClass({
   _renderIOS: function() {
     var textContainer;
 
-	  var props = {
-			...this.props,
-		  style: [styles.input, this.props.style]
-    };
+    var props = { ...this.props };
+    props.style = [styles.input, this.props.style];
 
     if (!props.multiline) {
       for (var propKey in onlyMultiline) {
