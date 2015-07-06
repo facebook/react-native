@@ -159,7 +159,7 @@ var Image = React.createClass({
       tintColor: style.tintColor,
     });
     if (isStored) {
-      if (this.props.source.assetThumbnail === true){
+      if (source.assetThumbnail && source.assetThumbnail === true){
         nativeProps.assetThumbnail = source.uri;
       }else{
         nativeProps.imageTag = source.uri;
