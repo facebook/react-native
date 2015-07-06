@@ -249,12 +249,12 @@ NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary
 
 BOOL RCTRunningInTestEnvironment(void)
 {
-  static BOOL _isTestEnvironment = NO;
+  static BOOL isTestEnvironment = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    _isTestEnvironment = (NSClassFromString(@"SenTestCase") != nil || NSClassFromString(@"XCTest") != nil);
+    isTestEnvironment = NSClassFromString(@"SenTestCase") || NSClassFromString(@"XCTest");
   });
-  return _isTestEnvironment;
+  return isTestEnvironment;
 }
 
 BOOL RCTImageHasAlpha(CGImageRef image)
