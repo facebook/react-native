@@ -58,11 +58,11 @@
 		580C37661AB104AF0015E709 = {
 			isa = PBXGroup;
 			children = (
+				58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */,
 				585135331AB3C56F00882537 /* RCTTestModule.h */,
 				585135341AB3C56F00882537 /* RCTTestModule.m */,
 				585135351AB3C56F00882537 /* RCTTestRunner.h */,
 				585135361AB3C56F00882537 /* RCTTestRunner.m */,
-				58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */,
 				580C37701AB104AF0015E709 /* Products */,
 			);
 			indentWidth = 2;
