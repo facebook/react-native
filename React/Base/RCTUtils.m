@@ -231,12 +231,11 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
 NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
 {
   if (toStringify) {
-    message = [NSString stringWithFormat:@"%@%@", message, toStringify];
+    message = [message stringByAppendingString:[toStringify description]];
   }
-  NSMutableDictionary *error = [@{@"message": message} mutableCopy];
-  if (extraData) {
-    [error addEntriesFromDictionary:extraData];
-  }
+
+  NSMutableDictionary *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
+  error[@"message"] = message;
   return error;
 }
 
