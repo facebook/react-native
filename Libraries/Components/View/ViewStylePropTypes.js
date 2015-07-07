@@ -41,6 +41,8 @@ var ViewStylePropTypes = {
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
+  bringSubviewToFront: ReactPropTypes.bool,
+  sendSubviewToBack: ReactPropTypes.bool,
 };
 
 module.exports = ViewStylePropTypes;
