@@ -53,7 +53,7 @@ var IntegrationTestsApp = React.createClass({
       <View style={styles.container}>
         <Text style={styles.row}>
           Click on a test to run it in this shell for easier debugging and
-          development.  Run all tests in the testing envirnment with cmd+U in
+          development.  Run all tests in the testing environment with cmd+U in
           Xcode.
         </Text>
         <View style={styles.separator} />
