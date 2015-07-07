@@ -78,7 +78,12 @@ NSString *RCTCurrentThreadName(void)
 #if DEBUG // This is DEBUG not RCT_DEBUG because it *really* must not ship in RC
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
+    const char *label = dispatch_queue_get_label(dispatch_get_current_queue());
+    if (label && strlen(label) > 0) {
+      threadName = @(label);
+    } else {
+      threadName = [NSString stringWithFormat:@"%p", thread];
+    }
 #pragma clang diagnostic pop
 #else
     threadName = [NSString stringWithFormat:@"%p", thread];
