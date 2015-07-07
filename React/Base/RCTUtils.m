@@ -177,12 +177,9 @@ void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
 
-  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
-  {
+  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
-  }
-  else
-  {
+  } else {
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
 }
@@ -197,12 +194,9 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement)
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
 
-  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
-  {
+  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
-  }
-  else
-  {
+  } else {
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
 }
@@ -216,10 +210,8 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
 {
   unsigned int numberOfMethods;
   Method *methods = class_copyMethodList(cls, &numberOfMethods);
-  for (unsigned int i = 0; i < numberOfMethods; i++)
-  {
-    if (method_getName(methods[i]) == selector)
-    {
+  for (unsigned int i = 0; i < numberOfMethods; i++) {
+    if (method_getName(methods[i]) == selector) {
       free(methods);
       return YES;
     }
