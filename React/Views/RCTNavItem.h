@@ -9,6 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class RCTNavItem;
+
+@protocol RCTNavItemListener <NSObject>
+
+-(void)update:(RCTNavItem *)itemNav;
+
+@end
+
 @interface RCTNavItem : UIView
 
 @property (nonatomic, copy) NSString *title;
@@ -27,5 +35,7 @@
 @property (nonatomic, readonly) UIBarButtonItem *backButtonItem;
 @property (nonatomic, readonly) UIBarButtonItem *leftButtonItem;
 @property (nonatomic, readonly) UIBarButtonItem *rightButtonItem;
+
+@property (nonatomic, weak) id<RCTNavItemListener> delegate;
 
 @end

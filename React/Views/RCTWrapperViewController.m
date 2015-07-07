@@ -77,26 +77,30 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     if (!_navItem) {
       return;
     }
-
-    UINavigationBar *bar = self.navigationController.navigationBar;
-    bar.barTintColor = _navItem.barTintColor;
-    bar.tintColor = _navItem.tintColor;
-    bar.translucent = _navItem.translucent;
-    if (_navItem.titleTextColor) {
-      [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
-    }
-
-    UINavigationItem *item = self.navigationItem;
-    item.title = _navItem.title;
-    item.backBarButtonItem = _navItem.backButtonItem;
-    if ((item.leftBarButtonItem = _navItem.leftButtonItem)) {
-      item.leftBarButtonItem.target = self;
-      item.leftBarButtonItem.action = @selector(handleNavLeftButtonTapped);
-    }
-    if ((item.rightBarButtonItem = _navItem.rightButtonItem)) {
-      item.rightBarButtonItem.target = self;
-      item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
-    }
+    [self update:_navItem];
+  }
+}
+-(void)update:(RCTNavItem *)navItem{
+  _navItem = navItem;
+  _navItem.delegate = self;
+  
+  UINavigationBar *bar = self.navigationController.navigationBar;
+  bar.barTintColor = _navItem.barTintColor;
+  bar.tintColor = _navItem.tintColor;
+  if (_navItem.titleTextColor) {
+    [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
+  }
+  
+  UINavigationItem *item = self.navigationItem;
+  item.title = _navItem.title;
+  item.backBarButtonItem = _navItem.backButtonItem;
+  if ((item.leftBarButtonItem = _navItem.leftButtonItem)) {
+    item.leftBarButtonItem.target = self;
+    item.leftBarButtonItem.action = @selector(handleNavLeftButtonTapped);
+  }
+  if ((item.rightBarButtonItem = _navItem.rightButtonItem)) {
+    item.rightBarButtonItem.target = self;
+    item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
   }
 }
 
