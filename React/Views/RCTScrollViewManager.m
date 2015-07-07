@@ -14,6 +14,10 @@
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
 
+@interface RCTScrollView (Private)
+- (NSArray *)calculateChildFramesData;
+@end
+
 @implementation RCTConvert (UIScrollView)
 
 RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
@@ -88,6 +92,25 @@ RCT_EXPORT_METHOD(getContentSize:(NSNumber *)reactTag
       @"width" : @(size.width),
       @"height" : @(size.height)
     }]);
+  }];
+}
+
+RCT_EXPORT_METHOD(calculateChildFrames:(NSNumber *)reactTag
+                    callback:(RCTResponseSenderBlock)callback)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+
+    UIView *view = viewRegistry[reactTag];
+    if (!view) {
+      RCTLogError(@"Cannot find view with tag #%@", reactTag);
+      return;
+    }
+
+    NSArray *childFrames = [((RCTScrollView *)view) calculateChildFramesData];
+
+    if (childFrames) {
+      callback(@[childFrames]);
+    }
   }];
 }
 
