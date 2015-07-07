@@ -105,13 +105,13 @@ RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
 RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
 RCT_CUSTOM_VIEW_PROPERTY(bringSubviewToFront, BOOL, RCTView)
 {
-  if(view.superview != nil && [RCTConvert BOOL:json]){
+  if (view.superview != nil && [RCTConvert BOOL:json]) {
     [view.superview bringSubviewToFront:view];
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(sendSubviewToBack, BOOL, RCTView)
 {
-  if(view.superview != nil && [RCTConvert BOOL:json]){
+  if (view.superview != nil && [RCTConvert BOOL:json]) {
     [view.superview sendSubviewToBack:view];
   }
 }
