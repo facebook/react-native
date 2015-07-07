@@ -161,7 +161,7 @@ var Image = React.createClass({
     if (isStored) {
       if (source.assetThumbnail && source.assetThumbnail === true){
         nativeProps.assetThumbnail = source.uri;
-      }else{
+      } else {
         nativeProps.imageTag = source.uri;
       }
     } else {
@@ -188,7 +188,7 @@ var nativeOnlyProps = {
   defaultImageSrc: true,
   imageTag: true,
   resizeMode: true,
-  assetThumbnail:true,
+  assetThumbnail: true,
 };
 if (__DEV__) {
   verifyPropTypes(Image, RCTStaticImage.viewConfig, nativeOnlyProps);

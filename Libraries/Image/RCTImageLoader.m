@@ -77,9 +77,9 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
             UIImage *image = nil;
             ALAssetRepresentation *representation = [asset defaultRepresentation];
             ALAssetOrientation orientation = [representation orientation];
-            if (!thumb){
+            if (!thumb) {
               image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
-            }else{
+            } else {
               image = [UIImage imageWithCGImage:[asset thumbnail]];
             }
             
