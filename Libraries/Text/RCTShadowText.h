@@ -8,6 +8,7 @@
  */
 
 #import "RCTShadowView.h"
+#import "RCTTextDecorationLineType.h"
 
 extern NSString *const RCTIsHighlightedAttributeName;
 extern NSString *const RCTReactTagAttributeName;
@@ -26,6 +27,9 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) CGSize shadowOffset;
 @property (nonatomic, assign) NSTextAlignment textAlign;
 @property (nonatomic, assign) NSWritingDirection writingDirection;
+@property (nonatomic, strong) UIColor *textDecorationColor;
+@property (nonatomic, assign) NSUnderlineStyle textDecorationStyle;
+@property (nonatomic, assign) RCTTextDecorationLineType textDecorationLine;
 
 - (void)recomputeText;
 
