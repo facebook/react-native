@@ -24,6 +24,18 @@ ReactNativeViewAttributes.UIView = {
   onLayout: true,
   onAccessibilityTap: true,
   onMagicTap: true,
+  collapsible: true,
+
+  // If any below are set, view should not be collapsible!
+  onMoveShouldSetResponder: true,
+  onResponderGrant: true,
+  onResponderMove: true,
+  onResponderReject: true,
+  onResponderRelease: true,
+  onResponderTerminate: true,
+  onResponderTerminationRequest: true,
+  onStartShouldSetResponder: true,
+  onStartShouldSetResponderCapture: true,
 };
 
 ReactNativeViewAttributes.RCTView = merge(

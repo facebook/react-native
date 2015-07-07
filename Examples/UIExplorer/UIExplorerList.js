@@ -50,6 +50,7 @@ var COMMON_COMPONENTS = [
 ];
 
 var COMMON_APIS = [
+  require('./AnimationExample/AnExApp'),
   require('./GeolocationExample'),
   require('./LayoutExample'),
   require('./PanResponderExample'),
