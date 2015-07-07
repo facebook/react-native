@@ -212,6 +212,7 @@ var styles = StyleSheet.create({
     width: 64,
     height: 64,
     marginHorizontal: 10,
+    backgroundColor: 'transparent',
   },
   section: {
     flexDirection: 'column',
