@@ -337,6 +337,44 @@ BOOL RCTRunningInTestEnvironment(void)
   return isTestEnvironment;
 }
 
+BOOL RCTRunningInAppExtension(void)
+{
+  return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+}
+
+id RCTSharedApplication(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+  
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles)
+{
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
+    return nil;
+  }
+  
+  UIAlertView *alertView = [UIAlertView alloc];
+  
+  NSInvocation *initInvocation = [NSInvocation invocationWithMethodSignature:
+                                  [alertView methodSignatureForSelector:
+                                   @selector(initWithTitle:message:delegate:cancelButtonTitle:otherButtonTitles:)]];
+  [initInvocation setTarget:alertView];
+  [initInvocation setSelector:@selector(initWithTitle:message:delegate:cancelButtonTitle:otherButtonTitles:)];
+  [initInvocation setArgument:&title atIndex:2];
+  [initInvocation setArgument:&message atIndex:3];
+  [initInvocation setArgument:&delegate atIndex:4];
+  [initInvocation setArgument:&cancelButtonTitle atIndex:5];
+  [initInvocation setArgument:&otherButtonTitles atIndex:6];
+  [initInvocation invoke];
+  [initInvocation getReturnValue:&alertView];
+  return alertView;
+}
+
 BOOL RCTImageHasAlpha(CGImageRef image)
 {
   switch (CGImageGetAlphaInfo(image)) {
