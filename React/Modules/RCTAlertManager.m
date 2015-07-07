@@ -72,7 +72,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
   
   if (RCTRunningInAppExtension()) {
-    RCTLogError(@"RCTAlertManager is unavailable when running in an app extension");
     return;
   }
   
