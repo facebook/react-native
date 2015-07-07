@@ -14,6 +14,12 @@
 @synthesize backButtonItem = _backButtonItem;
 @synthesize leftButtonItem = _leftButtonItem;
 @synthesize rightButtonItem = _rightButtonItem;
+@synthesize navigationBarTransparent = _navigationBarTransparent;
+
+- (void)setNavigationBarTransparent:(BOOL)transparent{
+  _navigationBarTransparent = transparent;
+  [self.delegate update:self];
+}
 
 - (void)setBackButtonTitle:(NSString *)backButtonTitle
 {

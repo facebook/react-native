@@ -88,6 +88,11 @@ var NavigatorIOSExample = React.createClass({
               this.props.navigator.updateNavBar({rightButtonTitle:null});
             }});
           })}
+          {this._renderRow('Transparant navBar', () => {
+            this.props.navigator.updateNavBar({rightButtonTitle:"Reset",navigationBarTransparent:true,onRightButtonPress:()=>{
+              this.props.navigator.updateNavBar({navigationBarTransparent:false,rightButtonTitle:null,onRightButtonPress:null});
+            }});
+          })}
           {this._renderRow('Custom Right Button', () => {
             this.props.navigator.push({
               title: NavigatorIOSExample.title,

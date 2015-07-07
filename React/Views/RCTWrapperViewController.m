@@ -24,6 +24,7 @@
   RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayout;
   CGFloat _previousBottomLayout;
+  BOOL    translusante;
 }
 
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
@@ -63,6 +64,10 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   _currentBottomLayoutGuide = self.bottomLayoutGuide;
 }
 
+-(void)viewDidLoad{
+  [super viewDidLoad];
+  translusante = self.navigationController.navigationBar.translucent;
+}
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
@@ -77,10 +82,32 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     if (!_navItem) {
       return;
     }
-    [self update:_navItem];
+    [self update:_navItem animated:animated];
   }
 }
--(void)update:(RCTNavItem *)navItem{
+-(void)update:(RCTNavItem *)navItem {
+  [self update:navItem animated:NO];
+}
+-(void)update:(RCTNavItem *)navItem animated:(BOOL)animated{
+  if (!_navItem) {
+    return;
+  }
+  
+  if (_navItem.navigationBarTransparent) {
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTranslucent:YES];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+  }else{
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTranslucent:translusante];
+    [self.navigationController.navigationBar setShadowImage:nil];
+  }
+  
+  [self.navigationController
+   setNavigationBarHidden:_navItem.navigationBarHidden
+   animated:animated];
+  
+  
   _navItem = navItem;
   _navItem.delegate = self;
   
@@ -103,7 +130,6 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
   }
 }
-
 - (void)loadView
 {
   // Add a wrapper so that the wrapper view managed by the

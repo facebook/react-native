@@ -60,6 +60,7 @@ var RCTNavigatorItem = createReactNativeComponentClass({
     tintColor: true,
     translucent: true,
     navigationBarHidden: true,
+    navigationBarTransparent: true,
     titleTextColor: true,
     style: true,
   },
@@ -94,6 +95,8 @@ type Route = {
   rightButtonTitle?: string;
   rightButtonIcon?: Object;
   onRightButtonPress?: Function;
+  navigationBarHidden?: Boolean;
+  navigationBarTransparent?: Boolean;
   wrapperStyle?: any;
 };
 
@@ -281,6 +284,11 @@ var NavigatorIOS = React.createClass({
      * A Boolean value that indicates whether the navigation bar is hidden
      */
     navigationBarHidden: PropTypes.bool,
+
+    /**
+     * A Boolean value that indicates whether the navigation bar is totaly transparent
+     */
+    navigationBarTransparent: PropTypes.bool,
 
     /**
      * The default wrapper style for components in the navigator.
@@ -635,7 +643,9 @@ var NavigatorIOS = React.createClass({
     var Component = route.component;
     var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
       this.state.updatingAllIndicesAtOrBeyond >= i || this.state.navBarReload;
-
+    var navigationBarHidden = route.navigationBarHidden !== undefined ? route.navigationBarHidden : this.props.navigationBarHidden;
+    var navigationBarTransparent = route.navigationBarTransparent !== undefined ? route.navigationBarTransparent : this.props.navigationBarTransparent;
+    
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
@@ -653,7 +663,8 @@ var NavigatorIOS = React.createClass({
           rightButtonIcon={this._imageNameFromSource(route.rightButtonIcon)}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
-          navigationBarHidden={this.props.navigationBarHidden}
+          navigationBarHidden={navigationBarHidden}
+          navigationBarTransparent={navigationBarTransparent}
           tintColor={this.props.tintColor}
           barTintColor={this.props.barTintColor}
           translucent={this.props.translucent !== false}
