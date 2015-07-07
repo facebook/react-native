@@ -256,9 +256,9 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
-var { DeviceEventEmitter } = require('react-native');
+var { NativeAppEventEmitter } = require('react-native');
 
-var subscription = DeviceEventEmitter.addListener(
+var subscription = NativeAppEventEmitter.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
 );
