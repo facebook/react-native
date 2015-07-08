@@ -98,9 +98,9 @@ var WebView = React.createClass({
      */
     javaScriptEnabledAndroid: PropTypes.bool,
     /**
-     * Used for iOS only, sets the JS to be injected when the webpage loads.
+     * Sets the JS to be injected when the webpage loads.
      */
-    injectedJavascriptIOS: PropTypes.string,
+    injectedJavaScript: PropTypes.string,
 
     /**
      * Used for iOS only, sets whether the webpage scales to fit the view and the
@@ -159,7 +159,7 @@ var WebView = React.createClass({
         style={webViewStyles}
         url={this.props.url}
         html={this.props.html}
-        injectedJavascriptIOS={this.props.injectedJavascriptIOS}
+        injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
         contentInset={this.props.contentInset}
@@ -179,15 +179,15 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTWebViewManager.goForward(this.getWebWiewHandle());
+    RCTWebViewManager.goForward(this.getWebViewHandle());
   },
 
   goBack: function() {
-    RCTWebViewManager.goBack(this.getWebWiewHandle());
+    RCTWebViewManager.goBack(this.getWebViewHandle());
   },
 
   reload: function() {
-    RCTWebViewManager.reload(this.getWebWiewHandle());
+    RCTWebViewManager.reload(this.getWebViewHandle());
   },
 
   /**
@@ -200,7 +200,7 @@ var WebView = React.createClass({
     }
   },
 
-  getWebWiewHandle: function(): any {
+  getWebViewHandle: function(): any {
     return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
