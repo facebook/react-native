@@ -241,6 +241,7 @@
 		83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTouchHandler.m; sourceTree = "<group>"; };
 		83CBBACA1A6023D300E9B192 /* RCTConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTConvert.h; sourceTree = "<group>"; };
 		83CBBACB1A6023D300E9B192 /* RCTConvert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert.m; sourceTree = "<group>"; };
+		C7D194FB1B463BDD00A057CD /* RCTBackgroundRepeatType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBackgroundRepeatType.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -423,6 +424,7 @@
 				830213F31A654E0800B993E6 /* RCTBridgeModule.h */,
 				83CBBACA1A6023D300E9B192 /* RCTConvert.h */,
 				83CBBACB1A6023D300E9B192 /* RCTConvert.m */,
+				C7D194FB1B463BDD00A057CD /* RCTBackgroundRepeatType.h */,
 				13AF1F851AE6E777005F5298 /* RCTDefines.h */,
 				00C1A2B11AC0B7E000E89A1C /* RCTDevMenu.h */,
 				00C1A2B21AC0B7E000E89A1C /* RCTDevMenu.m */,

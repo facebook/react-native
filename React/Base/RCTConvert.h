@@ -15,6 +15,7 @@
 #import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
+#import "RCTBackgroundRepeatType.h"
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -126,6 +127,7 @@ typedef BOOL css_clip_t;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
++ (RCTBackgroundRepeatType)RCTBackgroundRepeatType:(id)json;
 
 @end
 

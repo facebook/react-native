@@ -79,6 +79,7 @@ if (Platform.OS === 'ios') {
     require('./AppStateIOSExample'),
     require('./AsyncStorageExample'),
     require('./BorderExample'),
+    require('./BackgroundImageExample'),
     require('./CameraRollExample.ios'),
     require('./LayoutEventsExample'),
     require('./NetInfoExample'),

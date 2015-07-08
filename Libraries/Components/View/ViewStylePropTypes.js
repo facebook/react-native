@@ -22,6 +22,16 @@ var ViewStylePropTypes = {
   ...LayoutPropTypes,
   ...TransformPropTypes,
   backgroundColor: ReactPropTypes.string,
+  backgroundImage: ReactPropTypes.string,
+  backgroundPosition: ReactPropTypes.shape(
+    {x: ReactPropTypes.number, y: ReactPropTypes.number}
+  ),
+  backgroundSize: ReactPropTypes.shape(
+    {width: ReactPropTypes.number, height: ReactPropTypes.number}
+  ),
+  backgroundRepeat: ReactPropTypes.oneOf(
+    ['repeat', 'repeat-x', 'repeat-y', 'no-repeat']
+  ),
   borderColor: ReactPropTypes.string,
   borderTopColor: ReactPropTypes.string,
   borderRightColor: ReactPropTypes.string,
