@@ -63,16 +63,22 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
   shape.leftCalloutConfig = [RCTConvert NSDictionary:json[@"leftCallout"][@"config"]];
   shape.rightCalloutConfig = [RCTConvert NSDictionary:json[@"rightCallout"][@"config"]];
   
-  shape.hasLeftCallout = [RCTConvert BOOL:json[@"leftCallout"][@"enabled"]];
-  shape.hasRightCallout = [RCTConvert BOOL:json[@"rightCallout"][@"enabled"]];
+  shape.hasLeftCallout = false;
+  if ([[RCTConvert NSDictionary:json[@"leftCallout"]] count] > 0) {
+    shape.hasLeftCallout = true;
+  }
+
+  shape.hasRightCallout = false;
+  if ([[RCTConvert NSDictionary:json[@"rightCallout"]] count] > 0) {
+    shape.hasRightCallout = true;
+  }
 
   shape.leftCalloutType = RCTPointAnnotationTypeButton;
-  shape.rightCalloutType = RCTPointAnnotationTypeButton;
-  
   if ([[RCTConvert NSString:json[@"leftCallout"][@"type"]] isEqual: @"image"]) {
     shape.leftCalloutType = RCTPointAnnotationTypeImage;
   }
 
+  shape.rightCalloutType = RCTPointAnnotationTypeButton;
   if ([[RCTConvert NSString:json[@"rightCallout"][@"type"]] isEqual: @"image"]) {
     shape.rightCalloutType = RCTPointAnnotationTypeImage;
   }
