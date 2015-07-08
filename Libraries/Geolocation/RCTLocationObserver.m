@@ -253,6 +253,13 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 {
   // Create event
   CLLocation *location = [locations lastObject];
+  if (_lastLocationEvent &&
+        _locationManager.desiredAccuracy == 100.0){
+  if([_lastLocationEvent[@"coords"][@"latitude"] doubleValue] != location.coordinate.latitude || [_lastLocationEvent[@"coords"][@"longitude"] doubleValue] != location.coordinate.longitude){
+    _observingLocation=YES;
+  }
+  }
+  
   _lastLocationEvent = @{
     @"coords": @{
       @"latitude": @(location.coordinate.latitude),
@@ -280,12 +287,9 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   [_pendingRequests removeAllObjects];
 
   // Stop updating if not not observing
-  if (!_observingLocation) {
+  if (!!_observingLocation) {
     [_locationManager stopUpdatingLocation];
   }
-
-  // Reset location accuracy
-  _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
