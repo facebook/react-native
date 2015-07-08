@@ -11,7 +11,14 @@
  */
 'use strict';
 
-var invariant = require('invariant');
+// TODO(#7644673): fix this hack once github jest actually checks invariants
+var invariant = function(condition, message) {
+  if (!condition) {
+    var error = new Error(message);
+    (error: any).framesToPop = 1; // $FlowIssue
+    throw error;
+  }
+};
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
