@@ -279,6 +279,32 @@ describe('Animated Parallel', () => {
   });
 });
 
+describe('Animated delays', () => {
+  it('should call anim after delay in sequence', () => {
+    var anim = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
+    var cb = jest.genMockFunction();
+    Animated.sequence([
+      Animated.delay(1000),
+      anim,
+    ]).start(cb);
+    jest.runAllTimers();
+    expect(anim.start.mock.calls.length).toBe(1);
+    expect(cb).not.toBeCalled();
+    anim.start.mock.calls[0][0]({finished: true});
+    expect(cb).toBeCalledWith({finished: true});
+  });
+  it('should run stagger to end', () => {
+    var cb = jest.genMockFunction();
+    Animated.stagger(1000, [
+      Animated.delay(1000),
+      Animated.delay(1000),
+      Animated.delay(1000),
+    ]).start(cb);
+    jest.runAllTimers();
+    expect(cb).toBeCalledWith({finished: true});
+  });
+});
+
 describe('Animated Events', () => {
   it('should map events', () => {
     var value = new Animated.Value(0);

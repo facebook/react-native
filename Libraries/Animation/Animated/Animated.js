@@ -172,6 +172,7 @@ class TimingAnimation extends Animation {
     var start = () => {
       if (this._duration === 0) {
         this._onUpdate(this._toValue);
+        this.__debouncedOnEnd({finished: true});
       } else {
         this._startTime = Date.now();
         this._animationFrame = window.requestAnimationFrame(this.onUpdate.bind(this));
