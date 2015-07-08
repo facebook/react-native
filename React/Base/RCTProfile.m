@@ -144,13 +144,16 @@ static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
   return imp;
 }
 
-static void RCTProfileHookModules(RCTBridge *);
-static void RCTProfileHookModules(RCTBridge *bridge)
+void RCTProfileHookModules(RCTBridge *bridge)
 {
   for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
     [moduleData dispatchBlock:^{
       Class moduleClass = moduleData.cls;
       Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
+
+      if (!proxyClass) {
+        return;
+      }
 
       unsigned int methodCount;
       Method *methods = class_copyMethodList(moduleClass, &methodCount);
@@ -185,7 +188,6 @@ static void RCTProfileHookModules(RCTBridge *bridge)
   }
 }
 
-void RCTProfileUnhookModules(RCTBridge *);
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
   for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
