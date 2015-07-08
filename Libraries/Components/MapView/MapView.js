@@ -171,11 +171,6 @@ var MapView = React.createClass({
       rightCallout: React.PropTypes.arrayOf(React.PropTypes.shape({
 
         /**
-         * Bool, whether the callout is enabled or not
-         */
-        enabled: React.PropTypes.bool,
-
-        /**
          * Type of the callout. If image, set src in config
          */
         type: React.PropTypes.oneOf([
@@ -205,11 +200,6 @@ var MapView = React.createClass({
        * Left callout
        */
       leftCallout: React.PropTypes.arrayOf(React.PropTypes.shape({
-
-        /**
-         * Bool, whether the callout is enabled or not
-         */
-        enabled: React.PropTypes.bool,
 
         /**
          * Type of the callout. If image, set src in config
