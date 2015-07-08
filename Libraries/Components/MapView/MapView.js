@@ -168,11 +168,13 @@ var MapView = React.createClass({
       /**
        * Right callout
        */
-      rightCallout: {
+      rightCallout: React.PropTypes.arrayOf(React.PropTypes.shape({
+
         /**
          * Bool, whether the callout is enabled or not
          */
         enabled: React.PropTypes.bool,
+
         /**
          * Type of the callout. If image, set src in config
          */
@@ -180,30 +182,35 @@ var MapView = React.createClass({
           'button',
           'image'
         ]),
+
         /**
          * Callback for when the accessory is clicked
          * Currently only works on button and not image
          */
         onPress: React.PropTypes.func,
+
         /**
          * Additional config parameters to pass to the callout. 
          */
-        config: {
+        config: React.PropTypes.arrayOf(React.PropTypes.shape({
+
           /**
            * Is being used when type == image. use the same input as for Image
            */
           src: React.PropTypes.string
-        }
-      },
+        }))
+      })),
 
       /**
        * Left callout
        */
-      leftCallout: {
+      leftCallout: React.PropTypes.arrayOf(React.PropTypes.shape({
+
         /**
          * Bool, whether the callout is enabled or not
          */
         enabled: React.PropTypes.bool,
+
         /**
          * Type of the callout. If image, set src in config
          */
@@ -211,21 +218,24 @@ var MapView = React.createClass({
           'button',
           'image'
         ]),
+
         /**
          * Callback for when the accessory is clicked
          * Currently only works on button and not image
          */
         onPress: React.PropTypes.func,
+
         /**
          * Additional config parameters to pass to the callout. 
          */
-        config: {
+        config: React.PropTypes.arrayOf(React.PropTypes.shape({
+
           /**
            * Is being used when type == image. use the same input as for Image
            */
           src: React.PropTypes.string
-        }
-      },
+        }))
+      })),
 
       /**
        * annotation id
