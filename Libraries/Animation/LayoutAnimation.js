@@ -87,37 +87,42 @@ function create(duration: number, type, creationProp): Config {
   };
 }
 
+var Presets = {
+  easeInEaseOut: create(
+    300, Types.easeInEaseOut, Properties.opacity
+  ),
+  linear: create(
+    500, Types.linear, Properties.opacity
+  ),
+  spring: {
+    duration: 700,
+    create: {
+      type: Types.linear,
+      property: Properties.opacity,
+    },
+    update: {
+      type: Types.spring,
+      springDamping: 0.4,
+    },
+  },
+};
+
 var LayoutAnimation = {
   configureNext,
   create,
   Types,
   Properties,
   configChecker: configChecker,
-  Presets: {
-    easeInEaseOut: create(
-      300, Types.easeInEaseOut, Properties.opacity
-    ),
-    linear: create(
-      500, Types.linear, Properties.opacity
-    ),
-    spring: {
-      duration: 700,
-      create: {
-        type: Types.linear,
-        property: Properties.opacity,
-      },
-      update: {
-        type: Types.spring,
-        springDamping: 0.4,
-      },
-    },
-  }
+  Presets,
+  easeInEaseOut: configureNext.bind(
+    null, Presets.easeInEaseOut
+  ),
+  linear: configureNext.bind(
+    null, Presets.linear
+  ),
+  spring: configureNext.bind(
+    null, Presets.spring
+  ),
 };
-
-for (var key in LayoutAnimation.Presets) {
-  LayoutAnimation[key] = LayoutAnimation.configureNext.bind(
-    null, LayoutAnimation.Presets[key]
-  );
-}
 
 module.exports = LayoutAnimation;

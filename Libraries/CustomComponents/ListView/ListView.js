@@ -29,6 +29,7 @@
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
 var RCTUIManager = require('NativeModules').UIManager;
+var RKScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
@@ -400,6 +401,13 @@ var ListView = React.createClass({
       logError,
       this._setScrollVisibleHeight
     );
+
+    // RKScrollViewManager.calculateChildFrames not available on every platform
+    RKScrollViewManager && RKScrollViewManager.calculateChildFrames &&
+      RKScrollViewManager.calculateChildFrames(
+        React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
+        this._updateChildFrames,
+      );
   },
 
   _setScrollContentHeight: function(left, top, width, height) {
@@ -410,6 +418,10 @@ var ListView = React.createClass({
     this.scrollProperties.visibleHeight = height;
     this._updateVisibleRows();
     this._renderMoreRowsIfNeeded();
+  },
+
+  _updateChildFrames: function(childFrames) {
+    this._updateVisibleRows(childFrames);
   },
 
   _renderMoreRowsIfNeeded: function() {
@@ -449,11 +461,10 @@ var ListView = React.createClass({
       scrollProperties.offsetY;
   },
 
-  _updateVisibleRows: function(e) {
+  _updateVisibleRows: function(updatedFrames) {
     if (!this.props.onChangeVisibleRows) {
       return; // No need to compute visible rows if there is no callback
     }
-    var updatedFrames = e && e.nativeEvent.updatedChildFrames;
     if (updatedFrames) {
       updatedFrames.forEach((newFrame) => {
         this._childFrames[newFrame.index] = merge(newFrame);
@@ -522,7 +533,7 @@ var ListView = React.createClass({
     this.scrollProperties.visibleHeight = e.nativeEvent.layoutMeasurement.height;
     this.scrollProperties.contentHeight = e.nativeEvent.contentSize.height;
     this.scrollProperties.offsetY = e.nativeEvent.contentOffset.y;
-    this._updateVisibleRows(e);
+    this._updateVisibleRows(e.nativeEvent.updatedChildFrames);
     var nearEnd = this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold;
     if (nearEnd &&
         this.props.onEndReached &&
