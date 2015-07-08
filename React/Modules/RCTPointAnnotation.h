@@ -9,11 +9,24 @@
 
 #import <MapKit/MapKit.h>
 
+typedef enum{
+  RCTPointAnnotationTypeButton,
+  RCTPointAnnotationTypeImage
+} RCTPointAnnotationCalloutType;
+
 @interface RCTPointAnnotation : MKPointAnnotation <MKAnnotation>
 
 @property (nonatomic, copy) NSString *identifier;
+
 @property (nonatomic, assign) BOOL hasLeftCallout;
 @property (nonatomic, assign) BOOL hasRightCallout;
+
+@property (nonatomic, assign) RCTPointAnnotationCalloutType leftCalloutType;
+@property (nonatomic, assign) RCTPointAnnotationCalloutType rightCalloutType;
+
+@property (nonatomic, copy) NSDictionary *rightCalloutConfig;
+@property (nonatomic, copy) NSDictionary *leftCalloutConfig;
+
 @property (nonatomic, assign) BOOL animateDrop;
 
 @end

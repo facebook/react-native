@@ -23,6 +23,7 @@ var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 type Event = Object;
 type MapRegion = {
@@ -50,7 +51,6 @@ var MapView = React.createClass({
       annotations: newAnnotations
     });
   },
-
   componentWillMount: function() {
     if (this.props.annotations) {
       this.checkAnnotationIds(this.props.annotations);
@@ -141,7 +141,7 @@ var MapView = React.createClass({
        * to be displayed.
        */
       latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
+      longitudeDelta: React.PropTypes.number.isRequired
     }),
 
     /**
@@ -166,16 +166,66 @@ var MapView = React.createClass({
       subtitle: React.PropTypes.string,
 
       /**
-       * Whether the Annotation has callout buttons.
+       * Right callout
        */
-      hasLeftCallout: React.PropTypes.bool,
-      hasRightCallout: React.PropTypes.bool,
+      rightCallout: {
+        /**
+         * Bool, whether the callout is enabled or not
+         */
+        enabled: React.PropTypes.bool,
+        /**
+         * Type of the callout. If image, set src in config
+         */
+        type: React.PropTypes.oneOf([
+          'button',
+          'image'
+        ]),
+        /**
+         * Callback for when the accessory is clicked
+         * Currently only works on button and not image
+         */
+        onPress: React.PropTypes.func,
+        /**
+         * Additional config parameters to pass to the callout. 
+         */
+        config: {
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
+          src: React.PropTypes.string
+        }
+      },
 
       /**
-       * Event handlers for callout buttons.
+       * Left callout
        */
-      onLeftCalloutPress: React.PropTypes.func,
-      onRightCalloutPress: React.PropTypes.func,
+      leftCallout: {
+        /**
+         * Bool, whether the callout is enabled or not
+         */
+        enabled: React.PropTypes.bool,
+        /**
+         * Type of the callout. If image, set src in config
+         */
+        type: React.PropTypes.oneOf([
+          'button',
+          'image'
+        ]),
+        /**
+         * Callback for when the accessory is clicked
+         * Currently only works on button and not image
+         */
+        onPress: React.PropTypes.func,
+        /**
+         * Additional config parameters to pass to the callout. 
+         */
+        config: {
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
+          src: React.PropTypes.string
+        }
+      },
 
       /**
        * annotation id
@@ -242,9 +292,9 @@ var MapView = React.createClass({
         if (annotation.id === event.nativeEvent.annotationId) {
           // Pass the right function
           if (event.nativeEvent.side === 'left') {
-            annotation.onLeftCalloutPress && annotation.onLeftCalloutPress(event.nativeEvent);
+            annotation.leftCallout.onPress && annotation.leftCallout.onPress(event.nativeEvent);
           } else if (event.nativeEvent.side === 'right') {
-            annotation.onRightCalloutPress && annotation.onRightCalloutPress(event.nativeEvent);
+            annotation.rightCallout.onPress && annotation.rightCallout.onPress(event.nativeEvent);
           }
         }
       }

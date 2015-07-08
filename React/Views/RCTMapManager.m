@@ -92,12 +92,24 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
   annotationView.leftCalloutAccessoryView = nil;
   if (annotation.hasLeftCallout) {
-    annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    if (annotation.leftCalloutType == RCTPointAnnotationTypeImage) {
+      NSString *uri = [RCTConvert NSString:annotation.leftCalloutConfig[@"src"][@"uri"]];
+      UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
+      annotationView.leftCalloutAccessoryView = calloutImage;
+    } else {
+      annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    }
   }
-
+  
   annotationView.rightCalloutAccessoryView = nil;
   if (annotation.hasRightCallout) {
-    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    if (annotation.rightCalloutType == RCTPointAnnotationTypeImage) {
+      NSString *uri = [RCTConvert NSString:annotation.rightCalloutConfig[@"src"][@"uri"]];
+      UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
+      annotationView.rightCalloutAccessoryView = calloutImage;
+    } else {
+      annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    }
   }
 
   return annotationView;
