@@ -347,36 +347,53 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     RCTLatestExecutor = nil;
   }
 
-  [_mainDisplayLink invalidate];
-  _mainDisplayLink = nil;
+  void (^mainThreadInvalidate)(void) = ^{
+    RCTAssertMainThread();
 
-  // Invalidate modules
-  dispatch_group_t group = dispatch_group_create();
-  for (RCTModuleData *moduleData in _modules) {
-    if (moduleData.instance == _javaScriptExecutor) {
-      continue;
-    }
+    [_mainDisplayLink invalidate];
+    _mainDisplayLink = nil;
 
-    if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
-      [moduleData dispatchBlock:^{
-        [(id<RCTInvalidating>)moduleData.instance invalidate];
-      } dispatchGroup:group];
+    // Invalidate modules
+    dispatch_group_t group = dispatch_group_create();
+    for (RCTModuleData *moduleData in _modules) {
+      if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
+        [moduleData dispatchBlock:^{
+          [(id<RCTInvalidating>)moduleData.instance invalidate];
+        } dispatchGroup:group];
+      }
+      moduleData.queue = nil;
     }
-    moduleData.queue = nil;
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+      _modules = nil;
+      _modulesByName = nil;
+      _frameUpdateObservers = nil;
+    });
+  };
+
+  if (!_javaScriptExecutor) {
+
+    // No JS thread running
+    mainThreadInvalidate();
+    return;
   }
-  dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-    [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-      [_jsDisplayLink invalidate];
-      _jsDisplayLink = nil;
 
-      [_javaScriptExecutor invalidate];
-      _javaScriptExecutor = nil;
-    }];
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
 
-    _modules = nil;
-    _modulesByName = nil;
-    _frameUpdateObservers = nil;
-  });
+    /**
+     * JS Thread deallocations
+     */
+    [_javaScriptExecutor invalidate];
+    _javaScriptExecutor = nil;
+
+    [_jsDisplayLink invalidate];
+    _jsDisplayLink = nil;
+
+    /**
+     * Main Thread deallocations
+     */
+    dispatch_async(dispatch_get_main_queue(), mainThreadInvalidate);
+
+  }];
 }
 
 #pragma mark - RCTBridge methods
