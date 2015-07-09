@@ -45,7 +45,6 @@ RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 
 // Creates a standardized error object
-// TODO(#6472857): create NSErrors and automatically convert them over the bridge.
 RCT_EXTERN NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
 RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
 
@@ -55,7 +54,7 @@ RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 
-// Create an NSError in the NCTErrorDomain
+// Create an NSError in the RCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa

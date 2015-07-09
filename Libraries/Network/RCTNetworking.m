@@ -381,7 +381,7 @@ RCT_EXPORT_MODULE()
 
   NSString *responseText = [[NSString alloc] initWithData:data encoding:encoding];
   if (!responseText && data.length) {
-    RCTLogError(@"Received data was invalid.");
+    RCTLogWarn(@"Received data was invalid.");
     return;
   }
 

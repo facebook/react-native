@@ -16,6 +16,7 @@
 
 #import "RCTImageLoader.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @implementation RCTCameraRollManager
 
@@ -23,21 +24,20 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
                   successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseSenderBlock)errorCallback)
+                  errorCallback:(RCTResponseErrorBlock)errorCallback)
 {
   [RCTImageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
     if (loadError) {
-      errorCallback(@[[loadError localizedDescription]]);
+      errorCallback(loadError);
       return;
     }
     [[RCTImageLoader assetsLibrary] writeImageToSavedPhotosAlbum:[loadedImage CGImage] metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
       if (saveError) {
-        NSString *errorMessage = [NSString stringWithFormat:@"Error saving cropped image: %@", saveError];
-        RCTLogWarn(@"%@", errorMessage);
-        errorCallback(@[errorMessage]);
-        return;
+        RCTLogWarn(@"Error saving cropped image: %@", saveError);
+        errorCallback(saveError);
+      } else {
+        successCallback(@[[assetURL absoluteString]]);
       }
-      successCallback(@[[assetURL absoluteString]]);
     }];
   }];
 }
@@ -63,7 +63,7 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
 
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   callback:(RCTResponseSenderBlock)callback
-                  errorCallback:(RCTResponseSenderBlock)errorCallback)
+                  errorCallback:(RCTResponseErrorBlock)errorCallback)
 {
   NSUInteger first = [params[@"first"] integerValue];
   NSString *afterCursor = params[@"after"];
@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     if (error.code != ALAssetsLibraryAccessUserDeniedError) {
       RCTLogError(@"Failure while iterating through asset groups %@", error);
     }
-    errorCallback(@[error.description]);
+    errorCallback(error);
   }];
 }
 

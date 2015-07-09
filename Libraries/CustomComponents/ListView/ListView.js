@@ -29,14 +29,15 @@
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
 var RCTUIManager = require('NativeModules').UIManager;
+var RKScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
 
+var isEmpty = require('isEmpty');
 var logError = require('logError');
 var merge = require('merge');
-var isEmpty = require('isEmpty');
 
 var PropTypes = React.PropTypes;
 
@@ -174,6 +175,13 @@ var ListView = React.createClass({
      */
     renderSectionHeader: PropTypes.func,
     /**
+     * (props) => renderable
+     *
+     * A function that returns the scrollable component in which the list rows
+     * are rendered. Defaults to returning a ScrollView with the given props.
+     */
+    renderScrollComponent: React.PropTypes.func.isRequired,
+    /**
      * How early to start rendering rows before they come on screen, in
      * pixels.
      */
@@ -228,6 +236,7 @@ var ListView = React.createClass({
     return {
       initialListSize: DEFAULT_INITIAL_ROWS,
       pageSize: DEFAULT_PAGE_SIZE,
+      renderScrollComponent: props => <ScrollView {...props} />,
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
     };
@@ -365,23 +374,24 @@ var ListView = React.createClass({
       }
     }
 
-    var props = merge(
-      this.props, {
-        onScroll: this._onScroll,
-        stickyHeaderIndices: sectionHeaderIndices,
-      }
-    );
+    var {
+      renderScrollComponent,
+      ...props,
+    } = this.props;
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
-    return (
-      <ScrollView {...props}
-        ref={SCROLLVIEW_REF}>
-        {header}
-        {bodyComponents}
-        {footer}
-      </ScrollView>
-    );
+    Object.assign(props, {
+      onScroll: this._onScroll,
+      stickyHeaderIndices: sectionHeaderIndices,
+      children: [header, bodyComponents, footer],
+    });
+
+    // TODO(ide): Use function refs so we can compose with the scroll
+    // component's original ref instead of clobbering it
+    return React.cloneElement(renderScrollComponent(props), {
+      ref: SCROLLVIEW_REF,
+    });
   },
 
   /**
@@ -400,6 +410,13 @@ var ListView = React.createClass({
       logError,
       this._setScrollVisibleHeight
     );
+
+    // RKScrollViewManager.calculateChildFrames not available on every platform
+    RKScrollViewManager && RKScrollViewManager.calculateChildFrames &&
+      RKScrollViewManager.calculateChildFrames(
+        React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
+        this._updateChildFrames,
+      );
   },
 
   _setScrollContentHeight: function(left, top, width, height) {
@@ -410,6 +427,10 @@ var ListView = React.createClass({
     this.scrollProperties.visibleHeight = height;
     this._updateVisibleRows();
     this._renderMoreRowsIfNeeded();
+  },
+
+  _updateChildFrames: function(childFrames) {
+    this._updateVisibleRows(childFrames);
   },
 
   _renderMoreRowsIfNeeded: function() {
@@ -449,11 +470,10 @@ var ListView = React.createClass({
       scrollProperties.offsetY;
   },
 
-  _updateVisibleRows: function(e) {
+  _updateVisibleRows: function(updatedFrames) {
     if (!this.props.onChangeVisibleRows) {
       return; // No need to compute visible rows if there is no callback
     }
-    var updatedFrames = e && e.nativeEvent.updatedChildFrames;
     if (updatedFrames) {
       updatedFrames.forEach((newFrame) => {
         this._childFrames[newFrame.index] = merge(newFrame);
@@ -522,7 +542,7 @@ var ListView = React.createClass({
     this.scrollProperties.visibleHeight = e.nativeEvent.layoutMeasurement.height;
     this.scrollProperties.contentHeight = e.nativeEvent.contentSize.height;
     this.scrollProperties.offsetY = e.nativeEvent.contentOffset.y;
-    this._updateVisibleRows(e);
+    this._updateVisibleRows(e.nativeEvent.updatedChildFrames);
     var nearEnd = this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold;
     if (nearEnd &&
         this.props.onEndReached &&
