@@ -440,6 +440,24 @@ describe('Animated Vectors', () => {
     value1.setValue({x: 3, y: 4});
     expect(value2.__getValue()).toEqual({x: 3, y: 4});
   });
+
+  it('should track with springs', () => {
+    var value1 = new Animated.ValueXY();
+    var value2 = new Animated.ValueXY();
+    Animated.spring(value2, {
+      toValue: value1,
+      tension: 3000, // faster spring for faster test
+      friction: 60,
+    }).start();
+    value1.setValue({x: 1, y: 1});
+    jest.runAllTimers();
+    expect(Math.round(value2.__getValue().x)).toEqual(1);
+    expect(Math.round(value2.__getValue().y)).toEqual(1);
+    value1.setValue({x: 2, y: 2});
+    jest.runAllTimers();
+    expect(Math.round(value2.__getValue().x)).toEqual(2);
+    expect(Math.round(value2.__getValue().y)).toEqual(2);
+  });
 });
 
 describe('Animated Listeners', () => {

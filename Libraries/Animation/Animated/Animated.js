@@ -23,6 +23,7 @@ var invariant = require('invariant');
 
 var flattenStyle = require('flattenStyle');
 var rebound = require('rebound');
+var requestAnimationFrame = require('requestAnimationFrame');
 
 import type InterpolationConfigType from 'Interpolation';
 
@@ -175,7 +176,7 @@ class TimingAnimation extends Animation {
         this.__debouncedOnEnd({finished: true});
       } else {
         this._startTime = Date.now();
-        this._animationFrame = window.requestAnimationFrame(this.onUpdate.bind(this));
+        this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
       }
     };
     if (this._delay) {
@@ -205,7 +206,7 @@ class TimingAnimation extends Animation {
         (this._toValue - this._fromValue)
     );
     if (this.__active) {
-      this._animationFrame = window.requestAnimationFrame(this.onUpdate.bind(this));
+      this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
     }
   }
 
@@ -255,7 +256,7 @@ class DecayAnimation extends Animation {
     this._onUpdate = onUpdate;
     this.__onEnd = onEnd;
     this._startTime = Date.now();
-    this._animationFrame = window.requestAnimationFrame(this.onUpdate.bind(this));
+    this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
   }
 
   onUpdate(): void {
@@ -274,7 +275,7 @@ class DecayAnimation extends Animation {
 
     this._lastValue = value;
     if (this.__active) {
-      this._animationFrame = window.requestAnimationFrame(this.onUpdate.bind(this));
+      this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
     }
   }
 
@@ -482,7 +483,7 @@ class SpringAnimation extends Animation {
       this.__debouncedOnEnd({finished: true});
       return;
     }
-    this._animationFrame = window.requestAnimationFrame(this.onUpdate.bind(this));
+    this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
   }
 
   stop(): void {
