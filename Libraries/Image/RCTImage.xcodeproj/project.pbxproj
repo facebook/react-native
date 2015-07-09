@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03559E7F1B064DAF00730281 /* RCTDownloadTaskWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7E1B064DAF00730281 /* RCTDownloadTaskWrapper.m */; };
 		1304D5AB1AA8C4A30002E2BE /* RCTStaticImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5A81AA8C4A30002E2BE /* RCTStaticImage.m */; };
 		1304D5AC1AA8C4A30002E2BE /* RCTStaticImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTStaticImageManager.m */; };
 		1304D5B21AA8C50D0002E2BE /* RCTGIFImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5B11AA8C50D0002E2BE /* RCTGIFImage.m */; };
@@ -32,6 +33,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		03559E7D1B064D3A00730281 /* RCTDownloadTaskWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDownloadTaskWrapper.h; sourceTree = "<group>"; };
+		03559E7E1B064DAF00730281 /* RCTDownloadTaskWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDownloadTaskWrapper.m; sourceTree = "<group>"; };
 		1304D5A71AA8C4A30002E2BE /* RCTStaticImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTStaticImage.h; sourceTree = "<group>"; };
 		1304D5A81AA8C4A30002E2BE /* RCTStaticImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTStaticImage.m; sourceTree = "<group>"; };
 		1304D5A91AA8C4A30002E2BE /* RCTStaticImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTStaticImageManager.h; sourceTree = "<group>"; };
@@ -71,6 +74,8 @@
 			children = (
 				143879331AAD238D00F088A5 /* RCTCameraRollManager.h */,
 				143879341AAD238D00F088A5 /* RCTCameraRollManager.m */,
+				03559E7D1B064D3A00730281 /* RCTDownloadTaskWrapper.h */,
+				03559E7E1B064DAF00730281 /* RCTDownloadTaskWrapper.m */,
 				1304D5B01AA8C50D0002E2BE /* RCTGIFImage.h */,
 				1304D5B11AA8C50D0002E2BE /* RCTGIFImage.m */,
 				58B511891A9E6BD600147676 /* RCTImageDownloader.h */,
@@ -168,6 +173,7 @@
 				1304D5B21AA8C50D0002E2BE /* RCTGIFImage.m in Sources */,
 				143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */,
 				143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */,
+				03559E7F1B064DAF00730281 /* RCTDownloadTaskWrapper.m in Sources */,
 				1304D5AB1AA8C4A30002E2BE /* RCTStaticImage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

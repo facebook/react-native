@@ -121,7 +121,7 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
       RCTDispatchCallbackOnMainQueue(callback, RCTErrorWithMessage(errorMessage), nil);
       return;
     }
-    [[RCTImageDownloader sharedInstance] downloadDataForURL:url block:^(NSData *data, NSError *error) {
+    [[RCTImageDownloader sharedInstance] downloadDataForURL:url progressBlock:nil block:^(NSData *data, NSError *error) {
       if (error) {
         RCTDispatchCallbackOnMainQueue(callback, error, nil);
       } else {

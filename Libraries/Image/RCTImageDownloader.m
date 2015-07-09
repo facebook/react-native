@@ -9,6 +9,7 @@
 
 #import "RCTImageDownloader.h"
 
+#import "RCTDownloadTaskWrapper.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -45,12 +46,15 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
   return self;
 }
 
-- (id)_downloadDataForURL:(NSURL *)url block:(RCTCachedDataDownloadBlock)block
+- (id)_downloadDataForURL:(NSURL *)url progressBlock:progressBlock block:(RCTCachedDataDownloadBlock)block
 {
   NSString *cacheKey = url.absoluteString;
 
   __block BOOL cancelled = NO;
-  __block NSURLSessionDataTask *task = nil;
+  __block NSURLSessionDownloadTask *task = nil;
+
+  NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+  RCTDownloadTaskWrapper *downloadTaskWrapper = [[RCTDownloadTaskWrapper alloc] initWithSessionConfiguration:config delegateQueue:nil];
 
   dispatch_block_t cancel = ^{
     cancelled = YES;
@@ -85,7 +89,8 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
         });
       };
 
-      task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+      NSURLRequest *request = [NSURLRequest requestWithURL:url];
+      task = [downloadTaskWrapper downloadData:url progressBlock:progressBlock completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
         if (!cancelled) {
           runBlocks(NO, data, error);
         }
@@ -93,12 +98,12 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
         if (response) {
           RCTImageDownloader *strongSelf = weakSelf;
           NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
-          [strongSelf->_cache storeCachedResponse:cachedResponse forDataTask:task];
+          [strongSelf->_cache storeCachedResponse:cachedResponse forRequest:request];
         }
         task = nil;
       }];
 
-      [_cache getCachedResponseForDataTask:task completionHandler:^(NSCachedURLResponse *cachedResponse) {
+      NSCachedURLResponse *cachedResponse = [_cache cachedResponseForRequest:request];
         if (cancelled) {
           return;
         }
@@ -108,16 +113,16 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
         } else {
           [task resume];
         }
-      }];
+
     }
   });
 
   return [cancel copy];
 }
 
-- (id)downloadDataForURL:(NSURL *)url block:(RCTDataDownloadBlock)block
+- (id)downloadDataForURL:(NSURL *)url progressBlock:(RCTDataProgressBlock)progressBlock block:(RCTDataDownloadBlock)block
 {
-  return [self _downloadDataForURL:url block:^(BOOL cached, NSData *data, NSError *error) {
+  return [self _downloadDataForURL:url progressBlock:progressBlock block:^(BOOL cached, NSData *data, NSError *error) {
     block(data, error);
   }];
 }
@@ -127,9 +132,10 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
                     scale:(CGFloat)scale
                resizeMode:(UIViewContentMode)resizeMode
           backgroundColor:(UIColor *)backgroundColor
+            progressBlock:(RCTDataProgressBlock)progressBlock
                     block:(RCTImageDownloadBlock)block
 {
-  return [self downloadDataForURL:url block:^(NSData *data, NSError *error) {
+  return [self downloadDataForURL:url progressBlock:progressBlock block:^(NSData *data, NSError *error) {
     if (!data || error) {
       block(nil, error);
       return;
