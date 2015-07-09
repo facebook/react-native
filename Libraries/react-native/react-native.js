@@ -51,6 +51,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   AsyncStorage: require('AsyncStorage'),
   CameraRoll: require('CameraRoll'),
   Dimensions: require('Dimensions'),
+  Easing: require('Easing'),
   ImagePickerIOS: require('ImagePickerIOS'),
   InteractionManager: require('InteractionManager'),
   LayoutAnimation: require('LayoutAnimation'),
