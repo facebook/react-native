@@ -21,6 +21,7 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+scripts/compile_commands.json
 
 # OS X
 .DS_Store
