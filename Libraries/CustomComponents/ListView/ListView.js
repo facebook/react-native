@@ -526,9 +526,9 @@ var ListView = React.createClass({
     var nearEnd = this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold;
     if (nearEnd &&
         this.props.onEndReached &&
-        this.scrollProperties.contentHeight !== this._sentEndForContentHeight &&
+        this.scrollProperties.offsetY !== this._sentEndForOffsetY &&
         this.state.curRenderedRowsCount === this.props.dataSource.getRowCount()) {
-      this._sentEndForContentHeight = this.scrollProperties.contentHeight;
+      this._sentEndForOffsetY = this.scrollProperties.offsetY;
       this.props.onEndReached(e);
     } else {
       this._renderMoreRowsIfNeeded();
