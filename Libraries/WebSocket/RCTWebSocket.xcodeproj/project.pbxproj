@@ -36,12 +36,12 @@
 		3C86DF3D1ADF2C930047B81A = {
 			isa = PBXGroup;
 			children = (
-				3C86DF7A1ADF695F0047B81A /* RCTWebSocketManager.h */,
-				3C86DF7B1ADF695F0047B81A /* RCTWebSocketManager.m */,
 				1338BBDC1B04ACC80064A9C9 /* RCTSRWebSocket.h */,
 				1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */,
 				1338BBDE1B04ACC80064A9C9 /* RCTWebSocketExecutor.h */,
 				1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */,
+				3C86DF7A1ADF695F0047B81A /* RCTWebSocketManager.h */,
+				3C86DF7B1ADF695F0047B81A /* RCTWebSocketManager.m */,
 				3C86DF471ADF2C930047B81A /* Products */,
 			);
 			indentWidth = 2;

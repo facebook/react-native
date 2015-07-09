@@ -18,22 +18,18 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getAdvertisingId:(RCTResponseSenderBlock)callback
                   withErrorCallback:(RCTResponseSenderBlock)errorCallback)
 {
-  if ([ASIdentifierManager class]) {
-    callback(@[[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]]);
+  NSUUID *advertisingIdentifier = [ASIdentifierManager sharedManager].advertisingIdentifier;
+  if (advertisingIdentifier) {
+    callback(@[advertisingIdentifier.UUIDString]);
   } else {
-    return errorCallback(@[@"as_identifier_unavailable"]);
+    errorCallback(@[@"as_identifier_unavailable"]);
   }
 }
 
 RCT_EXPORT_METHOD(getAdvertisingTrackingEnabled:(RCTResponseSenderBlock)callback
-                  withErrorCallback:(RCTResponseSenderBlock)errorCallback)
+                  withErrorCallback:(__unused RCTResponseSenderBlock)errorCallback)
 {
-  if ([ASIdentifierManager class]) {
-    BOOL hasTracking = [[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled];
-    callback(@[@(hasTracking)]);
-  } else {
-    return errorCallback(@[@"as_identifier_unavailable"]);
-  }
+  callback(@[@([ASIdentifierManager sharedManager].advertisingTrackingEnabled)]);
 }
 
 @end
