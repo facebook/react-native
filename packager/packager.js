@@ -39,6 +39,10 @@ var options = parseCommandLine([{
   default: 8081,
   type: 'string',
 }, {
+  command: 'host',
+  default: '::',
+  type: 'string',
+}, {
   command: 'root',
   type: 'string',
   description: 'add another root(s) to be used by the packager in this project',
@@ -258,5 +262,5 @@ function runServer(
     .use(connect.compress())
     .use(connect.errorHandler());
 
-  return http.createServer(app).listen(options.port, '::', readyCallback);
+  return http.createServer(app).listen(options.port, options.host, readyCallback);
 }
