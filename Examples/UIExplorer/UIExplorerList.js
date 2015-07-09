@@ -38,6 +38,7 @@ var createExamplePage = require('./createExamplePage');
 
 var COMMON_COMPONENTS = [
   require('./ImageExample'),
+  require('./LayoutEventsExample'),
   require('./ListViewExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
@@ -81,7 +82,6 @@ if (Platform.OS === 'ios') {
     require('./AsyncStorageExample'),
     require('./BorderExample'),
     require('./CameraRollExample.ios'),
-    require('./LayoutEventsExample'),
     require('./NetInfoExample'),
     require('./PushNotificationIOSExample'),
     require('./StatusBarIOSExample'),
