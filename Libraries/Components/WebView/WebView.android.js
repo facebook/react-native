@@ -43,6 +43,12 @@ var WebView = React.createClass({
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
     javaScriptEnabledAndroid: PropTypes.bool,
+
+    /**
+     * Sets the JS to be injected when the webpage loads.
+     */
+    injectedJavaScript: PropTypes.string,
+
     /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native through
      * WebViewConfig, but this can and will overwrite that config.
@@ -96,6 +102,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabledAndroid={this.props.javaScriptEnabledAndroid}
         contentInset={this.props.contentInset}
@@ -176,8 +183,9 @@ var WebView = React.createClass({
 
 var RCTWebView = createReactNativeComponentClass({
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
-    url: true,
+    injectedJavaScript: true,
     javaScriptEnabledAndroid: true,
+    url: true,
     userAgent: true,
   }),
   uiViewClassName: 'RCTWebView',

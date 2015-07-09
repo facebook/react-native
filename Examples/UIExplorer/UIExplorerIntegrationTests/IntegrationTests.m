@@ -14,11 +14,11 @@
 
 #import "RCTAssert.h"
 
-@interface IntegrationTestsTests : XCTestCase
+@interface IntegrationTests : XCTestCase
 
 @end
 
-@implementation IntegrationTestsTests
+@implementation IntegrationTests
 {
   RCTTestRunner *_runner;
 }
@@ -31,7 +31,7 @@
 
   NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
   RCTAssert(version.majorVersion == 8 || version.minorVersion == 3, @"Tests should be run on iOS 8.3, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
-  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp");
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp", nil);
 }
 
 #pragma mark Logic Tests

@@ -20,6 +20,11 @@
   }
 }
 
+- (BOOL)isLayoutOnly
+{
+  return YES;
+}
+
 - (NSString *)description
 {
   NSString *superDescription = super.description;

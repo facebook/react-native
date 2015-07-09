@@ -7,11 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AnimationExperimental
- * @flow
  */
 'use strict';
 
 var RCTAnimationManager = require('NativeModules').AnimationExperimentalManager;
+if (!RCTAnimationManager) {
+  // AnimationExperimental isn't available internally - this is a temporary
+  // workaround to enable its availability to be determined at runtime.
+  // For Flow let's pretend like we always export AnimationExperimental
+  // so all our users don't need to do null checks
+  module.exports = null;
+} else {
+
 var React = require('React');
 var AnimationUtils = require('AnimationUtils');
 
@@ -88,3 +95,5 @@ if (__DEV__) {
 }
 
 module.exports = AnimationExperimental;
+
+}
