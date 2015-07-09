@@ -32,6 +32,8 @@
   NSArray *_argumentBlocks;
 }
 
+RCT_NOT_IMPLEMENTED(-init)
+
 - (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName
                            moduleClass:(Class)moduleClass
