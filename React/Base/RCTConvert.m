@@ -671,8 +671,8 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     NSURL *url = [NSURL URLWithString:path];
     NSData *imageData = [NSData dataWithContentsOfURL:url];
     image = [UIImage imageWithData:imageData];
-  } else if ([path isAbsolutePath]) {
-    image = [UIImage imageWithContentsOfFile:path];
+  } else if ([path isAbsolutePath] || [path hasPrefix:@"~"]) {
+    image = [UIImage imageWithContentsOfFile:path.stringByExpandingTildeInPath];
   } else {
     image = [UIImage imageNamed:path];
     if (!image) {
