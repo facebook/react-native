@@ -8,6 +8,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "RCTDownloadTaskWrapper.h"
 
 typedef void (^RCTDataDownloadBlock)(NSData *data, NSError *error);
 typedef void (^RCTImageDownloadBlock)(UIImage *image, NSError *error);
@@ -22,6 +23,7 @@ typedef void (^RCTImageDownloadBlock)(UIImage *image, NSError *error);
  * the main thread. Returns a token that can be used to cancel the download.
  */
 - (id)downloadDataForURL:(NSURL *)url
+           progressBlock:(RCTDataProgressBlock)progressBlock
                    block:(RCTDataDownloadBlock)block;
 
 /**
@@ -35,6 +37,7 @@ typedef void (^RCTImageDownloadBlock)(UIImage *image, NSError *error);
                     scale:(CGFloat)scale
                resizeMode:(UIViewContentMode)resizeMode
           backgroundColor:(UIColor *)backgroundColor
+            progressBlock:(RCTDataProgressBlock)progressBlock
                     block:(RCTImageDownloadBlock)block;
 
 /**

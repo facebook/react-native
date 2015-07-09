@@ -10,10 +10,12 @@
 #import <UIKit/UIKit.h>
 
 @class RCTImageDownloader;
+@class RCTEventDispatcher;
 
 @interface RCTNetworkImageView : UIView
 
-- (instancetype)initWithImageDownloader:(RCTImageDownloader *)imageDownloader NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+                        imageDownloader:(RCTImageDownloader *)imageDownloader NS_DESIGNATED_INITIALIZER;
 
 /**
  * An image that will appear while the view is loading the image from the network,
