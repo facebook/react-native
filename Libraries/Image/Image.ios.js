@@ -104,7 +104,33 @@ var Image = React.createClass({
      *
      *   {nativeEvent: { layout: {x, y, width, height}}}.
      */
-     onLayout: PropTypes.func,
+    onLayout: PropTypes.func,
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked on download progress with
+     *
+     *   {nativeEvent: { written, total}}.
+     */
+    onLoadProgress: PropTypes.func,
+    /**
+     * Invoked on load abort
+     */
+    onLoadAbort: PropTypes.func,
+    /**
+     * Invoked on load error
+     *
+     *   {nativeEvent: { error}}.
+     */
+    onLoadError: PropTypes.func,
+    /**
+     * Invoked on load end
+     *
+     */
+    onLoaded: PropTypes.func
+
   },
 
   statics: {
@@ -161,6 +187,7 @@ var Image = React.createClass({
     if (this.props.defaultSource) {
       nativeProps.defaultImageSrc = this.props.defaultSource.uri;
     }
+    nativeProps.progressHandlerRegistered = isNetwork && this.props.onLoadProgress;
     return <RawImage {...nativeProps} />;
   }
 });
@@ -178,6 +205,7 @@ var nativeOnlyProps = {
   src: true,
   defaultImageSrc: true,
   imageTag: true,
+  progressHandlerRegistered: true
 };
 if (__DEV__) {
   verifyPropTypes(Image, RCTStaticImage.viewConfig, nativeOnlyProps);

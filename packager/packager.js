@@ -30,6 +30,8 @@ var chalk = require('chalk');
 var connect = require('connect');
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
+var checkNodeVersion = require('./checkNodeVersion');
+var formatBanner = require('./formatBanner');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
 var webSocketProxy = require('./webSocketProxy.js');
@@ -108,16 +110,19 @@ if (options.assetRoots) {
   }
 }
 
-console.log('\n' +
-' ===============================================================\n' +
-' |  Running packager on port ' + options.port +          '.       \n' +
-' |  Keep this packager running while developing on any JS         \n' +
-' |  projects. Feel free to close this tab and run your own      \n' +
-' |  packager instance if you prefer.                              \n' +
-' |                                                              \n' +
-' |     https://github.com/facebook/react-native                 \n' +
-' |                                                              \n' +
-' ===============================================================\n'
+checkNodeVersion();
+
+console.log(formatBanner(
+  'Running packager on port ' + options.port + '.\n'+
+  '\n' +
+  'Keep this packager running while developing on any JS projects. Feel free ' +
+  'to close this tab and run your own packager instance if you prefer.\n' +
+  '\n' +
+  'https://github.com/facebook/react-native', {
+    marginLeft: 1,
+    marginRight: 1,
+    paddingBottom: 1,
+  })
 );
 
 console.log(

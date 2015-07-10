@@ -190,6 +190,7 @@ class UIExplorerList extends React.Component {
             onChangeText={this._search.bind(this)}
             placeholder="Search..."
             style={[styles.searchTextInput, platformTextInputStyle]}
+            testID="explorer_search"
             value={this.state.searchText}
           />
         </View>);
