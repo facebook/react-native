@@ -35,6 +35,7 @@ RCT_NUMBER_CONVERTER(NSInteger, integerValue)
 RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
 
 RCT_CUSTOM_CONVERTER(NSArray *, NSArray, [NSArray arrayWithArray:json])
+RCT_CUSTOM_CONVERTER(NSSet *, NSSet, [NSSet setWithArray:json])
 RCT_CUSTOM_CONVERTER(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
 RCT_CONVERTER(NSString *, NSString, description)
 
