@@ -20,6 +20,7 @@
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 - (UIView *)view
 {
