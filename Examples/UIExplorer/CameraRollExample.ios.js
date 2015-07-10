@@ -70,7 +70,10 @@ var CameraRollExample = React.createClass({
     return (
       <View key={asset} style={styles.row}>
         <Image
-          source={asset.node.image}
+          source={{
+            uri: asset.node.image.uri,
+            assetThumbnail: true
+          }}
           style={imageStyle}
         />
         <View style={styles.info}>

@@ -54,7 +54,7 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTStaticImage)
 RCT_CUSTOM_VIEW_PROPERTY(imageTag, NSString, RCTStaticImage)
 {
   if (json) {
-    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] callback:^(NSError *error, id image) {
+    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] thumb:NO callback:^(NSError *error, id image) {
       if (error) {
         RCTLogWarn(@"%@", error.localizedDescription);
       }
@@ -70,5 +70,26 @@ RCT_CUSTOM_VIEW_PROPERTY(imageTag, NSString, RCTStaticImage)
     view.image = defaultView.image;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(assetThumbnail, NSString, RCTStaticImage)
+{
+  if (json) {
+    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] thumb:YES callback:^(NSError *error, id image) {
+      if (error) {
+        RCTLogWarn(@"%@", error.localizedDescription);
+      }
+      if ([image isKindOfClass:[CAAnimation class]]) {
+        [view.layer addAnimation:image forKey:@"contents"];
+      } else {
+        [view.layer removeAnimationForKey:@"contents"];
+        view.image = image;
+      }
+    }];
+  } else {
+    [view.layer removeAnimationForKey:@"contents"];
+    view.image = defaultView.image;
+  }
+}
+
+
 
 @end

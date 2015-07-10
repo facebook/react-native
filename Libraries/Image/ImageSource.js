@@ -14,4 +14,5 @@
 type ImageSource = {
   uri: string;
   isStatic: boolean;
+  assetThumbnail: boolean;
 };

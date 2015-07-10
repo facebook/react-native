@@ -21,6 +21,6 @@
  * Will always call callback on main thread.
  */
 + (void)loadImageWithTag:(NSString *)tag
+                   thumb:(BOOL)thumb
                 callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback;
-
 @end
