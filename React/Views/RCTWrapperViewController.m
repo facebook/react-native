@@ -24,6 +24,7 @@
   RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayout;
   CGFloat _previousBottomLayout;
+  UIImageView *navBarHairlineImageView;
 }
 
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
@@ -79,6 +80,12 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     }
 
     UINavigationBar *bar = self.navigationController.navigationBar;
+
+    if (_navItem.shadowHidden) {
+      navBarHairlineImageView = [self findHairlineImageViewUnder:bar];
+      navBarHairlineImageView.hidden = YES;
+    }
+
     bar.barTintColor = _navItem.barTintColor;
     bar.tintColor = _navItem.tintColor;
     bar.translucent = _navItem.translucent;
@@ -132,5 +139,19 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     [self.navigationListener wrapperViewController:self didMoveToNavigationController:(UINavigationController *)parent];
   }
 }
+
+- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
+    if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
+            return (UIImageView *)view;
+    }
+    for (UIView *subview in view.subviews) {
+        UIImageView *imageView = [self findHairlineImageViewUnder:subview];
+        if (imageView) {
+            return imageView;
+        }
+    }
+    return nil;
+}
+
 
 @end

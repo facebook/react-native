@@ -23,6 +23,7 @@
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *titleTextColor;
 @property (nonatomic, assign) BOOL translucent;
+@property (nonatomic, assign) BOOL shadowHidden;
 
 @property (nonatomic, readonly) UIBarButtonItem *backButtonItem;
 @property (nonatomic, readonly) UIBarButtonItem *leftButtonItem;
