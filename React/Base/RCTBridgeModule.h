@@ -38,7 +38,6 @@ typedef void (^RCTPromiseResolveBlock)(id result);
  */
 typedef void (^RCTPromiseRejectBlock)(NSError *error);
 
-
 /**
  * This constant can be returned from +methodQueue to force module
  * methods to be called on the JavaScript thread. This can have serious
