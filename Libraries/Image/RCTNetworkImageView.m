@@ -14,23 +14,27 @@
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
 #import "RCTUtils.h"
+#import "RCTBridgeModule.h"
+#import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
 @implementation RCTNetworkImageView
 {
   BOOL _deferred;
+  BOOL _progressHandlerRegistered;
   NSURL *_imageURL;
   NSURL *_deferredImageURL;
   NSUInteger _deferSentinel;
   RCTImageDownloader *_imageDownloader;
   id _downloadToken;
+  RCTEventDispatcher *_eventDispatcher;
 }
 
-- (instancetype)initWithImageDownloader:(RCTImageDownloader *)imageDownloader
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher imageDownloader:(RCTImageDownloader *)imageDownloader
 {
-  RCTAssertParam(imageDownloader);
-
   if ((self = [super initWithFrame:CGRectZero])) {
+    _eventDispatcher = eventDispatcher;
+    _progressHandlerRegistered = NO;
     _deferSentinel = 0;
     _imageDownloader = imageDownloader;
     self.userInteractionEnabled = NO;
@@ -54,6 +58,11 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   super.backgroundColor = backgroundColor;
   [self _updateImage];
+}
+
+- (void)setProgressHandlerRegistered:(BOOL)progressHandlerRegistered
+{
+  _progressHandlerRegistered = progressHandlerRegistered;
 }
 
 - (void)reactSetFrame:(CGRect)frame
@@ -89,8 +98,34 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       self.layer.minificationFilter = kCAFilterTrilinear;
       self.layer.magnificationFilter = kCAFilterTrilinear;
     }
+    [_eventDispatcher sendInputEventWithName:@"loadStart" body:@{ @"target": self.reactTag }];
+
+    RCTDataProgressBlock progressHandler = ^(int64_t written, int64_t total) {
+      if (_progressHandlerRegistered) {
+        NSDictionary *event = @{
+          @"target": self.reactTag,
+          @"written": @(written),
+          @"total": @(total),
+        };
+        [_eventDispatcher sendInputEventWithName:@"loadProgress" body:event];
+      }
+    };
+
+    void (^errorHandler)(NSString *errorDescription) = ^(NSString *errorDescription) {
+      NSDictionary *event = @{
+        @"target": self.reactTag,
+        @"error": errorDescription,
+      };
+      [_eventDispatcher sendInputEventWithName:@"loadError" body:event];
+    };
+
+    void (^loadEndHandler)(void) = ^(void) {
+      NSDictionary *event = @{ @"target": self.reactTag };
+      [_eventDispatcher sendInputEventWithName:@"loaded" body:event];
+    };
+
     if ([imageURL.pathExtension caseInsensitiveCompare:@"gif"] == NSOrderedSame) {
-      _downloadToken = [_imageDownloader downloadDataForURL:imageURL block:^(NSData *data, NSError *error) {
+      _downloadToken = [_imageDownloader downloadDataForURL:imageURL progressBlock:progressHandler block:^(NSData *data, NSError *error) {
         if (data) {
           dispatch_async(dispatch_get_main_queue(), ^{
             if (imageURL != self.imageURL) {
@@ -102,13 +137,16 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
             self.layer.minificationFilter = kCAFilterLinear;
             self.layer.magnificationFilter = kCAFilterLinear;
             [self.layer addAnimation:animation forKey:@"contents"];
+            loadEndHandler();
           });
         } else if (error) {
-          RCTLogWarn(@"Unable to download image data. Error: %@", error);
+          errorHandler([error description]);
         }
       }];
     } else {
-      _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale() resizeMode:self.contentMode backgroundColor:self.backgroundColor block:^(UIImage *image, NSError *error) {
+      _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale()
+                                                  resizeMode:self.contentMode backgroundColor:self.backgroundColor
+                                                  progressBlock:progressHandler block:^(UIImage *image, NSError *error) {
         if (image) {
           dispatch_async(dispatch_get_main_queue(), ^{
             if (imageURL != self.imageURL) {
@@ -118,9 +156,10 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
             [self.layer removeAnimationForKey:@"contents"];
             self.layer.contentsScale = image.scale;
             self.layer.contents = (__bridge id)image.CGImage;
+            loadEndHandler();
           });
         } else if (error) {
-          RCTLogWarn(@"Unable to download image. Error: %@", error);
+          errorHandler([error description]);
         }
       }];
     }

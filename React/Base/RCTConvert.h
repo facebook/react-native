@@ -39,6 +39,7 @@
 + (NSUInteger)NSUInteger:(id)json;
 
 + (NSArray *)NSArray:(id)json;
++ (NSSet *)NSSet:(id)json;
 + (NSDictionary *)NSDictionary:(id)json;
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;

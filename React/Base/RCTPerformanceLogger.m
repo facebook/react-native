@@ -64,6 +64,8 @@ RCT_EXPORT_MODULE()
 
 - (void)sendTimespans
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
   [_bridge enqueueJSCall:@"PerformanceLogger.addTimespans" args:@[
     RCTPerformanceLoggerOutput(),
     @[
