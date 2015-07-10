@@ -23,6 +23,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
   NSURLCache *_cache;
   dispatch_queue_t _processingQueue;
   NSMutableDictionary *_pendingBlocks;
+  RCTDownloadTaskWrapper *_downloadTaskWrapper;
 }
 
 + (RCTImageDownloader *)sharedInstance
@@ -41,22 +42,22 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
     _cache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 diskCapacity:200 * 1024 * 1024 diskPath:@"React/RCTImageDownloader"];
     _processingQueue = dispatch_queue_create("com.facebook.React.DownloadProcessingQueue", DISPATCH_QUEUE_SERIAL);
     _pendingBlocks = [[NSMutableDictionary alloc] init];
+
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    _downloadTaskWrapper = [[RCTDownloadTaskWrapper alloc] initWithSessionConfiguration:config delegateQueue:nil];
   }
 
   return self;
 }
 
-- (id)_downloadDataForURL:(NSURL *)url progressBlock:progressBlock block:(RCTCachedDataDownloadBlock)block
+- (RCTImageDownloadCancellationBlock)_downloadDataForURL:(NSURL *)url progressBlock:progressBlock block:(RCTCachedDataDownloadBlock)block
 {
-  NSString *cacheKey = url.absoluteString;
+  NSString *const cacheKey = url.absoluteString;
 
   __block BOOL cancelled = NO;
   __block NSURLSessionDownloadTask *task = nil;
 
-  NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-  RCTDownloadTaskWrapper *downloadTaskWrapper = [[RCTDownloadTaskWrapper alloc] initWithSessionConfiguration:config delegateQueue:nil];
-
-  dispatch_block_t cancel = ^{
+  RCTImageDownloadCancellationBlock cancel = ^{
     cancelled = YES;
 
     dispatch_async(_processingQueue, ^{
@@ -90,7 +91,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
       };
 
       NSURLRequest *request = [NSURLRequest requestWithURL:url];
-      task = [downloadTaskWrapper downloadData:url progressBlock:progressBlock completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+      task = [_downloadTaskWrapper downloadData:url progressBlock:progressBlock completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
         if (!cancelled) {
           runBlocks(NO, data, error);
         }
@@ -120,20 +121,20 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
   return [cancel copy];
 }
 
-- (id)downloadDataForURL:(NSURL *)url progressBlock:(RCTDataProgressBlock)progressBlock block:(RCTDataDownloadBlock)block
+- (RCTImageDownloadCancellationBlock)downloadDataForURL:(NSURL *)url progressBlock:(RCTDataProgressBlock)progressBlock block:(RCTDataDownloadBlock)block
 {
   return [self _downloadDataForURL:url progressBlock:progressBlock block:^(BOOL cached, NSData *data, NSError *error) {
     block(data, error);
   }];
 }
 
-- (id)downloadImageForURL:(NSURL *)url
-                     size:(CGSize)size
-                    scale:(CGFloat)scale
-               resizeMode:(UIViewContentMode)resizeMode
-          backgroundColor:(UIColor *)backgroundColor
-            progressBlock:(RCTDataProgressBlock)progressBlock
-                    block:(RCTImageDownloadBlock)block
+- (RCTImageDownloadCancellationBlock)downloadImageForURL:(NSURL *)url
+                                                    size:(CGSize)size
+                                                   scale:(CGFloat)scale
+                                              resizeMode:(UIViewContentMode)resizeMode
+                                         backgroundColor:(UIColor *)backgroundColor
+                                           progressBlock:(RCTDataProgressBlock)progressBlock
+                                                   block:(RCTImageDownloadBlock)block
 {
   return [self downloadDataForURL:url progressBlock:progressBlock block:^(NSData *data, NSError *error) {
     if (!data || error) {
@@ -182,10 +183,10 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
   }];
 }
 
-- (void)cancelDownload:(id)downloadToken
+- (void)cancelDownload:(RCTImageDownloadCancellationBlock)downloadToken
 {
   if (downloadToken) {
-    ((dispatch_block_t)downloadToken)();
+    downloadToken();
   }
 }
 

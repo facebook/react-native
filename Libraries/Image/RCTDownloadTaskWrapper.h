@@ -14,13 +14,8 @@ typedef void (^RCTDataProgressBlock)(int64_t written, int64_t total);
 
 @interface RCTDownloadTaskWrapper : NSObject <NSURLSessionDownloadDelegate>
 
-@property (copy, nonatomic) RCTDataCompletionBlock completionBlock;
-@property (copy, nonatomic) RCTDataProgressBlock progressBlock;
-
 - (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration delegateQueue:(NSOperationQueue *)delegateQueue;
 
 - (NSURLSessionDownloadTask *)downloadData:(NSURL *)url progressBlock:(RCTDataProgressBlock)progressBlock completionBlock:(RCTDataCompletionBlock)completionBlock;
-
-@property (nonatomic, assign) id<NSURLSessionDownloadDelegate> delegate;
 
 @end
