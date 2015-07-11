@@ -51,6 +51,7 @@
 
 - (void)endRefreshing;
 
+- (CGPoint) getScrollViewPosition;
 @end
 
 @interface RCTEventDispatcher (RCTScrollView)
