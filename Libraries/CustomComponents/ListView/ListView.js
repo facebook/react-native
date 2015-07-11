@@ -221,7 +221,7 @@ var ListView = React.createClass({
    * such as scrollTo.
    */
   getScrollResponder: function() {
-    return this.refs[SCROLLVIEW_REF];
+    return this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
   setNativeProps: function(props) {
@@ -399,14 +399,15 @@ var ListView = React.createClass({
    */
 
   _measureAndUpdateScrollProps: function() {
+    var scrollComponent = this.getScrollResponder();
     RCTUIManager.measureLayout(
-      this.refs[SCROLLVIEW_REF].getInnerViewNode(),
-      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
+      scrollComponent.getInnerViewNode(),
+      React.findNodeHandle(scrollComponent),
       logError,
       this._setScrollContentHeight
     );
     RCTUIManager.measureLayoutRelativeToParent(
-      React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
+      React.findNodeHandle(scrollComponent),
       logError,
       this._setScrollVisibleHeight
     );
@@ -414,7 +415,7 @@ var ListView = React.createClass({
     // RKScrollViewManager.calculateChildFrames not available on every platform
     RKScrollViewManager && RKScrollViewManager.calculateChildFrames &&
       RKScrollViewManager.calculateChildFrames(
-        React.findNodeHandle(this.refs[SCROLLVIEW_REF]),
+        React.findNodeHandle(scrollComponent),
         this._updateChildFrames,
       );
   },
