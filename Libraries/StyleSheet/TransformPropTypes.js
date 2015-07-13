@@ -16,6 +16,7 @@ var ReactPropTypes = require('ReactPropTypes');
 var TransformPropTypes = {
   transform: ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
+      ReactPropTypes.shape({perspective: ReactPropTypes.number}),
       ReactPropTypes.shape({rotate: ReactPropTypes.string}),
       ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
