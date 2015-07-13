@@ -270,7 +270,7 @@
   XCTAssertEqualObjects(removeIndices, (@[@0, @1, @3, @4]));
 }
 
-- (void)testScenario1
+- (void)DISABLED_testScenario1
 {
   RCTUIManager *uiManager = [[RCTUIManager alloc] init];
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[uiManager]; } launchOptions:nil];
@@ -354,7 +354,7 @@
   }
 }
 
-- (void)testScenario2
+- (void)DISABLED_testScenario2
 {
   RCTUIManager *uiManager = [[RCTUIManager alloc] init];
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[uiManager]; } launchOptions:nil];
