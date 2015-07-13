@@ -11,6 +11,7 @@
 
 #import <objc/message.h>
 
+#import "RCTCache.h"
 #import "RCTDefines.h"
 
 @implementation RCTConvert
@@ -387,10 +388,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 + (UIColor *)UIColor:(id)json
 {
   // Check color cache
-  static NSMutableDictionary *colorCache = nil;
+  static RCTCache *colorCache = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    colorCache = [[NSMutableDictionary alloc] init];
+    colorCache = [[RCTCache alloc] init];
+    colorCache.countLimit = 1024;
   });
   UIColor *color = colorCache[json];
   if (color) {

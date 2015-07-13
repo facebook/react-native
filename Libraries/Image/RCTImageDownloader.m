@@ -105,16 +105,15 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
       }];
 
       NSCachedURLResponse *cachedResponse = [_cache cachedResponseForRequest:request];
-        if (cancelled) {
-          return;
-        }
+      if (cancelled) {
+        return;
+      }
 
-        if (cachedResponse) {
-          runBlocks(YES, cachedResponse.data, nil);
-        } else {
-          [task resume];
-        }
-
+      if (cachedResponse) {
+        runBlocks(YES, cachedResponse.data, nil);
+      } else {
+        [task resume];
+      }
     }
   });
 
