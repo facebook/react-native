@@ -107,7 +107,11 @@ RCT_CONVERTER(NSString *, NSString, description)
 
     // Assume that it's a local path
     path = [path stringByRemovingPercentEncoding];
-    if (![path isAbsolutePath]) {
+    if ([path hasPrefix:@"~"]) {
+      // Path is inside user directory
+      path = [path stringByExpandingTildeInPath];
+    } else if (![path isAbsolutePath]) {
+      // Assume it's a resource path
       path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:path];
     }
     return [NSURL fileURLWithPath:path];
@@ -652,43 +656,54 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     return nil;
   }
 
-  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]] && ![json isKindOfClass:[NSDictionary class]]) {
-    RCTLogConvertError(json, "an image");
-    return nil;
-  }
-
   UIImage *image;
   NSString *path;
   CGFloat scale = 0.0;
   if ([json isKindOfClass:[NSString class]]) {
-    if ([json length] == 0) {
-      return nil;
-    }
     path = json;
-  } else {
+  } else if ([json isKindOfClass:[NSDictionary class]]) {
     path = [self NSString:json[@"uri"]];
     scale = [self CGFloat:json[@"scale"]];
+  } else {
+    RCTLogConvertError(json, "an image");
   }
 
-  if ([path hasPrefix:@"data:"]) {
-    NSURL *url = [NSURL URLWithString:path];
-    NSData *imageData = [NSData dataWithContentsOfURL:url];
-    image = [UIImage imageWithData:imageData];
-  } else if ([path isAbsolutePath] || [path hasPrefix:@"~"]) {
-    image = [UIImage imageWithContentsOfFile:path.stringByExpandingTildeInPath];
-  } else {
-    image = [UIImage imageNamed:path];
-    if (!image) {
-      image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
+  NSURL *URL = [self NSURL:path];
+  NSString *scheme = [URL.scheme lowercaseString];
+  if ([scheme isEqualToString:@"file"]) {
+
+    if ([NSThread currentThread] == [NSThread mainThread]) {
+      // Image may reside inside a .car file, in which case we have no choice
+      // but to use +[UIImage imageNamed] - but this method isn't thread safe
+      image = [UIImage imageNamed:path];
     }
+
+    if (!image) {
+      // Attempt to load from the file system
+      if ([path pathExtension].length == 0) {
+        path = [path stringByAppendingPathExtension:@"png"];
+      }
+      image = [UIImage imageWithContentsOfFile:path];
+    }
+
+    // We won't warn about nil images because there are legitimate cases
+    // where we find out if a string is an image by using this method, but
+    // we do enforce thread-safe API usage with the following check
+    if (RCT_DEBUG && !image && [UIImage imageNamed:path]) {
+      RCTAssertMainThread();
+    }
+
+  } else if ([scheme isEqualToString:@"data"]) {
+    image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
+  } else {
+    RCTLogConvertError(json, "an image. Only local files or data URIs are supported");
   }
-  
+
   if (scale > 0) {
-    image = [UIImage imageWithCGImage:image.CGImage scale:scale orientation:image.imageOrientation];
+    image = [UIImage imageWithCGImage:image.CGImage
+                                scale:scale
+                          orientation:image.imageOrientation];
   }
-  
-  // NOTE: we don't warn about nil images because there are legitimate
-  // case where we find out if a string is an image by using this method
   return image;
 }
 

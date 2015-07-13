@@ -15,6 +15,7 @@
 #import <XCTest/XCTest.h>
 
 #import "RCTConvert.h"
+#import "RCTUtils.h"
 
 @interface RCTConvert_NSURLTests : XCTestCase
 
@@ -42,7 +43,7 @@ TEST_PATH(name, _input, [[[NSBundle mainBundle] bundlePath] stringByAppendingPat
 TEST_URL(basic, @"http://example.com", @"http://example.com")
 TEST_URL(null, (id)kCFNull, nil)
 
-// Local files
+// Resource files
 TEST_PATH(fileURL, @"file:///blah/hello.jsbundle", @"/blah/hello.jsbundle")
 TEST_BUNDLE_PATH(filePath, @"blah/hello.jsbundle", @"blah/hello.jsbundle")
 TEST_BUNDLE_PATH(filePathWithSpaces, @"blah blah/hello.jsbundle", @"blah blah/hello.jsbundle")
@@ -50,11 +51,22 @@ TEST_BUNDLE_PATH(filePathWithEncodedSpaces, @"blah%20blah/hello.jsbundle", @"bla
 TEST_BUNDLE_PATH(imageAt2XPath, @"images/foo@2x.jpg",  @"images/foo@2x.jpg")
 TEST_BUNDLE_PATH(imageFile, @"foo.jpg",  @"foo.jpg")
 
+// User documents
+TEST_PATH(documentsFolder, @"~/Documents", [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject])
+
 // Remote files
 TEST_URL(fullURL, @"http://example.com/blah/hello.jsbundle", @"http://example.com/blah/hello.jsbundle")
 TEST_URL(urlWithSpaces, @"http://example.com/blah blah/foo", @"http://example.com/blah%20blah/foo")
 TEST_URL(urlWithEncodedSpaces, @"http://example.com/blah%20blah/foo", @"http://example.com/blah%20blah/foo")
 TEST_URL(imageURL, @"http://example.com/foo@2x.jpg",  @"http://example.com/foo@2x.jpg")
 TEST_URL(imageURLWithSpaces, @"http://example.com/blah foo@2x.jpg",  @"http://example.com/blah%20foo@2x.jpg")
+
+// Data URLs
+- (void)testDataURL
+{
+  NSURL *expectedURL = RCTDataURL(@"text/plain", [@"abcde" dataUsingEncoding:NSUTF8StringEncoding]);
+  NSURL *testURL = [NSURL URLWithString:@"data:text/plain;base64,YWJjZGU="];
+  XCTAssertEqualObjects([testURL absoluteString], [expectedURL absoluteString]);
+}
 
 @end
