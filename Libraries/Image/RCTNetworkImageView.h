@@ -29,6 +29,11 @@
 @property (nonatomic, strong) NSURL *imageURL;
 
 /**
+ * Whether the image should be masked with this view's tint color.
+ */
+@property (nonatomic, assign) BOOL tinted;
+
+/**
  * By default, changing imageURL will reset whatever existing image was present
  * and revert to defaultImage while the new image loads. In certain obscure cases you
  * may want to disable this behavior and instead keep displaying the previous image

@@ -31,6 +31,16 @@ RCT_REMAP_VIEW_PROPERTY(defaultImageSrc, defaultImage, UIImage)
 RCT_REMAP_VIEW_PROPERTY(src, imageURL, NSURL)
 RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
 RCT_EXPORT_VIEW_PROPERTY(progressHandlerRegistered, BOOL)
+RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTNetworkImageView)
+{
+  if (json) {
+    view.tinted = YES;
+    view.tintColor = [RCTConvert UIColor:json];
+  } else {
+    view.tinted = defaultView.tinted;
+    view.tintColor = defaultView.tintColor;
+  }
+}
 
 - (NSDictionary *)customDirectEventTypes
 {
