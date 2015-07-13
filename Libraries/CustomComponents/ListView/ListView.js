@@ -221,7 +221,9 @@ var ListView = React.createClass({
    * such as scrollTo.
    */
   getScrollResponder: function() {
-    return this.refs[SCROLLVIEW_REF].getScrollResponder();
+    return this.refs[SCROLLVIEW_REF] &&
+      this.refs[SCROLLVIEW_REF].getScrollResponder &&
+      this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
   setNativeProps: function(props) {
@@ -400,6 +402,9 @@ var ListView = React.createClass({
 
   _measureAndUpdateScrollProps: function() {
     var scrollComponent = this.getScrollResponder();
+    if (!scrollComponent || !scrollComponent.getInnerViewNode) {
+      return;
+    }
     RCTUIManager.measureLayout(
       scrollComponent.getInnerViewNode(),
       React.findNodeHandle(scrollComponent),

@@ -157,8 +157,8 @@ class MessageQueue {
     let callback = this._callbacks[cbID];
     if (__DEV__) {
       let debug = this._debugInfo[cbID >> 1];
-      let module = this._remoteModuleTable[debug[0]];
-      let method = this._remoteMethodTable[debug[0]][debug[1]];
+      let module = debug && this._remoteModuleTable[debug[0]];
+      let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
       if (!callback) {
         console.error(`Callback with id ${cbID}: ${module}.${method}() not found`);
       } else if (SPY_MODE) {
