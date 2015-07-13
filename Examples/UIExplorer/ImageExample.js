@@ -194,23 +194,46 @@ exports.examples = [
       'pixels to the tint color.',
     render: function() {
       return (
-        <View style={styles.horizontal}>
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, {tintColor: 'blue' }]}
-          />
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, styles.leftMargin, {tintColor: 'green' }]}
-          />
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, styles.leftMargin, {tintColor: 'red' }]}
-          />
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, styles.leftMargin, {tintColor: 'black' }]}
-          />
+        <View>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, {tintColor: '#5ac8fa' }]}
+            />
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, styles.leftMargin, {tintColor: '#4cd964' }]}
+            />
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, styles.leftMargin, {tintColor: '#ff2d55' }]}
+            />
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, styles.leftMargin, {tintColor: '#8e8e93' }]}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            It also works with downloaded images:
+          </Text>
+          <View style={styles.horizontal}>
+            <Image
+              source={smallImage}
+              style={[styles.base, {tintColor: '#5ac8fa' }]}
+            />
+            <Image
+              source={smallImage}
+              style={[styles.base, styles.leftMargin, {tintColor: '#4cd964' }]}
+            />
+            <Image
+              source={smallImage}
+              style={[styles.base, styles.leftMargin, {tintColor: '#ff2d55' }]}
+            />
+            <Image
+              source={smallImage}
+              style={[styles.base, styles.leftMargin, {tintColor: '#8e8e93' }]}
+            />
+          </View>
         </View>
       );
     },
@@ -282,6 +305,9 @@ var styles = StyleSheet.create({
   },
   background: {
     backgroundColor: '#222222'
+  },
+  sectionText: {
+    marginVertical: 6,
   },
   nestedText: {
     marginLeft: 12,

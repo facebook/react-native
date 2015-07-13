@@ -131,6 +131,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
                                                     size:(CGSize)size
                                                    scale:(CGFloat)scale
                                               resizeMode:(UIViewContentMode)resizeMode
+                                               tintColor:(UIColor *)tintColor
                                          backgroundColor:(UIColor *)backgroundColor
                                            progressBlock:(RCTDataProgressBlock)progressBlock
                                                    block:(RCTImageDownloadBlock)block
@@ -172,6 +173,10 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
       if (blendColor) {
         [blendColor setFill];
         UIRectFill((CGRect){CGPointZero, destSize});
+      }
+      if (tintColor) {
+        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [tintColor setFill];
       }
       [image drawInRect:imageRect];
       image = UIGraphicsGetImageFromCurrentImageContext();
