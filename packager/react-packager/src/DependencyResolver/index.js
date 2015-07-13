@@ -155,6 +155,7 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
     return defineModuleCode({
       code: code
         .replace(replacePatterns.IMPORT_RE, relativizeCode)
+        .replace(replacePatterns.EXPORT_RE, relativizeCode)
         .replace(replacePatterns.REQUIRE_RE, relativizeCode),
       deps: JSON.stringify(resolvedDepsArr),
       moduleName: module.id,

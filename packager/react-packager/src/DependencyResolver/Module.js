@@ -123,6 +123,10 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
       deps.push(dep);
       return match;
     })
+    .replace(replacePatterns.EXPORT_RE, (match, pre, quot, dep, post) => {
+      deps.push(dep);
+      return match;
+    })
     .replace(replacePatterns.REQUIRE_RE, function(match, pre, quot, dep, post) {
       deps.push(dep);
     });
