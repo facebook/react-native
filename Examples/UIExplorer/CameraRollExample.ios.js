@@ -22,11 +22,13 @@ var {
   SliderIOS,
   StyleSheet,
   SwitchIOS,
+  TouchableOpacity,
   Text,
   View,
 } = React;
 
 var CameraRollView = require('./CameraRollView.ios');
+var AssetThumbnailExampleView = require('./AssetThumbnailExample.ios');
 
 var CAMERA_ROLL_VIEW = 'camera_roll_view';
 
@@ -61,6 +63,15 @@ var CameraRollExample = React.createClass({
       </View>
     );
   },
+  
+  loadAsset(asset){
+    this.props.navigator.push({
+      title: "Thumbnails",
+      component: AssetThumbnailExampleView,
+      backButtonTitle: 'Back',
+      passProps: { asset: asset },
+    });
+  },
 
   _renderImage(asset) {
     var imageSize = this.state.bigImages ? 150 : 75;
@@ -68,18 +79,20 @@ var CameraRollExample = React.createClass({
     var location = asset.node.location.longitude ?
       JSON.stringify(asset.node.location) : 'Unknown location';
     return (
-      <View key={asset} style={styles.row}>
-        <Image
-          source={asset.node.image}
-          style={imageStyle}
-        />
-        <View style={styles.info}>
-          <Text style={styles.url}>{asset.node.image.uri}</Text>
-          <Text>{location}</Text>
-          <Text>{asset.node.group_name}</Text>
-          <Text>{new Date(asset.node.timestamp).toString()}</Text>
+      <TouchableOpacity onPress={ this.loadAsset.bind( this, asset ) }>
+        <View key={asset} style={styles.row}>
+          <Image
+            source={{ uri: asset.node.image.uri }}
+            style={imageStyle}
+          />
+          <View style={styles.info}>
+            <Text style={styles.url}>{asset.node.image.uri}</Text>
+            <Text>{location}</Text>
+            <Text>{asset.node.group_name}</Text>
+            <Text>{new Date(asset.node.timestamp).toString()}</Text>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   },
 

@@ -49,6 +49,12 @@ var warning = require('warning');
  *         style={styles.logo}
  *         source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
  *       />
+ *       <Image
+ *         style={styles.logo}
+ *         source={{  uri: 'assets-library://...',
+ *                    options: { assetUseMaximumSize: true } 
+ *                 }}
+ *       />
  *     </View>
  *   );
  * },
@@ -61,9 +67,41 @@ var Image = React.createClass({
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
      * resource (which should be wrapped in the `require('image!name')` function).
+     *
+     * `options` supports the following optional properties:
+     *
+     *   Photos Framework and Asset Library:
+     *   -----------------------------------
+     *    assetUseMaximumSize (boolean): Boolean value indicating whether to use the full 
+     *                                   resolution asset. Defaults to false.
+     *
+     *          If false, the image will be automatically sized based
+     *          on the target dimensions specified in the style property of the
+     *          <Image... /> tag (width, height).
+     *    
+     *          If true, the full resolution asset will be used.
+     *          This can result in substantial memory usage and potential crashes, 
+     *          especially when rendering many images in sequence. Consider that
+     *          an 8MP photo taken with an iPhone6 will require 32MB of memory to
+     *          display in full resolution (3264x2448).
+     *
+     *
+     *   Photos Framework only (assets with uri matching ph://...):
+     *   ----------------------------------------------------------
+     *    contentMode (string): Content mode used when requesting images using the Photos Framework.
+     *                  `fit`  (PHImageContentModeAspectFit)   default
+     *                  `fill` (PHImageContentModeAspectFill)
+     *
+     *    renderMode (string): Render mode used when reqeusting images using the Photos Framework.
+     *                  `fast`   (PHImageRequestOptionsResizeModeFast)   default
+     *                  `exact`  (PHImageRequestOptionsResizeModeFast)
+     *                  `none`   (PHImageRequestOptionsResizeModeNone)
+     *
+     *
      */
     source: PropTypes.shape({
       uri: PropTypes.string,
+      assetOptions: PropTypes.object,
     }),
     /**
      * A static image to display while downloading the final image off the
@@ -154,7 +192,19 @@ var Image = React.createClass({
       tintColor: style.tintColor,
     });
     if (isStored) {
-      nativeProps.imageTag = source.uri;
+      var options = {
+        // iOS specific asset options
+        assetResizeMode: 'fast',
+        assetContentMode: 'fill',
+        assetTargetSize: { width: style.width, height: style.height },
+        assetUseMaximumSize: false
+      };
+      
+      Object.assign( options, this.props.source.options );
+      
+      nativeProps.imageTag = { uri: source.uri,
+                               options: options };
+                               
     } else {
       nativeProps.src = source.uri;
     }
