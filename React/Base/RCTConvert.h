@@ -120,8 +120,9 @@ typedef NSArray CGColorArray;
 typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
-typedef BOOL css_clip_t;
+typedef BOOL css_clip_t, css_backface_visibility_t;
 + (css_clip_t)css_clip_t:(id)json;
++ (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;
 + (css_justify_t)css_justify_t:(id)json;
 + (css_align_t)css_align_t:(id)json;
