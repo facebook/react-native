@@ -122,10 +122,6 @@ class MessageQueue {
           (this._debugInfo[this._callbackID >> 5] = null);
 
         this._debugInfo[this._callbackID >> 1] = [module, method];
-        if (SPY_MODE && isFinite(module)) {
-          console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
-            this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
-        }
       }
       onFail && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onFail;
@@ -135,6 +131,10 @@ class MessageQueue {
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
     this._queue[PARAMS].push(params);
+    if (__DEV__ && SPY_MODE && isFinite(module)) {
+      console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
+        this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
+    }
   }
 
   __callFunction(module, method, args) {
