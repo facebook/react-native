@@ -36,8 +36,7 @@ type MapRegion = {
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
 
-  checkAnnotationIds: function (annotations: Array<Object>) {
-
+  checkAnnotationData: function(annotations: Array<Object>) {
     var newAnnotations = annotations.map(function (annotation) {
       if (!annotation.id) {
         // TODO: add a base64 (or similar) encoder here
@@ -53,13 +52,13 @@ var MapView = React.createClass({
   },
   componentWillMount: function() {
     if (this.props.annotations) {
-      this.checkAnnotationIds(this.props.annotations);
+      this.checkAnnotationData(this.props.annotations);
     }
   },
 
   componentWillReceiveProps: function(nextProps: Object) {
     if (nextProps.annotations) {
-      this.checkAnnotationIds(nextProps.annotations);
+      this.checkAnnotationData(nextProps.annotations);
     }
   },
 
@@ -168,7 +167,7 @@ var MapView = React.createClass({
       /**
        * Right callout
        */
-      rightCallout: React.PropTypes.arrayOf(React.PropTypes.shape({
+      rightCallout: React.PropTypes.shape({
 
         /**
          * Type of the callout. If image, set src in config
@@ -185,21 +184,26 @@ var MapView = React.createClass({
         onPress: React.PropTypes.func,
 
         /**
-         * Additional config parameters to pass to the callout. 
+         * Additional config parameters to pass to the callout.
          */
-        config: React.PropTypes.arrayOf(React.PropTypes.shape({
+        config: React.PropTypes.shape({
 
           /**
            * Is being used when type == image. use the same input as for Image
            */
-          src: React.PropTypes.string
-        }))
-      })),
+          image: React.PropTypes.string,
+
+          /**
+           * Default Image is being used when the image has to get loaded
+           */
+          defaultImage: React.PropTypes.string
+        })
+      }),
 
       /**
        * Left callout
        */
-      leftCallout: React.PropTypes.arrayOf(React.PropTypes.shape({
+      leftCallout: React.PropTypes.shape({
 
         /**
          * Type of the callout. If image, set src in config
@@ -216,16 +220,21 @@ var MapView = React.createClass({
         onPress: React.PropTypes.func,
 
         /**
-         * Additional config parameters to pass to the callout. 
+         * Additional config parameters to pass to the callout.
          */
-        config: React.PropTypes.arrayOf(React.PropTypes.shape({
+        config: React.PropTypes.shape({
 
           /**
            * Is being used when type == image. use the same input as for Image
            */
-          src: React.PropTypes.string
-        }))
-      })),
+          image: React.PropTypes.string,
+
+          /**
+           * Default Image is being used when the image has to get loaded
+           */
+          defaultImage: React.PropTypes.string
+        })
+      }),
 
       /**
        * annotation id

@@ -93,20 +93,46 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   annotationView.leftCalloutAccessoryView = nil;
   if (annotation.hasLeftCallout) {
     if (annotation.leftCalloutType == RCTPointAnnotationTypeImage) {
-      NSString *uri = [RCTConvert NSString:annotation.leftCalloutConfig[@"src"][@"uri"]];
-      UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
-      annotationView.leftCalloutAccessoryView = calloutImage;
+      if ([annotation.leftCalloutConfig objectForKey:@"image"] != nil) {
+        if ([annotation.leftCalloutConfig[@"image"] isKindOfClass: [NSDictionary class]] &&
+            [annotation.leftCalloutConfig[@"image"] objectForKey:@"__packager_asset"] != nil) {
+          // We have a local ressource, no web loading necessary
+          NSString *uri = [RCTConvert NSString:annotation.leftCalloutConfig[@"image"][@"uri"]];
+          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
+          annotationView.leftCalloutAccessoryView = calloutImage;
+        } else {
+          // If we don't have a packager asset, we have to fetch it from interwebs
+          NSString *uri = [RCTConvert NSString:annotation.leftCalloutConfig[@"image"]];
+          UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:uri]]];
+          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:image];
+          annotationView.leftCalloutAccessoryView = calloutImage;
+        }
+      }
+
     } else {
       annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
     }
   }
-  
+
   annotationView.rightCalloutAccessoryView = nil;
   if (annotation.hasRightCallout) {
     if (annotation.rightCalloutType == RCTPointAnnotationTypeImage) {
-      NSString *uri = [RCTConvert NSString:annotation.rightCalloutConfig[@"src"][@"uri"]];
-      UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
-      annotationView.rightCalloutAccessoryView = calloutImage;
+      if ([annotation.rightCalloutConfig objectForKey:@"image"] != nil) {
+        if ([annotation.rightCalloutConfig[@"image"] isKindOfClass: [NSDictionary class]] &&
+            [annotation.rightCalloutConfig[@"image"] objectForKey:@"__packager_asset"] != nil) {
+          // We have a local ressource, no web loading necessary
+          NSString *uri = [RCTConvert NSString:annotation.rightCalloutConfig[@"image"][@"uri"]];
+          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
+          annotationView.rightCalloutAccessoryView = calloutImage;
+        } else {
+          // If we don't have a packager asset, we have to fetch it from interwebs
+          NSString *uri = [RCTConvert NSString:annotation.rightCalloutConfig[@"image"]];
+          UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:uri]]];
+          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:image];
+          annotationView.rightCalloutAccessoryView = calloutImage;
+        }
+      }
+
     } else {
       annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
     }
