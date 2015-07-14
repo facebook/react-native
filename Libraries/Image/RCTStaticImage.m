@@ -9,6 +9,13 @@
 
 #import "RCTStaticImage.h"
 
+#import "RCTConvert.h"
+#import "RCTGIFImage.h"
+#import "RCTImageLoader.h"
+#import "RCTUtils.h"
+
+#import "UIView+React.h"
+
 @implementation RCTStaticImage
 
 - (void)_updateImage
@@ -56,6 +63,56 @@
   if (_renderingMode != renderingMode) {
     _renderingMode = renderingMode;
     [self _updateImage];
+  }
+}
+
+- (void)setSrc:(NSString *)src
+{
+  if (![src isEqual:_src]) {
+    _src = [src copy];
+    [self reloadImage];
+  }
+}
+
+- (void)reloadImage
+{
+  if (_src && !CGSizeEqualToSize(self.frame.size, CGSizeZero)) {
+    [RCTImageLoader loadImageWithTag:_src
+                                size:self.bounds.size
+                               scale:RCTScreenScale()
+                          resizeMode:self.contentMode callback:^(NSError *error, id image) {
+      if (error) {
+        RCTLogWarn(@"%@", error.localizedDescription);
+      }
+      if ([image isKindOfClass:[CAAnimation class]]) {
+        [self.layer addAnimation:image forKey:@"contents"];
+      } else {
+        [self.layer removeAnimationForKey:@"contents"];
+        self.image = image;
+      }
+    }];
+  } else {
+    [self.layer removeAnimationForKey:@"contents"];
+    self.image = nil;
+  }
+}
+
+- (void)reactSetFrame:(CGRect)frame
+{
+  [super reactSetFrame:frame];
+  if (self.image == nil) {
+    [self reloadImage];
+  } else if ([RCTImageLoader isAssetLibraryImage:_src]) {
+    CGSize imageSize = {
+      self.image.size.width / RCTScreenScale(),
+      self.image.size.height / RCTScreenScale()
+    };
+    CGFloat widthChangeFraction = imageSize.width ? ABS(imageSize.width - frame.size.width) / imageSize.width : 1;
+    CGFloat heightChangeFraction = imageSize.height ? ABS(imageSize.height - frame.size.height) / imageSize.height : 1;
+    // If the combined change is more than 20%, reload the asset in case there is a better size.
+    if (widthChangeFraction + heightChangeFraction > 0.2) {
+      [self reloadImage];
+    }
   }
 }
 

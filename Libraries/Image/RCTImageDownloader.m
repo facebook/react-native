@@ -10,6 +10,7 @@
 #import "RCTImageDownloader.h"
 
 #import "RCTDownloadTaskWrapper.h"
+#import "RCTImageUtils.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -195,82 +196,3 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
 }
 
 @end
-
-/**
- * Returns the optimal context size for an image drawn using the clip rect
- * returned by RCTClipRect.
- */
-CGSize RCTTargetSizeForClipRect(CGRect clipRect)
-{
-  return (CGSize){
-    clipRect.size.width + clipRect.origin.x * 2,
-    clipRect.size.height + clipRect.origin.y * 2
-  };
-}
-
-/**
- * This function takes an input content size & scale (typically from an image),
- * a target size & scale that it will be drawn into (typically a CGContext) and
- * then calculates the optimal rectangle to draw the image into so that it will
- * be sized and positioned correctly if drawn using the specified content mode.
- */
-CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
-                   CGSize destSize, CGFloat destScale,
-                   UIViewContentMode resizeMode)
-{
-  // Precompensate for scale
-  CGFloat scale = sourceScale / destScale;
-  sourceSize.width *= scale;
-  sourceSize.height *= scale;
-
-  // Calculate aspect ratios if needed (don't bother is resizeMode == stretch)
-  CGFloat aspect = 0.0, targetAspect = 0.0;
-  if (resizeMode != UIViewContentModeScaleToFill) {
-    aspect = sourceSize.width / sourceSize.height;
-    targetAspect = destSize.width / destSize.height;
-    if (aspect == targetAspect) {
-      resizeMode = UIViewContentModeScaleToFill;
-    }
-  }
-
-  switch (resizeMode) {
-    case UIViewContentModeScaleToFill: // stretch
-
-      sourceSize.width = MIN(destSize.width, sourceSize.width);
-      sourceSize.height = MIN(destSize.height, sourceSize.height);
-      return (CGRect){CGPointZero, sourceSize};
-
-    case UIViewContentModeScaleAspectFit: // contain
-
-      if (targetAspect <= aspect) { // target is taller than content
-        sourceSize.width = destSize.width = MIN(sourceSize.width, destSize.width);
-        sourceSize.height = sourceSize.width / aspect;
-      } else { // target is wider than content
-        sourceSize.height = destSize.height = MIN(sourceSize.height, destSize.height);
-        sourceSize.width = sourceSize.height * aspect;
-      }
-      return (CGRect){CGPointZero, sourceSize};
-
-    case UIViewContentModeScaleAspectFill: // cover
-
-      if (targetAspect <= aspect) { // target is taller than content
-
-        sourceSize.height = destSize.height = MIN(sourceSize.height, destSize.height);
-        sourceSize.width = sourceSize.height * aspect;
-        destSize.width = destSize.height * targetAspect;
-        return (CGRect){{(destSize.width - sourceSize.width) / 2, 0}, sourceSize};
-
-      } else { // target is wider than content
-
-        sourceSize.width = destSize.width = MIN(sourceSize.width, destSize.width);
-        sourceSize.height = sourceSize.width / aspect;
-        destSize.height = destSize.width / targetAspect;
-        return (CGRect){{0, (destSize.height - sourceSize.height) / 2}, sourceSize};
-      }
-
-    default:
-
-      RCTLogError(@"A resizeMode value of %zd is not supported", resizeMode);
-      return (CGRect){CGPointZero, destSize};
-  }
-}

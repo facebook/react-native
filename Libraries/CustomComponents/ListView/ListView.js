@@ -29,7 +29,7 @@
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
 var RCTUIManager = require('NativeModules').UIManager;
-var RKScrollViewManager = require('NativeModules').ScrollViewManager;
+var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
@@ -417,9 +417,10 @@ var ListView = React.createClass({
       this._setScrollVisibleHeight
     );
 
-    // RKScrollViewManager.calculateChildFrames not available on every platform
-    RKScrollViewManager && RKScrollViewManager.calculateChildFrames &&
-      RKScrollViewManager.calculateChildFrames(
+    // RCTScrollViewManager.calculateChildFrames is not available on
+    // every platform
+    RCTScrollViewManager && RCTScrollViewManager.calculateChildFrames &&
+      RCTScrollViewManager.calculateChildFrames(
         React.findNodeHandle(scrollComponent),
         this._updateChildFrames,
       );

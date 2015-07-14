@@ -439,12 +439,15 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
       @"flex",
     };
     layoutKeys = [NSSet setWithObjects:layoutKeyStrings count:sizeof(layoutKeyStrings)/sizeof(*layoutKeyStrings)];
+    // layoutKeys are the only keys whose presence does not reject layout-only status.
 
     static NSString *const specialKeyStrings[] = {
       @"accessible",
       @"collapsible",
     };
     specialKeys = [NSSet setWithObjects:specialKeyStrings count:sizeof(specialKeyStrings)/sizeof(*specialKeyStrings)];
+    // specialKeys are keys whose presence does not indicate whether layout-only or not
+    // their values must be tested below
   }
 
   NSNumber *collapsible = self.allProps[@"collapsible"];

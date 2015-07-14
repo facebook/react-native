@@ -13,5 +13,6 @@
 
 @property (nonatomic, assign) UIEdgeInsets capInsets;
 @property (nonatomic, assign) UIImageRenderingMode renderingMode;
+@property (nonatomic, copy) NSString *src;
 
 @end

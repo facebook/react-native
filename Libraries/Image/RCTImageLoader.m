@@ -19,6 +19,7 @@
 #import "RCTDefines.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
+#import "RCTImageUtils.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -56,13 +57,23 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
   return assetsLibrary;
 }
 
-/**
- * Can be called from any thread.
- * Will always call callback on main thread.
- */
-+ (void)loadImageWithTag:(NSString *)imageTag callback:(void (^)(NSError *error, id image))callback
++ (void)loadImageWithTag:(NSString *)imageTag
+                callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback
 {
-  if ([imageTag hasPrefix:@"assets-library"]) {
+  return [self loadImageWithTag:imageTag
+                           size:CGSizeZero
+                          scale:0
+                     resizeMode:UIViewContentModeScaleToFill
+                       callback:callback];
+}
+
++ (void)loadImageWithTag:(NSString *)imageTag
+                    size:(CGSize)size
+                   scale:(CGFloat)scale
+              resizeMode:(UIViewContentMode)resizeMode
+                callback:(void (^)(NSError *error, id image))callback
+{
+  if ([imageTag hasPrefix:@"assets-library://"]) {
     [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
       if (asset) {
         // ALAssetLibrary API is async and will be multi-threaded. Loading a few full
@@ -73,9 +84,31 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
           // Also make sure the image is released immediately after it's used so it
           // doesn't spike the memory up during the process.
           @autoreleasepool {
-            ALAssetRepresentation *representation = [asset defaultRepresentation];
-            ALAssetOrientation orientation = [representation orientation];
-            UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
+
+            BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
+            ALAssetOrientation orientation = ALAssetOrientationUp;
+            CGImageRef imageRef = NULL;
+
+            if (!useMaximumSize) {
+              imageRef = asset.thumbnail;
+            }
+            if (RCTUpscalingRequired((CGSize){CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}, 1, size, scale, resizeMode)) {
+              if (!useMaximumSize) {
+                imageRef = asset.aspectRatioThumbnail;
+              }
+              if (RCTUpscalingRequired((CGSize){CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}, 1, size, scale, resizeMode)) {
+                ALAssetRepresentation *representation = [asset defaultRepresentation];
+                orientation = [representation orientation];
+                if (!useMaximumSize) {
+                  imageRef = [representation fullScreenImage];
+                }
+                if (RCTUpscalingRequired((CGSize){CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}, 1, size, scale, resizeMode)) {
+                  imageRef = [representation fullResolutionImage];
+                }
+              }
+            }
+
+            UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale orientation:(UIImageOrientation)orientation];
             RCTDispatchCallbackOnMainQueue(callback, nil, image);
           }
         });
@@ -91,9 +124,9 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
     }];
   } else if ([imageTag hasPrefix:@"ph://"]) {
     // Using PhotoKit for iOS 8+
-    // 'ph://' prefix is used by FBMediaKit to differentiate between assets-library. It is prepended to the local ID so that it
-    // is in the form of NSURL which is what assets-library is based on.
-    // This means if we use any FB standard photo picker, we will get this prefix =(
+    // The 'ph://' prefix is used by FBMediaKit to differentiate between
+    // assets-library. It is prepended to the local ID so that it is in the
+    // form of an, NSURL which is what assets-library uses.
     NSString *phAssetID = [imageTag substringFromIndex:[@"ph://" length]];
     PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[phAssetID] options:nil];
     if (results.count == 0) {
@@ -104,7 +137,12 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
     }
 
     PHAsset *asset = [results firstObject];
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    CGSize targetSize = CGSizeEqualToSize(size, CGSizeZero) ? PHImageManagerMaximumSize : size;
+    PHImageContentMode contentMode = PHImageContentModeAspectFill;
+    if (resizeMode == UIViewContentModeScaleAspectFit) {
+      contentMode = PHImageContentModeAspectFit;
+    }
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:contentMode options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
       if (result) {
         RCTDispatchCallbackOnMainQueue(callback, nil, result);
       } else {
@@ -121,13 +159,20 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
       RCTDispatchCallbackOnMainQueue(callback, RCTErrorWithMessage(errorMessage), nil);
       return;
     }
-    [[RCTImageDownloader sharedInstance] downloadDataForURL:url progressBlock:nil block:^(NSData *data, NSError *error) {
-      if (error) {
-        RCTDispatchCallbackOnMainQueue(callback, error, nil);
-      } else {
-        RCTDispatchCallbackOnMainQueue(callback, nil, [UIImage imageWithData:data]);
-      }
-    }];
+    if ([[imageTag lowercaseString] hasSuffix:@".gif"]) {
+      [[RCTImageDownloader sharedInstance] downloadDataForURL:url progressBlock:nil block:^(NSData *data, NSError *error) {
+        id image = RCTGIFImageWithFileURL([RCTConvert NSURL:imageTag]);
+        if (!image && !error) {
+          NSString *errorMessage = [NSString stringWithFormat:@"Unable to load GIF image: %@", imageTag];
+          error = RCTErrorWithMessage(errorMessage);
+        }
+        RCTDispatchCallbackOnMainQueue(callback, error, image);
+      }];
+    } else {
+      [[RCTImageDownloader sharedInstance] downloadImageForURL:url size:size scale:scale resizeMode:resizeMode tintColor:nil backgroundColor:nil progressBlock:NULL block:^(UIImage *image, NSError *error) {
+         RCTDispatchCallbackOnMainQueue(callback, error, image);
+      }];
+    }
   } else if ([[imageTag lowercaseString] hasSuffix:@".gif"]) {
     id image = RCTGIFImageWithFileURL([RCTConvert NSURL:imageTag]);
     if (image) {
@@ -147,6 +192,11 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
       RCTDispatchCallbackOnMainQueue(callback, error, nil);
     }
   }
+}
+
++ (BOOL)isAssetLibraryImage:(NSString *)imageTag
+{
+  return [imageTag hasPrefix:@"assets-library://"] || [imageTag hasPrefix:@"ph:"];
 }
 
 @end

@@ -15,7 +15,7 @@
  * outside of the specified cost/count limits, and will be automatically
  * cleared in the event of a memory warning.
  */
-@interface RCTCache : NSCache
+@interface RCTCache : NSCache <NSFastEnumeration>
 
 /**
  * The total number of objects currently resident in the cache.
@@ -32,6 +32,11 @@
  */
 - (id)objectForKeyedSubscript:(id<NSCopying>)key;
 - (void)setObject:(id)obj forKeyedSubscript:(id<NSCopying>)key;
+
+/**
+ * Enumerate cached objects
+ */
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block;
 
 @end
 
