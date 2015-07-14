@@ -14,7 +14,8 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *error);
+typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSURLResponse *response,
+                                           NSData *data, NSError *error);
 
 CGSize RCTTargetSizeForClipRect(CGRect);
 CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
@@ -80,21 +81,33 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
       _pendingBlocks[cacheKey] = [NSMutableArray arrayWithObject:block];
 
       __weak RCTImageDownloader *weakSelf = self;
-      RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSData *data, NSError *error) {
+      RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSURLResponse *response, NSData *data, NSError *error) {
+
+        if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+          NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+          if (httpResponse.statusCode != 200) {
+            data = nil;
+            error = [[NSError alloc] initWithDomain:NSURLErrorDomain
+                                               code:httpResponse.statusCode
+                                           userInfo:nil];
+          }
+        }
+
         dispatch_async(_processingQueue, ^{
           RCTImageDownloader *strongSelf = weakSelf;
           NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
           [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
           for (RCTCachedDataDownloadBlock downloadBlock in blocks) {
-            downloadBlock(cached, data, error);
+            downloadBlock(cached, response, data, error);
           }
         });
       };
 
       NSURLRequest *request = [NSURLRequest requestWithURL:url];
       task = [_downloadTaskWrapper downloadData:url progressBlock:progressBlock completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+
         if (!cancelled) {
-          runBlocks(NO, data, error);
+          runBlocks(NO, response, data, error);
         }
 
         if (response) {
@@ -111,7 +124,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
       }
 
       if (cachedResponse) {
-        runBlocks(YES, cachedResponse.data, nil);
+        runBlocks(YES, cachedResponse.response, cachedResponse.data, nil);
       } else {
         [task resume];
       }
@@ -123,7 +136,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
 
 - (RCTImageDownloadCancellationBlock)downloadDataForURL:(NSURL *)url progressBlock:(RCTDataProgressBlock)progressBlock block:(RCTDataDownloadBlock)block
 {
-  return [self _downloadDataForURL:url progressBlock:progressBlock block:^(BOOL cached, NSData *data, NSError *error) {
+  return [self _downloadDataForURL:url progressBlock:progressBlock block:^(BOOL cached, NSURLResponse *response, NSData *data, NSError *error) {
     block(data, error);
   }];
 }
