@@ -469,9 +469,9 @@ var ScrollResponderMixin = {
     this.props.onKeyboardWillHide && this.props.onKeyboardWillHide(e);
   },
 
-  scrollResponderKeyboardDidShow: function() {
+  scrollResponderKeyboardDidShow: function(e: Event) {
     this.keyboardWillOpenTo = null;
-    this.props.onKeyboardDidShow && this.props.onKeyboardDidShow();
+    this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
   },
 
   scrollResponderKeyboardDidHide: function() {
