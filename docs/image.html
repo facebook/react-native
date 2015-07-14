@@ -223,23 +223,46 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
       <span class="token string">&#x27;pixels to the tint color.&#x27;</span><span class="token punctuation">,</span>
     render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
-        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>horizontal<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          &lt;Image
-            source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;blue&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
-          <span class="token operator">/</span><span class="token operator">&gt;</span>
-          &lt;Image
-            source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;green&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
-          <span class="token operator">/</span><span class="token operator">&gt;</span>
-          &lt;Image
-            source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;red&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
-          <span class="token operator">/</span><span class="token operator">&gt;</span>
-          &lt;Image
-            source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;black&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
-          <span class="token operator">/</span><span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>horizontal<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#5ac8fa&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#4cd964&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#ff2d55&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!uie_thumb_normal&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#8e8e93&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+          &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>sectionText<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            It also works <span class="token keyword">with</span> downloaded images<span class="token punctuation">:</span>
+          &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>horizontal<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span>smallImage<span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#5ac8fa&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span>smallImage<span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#4cd964&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span>smallImage<span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#ff2d55&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;Image
+              source<span class="token operator">=</span><span class="token punctuation">{</span>smallImage<span class="token punctuation">}</span>
+              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">,</span> <span class="token punctuation">{</span>tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;#8e8e93&#x27;</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
       <span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -311,6 +334,9 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   background<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#222222&#x27;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  sectionText<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    marginVertical<span class="token punctuation">:</span> <span class="token number">6</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   nestedText<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     marginLeft<span class="token punctuation">:</span> <span class="token number">12</span><span class="token punctuation">,</span>
