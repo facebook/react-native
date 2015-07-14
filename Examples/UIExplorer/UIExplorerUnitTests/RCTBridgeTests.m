@@ -24,7 +24,7 @@
 
 @property (nonatomic, strong, readonly) RCTBridge *batchedBridge;
 
-- (void)_handleBuffer:(id)buffer context:(NSNumber *)context;
+- (void)_handleBuffer:(id)buffer;
 - (void)setUp;
 
 @end
@@ -57,7 +57,6 @@ RCT_EXPORT_MODULE()
 - (void)executeJSCall:(__unused NSString *)name
                method:(__unused NSString *)method
             arguments:(__unused NSArray *)arguments
-              context:(__unused NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
   onComplete(nil, nil);
@@ -155,7 +154,7 @@ RCT_EXPORT_MODULE(TestModule)
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args], @[], @1234567];
 
-  [_bridge.batchedBridge _handleBuffer:buffer context:RCTGetExecutorID(executor)];
+  [_bridge.batchedBridge _handleBuffer:buffer];
 
   dispatch_sync(_methodQueue, ^{
     // clear the queue

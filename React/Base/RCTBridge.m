@@ -230,7 +230,6 @@ RCT_NOT_IMPLEMENTED(-init)
     [RCTGetLatestExecutor() executeJSCall:@"RCTLog"
                                    method:@"logIfNoNativeHook"
                                 arguments:@[level, message]
-                                  context:RCTGetExecutorID(RCTGetLatestExecutor())
                                  callback:^(__unused id json, __unused NSError *error) {}];
   });
 }
@@ -254,7 +253,6 @@ RCT_NOT_IMPLEMENTED(-init)
 
 RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
                       method:(__unused NSString *)method
-                      arguments:(__unused NSArray *)args
-                      context:(__unused NSNumber *)context)
+                      arguments:(__unused NSArray *)args);
 
 @end
