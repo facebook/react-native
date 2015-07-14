@@ -396,7 +396,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     colorCache = [[RCTCache alloc] init];
-    colorCache.countLimit = 1024;
+    colorCache.countLimit = 128;
   });
   UIColor *color = colorCache[json];
   if (color) {
