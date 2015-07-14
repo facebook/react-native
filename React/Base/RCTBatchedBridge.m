@@ -239,7 +239,11 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   [_javaScriptExecutor injectJSONText:configJSON
                   asGlobalObjectNamed:@"__fbBatchedBridgeConfig" callback:
-   ^(__unused id err) {
+   ^(NSError *error) {
+     if (error) {
+       [[RCTRedBox sharedInstance] showError:error];
+     }
+
      dispatch_semaphore_signal(semaphore);
    }];
 
@@ -302,22 +306,21 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
         [self enqueueApplicationScript:script url:bundleURL onComplete:^(NSError *loadError) {
 
-          if (!loadError) {
-
-            /**
-             * Register the display link to start sending js calls after everything
-             * is setup
-             */
-            NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
-            [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
-
-            [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                                object:_parentBridge
-                                                              userInfo:@{ @"bridge": self }];
-          } else {
-            [[RCTRedBox sharedInstance] showErrorMessage:[loadError localizedDescription]
-                                             withDetails:[loadError localizedFailureReason]];
+          if (loadError) {
+            [[RCTRedBox sharedInstance] showError:loadError];
+            return;
           }
+
+          /**
+           * Register the display link to start sending js calls after everything
+           * is setup
+           */
+          NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
+          [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
+
+          [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                              object:_parentBridge
+                                                            userInfo:@{ @"bridge": self }];
         }];
       }
     }];
@@ -527,7 +530,11 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
 
-  RCTJavaScriptCallback processResponse = ^(id json, __unused NSError *error) {
+  RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
+    if (error) {
+      [[RCTRedBox sharedInstance] showError:error];
+    }
+
     if (!self.isValid) {
       return;
     }
