@@ -30,7 +30,6 @@ var viewConfig = {
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
-    allowFontScaling: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -100,26 +99,15 @@ var Text = React.createClass({
      *
      *   {nativeEvent: {layout: {x, y, width, height}}}.
      */
-    onLayout: React.PropTypes.func,
-    /**
-     * Specifies should fonts scale to respect Text Size accessibility setting.
-     */ 
-    allowFontScaling: React.PropTypes.bool,
+     onLayout: React.PropTypes.func,
   },
 
   viewConfig: viewConfig,
 
-  getInitialState: function(): Object {
+  getInitialState: function() {
     return merge(this.touchableGetInitialState(), {
       isHighlighted: false,
     });
-  },
-  
-  getDefaultProps: function(): Object {
-    return {
-      numberOfLines: 0,
-      allowFontScaling: true,
-    };
   },
 
   onStartShouldSetResponder: function(): bool {
@@ -243,7 +231,6 @@ if (Platform.OS === 'android') {
   RCTVirtualText = createReactNativeComponentClass({
     validAttributes: merge(ReactNativeViewAttributes.UIView, {
       isHighlighted: true,
-      allowFontScaling: false,
     }),
     uiViewClassName: 'RCTVirtualText',
   });
