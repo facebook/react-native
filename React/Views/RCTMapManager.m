@@ -103,8 +103,14 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
         } else {
           // If we don't have a packager asset, we have to fetch it from interwebs
           NSString *uri = [RCTConvert NSString:annotation.leftCalloutConfig[@"image"]];
-          UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:uri]]];
-          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:image];
+          // Init image with placeholder / default image
+          NSString *defaultUri = [RCTConvert NSString:annotation.leftCalloutConfig[@"defaultImage"][@"uri"]];
+          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:defaultUri]];
+
+          [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:uri]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+              calloutImage.image = [UIImage imageWithData:data];
+            }];
+
           annotationView.leftCalloutAccessoryView = calloutImage;
         }
       }
@@ -127,8 +133,14 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
         } else {
           // If we don't have a packager asset, we have to fetch it from interwebs
           NSString *uri = [RCTConvert NSString:annotation.rightCalloutConfig[@"image"]];
-          UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:uri]]];
-          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:image];
+          // Init image with placeholder / default image
+          NSString *defaultUri = [RCTConvert NSString:annotation.rightCalloutConfig[@"defaultImage"][@"uri"]];
+          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:defaultUri]];
+
+          [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:uri]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+              calloutImage.image = [UIImage imageWithData:data];
+            }];
+
           annotationView.rightCalloutAccessoryView = calloutImage;
         }
       }
