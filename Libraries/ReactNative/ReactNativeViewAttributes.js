@@ -26,7 +26,11 @@ ReactNativeViewAttributes.UIView = {
   onMagicTap: true,
   collapsible: true,
 
-  // If any below are set, view should not be collapsible!
+  // If editing layout-only view attributes, make sure
+  // -[RCTShadowView isLayoutOnly] in RCTShadowView.m
+  // is up-to-date! If any property below is set, the
+  // view should not be collapsible, but this is done
+  // on the native side.
   onMoveShouldSetResponder: true,
   onResponderGrant: true,
   onResponderMove: true,
