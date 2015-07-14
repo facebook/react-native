@@ -20,12 +20,12 @@ RCT_EXPORT_MODULE()
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_METHOD(getScriptText:(RCTResponseSenderBlock)successCallback
-                  failureCallback:(RCTResponseSenderBlock)failureCallback)
+                  failureCallback:(RCTResponseErrorBlock)failureCallback)
 {
   if (self.scriptText && self.scriptURL) {
     successCallback(@[@{@"text": self.scriptText, @"url":[self.scriptURL absoluteString]}]);
   } else {
-    failureCallback(@[RCTMakeError(@"Source code is not available", nil, nil)]);
+    failureCallback(RCTErrorWithMessage(@"Source code is not available"));
   }
 }
 

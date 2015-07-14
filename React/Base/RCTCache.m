@@ -28,15 +28,6 @@
 
 @implementation RCTCacheEntry
 
-+ (instancetype)entryWithObject:(id)object cost:(NSUInteger)cost sequenceNumber:(NSInteger)sequenceNumber
-{
-  RCTCacheEntry *entry = [[self alloc] init];
-  entry.object = object;
-  entry.cost = cost;
-  entry.sequenceNumber = sequenceNumber;
-  return entry;
-}
-
 @end
 
 @interface RCTCache_Private : NSObject
@@ -46,24 +37,28 @@
 @property (nonatomic, assign) NSUInteger totalCostLimit;
 @property (nonatomic, copy) NSString *name;
 
-@property (nonatomic, assign) NSUInteger totalCost;
 @property (nonatomic, strong) NSMutableDictionary *cache;
-@property (nonatomic, assign) BOOL delegateRespondsToWillEvictObject;
-@property (nonatomic, assign) BOOL delegateRespondsToShouldEvictObject;
-@property (nonatomic, assign) BOOL currentlyCleaning;
+@property (nonatomic, assign) NSUInteger totalCost;
 @property (nonatomic, assign) NSInteger sequenceNumber;
-@property (nonatomic, strong) NSLock *lock;
 
 @end
 
 @implementation RCTCache_Private
+{
+  BOOL _delegateRespondsToWillEvictObject;
+  BOOL _delegateRespondsToShouldEvictObject;
+  BOOL _currentlyCleaning;
+  NSMutableArray *_entryPool;
+  NSLock *_lock;
+}
 
-- (instancetype)init
+- (id)init
 {
   if ((self = [super init]))
   {
     //create storage
     _cache = [[NSMutableDictionary alloc] init];
+    _entryPool = [[NSMutableArray alloc] init];
     _lock = [[NSLock alloc] init];
     _totalCost = 0;
 
@@ -95,7 +90,7 @@
   [_lock lock];
   _countLimit = countLimit;
   [_lock unlock];
-  [self cleanUp];
+  [self cleanUp:NO];
 }
 
 - (void)setTotalCostLimit:(NSUInteger)totalCostLimit
@@ -103,7 +98,7 @@
   [_lock lock];
   _totalCostLimit = totalCostLimit;
   [_lock unlock];
-  [self cleanUp];
+  [self cleanUp:NO];
 }
 
 - (NSUInteger)count
@@ -111,40 +106,51 @@
   return [_cache count];
 }
 
-- (void)cleanUp
+- (void)cleanUp:(BOOL)keepEntries
 {
   [_lock lock];
-  NSUInteger maxCount = [self countLimit] ?: INT_MAX;
-  NSUInteger maxCost = [self totalCostLimit] ?: INT_MAX;
-  NSUInteger totalCount = [_cache count];
-  if (totalCount > maxCount || _totalCost > maxCost)
+  NSUInteger maxCount = _countLimit ?: INT_MAX;
+  NSUInteger maxCost = _totalCostLimit ?: INT_MAX;
+  NSUInteger totalCount = _cache.count;
+  NSMutableArray *keys = [_cache.allKeys mutableCopy];
+  while (totalCount > maxCount || _totalCost > maxCost)
   {
-    //sort, oldest first
-    NSArray *keys = [[_cache allKeys] sortedArrayUsingComparator:^NSComparisonResult(id key1, id key2) {
-      RCTCacheEntry *entry1 = self.cache[key1];
-      RCTCacheEntry *entry2 = self.cache[key2];
-      return (NSComparisonResult)MIN(1, MAX(-1, entry1.sequenceNumber - entry2.sequenceNumber));
-    }];
+    NSInteger lowestSequenceNumber = INT_MAX;
+    RCTCacheEntry *lowestEntry = nil;
+    id lowestKey = nil;
 
     //remove oldest items until within limit
     for (id key in keys)
     {
-      if (totalCount <= maxCount && _totalCost <= maxCost)
-      {
-        break;
-      }
       RCTCacheEntry *entry = _cache[key];
-      if (!_delegateRespondsToShouldEvictObject || [self.delegate cache:(RCTCache *)self shouldEvictObject:entry])
+      if (entry.sequenceNumber < lowestSequenceNumber)
+      {
+        lowestSequenceNumber = entry.sequenceNumber;
+        lowestEntry = entry;
+        lowestKey = key;
+      }
+    }
+
+    if (lowestKey)
+    {
+      [keys removeObject:lowestKey];
+      if (!_delegateRespondsToShouldEvictObject ||
+          [_delegate cache:(RCTCache *)self shouldEvictObject:lowestEntry.object])
       {
         if (_delegateRespondsToWillEvictObject)
         {
           _currentlyCleaning = YES;
-          [self.delegate cache:(RCTCache *)self willEvictObject:entry];
+          [self.delegate cache:(RCTCache *)self willEvictObject:lowestEntry.object];
           _currentlyCleaning = NO;
         }
-        [_cache removeObjectForKey:key];
-        _totalCost -= entry.cost;
+        [_cache removeObjectForKey:lowestKey];
+        _totalCost -= lowestEntry.cost;
         totalCount --;
+        if (keepEntries)
+        {
+          [_entryPool addObject:lowestEntry];
+          lowestEntry.object = nil;
+        }
       }
     }
   }
@@ -161,8 +167,8 @@
     {
       //sort, oldest first (in case we want to use that information in our eviction test)
       keys = [keys sortedArrayUsingComparator:^NSComparisonResult(id key1, id key2) {
-        RCTCacheEntry *entry1 = self.cache[key1];
-        RCTCacheEntry *entry2 = self.cache[key2];
+        RCTCacheEntry *entry1 = self->_cache[key1];
+        RCTCacheEntry *entry2 = self->_cache[key2];
         return (NSComparisonResult)MIN(1, MAX(-1, entry1.sequenceNumber - entry2.sequenceNumber));
       }];
     }
@@ -171,12 +177,12 @@
     for (id key in keys)
     {
       RCTCacheEntry *entry = _cache[key];
-      if (!_delegateRespondsToShouldEvictObject || [self.delegate cache:(RCTCache *)self shouldEvictObject:entry])
+      if (!_delegateRespondsToShouldEvictObject || [_delegate cache:(RCTCache *)self shouldEvictObject:entry.object])
       {
         if (_delegateRespondsToWillEvictObject)
         {
           _currentlyCleaning = YES;
-          [self.delegate cache:(RCTCache *)self willEvictObject:entry];
+          [_delegate cache:(RCTCache *)self willEvictObject:entry.object];
           _currentlyCleaning = NO;
         }
         [_cache removeObjectForKey:key];
@@ -208,7 +214,7 @@
   }
 }
 
-- (id)objectForKey:(id<NSCopying>)key
+- (id)objectForKey:(id)key
 {
   [_lock lock];
   RCTCacheEntry *entry = _cache[key];
@@ -227,7 +233,7 @@
   return [self objectForKey:key];
 }
 
-- (void)setObject:(id)obj forKey:(id<NSCopying>)key
+- (void)setObject:(id)obj forKey:(id)key
 {
   [self setObject:obj forKey:key cost:0];
 }
@@ -237,27 +243,44 @@
   [self setObject:obj forKey:key cost:0];
 }
 
-- (void)setObject:(id)obj forKey:(id<NSCopying>)key cost:(NSUInteger)g
+- (void)setObject:(id)obj forKey:(id)key cost:(NSUInteger)g
 {
+  if (!obj)
+  {
+    [self removeObjectForKey:key];
+    return;
+  }
   RCTAssert(!_currentlyCleaning, @"It is not possible to modify cache from within the implementation of this delegate method.");
   [_lock lock];
   _totalCost -= [_cache[key] cost];
   _totalCost += g;
-  _cache[key] = [RCTCacheEntry entryWithObject:obj cost:g sequenceNumber:_sequenceNumber++];
+  RCTCacheEntry *entry = _cache[key];
+  if (!entry) {
+    entry = [[RCTCacheEntry alloc] init];
+    _cache[key] = entry;
+  }
+  entry.object = obj;
+  entry.cost = g;
+  entry.sequenceNumber = _sequenceNumber++;
   if (_sequenceNumber < 0)
   {
     [self resequence];
   }
   [_lock unlock];
-  [self cleanUp];
+  [self cleanUp:YES];
 }
 
-- (void)removeObjectForKey:(id<NSCopying>)key
+- (void)removeObjectForKey:(id)key
 {
   RCTAssert(!_currentlyCleaning, @"It is not possible to modify cache from within the implementation of this delegate method.");
   [_lock lock];
-  _totalCost -= [_cache[key] cost];
-  [_cache removeObjectForKey:key];
+  RCTCacheEntry *entry = _cache[key];
+  if (entry) {
+    _totalCost -= entry.cost;
+    entry.object = nil;
+    [_entryPool addObject:entry];
+    [_cache removeObjectForKey:key];
+  }
   [_lock unlock];
 }
 
@@ -267,20 +290,42 @@
   [_lock lock];
   _totalCost = 0;
   _sequenceNumber = 0;
+  for (RCTCacheEntry *entry in _cache.allValues)
+  {
+    entry.object = nil;
+    [_entryPool addObject:entry];
+  }
   [_cache removeAllObjects];
+  [_lock unlock];
+}
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
+                                  objects:(id __unsafe_unretained [])buffer
+                                    count:(NSUInteger)len
+{
+  [_lock lock];
+  NSUInteger count = [_cache countByEnumeratingWithState:state objects:buffer count:len];
+  [_lock unlock];
+  return count;
+}
+
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block
+{
+  [_lock lock];
+  [_cache enumerateKeysAndObjectsUsingBlock:block];
   [_lock unlock];
 }
 
 //handle unimplemented methods
 
-- (BOOL)isKindOfClass:(Class)cls
+- (BOOL)isKindOfClass:(Class)aClass
 {
   //pretend that we're an RCTCache if anyone asks
-  if (cls == [RCTCache class] || cls == [NSCache class])
+  if (aClass == [RCTCache class] || aClass == [NSCache class])
   {
     return YES;
   }
-  return [super isKindOfClass:cls];
+  return [super isKindOfClass:aClass];
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
@@ -308,19 +353,16 @@
 
 @implementation RCTCache
 
-@dynamic count;
-@dynamic totalCost;
-
-+ (instancetype)alloc
++ (id)alloc
 {
   return (RCTCache *)[RCTCache_Private alloc];
 }
 
-- (id)objectForKeyedSubscript:(__unused NSNumber *)key
-{
-  return nil;
-}
-
+- (id)objectForKeyedSubscript:(__unused id<NSCopying>)key { return nil; }
 - (void)setObject:(__unused id)obj forKeyedSubscript:(__unused id<NSCopying>)key {}
+- (void)enumerateKeysAndObjectsUsingBlock:(__unused void (^)(id, id, BOOL *))block { }
+- (NSUInteger)countByEnumeratingWithState:(__unused NSFastEnumerationState *)state
+                                  objects:(__unused __unsafe_unretained id [])buffer
+                                    count:(__unused NSUInteger)len { return 0; }
 
 @end
