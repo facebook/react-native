@@ -87,7 +87,7 @@ RCT_ENUM_CONVERTER(CTTextAlignment, (@{
   }
 
   NSDictionary *fontDict = dict[@"font"];
-  CTFontRef font = (__bridge CTFontRef)[self UIFont:nil withFamily:fontDict[@"fontFamily"] size:fontDict[@"fontSize"] weight:fontDict[@"fontWeight"] style:fontDict[@"fontStyle"]];
+  CTFontRef font = (__bridge CTFontRef)[self UIFont:nil withFamily:fontDict[@"fontFamily"] size:fontDict[@"fontSize"] weight:fontDict[@"fontWeight"] style:fontDict[@"fontStyle"] scaleMultiplier:1.0];
   if (!font) {
     return frame;
   }
