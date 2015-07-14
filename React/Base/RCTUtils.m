@@ -238,6 +238,27 @@ NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary
   return error;
 }
 
+// TODO: Can we just replace RCTMakeError with this function instead?
+NSDictionary *RCTJSErrorFromNSError(NSError *error)
+{
+  NSString *errorMessage;
+  NSArray *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary *errorInfo =
+  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+
+  if (error) {
+    errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
+    errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    errorInfo[@"code"] = @(error.code);
+  } else {
+    errorMessage = @"Unknown error from a native module";
+    errorInfo[@"domain"] = RCTErrorDomain;
+    errorInfo[@"code"] = @-1;
+  }
+
+  return RCTMakeError(errorMessage, nil, errorInfo);
+}
+
 BOOL RCTRunningInTestEnvironment(void)
 {
   static BOOL isTestEnvironment = NO;
@@ -277,23 +298,10 @@ id RCTNilIfNull(id value)
   return value == (id)kCFNull ? nil : value;
 }
 
-// TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary *RCTJSErrorFromNSError(NSError *error)
+NSURL *RCTDataURL(NSString *mimeType, NSData *data)
 {
-  NSString *errorMessage;
-  NSArray *stackTrace = [NSThread callStackSymbols];
-  NSMutableDictionary *errorInfo =
-  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
-
-  if (error) {
-    errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
-    errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
-    errorInfo[@"code"] = @(error.code);
-  } else {
-    errorMessage = @"Unknown error from a native module";
-    errorInfo[@"domain"] = RCTErrorDomain;
-    errorInfo[@"code"] = @-1;
-  }
-
-  return RCTMakeError(errorMessage, nil, errorInfo);
+  return [NSURL URLWithString:
+          [NSString stringWithFormat:@"data:%@;base64,%@", mimeType,
+           [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
 }
+

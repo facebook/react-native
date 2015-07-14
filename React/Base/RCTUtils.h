@@ -47,6 +47,7 @@ RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 // Creates a standardized error object
 RCT_EXTERN NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
 RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
+RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
@@ -58,7 +59,8 @@ RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
-RCT_EXTERN id RCTNullIfNil(id value);
 RCT_EXTERN id RCTNilIfNull(id value);
+RCT_EXTERN id RCTNullIfNil(id value);
 
-RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);
+// Convert data to a Base64-encoded data URL
+RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);

@@ -60,6 +60,12 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   [self _updateImage];
 }
 
+- (void)setTintColor:(UIColor *)tintColor
+{
+  super.tintColor = tintColor;
+  [self _updateImage];
+}
+
 - (void)setProgressHandlerRegistered:(BOOL)progressHandlerRegistered
 {
   _progressHandlerRegistered = progressHandlerRegistered;
@@ -144,9 +150,14 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
         }
       }];
     } else {
-      _downloadToken = [_imageDownloader downloadImageForURL:imageURL size:self.bounds.size scale:RCTScreenScale()
-                                                  resizeMode:self.contentMode backgroundColor:self.backgroundColor
-                                                  progressBlock:progressHandler block:^(UIImage *image, NSError *error) {
+      _downloadToken = [_imageDownloader downloadImageForURL:imageURL
+                                                        size:self.bounds.size
+                                                       scale:RCTScreenScale()
+                                                  resizeMode:self.contentMode
+                                                   tintColor:_tinted ? self.tintColor : nil
+                                             backgroundColor:self.backgroundColor
+                                                  progressBlock:progressHandler
+                                                          block:^(UIImage *image, NSError *error) {
         if (image) {
           dispatch_async(dispatch_get_main_queue(), ^{
             if (imageURL != self.imageURL) {

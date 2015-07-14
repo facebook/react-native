@@ -122,10 +122,6 @@ class MessageQueue {
           (this._debugInfo[this._callbackID >> 5] = null);
 
         this._debugInfo[this._callbackID >> 1] = [module, method];
-        if (SPY_MODE && isFinite(module)) {
-          console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
-            this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
-        }
       }
       onFail && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onFail;
@@ -135,6 +131,10 @@ class MessageQueue {
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
     this._queue[PARAMS].push(params);
+    if (__DEV__ && SPY_MODE && isFinite(module)) {
+      console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
+        this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
+    }
   }
 
   __callFunction(module, method, args) {
@@ -157,8 +157,8 @@ class MessageQueue {
     let callback = this._callbacks[cbID];
     if (__DEV__) {
       let debug = this._debugInfo[cbID >> 1];
-      let module = this._remoteModuleTable[debug[0]];
-      let method = this._remoteMethodTable[debug[0]][debug[1]];
+      let module = debug && this._remoteModuleTable[debug[0]];
+      let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
       if (!callback) {
         console.error(`Callback with id ${cbID}: ${module}.${method}() not found`);
       } else if (SPY_MODE) {
