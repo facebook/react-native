@@ -1351,7 +1351,9 @@ RCT_EXPORT_METHOD(measure:(NSNumber *)reactTag
   [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
     if (!view) {
-      RCTLogError(@"measure cannot find view with tag #%@", reactTag);
+      // this view was probably collapsed out
+      RCTLogWarn(@"measure cannot find view with tag #%@", reactTag);
+      callback(@[]);
       return;
     }
     CGRect frame = view.frame;
