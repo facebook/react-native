@@ -37,6 +37,31 @@ class PushNotificationIOS {
   _badgeCount: number;
 
   /**
+   * Schedules the localNotification for immediate presentation.
+   *
+   * details is an object containing:
+   *
+   * - `alertBody` : The message displayed in the notification alert.
+   *
+   */
+  static presentLocalNotification(details: Object) {
+    RCTPushNotificationManager.presentLocalNotification(details);
+  }
+
+  /**
+   * Schedules the localNotification for future presentation.
+   *
+   * details is an object containing:
+   *
+   * - `fireDate` : The date and time when the system should deliver the notification.
+   * - `alertBody` : The message displayed in the notification alert.
+   *
+   */
+  static scheduleLocalNotification(details: Object) {
+    RCTPushNotificationManager.scheduleLocalNotification(details);
+  }
+
+  /**
    * Sets the badge number for the app icon on the home screen
    */
   static setApplicationIconBadgeNumber(number: number) {
