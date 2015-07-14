@@ -51,10 +51,10 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTStaticImage)
     view.tintColor = defaultView.tintColor;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(imageTag, NSString, RCTStaticImage)
+RCT_CUSTOM_VIEW_PROPERTY(imageTag, NSDictionary, RCTStaticImage)
 {
   if (json) {
-    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json] callback:^(NSError *error, id image) {
+    [RCTImageLoader loadImageWithTag:[RCTConvert NSString:json[@"uri"]] options:[RCTConvert NSDictionary:json[@"options"]] callback:^(NSError *error, id image) {
       if (error) {
         RCTLogWarn(@"%@", error.localizedDescription);
       }

@@ -26,7 +26,7 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
                   successCallback:(RCTResponseSenderBlock)successCallback
                   errorCallback:(RCTResponseErrorBlock)errorCallback)
 {
-  [RCTImageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
+  [RCTImageLoader loadImageWithTag:imageTag options:@{} callback:^(NSError *loadError, UIImage *loadedImage) {
     if (loadError) {
       errorCallback(loadError);
       return;

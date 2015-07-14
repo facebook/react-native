@@ -56,11 +56,44 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
   return assetsLibrary;
 }
 
++(CGImageRef )scaledImageRefForAssetRepresentation:(ALAssetRepresentation *)assetRepresentation maxPixelSize:(float)maxPixelSize
+{
+  NSData *data = nil;
+  CGImageRef imageRef = nil;
+  
+  uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t)*[assetRepresentation size]);
+  if (buffer != NULL) {
+    NSError *error = nil;
+    NSUInteger bytesRead = [assetRepresentation getBytes:buffer fromOffset:0 length:[assetRepresentation size] error:&error];
+    data = [NSData dataWithBytes:buffer length:bytesRead];
+    
+    free(buffer);
+  }
+  
+  if ([data length]){
+    CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, nil);
+    
+    NSMutableDictionary *options = [NSMutableDictionary dictionary];
+    
+    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceShouldAllowFloat];
+    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceCreateThumbnailWithTransform];
+    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceCreateThumbnailFromImageAlways];
+    [options setObject:(id)[NSNumber numberWithFloat:maxPixelSize] forKey:(id)kCGImageSourceThumbnailMaxPixelSize];
+    imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
+    
+    if (sourceRef){
+      CFRelease(sourceRef);
+    }
+  }
+  
+  return imageRef;
+}
+
 /**
  * Can be called from any thread.
  * Will always call callback on main thread.
  */
-+ (void)loadImageWithTag:(NSString *)imageTag callback:(void (^)(NSError *error, id image))callback
++ (void)loadImageWithTag:(NSString *)imageTag options:(NSDictionary *)options callback:(void (^)(NSError *error, id image))callback
 {
   if ([imageTag hasPrefix:@"assets-library"]) {
     [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
@@ -75,7 +108,38 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
           @autoreleasepool {
             ALAssetRepresentation *representation = [asset defaultRepresentation];
             ALAssetOrientation orientation = [representation orientation];
-            UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0f orientation:(UIImageOrientation)orientation];
+
+            CGImageRef ref = nil;
+            UIImage *image = nil;
+
+            if ([options[@"assetUseMaximumSize"] boolValue]) { // Full resolution
+              ref = [[asset defaultRepresentation] fullResolutionImage];
+              image = [UIImage imageWithCGImage:ref scale:[representation scale] orientation:(UIImageOrientation)orientation];
+              
+            } else {
+              CGFloat retinaScale = [UIScreen mainScreen].scale;
+              
+              CGFloat targetWidth = [options[@"assetTargetSize"][@"width"] floatValue];
+              CGFloat targetHeight = [options[@"assetTargetSize"][@"height"] floatValue];
+              
+              CGFloat fullWidth = [representation dimensions].width;
+              CGFloat fullHeight = [representation dimensions].height;
+              CGFloat fullAspectRatio = fullWidth / fullHeight;
+              
+              CGFloat maxPixelSize;
+
+              if (fullWidth > fullHeight) {
+                maxPixelSize = ceil((fullAspectRatio * targetHeight) * retinaScale);
+              } else {
+                maxPixelSize = ceil((targetWidth / fullAspectRatio) * retinaScale);
+              }
+              
+              ref = [self scaledImageRefForAssetRepresentation:representation maxPixelSize:maxPixelSize];
+              image = [UIImage imageWithCGImage:ref];
+            }
+            
+            //RCTLogInfo(@"[%@] Full size: (%f, %f) Container: (%f, %f), Scale: %f, UIImage: (%f, %f), Memory=%.2fkb", [options[@"assetUseMaximumSize"] boolValue] ? @"Maximum" : @"Scaled", [representation dimensions].width, [representation dimensions].height, [options[@"assetTargetSize"][@"width"] floatValue], [options[@"assetTargetSize"][@"height"] floatValue], [UIScreen mainScreen].scale, image.size.width, image.size.height, (CGImageGetHeight(image.CGImage) * CGImageGetBytesPerRow(image.CGImage)) / 1024.0 );
+            
             RCTDispatchCallbackOnMainQueue(callback, nil, image);
           }
         });
@@ -102,9 +166,42 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
       RCTDispatchCallbackOnMainQueue(callback, error, nil);
       return;
     }
-
+    
     PHAsset *asset = [results firstObject];
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    PHImageRequestOptions *imageOptions = [[PHImageRequestOptions alloc] init];
+    
+    // Resize Mode (default: PHImageRequestOptionsResizeModeFast)
+    if ([options[@"resizeMode"] isEqualToString:@"fast"]) {
+      imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+    } else if ([options[@"resizeMode"] isEqualToString:@"exact"]) {
+      imageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+    } else if ([options[@"resizeMode"] isEqualToString:@"none"]) {
+      imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+    } else {
+      imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+    }
+    
+    // Content Mode (default: PHImageContentModeAspectFill)
+    PHImageContentMode contentMode;
+    if ([options[@"contentMode"] isEqualToString:@"fill"]) {
+      contentMode = PHImageContentModeAspectFill;
+    } else if ([options[@"contentMode"] isEqualToString:@"fit"]) {
+      contentMode = PHImageContentModeAspectFit;
+    } else {
+      contentMode = PHImageContentModeAspectFit;
+    }
+  
+    float retinaScale = [UIScreen mainScreen].scale;
+    CGSize targetSize;
+    
+    if ([options[@"assetUseMaximumSize"] boolValue]) {
+      targetSize = PHImageManagerMaximumSize;
+    } else {
+      targetSize = CGSizeMake([options[@"targetSize"][@"width"] floatValue] * retinaScale,
+                              [options[@"targetSize"][@"height"] floatValue] * retinaScale);
+    }
+
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:contentMode options:imageOptions resultHandler:^(UIImage *result, NSDictionary *info) {
       if (result) {
         RCTDispatchCallbackOnMainQueue(callback, nil, result);
       } else {
@@ -114,6 +211,7 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
         return;
       }
     }];
+    
   } else if ([imageTag hasPrefix:@"http"]) {
     NSURL *url = [NSURL URLWithString:imageTag];
     if (!url) {
