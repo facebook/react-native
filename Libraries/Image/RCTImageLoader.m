@@ -79,10 +79,8 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
   UIImage *image;
   NSData *data = nil;
 
-  uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t)*[representation size]);
   if (buffer != NULL) {
     NSError *error = nil;
-    NSUInteger bytesRead = [representation getBytes:buffer fromOffset:0 length:[representation size] error:&error];
     data = [NSData dataWithBytes:buffer length:bytesRead];
     
     free(buffer);
