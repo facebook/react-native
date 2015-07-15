@@ -1101,7 +1101,10 @@ var Navigator = React.createClass({
     return (
       <View style={[styles.container, this.props.style]}>
         <View
-          style={[styles.transitioner,{backgroundColor: this.props.transitionBackgroundColor}]}
+          style={[
+            styles.transitioner,
+            {backgroundColor: this.props.transitionBackgroundColor}
+          ]}
           {...this.panGesture.panHandlers}
           onTouchStart={this._handleTouchStart}
           onResponderTerminationRequest={
