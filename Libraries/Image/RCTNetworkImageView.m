@@ -86,6 +86,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   if (![_imageURL isEqual:imageURL] && _downloadToken) {
     [_imageDownloader cancelDownload:_downloadToken];
+    NSDictionary *event = @{ @"target": self.reactTag };
+    [_eventDispatcher sendInputEventWithName:@"loadAbort" body:event];
     _downloadToken = nil;
   }
 
@@ -146,7 +148,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
             loadEndHandler();
           });
         } else if (error) {
-          errorHandler([error description]);
+          errorHandler([error localizedDescription]);
         }
       }];
     } else {
@@ -170,7 +172,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
             loadEndHandler();
           });
         } else if (error) {
-          errorHandler([error description]);
+          errorHandler([error localizedDescription]);
         }
       }];
     }

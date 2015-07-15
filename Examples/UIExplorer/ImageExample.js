@@ -21,9 +21,40 @@ var {
   StyleSheet,
   Text,
   View,
+  ActivityIndicatorIOS
 } = React;
 
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
+
+var NetworkImageExample = React.createClass({
+  watchID: (null: ?number),
+
+  getInitialState: function() {
+    return {
+      error: false,
+      loading: true,
+      progress: 0
+    };
+  },
+  render: function() {
+    var loader = this.state.loading ?
+      <View style={styles.progress}>
+        <Text>{this.state.progress}%</Text>
+        <ActivityIndicatorIOS style={{marginLeft:5}}/>
+      </View> : null;
+    return this.state.error ?
+      <Text>{this.state.error}</Text> :
+      <Image
+        source={this.props.source}
+        style={[styles.base, {overflow: 'visible'}]}
+        onLoadError={(e) => this.setState({error: e.nativeEvent.error})}
+        onLoadProgress={(e) => this.setState({progress: Math.max(0, Math.round(100 * e.nativeEvent.written / e.nativeEvent.total))}) }
+        onLoadEnd={() => this.setState({loading: false, error: false})}
+        onLoadAbort={() => this.setState({error: 'Loading has aborted'})} >
+        {loader}
+      </Image>;
+  }
+});
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -56,6 +87,22 @@ exports.examples = [
           <Image source={require('image!uie_comment_normal')} style={styles.icon} />
           <Image source={require('image!uie_comment_highlighted')} style={styles.icon} />
         </View>
+      );
+    },
+  },
+  {
+    title: 'Error Handler',
+    render: function() {
+      return (
+        <NetworkImageExample source={{uri: 'http://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
+      );
+    },
+  },
+  {
+    title: 'Image Download Progress',
+    render: function() {
+      return (
+        <NetworkImageExample source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}}/>
       );
     },
   },
@@ -299,6 +346,12 @@ var styles = StyleSheet.create({
   base: {
     width: 38,
     height: 38,
+  },
+  progress: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: 100
   },
   leftMargin: {
     marginLeft: 10,

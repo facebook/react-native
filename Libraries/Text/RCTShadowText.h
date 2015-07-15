@@ -30,8 +30,6 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, strong) UIColor *textDecorationColor;
 @property (nonatomic, assign) NSUnderlineStyle textDecorationStyle;
 @property (nonatomic, assign) RCTTextDecorationLineType textDecorationLine;
-@property (nonatomic, assign) CGFloat fontSizeMultiplier;
-@property (nonatomic, assign) BOOL allowFontScaling;
 
 - (void)recomputeText;
 

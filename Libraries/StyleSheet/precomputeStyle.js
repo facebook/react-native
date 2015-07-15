@@ -58,7 +58,17 @@ function _precomputeTransforms(style: Object): Object {
       case 'matrix':
         MatrixMath.multiplyInto(result, result, value);
         break;
+      case 'perspective':
+        _multiplyTransform(result, MatrixMath.reusePerspectiveCommand, [value]);
+        break;
+      case 'rotateX':
+        _multiplyTransform(result, MatrixMath.reuseRotateXCommand, [_convertToRadians(value)]);
+        break;
+      case 'rotateY':
+        _multiplyTransform(result, MatrixMath.reuseRotateYCommand, [_convertToRadians(value)]);
+        break;
       case 'rotate':
+      case 'rotateZ':
         _multiplyTransform(result, MatrixMath.reuseRotateZCommand, [_convertToRadians(value)]);
         break;
       case 'scale':
@@ -156,6 +166,9 @@ function _validateTransform(key, value, transformation) {
       break;
     case 'translate':
       break;
+    case 'rotateX':
+    case 'rotateY':
+    case 'rotateZ':
     case 'rotate':
       invariant(
         typeof value === 'string',

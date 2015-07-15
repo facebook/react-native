@@ -20,15 +20,83 @@ var StyleSheet = require('StyleSheet');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 
+var REACT_DEVTOOLS_HOOK: ?Object = typeof window !== 'undefined' ? window.__REACT_DEVTOOLS_BACKEND__ : null;
+
+if (REACT_DEVTOOLS_HOOK) {
+  // required for devtools to be able to edit react native styles
+  REACT_DEVTOOLS_HOOK.resolveRNStyle = require('flattenStyle');
+}
+
 class Inspector extends React.Component {
+  _subs: ?Array<() => void>;
+
   constructor(props: Object) {
     super(props);
+
     this.state = {
+      devtoolsBackend: null,
       panelPos: 'bottom',
       inspecting: true,
       perfing: false,
       inspected: null,
     };
+  }
+
+  componentDidMount() {
+    if (REACT_DEVTOOLS_HOOK) {
+      this.attachToDevtools = this.attachToDevtools.bind(this);
+      REACT_DEVTOOLS_HOOK.addStartupListener(this.attachToDevtools);
+      // if devtools is already started
+      // TODO(jared): should addStartupListener just go ahead and call the
+      // listener if the devtools is already started? might be unexpected...
+      // is there some name other than `addStartupListener` that would be
+      // better?
+      if (REACT_DEVTOOLS_HOOK.backend) {
+        this.attachToDevtools(REACT_DEVTOOLS_HOOK.backend);
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._subs) {
+      this._subs.map(fn => fn());
+    }
+    if (REACT_DEVTOOLS_HOOK) {
+      REACT_DEVTOOLS_HOOK.removeStartupListener(this.attachToDevtools);
+    }
+  }
+
+  attachToDevtools(backend: Object) {
+    var _hideWait = null;
+    var hlSub = backend.sub('highlight', ({node, name, props}) => {
+      clearTimeout(_hideWait);
+      UIManager.measure(node, (x, y, width, height, left, top) => {
+        this.setState({
+          hierarchy: [],
+          inspected: {
+            frame: {left, top, width, height},
+            style: props ? props.style : {},
+          },
+        });
+      });
+    });
+    var hideSub = backend.sub('hideHighlight', () => {
+      // we wait to actually hide in order to avoid flicker
+      _hideWait = setTimeout(() => {
+        this.setState({
+          inspected: null,
+        });
+      }, 100);
+    });
+    this._subs = [hlSub, hideSub];
+
+    backend.on('shutdown', () => {
+      this.setState({devtoolsBackend: null});
+      this._subs = null;
+    });
+    this.setState({
+      devtoolsBackend: backend,
+    });
   }
 
   setSelection(i: number) {
@@ -46,6 +114,9 @@ class Inspector extends React.Component {
   }
 
   onTouchInstance(instance: Object, frame: Object, pointerY: number) {
+    if (this.state.devtoolsBackend) {
+      this.state.devtoolsBackend.selectFromReactInstance(instance, true);
+    }
     var hierarchy = InspectorUtils.getOwnerHierarchy(instance);
     var publicInstance = instance.getPublicInstance();
     var props = publicInstance.props || {};
@@ -88,6 +159,7 @@ class Inspector extends React.Component {
           />}
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
+            devtoolsIsOpen={!!this.state.devtoolsBackend}
             inspecting={this.state.inspecting}
             perfing={this.state.perfing}
             setPerfing={this.setPerfing.bind(this)}

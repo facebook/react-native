@@ -27,7 +27,11 @@ type EventLike = {
 
 var InspectorOverlay = React.createClass({
   propTypes: {
-    inspectedViewTag: PropTypes.object,
+    inspected: PropTypes.shape({
+      frame: PropTypes.object,
+      style: PropTypes.any,
+    }),
+    inspectedViewTag: PropTypes.number,
     onTouchInstance: PropTypes.func.isRequired,
   },
 

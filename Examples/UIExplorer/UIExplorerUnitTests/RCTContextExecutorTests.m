@@ -33,7 +33,6 @@
 {
   [super setUp];
   _executor = [[RCTContextExecutor alloc] init];
-  RCTSetExecutorID(_executor);
   [_executor setUp];
 }
 
@@ -139,7 +138,6 @@ static uint64_t _get_time_nanoseconds(void)
           [_executor executeJSCall:@"module"
                            method:@"method"
                         arguments:params
-                          context:RCTGetExecutorID(_executor)
                          callback:^(id json, __unused NSError *unused) {
                            XCTAssert([json isEqual:@YES], @"Invalid return");
                          }];
