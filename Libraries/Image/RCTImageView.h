@@ -9,9 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RCTStaticImage : UIImageView
+@class RCTBridge;
+
+@interface RCTImageView : UIImageView
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, assign) UIEdgeInsets capInsets;
+@property (nonatomic, strong) UIImage *defaultImage;
 @property (nonatomic, assign) UIImageRenderingMode renderingMode;
 @property (nonatomic, copy) NSString *src;
 

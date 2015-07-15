@@ -57,21 +57,23 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
   return assetsLibrary;
 }
 
-+ (void)loadImageWithTag:(NSString *)imageTag
-                callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback
++ (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                           callback:(RCTImageLoaderCompletionBlock)callback
 {
   return [self loadImageWithTag:imageTag
                            size:CGSizeZero
                           scale:0
                      resizeMode:UIViewContentModeScaleToFill
-                       callback:callback];
+                  progressBlock:nil
+                completionBlock:callback];
 }
 
-+ (void)loadImageWithTag:(NSString *)imageTag
-                    size:(CGSize)size
-                   scale:(CGFloat)scale
-              resizeMode:(UIViewContentMode)resizeMode
-                callback:(void (^)(NSError *error, id image))callback
++ (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                               size:(CGSize)size
+                                              scale:(CGFloat)scale
+                                         resizeMode:(UIViewContentMode)resizeMode
+                                      progressBlock:(RCTImageLoaderProgressBlock)progress
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completion
 {
   if ([imageTag hasPrefix:@"assets-library://"]) {
     [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
@@ -109,19 +111,20 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
             }
 
             UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale orientation:(UIImageOrientation)orientation];
-            RCTDispatchCallbackOnMainQueue(callback, nil, image);
+            RCTDispatchCallbackOnMainQueue(completion, nil, image);
           }
         });
       } else {
         NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@ with no error message.", imageTag];
         NSError *error = RCTErrorWithMessage(errorText);
-        RCTDispatchCallbackOnMainQueue(callback, error, nil);
+        RCTDispatchCallbackOnMainQueue(completion, error, nil);
       }
     } failureBlock:^(NSError *loadError) {
       NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@.\niOS Error: %@", imageTag, loadError];
       NSError *error = RCTErrorWithMessage(errorText);
-      RCTDispatchCallbackOnMainQueue(callback, error, nil);
+      RCTDispatchCallbackOnMainQueue(completion, error, nil);
     }];
+    return ^{};
   } else if ([imageTag hasPrefix:@"ph://"]) {
     // Using PhotoKit for iOS 8+
     // The 'ph://' prefix is used by FBMediaKit to differentiate between
@@ -132,8 +135,8 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
     if (results.count == 0) {
       NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", phAssetID];
       NSError *error = RCTErrorWithMessage(errorText);
-      RCTDispatchCallbackOnMainQueue(callback, error, nil);
-      return;
+      RCTDispatchCallbackOnMainQueue(completion, error, nil);
+      return ^{};
     }
 
     PHAsset *asset = [results firstObject];
@@ -144,59 +147,67 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
     }
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:contentMode options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
       if (result) {
-        RCTDispatchCallbackOnMainQueue(callback, nil, result);
+        RCTDispatchCallbackOnMainQueue(completion, nil, result);
       } else {
         NSString *errorText = [NSString stringWithFormat:@"Failed to load PHAsset with local identifier %@ with no error message.", phAssetID];
         NSError *error = RCTErrorWithMessage(errorText);
-        RCTDispatchCallbackOnMainQueue(callback, error, nil);
+        RCTDispatchCallbackOnMainQueue(completion, error, nil);
         return;
       }
     }];
+    return ^{};
   } else if ([imageTag hasPrefix:@"http"]) {
     NSURL *url = [NSURL URLWithString:imageTag];
     if (!url) {
       NSString *errorMessage = [NSString stringWithFormat:@"Invalid URL: %@", imageTag];
-      RCTDispatchCallbackOnMainQueue(callback, RCTErrorWithMessage(errorMessage), nil);
-      return;
+      RCTDispatchCallbackOnMainQueue(completion, RCTErrorWithMessage(errorMessage), nil);
+      return ^{};
     }
-    if ([[imageTag lowercaseString] hasSuffix:@".gif"]) {
-      [[RCTImageDownloader sharedInstance] downloadDataForURL:url progressBlock:nil block:^(NSData *data, NSError *error) {
+    if ([imageTag.lowercaseString hasSuffix:@".gif"]) {
+      return [[RCTImageDownloader sharedInstance] downloadDataForURL:url progressBlock:progress block:^(NSData *data, NSError *error) {
         id image = RCTGIFImageWithFileURL([RCTConvert NSURL:imageTag]);
         if (!image && !error) {
           NSString *errorMessage = [NSString stringWithFormat:@"Unable to load GIF image: %@", imageTag];
           error = RCTErrorWithMessage(errorMessage);
         }
-        RCTDispatchCallbackOnMainQueue(callback, error, image);
+        RCTDispatchCallbackOnMainQueue(completion, error, image);
       }];
     } else {
-      [[RCTImageDownloader sharedInstance] downloadImageForURL:url size:size scale:scale resizeMode:resizeMode tintColor:nil backgroundColor:nil progressBlock:NULL block:^(UIImage *image, NSError *error) {
-         RCTDispatchCallbackOnMainQueue(callback, error, image);
+      return [[RCTImageDownloader sharedInstance] downloadImageForURL:url size:size scale:scale resizeMode:resizeMode tintColor:nil backgroundColor:nil progressBlock:progress block:^(UIImage *image, NSError *error) {
+         RCTDispatchCallbackOnMainQueue(completion, error, image);
       }];
     }
-  } else if ([[imageTag lowercaseString] hasSuffix:@".gif"]) {
+  } else if ([imageTag.lowercaseString hasSuffix:@".gif"]) {
     id image = RCTGIFImageWithFileURL([RCTConvert NSURL:imageTag]);
     if (image) {
-      RCTDispatchCallbackOnMainQueue(callback, nil, image);
+      RCTDispatchCallbackOnMainQueue(completion, nil, image);
     } else {
       NSString *errorMessage = [NSString stringWithFormat:@"Unable to load GIF image: %@", imageTag];
       NSError *error = RCTErrorWithMessage(errorMessage);
-      RCTDispatchCallbackOnMainQueue(callback, error, nil);
+      RCTDispatchCallbackOnMainQueue(completion, error, nil);
     }
+    return ^{};
   } else {
     UIImage *image = [RCTConvert UIImage:imageTag];
     if (image) {
-      RCTDispatchCallbackOnMainQueue(callback, nil, image);
+      RCTDispatchCallbackOnMainQueue(completion, nil, image);
     } else {
       NSString *errorMessage = [NSString stringWithFormat:@"Unrecognized tag protocol: %@", imageTag];
       NSError *error = RCTErrorWithMessage(errorMessage);
-      RCTDispatchCallbackOnMainQueue(callback, error, nil);
+      RCTDispatchCallbackOnMainQueue(completion, error, nil);
     }
+    return ^{};
   }
 }
 
 + (BOOL)isAssetLibraryImage:(NSString *)imageTag
 {
-  return [imageTag hasPrefix:@"assets-library://"] || [imageTag hasPrefix:@"ph:"];
+  return [imageTag hasPrefix:@"assets-library://"] || [imageTag hasPrefix:@"ph://"];
+}
+
++ (BOOL)isRemoteImage:(NSString *)imageTag
+{
+  return [imageTag hasPrefix:@"http://"] || [imageTag hasPrefix:@"https://"];
 }
 
 @end

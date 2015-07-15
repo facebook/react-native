@@ -32,7 +32,7 @@ var NetworkImageExample = React.createClass({
   getInitialState: function() {
     return {
       error: false,
-      loading: true,
+      loading: false,
       progress: 0
     };
   },
@@ -47,10 +47,10 @@ var NetworkImageExample = React.createClass({
       <Image
         source={this.props.source}
         style={[styles.base, {overflow: 'visible'}]}
-        onLoadError={(e) => this.setState({error: e.nativeEvent.error})}
-        onLoadProgress={(e) => this.setState({progress: Math.max(0, Math.round(100 * e.nativeEvent.written / e.nativeEvent.total))}) }
-        onLoadEnd={() => this.setState({loading: false, error: false})}
-        onLoadAbort={() => this.setState({error: 'Loading has aborted'})} >
+        onLoadStart={(e) => this.setState({loading: true})}
+        onError={(e) => this.setState({error: e.nativeEvent.error, loading: false})}
+        onProgress={(e) => this.setState({progress: Math.round(100 * e.nativeEvent.loaded / e.nativeEvent.total)})}
+        onLoad={() => this.setState({loading: false, error: false})}>
         {loader}
       </Image>;
   }

@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		03559E7F1B064DAF00730281 /* RCTDownloadTaskWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7E1B064DAF00730281 /* RCTDownloadTaskWrapper.m */; };
-		1304D5AB1AA8C4A30002E2BE /* RCTStaticImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5A81AA8C4A30002E2BE /* RCTStaticImage.m */; };
-		1304D5AC1AA8C4A30002E2BE /* RCTStaticImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTStaticImageManager.m */; };
+		1304D5AB1AA8C4A30002E2BE /* RCTImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5A81AA8C4A30002E2BE /* RCTImageView.m */; };
+		1304D5AC1AA8C4A30002E2BE /* RCTImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */; };
 		1304D5B21AA8C50D0002E2BE /* RCTGIFImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5B11AA8C50D0002E2BE /* RCTGIFImage.m */; };
 		1345A8391B26592900583190 /* RCTImageRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1345A8381B26592900583190 /* RCTImageRequestHandler.m */; };
 		134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 134B00A11B54232B00EC8DFB /* RCTImageUtils.m */; };
@@ -17,8 +17,6 @@
 		143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879341AAD238D00F088A5 /* RCTCameraRollManager.m */; };
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
 		58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */; };
-		58B511901A9E6BD600147676 /* RCTNetworkImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */; };
-		58B511911A9E6BD600147676 /* RCTNetworkImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118E1A9E6BD600147676 /* RCTNetworkImageViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,10 +34,10 @@
 /* Begin PBXFileReference section */
 		03559E7D1B064D3A00730281 /* RCTDownloadTaskWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDownloadTaskWrapper.h; sourceTree = "<group>"; };
 		03559E7E1B064DAF00730281 /* RCTDownloadTaskWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDownloadTaskWrapper.m; sourceTree = "<group>"; };
-		1304D5A71AA8C4A30002E2BE /* RCTStaticImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTStaticImage.h; sourceTree = "<group>"; };
-		1304D5A81AA8C4A30002E2BE /* RCTStaticImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTStaticImage.m; sourceTree = "<group>"; };
-		1304D5A91AA8C4A30002E2BE /* RCTStaticImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTStaticImageManager.h; sourceTree = "<group>"; };
-		1304D5AA1AA8C4A30002E2BE /* RCTStaticImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTStaticImageManager.m; sourceTree = "<group>"; };
+		1304D5A71AA8C4A30002E2BE /* RCTImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageView.h; sourceTree = "<group>"; };
+		1304D5A81AA8C4A30002E2BE /* RCTImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageView.m; sourceTree = "<group>"; };
+		1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageViewManager.h; sourceTree = "<group>"; };
+		1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageViewManager.m; sourceTree = "<group>"; };
 		1304D5B01AA8C50D0002E2BE /* RCTGIFImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTGIFImage.h; sourceTree = "<group>"; };
 		1304D5B11AA8C50D0002E2BE /* RCTGIFImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTGIFImage.m; sourceTree = "<group>"; };
 		1345A8371B26592900583190 /* RCTImageRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageRequestHandler.h; sourceTree = "<group>"; };
@@ -55,10 +53,6 @@
 		58B5115D1A9E6B3D00147676 /* libRCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B511891A9E6BD600147676 /* RCTImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageDownloader.h; sourceTree = "<group>"; };
 		58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageDownloader.m; sourceTree = "<group>"; };
-		58B5118B1A9E6BD600147676 /* RCTNetworkImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworkImageView.h; sourceTree = "<group>"; };
-		58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNetworkImageView.m; sourceTree = "<group>"; };
-		58B5118D1A9E6BD600147676 /* RCTNetworkImageViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworkImageViewManager.h; sourceTree = "<group>"; };
-		58B5118E1A9E6BD600147676 /* RCTNetworkImageViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNetworkImageViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,14 +83,10 @@
 				137620341B31C53500677FF0 /* RCTImagePickerManager.m */,
 				1345A8371B26592900583190 /* RCTImageRequestHandler.h */,
 				1345A8381B26592900583190 /* RCTImageRequestHandler.m */,
-				58B5118B1A9E6BD600147676 /* RCTNetworkImageView.h */,
-				58B5118C1A9E6BD600147676 /* RCTNetworkImageView.m */,
-				58B5118D1A9E6BD600147676 /* RCTNetworkImageViewManager.h */,
-				58B5118E1A9E6BD600147676 /* RCTNetworkImageViewManager.m */,
-				1304D5A71AA8C4A30002E2BE /* RCTStaticImage.h */,
-				1304D5A81AA8C4A30002E2BE /* RCTStaticImage.m */,
-				1304D5A91AA8C4A30002E2BE /* RCTStaticImageManager.h */,
-				1304D5AA1AA8C4A30002E2BE /* RCTStaticImageManager.m */,
+				1304D5A71AA8C4A30002E2BE /* RCTImageView.h */,
+				1304D5A81AA8C4A30002E2BE /* RCTImageView.m */,
+				1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */,
+				1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */,
 				134B00A01B54232B00EC8DFB /* RCTImageUtils.h */,
 				134B00A11B54232B00EC8DFB /* RCTImageUtils.m */,
 				58B5115E1A9E6B3D00147676 /* Products */,
@@ -171,15 +161,13 @@
 			files = (
 				58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */,
 				137620351B31C53500677FF0 /* RCTImagePickerManager.m in Sources */,
-				58B511911A9E6BD600147676 /* RCTNetworkImageViewManager.m in Sources */,
-				1304D5AC1AA8C4A30002E2BE /* RCTStaticImageManager.m in Sources */,
+				1304D5AC1AA8C4A30002E2BE /* RCTImageViewManager.m in Sources */,
 				1345A8391B26592900583190 /* RCTImageRequestHandler.m in Sources */,
-				58B511901A9E6BD600147676 /* RCTNetworkImageView.m in Sources */,
 				1304D5B21AA8C50D0002E2BE /* RCTGIFImage.m in Sources */,
 				143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */,
 				143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */,
 				03559E7F1B064DAF00730281 /* RCTDownloadTaskWrapper.m in Sources */,
-				1304D5AB1AA8C4A30002E2BE /* RCTStaticImage.m in Sources */,
+				1304D5AB1AA8C4A30002E2BE /* RCTImageView.m in Sources */,
 				134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

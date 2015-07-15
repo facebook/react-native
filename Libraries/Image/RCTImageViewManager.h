@@ -9,7 +9,6 @@
 
 #import "RCTViewManager.h"
 
-@interface RCTNetworkImageViewManager : RCTViewManager
+@interface RCTImageViewManager : RCTViewManager
 
 @end
-
