@@ -47,7 +47,7 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTNetworkImageView)
   return @{
     @"loadStart":    @{ @"registrationName": @"onLoadStart" },
     @"loadProgress": @{ @"registrationName": @"onLoadProgress" },
-    @"loaded":       @{ @"registrationName": @"onLoaded" },
+    @"loaded":       @{ @"registrationName": @"onLoadEnd" },
     @"loadError":    @{ @"registrationName": @"onLoadError" },
     @"loadAbort":    @{ @"registrationName": @"onLoadAbort" },
   };

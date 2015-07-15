@@ -66,7 +66,6 @@ static void *const RCTDownloadTaskWrapperProgressBlockKey = (void *)&RCTDownload
   task.rct_completionBlock = completionBlock;
   task.rct_progressBlock = progressBlock;
 
-  [task resume];
   return task;
 }
 

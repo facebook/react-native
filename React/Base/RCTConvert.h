@@ -91,8 +91,7 @@ typedef NSURL RCTFileURL;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style
-   scaleMultiplier:(CGFloat)scaleMultiplier;
+              size:(id)size weight:(id)weight style:(id)style;
 
 typedef NSArray NSStringArray;
 + (NSStringArray *)NSStringArray:(id)json;
@@ -121,8 +120,9 @@ typedef NSArray CGColorArray;
 typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
-typedef BOOL css_clip_t;
+typedef BOOL css_clip_t, css_backface_visibility_t;
 + (css_clip_t)css_clip_t:(id)json;
++ (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;
 + (css_justify_t)css_justify_t:(id)json;
 + (css_align_t)css_align_t:(id)json;

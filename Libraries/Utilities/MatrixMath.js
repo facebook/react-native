@@ -65,6 +65,10 @@ var MatrixMath = {
     matrixCommand[10] = z;
   },
 
+  reusePerspectiveCommand: function(matrixCommand, p) {
+    matrixCommand[11] = -1 / p;
+  },
+
   reuseScaleXCommand(matrixCommand, factor) {
     matrixCommand[0] = factor;
   },

@@ -48,7 +48,8 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
-                  stack:(NSArray *)stack)
+                  stack:(NSArray *)stack
+                  exceptionId:(__unused NSNumber *)exceptionId)
 {
   if (_delegate) {
     [_delegate handleFatalJSExceptionWithMessage:message stack:stack];
@@ -86,7 +87,8 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
-                  stack:(NSArray *)stack)
+                  stack:(NSArray *)stack
+                  exceptionId:(__unused NSNumber *)exceptionId)
 {
   if (_delegate) {
     [_delegate updateJSExceptionWithMessage:message stack:stack];
@@ -100,6 +102,6 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
 RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
                   stack:(NSArray *)stack)
 {
-  [self reportFatalException:message stack:stack];
+  [self reportFatalException:message stack:stack exceptionId:nil];
 }
 @end

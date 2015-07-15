@@ -14,12 +14,6 @@
 #import "RCTInvalidating.h"
 #import "RCTViewManager.h"
 
-/**
- * Posted right before re-render happens. This is a chance for views to invalidate their state so
- * next render cycle will pick up updated views and layout appropriately.
- */
-extern NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
-
 @protocol RCTScrollableProtocol;
 
 /**
