@@ -26,6 +26,7 @@
 
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -34,7 +35,8 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
   NSDictionary *details = [self NSDictionary:json];
   UILocalNotification *notification = [[UILocalNotification alloc] init];
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
-  notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
+  notification.alertBody = [RCTConvert NSString:details[@"alertBody"]] ?: nil;
+  notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]] ?: nil;
   return notification;
 }
 
@@ -59,6 +61,10 @@ RCT_EXPORT_MODULE()
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRemoteNotificationsRegistered:)
                                                  name:RCTRemoteNotificationsRegistered
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleLocalNotificationReceived:)
+                                                 name:RCTLocalNotificationReceived
                                                object:nil];
   }
   return self;
@@ -98,11 +104,11 @@ RCT_EXPORT_MODULE()
                                                     userInfo:userInfo];
 }
 
-+ (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
++ (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
-                                                    userInfo:notification];
+                                                    userInfo:userInfo];
 }
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
@@ -114,6 +120,38 @@ RCT_EXPORT_MODULE()
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
+                                              body:[notification userInfo]];
+}
+
++ (void)application:(__unused UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)localNotification
+{
+  NSDictionary *baseNotificationData = @{
+    @"aps": @{
+      @"alert": localNotification.alertBody,
+      @"sound": @"",
+      @"badge": @0
+    },
+    @"userInfo": localNotification.userInfo
+  };
+
+  NSMutableDictionary *notificationData = [NSMutableDictionary dictionaryWithDictionary:baseNotificationData];
+
+  if (localNotification.fireDate) {
+    [notificationData setObject:[NSString stringWithFormat:@"%d",(int)[localNotification.fireDate timeIntervalSince1970]]
+                         forKey: @"fireDate"];
+  }
+
+  // Note: repeatInterval has been intentionally left out because it is not currently used
+  // [notificationData setObject:localNotification.repeatInterval forKey:@"repeatInterval"];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTLocalNotificationReceived
+                                                      object:self
+                                                    userInfo:notificationData];
+}
+
+- (void)handleLocalNotificationReceived:(NSNotification *)notification
+{
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"localNotificationReceived"
                                               body:[notification userInfo]];
 }
 
@@ -210,6 +248,12 @@ RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
 RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification)
 {
   [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+}
+
+RCT_EXPORT_METHOD(cancelLocalNotifications)
+{
+  // Cancel all scheduled local notifications
+  [[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
 @end
