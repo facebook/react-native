@@ -103,6 +103,18 @@ RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
 RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
+RCT_CUSTOM_VIEW_PROPERTY(bringSubviewToFront, BOOL, RCTView)
+{
+  if (view.superview != nil && [RCTConvert BOOL:json]) {
+    [view.superview bringSubviewToFront:view];
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(sendSubviewToBack, BOOL, RCTView)
+{
+  if (view.superview != nil && [RCTConvert BOOL:json]) {
+    [view.superview sendSubviewToBack:view];
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
