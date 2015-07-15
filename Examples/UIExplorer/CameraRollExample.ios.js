@@ -24,9 +24,11 @@ var {
   SwitchIOS,
   Text,
   View,
+  TouchableOpacity
 } = React;
 
 var CameraRollView = require('./CameraRollView.ios');
+var AssetScaledImageExampleView = require('./AssetScaledImageExample.ios');
 
 var CAMERA_ROLL_VIEW = 'camera_roll_view';
 
@@ -54,7 +56,7 @@ var CameraRollExample = React.createClass({
         <Text>{'Group Type: ' + this.state.groupTypes}</Text>
         <CameraRollView
           ref={CAMERA_ROLL_VIEW}
-          batchSize={5}
+          batchSize={20}
           groupTypes={this.state.groupTypes}
           renderImage={this._renderImage}
         />
@@ -62,24 +64,35 @@ var CameraRollExample = React.createClass({
     );
   },
 
+  loadAsset(asset){
+    this.props.navigator.push({
+      title: "Camera Roll Image",
+      component: AssetScaledImageExampleView,
+      backButtonTitle: 'Back',
+      passProps: { asset: asset },
+    });
+  },
+  
   _renderImage(asset) {
     var imageSize = this.state.bigImages ? 150 : 75;
     var imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     var location = asset.node.location.longitude ?
       JSON.stringify(asset.node.location) : 'Unknown location';
     return (
-      <View key={asset} style={styles.row}>
-        <Image
-          source={asset.node.image}
-          style={imageStyle}
-        />
-        <View style={styles.info}>
-          <Text style={styles.url}>{asset.node.image.uri}</Text>
-          <Text>{location}</Text>
-          <Text>{asset.node.group_name}</Text>
-          <Text>{new Date(asset.node.timestamp).toString()}</Text>
+      <TouchableOpacity onPress={ this.loadAsset.bind( this, asset ) }>
+        <View key={asset} style={styles.row}>
+          <Image
+            source={{ uri: asset.node.image.uri }}
+            style={imageStyle}
+          />
+          <View style={styles.info}>
+            <Text style={styles.url}>{asset.node.image.uri}</Text>
+            <Text>{location}</Text>
+            <Text>{asset.node.group_name}</Text>
+            <Text>{new Date(asset.node.timestamp).toString()}</Text>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   },
 
