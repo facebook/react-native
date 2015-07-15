@@ -58,6 +58,9 @@ function _precomputeTransforms(style: Object): Object {
       case 'matrix':
         MatrixMath.multiplyInto(result, result, value);
         break;
+      case 'perspective':
+        _multiplyTransform(result, MatrixMath.reusePerspectiveCommand, [value]);
+        break;
       case 'rotate':
         _multiplyTransform(result, MatrixMath.reuseRotateZCommand, [_convertToRadians(value)]);
         break;

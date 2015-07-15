@@ -80,6 +80,7 @@ if (Platform.OS === 'ios') {
     require('./AlertIOSExample'),
     require('./AppStateIOSExample'),
     require('./AsyncStorageExample'),
+    require('./TransformExample'),
     require('./BorderExample'),
     require('./CameraRollExample.ios'),
     require('./NetInfoExample'),
