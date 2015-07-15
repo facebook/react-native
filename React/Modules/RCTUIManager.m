@@ -283,12 +283,13 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
 {
   __weak RCTUIManager *weakSelf = self;
   dispatch_async(self.methodQueue, ^{
-    __weak RCTUIManager *strongSelf = weakSelf;
-    if (strongSelf) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
-                                                          object:strongSelf];
-      [strongSelf batchDidComplete];
+    RCTUIManager *strongSelf = weakSelf;
+    if (!strongSelf.isValid) {
+      return;
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
+                                                        object:strongSelf];
+    [strongSelf batchDidComplete];
   });
 }
 
