@@ -17,6 +17,10 @@ var TransformPropTypes = {
   transform: ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
       ReactPropTypes.shape({rotate: ReactPropTypes.string}),
+      ReactPropTypes.shape({rotateX: ReactPropTypes.string}),
+      ReactPropTypes.shape({rotateY: ReactPropTypes.string}),
+      ReactPropTypes.shape({rotateZ: ReactPropTypes.string}),
+      ReactPropTypes.shape({scale: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
       ReactPropTypes.shape({translateX: ReactPropTypes.number}),
