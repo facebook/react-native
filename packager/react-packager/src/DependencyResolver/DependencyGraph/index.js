@@ -21,6 +21,7 @@ const getAssetDataFromName = require('../../lib/getAssetDataFromName');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 const util = require('util');
+const assert = require('assert');
 
 const validateOpts = declareOpts({
   roots: {
@@ -150,7 +151,7 @@ class DependencyGraph {
 
   getOrderedDependencies(entryPath) {
     return this.load().then(() => {
-      const absolutePath = path.resolve(this._getAbsolutePath(entryPath));
+      const absolutePath = path.resolve(this._getAbsolutePath(entryPath) || assert(false, "Cannot find "+entryPath));
 
       if (absolutePath == null) {
         throw new NotFoundError(
