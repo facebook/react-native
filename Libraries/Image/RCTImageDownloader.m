@@ -97,7 +97,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
           runBlocks(NO, data, error);
         }
 
-        if (response) {
+        if (response && !error) {
           RCTImageDownloader *strongSelf = weakSelf;
           NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
           [strongSelf->_cache storeCachedResponse:cachedResponse forRequest:request];
