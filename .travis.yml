@@ -1,6 +1,6 @@
 language: objective-c
 
-osx_image: beta-xcode6.3
+osx_image: xcode6.4
 
 cache:
     directories:
