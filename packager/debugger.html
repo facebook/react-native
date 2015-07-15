@@ -29,8 +29,8 @@ window.onbeforeunload = function() {
 
 // Alias native implementations needed by the debugger before platform-specific
 // implementations are loaded into the global namespace
-window.debuggerSetTimeout = window.setTimeout;
-window.DebuggerWebSocket = window.WebSocket;
+var debuggerSetTimeout = window.setTimeout;
+var DebuggerWebSocket = window.WebSocket;
 
 function setStatus(status) {
   document.getElementById('status').innerHTML = status;
@@ -92,7 +92,10 @@ function connectToDebuggerProxy() {
 
   ws.onclose = function() {
     setStatus('Disconnected from proxy. Attempting reconnection. Is node server running?');
-    debuggerSetTimeout(connectToDebuggerProxy, 1000);
+
+    sessionID = null;
+    window.localStorage.removeItem('sessionID');
+    debuggerSetTimeout(connectToDebuggerProxy, 100);
   };
 }
 
