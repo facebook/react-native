@@ -993,6 +993,11 @@ static id RCTConvertPropertyListValue(id json)
   return RCTConvertPropertyListValue(json);
 }
 
+RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
+  @"hidden": @NO,
+  @"visible": @YES
+}), YES, boolValue)
+
 RCT_ENUM_CONVERTER(css_clip_t, (@{
   @"hidden": @YES,
   @"visible": @NO
