@@ -236,14 +236,10 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   NSString *configJSON = RCTJSONStringify(@{
     @"remoteModuleConfig": config,
   }, NULL);
-  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   [_javaScriptExecutor injectJSONText:configJSON
                   asGlobalObjectNamed:@"__fbBatchedBridgeConfig" callback:
    ^(__unused id err) {
-     dispatch_semaphore_signal(semaphore);
    }];
-
-  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW);
 
   NSURL *bundleURL = _parentBridge.bundleURL;
   if (_javaScriptExecutor == nil) {
