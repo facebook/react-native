@@ -1,61 +1,30 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * The examples provided by Facebook are for non-commercial testing and
+ * evaluation purposes only.
  *
- * @providesModule TransformExample
+ * Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 'use strict';
 
-var React = require('React');
+var React = require('react-native');
 var {
+  Animated,
   StyleSheet,
+  Text,
   View,
 } = React;
 
-var TimerMixin = require('react-timer-mixin');
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
-
-var TransformExample = React.createClass({
-
-  mixins: [TimerMixin],
-
-  getInitialState() {
-    return {
-      interval: this.setInterval(this._update, 800),
-      pulse: false,
-    };
-  },
-
-  render() {
-    return (
-      <UIExplorerPage title="Transforms">
-        <UIExplorerBlock title="foo bar">
-          <View style={{height: 500}}>
-            <View style={styles.box1} />
-            <View style={styles.box2} />
-            <View style={styles.box3step1} />
-            <View style={styles.box3step2} />
-            <View style={styles.box3step3} />
-            <View style={styles.box4} />
-            <View style={[
-              styles.box5,
-              this.state.pulse ? styles.box5Transform : null
-            ]} />
-          </View>
-        </UIExplorerBlock>
-      </UIExplorerPage>
-    );
-  },
-
-  _update() {
-    this.setState({
-      pulse: !this.state.pulse,
-    });
-  },
-
-});
-
 var styles = StyleSheet.create({
+  container: {
+    height: 500,
+  },
   box1: {
     left: 0,
     backgroundColor: 'green',
@@ -155,7 +124,153 @@ var styles = StyleSheet.create({
       {scale: 2},
     ],
   },
+  flipCardContainer: {
+    height: 300,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flipCard: {
+    width: 200,
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'blue',
+    backfaceVisibility: 'hidden',
+  },
+  flipText: {
+    color: '#fff',
+  }
 });
 
+var Flip = React.createClass({
+  getInitialState() {
+    return {
+      theta: new Animated.Value(45),
+    };
+  },
 
-module.exports = TransformExample;
+  componentDidMount() {
+    this._animate();
+  },
+
+  _animate() {
+    this.state.theta.setValue(0);
+    Animated.timing(this.state.theta, {
+      toValue: 180,
+      duration: 500,
+    }).start((finished) => {
+      if(finished) return this._animate();
+    });
+  },
+
+  render() {
+    return (
+      <View style={styles.flipCardContainer}>
+        <Animated.View style={[
+          styles.flipCard,
+          {
+            transform: [
+              { perspective: 850 },
+              {
+                rotateX: this.state.theta.interpolate({
+                  inputRange: [0, 180],
+                  outputRange: ['0deg', '180deg']
+                })
+              },
+            ]
+          }
+        ]}>
+          <Text style={styles.flipText}>1</Text>
+        </Animated.View>
+      </View>
+    );
+  }
+});
+
+exports.title = 'Transforms';
+exports.description = 'View transforms';
+exports.examples = [
+  {
+    title: 'Perspective',
+    description: "perspective: 850, rotateY: 180",
+    render(): ReactElement { return <Flip />; }
+  },
+  {
+    title: 'Translate, Rotate, Scale',
+    description: "translateX: 100, translateY: 50, rotate: '30deg', scaleX: 2, scaleY: 2",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={styles.box1} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Scale, Translate, Rotate, ',
+    description: "scaleX: 2, scaleY: 2, translateX: 100, translateY: 50, rotate: '30deg'",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={styles.box2} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Rotate',
+    description: "rotate: '30deg'",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={styles.box3step1} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Rotate, Scale',
+    description: "rotate: '30deg', scaleX: 2, scaleY: 2",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={styles.box3step2} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Rotate, Scale, Translate ',
+    description: "rotate: '30deg', scaleX: 2, scaleY: 2, translateX: 100, translateY: 50",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={styles.box3step3} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Translate, Scale, Rotate',
+    description: "translate: [200, 350], scale: 2.5, rotate: '-0.2rad'",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={styles.box4} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Translate, Rotate, Scale',
+    description: "translate: [-50, 35], rotate: '50deg', scale: 2",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={[styles.box5, styles.box5Transform]} />
+        </View>
+      );
+    }
+  }
+];
