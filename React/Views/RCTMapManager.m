@@ -136,21 +136,19 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   annotationView.canShowCallout = true;
   annotationView.animatesDrop = annotation.animateDrop;
 
-  annotationView.leftCalloutAccessoryView = nil;
-  if (annotation.hasLeftCallout) {
-    annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  for (NSString *side in @[@"left", @"right"]) {
+    NSString *accessoryViewSelector = [NSString stringWithFormat:@"%@CalloutAccessoryView", side];
+    NSString *typeSelector = [NSString stringWithFormat:@"%@CalloutType", side];
+    NSString *hasCheckSelector = [NSString stringWithFormat:@"has%@Callout", [side capitalizedString]];
+    NSString *configSelector = [NSString stringWithFormat:@"%@CalloutConfig", side];
 
-    if (annotation.leftCalloutType == RCTPointAnnotationTypeImage) {
-      annotationView.leftCalloutAccessoryView = [self generateCalloutImageAccessory:annotation.leftCalloutConfig];
-    }
-  }
+    [annotationView setValue:nil forKey:accessoryViewSelector];
+    if ([annotation valueForKey:hasCheckSelector]) {
+      [annotationView setValue:[UIButton buttonWithType:UIButtonTypeDetailDisclosure] forKey:accessoryViewSelector];
 
-  annotationView.rightCalloutAccessoryView = nil;
-  if (annotation.hasRightCallout) {
-    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-
-    if (annotation.rightCalloutType == RCTPointAnnotationTypeImage) {
-      annotationView.rightCalloutAccessoryView = [self generateCalloutImageAccessory:annotation.rightCalloutConfig];
+      if ([[annotation valueForKey:typeSelector] integerValue] == RCTPointAnnotationTypeImage) {
+        [annotationView setValue:[self generateCalloutImageAccessory:[annotation valueForKey:configSelector]] forKey:accessoryViewSelector];
+      }
     }
   }
 
