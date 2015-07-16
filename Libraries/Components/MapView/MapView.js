@@ -196,7 +196,7 @@ var MapView = React.createClass({
           /**
            * Default Image is being used when the image has to get loaded
            */
-          defaultImage: React.PropTypes.string
+          defaultImage: React.PropTypes.shape
         })
       }),
 
@@ -232,7 +232,7 @@ var MapView = React.createClass({
           /**
            * Default Image is being used when the image has to get loaded
            */
-          defaultImage: React.PropTypes.string
+          defaultImage: React.PropTypes.shape
         })
       }),
 
