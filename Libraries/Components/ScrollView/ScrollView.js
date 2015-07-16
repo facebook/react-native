@@ -17,7 +17,6 @@ var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
-var ReactChildren = require('ReactChildren');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
 var ScrollResponder = require('ScrollResponder');
@@ -278,24 +277,13 @@ var ScrollView = React.createClass({
       }
     }
 
-    var children = this.props.children;
-    if (this.props.stickyHeaderIndices) {
-      children = ReactChildren.map(children, (child) => {
-        if (child) {
-          return <View collapsible={false}>{child}</View>;
-        } else {
-          return child;
-        }
-      });
-    }
-
     var contentContainer =
       <View
         collapsible={false}
         ref={INNERVIEW}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}>
-        {children}
+        {this.props.children}
       </View>;
 
     var alwaysBounceHorizontal =
