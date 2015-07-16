@@ -79,6 +79,52 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
+- (bool)isLocalImage: (NSDictionary *)config
+{
+  if (config[@"image"] != nil) {
+    if ([config[@"image"] isKindOfClass:[NSDictionary class]]) {
+      if ([config[@"image"] objectForKey:@"__packager_asset"] != nil) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+- (UIImageView *)generateCalloutImageAccessory:(NSDictionary *)config
+{
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(36, 36), NO, 0.0);
+  UIImage *blank = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:blank];
+
+  if ([self isLocalImage:config]) {
+    // We have a local ressource, no web loading necessary
+    NSString *ressourceName = [RCTConvert NSString:config[@"image"][@"uri"]];
+    calloutImageView.image = [UIImage imageNamed:ressourceName];
+  } else {
+    NSString *uri = [RCTConvert NSString:config[@"image"]];
+
+    if (config[@"defaultImage"] != nil) {
+      NSString *defaultImagePath = [RCTConvert NSString:config[@"defaultImage"][@"uri"]];
+      calloutImageView.image = [UIImage imageNamed:defaultImagePath];
+    }
+
+    // Load the real image async and replace the image with it
+    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:uri]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if (!error) {
+          if ([@[@200, @301, @302, @304] containsObject:@([(NSHTTPURLResponse *)response statusCode])]) {
+            calloutImageView.image = [UIImage imageWithData:data];
+          }
+        }
+    }];
+  }
+
+  return calloutImageView;
+}
+
 - (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
 {
   if ([annotation isKindOfClass:[MKUserLocation class]]) {
@@ -92,61 +138,19 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
   annotationView.leftCalloutAccessoryView = nil;
   if (annotation.hasLeftCallout) {
+    annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+
     if (annotation.leftCalloutType == RCTPointAnnotationTypeImage) {
-      if ([annotation.leftCalloutConfig objectForKey:@"image"] != nil) {
-        if ([annotation.leftCalloutConfig[@"image"] isKindOfClass: [NSDictionary class]] &&
-            [annotation.leftCalloutConfig[@"image"] objectForKey:@"__packager_asset"] != nil) {
-          // We have a local ressource, no web loading necessary
-          NSString *uri = [RCTConvert NSString:annotation.leftCalloutConfig[@"image"][@"uri"]];
-          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
-          annotationView.leftCalloutAccessoryView = calloutImage;
-        } else {
-          // If we don't have a packager asset, we have to fetch it from interwebs
-          NSString *uri = [RCTConvert NSString:annotation.leftCalloutConfig[@"image"]];
-          // Init image with placeholder / default image
-          NSString *defaultUri = [RCTConvert NSString:annotation.leftCalloutConfig[@"defaultImage"][@"uri"]];
-          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:defaultUri]];
-
-          [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:uri]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-              calloutImage.image = [UIImage imageWithData:data];
-            }];
-
-          annotationView.leftCalloutAccessoryView = calloutImage;
-        }
-      }
-
-    } else {
-      annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+      annotationView.leftCalloutAccessoryView = [self generateCalloutImageAccessory:annotation.leftCalloutConfig];
     }
   }
 
   annotationView.rightCalloutAccessoryView = nil;
   if (annotation.hasRightCallout) {
+    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+
     if (annotation.rightCalloutType == RCTPointAnnotationTypeImage) {
-      if ([annotation.rightCalloutConfig objectForKey:@"image"] != nil) {
-        if ([annotation.rightCalloutConfig[@"image"] isKindOfClass: [NSDictionary class]] &&
-            [annotation.rightCalloutConfig[@"image"] objectForKey:@"__packager_asset"] != nil) {
-          // We have a local ressource, no web loading necessary
-          NSString *uri = [RCTConvert NSString:annotation.rightCalloutConfig[@"image"][@"uri"]];
-          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:uri]];
-          annotationView.rightCalloutAccessoryView = calloutImage;
-        } else {
-          // If we don't have a packager asset, we have to fetch it from interwebs
-          NSString *uri = [RCTConvert NSString:annotation.rightCalloutConfig[@"image"]];
-          // Init image with placeholder / default image
-          NSString *defaultUri = [RCTConvert NSString:annotation.rightCalloutConfig[@"defaultImage"][@"uri"]];
-          UIImageView *calloutImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:defaultUri]];
-
-          [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:uri]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-              calloutImage.image = [UIImage imageWithData:data];
-            }];
-
-          annotationView.rightCalloutAccessoryView = calloutImage;
-        }
-      }
-
-    } else {
-      annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+      annotationView.rightCalloutAccessoryView = [self generateCalloutImageAccessory:annotation.rightCalloutConfig];
     }
   }
 
@@ -216,6 +220,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   mapView.hasStartedRendering = YES;
   [self _emitRegionChangeEvent:mapView continuous:NO];
 }
+
 
 #pragma mark Private
 
