@@ -14,6 +14,12 @@
 @synthesize backButtonItem = _backButtonItem;
 @synthesize leftButtonItem = _leftButtonItem;
 @synthesize rightButtonItem = _rightButtonItem;
+@synthesize navigationBarTransparent = _navigationBarTransparent;
+
+- (void)setNavigationBarTransparent:(BOOL)transparent{
+  _navigationBarTransparent = transparent;
+  [self.delegate update:self];
+}
 
 - (void)setBackButtonTitle:(NSString *)backButtonTitle
 {
@@ -25,6 +31,7 @@
 {
   _backButtonIcon = backButtonIcon;
   _backButtonItem = nil;
+  [self.delegate update:self];
 }
 
 - (UIBarButtonItem *)backButtonItem
@@ -51,12 +58,14 @@
 {
   _leftButtonTitle = leftButtonTitle;
   _leftButtonItem = nil;
+  [self.delegate update:self];
 }
 
 - (void)setLeftButtonIcon:(UIImage *)leftButtonIcon
 {
   _leftButtonIcon = leftButtonIcon;
   _leftButtonItem = nil;
+  [self.delegate update:self];
 }
 
 - (UIBarButtonItem *)leftButtonItem
@@ -83,12 +92,14 @@
 {
   _rightButtonTitle = rightButtonTitle;
   _rightButtonItem = nil;
+  [self.delegate update:self];
 }
 
 - (void)setRightButtonIcon:(UIImage *)rightButtonIcon
 {
   _rightButtonIcon = rightButtonIcon;
   _rightButtonItem = nil;
+  [self.delegate update:self];
 }
 
 - (UIBarButtonItem *)rightButtonItem

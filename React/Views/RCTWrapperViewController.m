@@ -24,6 +24,7 @@
   RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayout;
   CGFloat _previousBottomLayout;
+  BOOL    translusante;
 }
 
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
@@ -63,6 +64,10 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   _currentBottomLayoutGuide = self.bottomLayoutGuide;
 }
 
+-(void)viewDidLoad{
+  [super viewDidLoad];
+  translusante = self.navigationController.navigationBar.translucent;
+}
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
@@ -77,29 +82,54 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     if (!_navItem) {
       return;
     }
-
-    UINavigationBar *bar = self.navigationController.navigationBar;
-    bar.barTintColor = _navItem.barTintColor;
-    bar.tintColor = _navItem.tintColor;
-    bar.translucent = _navItem.translucent;
-    if (_navItem.titleTextColor) {
-      [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
-    }
-
-    UINavigationItem *item = self.navigationItem;
-    item.title = _navItem.title;
-    item.backBarButtonItem = _navItem.backButtonItem;
-    if ((item.leftBarButtonItem = _navItem.leftButtonItem)) {
-      item.leftBarButtonItem.target = self;
-      item.leftBarButtonItem.action = @selector(handleNavLeftButtonTapped);
-    }
-    if ((item.rightBarButtonItem = _navItem.rightButtonItem)) {
-      item.rightBarButtonItem.target = self;
-      item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
-    }
+    [self update:_navItem animated:animated];
   }
 }
-
+-(void)update:(RCTNavItem *)navItem {
+  [self update:navItem animated:NO];
+}
+-(void)update:(RCTNavItem *)navItem animated:(BOOL)animated{
+  if (!_navItem) {
+    return;
+  }
+  
+  if (_navItem.navigationBarTransparent) {
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTranslucent:YES];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+  }else{
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTranslucent:translusante];
+    [self.navigationController.navigationBar setShadowImage:nil];
+  }
+  
+  [self.navigationController
+   setNavigationBarHidden:_navItem.navigationBarHidden
+   animated:animated];
+  
+  
+  _navItem = navItem;
+  _navItem.delegate = self;
+  
+  UINavigationBar *bar = self.navigationController.navigationBar;
+  bar.barTintColor = _navItem.barTintColor;
+  bar.tintColor = _navItem.tintColor;
+  if (_navItem.titleTextColor) {
+    [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
+  }
+  
+  UINavigationItem *item = self.navigationItem;
+  item.title = _navItem.title;
+  item.backBarButtonItem = _navItem.backButtonItem;
+  if ((item.leftBarButtonItem = _navItem.leftButtonItem)) {
+    item.leftBarButtonItem.target = self;
+    item.leftBarButtonItem.action = @selector(handleNavLeftButtonTapped);
+  }
+  if ((item.rightBarButtonItem = _navItem.rightButtonItem)) {
+    item.rightBarButtonItem.target = self;
+    item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
+  }
+}
 - (void)loadView
 {
   // Add a wrapper so that the wrapper view managed by the

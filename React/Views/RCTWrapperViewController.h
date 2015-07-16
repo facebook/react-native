@@ -10,10 +10,12 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTViewControllerProtocol.h"
+#import "RCTNavItem.h"
 
 @class RCTEventDispatcher;
 @class RCTNavItem;
 @class RCTWrapperViewController;
+
 
 @protocol RCTWrapperViewControllerNavigationListener <NSObject>
 
@@ -22,7 +24,9 @@ didMoveToNavigationController:(UINavigationController *)navigationController;
 
 @end
 
-@interface RCTWrapperViewController : UIViewController <RCTViewControllerProtocol>
+
+
+@interface RCTWrapperViewController : UIViewController <RCTViewControllerProtocol, RCTNavItemListener>
 
 - (instancetype)initWithContentView:(UIView *)contentView
                     eventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
@@ -32,5 +36,6 @@ didMoveToNavigationController:(UINavigationController *)navigationController;
 
 @property (nonatomic, weak) id<RCTWrapperViewControllerNavigationListener> navigationListener;
 @property (nonatomic, strong) RCTNavItem *navItem;
+
 
 @end
