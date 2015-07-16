@@ -340,6 +340,10 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   sourceCodeModule.scriptText = sourceCode;
 
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
+    if (!self.isValid) {
+      return;
+    }
+
     if (loadError) {
       dispatch_async(dispatch_get_main_queue(), ^{
         [self stopLoadingWithError:loadError];
