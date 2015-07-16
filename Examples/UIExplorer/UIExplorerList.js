@@ -40,6 +40,7 @@ var COMMON_COMPONENTS = [
   require('./ImageExample'),
   require('./LayoutEventsExample'),
   require('./ListViewExample'),
+  require('./ListViewGridLayoutExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
   require('./Navigator/NavigatorExample'),
