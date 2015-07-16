@@ -279,7 +279,7 @@ var ScrollView = React.createClass({
     }
 
     var children = this.props.children;
-    if (this.props.stickyHeaderIndices) {
+    if (this.props.stickyHeaderIndices.length) {
       children = ReactChildren.map(children, (child) => {
         if (child) {
           return <View collapsible={false}>{child}</View>;
