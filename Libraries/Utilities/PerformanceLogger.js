@@ -24,7 +24,8 @@ var PerformanceLogger = {
     if (timespans[key]) {
       if (__DEV__) {
         console.log(
-          'PerformanceLogger: Attempting to add a timespan that already exists'
+          'PerformanceLogger: Attempting to add a timespan that already exists ',
+          key
         );
       }
       return;
@@ -40,7 +41,8 @@ var PerformanceLogger = {
     if (timespans[key]) {
       if (__DEV__) {
         console.log(
-          'PerformanceLogger: Attempting to start a timespan that already exists'
+          'PerformanceLogger: Attempting to start a timespan that already exists ',
+          key,
         );
       }
       return;
@@ -56,7 +58,8 @@ var PerformanceLogger = {
     if (!timespans[key] || !timespans[key].startTime) {
       if (__DEV__) {
         console.log(
-          'PerformanceLogger: Attempting to end a timespan that has not started'
+          'PerformanceLogger: Attempting to end a timespan that has not started ',
+          key,
         );
       }
       return;
@@ -73,6 +76,10 @@ var PerformanceLogger = {
 
   getTimespans() {
     return timespans;
+  },
+
+  hasTimespan(key) {
+    return !!timespans[key];
   },
 
   logTimespans() {
