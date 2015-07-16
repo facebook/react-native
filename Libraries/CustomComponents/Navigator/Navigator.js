@@ -45,6 +45,7 @@ var View = require('View');
 
 var clamp = require('clamp');
 var flattenStyle = require('flattenStyle');
+var guid = require('guid');
 var invariant = require('invariant');
 var rebound = require('rebound');
 
@@ -1012,14 +1013,14 @@ var Navigator = React.createClass({
     }
   },
 
-  _renderScene: function(route, i) {
+  _renderScene: function(route, i, key) {
     var disabledSceneStyle = null;
     if (i !== this.state.presentedIndex) {
       disabledSceneStyle = styles.disabledScene;
     }
     return (
       <View
-        key={'scene_' + i}
+        key={key}
         ref={'scene_' + i}
         onStartShouldSetResponderCapture={() => {
           return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
@@ -1052,7 +1053,7 @@ var Navigator = React.createClass({
           index !== this.state.presentedIndex) {
         renderedScene = this._renderedSceneMap.get(route);
       } else {
-        renderedScene = this._renderScene(route, index);
+        renderedScene = this._renderScene(route, index, guid());
       }
       newRenderedSceneMap.set(route, renderedScene);
       return renderedScene;
