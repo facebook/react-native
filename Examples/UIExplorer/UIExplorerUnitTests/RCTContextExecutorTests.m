@@ -19,6 +19,7 @@
 #import "RCTContextExecutor.h"
 #import "RCTUtils.h"
 
+#define RUN_PERF_TESTS 0
 
 @interface RCTContextExecutorTests : XCTestCase
 
@@ -47,6 +48,8 @@
   dispatch_semaphore_wait(doneSem, DISPATCH_TIME_FOREVER);
   [_executor invalidate];
 }
+
+#if RUN_PERF_TESTS
 
 static uint64_t _get_time_nanoseconds(void)
 {
@@ -91,7 +94,7 @@ static uint64_t _get_time_nanoseconds(void)
   JSContextGroupRelease(group);
 }
 
-- (void)MANUALLY_testJavaScriptCallSpeed
+- (void)testJavaScriptCallSpeed
 {
 /**
  * Since we almost don't change the RCTContextExecutor logic, and this test is
@@ -199,5 +202,7 @@ static uint64_t _get_time_nanoseconds(void)
                              beforeDate:[NSDate dateWithTimeIntervalSinceNow:10]];
   }
 }
+
+#endif
 
 @end
