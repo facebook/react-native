@@ -84,12 +84,6 @@ var View = React.createClass({
 
   propTypes: {
     /**
-     * When false, indicates that the view should not be collapsed, even if it is
-     * layout-only. Defaults to true.
-     */
-    collapsible: PropTypes.bool,
-
-    /**
      * When true, indicates that the view is an accessibility element. By default,
      * all the touchable elements are accessible.
      */

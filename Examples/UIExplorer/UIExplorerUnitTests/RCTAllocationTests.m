@@ -19,16 +19,14 @@
 #import "RCTContextExecutor.h"
 #import "RCTRootView.h"
 
-#define RUN_RUNLOOP_WHILE(CONDITION, TIMEOUT) \
+#define RUN_RUNLOOP_WHILE(CONDITION) \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:TIMEOUT]; \
+NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:0.1]; \
 while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
   [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
 } \
 _Pragma("clang diagnostic pop")
-
-#define DEFAULT_TIMEOUT 2
 
 @interface RCTBridge (RCTAllocationTests)
 
@@ -83,7 +81,6 @@ RCT_EXPORT_MODULE();
     (void)view;
   }
 
-  sleep(DEFAULT_TIMEOUT);
   XCTAssertNil(weakBridge, @"RCTBridge should have been deallocated");
 }
 
@@ -104,8 +101,7 @@ RCT_EXPORT_MODULE();
    * Sleep on the main thread to allow js thread deallocations then run the runloop
    * to allow the module to be deallocated on the main thread
    */
-  sleep(1);
-  RUN_RUNLOOP_WHILE(module.isValid, 1)
+  RUN_RUNLOOP_WHILE(module.isValid)
   XCTAssertFalse(module.isValid, @"AllocationTestModule should have been invalidated by the bridge");
 }
 
@@ -124,12 +120,7 @@ RCT_EXPORT_MODULE();
     (void)bridge;
   }
 
-  /**
-   * Sleep on the main thread to allow js thread deallocations then run the runloop
-   * to allow the module to be deallocated on the main thread
-   */
-  sleep(1);
-  RUN_RUNLOOP_WHILE(weakModule, 1)
+  RUN_RUNLOOP_WHILE(weakModule)
   XCTAssertNil(weakModule, @"AllocationTestModule should have been deallocated");
 }
 
@@ -145,8 +136,7 @@ RCT_EXPORT_MODULE();
     (void)bridge;
   }
 
-  RUN_RUNLOOP_WHILE(weakExecutor, 1);
-  sleep(1);
+  RUN_RUNLOOP_WHILE(weakExecutor);
   XCTAssertNil(weakExecutor, @"JavaScriptExecutor should have been released");
 }
 
@@ -158,13 +148,12 @@ RCT_EXPORT_MODULE();
                                               moduleProvider:nil
                                                launchOptions:nil];
     id executor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
-    RUN_RUNLOOP_WHILE(!(weakContext = [executor valueForKey:@"context"]), DEFAULT_TIMEOUT);
+    RUN_RUNLOOP_WHILE(!(weakContext = [executor valueForKey:@"context"]));
     XCTAssertNotNil(weakContext, @"RCTJavaScriptContext should have been created");
     (void)bridge;
   }
 
-  RUN_RUNLOOP_WHILE(weakContext, 1);
-  sleep(1);
+  RUN_RUNLOOP_WHILE(weakContext);
   XCTAssertNil(weakContext, @"RCTJavaScriptContext should have been deallocated");
 }
 
@@ -176,12 +165,11 @@ RCT_EXPORT_MODULE();
   __weak id rootContentView;
   @autoreleasepool {
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@""];
-    RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]), DEFAULT_TIMEOUT)
+    RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))
     XCTAssertTrue([rootContentView isValid], @"RCTContentView should be valid");
     (void)rootView;
   }
 
-  sleep(DEFAULT_TIMEOUT);
   XCTAssertFalse([rootContentView isValid], @"RCTContentView should have been invalidated");
 }
 
@@ -196,8 +184,7 @@ RCT_EXPORT_MODULE();
     [bridge reload];
   }
 
-  // Use RUN_RUNLOOP_WHILE because `batchedBridge` deallocates on the main thread.
-  RUN_RUNLOOP_WHILE(batchedBridge != nil, DEFAULT_TIMEOUT)
+  RUN_RUNLOOP_WHILE(batchedBridge != nil)
 
   XCTAssertNotNil(bridge, @"RCTBridge should not have been deallocated");
   XCTAssertNil(batchedBridge, @"RCTBatchedBridge should have been deallocated");
