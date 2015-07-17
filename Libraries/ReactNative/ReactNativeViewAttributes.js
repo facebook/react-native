@@ -24,22 +24,6 @@ ReactNativeViewAttributes.UIView = {
   onLayout: true,
   onAccessibilityTap: true,
   onMagicTap: true,
-  collapsible: true,
-
-  // If editing layout-only view attributes, make sure
-  // -[RCTShadowView isLayoutOnly] in RCTShadowView.m
-  // is up-to-date! If any property below is set, the
-  // view should not be collapsible, but this is done
-  // on the native side.
-  onMoveShouldSetResponder: true,
-  onResponderGrant: true,
-  onResponderMove: true,
-  onResponderReject: true,
-  onResponderRelease: true,
-  onResponderTerminate: true,
-  onResponderTerminationRequest: true,
-  onStartShouldSetResponder: true,
-  onStartShouldSetResponderCapture: true,
 };
 
 ReactNativeViewAttributes.RCTView = merge(

@@ -14,8 +14,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTRootView.h"
-#import "RCTShadowView.h"
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
 #import "UIView+React.h"
@@ -23,13 +21,14 @@
 @interface RCTUIManager (Testing)
 
 - (void)_manageChildren:(NSNumber *)containerReactTag
+        moveFromIndices:(NSArray *)moveFromIndices
+          moveToIndices:(NSArray *)moveToIndices
       addChildReactTags:(NSArray *)addChildReactTags
            addAtIndices:(NSArray *)addAtIndices
         removeAtIndices:(NSArray *)removeAtIndices
                registry:(RCTSparseArray *)registry;
 
 @property (nonatomic, readonly) RCTSparseArray *viewRegistry;
-@property (nonatomic, readonly) RCTSparseArray *shadowViewRegistry; // RCT thread only
 
 @end
 
@@ -52,11 +51,6 @@
     UIView *registeredView = [[UIView alloc] init];
     [registeredView setReactTag:@(i)];
     _uiManager.viewRegistry[i] = registeredView;
-
-    RCTShadowView *registeredShadowView = [[RCTShadowView alloc] init];
-    registeredShadowView.viewName = @"RCTView";
-    [registeredShadowView setReactTag:@(i)];
-    _uiManager.shadowViewRegistry[i] = registeredShadowView;
   }
 }
 
@@ -73,6 +67,8 @@
 
   // Add views 1-5 to view 20
   [_uiManager _manageChildren:@20
+              moveFromIndices:nil
+                moveToIndices:nil
             addChildReactTags:tagsToAdd
                  addAtIndices:addAtIndices
               removeAtIndices:nil
@@ -105,6 +101,8 @@
 
   // Remove views 1-5 from view 20
   [_uiManager _manageChildren:@20
+              moveFromIndices:nil
+                moveToIndices:nil
             addChildReactTags:nil
                  addAtIndices:nil
               removeAtIndices:removeAtIndices
@@ -142,9 +140,11 @@
 {
   UIView *containerView = _uiManager.viewRegistry[20];
 
-  NSArray *removeAtIndices = @[@2, @3, @5, @8, @4, @9];
-  NSArray *addAtIndices = @[@0, @6, @1, @7];
-  NSArray *tagsToAdd = @[@11, @12, @5, @10];
+  NSArray *removeAtIndices = @[@2, @3, @5, @8];
+  NSArray *addAtIndices = @[@0, @6];
+  NSArray *tagsToAdd = @[@11, @12];
+  NSArray *moveFromIndices = @[@4, @9];
+  NSArray *moveToIndices = @[@1, @7];
 
   // We need to keep these in array to keep them around
   NSMutableArray *viewsToRemove = [NSMutableArray array];
@@ -160,6 +160,8 @@
   }
 
   [_uiManager _manageChildren:@20
+              moveFromIndices:moveFromIndices
+                moveToIndices:moveToIndices
             addChildReactTags:tagsToAdd
                  addAtIndices:addAtIndices
               removeAtIndices:removeAtIndices

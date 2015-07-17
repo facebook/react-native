@@ -102,8 +102,13 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor);
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_REMAP_VIEW_PROPERTY(transformMatrix, layer.transform, CATransform3D)
 RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
+RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
+{
+  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
+  // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
+  view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
+}
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
