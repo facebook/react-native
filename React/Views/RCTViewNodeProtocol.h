@@ -15,11 +15,10 @@
 @protocol RCTViewNodeProtocol <NSObject>
 
 @property (nonatomic, copy) NSNumber *reactTag;
-@property (nonatomic, assign) CGRect frame;
 
 - (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTViewNodeProtocol>)subview;
-- (NSArray *)reactSubviews;
+- (NSMutableArray *)reactSubviews;
 - (id<RCTViewNodeProtocol>)reactSuperview;
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 
