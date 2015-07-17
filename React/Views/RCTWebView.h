@@ -9,14 +9,16 @@
 
 #import "RCTView.h"
 
+extern NSString *const RCTJSNavigationScheme;
+
 @class RCTEventDispatcher;
 
 @interface RCTWebView : RCTView
 
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
-@property (nonatomic, assign) BOOL shouldInjectAJAXHandler;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, copy) NSString *injectedJavaScript;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 

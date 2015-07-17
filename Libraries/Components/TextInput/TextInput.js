@@ -411,7 +411,7 @@ var TextInput = React.createClass({
   _renderIOS: function() {
     var textContainer;
 
-    var props = this.props;
+    var props = Object.assign({},this.props);
     props.style = [styles.input, this.props.style];
 
     if (!props.multiline) {
@@ -537,7 +537,9 @@ var TextInput = React.createClass({
   },
 
   _onPress: function(event: Event) {
-    this.focus();
+    if (this.props.editable || this.props.editable === undefined) {
+      this.focus();
+    }
   },
 
   _onChange: function(event: Event) {

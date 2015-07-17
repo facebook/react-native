@@ -26,8 +26,10 @@ var {
 var TabBarExample = React.createClass({
   statics: {
     title: '<TabBarIOS>',
-    description: 'Tab-based navigation.'
+    description: 'Tab-based navigation.',
   },
+
+  displayName: 'TabBarExample',
 
   getInitialState: function() {
     return {

@@ -10,6 +10,7 @@
 #import "RCTPushNotificationManager.h"
 
 #import "RCTBridge.h"
+#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 
@@ -25,6 +26,19 @@
 
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+
+@implementation RCTConvert (UILocalNotification)
+
++ (UILocalNotification *)UILocalNotification:(id)json
+{
+  NSDictionary *details = [self NSDictionary:json];
+  UILocalNotification *notification = [[UILocalNotification alloc] init];
+  notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
+  notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
+  return notification;
+}
+
+@end
 
 @implementation RCTPushNotificationManager
 {
@@ -139,11 +153,15 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
   }
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_8_0
+
   id notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
   [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
   [[UIApplication sharedApplication] registerForRemoteNotifications];
+
 #else
+
   [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
+
 #endif
 
 }
@@ -181,6 +199,17 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
   return @{
     @"initialNotification": RCTNullIfNil(_initialNotification),
   };
+}
+
+RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
+{
+  [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+}
+
+
+RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification)
+{
+  [[UIApplication sharedApplication] scheduleLocalNotification:notification];
 }
 
 @end

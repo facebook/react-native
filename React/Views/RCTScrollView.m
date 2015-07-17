@@ -114,8 +114,16 @@ RCT_NOT_IMPLEMENTED(-init)
   return YES;
 }
 
-- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
+- (RCTScrollEvent *)coalesceWithEvent:(RCTScrollEvent *)newEvent
 {
+  NSArray *updatedChildFrames = [_userData[@"updatedChildFrames"] arrayByAddingObjectsFromArray:newEvent->_userData[@"updatedChildFrames"]];
+
+  if (updatedChildFrames) {
+    NSMutableDictionary *userData = [newEvent->_userData mutableCopy];
+    userData[@"updatedChildFrames"] = updatedChildFrames;
+    newEvent->_userData = userData;
+  }
+  
   return newEvent;
 }
 
@@ -349,6 +357,10 @@ RCT_NOT_IMPLEMENTED(-init)
 
 @end
 
+@interface RCTScrollView (Private)
+- (NSArray *)calculateChildFramesData;
+@end
+
 @implementation RCTScrollView
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -525,6 +537,23 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
       (_scrollEventThrottle > 0 && _scrollEventThrottle < (now - _lastScrollDispatchTime))) {
 
     // Calculate changed frames
+    NSArray *childFrames = [self calculateChildFramesData];
+
+    // Dispatch event
+    [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
+                                     reactTag:self.reactTag
+                                   scrollView:scrollView
+                                     userData:@{@"updatedChildFrames": childFrames}];
+
+    // Update dispatch time
+    _lastScrollDispatchTime = now;
+    _allowNextScrollNoMatterWhat = NO;
+  }
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll:scrollView);
+}
+
+- (NSArray *)calculateChildFramesData
+{
     NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
     [[_contentView reactSubviews] enumerateObjectsUsingBlock:
      ^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
@@ -550,26 +579,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
           @"height": @(newFrame.size.height),
         }];
       }
-
     }];
 
-    // If there are new frames, add them to event data
-    NSDictionary *userData = nil;
-    if (updatedChildFrames.count > 0) {
-      userData = @{@"updatedChildFrames": updatedChildFrames};
-    }
-
-    // Dispatch event
-    [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
-                                     reactTag:self.reactTag
-                                   scrollView:scrollView
-                                     userData:userData];
-
-    // Update dispatch time
-    _lastScrollDispatchTime = now;
-    _allowNextScrollNoMatterWhat = NO;
-  }
-  RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll:scrollView);
+    return updatedChildFrames;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView

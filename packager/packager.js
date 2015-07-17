@@ -12,6 +12,7 @@ var fs = require('fs');
 var path = require('path');
 var execFile = require('child_process').execFile;
 var http = require('http');
+var isAbsolutePath = require('absolute-path');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
@@ -29,6 +30,8 @@ var chalk = require('chalk');
 var connect = require('connect');
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
+var checkNodeVersion = require('./checkNodeVersion');
+var formatBanner = require('./formatBanner');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
 var webSocketProxy = require('./webSocketProxy.js');
@@ -56,6 +59,11 @@ var options = parseCommandLine([{
 }, {
   command: 'nonPersistent',
   description: 'Disable file watcher'
+}, {
+  command: 'transformer',
+  type: 'string',
+  default: require.resolve('./transformer.js'),
+  description: 'Specify a custom transformer to be used (absolute path)'
 }]);
 
 if (options.projectRoots) {
@@ -63,8 +71,9 @@ if (options.projectRoots) {
     options.projectRoots = options.projectRoots.split(',');
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
-    // packager is running from node_modules of another project
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
+     // packager is running from node_modules of another project
     options.projectRoots = [path.resolve(__dirname, '../../..')];
   } else if (__dirname.match(/Pods\/React\/packager$/)) {
     // packager is running from node_modules of another project
@@ -91,7 +100,8 @@ if (options.assetRoots) {
     });
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];
   } else if (__dirname.match(/Pods\/React\/packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];
@@ -100,16 +110,19 @@ if (options.assetRoots) {
   }
 }
 
-console.log('\n' +
-' ===============================================================\n' +
-' |  Running packager on port ' + options.port +          '.       \n' +
-' |  Keep this packager running while developing on any JS         \n' +
-' |  projects. Feel free to close this tab and run your own      \n' +
-' |  packager instance if you prefer.                              \n' +
-' |                                                              \n' +
-' |     https://github.com/facebook/react-native                 \n' +
-' |                                                              \n' +
-' ===============================================================\n'
+checkNodeVersion();
+
+console.log(formatBanner(
+  'Running packager on port ' + options.port + '.\n'+
+  '\n' +
+  'Keep this packager running while developing on any JS projects. Feel free ' +
+  'to close this tab and run your own packager instance if you prefer.\n' +
+  '\n' +
+  'https://github.com/facebook/react-native', {
+    marginLeft: 1,
+    marginRight: 1,
+    paddingBottom: 1,
+  })
 );
 
 console.log(
@@ -208,12 +221,17 @@ function statusPageMiddleware(req, res, next) {
 }
 
 function getAppMiddleware(options) {
+  var transformerPath = options.transformer;
+  if (!isAbsolutePath(transformerPath)) {
+    transformerPath = path.resolve(process.cwd(), transformerPath);
+  }
+
   return ReactPackager.middleware({
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(options.platform),
     cacheVersion: '2',
-    transformModulePath: require.resolve('./transformer.js'),
+    transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
     polyfillModuleNames: [

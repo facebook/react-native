@@ -19,6 +19,7 @@
 @property (nonatomic, strong) UIImage *backButtonIcon;
 @property (nonatomic, copy) NSString *backButtonTitle;
 @property (nonatomic, assign) BOOL navigationBarHidden;
+@property (nonatomic, assign) BOOL shadowHidden;
 @property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *titleTextColor;

@@ -7,20 +7,37 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class ALAssetsLibrary;
-@class UIImage;
 
 @interface RCTImageLoader : NSObject
 
+/**
+ * The shared asset library instance.
+ */
 + (ALAssetsLibrary *)assetsLibrary;
 
 /**
  * Can be called from any thread.
  * Will always call callback on main thread.
  */
-+ (void)loadImageWithTag:(NSString *)tag
++ (void)loadImageWithTag:(NSString *)imageTag
                 callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback;
+
+/**
+ * As above, but includes target size, scale and resizeMode, which are used to
+ * select the optimal dimensions for the loaded image.
+ */
++ (void)loadImageWithTag:(NSString *)imageTag
+                    size:(CGSize)size
+                   scale:(CGFloat)scale
+              resizeMode:(UIViewContentMode)resizeMode
+                callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback;
+
+/**
+ * Is the specified image tag an asset library image?
+ */
++ (BOOL)isAssetLibraryImage:(NSString *)imageTag;
 
 @end

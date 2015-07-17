@@ -36,7 +36,6 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
-              context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete;
 
 /**
@@ -66,17 +65,3 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
 @end
-
-static const char *RCTJavaScriptExecutorID = "RCTJavaScriptExecutorID";
-__used static void RCTSetExecutorID(id<RCTJavaScriptExecutor> executor)
-{
-  static NSUInteger executorID = 0;
-  if (executor) {
-    objc_setAssociatedObject(executor, RCTJavaScriptExecutorID, @(++executorID), OBJC_ASSOCIATION_RETAIN);
-  }
-}
-
-__used static NSNumber *RCTGetExecutorID(id<RCTJavaScriptExecutor> executor)
-{
-  return executor ? objc_getAssociatedObject(executor, RCTJavaScriptExecutorID) : @0;
-}

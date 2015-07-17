@@ -27,6 +27,11 @@ window.onbeforeunload = function() {
   }
 };
 
+// Alias native implementations needed by the debugger before platform-specific
+// implementations are loaded into the global namespace
+var debuggerSetTimeout = window.setTimeout;
+var DebuggerWebSocket = window.WebSocket;
+
 function setStatus(status) {
   document.getElementById('status').innerHTML = status;
 }
@@ -58,35 +63,43 @@ var messageHandlers = {
       sendReply(JSON.stringify(returnValue));
     }
   }
+};
+
+function connectToDebuggerProxy() {
+  var ws = new DebuggerWebSocket('ws://' + window.location.host + '/debugger-proxy');
+
+  ws.onopen = function() {
+    if (sessionID) {
+      setStatus('Debugger session #' + sessionID + ' active');
+      ws.send(JSON.stringify({replyID: parseInt(sessionID, 10)}));
+    } else {
+      setStatus('Waiting, press ⌘R in simulator to reload and connect');
+    }
+  };
+
+  ws.onmessage = function(message) {
+    var object = JSON.parse(message.data);
+    var sendReply = function(result) {
+      ws.send(JSON.stringify({replyID: object.id, result: result}));
+    };
+    var handler = messageHandlers[object.method];
+    if (handler) {
+      handler(object, sendReply);
+    } else {
+      console.warn('Unknown method: ' + object.method);
+    }
+  };
+
+  ws.onclose = function() {
+    setStatus('Disconnected from proxy. Attempting reconnection. Is node server running?');
+
+    sessionID = null;
+    window.localStorage.removeItem('sessionID');
+    debuggerSetTimeout(connectToDebuggerProxy, 100);
+  };
 }
 
-var ws = new WebSocket('ws://' + window.location.host + '/debugger-proxy');
-
-ws.onopen = function() {
-  if (sessionID) {
-    setStatus('Debugger session #' + sessionID + ' active');
-    ws.send(JSON.stringify({replyID: parseInt(sessionID, 10)}));
-  } else {
-    setStatus('Waiting, press ⌘R in simulator to reload and connect');
-  }
-}
-
-ws.onmessage = function(message) {
-  var object = JSON.parse(message.data);
-  var sendReply = function(result) {
-    ws.send(JSON.stringify({replyID: object.id, result: result}));
-  }
-  var handler = messageHandlers[object.method];
-  if (handler) {
-    handler(object, sendReply);
-  } else {
-    console.warn('Unknown method: ' + object.method);
-  }
-}
-
-ws.onclose = function() {
-  setStatus('Disconnected from proxy. Is node server running?');
-}
+connectToDebuggerProxy();
 
 function loadScript(src, callback) {
   var script = document.createElement('script');

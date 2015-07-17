@@ -21,14 +21,14 @@
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
 
-@interface UIExplorerTests : XCTestCase
+@interface UIExplorerSnapshotTests : XCTestCase
 {
   RCTTestRunner *_runner;
 }
 
 @end
 
-@implementation UIExplorerTests
+@implementation UIExplorerSnapshotTests
 
 - (void)setUp
 {
@@ -37,21 +37,26 @@
 #endif
   NSString *version = [[UIDevice currentDevice] systemVersion];
   RCTAssert([version isEqualToString:@"8.3"], @"Snapshot tests should be run on iOS 8.3, found %@", version);
-  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios");
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios", nil);
+  _runner.recordMode = NO;
 }
 
-#define RCT_SNAPSHOT_TEST(name, reRecord) \
-- (void)test##name##Snapshot              \
-{                                         \
-  _runner.recordMode |= reRecord;         \
-  [_runner runTest:_cmd module:@#name];   \
+#define RCT_TEST(name)                  \
+- (void)test##name                      \
+{                                       \
+  [_runner runTest:_cmd module:@#name]; \
 }
 
-RCT_SNAPSHOT_TEST(ViewExample, NO)
-RCT_SNAPSHOT_TEST(LayoutExample, NO)
-RCT_SNAPSHOT_TEST(TextExample, NO)
-RCT_SNAPSHOT_TEST(SwitchExample, NO)
-RCT_SNAPSHOT_TEST(SliderExample, NO)
-RCT_SNAPSHOT_TEST(TabBarExample, NO)
+RCT_TEST(ViewExample)
+RCT_TEST(LayoutExample)
+RCT_TEST(TextExample)
+RCT_TEST(SwitchExample)
+RCT_TEST(SliderExample)
+RCT_TEST(TabBarExample)
+
+- (void)testZZZNotInRecordMode
+{
+  XCTAssertFalse(_runner.recordMode, @"Don't forget to turn record mode back to off");
+}
 
 @end

@@ -8,7 +8,7 @@
  */
 'use strict';
 
-require('babel/register')({
+require('babel-core/register')({
   only: /react-packager\/src/
 });
 

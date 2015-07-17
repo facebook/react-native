@@ -34,7 +34,6 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Shadow properties
 
-RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
 RCT_EXPORT_SHADOW_PROPERTY(color, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(fontFamily, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(fontSize, CGFloat)
@@ -43,9 +42,13 @@ RCT_EXPORT_SHADOW_PROPERTY(fontStyle, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(isHighlighted, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(letterSpacing, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(lineHeight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
 RCT_EXPORT_SHADOW_PROPERTY(shadowOffset, CGSize)
 RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
-RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationStyle, NSUnderlineStyle)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationColor, UIColor)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationLine, RCTTextDecorationLineType)
+RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {

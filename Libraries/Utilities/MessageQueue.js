@@ -26,6 +26,8 @@ let MODULE_IDS = 0;
 let METHOD_IDS = 1;
 let PARAMS = 2;
 
+let SPY_MODE = false;
+
 let MethodTypes = keyMirror({
   local: null,
   remote: null,
@@ -129,6 +131,10 @@ class MessageQueue {
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
     this._queue[PARAMS].push(params);
+    if (__DEV__ && SPY_MODE && isFinite(module)) {
+      console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
+        this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
+    }
   }
 
   __callFunction(module, method, args) {
@@ -136,6 +142,9 @@ class MessageQueue {
     if (isFinite(module)) {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
+    }
+    if (__DEV__ && SPY_MODE) {
+      console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
     module = this._require(module);
     module[method].apply(module, args);
@@ -146,11 +155,15 @@ class MessageQueue {
     BridgeProfiling.profile(
       () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
     let callback = this._callbacks[cbID];
-    if (__DEV__ && !callback) {
+    if (__DEV__) {
       let debug = this._debugInfo[cbID >> 1];
-      let module = this._remoteModuleTable[debug[0]];
-      let method = this._remoteMethodTable[debug[0]][debug[1]];
-      console.error(`Callback with id ${cbID}: ${module}.${method}() not found`);
+      let module = debug && this._remoteModuleTable[debug[0]];
+      let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
+      if (!callback) {
+        console.error(`Callback with id ${cbID}: ${module}.${method}() not found`);
+      } else if (SPY_MODE) {
+        console.log('N->JS : <callback for ' + module + '.' + method + '>(' + JSON.stringify(args) + ')');
+      }
     }
     this._callbacks[cbID & ~1] = null;
     this._callbacks[cbID |  1] = null;

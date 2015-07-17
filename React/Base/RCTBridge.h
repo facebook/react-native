@@ -34,6 +34,11 @@ RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
 /**
+ * This notification fires when the bridge created all registered native modules
+ */
+RCT_EXTERN NSString *const RCTDidCreateNativeModules;
+
+/**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
  * The bridge will call this block to instatiate the modules, and will

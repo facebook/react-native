@@ -31,6 +31,24 @@ var MatrixMath = {
     ];
   },
 
+  createFrustum: function(left, right, bottom, top, near, far) {
+    var r_width  = 1 / (right - left);
+    var r_height = 1 / (top - bottom);
+    var r_depth  = 1 / (near - far);
+    var x = 2 * (near * r_width);
+    var y = 2 * (near * r_height);
+    var A = (right + left) * r_width;
+    var B = (top + bottom) * r_height;
+    var C = (far + near) * r_depth;
+    var D = 2 * (far * near * r_depth);
+    return [
+      x, 0, 0, 0,
+      0, y, 0, 0,
+      A, B, C,-1,
+      0, 0, D, 0,
+    ];
+  },
+
   createTranslate2d: function(x, y) {
     var mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseTranslate2dCommand(mat, x, y);
@@ -63,6 +81,10 @@ var MatrixMath = {
     matrixCommand[0] = x;
     matrixCommand[5] = y;
     matrixCommand[10] = z;
+  },
+
+  reusePerspectiveCommand: function(matrixCommand, p) {
+    matrixCommand[11] = -1 / p;
   },
 
   reuseScaleXCommand(matrixCommand, factor) {

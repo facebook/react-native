@@ -20,6 +20,12 @@
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
+ * The type of a block that is capable of sending an error response to a
+ * bridged operation. Use this for returning error information to JS.
+ */
+typedef void (^RCTResponseErrorBlock)(NSError *error);
+
+/**
  * Block that bridge modules use to resolve the JS promise waiting for a result.
  * Nil results are supported and are converted to JS's undefined value.
  */
@@ -31,7 +37,6 @@ typedef void (^RCTPromiseResolveBlock)(id result);
  * precise error messages.
  */
 typedef void (^RCTPromiseRejectBlock)(NSError *error);
-
 
 /**
  * This constant can be returned from +methodQueue to force module
