@@ -293,7 +293,7 @@ var FromTheDown = {
   },
 };
 
-var FromTheUp = {
+var FromTheTop = {
   ...FromTheRight,
   transformTranslate: {
     from: {y: -SCREEN_HEIGHT, x: 0, z: 0},
@@ -612,7 +612,7 @@ var NavigatorSceneConfigs = {
       },
     },
     animationInterpolators: {
-      into: buildStyleInterpolator(FromTheUp),
+      into: buildStyleInterpolator(FromTheTop),
       out: buildStyleInterpolator(ToTheDown),
     },
   },
