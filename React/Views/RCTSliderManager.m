@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE()
   RCTSlider *slider = [[RCTSlider alloc] init];
   [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
   [slider addTarget:self action:@selector(sliderTouchEnd:) forControlEvents:UIControlEventTouchUpInside];
+  [slider addTarget:self action:@selector(sliderTouchEnd:) forControlEvents:UIControlEventTouchUpOutside];
   return slider;
 }
 
