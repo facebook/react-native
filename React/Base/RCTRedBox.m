@@ -36,7 +36,7 @@
 {
   if ((self = [super initWithFrame:frame])) {
     _redColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
-    self.windowLevel = UIWindowLevelStatusBar + 5;
+    self.windowLevel = CGFLOAT_MAX;
     self.backgroundColor = _redColor;
     self.hidden = YES;
 
