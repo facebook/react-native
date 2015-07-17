@@ -230,14 +230,12 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)buildRequest:(NSDictionary *)query
-      responseSender:(RCTResponseSenderBlock)responseSender
+     completionBlock:(void (^)(NSURLRequest *request))block
 {
   NSURL *URL = [RCTConvert NSURL:query[@"url"]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [[RCTConvert NSString:query[@"method"]] uppercaseString] ?: @"GET";
   request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
-
-  BOOL incrementalUpdates = [RCTConvert BOOL:query[@"incrementalUpdates"]];
 
   NSDictionary *data = [RCTConvert NSDictionary:query[@"data"]];
   [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary *result) {
@@ -258,9 +256,7 @@ RCT_EXPORT_MODULE()
       [request setValue:[@(request.HTTPBody.length) description] forHTTPHeaderField:@"Content-Length"];
     }
 
-    [self sendRequest:request
-   incrementalUpdates:incrementalUpdates
-       responseSender:responseSender];
+    block(request);
   }];
 }
 
@@ -464,7 +460,12 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
                   responseSender:(RCTResponseSenderBlock)responseSender)
 {
-  [self buildRequest:query responseSender:responseSender];
+  [self buildRequest:query completionBlock:^(NSURLRequest *request) {
+
+    BOOL incrementalUpdates = [RCTConvert BOOL:query[@"incrementalUpdates"]];
+    [self sendRequest:request incrementalUpdates:incrementalUpdates
+       responseSender:responseSender];
+  }];
 }
 
 RCT_EXPORT_METHOD(cancelRequest:(NSNumber *)requestID)
