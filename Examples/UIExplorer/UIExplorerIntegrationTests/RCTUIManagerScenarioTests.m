@@ -12,8 +12,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#import <XCTest/XCTest.h>
 
+#import <UIKit/UIKit.h>
+#import <XCTest/XCTest.h>
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
 #import "UIView+React.h"
@@ -32,13 +33,13 @@
 
 @end
 
-@interface RCTUIManagerTests : XCTestCase
+@interface RCTUIManagerScenarioTests : XCTestCase
 
 @property (nonatomic, readwrite, strong) RCTUIManager *uiManager;
 
 @end
 
-@implementation RCTUIManagerTests
+@implementation RCTUIManagerScenarioTests
 
 - (void)setUp
 {
