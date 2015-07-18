@@ -16,6 +16,8 @@ var ReactPropTypes = require('ReactPropTypes');
 var TransformPropTypes = {
   transform: ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
+      ReactPropTypes.shape({matrix: ReactPropTypes.arrayOf(ReactPropTypes.number)}),
+      ReactPropTypes.shape({matrix3d: ReactPropTypes.arrayOf(ReactPropTypes.number)}),
       ReactPropTypes.shape({perspective: ReactPropTypes.number}),
       ReactPropTypes.shape({rotate: ReactPropTypes.string}),
       ReactPropTypes.shape({rotateX: ReactPropTypes.string}),
@@ -29,17 +31,11 @@ var TransformPropTypes = {
     ])
   ),
 
-  /*
-   * `transformMatrix` accepts a 4x4 matrix expressed as a row-major ordered
-   * array. This property is DEPRECATED and cannot be used simultaneously with
-   * the `transform` property.
-   */
-  transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
-
   // DEPRECATED
   rotation: ReactPropTypes.number,
   scaleX: ReactPropTypes.number,
   scaleY: ReactPropTypes.number,
+  transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
   translateX: ReactPropTypes.number,
   translateY: ReactPropTypes.number,
 };

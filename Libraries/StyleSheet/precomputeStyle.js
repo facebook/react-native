@@ -26,10 +26,6 @@ function precomputeStyle(style: ?Object): ?Object {
   if (!style || !style.transform) {
     return style;
   }
-  invariant(
-    !style.transformMatrix,
-    'transformMatrix and transform styles cannot be used on the same component'
-  );
   var newStyle = _precomputeTransforms({...style});
   deepFreezeAndThrowOnMutationInDev(newStyle);
   return newStyle;
@@ -56,6 +52,7 @@ function _precomputeTransforms(style: Object): Object {
 
     switch (key) {
       case 'matrix':
+      case 'matrix3d':
         MatrixMath.multiplyInto(result, result, value);
         break;
       case 'perspective':
@@ -101,13 +98,11 @@ function _precomputeTransforms(style: Object): Object {
   if (Platform.OS === 'android') {
     return {
       ...style,
-      transformMatrix: result,
       decomposedMatrix: MatrixMath.decomposeMatrix(result),
     };
   }
   return {
     ...style,
-    transformMatrix: result,
   };
 }
 
@@ -144,6 +139,7 @@ function _validateTransform(key, value, transformation) {
 
   var multivalueTransforms = [
     'matrix',
+    'matrix3d',
     'translate',
   ];
   if (multivalueTransforms.indexOf(key) !== -1) {
@@ -157,8 +153,17 @@ function _validateTransform(key, value, transformation) {
   switch (key) {
     case 'matrix':
       invariant(
-        value.length === 9 || value.length === 16,
-        'Matrix transform must have a length of 9 (2d) or 16 (3d). ' +
+        value.length === 9,
+        'Matrix transform must have a length of 9 (2d). ' +
+          'Provided matrix has a length of %s: %s',
+        value.length,
+        stringifySafe(transformation),
+      );
+      break;
+    case 'matrix3d':
+      invariant(
+        value.length === 16,
+        'Matrix transform must have a length of 16 (3d). ' +
           'Provided matrix has a length of %s: %s',
         value.length,
         stringifySafe(transformation),
