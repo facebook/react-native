@@ -780,6 +780,51 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 }
 
+class AnimatedTransformMatrix extends AnimatedWithChildren {
+  _transformMatrix: Array<Object>;
+
+  constructor(transformMatrix: Array<Object>) {
+    super();
+    this._transformMatrix = transformMatrix;
+  }
+
+  __getValue(): Array<Number> {
+    return this._transformMatrix.map(x => {
+      if (x instanceof Animated) {
+        return x.__getValue();
+      } else {
+        return x;
+      }
+    });
+  }
+
+  getAnimatedValue(): Array<Number> {
+    return this._transformMatrix.map(x => {
+      if (x instanceof Animated) {
+        return x.getAnimatedValue();
+      } else {
+        return x;
+      }
+    });
+  }
+
+  attach(): void {
+    this._transformMatrix.forEach(x => {
+      if (x instanceof Animated) {
+        x.addChild(this);
+      }
+    });
+  }
+
+  detach(): void {
+    this._transformMatrix.forEach(x => {
+      if (x instanceof Animated) {
+        x.removeChild(this);
+      }
+    });
+  }
+}
+
 class AnimatedStyle extends AnimatedWithChildren {
   _style: Object;
 
@@ -790,6 +835,12 @@ class AnimatedStyle extends AnimatedWithChildren {
       style = {
         ...style,
         transform: new AnimatedTransform(style.transform),
+      };
+    }
+    if (style.transformMatrix) {
+      style = {
+        ...style,
+        transformMatrix: new AnimatedTransformMatrix(style.transformMatrix),
       };
     }
     this._style = style;
