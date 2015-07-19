@@ -718,6 +718,34 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 }
 
+class AnimatedFormula extends AnimatedWithChildren {
+  _parents: Array<Animated|number>;
+  _formula: (...inputs: number) => number;
+
+  constructor(parents: Array<Animated|number>, formula: (...inputs: number) => number ) {
+    super();
+    this._parents = parents;
+    this._formula = formula;
+  }
+
+  __getValue(): number {
+    var args: Array<number> = this._parents.map(parent => parent instanceof Animated ? parent.__getValue() : parent);
+    return this._formula.apply(null, args);
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  attach(): void {
+    this._parents.forEach(parent => parent instanceof Animated && parent.addChild(this));
+  }
+
+  detach(): void {
+    this._parents.forEach(parent => parent instanceof Animated && parent.removeChild(this));
+  }
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: Array<Object>;
 
@@ -1289,6 +1317,7 @@ module.exports = {
 
   Value: AnimatedValue,
   ValueXY: AnimatedValueXY,
+  Formula: AnimatedFormula,
   __PropsOnlyForTests: AnimatedProps,
   View: createAnimatedComponent(View),
   Text: createAnimatedComponent(Text),
