@@ -62,6 +62,9 @@ var messageHandlers = {
     } finally {
       sendReply(JSON.stringify(returnValue));
     }
+  },
+  'usageMetrics': function (message) {
+    console.log(message);
   }
 };
 

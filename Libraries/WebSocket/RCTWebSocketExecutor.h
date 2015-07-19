@@ -8,6 +8,7 @@
  */
 
 #import "RCTDefines.h"
+#import "RCTProfile.h"
 
 #if RCT_DEV // Debug executors are only supported in dev mode
 

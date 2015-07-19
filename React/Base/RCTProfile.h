@@ -69,6 +69,18 @@ RCT_EXTERN NSNumber *_RCTProfileBeginEvent(void);
 RCT_EXTERN void _RCTProfileEndEvent(NSNumber *, NSString *, NSString *, id);
 
 /**
+ * Exposes memory usage metrics
+ */
+
+NSDictionary *RCTProfileGetMemoryUsage(bool);
+
+/**
+ * Exposes device cpu usage metrics - Note this does not include JS Runtime CPU usage
+ */
+
+NSDictionary *RCTProfileGetCPUUsage();
+
+/**
  * This pair of macros implicitly handle the event ID when beginning and ending
  * an event, for both simplicity and performance reasons, this method is preferred
  *
@@ -122,6 +134,7 @@ RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *
 #define RCTProfileEndEvent(...)
 
 #define RCTProfileImmediateEvent(...)
+
 
 #define RCTProfileBlock(block, ...) block
 

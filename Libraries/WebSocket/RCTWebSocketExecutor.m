@@ -32,6 +32,7 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
   dispatch_semaphore_t _socketOpenSemaphore;
   NSMutableDictionary *_injectedObjects;
   NSURL *_url;
+  NSTimer *_useage_metrics_timer;
 }
 
 RCT_EXPORT_MODULE()
@@ -83,6 +84,8 @@ RCT_EXPORT_MODULE()
     [self invalidate];
     return;
   }
+  _useage_metrics_timer = [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                                           target:self selector:@selector(sendUsageMetrics) userInfo:nil repeats:YES];
 }
 
 - (BOOL)connectToProxy
@@ -176,6 +179,22 @@ RCT_EXPORT_MODULE()
   }];
 }
 
+- (void)sendUsageMetrics
+{
+  NSDictionary *memoryUsage = RCTProfileGetMemoryUsage(true);
+  NSDictionary *cpuUsage = RCTProfileGetCPUUsage();
+  
+  NSDictionary *message = @{
+                            @"method": @"usageMetrics",
+                            @"residentMemorySize": memoryUsage[@"resident_size"],
+                            @"virtualMemorySize": memoryUsage[@"virtual_size"],
+                            @"deviceCPUUsage": cpuUsage[@"device_cpu_usage"]
+                            };
+
+  // TODO: handle errors
+  [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary *reply) {}];
+}
+
 - (void)injectJSONText:(NSString *)script asGlobalObjectNamed:(NSString *)objectName callback:(RCTJavaScriptCompleteBlock)onComplete
 {
   dispatch_async(_jsQueue, ^{
@@ -200,6 +219,10 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  // stop sending usage metrics
+  [_useage_metrics_timer invalidate];
+  _useage_metrics_timer = nil;
+  
   _socket.delegate = nil;
   [_socket closeWithCode:1000 reason:@"Invalidated"];
   _socket = nil;
