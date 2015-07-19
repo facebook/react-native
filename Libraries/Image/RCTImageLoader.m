@@ -194,7 +194,7 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
       targetSize = PHImageManagerMaximumSize;
       imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
     } else {
-      targetSize = size;
+      targetSize = CGSizeMake(size.width * scale, size.height * scale);
       imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
     }
 
