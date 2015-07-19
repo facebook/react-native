@@ -172,6 +172,7 @@ var TouchableOpacity = React.createClass({
     return cloneWithProps(onlyChild(this.props.children), {
       ref: CHILD_REF,
       accessible: true,
+      accessibilityLabel: this.props.accessibilityLabel,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
