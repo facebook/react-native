@@ -33,7 +33,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 {
   RCTEventDispatcher *_eventDispatcher;
   UIWebView *_webView;
-  NSString *_injectedJavascriptIOS;
+  NSString *_injectedJavaScript;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -126,19 +126,6 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   return _webView.backgroundColor;
 }
 
-- (void)setinjectedJavascriptIOS:(NSString *)jsStr
-{
-  if (_injectedJavascriptIOS == jsStr) {
-    return;
-  }
-
-  if ([_injectedJavascriptIOS isEqualToString:jsStr]) {
-    return;
-  }
-
-  _injectedJavascriptIOS = [jsStr copy];
-}
-
 - (NSMutableDictionary *)baseEvent
 {
   NSURL *url = _webView.request.URL;
@@ -197,8 +184,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-  if (_injectedJavascriptIOS != nil) {
-    [webView stringByEvaluatingJavaScriptFromString:_injectedJavascriptIOS];
+  if (_injectedJavaScript != nil) {
+    [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
   }
 
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.

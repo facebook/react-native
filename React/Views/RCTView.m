@@ -480,7 +480,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     _borderTopColor ?: _borderColor,
     _borderLeftColor ?: _borderColor,
     _borderBottomColor ?: _borderColor,
-    _borderRightColor ?: _borderColor
+    _borderRightColor ?: _borderColor,
   };
 }
 
@@ -580,14 +580,15 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
 
 #pragma mark Border Color
 
-#define setBorderColor(side)                                              \
-  - (void)setBorder##side##Color:(CGColorRef)border##side##Color          \
-  {                                                                       \
-    if (CGColorEqualToColor(_border##side##Color, border##side##Color)) { \
-      return;                                                             \
-    }                                                                     \
-    _border##side##Color = border##side##Color;                           \
-    [self.layer setNeedsDisplay];                                         \
+#define setBorderColor(side)                                \
+  - (void)setBorder##side##Color:(CGColorRef)color          \
+  {                                                         \
+    if (CGColorEqualToColor(_border##side##Color, color)) { \
+      return;                                               \
+    }                                                       \
+    CGColorRelease(_border##side##Color);                   \
+    _border##side##Color = CGColorRetain(color);            \
+    [self.layer setNeedsDisplay];                           \
   }
 
 setBorderColor()
@@ -598,14 +599,14 @@ setBorderColor(Left)
 
 #pragma mark - Border Width
 
-#define setBorderWidth(side)                                  \
-  - (void)setBorder##side##Width:(CGFloat)border##side##Width \
-  {                                                           \
-    if (_border##side##Width == border##side##Width) {        \
-      return;                                                 \
-    }                                                         \
-    _border##side##Width = border##side##Width;               \
-    [self.layer setNeedsDisplay];                             \
+#define setBorderWidth(side)                    \
+  - (void)setBorder##side##Width:(CGFloat)width \
+  {                                             \
+    if (_border##side##Width == width) {        \
+      return;                                   \
+    }                                           \
+    _border##side##Width = width;               \
+    [self.layer setNeedsDisplay];               \
   }
 
 setBorderWidth()
@@ -614,14 +615,14 @@ setBorderWidth(Right)
 setBorderWidth(Bottom)
 setBorderWidth(Left)
 
-#define setBorderRadius(side) \
-  - (void)setBorder##side##Radius:(CGFloat)border##side##Radius \
-  {                                                             \
-    if (_border##side##Radius == border##side##Radius) {        \
-      return;                                                   \
-    }                                                           \
-    _border##side##Radius = border##side##Radius;               \
-    [self.layer setNeedsDisplay];                               \
+#define setBorderRadius(side)                     \
+  - (void)setBorder##side##Radius:(CGFloat)radius \
+  {                                               \
+    if (_border##side##Radius == radius) {        \
+      return;                                     \
+    }                                             \
+    _border##side##Radius = radius;               \
+    [self.layer setNeedsDisplay];                 \
   }
 
 setBorderRadius()
@@ -629,5 +630,14 @@ setBorderRadius(TopLeft)
 setBorderRadius(TopRight)
 setBorderRadius(BottomLeft)
 setBorderRadius(BottomRight)
+
+- (void)dealloc
+{
+  CGColorRelease(_borderColor);
+  CGColorRelease(_borderTopColor);
+  CGColorRelease(_borderRightColor);
+  CGColorRelease(_borderBottomColor);
+  CGColorRelease(_borderLeftColor);
+}
 
 @end

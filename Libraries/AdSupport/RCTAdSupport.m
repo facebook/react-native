@@ -10,19 +10,20 @@
 #import <AdSupport/ASIdentifierManager.h>
 
 #import "RCTAdSupport.h"
+#import "RCTUtils.h"
 
 @implementation RCTAdSupport
 
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(getAdvertisingId:(RCTResponseSenderBlock)callback
-                  withErrorCallback:(RCTResponseSenderBlock)errorCallback)
+                  withErrorCallback:(RCTResponseErrorBlock)errorCallback)
 {
   NSUUID *advertisingIdentifier = [ASIdentifierManager sharedManager].advertisingIdentifier;
   if (advertisingIdentifier) {
     callback(@[advertisingIdentifier.UUIDString]);
   } else {
-    errorCallback(@[@"as_identifier_unavailable"]);
+    errorCallback(RCTErrorWithMessage(@"Advertising identifier is unavailable."));
   }
 }
 

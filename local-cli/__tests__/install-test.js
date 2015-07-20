@@ -18,7 +18,7 @@ describe('setup Podfile', function() {
 
   it('creates a Podfile if none exists', function() {
     try {
-      fs.unlinkSync(path.resolve(__dirname, 'Podfile'));
+      fs.unlinkSync(path.resolve(__dirname, '../Podfile'));
     } catch(e) {}
 
     var setupPodfile = install.setupPodfile();
@@ -37,8 +37,11 @@ describe('setup Podfile', function() {
     expect(setupPodfile.podfileText).toContain(openingReactTag);
     expect(setupPodfile.podfileText).toContain(closingReactTag);
 
+    // cleanup
     try {
-      fs.unlinkSync(path.resolve(__dirname, 'Podfile'));
-    } catch(e) {}
+      fs.unlinkSync(path.resolve(__dirname, '../Podfile'));
+    } catch(e) {
+      throw new Error('failed to cleanup Podfile', e);
+    }
   });
 });

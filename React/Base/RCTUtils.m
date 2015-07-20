@@ -10,11 +10,14 @@
 #import "RCTUtils.h"
 
 #import <mach/mach_time.h>
-#import <objc/runtime.h>
+#import <objc/message.h>
 
 #import <UIKit/UIKit.h>
 
 #import <CommonCrypto/CommonCrypto.h>
+
+#import <zlib.h>
+#import <dlfcn.h>
 
 #import "RCTLog.h"
 
@@ -177,12 +180,9 @@ void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
 
-  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
-  {
+  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
-  }
-  else
-  {
+  } else {
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
 }
@@ -197,12 +197,9 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement)
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
 
-  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
-  {
+  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
-  }
-  else
-  {
+  } else {
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
 }
@@ -216,10 +213,8 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
 {
   unsigned int numberOfMethods;
   Method *methods = class_copyMethodList(cls, &numberOfMethods);
-  for (unsigned int i = 0; i < numberOfMethods; i++)
-  {
-    if (method_getName(methods[i]) == selector)
-    {
+  for (unsigned int i = 0; i < numberOfMethods; i++) {
+    if (method_getName(methods[i]) == selector) {
       free(methods);
       return YES;
     }
@@ -231,12 +226,11 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
 NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
 {
   if (toStringify) {
-    message = [NSString stringWithFormat:@"%@%@", message, toStringify];
+    message = [message stringByAppendingString:[toStringify description]];
   }
-  NSMutableDictionary *error = [@{@"message": message} mutableCopy];
-  if (extraData) {
-    [error addEntriesFromDictionary:extraData];
-  }
+
+  NSMutableDictionary *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
+  error[@"message"] = message;
   return error;
 }
 
@@ -245,6 +239,27 @@ NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary
   id error = RCTMakeError(message, toStringify, extraData);
   RCTLogError(@"\nError: %@", error);
   return error;
+}
+
+// TODO: Can we just replace RCTMakeError with this function instead?
+NSDictionary *RCTJSErrorFromNSError(NSError *error)
+{
+  NSString *errorMessage;
+  NSArray *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary *errorInfo =
+  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+
+  if (error) {
+    errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
+    errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    errorInfo[@"code"] = @(error.code);
+  } else {
+    errorMessage = @"Unknown error from a native module";
+    errorInfo[@"domain"] = RCTErrorDomain;
+    errorInfo[@"code"] = @-1;
+  }
+
+  return RCTMakeError(errorMessage, nil, errorInfo);
 }
 
 BOOL RCTRunningInTestEnvironment(void)
@@ -286,23 +301,58 @@ id RCTNilIfNull(id value)
   return value == (id)kCFNull ? nil : value;
 }
 
-// TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary *RCTJSErrorFromNSError(NSError *error)
+NSURL *RCTDataURL(NSString *mimeType, NSData *data)
 {
-  NSString *errorMessage;
-  NSArray *stackTrace = [NSThread callStackSymbols];
-  NSMutableDictionary *errorInfo =
-  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+  return [NSURL URLWithString:
+          [NSString stringWithFormat:@"data:%@;base64,%@", mimeType,
+           [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
+}
 
-  if (error) {
-    errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
-    errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
-    errorInfo[@"code"] = @(error.code);
-  } else {
-    errorMessage = @"Unknown error from a native module";
-    errorInfo[@"domain"] = RCTErrorDomain;
-    errorInfo[@"code"] = @-1;
+static BOOL RCTIsGzippedData(NSData *data)
+{
+  UInt8 *bytes = (UInt8 *)data.bytes;
+  return (data.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
+}
+
+NSData *RCTGzipData(NSData *input, float level)
+{
+  if (input.length == 0 || RCTIsGzippedData(input)) {
+    return input;
   }
 
-  return RCTMakeError(errorMessage, nil, errorInfo);
+  void *libz = dlopen("libz.dylib", RTLD_NOW);
+  int (*deflateInit2_)(z_streamp, int, int, int, int, int, const char *, int) = dlsym(libz, "deflateInit2_");
+  int (*deflate)(z_streamp, int) = dlsym(libz, "deflate");
+  int (*deflateEnd)(z_streamp) = dlsym(libz, "deflateEnd");
+
+  z_stream stream;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  stream.opaque = Z_NULL;
+  stream.avail_in = (uint)input.length;
+  stream.next_in = (Bytef *)input.bytes;
+  stream.total_out = 0;
+  stream.avail_out = 0;
+
+  static const NSUInteger RCTGZipChunkSize = 16384;
+
+  NSMutableData *output = nil;
+  int compression = (level < 0.0f)? Z_DEFAULT_COMPRESSION: (int)(roundf(level * 9));
+  if (deflateInit2(&stream, compression, Z_DEFLATED, 31, 8, Z_DEFAULT_STRATEGY) == Z_OK) {
+    output = [NSMutableData dataWithLength:RCTGZipChunkSize];
+    while (stream.avail_out == 0) {
+      if (stream.total_out >= output.length) {
+        output.length += RCTGZipChunkSize;
+      }
+      stream.next_out = (uint8_t *)output.mutableBytes + stream.total_out;
+      stream.avail_out = (uInt)(output.length - stream.total_out);
+      deflate(&stream, Z_FINISH);
+    }
+    deflateEnd(&stream);
+    output.length = stream.total_out;
+  }
+
+  dlclose(libz);
+
+  return output;
 }

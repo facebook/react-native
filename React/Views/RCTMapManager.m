@@ -79,7 +79,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
-- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
+- (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
 {
   if ([annotation isKindOfClass:[MKUserLocation class]]) {
     return nil;

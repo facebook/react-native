@@ -50,6 +50,7 @@ static css_dim_t RCTMeasure(void *context, float width)
     _fontSize = NAN;
     _letterSpacing = NAN;
     _isHighlighted = NO;
+    _textDecorationStyle = NSUnderlineStyleSingle;
   }
   return self;
 }
@@ -252,6 +253,24 @@ static css_dim_t RCTMeasure(void *context, float width)
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];
   }
+
+  // Text decoration
+  if(_textDecorationLine == RCTTextDecorationLineTypeUnderline ||
+     _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough) {
+    [self _addAttribute:NSUnderlineStyleAttributeName withValue:@(_textDecorationStyle)
+     toAttributedString:attributedString];
+  }
+  if(_textDecorationLine == RCTTextDecorationLineTypeStrikethrough ||
+     _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough){
+    [self _addAttribute:NSStrikethroughStyleAttributeName withValue:@(_textDecorationStyle)
+     toAttributedString:attributedString];
+  }
+  if(_textDecorationColor) {
+    [self _addAttribute:NSStrikethroughColorAttributeName withValue:_textDecorationColor
+     toAttributedString:attributedString];
+    [self _addAttribute:NSUnderlineColorAttributeName withValue:_textDecorationColor
+     toAttributedString:attributedString];
+  }
 }
 
 - (void)fillCSSNode:(css_node_t *)node
@@ -297,6 +316,9 @@ RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
 RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
+RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
+RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
+RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
 
 @end

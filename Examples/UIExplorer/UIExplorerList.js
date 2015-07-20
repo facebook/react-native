@@ -38,7 +38,9 @@ var createExamplePage = require('./createExamplePage');
 
 var COMMON_COMPONENTS = [
   require('./ImageExample'),
+  require('./LayoutEventsExample'),
   require('./ListViewExample'),
+  require('./ListViewGridLayoutExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
   require('./Navigator/NavigatorExample'),
@@ -50,6 +52,7 @@ var COMMON_COMPONENTS = [
 ];
 
 var COMMON_APIS = [
+  require('./AnimationExample/AnExApp'),
   require('./GeolocationExample'),
   require('./LayoutExample'),
   require('./PanResponderExample'),
@@ -78,9 +81,9 @@ if (Platform.OS === 'ios') {
     require('./AlertIOSExample'),
     require('./AppStateIOSExample'),
     require('./AsyncStorageExample'),
+    require('./TransformExample'),
     require('./BorderExample'),
     require('./CameraRollExample.ios'),
-    require('./LayoutEventsExample'),
     require('./NetInfoExample'),
     require('./PushNotificationIOSExample'),
     require('./StatusBarIOSExample'),
@@ -189,6 +192,7 @@ class UIExplorerList extends React.Component {
             onChangeText={this._search.bind(this)}
             placeholder="Search..."
             style={[styles.searchTextInput, platformTextInputStyle]}
+            testID="explorer_search"
             value={this.state.searchText}
           />
         </View>);

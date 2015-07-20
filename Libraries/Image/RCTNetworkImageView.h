@@ -9,11 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class RCTEventDispatcher;
 @class RCTImageDownloader;
 
 @interface RCTNetworkImageView : UIView
 
-- (instancetype)initWithImageDownloader:(RCTImageDownloader *)imageDownloader NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+                        imageDownloader:(RCTImageDownloader *)imageDownloader NS_DESIGNATED_INITIALIZER;
 
 /**
  * An image that will appear while the view is loading the image from the network,
@@ -25,6 +27,11 @@
  * Specify a URL for an image. The image will be asynchronously loaded and displayed.
  */
 @property (nonatomic, strong) NSURL *imageURL;
+
+/**
+ * Whether the image should be masked with this view's tint color.
+ */
+@property (nonatomic, assign) BOOL tinted;
 
 /**
  * By default, changing imageURL will reset whatever existing image was present

@@ -17,7 +17,7 @@ Since React makes no assumptions about the rest of your technology stack â€“ itâ
 
 ## Install React Native Using CocoaPods
 
-[CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't install CocoaPods yet, checkout [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
+[CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't installed CocoaPods yet, check out [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
 
 When you are ready to work with CocoaPods, add the following line to `Podfile`. If you don't have one, then create it under the root directory of your project.
 

@@ -151,7 +151,16 @@ class DependencyGraph {
 
   getOrderedDependencies(entryPath) {
     return this.load().then(() => {
-      const absolutePath = path.resolve(this._getAbsolutePath(entryPath) || assert(false, "Cannot find "+entryPath));
+      const absPath = this._getAbsolutePath(entryPath);
+
+      if (absPath == null) {
+        throw new NotFoundError(
+          'Could not find source file at %s',
+          entryPath
+        );
+      }
+
+      const absolutePath = path.resolve(absPath);
 
       if (absolutePath == null) {
         throw new NotFoundError(
