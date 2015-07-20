@@ -20,6 +20,22 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
 
+#ifndef RCT_JSC_PROFILER
+#if RCT_DEV && DEBUG
+#define RCT_JSC_PROFILER 1
+#else
+#define RCT_JSC_PROFILER 0
+#endif
+#endif
+
+#if RCT_JSC_PROFILER
+#include <dlfcn.h>
+
+#ifndef RCT_JSC_PROFILER_DYLIB
+#define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion] ofType:@"dylib" inDirectory:@"Frameworks"] UTF8String]
+#endif
+#endif
+
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
 @property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
@@ -268,6 +284,18 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 #if RCT_DEV
     [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
     [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
+
+#if RCT_JSC_PROFILER
+    void *JSCProfiler = dlopen(RCT_JSC_PROFILER_DYLIB, RTLD_NOW);
+    if (JSCProfiler != NULL) {
+      JSObjectCallAsFunctionCallback nativeProfilerStart = dlsym(JSCProfiler, "nativeProfilerStart");
+      JSObjectCallAsFunctionCallback nativeProfilerEnd = dlsym(JSCProfiler, "nativeProfilerEnd");
+      if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
+        [strongSelf _addNativeHook:nativeProfilerStart withName:"nativeProfilerStart"];
+        [strongSelf _addNativeHook:nativeProfilerEnd withName:"nativeProfilerStop"];
+      }
+    }
+#endif
 
     for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
       [[NSNotificationCenter defaultCenter] addObserver:strongSelf
