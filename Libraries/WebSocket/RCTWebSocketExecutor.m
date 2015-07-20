@@ -187,8 +187,7 @@ RCT_EXPORT_MODULE()
   
   NSDictionary *message = @{
                             @"method": @"usageMetrics",
-                            @"residentMemorySize": memoryUsage[@"resident_size"],
-                            @"virtualMemorySize": memoryUsage[@"virtual_size"],
+                            @"memoryUsage": memoryUsage,
                             @"deviceCPUUsage": cpuUsage[@"device_cpu_usage"]
                             };
 

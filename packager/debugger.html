@@ -214,7 +214,10 @@ var messageHandlers = {
     // Remove the first point so we dont just add values forever
     cpuChart.removeData();
 
-    memoryChart.addData([convertToMB(message.residentMemorySize), convertToMB(message.virtualMemorySize)], '');
+    memoryChart.addData([
+      convertToMB(message.memoryUsage.resident_size),
+      convertToMB(message.memoryUsage.virtual_size)
+    ], '');
     // Remove the first point so we dont just add values forever
     memoryChart.removeData();
 
