@@ -203,6 +203,12 @@ function getDevToolsLauncher(options) {
         console.warn(stderr);
       });
       res.end('OK');
+    } else if (req.url === '/debugger-ui/Chart.min.js') {
+      // NOTE: this works for a small number or external dependencies,
+      //       but will need a better solution as the project expands
+      var chartPath = path.join(__dirname + '/static/Chart.min.js');
+      res.writeHead(200, {'Content-Type': 'application/javascript'});
+      fs.createReadStream(chartPath).pipe(res);
     } else {
       next();
     }
