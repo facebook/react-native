@@ -120,10 +120,10 @@ NSDictionary *RCTProfileGetCPUUsage(void)
     return @{};
   }
   
-  thread_array_t         thread_list;
+  thread_array_t thread_list;
   mach_msg_type_number_t thread_count;
   
-  thread_info_data_t     thinfo;
+  thread_info_data_t thinfo;
   mach_msg_type_number_t thread_info_count;
   
   thread_basic_info_t basic_info_th;
@@ -139,8 +139,7 @@ NSDictionary *RCTProfileGetCPUUsage(void)
   float tot_cpu = 0;
   unsigned j;
   
-  for (j = 0; j < thread_count; j++)
-  {
+  for (j = 0; j < thread_count; j++) {
     thread_info_count = THREAD_INFO_MAX;
     kr = thread_info(thread_list[j], THREAD_BASIC_INFO,
                      (thread_info_t)thinfo, &thread_info_count);
