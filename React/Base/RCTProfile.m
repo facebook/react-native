@@ -108,7 +108,7 @@ NSDictionary *RCTProfileGetMemoryUsage(BOOL raw)
   
 }
 
-NSDictionary *RCTProfileGetCPUUsage(void)
+NSNumber *RCTProfileGetCPUUsage(void)
 {
   kern_return_t kr;
   task_info_data_t tinfo;
@@ -117,7 +117,7 @@ NSDictionary *RCTProfileGetCPUUsage(void)
   task_info_count = TASK_INFO_MAX;
   kr = task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)tinfo, &task_info_count);
   if (kr != KERN_SUCCESS) {
-    return @{};
+    return nil;
   }
   
   thread_array_t thread_list;
@@ -131,7 +131,7 @@ NSDictionary *RCTProfileGetCPUUsage(void)
   // get threads in the task
   kr = task_threads(mach_task_self(), &thread_list, &thread_count);
   if (kr != KERN_SUCCESS) {
-    return @{};
+    return nil;
   }
   
   long tot_sec = 0;
@@ -144,7 +144,7 @@ NSDictionary *RCTProfileGetCPUUsage(void)
     kr = thread_info(thread_list[j], THREAD_BASIC_INFO,
                      (thread_info_t)thinfo, &thread_info_count);
     if (kr != KERN_SUCCESS) {
-      return @{};
+      return nil;
     }
     
     basic_info_th = (thread_basic_info_t)thinfo;
@@ -160,11 +160,9 @@ NSDictionary *RCTProfileGetCPUUsage(void)
   kr = vm_deallocate(mach_task_self(), (vm_offset_t)thread_list, thread_count * sizeof(thread_t));
   
   if( kr == KERN_SUCCESS ) {
-    return @{
-             @"device_cpu_usage": @(tot_cpu)
-            };
+    return [NSNumber numberWithFloat:tot_cpu];
   } else {
-    return @{};
+    return nil;
     
   }
 }

@@ -183,12 +183,12 @@ RCT_EXPORT_MODULE()
 - (void)sendUsageMetrics
 {
   NSDictionary *memoryUsage = RCTProfileGetMemoryUsage(YES);
-  NSDictionary *cpuUsage = RCTProfileGetCPUUsage();
+  NSNumber *cpuUsage = RCTProfileGetCPUUsage();
   
   NSDictionary *message = @{
                             @"method": @"usageMetrics",
                             @"memoryUsage": memoryUsage,
-                            @"deviceCPUUsage": cpuUsage[@"device_cpu_usage"]
+                            @"deviceCPUUsage": cpuUsage
                             };
 
   // TODO: handle errors
