@@ -320,6 +320,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
                    onThread:_javaScriptThread
                  withObject:nil
               waitUntilDone:NO];
+  _context = nil;
 }
 
 - (void)dealloc
