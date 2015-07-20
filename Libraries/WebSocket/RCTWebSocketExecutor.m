@@ -17,6 +17,7 @@
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
 #import "RCTSRWebSocket.h"
+#import "RCTProfile.h"
 
 typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
 
