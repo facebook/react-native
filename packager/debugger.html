@@ -14,9 +14,9 @@
 <!-- Fake favicon, to avoid extra request to server -->
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>React Native Debugger</title>
-<script src="/debugger-ui/Chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+<script src="/debugger-ui/static/Chart.min.js"></script>
+<script src="/debugger-ui/static/react-0.13.3.min.js"></script>
+<script src="/debugger-ui/static/JSXTransformer-0.13.3.js"></script>
 <script type="text/jsx">
 (function() {
 var cpuChart, memoryChart, jsCallsChart, latestLabel;
@@ -135,13 +135,13 @@ var JSCallsList = React.createClass({
           if (!batch.arguments.length) {
             return (
               <li>
-                {batch.moduleName}
+                {batch.moduleMethod}
               </li>
             )
           } else {
             return (
               <li>
-                {batch.moduleName}
+                {batch.moduleMethod}
                 <JSCall data={batch.arguments[0]}></JSCall>
               </li>
             )
