@@ -205,12 +205,12 @@ map syntax so that values can be extracted from complex event objects.  The
 first level is an array to allow mapping across multiple args, and that array
 contains nested objects.  In the example, you can see that `scrollX` maps to
 `event.nativeEvent.contentOffset.x` (`event` is normally the first arg to the
-handler), and `pan.x` maps to `gestureState.dx` (`gestureState` is the second
-arg passed to the `PanResponder` handler).
+handler), and `pan.x` and `pan.y` map to `gestureState.dx` and `gestureState.dy`,
+respectively (`gestureState` is the second arg passed to the `PanResponder` handler).
 
 ```javascript
 onScroll={Animated.event(
-  [{nativeEvent: {contentOffset: {y: pan.y}}}]   // pan.y = e.nativeEvent.contentOffset.y
+  [{nativeEvent: {contentOffset: {x: scrollX}}}]   // scrollX = e.nativeEvent.contentOffset.x
 )}
 onPanResponderMove={Animated.event([
   null,                                          // ignore the native event
