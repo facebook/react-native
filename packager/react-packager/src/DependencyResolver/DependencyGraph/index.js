@@ -21,6 +21,7 @@ const getAssetDataFromName = require('../../lib/getAssetDataFromName');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 const util = require('util');
+const assert = require('assert');
 
 const validateOpts = declareOpts({
   roots: {
@@ -289,7 +290,7 @@ class DependencyGraph {
         realModuleName => {
           const searchQueue = [];
           for (let currDir = path.dirname(fromModule.path);
-               currDir !== '/';
+               path.dirname(currDir) !== currDir;
                currDir = path.dirname(currDir)) {
             searchQueue.push(
               path.join(currDir, 'node_modules', realModuleName)
