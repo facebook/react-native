@@ -30,7 +30,7 @@ NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 NSNumber *RCTProfileTimestamp(NSTimeInterval);
 NSString *RCTProfileMemory(vm_size_t);
-NSDictionary *RCTProfileGetMemoryUsage(bool);
+NSDictionary *RCTProfileGetMemoryUsage(BOOL);
 
 #pragma mark - Constants
 
@@ -79,7 +79,7 @@ NSString *RCTProfileMemory(vm_size_t memory)
 }
 
 
-NSDictionary *RCTProfileGetMemoryUsage(bool raw)
+NSDictionary *RCTProfileGetMemoryUsage(BOOL raw)
 {
   struct task_basic_info info;
   mach_msg_type_number_t size = sizeof(info);
@@ -363,7 +363,7 @@ void RCTProfileImmediateEvent(NSString *name, NSTimeInterval timestamp, NSString
       @"ts": RCTProfileTimestamp(timestamp),
       @"scope": scope,
       @"ph": @"i",
-      @"args": RCTProfileGetMemoryUsage(false),
+      @"args": RCTProfileGetMemoryUsage(NO),
     );
   );
 }
