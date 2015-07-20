@@ -18,7 +18,7 @@
 <script>
 (function() {
   var cpuChart, memoryChart, jsCallsChart, latestLabel;
-  var jsCalls = [];
+  var batchedJSCalls = [];
   var numJsCalls = 0;
 
   document.addEventListener("DOMContentLoaded", function(event) {
@@ -115,20 +115,43 @@
 
 function updateJSCalls() {
   var list = [];
-  for (var i = 0; i < jsCalls.length; i++) {
-    if (jsCalls[i].arguments.length) {
+  for (var i = batchedJSCalls.length - 1; i >= 0 ; i--) {
+    // grab a batch of JS Calls
+    var jsCalls = batchedJSCalls[i];
 
-      for (var j = 0; j < jsCalls[i].arguments[0].length; j++) {
-        var stringItem = "<li>";
-        stringItem += "<b>" + jsCalls[i].arguments[0][j].method + '</b> - ' +
-                     jsCalls[i].arguments[0][j].args.join(', ');
+    // display the method called (typically a batch call)
+    var stringItem = "<li>" + jsCalls.moduleMethod;
+
+    // break out the sub js calls
+    var arguments = jsCalls.arguments;
+
+    for (var argument in arguments) {
+      var subCalls = arguments[argument];
+      stringItem += "<ul>";
+      for (var call in subCalls) {
+        var subCall = subCalls[call];
+        // just grab the function name called
+        var subCallFunction = subCall.args[0];
+        // NOTE: there's more debug info that could
+        //       be pulled from the args
+        stringItem += "<li>" + subCall.method +
+            " <em>\"" + subCallFunction + "\"</em>";
         stringItem += "</li>";
       }
-      list.push(stringItem);
+      stringItem += "</ul>";
     }
+
+    stringItem += "</li>";
+    list.push(stringItem);
   }
   document.getElementById('js-calls').innerHTML = '<ul>' + list.join('') + '</ul>';
 };
+
+function countJSCalls(batch) {
+  return batch.arguments.reduce(function (p, c) {
+    return p + c.length;
+  }, 0);
+}
 
 var sessionID = window.localStorage.getItem('sessionID');
 window.localStorage.removeItem('sessionID');
@@ -167,10 +190,12 @@ var messageHandlers = {
   },
   'executeJSCall': function(message, sendReply) {
 
-    numJsCalls += 1;
-    jsCalls.push(message);
-    if (jsCalls.length > 10) {
-      jsCalls.shift();
+    numJsCalls += countJSCalls(message);
+
+    batchedJSCalls.push(message);
+    // show the last 5 batches
+    if (batchedJSCalls.length > 5) {
+      batchedJSCalls.shift();
     }
     updateJSCalls();
 
