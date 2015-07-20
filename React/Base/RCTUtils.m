@@ -23,34 +23,99 @@
 
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObject options:(NSJSONWritingOptions)NSJSONReadingAllowFragments error:error];
+  static SEL JSONKitSelector = NULL;
+  static NSSet *collectionTypes;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    SEL selector = NSSelectorFromString(@"JSONStringWithOptions:error:");
+    if ([NSDictionary instancesRespondToSelector:selector]) {
+      JSONKitSelector = selector;
+      collectionTypes = [NSSet setWithObjects:
+                         [NSArray class], [NSMutableArray class],
+                         [NSDictionary class], [NSMutableDictionary class], nil];
+    }
+  });
+
+  // Use JSONKit if available and object is not a fragment
+  if (JSONKitSelector && [collectionTypes containsObject:[jsonObject classForCoder]]) {
+    return ((NSString *(*)(id, SEL, int, NSError **))objc_msgSend)(jsonObject, JSONKitSelector, 0, error);
+  }
+
+  // Use Foundation JSON method
+  NSData *jsonData = [NSJSONSerialization
+                      dataWithJSONObject:jsonObject
+                      options:(NSJSONWritingOptions)NSJSONReadingAllowFragments
+                      error:error];
   return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : nil;
 }
 
-id RCTJSONParseWithOptions(NSString *jsonString, NSError **error, NSJSONReadingOptions options)
+static id _RCTJSONParse(NSString *jsonString, BOOL mutable, NSError **error)
 {
-  if (!jsonString) {
-    return nil;
-  }
-  NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
-  if (!jsonData) {
-    jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-    if (jsonData) {
-      RCTLogWarn(@"RCTJSONParse received the following string, which could not be losslessly converted to UTF8 data: '%@'", jsonString);
-    } else {
-      RCTLogError(@"RCTJSONParse received invalid UTF8 data");
-      return nil;
+  static SEL JSONKitSelector = NULL;
+  static SEL JSONKitMutableSelector = NULL;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    SEL selector = NSSelectorFromString(@"objectFromJSONStringWithParseOptions:error:");
+    if ([NSString instancesRespondToSelector:selector]) {
+      JSONKitSelector = selector;
+      JSONKitMutableSelector = NSSelectorFromString(@"mutableObjectFromJSONStringWithParseOptions:error:");
     }
+  });
+
+  if (jsonString) {
+
+    // Use JSONKit if available and string is not a fragment
+    if (JSONKitSelector) {
+      NSInteger length = jsonString.length;
+      for (NSInteger i = 0; i < length; i++) {
+        unichar c = [jsonString characterAtIndex:i];
+        if (strchr("{[", c)) {
+          static const int options = (1 << 2); // loose unicode
+          SEL selector = mutable ? JSONKitMutableSelector : JSONKitSelector;
+          return ((id (*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
+        }
+        if (!strchr(" \r\n\t", c)) {
+          break;
+        }
+      }
+    }
+
+    // Use Foundation JSON method
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    if (!jsonData) {
+      jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+      if (jsonData) {
+        RCTLogWarn(@"RCTJSONParse received the following string, which could "
+                   "not be losslessly converted to UTF8 data: '%@'", jsonString);
+      } else {
+        NSString *errorMessage = @"RCTJSONParse received invalid UTF8 data";
+        if (error) {
+          *error = RCTErrorWithMessage(errorMessage);
+        } else {
+          RCTLogError(@"%@", errorMessage);
+        }
+        return nil;
+      }
+    }
+    NSJSONReadingOptions options = NSJSONReadingAllowFragments;
+    if (mutable) {
+      options |= NSJSONReadingMutableContainers;
+    }
+    return [NSJSONSerialization JSONObjectWithData:jsonData
+                                           options:options
+                                             error:error];
   }
-  return [NSJSONSerialization JSONObjectWithData:jsonData options:options error:error];
+  return nil;
 }
 
-id RCTJSONParse(NSString *jsonString, NSError **error) {
-  return RCTJSONParseWithOptions(jsonString, error, NSJSONReadingAllowFragments);
+id RCTJSONParse(NSString *jsonString, NSError **error)
+{
+  return _RCTJSONParse(jsonString, NO, error);
 }
 
-id RCTJSONParseMutable(NSString *jsonString, NSError **error) {
-  return RCTJSONParseWithOptions(jsonString, error, NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves);
+id RCTJSONParseMutable(NSString *jsonString, NSError **error)
+{
+  return _RCTJSONParse(jsonString, YES, error);
 }
 
 id RCTJSONClean(id object)
