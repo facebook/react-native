@@ -32,12 +32,15 @@ var {
 var { TestModule } = React.addons;
 
 import type { ExampleModule } from 'ExampleTypes';
+import type { NavigationContext } from 'NavigationContext';
 
 var createExamplePage = require('./createExamplePage');
 
 var COMMON_COMPONENTS = [
   require('./ImageExample'),
+  require('./LayoutEventsExample'),
   require('./ListViewExample'),
+  require('./ListViewGridLayoutExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
   require('./Navigator/NavigatorExample'),
@@ -49,6 +52,7 @@ var COMMON_COMPONENTS = [
 ];
 
 var COMMON_APIS = [
+  require('./AnimationExample/AnExApp'),
   require('./GeolocationExample'),
   require('./LayoutExample'),
   require('./PanResponderExample'),
@@ -77,9 +81,9 @@ if (Platform.OS === 'ios') {
     require('./AlertIOSExample'),
     require('./AppStateIOSExample'),
     require('./AsyncStorageExample'),
+    require('./TransformExample'),
     require('./BorderExample'),
     require('./CameraRollExample.ios'),
-    require('./LayoutEventsExample'),
     require('./NetInfoExample'),
     require('./PushNotificationIOSExample'),
     require('./StatusBarIOSExample'),
@@ -129,7 +133,10 @@ COMPONENTS.concat(APIS).forEach((Example) => {
 });
 
 type Props = {
-  navigator: Array<{title: string, component: ReactClass<any,any,any>}>,
+  navigator: {
+    navigationContext: NavigationContext,
+    push: (route: {title: string, component: ReactClass<any,any,any>}) => void,
+  },
   onExternalExampleRequested: Function,
   onSelectExample: Function,
   isInDrawer: bool,
@@ -149,8 +156,25 @@ class UIExplorerList extends React.Component {
     };
   }
 
+  componentWillMount() {
+    this.props.navigator.navigationContext.addListener('didfocus', function(event) {
+      if (event.data.route.title === 'UIExplorer') {
+        Settings.set({visibleExample: null});
+      }
+    });
+  }
+
   componentDidMount() {
     this._search(this.state.searchText);
+
+    var visibleExampleTitle = Settings.get('visibleExample');
+    if (visibleExampleTitle) {
+      var predicate = (example) => example.title === visibleExampleTitle;
+      var foundExample = APIS.find(predicate) || COMPONENTS.find(predicate);
+      if (foundExample) {
+        setTimeout(() => this._openExample(foundExample), 100);
+      }
+    }
   }
 
   render() {
@@ -168,6 +192,7 @@ class UIExplorerList extends React.Component {
             onChangeText={this._search.bind(this)}
             placeholder="Search..."
             style={[styles.searchTextInput, platformTextInputStyle]}
+            testID="explorer_search"
             value={this.state.searchText}
           />
         </View>);
@@ -240,11 +265,12 @@ class UIExplorerList extends React.Component {
     Settings.set({searchText: text});
   }
 
-  _onPressRow(example: any) {
+  _openExample(example: any) {
     if (example.external) {
       this.props.onExternalExampleRequested(example);
       return;
     }
+
     var Component = makeRenderable(example);
     if (Platform.OS === 'ios') {
       this.props.navigator.push({
@@ -257,6 +283,11 @@ class UIExplorerList extends React.Component {
         component: Component,
       });
     }
+  }
+
+  _onPressRow(example: any) {
+    Settings.set({visibleExample: example.title});
+    this._openExample(example);
   }
 }
 

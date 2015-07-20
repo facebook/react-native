@@ -121,7 +121,7 @@ var LayoutEventsTest = React.createClass({
             ref="img"
             onLayout={this.onImageLayout}
             style={styles.image}
-            source={{uri: 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851561_767334496626293_1958532586_n.png'}}
+            source={{uri: 'uie_thumb_big.png'}}
           />
           <Text>
             ViewLayout: {JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}

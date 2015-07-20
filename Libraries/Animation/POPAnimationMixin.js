@@ -36,6 +36,7 @@ var POPAnimationMixin = {
   AnimationProperties: POPAnimation.Properties,
 
   getInitialState: function(): Object {
+    this._popAnimationEnqueuedAnimationTimeouts = [];
     return {
       _currentAnimationsByNodeHandle: {},
     };
@@ -120,7 +121,11 @@ var POPAnimationMixin = {
       }
       doneCallback && doneCallback(finished);
     };
-    POPAnimation.addAnimation(nodeHandle, animID, cleanupWrapper);
+    // Hack to aviod race condition in POP:
+    var animationTimeoutHandler = setTimeout(() => {
+      POPAnimation.addAnimation(nodeHandle, animID, cleanupWrapper);
+    }, 1);
+    this._popAnimationEnqueuedAnimationTimeouts.push(animationTimeoutHandler);
   },
 
   /**
@@ -251,6 +256,10 @@ var POPAnimationMixin = {
   // Cleanup any potentially leaked animations.
   componentWillUnmount: function() {
     this.stopAllAnimations();
+    this._popAnimationEnqueuedAnimationTimeouts.forEach(animationTimeoutHandler => {
+      clearTimeout(animationTimeoutHandler);
+    });
+    this._popAnimationEnqueuedAnimationTimeouts = [];
   }
 };
 

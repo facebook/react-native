@@ -249,8 +249,15 @@ RCT_EXPORT_MODULE()
     request.HTTPBody = result[@"body"];
     NSString *contentType = result[@"contentType"];
     if (contentType) {
-      [request setValue:contentType forHTTPHeaderField:@"content-type"];
+      [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
     }
+
+    // Gzip the request body
+    if ([request.allHTTPHeaderFields[@"Content-Encoding"] isEqualToString:@"gzip"]) {
+      request.HTTPBody = RCTGzipData(request.HTTPBody, -1 /* default */);
+      [request setValue:[@(request.HTTPBody.length) description] forHTTPHeaderField:@"Content-Length"];
+    }
+
     [self sendRequest:request
    incrementalUpdates:incrementalUpdates
        responseSender:responseSender];
@@ -381,7 +388,7 @@ RCT_EXPORT_MODULE()
 
   NSString *responseText = [[NSString alloc] initWithData:data encoding:encoding];
   if (!responseText && data.length) {
-    RCTLogError(@"Received data was invalid.");
+    RCTLogWarn(@"Received data was invalid.");
     return;
   }
 

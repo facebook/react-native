@@ -28,3 +28,4 @@ project.xcworkspace
 # Node
 node_modules
 *.log
+.nvm

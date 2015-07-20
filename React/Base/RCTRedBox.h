@@ -13,6 +13,7 @@
 
 + (instancetype)sharedInstance;
 
+- (void)showError:(NSError *)error;
 - (void)showErrorMessage:(NSString *)message;
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details;
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack;

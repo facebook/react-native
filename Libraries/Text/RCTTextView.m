@@ -222,7 +222,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (UIFont *)defaultPlaceholderFont
 {
-  return [UIFont fontWithName:@"Helvetica" size:17];
+  return [UIFont systemFontOfSize:17];
 }
 
 - (UIColor *)defaultPlaceholderTextColor

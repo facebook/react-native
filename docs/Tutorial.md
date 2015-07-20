@@ -16,7 +16,7 @@ We assume you have experience writing websites with React. If not, you can learn
 
 ## Setup
 
-React Native requires OSX, Xcode, [Homebrew](http://brew.sh/), node (we recommend installing this via Homebrew), npm (installed automatically with node), and [watchman](https://facebook.github.io/watchman/docs/install.html). [Flow](https://github.com/facebook/flow) is optional.
+React Native requires OSX, Xcode, [Homebrew](http://brew.sh/), io.js (we recommend installing this via [nvm](https://github.com/creationix/nvm) or Homebrew), npm (installed automatically with io.js), and [watchman](https://facebook.github.io/watchman/docs/install.html). [Flow](https://github.com/facebook/flow) is optional.
 
 After installing these dependencies there are two simple commands to get a React Native project all set up for development.
 
@@ -31,7 +31,7 @@ After installing these dependencies there are two simple commands to get a React
 
 ## Development
 
-You can now open this new project (`AwesomeProject/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with cmd+R. Doing so will also start a node server which enables live code reloading. With this you can see your changes by pressing cmd+R in the simulator rather than recompiling in Xcode.
+You can now open this new project (`AwesomeProject/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with cmd+R. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing cmd+R in the simulator rather than recompiling in Xcode.
 
 For this tutorial we'll be building a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
 

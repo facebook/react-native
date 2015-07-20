@@ -26,7 +26,6 @@
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
 #import "RCTSparseArray.h"
-#import "RCTTouchHandler.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTViewManager.h"
@@ -140,10 +139,11 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
 @interface RCTLayoutAnimation : NSObject
 
+@property (nonatomic, copy) NSDictionary *config;
 @property (nonatomic, strong) RCTAnimation *createAnimation;
 @property (nonatomic, strong) RCTAnimation *updateAnimation;
 @property (nonatomic, strong) RCTAnimation *deleteAnimation;
-@property (nonatomic, strong) RCTResponseSenderBlock callback;
+@property (nonatomic, copy) RCTResponseSenderBlock callback;
 
 @end
 
@@ -156,7 +156,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   }
 
   if ((self = [super init])) {
-
+    _config = [config copy];
     NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]];
     if (duration > 0.0 && duration < 0.01) {
       RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
@@ -1013,7 +1013,9 @@ RCT_EXPORT_METHOD(measure:(NSNumber *)reactTag
   [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
     if (!view) {
-      RCTLogError(@"measure cannot find view with tag #%@", reactTag);
+      // this view was probably collapsed out
+      RCTLogWarn(@"measure cannot find view with tag #%@", reactTag);
+      callback(@[]);
       return;
     }
     CGRect frame = view.frame;
@@ -1461,8 +1463,8 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
                   withCallback:(RCTResponseSenderBlock)callback
                   errorCallback:(__unused RCTResponseSenderBlock)errorCallback)
 {
-  if (_nextLayoutAnimation) {
-    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.", _nextLayoutAnimation, config);
+  if (_nextLayoutAnimation && ![config isEqualToDictionary:_nextLayoutAnimation.config]) {
+    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.", _nextLayoutAnimation.config, config);
   }
   if (config[@"delete"] != nil) {
     RCTLogError(@"LayoutAnimation only supports create and update right now. Config: %@", config);

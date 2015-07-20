@@ -16,7 +16,10 @@
  *
  *   FB_REFERENCE_IMAGE_DIR="\"$(SOURCE_ROOT)/$(PROJECT_NAME)Tests/ReferenceImages\""
  */
-#define RCTInitRunnerForApp(app__) [[RCTTestRunner alloc] initWithApp:(app__) referenceDir:@FB_REFERENCE_IMAGE_DIR]
+#define RCTInitRunnerForApp(app__, moduleProvider__) \
+[[RCTTestRunner alloc] initWithApp:(app__) \
+                referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
+                    moduleProvider:(moduleProvider__)]
 
 @interface RCTTestRunner : NSObject
 
@@ -28,10 +31,12 @@
  * macro instead of calling this directly.
  *
  * @param app The path to the app bundle without suffixes, e.g. IntegrationTests/IntegrationTestsApp
- * @param referenceDir The path for snapshot references images. The RCTInitRunnerForApp macro uses
- *        FB_REFERENCE_IMAGE_DIR for this automatically.
+ * @param referenceDirectory The path for snapshot references images. The RCTInitRunnerForApp macro uses FB_REFERENCE_IMAGE_DIR for this automatically.
+ * @param block A block that returns an array of extra modules to be used by the test runner.
  */
-- (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithApp:(NSString *)app
+         referenceDirectory:(NSString *)referenceDirectory
+             moduleProvider:(NSArray *(^)(void))block NS_DESIGNATED_INITIALIZER;
 
 /**
  * Simplest runTest function simply mounts the specified JS module with no

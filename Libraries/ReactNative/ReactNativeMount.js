@@ -79,6 +79,12 @@ var ReactNativeMount = {
 
   _instancesByContainerID: {},
 
+  // these two functions are needed by React Devtools
+  findNodeHandle: require('findNodeHandle'),
+  nativeTagToRootNodeID: function (nativeTag: number): string {
+    return ReactNativeTagHandles.tagToRootNodeID[nativeTag];
+  },
+
   /**
    * @param {ReactComponent} instance Instance to render.
    * @param {containerTag} containerView Handle to native view tag
