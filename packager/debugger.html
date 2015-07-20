@@ -42,13 +42,13 @@
     var cpuStartingData = {
       labels: labels,
       datasets: [
-          {
-              fillColor: "rgba(113,188,120,0.2)",
-              strokeColor: "rgba(113,188,120,1)",
-              pointColor: "rgba(113, 188,120,1)",
-              pointStrokeColor: "#fff",
-              data: data
-          }
+        {
+          fillColor: "rgba(113,188,120,0.2)",
+          strokeColor: "rgba(113,188,120,1)",
+          pointColor: "rgba(113, 188,120,1)",
+          pointStrokeColor: "#fff",
+          data: data
+        }
       ]
     };
 
@@ -82,24 +82,24 @@
     var jsCallsStartingData = {
       labels: labels,
       datasets: [
-          {
-              fillColor: "rgba(238, 210, 2,0.2)",
-              strokeColor: "rgba(238, 210, 2,1)",
-              pointColor: "rgba(238, 210, 2,1)",
-              pointStrokeColor: "#fff",
-              data: data
-          }
+        {
+          fillColor: "rgba(238, 210, 2,0.2)",
+          strokeColor: "rgba(238, 210, 2,1)",
+          pointColor: "rgba(238, 210, 2,1)",
+          pointStrokeColor: "#fff",
+          data: data
+        }
       ]
     };
 
     latestLabel = cpuStartingData.labels[numPoints - 1];
     // Reduce the animation steps for demo clarity.
     cpuChart = new Chart(ctx).Line(cpuStartingData, {
-        scaleOverride: true,
-        scaleSteps: 10,
-        scaleStepWidth: 10,
-        scaleStartValue: 0,
-        animation: false
+      scaleOverride: true,
+      scaleSteps: 10,
+      scaleStepWidth: 10,
+      scaleStartValue: 0,
+      animation: false
     });
 
     memoryChart = new Chart(memoryCtx).Line(memoryStartingData, {
