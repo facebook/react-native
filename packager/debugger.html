@@ -226,7 +226,7 @@ var messageHandlers = {
 };
 
 function convertToMB(val) {
-  return val / 1024 / 1024;
+  return ((val / 1024) / 1024);
 }
 
 function connectToDebuggerProxy() {
