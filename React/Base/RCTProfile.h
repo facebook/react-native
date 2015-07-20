@@ -135,6 +135,8 @@ RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *
 
 #define RCTProfileImmediateEvent(...)
 
+#define RCTProfileGetMemoryUsage(...)
+#define RCTProfileGetCPUUsage(...)
 
 #define RCTProfileBlock(block, ...) block
 
