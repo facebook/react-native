@@ -33,7 +33,7 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
   dispatch_semaphore_t _socketOpenSemaphore;
   NSMutableDictionary *_injectedObjects;
   NSURL *_url;
-  NSTimer *_useage_metrics_timer;
+  NSTimer *_usageMetricsTimer;
 }
 
 RCT_EXPORT_MODULE()
@@ -85,7 +85,7 @@ RCT_EXPORT_MODULE()
     [self invalidate];
     return;
   }
-  _useage_metrics_timer = [NSTimer scheduledTimerWithTimeInterval:1.0f
+  _usageMetricsTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
                                                            target:self selector:@selector(sendUsageMetrics) userInfo:nil repeats:YES];
 }
 
@@ -221,8 +221,8 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   // stop sending usage metrics
-  [_useage_metrics_timer invalidate];
-  _useage_metrics_timer = nil;
+  [_usageMetricsTimer invalidate];
+  _usageMetricsTimer = nil;
   
   _socket.delegate = nil;
   [_socket closeWithCode:1000 reason:@"Invalidated"];
