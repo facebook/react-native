@@ -445,7 +445,7 @@ var ScrollResponderMixin = {
     
     //For horizontal scroll enabled scroll views, current x position of the scroll view needs to be taken into account to
     // preserve the horizontal scroll offset and prevent the scroll view from scrolling back.
-    ScrollViewManager.getScrollViewPosition(React.findNodeHandle(this), (x, y)=>{
+    ScrollViewManager.getScrollViewPosition(React.findNodeHandle(this), (x, y) => {
       this.scrollResponderScrollTo(x, scrollOffsetY);
     });
 
