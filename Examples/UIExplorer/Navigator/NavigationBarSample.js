@@ -51,12 +51,11 @@ var NavigationBarRouteMapper = {
     var previousRoute = navState.routeStack[index - 1];
     return (
       <TouchableOpacity
-        onPress={() => navigator.pop()}>
-        <View style={styles.navBarLeftButton}>
-          <Text style={[styles.navBarText, styles.navBarButtonText]}>
-            {previousRoute.title}
-          </Text>
-        </View>
+        onPress={() => navigator.pop()}
+        style={styles.navBarLeftButton}>
+        <Text style={[styles.navBarText, styles.navBarButtonText]}>
+          {previousRoute.title}
+        </Text>
       </TouchableOpacity>
     );
   },
@@ -64,12 +63,11 @@ var NavigationBarRouteMapper = {
   RightButton: function(route, navigator, index, navState) {
     return (
       <TouchableOpacity
-        onPress={() => navigator.push(newRandomRoute())}>
-        <View style={styles.navBarRightButton}>
-          <Text style={[styles.navBarText, styles.navBarButtonText]}>
-            Next
-          </Text>
-        </View>
+        onPress={() => navigator.push(newRandomRoute())}
+        style={styles.navBarRightButton}>
+        <Text style={[styles.navBarText, styles.navBarButtonText]}>
+          Next
+        </Text>
       </TouchableOpacity>
     );
   },
