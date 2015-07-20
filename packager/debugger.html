@@ -14,138 +14,148 @@
 <!-- Fake favicon, to avoid extra request to server -->
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>React Native Debugger</title>
-<script src="/debugger-ui/Chart.min.js"></script>
-<script>
+<script src="/debugger-ui/static/Chart.min.js"></script>
+<script src="/debugger-ui/static/react-0.13.3.min.js"></script>
+<script src="/debugger-ui/static/JSXTransformer-0.13.3.js"></script>
+<script type="text/jsx">
 (function() {
-  var cpuChart, memoryChart, jsCallsChart, latestLabel;
-  var batchedJSCalls = [];
-  var numJsCalls = 0;
+var cpuChart, memoryChart, jsCallsChart, latestLabel;
+var batchedJSCalls = [];
+var numJsCalls = 0;
 
-  document.addEventListener("DOMContentLoaded", function(event) {
-    var canvas = document.getElementById('cpu-utilization');
-    var ctx = canvas.getContext('2d');
+var canvas = document.getElementById('cpu-utilization');
+var ctx = canvas.getContext('2d');
 
-    var memoryCanvas = document.getElementById('memory-utilization');
-    var memoryCtx = memoryCanvas.getContext('2d');
+var memoryCanvas = document.getElementById('memory-utilization');
+var memoryCtx = memoryCanvas.getContext('2d');
 
-    var jsCallsCanvas = document.getElementById("js-calls-graph");
-    var jsCallsCtx = jsCallsCanvas.getContext('2d');
+var jsCallsCanvas = document.getElementById("js-calls-graph");
+var jsCallsCtx = jsCallsCanvas.getContext('2d');
 
-    var numPoints = 20;
-    var labels = [];
-    var data = [];
-    for (var i = 1; i < numPoints + 1; i++) {
-      labels.push('');
-      data.push(0);
+var numPoints = 20;
+var labels = [];
+var data = [];
+for (var i = 1; i < numPoints + 1; i++) {
+  labels.push('');
+  data.push(0);
+}
+
+var cpuStartingData = {
+  labels: labels,
+  datasets: [
+    {
+      fillColor: "rgba(113,188,120,0.2)",
+      strokeColor: "rgba(113,188,120,1)",
+      pointColor: "rgba(113, 188,120,1)",
+      pointStrokeColor: "#fff",
+      data: data
     }
+  ]
+};
 
-    var cpuStartingData = {
-      labels: labels,
-      datasets: [
-        {
-          fillColor: "rgba(113,188,120,0.2)",
-          strokeColor: "rgba(113,188,120,1)",
-          pointColor: "rgba(113, 188,120,1)",
-          pointStrokeColor: "#fff",
-          data: data
-        }
-      ]
-    };
-
-    var memoryStartingData = {
-      labels: labels,
-      datasets: [
-        {
-          label: "Resident Memory (MB)",
-          fillColor: "rgba(220,220,220,0.2)",
-          strokeColor: "rgba(220,220,220,1)",
-          pointColor: "rgba(220,220,220,1)",
-          pointStrokeColor: "#fff",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(220,220,220,1)",
-          data: data
-        },
-        {
-          label: "Virtual Memory (MB)",
-          fillColor: "rgba(151,187,205,0.2)",
-          strokeColor: "rgba(151,187,205,1)",
-          pointColor: "rgba(151,187,205,1)",
-          pointStrokeColor: "#fff",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(151,187,205,1)",
-          data: data
-        }
-      ]
-    };
+var memoryStartingData = {
+  labels: labels,
+  datasets: [
+    {
+      label: "Resident Memory (MB)",
+      fillColor: "rgba(220,220,220,0.2)",
+      strokeColor: "rgba(220,220,220,1)",
+      pointColor: "rgba(220,220,220,1)",
+      pointStrokeColor: "#fff",
+      pointHighlightFill: "#fff",
+      pointHighlightStroke: "rgba(220,220,220,1)",
+      data: data
+    },
+    {
+      label: "Virtual Memory (MB)",
+      fillColor: "rgba(151,187,205,0.2)",
+      strokeColor: "rgba(151,187,205,1)",
+      pointColor: "rgba(151,187,205,1)",
+      pointStrokeColor: "#fff",
+      pointHighlightFill: "#fff",
+      pointHighlightStroke: "rgba(151,187,205,1)",
+      data: data
+    }
+  ]
+};
 
 
-    var jsCallsStartingData = {
-      labels: labels,
-      datasets: [
-        {
-          fillColor: "rgba(238,210,2,0.2)",
-          strokeColor: "rgba(238,210,2,1)",
-          pointColor: "rgba(238,210,2,1)",
-          pointStrokeColor: "#fff",
-          data: data
-        }
-      ]
-    };
+var jsCallsStartingData = {
+  labels: labels,
+  datasets: [
+    {
+      fillColor: "rgba(238,210,2,0.2)",
+      strokeColor: "rgba(238,210,2,1)",
+      pointColor: "rgba(238,210,2,1)",
+      pointStrokeColor: "#fff",
+      data: data
+    }
+  ]
+};
 
-    latestLabel = cpuStartingData.labels[numPoints - 1];
-    // Reduce the animation steps for demo clarity.
-    cpuChart = new Chart(ctx).Line(cpuStartingData, {
-      scaleOverride: true,
-      scaleSteps: 10,
-      scaleStepWidth: 10,
-      scaleStartValue: 0,
-      animation: false
-    });
-
-    memoryChart = new Chart(memoryCtx).Line(memoryStartingData, {
-      animation: false
-    });
-
-    document.getElementById("memory-legend").innerHTML = memoryChart.generateLegend();
-
-    jsCallsChart = new Chart(jsCallsCtx).Bar(jsCallsStartingData, {
-      animation: false
-    });
+latestLabel = cpuStartingData.labels[numPoints - 1];
+// Reduce the animation steps for demo clarity.
+cpuChart = new Chart(ctx).Line(cpuStartingData, {
+  scaleOverride: true,
+  scaleSteps: 10,
+  scaleStepWidth: 10,
+  scaleStartValue: 0,
+  animation: false
 });
 
-function updateJSCalls() {
-  var list = [];
-  for (var i = batchedJSCalls.length - 1; i >= 0 ; i--) {
-    // grab a batch of JS Calls
-    var jsCalls = batchedJSCalls[i];
+memoryChart = new Chart(memoryCtx).Line(memoryStartingData, {
+  animation: false
+});
 
-    // display the method called (typically a batch call)
-    var stringItem = "<li>" + jsCalls.moduleMethod;
+document.getElementById("memory-legend").innerHTML = memoryChart.generateLegend();
 
-    // break out the sub js calls
-    var arguments = jsCalls.arguments;
+jsCallsChart = new Chart(jsCallsCtx).Bar(jsCallsStartingData, {
+  animation: false
+});
 
-    for (var argument in arguments) {
-      var subCalls = arguments[argument];
-      stringItem += "<ul>";
-      for (var call in subCalls) {
-        var subCall = subCalls[call];
-        // just grab the function name called
-        var subCallFunction = subCall.args[0];
-        // NOTE: there's more debug info that could
-        //       be pulled from the args
-        stringItem += "<li>" + subCall.method +
-            " <em>\"" + subCallFunction + "\"</em>";
-        stringItem += "</li>";
-      }
-      stringItem += "</ul>";
-    }
-
-    stringItem += "</li>";
-    list.push(stringItem);
+var JSCall = React.createClass({
+  render: function() {
+    return (
+      <ul>
+        {this.props.data.map(function (subCall) {
+          return (
+            <li>{subCall.method}<em>"{subCall.args[0]}"</em></li>
+          )
+        })}
+      </ul>
+    );
   }
-  document.getElementById('js-calls').innerHTML = '<ul>' + list.join('') + '</ul>';
-};
+});
+
+var JSCallsList = React.createClass({
+  render: function() {
+    return (
+      <ul>
+        {this.props.data.map(function (batch) {
+          if (!batch.arguments.length) {
+            return (
+              <li>
+                {batch.moduleMethod}
+              </li>
+            )
+          } else {
+            return (
+              <li>
+                {batch.moduleMethod}
+                <JSCall data={batch.arguments[0]}></JSCall>
+              </li>
+            )
+          }
+        })}
+      </ul>
+    );
+  }
+});
+
+var jsCallsComponent = React.render(
+  <JSCallsList data={[]}/>,
+  document.getElementById('js-calls')
+);
 
 function countJSCalls(batch) {
   return batch.arguments.reduce(function (p, c) {
@@ -192,12 +202,16 @@ var messageHandlers = {
 
     numJsCalls += countJSCalls(message);
 
-    batchedJSCalls.push(message);
+    batchedJSCalls.unshift(message);
     // show the last 5 batches
     if (batchedJSCalls.length > 5) {
-      batchedJSCalls.shift();
+      batchedJSCalls.pop();
     }
-    updateJSCalls();
+
+    jsCallsComponent.setProps({
+      data: batchedJSCalls
+    });
+
 
     var returnValue = null;
     try {
