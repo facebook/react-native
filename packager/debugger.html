@@ -310,6 +310,13 @@ function loadScript(src, callback) {
   .js-calls {
     font-size: small;
   }
+  .graph-column {
+    width: "49%";
+    display: inline-block;
+  }
+  .js-calls-column {
+    vertical-align:top;
+  }
   body {
     font-size: large;
     font-family: "Helvetica Neue", Helvetica, sans-serif;
@@ -326,7 +333,7 @@ function loadScript(src, callback) {
   </p>
   <p>Press <span class="shortcut">⌘⌥J</span> to open Developer Tools. Enable <a href="http://stackoverflow.com/a/17324511/232122" target="_blank">Pause On Caught Exceptions</a> for a better debugging experience.</p>
   <div>Status: <span id="status">Loading</span></div>
-  <div style='width:49%; display:inline-block;'>
+  <div class="graph-column">
     <div>
       <h2>UI CPU Utilization</h2>
       <div>
@@ -342,7 +349,7 @@ function loadScript(src, callback) {
       <div id="memory-legend" class="legend"></div>
     </div>
   </div>
-  <div style='width:49%; display:inline-block; vertical-align:top;'>
+  <div class="graph-column js-calls-column">
     <h2>JS Calls</h2>
     <div>
       <canvas id="js-calls-graph" width="400" height="250"></canvas>
