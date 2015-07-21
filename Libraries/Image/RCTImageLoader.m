@@ -72,6 +72,64 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
                 completionBlock:callback];
 }
 
+//
+// Why use a custom scaling method:
+// http://www.mindsea.com/2012/12/downscaling-huge-alassets-without-fear-of-sigkill/
+//     Greater efficiency, reduced memory overhead.
++ (UIImage *)scaledImageForAssetRepresentation:(ALAssetRepresentation *)representation
+                                         size:(CGSize)size
+                                        scale:(CGFloat)scale
+                                  orientation:(UIImageOrientation)orientation
+{
+  UIImage *image = nil;
+  NSData *data = nil;
+
+  uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t)*(NSUInteger)[representation size]);
+  if (buffer != NULL) {
+    NSError *error = nil;
+    NSUInteger bytesRead = [representation getBytes:buffer fromOffset:0 length:(NSUInteger)[representation size] error:&error];
+    data = [NSData dataWithBytes:buffer length:bytesRead];
+
+    free(buffer);
+  }
+
+  if ([data length]) {
+    CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, nil);
+
+    NSMutableDictionary *options = [NSMutableDictionary dictionary];
+
+    CGSize source = representation.dimensions;
+    CGFloat mW = size.width / source.width;
+    CGFloat mH = size.height / source.height;
+
+    if (mH > mW) {
+      size.width = size.height / source.height * source.width;
+    } else if (mW > mH) {
+      size.height = size.width / source.width * source.height;
+    }
+
+    CGFloat maxPixelSize = MAX(size.width, size.height) * scale;
+
+    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceShouldAllowFloat];
+    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceCreateThumbnailWithTransform];
+    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceCreateThumbnailFromImageAlways];
+    [options setObject:(id)@(maxPixelSize) forKey:(id)kCGImageSourceThumbnailMaxPixelSize];
+
+    CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
+
+    if (imageRef) {
+      image = [UIImage imageWithCGImage:imageRef scale:[representation scale] orientation:orientation];
+      CGImageRelease(imageRef);
+    }
+
+    if (sourceRef) {
+      CFRelease(sourceRef);
+    }
+  }
+
+  return image;
+}
+
 + (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
@@ -94,28 +152,17 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
 
             BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
             ALAssetOrientation orientation = ALAssetOrientationUp;
-            CGImageRef imageRef = NULL;
+            ALAssetRepresentation *representation = [asset defaultRepresentation];
 
-            if (!useMaximumSize) {
-              imageRef = asset.thumbnail;
-            }
-            if (RCTUpscalingRequired((CGSize){CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}, 1, size, scale, resizeMode)) {
-              if (!useMaximumSize) {
-                imageRef = asset.aspectRatioThumbnail;
-              }
-              if (RCTUpscalingRequired((CGSize){CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}, 1, size, scale, resizeMode)) {
-                ALAssetRepresentation *representation = [asset defaultRepresentation];
-                orientation = [representation orientation];
-                if (!useMaximumSize) {
-                  imageRef = [representation fullScreenImage];
-                }
-                if (RCTUpscalingRequired((CGSize){CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}, 1, size, scale, resizeMode)) {
-                  imageRef = [representation fullResolutionImage];
-                }
-              }
+            UIImage *image;
+
+            if (useMaximumSize) {
+              image = [UIImage imageWithCGImage:representation.fullResolutionImage scale:scale orientation:(UIImageOrientation)orientation];
+
+            } else {
+              image = [self scaledImageForAssetRepresentation:representation size:size scale:scale orientation:(UIImageOrientation)orientation];
             }
 
-            UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale orientation:(UIImageOrientation)orientation];
             RCTDispatchCallbackOnMainQueue(completion, nil, image);
           }
         });
@@ -145,12 +192,25 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
     }
 
     PHAsset *asset = [results firstObject];
-    CGSize targetSize = CGSizeEqualToSize(size, CGSizeZero) ? PHImageManagerMaximumSize : size;
+
+    PHImageRequestOptions *imageOptions = [[PHImageRequestOptions alloc] init];
+
+    BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
+    CGSize targetSize;
+
+    if ( useMaximumSize ){
+      targetSize = PHImageManagerMaximumSize;
+      imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+    } else {
+      targetSize = size;
+      imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+    }
+
     PHImageContentMode contentMode = PHImageContentModeAspectFill;
     if (resizeMode == UIViewContentModeScaleAspectFit) {
       contentMode = PHImageContentModeAspectFit;
     }
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:contentMode options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:contentMode options:imageOptions resultHandler:^(UIImage *result, NSDictionary *info) {
       if (result) {
         RCTDispatchCallbackOnMainQueue(completion, nil, result);
       } else {
