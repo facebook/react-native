@@ -19,6 +19,12 @@
  * Call this when you first receives a response from the server. This should
  * include response headers, etc.
  */
+- (void)URLRequest:(id)requestToken didUploadProgress:(double)progress total:(double)total;
+
+/**
+ * Call this when you first receives a response from the server. This should
+ * include response headers, etc.
+ */
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response;
 
 /**

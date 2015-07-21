@@ -76,6 +76,16 @@ RCT_EXPORT_MODULE()
 #pragma mark - NSURLSession delegate
 
 - (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+   didSendBodyData:(int64_t)bytesSent
+    totalBytesSent:(int64_t)totalBytesSent
+totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+{
+  [[_delegates objectForKey:task] URLRequest:task didUploadProgress:(double)totalBytesSent total:(double)totalBytesExpectedToSend];
+}
+
+
+- (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)task
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler

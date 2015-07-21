@@ -184,6 +184,11 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
   return [self initWithRequest:nil handler:nil callback:nil];
 }
 
+- (void)URLRequest:(id)requestToken didUploadProgress:(double)progress total:(double)total
+{
+  RCTAssert([requestToken isEqual:_requestToken], @"Shouldn't ever happen");
+}
+
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response
 {
   RCTAssert([requestToken isEqual:_requestToken], @"Shouldn't ever happen");
@@ -394,6 +399,17 @@ RCT_EXPORT_MODULE()
 }
 
 #pragma mark - RCTURLRequestDelegate
+
+- (void)URLRequest:(id)requestToken didUploadProgress:(double)progress total:(double)total
+{
+  dispatch_async(_methodQueue, ^{
+    RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
+    RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
+
+    NSArray *responseJSON = @[request.requestID, @(progress), @(total)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUploadProgress" body:responseJSON];
+  });
+}
 
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response
 {
