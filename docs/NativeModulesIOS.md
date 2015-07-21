@@ -230,6 +230,43 @@ console.log(CalendarManager.firstDayOfTheWeek);
 
 Note that the constants are exported only at initialization time, so if you change `constantsToExport` values at runtime it won't affect the JavaScript environment.
 
+###Enum Constants
+
+Enums that are defined via `NS_ENUM` cannot be used as method arguments without first extending RCTConvert.
+
+In order to export the following `NS_ENUM` definition:
+```objc
+typedef NS_ENUM(NSInteger, MyEnumType)
+{
+  kEnumOne,
+  kEnumTwo,
+};
+```
+
+You must create a class extension of RCTConvert like so:
+```objc
+@implementation RCTConvert (MyEnumExtension)
+  RCT_ENUM_CONVERTER(MyEnumType, (@{ @"enumOne" : @(kEnumOne),
+                                     @"enumTwo" : @(kEnumTwo),
+                      kEnumOne, integerValue)
+@end
+```
+
+You can then define methods and export your enum constants like this:
+
+```objc
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"enumOne" : @(kEnumOne),
+            @"enumTwo" : @(kEnumTwo) }
+};
+    
+RCT_EXPORT_METHOD(doSomethingWithEnum:(MyEnumType)enum
+                           completion:(RCTResponseSenderBlock)callback)
+```
+
+Your enum will then be automatically unwrapped using the selector provided (`integerValue` in the above example) before being passed to your exported method.
+
 
 ## Sending Events to JavaScript
 
