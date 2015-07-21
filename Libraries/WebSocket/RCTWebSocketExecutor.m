@@ -33,7 +33,6 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
   dispatch_semaphore_t _socketOpenSemaphore;
   NSMutableDictionary *_injectedObjects;
   NSURL *_url;
-  NSTimer *_usageMetricsTimer;
 }
 
 RCT_EXPORT_MODULE()
@@ -85,8 +84,6 @@ RCT_EXPORT_MODULE()
     [self invalidate];
     return;
   }
-  _usageMetricsTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
-                                                           target:self selector:@selector(sendUsageMetrics) userInfo:nil repeats:YES];
 }
 
 - (BOOL)connectToProxy
@@ -112,11 +109,19 @@ RCT_EXPORT_MODULE()
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
   NSError *error = nil;
-  NSDictionary *reply = RCTJSONParse(message, &error);
-  NSNumber *messageID = reply[@"replyID"];
-  RCTWSMessageCallback callback = _callbacks[messageID];
-  if (callback) {
-    callback(error, reply);
+  NSDictionary *parsedMessage = RCTJSONParse(message, &error);
+
+  if ([parsedMessage objectForKey:@"method"]) {
+    NSString *methodName = parsedMessage[@"method"];
+    if ([methodName isEqual:@"requestMetrics"]) {
+      [self sendUsageMetrics];
+    }
+  } else if ([parsedMessage objectForKey:@"replyID"]) {
+    NSNumber *messageID = parsedMessage[@"replyID"];
+    RCTWSMessageCallback callback = _callbacks[messageID];
+    if (callback) {
+      callback(error, parsedMessage);
+    }
   }
 }
 
@@ -219,10 +224,6 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  // stop sending usage metrics
-  [_usageMetricsTimer invalidate];
-  _usageMetricsTimer = nil;
-  
   _socket.delegate = nil;
   [_socket closeWithCode:1000 reason:@"Invalidated"];
   _socket = nil;

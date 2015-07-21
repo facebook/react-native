@@ -19,6 +19,8 @@
 <script src="/debugger-ui/static/JSXTransformer-0.13.3.js"></script>
 <script type="text/jsx">
 (function() {
+var ws;
+var metricsIntervalId, metricsCollectionEnabled;
 var cpuChart, memoryChart, jsCallsChart, latestLabel;
 var batchedJSCalls = [];
 var numJsCalls = 0;
@@ -113,6 +115,47 @@ jsCallsChart = new Chart(jsCallsCtx).Bar(jsCallsStartingData, {
   animation: false
 });
 
+function toggleMetrics(enable) {
+  if (metricsIntervalId) {
+    debuggerClearInterval(metricsIntervalId);
+  }
+  if (enable) {
+    // request metrics once every second
+    metricsIntervalId = debuggerSetInterval(function () {
+      ws.send(JSON.stringify({method: "requestMetrics"}));
+    }, 1000);
+  }
+  metricsCollectionEnabled = enable;
+}
+
+var MetricsToggle = React.createClass({
+  handleClick: function () {
+    var enabled = !this.props.metricsEnabled;
+    this.setProps({
+      metricsEnabled:enabled
+    });
+    toggleMetrics(enabled);
+  },
+
+  buttonText: function () {
+    if (this.props.metricsEnabled) {
+      return "Disable Metrics Collection"
+    } else {
+      return "Enable Metrics Collection"
+    }
+  },
+  render: function() {
+    return (
+      <input type="button" onClick={this.handleClick} value={this.buttonText()} />
+    );
+  }
+});
+
+React.render(
+  <MetricsToggle metricsEnabled={true}/>,
+  document.getElementById('metrics-toggle')
+);
+
 var JSCall = React.createClass({
   render: function() {
     return (
@@ -176,6 +219,8 @@ window.onbeforeunload = function() {
 // Alias native implementations needed by the debugger before platform-specific
 // implementations are loaded into the global namespace
 var debuggerSetTimeout = window.setTimeout;
+var debuggerSetInterval = window.setInterval;
+var debuggerClearInterval = window.clearInterval;
 var DebuggerWebSocket = window.WebSocket;
 
 function setStatus(status) {
@@ -199,20 +244,19 @@ var messageHandlers = {
     loadScript(message.url, sendReply.bind(null, null));
   },
   'executeJSCall': function(message, sendReply) {
+    if(metricsCollectionEnabled) {
+      numJsCalls += countJSCalls(message);
 
-    numJsCalls += countJSCalls(message);
+      batchedJSCalls.unshift(message);
+      // show the last 5 batches
+      if (batchedJSCalls.length > 5) {
+        batchedJSCalls.pop();
+      }
 
-    batchedJSCalls.unshift(message);
-    // show the last 5 batches
-    if (batchedJSCalls.length > 5) {
-      batchedJSCalls.pop();
+      jsCallsComponent.setProps({
+        data: batchedJSCalls
+      });
     }
-
-    jsCallsComponent.setProps({
-      data: batchedJSCalls
-    });
-
-
     var returnValue = null;
     try {
       if (window && window.require) {
@@ -247,7 +291,7 @@ function convertToMB(val) {
 }
 
 function connectToDebuggerProxy() {
-  var ws = new DebuggerWebSocket('ws://' + window.location.host + '/debugger-proxy');
+  ws = new DebuggerWebSocket('ws://' + window.location.host + '/debugger-proxy');
 
   ws.onopen = function() {
     if (sessionID) {
@@ -256,6 +300,9 @@ function connectToDebuggerProxy() {
     } else {
       setStatus('Waiting, press ⌘R in simulator to reload and connect');
     }
+
+    // start collecting metrics
+    toggleMetrics(true);
   };
 
   ws.onmessage = function(message) {
@@ -277,6 +324,9 @@ function connectToDebuggerProxy() {
     sessionID = null;
     window.localStorage.removeItem('sessionID');
     debuggerSetTimeout(connectToDebuggerProxy, 100);
+
+    // stop collecting metrics
+    toggleMetrics(false);
   };
 }
 
@@ -327,6 +377,9 @@ function loadScript(src, callback) {
   .js-calls {
     font-size: small;
   }
+  .toggle-button {
+    margin-top: 15px;
+  }
   .graph-column {
     width: "49%";
     display: inline-block;
@@ -350,6 +403,7 @@ function loadScript(src, callback) {
   </p>
   <p>Press <span class="shortcut">⌘⌥J</span> to open Developer Tools. Enable <a href="http://stackoverflow.com/a/17324511/232122" target="_blank">Pause On Caught Exceptions</a> for a better debugging experience.</p>
   <div>Status: <span id="status">Loading</span></div>
+  <div id="metrics-toggle" class="toggle-button"></div>
   <div class="graph-column">
     <div>
       <h2>UI CPU Utilization</h2>
