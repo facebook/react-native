@@ -13,6 +13,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "RCTTextKeyValueConstants.h"
 
 @implementation RCTTextField
 {
@@ -38,6 +39,32 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (void)sendKeyValueForString:(NSString *)string
+{
+  NSString *keyValue;
+  
+  if ([string isEqualToString:RCTNewlineRawValue]) {
+    keyValue = RCTEnterKeyValue;
+  } else if ([string isEqualToString:@""]) {
+    keyValue = RCTBackspaceKeyValue;
+  } else {
+    keyValue = string;
+  }
+  
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
+                                 reactTag:self.reactTag
+                                     text:nil
+                                      key:keyValue
+                               eventCount:_nativeEventCount];
+}
+
+// This method is overriden for `onKeyPress`. The manager will not send a keyPress for text that was pasted.
+- (void)paste:(id)sender
+{
+  _textWasPasted = YES;
+  [super paste:sender];
+}
 
 - (void)setText:(NSString *)text
 {
@@ -134,6 +161,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
                                      text:self.text
+                                      key:nil
                                eventCount:_nativeEventCount];
 }
 
@@ -142,6 +170,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
                                      text:self.text
+                                      key:nil
                                eventCount:_nativeEventCount];
 }
 - (void)textFieldSubmitEditing
@@ -149,6 +178,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                  reactTag:self.reactTag
                                      text:self.text
+                                      key:nil
                                eventCount:_nativeEventCount];
 }
 
@@ -162,6 +192,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:self.text
+                                      key:nil
                                eventCount:_nativeEventCount];
 }
 
@@ -181,6 +212,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                    reactTag:self.reactTag
                                        text:self.text
+                                        key:nil
                                  eventCount:_nativeEventCount];
   }
   return result;
