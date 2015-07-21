@@ -29,6 +29,7 @@ RCT_REMAP_VIEW_PROPERTY(editable, textView.editable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
+RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_REMAP_VIEW_PROPERTY(keyboardType, textView.keyboardType, UIKeyboardType)
@@ -52,6 +53,7 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
 {
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
+RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {

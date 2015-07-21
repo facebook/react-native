@@ -31,8 +31,8 @@ var invariant = require('invariant');
 var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
-  onSelectionChange: true,
-  onTextInput: true,
+  onSelectionChange: true, // not supported in Open Source yet
+  onTextInput: true, // not supported in Open Source yet
   children: true,
 };
 
@@ -64,10 +64,6 @@ var viewConfigAndroid = {
 var RCTTextView = requireNativeComponent('RCTTextView', null);
 var RCTTextField = requireNativeComponent('RCTTextField', null);
 
-type DefaultProps = {
-  bufferDelay: number;
-};
-
 type Event = Object;
 
 /**
@@ -77,30 +73,29 @@ type Event = Object;
  * types, such as a numeric keypad.
  *
  * The simplest use case is to plop down a `TextInput` and subscribe to the
- * `onChangeText` events to read the user input.  There are also other events, such
- * as `onSubmitEditing` and `onFocus` that can be subscribed to.  A simple
+ * `onChangeText` events to read the user input.  There are also other events,
+ * such as `onSubmitEditing` and `onFocus` that can be subscribed to.  A simple
  * example:
  *
  * ```
- * <View>
  *   <TextInput
  *     style={{height: 40, borderColor: 'gray', borderWidth: 1}}
- *     onChangeText={(text) => this.setState({input: text})}
+ *     onChangeText={(text) => this.setState({text})}
+ *     value={this.state.text}
  *   />
- *   <Text>{'user input: ' + this.state.input}</Text>
- * </View>
  * ```
  *
- * The `value` prop can be used to set the value of the input in order to make
- * the state of the component clear, but <TextInput> does not behave as a true
- * controlled component by default because all operations are asynchronous.
- * Setting `value` once is like setting the default value, but you can change it
- * continuously based on `onChangeText` events as well.  If you really want to
- * force the component to always revert to the value you are setting, you can
- * set `controlled={true}`.
+ * Note that some props are only available with multiline={true/false}:
  *
- * The `multiline` prop is not supported in all releases, and some props are
- * multiline only.
+ *   var onlyMultiline = {
+ *     onSelectionChange: true, // not supported in Open Source yet
+ *     onTextInput: true, // not supported in Open Source yet
+ *     children: true,
+ *   };
+ *
+ *   var notMultiline = {
+ *     onSubmitEditing: true,
+ *   };
  */
 
 var TextInput = React.createClass({
@@ -180,6 +175,11 @@ var TextInput = React.createClass({
       'emergency-call',
     ]),
     /**
+     * Limits the maximum number of characters that can be entered.  Use this
+     * instead of implementing the logic in JS to avoid flicker.
+     */
+    maxLength: PropTypes.number,
+    /**
      * If true, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. Default value is false.
      */
@@ -236,22 +236,15 @@ var TextInput = React.createClass({
      */
     selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
-     * The default value for the text input
+     * The value to show for the text input.  TextInput is a controlled
+     * component, which means the native value will be forced to match this
+     * value prop if provided.  For most uses this works great, but in some
+     * cases this may cause flickering - one common cause is preventing edits
+     * by keeping value the same.  In addition to simply setting the same value,
+     * either set `editable={false}`, or set/update `maxLength` to prevent
+     * unwanted edits without flicker.
      */
     value: PropTypes.string,
-    /**
-     * This helps avoid drops characters due to race conditions between JS and
-     * the native text input.  The default should be fine, but if you're
-     * potentially doing very slow operations on every keystroke then you may
-     * want to try increasing this.
-     */
-    bufferDelay: PropTypes.number,
-    /**
-     * If you really want this to behave as a controlled component, you can set
-     * this true, but you will probably see flickering, dropped keystrokes,
-     * and/or laggy typing, depending on how you process onChange events.
-     */
-    controlled: PropTypes.bool,
     /**
      * When the clear button should appear on the right side of the text view
      */
@@ -297,16 +290,9 @@ var TextInput = React.createClass({
       React.findNodeHandle(this.refs.input);
   },
 
-  getDefaultProps: function(): DefaultProps {
-    return {
-      bufferDelay: 100,
-    };
-  },
-
   getInitialState: function() {
     return {
-      mostRecentEventCounter: 0,
-      bufferedValue: this.props.value,
+      mostRecentEventCount: 0,
     };
   },
 
@@ -346,52 +332,6 @@ var TextInput = React.createClass({
     }
   },
 
-  _bufferTimeout: (undefined: ?number),
-
-  componentWillReceiveProps: function(newProps: {value: any}) {
-    if (newProps.value !== this.props.value) {
-      if (!this.isFocused()) {
-        // Set the value immediately if the input is not focused since that
-        // means there is no risk of the user typing immediately.
-        this.setState({bufferedValue: newProps.value});
-      } else {
-        // The following clear and setTimeout buffers the value such that if more
-        // characters are typed in quick succession, generating new values, the
-        // out of date values will get cancelled before they are ever sent to
-        // native.
-        //
-        // If we don't do this, it's likely the out of date values will blow
-        // away recently typed characters in the native input that JS was not
-        // yet aware of (since it is informed asynchronously), then the next
-        // character will be appended to the older value, dropping the
-        // characters in between.  Here is a potential sequence of events
-        // (recall we have multiple independently serial, interleaved queues):
-        //
-        // 1) User types 'R' => send 'R' to JS queue.
-        // 2) User types 'e' => send 'Re' to JS queue.
-        // 3) JS processes 'R' and sends 'R' back to native.
-        // 4) Native recieves 'R' and changes input from 'Re' back to 'R'.
-        // 5) User types 'a' => send 'Ra' to JS queue.
-        // 6) JS processes 'Re' and sends 'Re' back to native.
-        // 7) Native recieves 'Re' and changes input from 'R' back to 'Re'.
-        // 8) JS processes 'Ra' and sends 'Ra' back to native.
-        // 9) Native recieves final 'Ra' from JS - 'e' has been dropped!
-        //
-        // This isn't 100% foolproop (e.g. if it takes longer than
-        // `props.bufferDelay` ms to process one keystroke), and there are of
-        // course other potential algorithms to deal with this, but this is a
-        // simple solution that seems to reduce the chance of dropped characters
-        // drastically without compromising native input responsiveness (e.g. by
-        // introducing delay from a synchronization protocol).
-        this.clearTimeout(this._bufferTimeout);
-        this._bufferTimeout = this.setTimeout(
-          () => this.setState({bufferedValue: newProps.value}),
-          this.props.bufferDelay
-        );
-      }
-    }
-  },
-
   getChildContext: function(): Object {
     return {isInAParentText: true};
   },
@@ -411,7 +351,7 @@ var TextInput = React.createClass({
   _renderIOS: function() {
     var textContainer;
 
-    var props = Object.assign({},this.props);
+    var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
 
     if (!props.multiline) {
@@ -430,7 +370,8 @@ var TextInput = React.createClass({
           onBlur={this._onBlur}
           onChange={this._onChange}
           onSelectionChangeShouldSetResponder={() => true}
-          text={this.state.bufferedValue}
+          text={this.props.value}
+          mostRecentEventCount={this.state.mostRecentEventCount}
         />;
     } else {
       for (var propKey in notMultiline) {
@@ -459,14 +400,14 @@ var TextInput = React.createClass({
           ref="input"
           {...props}
           children={children}
-          mostRecentEventCounter={this.state.mostRecentEventCounter}
+          mostRecentEventCount={this.state.mostRecentEventCount}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
-          text={this.state.bufferedValue}
+          text={this.props.value}
         />;
     }
 
@@ -516,7 +457,7 @@ var TextInput = React.createClass({
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
-        text={this.state.bufferedValue}
+        text={this.props.value}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
       />;
@@ -543,11 +484,20 @@ var TextInput = React.createClass({
   },
 
   _onChange: function(event: Event) {
-    if (this.props.controlled && event.nativeEvent.text !== this.props.value) {
-      this.refs.input.setNativeProps({text: this.props.value});
-    }
+    var text = event.nativeEvent.text;
+    var eventCount = event.nativeEvent.eventCount;
     this.props.onChange && this.props.onChange(event);
-    this.props.onChangeText && this.props.onChangeText(event.nativeEvent.text);
+    this.props.onChangeText && this.props.onChangeText(text);
+    this.setState({mostRecentEventCount: eventCount}, () => {
+      // This is a controlled component, so make sure to force the native value
+      // to match.  Most usage shouldn't need this, but if it does this will be
+      // more correct but might flicker a bit and/or cause the cursor to jump.
+      if (text !== this.props.value && typeof this.props.value === 'string') {
+        this.refs.input.setNativeProps({
+          text: this.props.value,
+        });
+      }
+    });
   },
 
   _onBlur: function(event: Event) {
@@ -567,10 +517,6 @@ var TextInput = React.createClass({
 
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
-    var counter = event.nativeEvent.eventCounter;
-    if (counter > this.state.mostRecentEventCounter) {
-      this.setState({mostRecentEventCounter: counter});
-    }
   },
 });
 
