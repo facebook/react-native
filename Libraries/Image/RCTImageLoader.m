@@ -72,62 +72,48 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
                 completionBlock:callback];
 }
 
-//
-// Why use a custom scaling method:
-// http://www.mindsea.com/2012/12/downscaling-huge-alassets-without-fear-of-sigkill/
-//     Greater efficiency, reduced memory overhead.
-+ (UIImage *)scaledImageForAssetRepresentation:(ALAssetRepresentation *)representation
-                                         size:(CGSize)size
-                                        scale:(CGFloat)scale
-                                  orientation:(UIImageOrientation)orientation
+// Why use a custom scaling method? Greater efficiency, reduced memory overhead:
+// http://www.mindsea.com/2012/12/downscaling-huge-alassets-without-fear-of-sigkill
+
+static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
+                                       CGSize size, CGFloat scale,
+                                       UIViewContentMode resizeMode,
+                                       NSError **error)
 {
-  UIImage *image = nil;
-  NSData *data = nil;
-
-  uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t)*(NSUInteger)[representation size]);
-  if (buffer != NULL) {
-    NSError *error = nil;
-    NSUInteger bytesRead = [representation getBytes:buffer fromOffset:0 length:(NSUInteger)[representation size] error:&error];
-    data = [NSData dataWithBytes:buffer length:bytesRead];
-
-    free(buffer);
+  NSUInteger length = (NSUInteger)representation.size;
+  NSMutableData *data = [NSMutableData dataWithLength:length];
+  if (![representation getBytes:data.mutableBytes
+                     fromOffset:0
+                         length:length
+                          error:error]) {
+    return nil;
   }
 
-  if ([data length]) {
-    CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, nil);
+  CGSize sourceSize = representation.dimensions;
+  CGRect targetRect = RCTClipRect(sourceSize, representation.scale, size, scale, resizeMode);
+  CGSize targetSize = targetRect.size;
 
-    NSMutableDictionary *options = [NSMutableDictionary dictionary];
+  NSDictionary *options = @{
+    (id)kCGImageSourceShouldAllowFloat: @YES,
+    (id)kCGImageSourceCreateThumbnailWithTransform: @YES,
+    (id)kCGImageSourceCreateThumbnailFromImageAlways: @YES,
+    (id)kCGImageSourceThumbnailMaxPixelSize: @(MAX(targetSize.width, targetSize.height) * scale)
+  };
 
-    CGSize source = representation.dimensions;
-    CGFloat mW = size.width / source.width;
-    CGFloat mH = size.height / source.height;
-
-    if (mH > mW) {
-      size.width = size.height / source.height * source.width;
-    } else if (mW > mH) {
-      size.height = size.width / source.width * source.height;
-    }
-
-    CGFloat maxPixelSize = MAX(size.width, size.height) * scale;
-
-    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceShouldAllowFloat];
-    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceCreateThumbnailWithTransform];
-    [options setObject:(id)kCFBooleanTrue forKey:(id)kCGImageSourceCreateThumbnailFromImageAlways];
-    [options setObject:(id)@(maxPixelSize) forKey:(id)kCGImageSourceThumbnailMaxPixelSize];
-
-    CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
-
-    if (imageRef) {
-      image = [UIImage imageWithCGImage:imageRef scale:[representation scale] orientation:orientation];
-      CGImageRelease(imageRef);
-    }
-
-    if (sourceRef) {
-      CFRelease(sourceRef);
-    }
+  CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, nil);
+  CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
+  if (sourceRef) {
+    CFRelease(sourceRef);
   }
 
-  return image;
+  if (imageRef) {
+    UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale
+                                   orientation:(UIImageOrientation)representation.orientation];
+    CGImageRelease(imageRef);
+    return image;
+  }
+
+  return nil;
 }
 
 + (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
@@ -139,7 +125,7 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
                                     completionBlock:(RCTImageLoaderCompletionBlock)completion
 {
   if ([imageTag hasPrefix:@"assets-library://"]) {
-    [[RCTImageLoader assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
+    [[self assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
       if (asset) {
         // ALAssetLibrary API is async and will be multi-threaded. Loading a few full
         // resolution images at once will spike the memory up to store the image data,
@@ -151,19 +137,19 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
           @autoreleasepool {
 
             BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
-            ALAssetOrientation orientation = ALAssetOrientationUp;
             ALAssetRepresentation *representation = [asset defaultRepresentation];
 
             UIImage *image;
-
+            NSError *error = nil;
             if (useMaximumSize) {
-              image = [UIImage imageWithCGImage:representation.fullResolutionImage scale:scale orientation:(UIImageOrientation)orientation];
-
+              image = [UIImage imageWithCGImage:representation.fullResolutionImage
+                                          scale:scale
+                                    orientation:(UIImageOrientation)representation.orientation];
             } else {
-              image = [self scaledImageForAssetRepresentation:representation size:size scale:scale orientation:(UIImageOrientation)orientation];
+              image = RCTScaledImageForAsset(representation, size, scale, resizeMode, &error);
             }
 
-            RCTDispatchCallbackOnMainQueue(completion, nil, image);
+            RCTDispatchCallbackOnMainQueue(completion, error, image);
           }
         });
       } else {

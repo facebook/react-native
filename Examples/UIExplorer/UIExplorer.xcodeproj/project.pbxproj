@@ -23,7 +23,7 @@
 		13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DB03471B5D2ED500C27245 /* RCTJSONTests.m */; };
 		141FC1211B222EBB004D5FFB /* IntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 141FC1201B222EBB004D5FFB /* IntegrationTests.m */; };
 		143BC5A11B21E45C00462512 /* UIExplorerSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */; };
-		144D21241B2204C5006DB32B /* RCTClippingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTClippingTests.m */; };
+		144D21241B2204C5006DB32B /* RCTClipRectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTClipRectTests.m */; };
 		147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
 		1497CFAC1B21F5E400C1F8F2 /* RCTAllocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */; };
 		1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */; };
@@ -187,7 +187,7 @@
 		143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		143BC5981B21E3E100462512 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerSnapshotTests.m; sourceTree = "<group>"; };
-		144D21231B2204C5006DB32B /* RCTClippingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTClippingTests.m; sourceTree = "<group>"; };
+		144D21231B2204C5006DB32B /* RCTClipRectTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTClipRectTests.m; sourceTree = "<group>"; };
 		1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAllocationTests.m; sourceTree = "<group>"; };
 		1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBridgeTests.m; sourceTree = "<group>"; };
 		1497CFA61B21F5E400C1F8F2 /* RCTContextExecutorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTContextExecutorTests.m; sourceTree = "<group>"; };
@@ -353,7 +353,7 @@
 				1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */,
 				1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */,
 				138D6A151B53CD440074A87E /* RCTCacheTests.m */,
-				144D21231B2204C5006DB32B /* RCTClippingTests.m */,
+				144D21231B2204C5006DB32B /* RCTClipRectTests.m */,
 				1497CFA61B21F5E400C1F8F2 /* RCTContextExecutorTests.m */,
 				1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */,
 				1497CFA81B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m */,
@@ -787,7 +787,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1497CFB01B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m in Sources */,
-				144D21241B2204C5006DB32B /* RCTClippingTests.m in Sources */,
+				144D21241B2204C5006DB32B /* RCTClipRectTests.m in Sources */,
 				1497CFB21B21F5E400C1F8F2 /* RCTSparseArrayTests.m in Sources */,
 				1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */,
 				1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */,
