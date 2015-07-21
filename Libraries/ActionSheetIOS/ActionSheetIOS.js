@@ -27,7 +27,7 @@ var ActionSheetIOS = {
     );
     RCTActionSheetManager.showActionSheetWithOptions(
       options,
-      () => {}, // RKActionSheet compatibility hack
+      () => {}, // RCTActionSheet compatibility hack
       callback
     );
   },

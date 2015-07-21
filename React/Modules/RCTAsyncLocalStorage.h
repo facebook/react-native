@@ -16,7 +16,7 @@
  *
  * Current implementation stores small values in serialized dictionary and
  * larger values in separate files. Since we use a serial file queue
- * `RKFileQueue`, reading/writing from multiple threads should be perceived as
+ * `RCTFileQueue`, reading/writing from multiple threads should be perceived as
  * being atomic, unless someone bypasses the `RCTAsyncLocalStorage` API.
  *
  * Keys and values must always be strings or an error is returned.

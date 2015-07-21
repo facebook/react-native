@@ -48,7 +48,7 @@ typedef void (^RCTViewEventHandler)(RCTView *view);
 
 /**
  * Hide subviews if they are outside the view bounds.
- * This is an optimisation used predominantly with RKScrollViews
+ * This is an optimisation used predominantly with RCTScrollViews
  * but it is applied recursively to all subviews that have
  * removeClippedSubviews set to YES
  */
