@@ -290,7 +290,6 @@ var Navigator = React.createClass({
       sceneConfigStack: routeStack.map(
         (route) => this.props.configureScene(route)
       ),
-      idStack: routeStack.map(() => getuid()),
       routeStack,
       presentedIndex: initialRouteIndex,
       transitionFromIndex: null,
@@ -357,7 +356,6 @@ var Navigator = React.createClass({
   immediatelyResetRouteStack: function(nextRouteStack) {
     var destIndex = nextRouteStack.length - 1;
     this.setState({
-      idStack: nextRouteStack.map(getuid),
       routeStack: nextRouteStack,
       sceneConfigStack: nextRouteStack.map(
         this.props.configureScene
@@ -882,17 +880,14 @@ var Navigator = React.createClass({
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
-    var activeIDStack = this.state.idStack.slice(0, activeLength);
     var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
-    var nextIDStack = activeIDStack.concat([getuid()]);
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
       this.props.configureScene(route),
     ]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
-      idStack: nextIDStack,
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
     }, () => {
@@ -942,12 +937,8 @@ var Navigator = React.createClass({
       return;
     }
 
-    // I don't believe we need to lock for a replace since there's no
-    // navigation actually happening
-    var nextIDStack = this.state.idStack.slice();
     var nextRouteStack = this.state.routeStack.slice();
     var nextAnimationModeStack = this.state.sceneConfigStack.slice();
-    nextIDStack[index] = getuid();
     nextRouteStack[index] = route;
     nextAnimationModeStack[index] = this.props.configureScene(route);
 
@@ -955,7 +946,6 @@ var Navigator = React.createClass({
       this._emitWillFocus(route);
     }
     this.setState({
-      idStack: nextIDStack,
       routeStack: nextRouteStack,
       sceneConfigStack: nextAnimationModeStack,
     }, () => {
@@ -1024,7 +1014,6 @@ var Navigator = React.createClass({
     if (newStackLength < this.state.routeStack.length) {
       this.setState({
         sceneConfigStack: this.state.sceneConfigStack.slice(0, newStackLength),
-        idStack: this.state.idStack.slice(0, newStackLength),
         routeStack: this.state.routeStack.slice(0, newStackLength),
       });
     }
