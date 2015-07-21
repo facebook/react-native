@@ -16,6 +16,7 @@
 		137620351B31C53500677FF0 /* RCTImagePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 137620341B31C53500677FF0 /* RCTImagePickerManager.m */; };
 		143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879341AAD238D00F088A5 /* RCTCameraRollManager.m */; };
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
+		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,8 @@
 		143879341AAD238D00F088A5 /* RCTCameraRollManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCameraRollManager.m; sourceTree = "<group>"; };
 		143879361AAD32A300F088A5 /* RCTImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoader.h; sourceTree = "<group>"; };
 		143879371AAD32A300F088A5 /* RCTImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoader.m; sourceTree = "<group>"; };
+		35123E691B59C99D00EBAD80 /* RCTImageStoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageStoreManager.h; sourceTree = "<group>"; };
+		35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageStoreManager.m; sourceTree = "<group>"; };
 		58B5115D1A9E6B3D00147676 /* libRCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B511891A9E6BD600147676 /* RCTImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageDownloader.h; sourceTree = "<group>"; };
 		58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageDownloader.m; sourceTree = "<group>"; };
@@ -87,6 +90,8 @@
 				1304D5A81AA8C4A30002E2BE /* RCTImageView.m */,
 				1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */,
 				1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */,
+				35123E691B59C99D00EBAD80 /* RCTImageStoreManager.h */,
+				35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */,
 				134B00A01B54232B00EC8DFB /* RCTImageUtils.h */,
 				134B00A11B54232B00EC8DFB /* RCTImageUtils.m */,
 				58B5115E1A9E6B3D00147676 /* Products */,
@@ -159,6 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */,
 				58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */,
 				137620351B31C53500677FF0 /* RCTImagePickerManager.m in Sources */,
 				1304D5AC1AA8C4A30002E2BE /* RCTImageViewManager.m in Sources */,

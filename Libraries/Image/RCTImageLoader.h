@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 @class ALAssetsLibrary;
+@class RCTBridge;
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t written, int64_t total);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id /* UIImage or CAAnimation */);
@@ -27,6 +28,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Will always call callback on main thread.
  */
 + (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                             bridge:(RCTBridge *)bridge
                                            callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
@@ -37,6 +39,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(UIViewContentMode)resizeMode
+                                             bridge:(RCTBridge *)bridge
                                       progressBlock:(RCTImageLoaderProgressBlock)progress
                                     completionBlock:(RCTImageLoaderCompletionBlock)completion;
 

@@ -15,10 +15,12 @@
 #import <Photos/PHImageManager.h>
 #import <UIKit/UIKit.h>
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTGIFImage.h"
 #import "RCTImageDownloader.h"
+#import "RCTImageStoreManager.h"
 #import "RCTImageUtils.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -58,12 +60,14 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
 }
 
 + (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                             bridge:(RCTBridge *)bridge
                                            callback:(RCTImageLoaderCompletionBlock)callback
 {
   return [self loadImageWithTag:imageTag
                            size:CGSizeZero
                           scale:0
                      resizeMode:UIViewContentModeScaleToFill
+                         bridge:bridge
                   progressBlock:nil
                 completionBlock:callback];
 }
@@ -72,6 +76,7 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(UIViewContentMode)resizeMode
+                                             bridge:(RCTBridge *)bridge
                                       progressBlock:(RCTImageLoaderProgressBlock)progress
                                     completionBlock:(RCTImageLoaderCompletionBlock)completion
 {
@@ -177,6 +182,17 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
          RCTDispatchCallbackOnMainQueue(completion, error, image);
       }];
     }
+  } else if ([imageTag hasPrefix:@"rct-image-store://"]) {
+    [bridge.imageStoreManager getImageForTag:imageTag withBlock:^(UIImage *image) {
+      if (image) {
+        RCTDispatchCallbackOnMainQueue(completion, nil, image);
+      } else {
+        NSString *errorMessage = [NSString stringWithFormat:@"Unable to load image from image store: %@", imageTag];
+        NSError *error = RCTErrorWithMessage(errorMessage);
+        RCTDispatchCallbackOnMainQueue(completion, error, nil);
+      }
+    }];
+    return ^{};
   } else if ([imageTag.lowercaseString hasSuffix:@".gif"]) {
     id image = RCTGIFImageWithFileURL([RCTConvert NSURL:imageTag]);
     if (image) {

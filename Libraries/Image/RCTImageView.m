@@ -124,6 +124,7 @@ RCT_NOT_IMPLEMENTED(-init)
                                 size:self.bounds.size
                                scale:RCTScreenScale()
                           resizeMode:self.contentMode
+                              bridge:_bridge
                        progressBlock:progressHandler
                      completionBlock:^(NSError *error, id image) {
 
