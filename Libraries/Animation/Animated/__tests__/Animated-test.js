@@ -205,6 +205,16 @@ describe('Animated Parallel', () => {
     expect(cb).toBeCalledWith({finished: true});
   });
 
+  it('works with an empty element in array', () => {
+    var anim1 = {start: jest.genMockFunction()};
+    var cb = jest.genMockFunction();
+    Animated.parallel([null, anim1]).start(cb);
+
+    expect(anim1.start).toBeCalled();
+    anim1.start.mock.calls[0][0]({finished: true});
+
+    expect(cb).toBeCalledWith({finished: true});
+  });
 
   it('parellelizes well', () => {
     var anim1 = {start: jest.genMockFunction()};
