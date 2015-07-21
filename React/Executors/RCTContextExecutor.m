@@ -12,6 +12,7 @@
 #import <pthread.h>
 
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <UIKit/UIDevice.h>
 
 #import "RCTAssert.h"
 #import "RCTDefines.h"
@@ -32,7 +33,7 @@
 #include <dlfcn.h>
 
 #ifndef RCT_JSC_PROFILER_DYLIB
-#define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion] ofType:@"dylib" inDirectory:@"Frameworks"] UTF8String]
+#define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[[UIDevice currentDevice] systemVersion] integerValue]] ofType:@"dylib" inDirectory:@"Frameworks"] UTF8String]
 #endif
 #endif
 
