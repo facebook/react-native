@@ -31,8 +31,9 @@ var EventEmitter = require('EventEmitter');
 var NavigationEvent = require('NavigationEvent');
 
 type EventParams = {
-  eventType: String;
   data: any;
+  didEmitCallback: ?Function;
+  eventType: string;
 };
 
 class NavigationEventEmitter extends EventEmitter {
@@ -47,22 +48,36 @@ class NavigationEventEmitter extends EventEmitter {
     this._target = target;
   }
 
-  emit(eventType: String, data: any): void {
+  emit(
+    eventType: string,
+    data: any,
+    didEmitCallback: ?Function
+  ): void {
     if (this._emitting) {
       // An event cycle that was previously created hasn't finished yet.
       // Put this event cycle into the queue and will finish them later.
-      this._emitQueue.push({eventType, data});
+      this._emitQueue.push({eventType, data, didEmitCallback});
       return;
     }
 
     this._emitting = true;
+
     var event = new NavigationEvent(eventType, this._target, data);
-    super.emit(eventType, event);
+
+    // EventEmitter#emit only takes `eventType` as `String`. Casting `eventType`
+    // to `String` to make @flow happy.
+    super.emit(String(eventType), event);
+
+    if (typeof didEmitCallback === 'function') {
+      didEmitCallback.call(this._target, event);
+    }
+    event.dispose();
+
     this._emitting = false;
 
     while (this._emitQueue.length) {
       var arg = this._emitQueue.shift();
-      this.emit(arg.eventType, arg.data);
+      this.emit(arg.eventType, arg.data, arg.didEmitCallback);
     }
   }
 }

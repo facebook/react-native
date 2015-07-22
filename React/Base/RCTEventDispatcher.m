@@ -12,6 +12,8 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 
+const NSInteger RCTTextUpdateLagWarningThreshold = 3;
+
 static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
@@ -113,6 +115,7 @@ RCT_EXPORT_MODULE()
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
+                   eventCount:(NSInteger)eventCount
 {
   static NSString *events[] = {
     @"topFocus",
@@ -124,8 +127,10 @@ RCT_EXPORT_MODULE()
 
   [self sendInputEventWithName:events[type] body:text ? @{
     @"text": text,
+    @"eventCount": @(eventCount),
     @"target": reactTag
   } : @{
+    @"eventCount": @(eventCount),
     @"target": reactTag
   }];
 }

@@ -128,6 +128,7 @@ class FormUploader extends React.Component {
     super(props);
     this.state = {
       isUploading: false,
+      uploadProgress: null,
       randomPhoto: null,
       textParams: [],
     };
@@ -217,6 +218,14 @@ class FormUploader extends React.Component {
     this.state.textParams.forEach(
       (param) => formdata.append(param.name, param.value)
     );
+    if (xhr.upload) {
+      xhr.upload.onprogress = (event) => {
+        console.log('upload onprogress', event);
+        if (event.lengthComputable) {
+          this.setState({uploadProgress: event.loaded / event.total});
+        }
+      };
+    }
     xhr.send(formdata);
     this.setState({isUploading: true});
   }
@@ -251,6 +260,10 @@ class FormUploader extends React.Component {
       </View>
     ));
     var uploadButtonLabel = this.state.isUploading ? 'Uploading...' : 'Upload';
+    var uploadProgress = this.state.uploadProgress;
+    if (uploadProgress !== null) {
+      uploadButtonLabel += ' ' + Math.round(uploadProgress * 100) + '%';
+    }
     var uploadButton = (
       <View style={styles.uploadButtonBox}>
         <Text style={styles.uploadButtonLabel}>{uploadButtonLabel}</Text>

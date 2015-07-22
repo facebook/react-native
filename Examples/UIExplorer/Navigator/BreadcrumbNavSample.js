@@ -55,26 +55,24 @@ var BreadcrumbNavSample = React.createClass({
         return (
           <TouchableOpacity
             onPress={() => navigator.push(_getRandomRoute())}>
-            <View>
-              <Text style={styles.titleText}>{route.title}</Text>
-            </View>
+            <Text style={styles.titleText}>{route.title}</Text>
           </TouchableOpacity>
         );
       },
       iconForRoute: function(route, navigator) {
         return (
-          <TouchableOpacity onPress={() => {
-            navigator.popToRoute(route);
-          }}>
-            <View style={styles.crumbIconPlaceholder} />
-          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => { navigator.popToRoute(route); }}
+            style={styles.crumbIconPlaceholder}
+          />
         );
       },
       separatorForRoute: function(route, navigator) {
         return (
-          <TouchableOpacity onPress={navigator.pop}>
-            <View style={styles.crumbSeparatorPlaceholder} />
-          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={navigator.pop}
+            style={styles.crumbSeparatorPlaceholder}
+          />
         );
       }
     };

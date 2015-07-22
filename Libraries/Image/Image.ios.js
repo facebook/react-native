@@ -24,7 +24,6 @@ var StyleSheetPropType = require('StyleSheetPropType');
 
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
-var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 var verifyPropTypes = require('verifyPropTypes');
@@ -57,6 +56,7 @@ var warning = require('warning');
 
 var Image = React.createClass({
   propTypes: {
+    style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
@@ -93,7 +93,6 @@ var Image = React.createClass({
      * image dimensions.
      */
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
-    style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * A unique identifier for this element to be used in UI Automation
      * testing scripts.
@@ -102,7 +101,7 @@ var Image = React.createClass({
     /**
      * Invoked on mount and layout changes with
      *
-     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     *   {nativeEvent: {layout: {x, y, width, height}}}.
      */
     onLayout: PropTypes.func,
     /**
@@ -112,25 +111,23 @@ var Image = React.createClass({
     /**
      * Invoked on download progress with
      *
-     *   {nativeEvent: { written, total}}.
+     *   {nativeEvent: {loaded, total}}.
      */
-    onLoadProgress: PropTypes.func,
-    /**
-     * Invoked on load abort
-     */
-    onLoadAbort: PropTypes.func,
+    onProgress: PropTypes.func,
     /**
      * Invoked on load error
      *
-     *   {nativeEvent: { error}}.
+     *   {nativeEvent: {error}}.
      */
-    onLoadError: PropTypes.func,
+    onError: PropTypes.func,
     /**
-     * Invoked on load end
-     *
+     * Invoked when load completes successfully
      */
-    onLoaded: PropTypes.func
-
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
   },
 
   statics: {
@@ -149,46 +146,27 @@ var Image = React.createClass({
   },
 
   render: function() {
-    for (var prop in nativeOnlyProps) {
-      if (this.props[prop] !== undefined) {
-        console.warn('Prop `' + prop + ' = ' + this.props[prop] + '` should ' +
-          'not be set directly on Image.');
-      }
-    }
     var source = resolveAssetSource(this.props.source) || {};
+    var defaultSource = (this.props.defaultSource && resolveAssetSource(this.props.defaultSource)) || {};
 
     var {width, height} = source;
-    var style = flattenStyle([{width, height}, styles.base, this.props.style]);
-    invariant(style, 'style must be initialized');
+    var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
     var isNetwork = source.uri && source.uri.match(/^https?:/);
-    invariant(
-      !(isNetwork && source.isStatic),
-      'static image uris cannot start with "http": "' + source.uri + '"'
+    var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
+    var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
+    var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+
+    return (
+      <RawImage
+        {...this.props}
+        style={style}
+        resizeMode={resizeMode}
+        tintColor={tintColor}
+        src={source.uri}
+        defaultSrc={defaultSource.uri}
+      />
     );
-    var isStored = !source.isStatic && !isNetwork;
-    var RawImage = isNetwork ? RCTNetworkImage : RCTStaticImage;
-
-    if (this.props.style && this.props.style.tintColor) {
-      warning(RawImage === RCTStaticImage, 'tintColor style only supported on static images.');
-    }
-    var resizeMode = this.props.resizeMode || style.resizeMode || 'cover';
-
-    var nativeProps = merge(this.props, {
-      style,
-      resizeMode,
-      tintColor: style.tintColor,
-    });
-    if (isStored) {
-      nativeProps.imageTag = source.uri;
-    } else {
-      nativeProps.src = source.uri;
-    }
-    if (this.props.defaultSource) {
-      nativeProps.defaultImageSrc = this.props.defaultSource.uri;
-    }
-    nativeProps.progressHandlerRegistered = isNetwork && this.props.onLoadProgress;
-    return <RawImage {...nativeProps} />;
   }
 });
 
@@ -198,18 +176,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTNetworkImage = requireNativeComponent('RCTNetworkImageView', null);
-var RCTStaticImage = requireNativeComponent('RCTStaticImage', null);
-
-var nativeOnlyProps = {
-  src: true,
-  defaultImageSrc: true,
-  imageTag: true,
-  progressHandlerRegistered: true
-};
-if (__DEV__) {
-  verifyPropTypes(Image, RCTStaticImage.viewConfig, nativeOnlyProps);
-  verifyPropTypes(Image, RCTNetworkImage.viewConfig, nativeOnlyProps);
-}
+var RCTImageView = requireNativeComponent('RCTImageView', null);
+var RCTNetworkImageView = (NativeModules.NetworkImageViewManager) ? requireNativeComponent('RCTNetworkImageView', null) : RCTImageView;
 
 module.exports = Image;

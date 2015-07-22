@@ -11,6 +11,24 @@
 
 #import "RCTLog.h"
 
+static CGFloat RCTCeilValue(CGFloat value, CGFloat scale)
+{
+  return ceil(value * scale) / scale;
+}
+
+static CGFloat RCTFloorValue(CGFloat value, CGFloat scale)
+{
+  return floor(value * scale) / scale;
+}
+
+static CGSize RCTCeilSize(CGSize size, CGFloat scale)
+{
+  return (CGSize){
+    RCTCeilValue(size.width, scale),
+    RCTCeilValue(size.height, scale)
+  };
+}
+
 CGSize RCTTargetSizeForClipRect(CGRect clipRect)
 {
   return (CGSize){
@@ -48,7 +66,7 @@ CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
 
       sourceSize.width = MIN(destSize.width, sourceSize.width);
       sourceSize.height = MIN(destSize.height, sourceSize.height);
-      return (CGRect){CGPointZero, sourceSize};
+      return (CGRect){CGPointZero, RCTCeilSize(sourceSize, destScale)};
 
     case UIViewContentModeScaleAspectFit: // contain
 
@@ -62,7 +80,7 @@ CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
         sourceSize.height = destSize.height = MIN(sourceSize.height, destSize.height);
         sourceSize.width = sourceSize.height * aspect;
       }
-      return (CGRect){CGPointZero, sourceSize};
+      return (CGRect){CGPointZero, RCTCeilSize(sourceSize, destScale)};
 
     case UIViewContentModeScaleAspectFill: // cover
 
@@ -71,20 +89,26 @@ CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
         sourceSize.height = destSize.height = MIN(sourceSize.height, destSize.height);
         sourceSize.width = sourceSize.height * aspect;
         destSize.width = destSize.height * targetAspect;
-        return (CGRect){{(destSize.width - sourceSize.width) / 2, 0}, sourceSize};
+        return (CGRect){
+          {RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale), 0},
+          RCTCeilSize(sourceSize, destScale)
+        };
 
       } else { // target is wider than content
 
         sourceSize.width = destSize.width = MIN(sourceSize.width, destSize.width);
         sourceSize.height = sourceSize.width / aspect;
         destSize.height = destSize.width / targetAspect;
-        return (CGRect){{0, (destSize.height - sourceSize.height) / 2}, sourceSize};
+        return (CGRect){
+          {0, RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale)},
+          RCTCeilSize(sourceSize, destScale)
+        };
       }
 
     default:
 
       RCTLogError(@"A resizeMode value of %zd is not supported", resizeMode);
-      return (CGRect){CGPointZero, destSize};
+      return (CGRect){CGPointZero, RCTCeilSize(destSize, destScale)};
   }
 }
 

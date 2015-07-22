@@ -436,7 +436,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
  */
 - (UIView *)reactSuperview
 {
-  RCTAssert(self.superview != nil, @"put reactNavSuperviewLink back");
+  RCTAssert(!_bridge.isValid || self.superview != nil, @"put reactNavSuperviewLink back");
   return self.superview ? self.superview : self.reactNavSuperviewLink;
 }
 

@@ -16,10 +16,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIView.h>
 #import <XCTest/XCTest.h>
-
-extern CGRect RCTClipRect(CGSize contentSize, CGFloat contentScale,
-                          CGSize targetSize, CGFloat targetScale,
-                          UIViewContentMode resizeMode);
+#import "RCTImageUtils.h"
 
 #define RCTAssertEqualPoints(a, b) { \
 XCTAssertEqual(a.x, b.x); \
@@ -36,11 +33,11 @@ RCTAssertEqualPoints(a.origin, b.origin); \
 RCTAssertEqualSizes(a.size, b.size); \
 }
 
-@interface ClippingTests : XCTestCase
+@interface RCTClipRectTests : XCTestCase
 
 @end
 
-@implementation ClippingTests
+@implementation RCTClipRectTests
 
 - (void)testLandscapeSourceLandscapeTarget
 {
@@ -109,6 +106,18 @@ RCTAssertEqualSizes(a.size, b.size); \
 
   {
     CGRect expected = {{0, -37.5}, {10, 100}};
+    CGRect result = RCTClipRect(content, 2, target, 2, UIViewContentModeScaleAspectFill);
+    RCTAssertEqualRects(expected, result);
+  }
+}
+
+- (void)testRounding
+{
+  CGSize content = {10, 100};
+  CGSize target = {20, 50};
+
+  {
+    CGRect expected = {{0, -38}, {10, 100}};
     CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleAspectFill);
     RCTAssertEqualRects(expected, result);
   }

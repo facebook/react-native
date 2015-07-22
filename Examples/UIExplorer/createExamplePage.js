@@ -55,6 +55,7 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
       var result = example.render(null);
       if (result) {
         renderedComponent = result;
+        result.props.navigator = this.props.navigator;
       }
       (React: Object).render = originalRender;
       (React: Object).renderComponent = originalRenderComponent;

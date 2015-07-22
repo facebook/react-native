@@ -184,6 +184,11 @@ typedef void (^RCTDataLoaderCallback)(NSData *data, NSString *MIMEType, NSError 
   return [self initWithRequest:nil handler:nil callback:nil];
 }
 
+- (void)URLRequest:(id)requestToken didUploadProgress:(double)progress total:(double)total
+{
+  RCTAssert([requestToken isEqual:_requestToken], @"Shouldn't ever happen");
+}
+
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response
 {
   RCTAssert([requestToken isEqual:_requestToken], @"Shouldn't ever happen");
@@ -230,14 +235,12 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)buildRequest:(NSDictionary *)query
-      responseSender:(RCTResponseSenderBlock)responseSender
+     completionBlock:(void (^)(NSURLRequest *request))block
 {
   NSURL *URL = [RCTConvert NSURL:query[@"url"]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [[RCTConvert NSString:query[@"method"]] uppercaseString] ?: @"GET";
   request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
-
-  BOOL incrementalUpdates = [RCTConvert BOOL:query[@"incrementalUpdates"]];
 
   NSDictionary *data = [RCTConvert NSDictionary:query[@"data"]];
   [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary *result) {
@@ -258,9 +261,7 @@ RCT_EXPORT_MODULE()
       [request setValue:[@(request.HTTPBody.length) description] forHTTPHeaderField:@"Content-Length"];
     }
 
-    [self sendRequest:request
-   incrementalUpdates:incrementalUpdates
-       responseSender:responseSender];
+    block(request);
   }];
 }
 
@@ -399,6 +400,17 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - RCTURLRequestDelegate
 
+- (void)URLRequest:(id)requestToken didUploadProgress:(double)progress total:(double)total
+{
+  dispatch_async(_methodQueue, ^{
+    RCTActiveURLRequest *request = [_activeRequests objectForKey:requestToken];
+    RCTAssert(request != nil, @"Unrecognized request token: %@", requestToken);
+
+    NSArray *responseJSON = @[request.requestID, @(progress), @(total)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUploadProgress" body:responseJSON];
+  });
+}
+
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response
 {
   dispatch_async(_methodQueue, ^{
@@ -464,7 +476,12 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
                   responseSender:(RCTResponseSenderBlock)responseSender)
 {
-  [self buildRequest:query responseSender:responseSender];
+  [self buildRequest:query completionBlock:^(NSURLRequest *request) {
+
+    BOOL incrementalUpdates = [RCTConvert BOOL:query[@"incrementalUpdates"]];
+    [self sendRequest:request incrementalUpdates:incrementalUpdates
+       responseSender:responseSender];
+  }];
 }
 
 RCT_EXPORT_METHOD(cancelRequest:(NSNumber *)requestID)
