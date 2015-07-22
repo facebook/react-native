@@ -214,13 +214,13 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
 {
-  [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+  [RCTSharedApplication() presentLocalNotificationNow:notification];
 }
 
 
 RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification)
 {
-  [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+  [RCTSharedApplication() scheduleLocalNotification:notification];
 }
 
 @end
