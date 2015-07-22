@@ -179,6 +179,18 @@ var MapViewExample = React.createClass({
       longitude: region.longitude,
       latitude: region.latitude,
       title: 'You Are Here',
+      rightCallout: {
+        type: "button",
+        onPress: function() {
+          console.info("You clicked me");
+        }
+      },
+      leftCallout: {
+        type: "image",
+        config: {
+          image: "http://facebook.github.io/react-native/img/opengraph.png?2"
+        }
+      }
     }];
   },
 
