@@ -52,6 +52,16 @@ class RouteStack {
     return this._routes.get(index);
   }
 
+  indexOf(route: any): number {
+    return this._routes.indexOf(route);
+  }
+
+  slice(begin: ?number, end: ?number): RouteStack {
+    var routes = this._routes.slice(begin, end);
+    var index = Math.min(this._index, routes.size - 1);
+    return this._update(index, routes);
+  }
+
   /**
    * Returns a new stack with the provided route appended,
    * starting at this stack size.
@@ -71,7 +81,7 @@ class RouteStack {
       list.slice(0, this._index + 1).push(route);
     });
 
-    return new RouteStack(routes.size - 1, routes);
+    return this._update(routes.size - 1, routes);
   }
 
   /**
@@ -83,7 +93,7 @@ class RouteStack {
 
     // When popping, removes the rest of the routes past the current index.
     var routes = this._routes.slice(0, this._index);
-    return new RouteStack(routes.size - 1, routes);
+    return this._update(routes.size - 1, routes);
   }
 
   jumpToIndex(index: number): RouteStack {
@@ -92,11 +102,7 @@ class RouteStack {
       'index out of bound'
     );
 
-    if (index === this._index) {
-      return this;
-    }
-
-    return new RouteStack(index, this._routes);
+    return this._update(index, this._routes);
   }
 
   /**
@@ -129,7 +135,14 @@ class RouteStack {
     );
 
     var routes = this._routes.set(index, route);
-    return new RouteStack(this._index, routes);
+    return this._update(this._index, routes);
+  }
+
+  _update(index: number, routes: List): RouteStack {
+    if (this._index === index && this._routes === routes) {
+      return this;
+    }
+    return new RouteStack(index, routes);
   }
 }
 
