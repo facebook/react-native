@@ -107,6 +107,13 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
     [self registerModules];
 
     /**
+     * If currently profiling, hook into the current instance
+     */
+    if (RCTProfileIsProfiling()) {
+      RCTProfileHookModules(self);
+    }
+
+    /**
      * Start the application script
      */
     [self initJS];
@@ -361,6 +368,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     }
     moduleData.queue = nil;
   }
+
   dispatch_group_notify(group, dispatch_get_main_queue(), ^{
     [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
       [_jsDisplayLink invalidate];
@@ -368,11 +376,15 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
       [_javaScriptExecutor invalidate];
       _javaScriptExecutor = nil;
-    }];
 
-    _modules = nil;
-    _modulesByName = nil;
-    _frameUpdateObservers = nil;
+      if (RCTProfileIsProfiling()) {
+        RCTProfileUnhookModules(self);
+      }
+      _modules = nil;
+      _modulesByName = nil;
+      _frameUpdateObservers = nil;
+
+    }];
   });
 }
 
