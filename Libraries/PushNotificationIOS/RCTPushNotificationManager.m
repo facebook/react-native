@@ -36,6 +36,7 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
   UILocalNotification *notification = [[UILocalNotification alloc] init];
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
+  notification.userInfo = details[@"userInfo"] ? [RCTConvert NSDictionary:details[@"userInfo"]] : nil;
   return notification;
 }
 
