@@ -111,7 +111,7 @@ RCT_EXPORT_MODULE()
                                                     userInfo:notification];
 }
 
-+ (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
++ (void)application:(__unused UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
   NSMutableDictionary *notificationDict = [NSMutableDictionary dictionaryWithDictionary:notification.userInfo];
   [notificationDict setObject:notification.alertBody forKey:@"alertBody"];
