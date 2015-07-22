@@ -215,6 +215,7 @@ var TouchableHighlight = React.createClass({
           {
             ref: CHILD_REF,
             accessible: true,
+            accessibilityLabel: this.props.accessibilityLabel,
             testID: this.props.testID,
           }
         )}

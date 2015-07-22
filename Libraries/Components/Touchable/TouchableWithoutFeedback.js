@@ -41,6 +41,7 @@ var TouchableWithoutFeedback = React.createClass({
      * that steals the responder lock).
      */
     accessible: React.PropTypes.bool,
+    accessibilityLabel: React.PropTypes.string,
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
@@ -112,6 +113,7 @@ var TouchableWithoutFeedback = React.createClass({
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     return (React: any).cloneElement(onlyChild(this.props.children), {
       accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
       testID: this.props.testID,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
