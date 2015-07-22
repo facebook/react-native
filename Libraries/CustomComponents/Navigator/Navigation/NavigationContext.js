@@ -67,10 +67,10 @@ class NavigationContext {
     }
   }
 
-  emit(eventType: String, data: any): void {
+  emit(eventType: String, data: any, didEmitCallback: ?Function): void {
     var emitter = this._eventEmitter;
     if (emitter) {
-      emitter.emit(eventType, data);
+      emitter.emit(eventType, data, didEmitCallback);
     }
   }
 
