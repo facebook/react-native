@@ -472,6 +472,7 @@
 				83CBBA2A1A601D0E00E9B192 /* Sources */,
 				83CBBA2B1A601D0E00E9B192 /* Frameworks */,
 				83CBBA2C1A601D0E00E9B192 /* Copy Files */,
+				142C4F7F1B582EA6001F0B58 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -527,6 +528,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if nc -w 5 -z localhost 8081 ; then\n  if ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\n    echo \"Port 8081 already in use, packager is either not running or not running correctly\"\n    exit 2\n  fi\nelse\n  open $SRCROOT/../packager/launchPackager.command || echo \"Can't start packager automatically\"\nfi";
+		};
+		142C4F7F1B582EA6001F0B58 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$CONFIGURATION\" == \"Debug\" ]] && [[ -d \"/tmp/RCTJSCProfiler\" ]]; then\n   find \"${CONFIGURATION_BUILD_DIR}\" -name '*.app' | xargs -I{} sh -c 'mkdir -p \"$1/Frameworks\" && cp -r /tmp/RCTJSCProfiler/* \"$1/Frameworks\"' -- {}\nfi";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 

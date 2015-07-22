@@ -1408,8 +1408,13 @@ RCT_EXPORT_METHOD(clearJSResponder)
   for (RCTViewManager *manager in _viewManagers.allValues) {
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customDirectEventTypes))) {
       NSDictionary *eventTypes = [manager customDirectEventTypes];
-      for (NSString *eventName in eventTypes) {
-        RCTAssert(!customDirectEventTypes[eventName], @"Event '%@' registered multiple times.", eventName);
+      if (RCT_DEV) {
+        for (NSString *eventName in eventTypes) {
+          id eventType = customDirectEventTypes[eventName];
+          RCTAssert(!eventType || [eventType isEqual:eventTypes[eventName]],
+                    @"Event '%@' registered multiple times with different "
+                    "properties.", eventName);
+        }
       }
       [customDirectEventTypes addEntriesFromDictionary:eventTypes];
     }

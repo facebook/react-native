@@ -67,6 +67,24 @@ function getuid() {
   return __uid++;
 }
 
+function getRouteID(route) {
+  if (route === null || typeof route !== 'object') {
+    return String(route);
+  }
+
+  var key = '__navigatorRouteID';
+
+  if (!route.hasOwnProperty(key)) {
+    Object.defineProperty(route, key, {
+      enumerable: false,
+      configurable: false,
+      writable: false,
+      value: getuid(),
+    });
+  }
+  return route[key];
+}
+
 // styles moved to the top of the file so getDefaultProps can refer to it
 var styles = StyleSheet.create({
   container: {
@@ -221,11 +239,6 @@ var Navigator = React.createClass({
     onDidFocus: PropTypes.func,
 
     /**
-     * Will be called with (ref, indexInStack, route) when the scene ref changes
-     */
-    onItemRef: PropTypes.func,
-
-    /**
      * Optionally provide a navigation bar that persists across scene
      * transitions
      */
@@ -277,7 +290,6 @@ var Navigator = React.createClass({
       sceneConfigStack: routeStack.map(
         (route) => this.props.configureScene(route)
       ),
-      idStack: routeStack.map(() => getuid()),
       routeStack,
       presentedIndex: initialRouteIndex,
       transitionFromIndex: null,
@@ -318,7 +330,6 @@ var Navigator = React.createClass({
       onPanResponderMove: this._handlePanResponderMove,
       onPanResponderTerminate: this._handlePanResponderTerminate,
     });
-    this._itemRefs = {};
     this._interactionHandle = null;
     this._emitWillFocus(this.state.routeStack[this.state.presentedIndex]);
   },
@@ -345,7 +356,6 @@ var Navigator = React.createClass({
   immediatelyResetRouteStack: function(nextRouteStack) {
     var destIndex = nextRouteStack.length - 1;
     this.setState({
-      idStack: nextRouteStack.map(getuid),
       routeStack: nextRouteStack,
       sceneConfigStack: nextRouteStack.map(
         this.props.configureScene
@@ -870,17 +880,14 @@ var Navigator = React.createClass({
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
-    var activeIDStack = this.state.idStack.slice(0, activeLength);
     var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
-    var nextIDStack = activeIDStack.concat([getuid()]);
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
       this.props.configureScene(route),
     ]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
-      idStack: nextIDStack,
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
     }, () => {
@@ -930,12 +937,8 @@ var Navigator = React.createClass({
       return;
     }
 
-    // I don't believe we need to lock for a replace since there's no
-    // navigation actually happening
-    var nextIDStack = this.state.idStack.slice();
     var nextRouteStack = this.state.routeStack.slice();
     var nextAnimationModeStack = this.state.sceneConfigStack.slice();
-    nextIDStack[index] = getuid();
     nextRouteStack[index] = route;
     nextAnimationModeStack[index] = this.props.configureScene(route);
 
@@ -943,7 +946,6 @@ var Navigator = React.createClass({
       this._emitWillFocus(route);
     }
     this.setState({
-      idStack: nextIDStack,
       routeStack: nextRouteStack,
       sceneConfigStack: nextAnimationModeStack,
     }, () => {
@@ -1006,63 +1008,34 @@ var Navigator = React.createClass({
     return this.state.routeStack.slice();
   },
 
-  _handleItemRef: function(itemId, route, ref) {
-    this._itemRefs[itemId] = ref;
-    var itemIndex = this.state.idStack.indexOf(itemId);
-    if (itemIndex === -1) {
-      return;
-    }
-    this.props.onItemRef && this.props.onItemRef(ref, itemIndex, route);
-  },
-
   _cleanScenesPastIndex: function(index) {
     var newStackLength = index + 1;
     // Remove any unneeded rendered routes.
     if (newStackLength < this.state.routeStack.length) {
-      this.state.idStack.slice(newStackLength).map((removingId) => {
-        this._itemRefs[removingId] = null;
-      });
       this.setState({
         sceneConfigStack: this.state.sceneConfigStack.slice(0, newStackLength),
-        idStack: this.state.idStack.slice(0, newStackLength),
         routeStack: this.state.routeStack.slice(0, newStackLength),
       });
     }
   },
 
   _renderScene: function(route, i) {
-    var child = this.props.renderScene(
-      route,
-      this
-    );
     var disabledSceneStyle = null;
     if (i !== this.state.presentedIndex) {
       disabledSceneStyle = styles.disabledScene;
     }
-    var originalRef = child.ref;
-    if (originalRef != null && typeof originalRef !== 'function') {
-      console.warn(
-        'String refs are not supported for navigator scenes. Use a callback ' +
-        'ref instead. Ignoring ref: ' + originalRef
-      );
-      originalRef = null;
-    }
     return (
       <View
-        key={this.state.idStack[i]}
+        key={'scene_' + getRouteID(route)}
         ref={'scene_' + i}
         onStartShouldSetResponderCapture={() => {
           return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
         }}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
-        {React.cloneElement(child, {
-          ref: component => {
-            this._handleItemRef(this.state.idStack[i], route, component);
-            if (originalRef) {
-              originalRef(component);
-            }
-          }
-        })}
+        {this.props.renderScene(
+          route,
+          this
+        )}
       </View>
     );
   },

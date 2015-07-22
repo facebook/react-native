@@ -21,15 +21,23 @@ class XMLHttpRequest extends XMLHttpRequestBase {
 
   _requestId: ?number;
   _subscriptions: [any];
+  upload: {
+    onprogress?: (event: Object) => void;
+  };
 
   constructor() {
     super();
     this._requestId = null;
     this._subscriptions = [];
+    this.upload = {};
   }
 
   _didCreateRequest(requestId: number): void {
     this._requestId = requestId;
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didUploadProgress',
+      (args) => this._didUploadProgress.call(this, args[0], args[1], args[2])
+    ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didReceiveNetworkResponse',
       (args) => this._didReceiveResponse.call(this, args[0], args[1], args[2])
@@ -42,6 +50,17 @@ class XMLHttpRequest extends XMLHttpRequestBase {
       'didCompleteNetworkResponse',
       (args) => this._didCompleteResponse.call(this, args[0], args[1])
     ));
+  }
+
+  _didUploadProgress(requestId: number, progress: number, total: number): void {
+    if (requestId === this._requestId && this.upload.onprogress) {
+      var event = {
+        lengthComputable: true,
+        loaded: progress,
+        total,
+      };
+      this.upload.onprogress(event);
+    }
   }
 
   _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object): void {

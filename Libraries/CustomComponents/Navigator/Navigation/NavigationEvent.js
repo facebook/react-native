@@ -36,7 +36,7 @@ class NavigationEventPool {
     this._list = [];
   }
 
-  get(type: String, target: Object, data: any): NavigationEvent {
+  get(type: string, target: Object, data: any): NavigationEvent {
     var event;
     if (this._list.length > 0) {
       event = this._list.pop();
@@ -59,13 +59,13 @@ class NavigationEvent {
   _defaultPrevented: boolean;
   _disposed: boolean;
   _target: ?Object;
-  _type: ?String;
+  _type: ?string;
 
-  static pool(type: String, target: Object, data: any): NavigationEvent {
+  static pool(type: string, target: Object, data: any): NavigationEvent {
     return _navigationEventPool.get(type, target, data);
   }
 
-  constructor(type: String, target: Object, data: any) {
+  constructor(type: string, target: Object, data: any) {
     this._type = type;
     this._target = target;
     this._data = data;

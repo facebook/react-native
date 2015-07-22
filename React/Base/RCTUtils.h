@@ -19,7 +19,6 @@
 RCT_EXTERN NSString *RCTJSONStringify(id jsonObject, NSError **error);
 RCT_EXTERN id RCTJSONParse(NSString *jsonString, NSError **error);
 RCT_EXTERN id RCTJSONParseMutable(NSString *jsonString, NSError **error);
-RCT_EXTERN id RCTJSONParseWithOptions(NSString *jsonString, NSError **error, NSJSONReadingOptions options);
 
 // Strip non JSON-safe values from an object graph
 RCT_EXTERN id RCTJSONClean(id object);

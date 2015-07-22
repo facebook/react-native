@@ -19,6 +19,7 @@
   RCTEventDispatcher *_eventDispatcher;
   NSMutableArray *_reactSubviews;
   BOOL _jsRequestingFirstResponder;
+  NSInteger _nativeEventCount;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -31,6 +32,7 @@
     [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     _reactSubviews = [[NSMutableArray alloc] init];
+    self.delegate = self;
   }
   return self;
 }
@@ -38,10 +40,40 @@
 RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+  if (_maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+    return YES;
+  }
+  NSUInteger allowedLength = _maxLength.integerValue - textField.text.length + range.length;
+  if (string.length > allowedLength) {
+    if (string.length > 1) {
+      // Truncate the input string so the result is exactly maxLength
+      NSString *limitedString = [string substringToIndex:allowedLength];
+      NSMutableString *newString = textField.text.mutableCopy;
+      [newString replaceCharactersInRange:range withString:limitedString];
+      textField.text = newString;
+      // Collapse selection at end of insert to match normal paste behavior
+      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
+                                                          offset:(range.location + allowedLength)];
+      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
+      [self _textFieldDidChange];
+    }
+    return NO;
+  } else {
+    return YES;
+  }
+}
+
 - (void)setText:(NSString *)text
 {
-  if (![text isEqualToString:self.text]) {
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![text isEqualToString:self.text]) {
+    UITextRange *selection = self.selectedTextRange;
     [super setText:text];
+    self.selectedTextRange = selection; // maintain cursor position/selection - this is robust to out of bounds
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %ld events ahead of JS - try to make your JS faster.", self.text, (long)eventLag);
   }
 }
 
@@ -122,17 +154,29 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   return self.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
-#define RCT_TEXT_EVENT_HANDLER(delegateMethod, eventName) \
-- (void)delegateMethod                                    \
-{                                                         \
-  [_eventDispatcher sendTextEventWithType:eventName       \
-                                 reactTag:self.reactTag   \
-                                     text:self.text];     \
+- (void)_textFieldDidChange
+{
+  _nativeEventCount++;
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
+                                 reactTag:self.reactTag
+                                     text:self.text
+                               eventCount:_nativeEventCount];
 }
 
-RCT_TEXT_EVENT_HANDLER(_textFieldDidChange, RCTTextEventTypeChange)
-RCT_TEXT_EVENT_HANDLER(_textFieldEndEditing, RCTTextEventTypeEnd)
-RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
+- (void)_textFieldEndEditing
+{
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
+                                 reactTag:self.reactTag
+                                     text:self.text
+                               eventCount:_nativeEventCount];
+}
+- (void)_textFieldSubmitEditing
+{
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                 reactTag:self.reactTag
+                                     text:self.text
+                               eventCount:_nativeEventCount];
+}
 
 - (void)_textFieldBeginEditing
 {
@@ -143,10 +187,9 @@ RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
   }
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:self.text];
+                                     text:self.text
+                               eventCount:_nativeEventCount];
 }
-
-// TODO: we should support shouldChangeTextInRect (see UITextFieldDelegate)
 
 - (BOOL)becomeFirstResponder
 {
@@ -163,7 +206,8 @@ RCT_TEXT_EVENT_HANDLER(_textFieldSubmitEditing, RCTTextEventTypeSubmit)
   {
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                    reactTag:self.reactTag
-                                       text:self.text];
+                                       text:self.text
+                                 eventCount:_nativeEventCount];
   }
   return result;
 }

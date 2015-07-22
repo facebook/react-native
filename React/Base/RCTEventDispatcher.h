@@ -28,6 +28,8 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
   RCTScrollEventTypeEndAnimation,
 };
 
+extern const NSInteger RCTTextUpdateLagWarningThreshold;
+
 @protocol RCTEvent <NSObject>
 
 @required
@@ -76,12 +78,14 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
  */
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body;
 
+
 /**
  * Send a text input/focus event.
  */
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
-                         text:(NSString *)text;
+                         text:(NSString *)text
+                   eventCount:(NSInteger)eventCount;
 
 - (void)sendEvent:(id<RCTEvent>)event;
 

@@ -1177,7 +1177,7 @@ var parallel = function(
       }
 
       animations.forEach((animation, idx) => {
-        animation.start(endResult => {
+        var cb = function(endResult) {
           hasEnded[idx] = true;
           doneCount++;
           if (doneCount === animations.length) {
@@ -1189,7 +1189,13 @@ var parallel = function(
           if (!endResult.finished && stopTogether) {
             result.stop();
           }
-        });
+        };
+
+        if (!animation) {
+          cb({finished: true});
+        } else {
+          animation.start(cb);
+        }
       });
     },
 

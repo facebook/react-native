@@ -52,7 +52,9 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
   return self;
 }
 
-- (RCTImageDownloadCancellationBlock)_downloadDataForURL:(NSURL *)url progressBlock:progressBlock block:(RCTCachedDataDownloadBlock)block
+- (RCTImageDownloadCancellationBlock)_downloadDataForURL:(NSURL *)url
+                                           progressBlock:progressBlock
+                                                   block:(RCTCachedDataDownloadBlock)block
 {
   NSString *const cacheKey = url.absoluteString;
 
@@ -134,7 +136,9 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
   return [cancel copy];
 }
 
-- (RCTImageDownloadCancellationBlock)downloadDataForURL:(NSURL *)url progressBlock:(RCTDataProgressBlock)progressBlock block:(RCTDataDownloadBlock)block
+- (RCTImageDownloadCancellationBlock)downloadDataForURL:(NSURL *)url
+                                          progressBlock:(RCTDataProgressBlock)progressBlock
+                                                  block:(RCTDataDownloadBlock)block
 {
   return [self _downloadDataForURL:url progressBlock:progressBlock block:^(BOOL cached, NSURLResponse *response, NSData *data, NSError *error) {
     block(data, error);
@@ -150,24 +154,19 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
                                            progressBlock:(RCTDataProgressBlock)progressBlock
                                                    block:(RCTImageDownloadBlock)block
 {
+  scale = scale ?: RCTScreenScale();
+
   return [self downloadDataForURL:url progressBlock:progressBlock block:^(NSData *data, NSError *error) {
     if (!data || error) {
       block(nil, error);
       return;
     }
 
-    if (CGSizeEqualToSize(size, CGSizeZero)) {
-      // Target size wasn't available yet, so abort image drawing
-      block(nil, nil);
-      return;
-    }
-
     UIImage *image = [UIImage imageWithData:data scale:scale];
-    if (image) {
+    if (image && !CGSizeEqualToSize(size, CGSizeZero)) {
 
       // Get scale and size
-      CGFloat destScale = scale ?: RCTScreenScale();
-      CGRect imageRect = RCTClipRect(image.size, image.scale, size, destScale, resizeMode);
+      CGRect imageRect = RCTClipRect(image.size, scale, size, scale, resizeMode);
       CGSize destSize = RCTTargetSizeForClipRect(imageRect);
 
       // Opacity optimizations
@@ -183,7 +182,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
       }
 
       // Decompress image at required size
-      UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
+      UIGraphicsBeginImageContextWithOptions(destSize, opaque, scale);
       if (blendColor) {
         [blendColor setFill];
         UIRectFill((CGRect){CGPointZero, destSize});
@@ -199,13 +198,6 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
 
     block(image, nil);
   }];
-}
-
-- (void)cancelDownload:(RCTImageDownloadCancellationBlock)downloadToken
-{
-  if (downloadToken) {
-    downloadToken();
-  }
 }
 
 @end

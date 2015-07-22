@@ -48,19 +48,19 @@ var Thumb = React.createClass({
   },
   render: function() {
     return (
-      <TouchableOpacity onPress={this._onPressThumb}>
-        <View style={[styles.buttonContents, {flexDirection: this.state.dir}]}>
-          <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
-          <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
-          <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
-          {this.state.dir === 'column' ?
-            <Text>
-              Oooo, look at this new text!  So awesome it may just be crazy.
-              Let me keep typing here so it wraps at least one line.
-            </Text> :
-            <Text />
-          }
-        </View>
+      <TouchableOpacity
+        onPress={this._onPressThumb}
+        style={[styles.buttonContents, {flexDirection: this.state.dir}]}>
+        <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
+        <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
+        <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
+        {this.state.dir === 'column' ?
+          <Text>
+            Oooo, look at this new text!  So awesome it may just be crazy.
+            Let me keep typing here so it wraps at least one line.
+          </Text> :
+          <Text />
+        }
       </TouchableOpacity>
     );
   }
@@ -127,14 +127,12 @@ var ListViewPagingExample = React.createClass({
       <View><Text style={styles.text}>1 Like</Text></View> :
       null;
     return (
-      <TouchableOpacity onPress={this._onPressHeader}>
-        <View style={styles.header}>
-          {headerLikeText}
-          <View>
-            <Text style={styles.text}>
-              Table Header (click me)
-            </Text>
-          </View>
+      <TouchableOpacity onPress={this._onPressHeader} style={styles.header}>
+        {headerLikeText}
+        <View>
+          <Text style={styles.text}>
+            Table Header (click me)
+          </Text>
         </View>
       </TouchableOpacity>
     );

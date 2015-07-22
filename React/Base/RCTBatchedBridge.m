@@ -107,6 +107,13 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
     [self registerModules];
 
     /**
+     * If currently profiling, hook into the current instance
+     */
+    if (RCTProfileIsProfiling()) {
+      RCTProfileHookModules(self);
+    }
+
+    /**
      * Start the application script
      */
     [self initJS];
@@ -235,18 +242,13 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   NSString *configJSON = RCTJSONStringify(@{
     @"remoteModuleConfig": config,
   }, NULL);
-  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   [_javaScriptExecutor injectJSONText:configJSON
-                  asGlobalObjectNamed:@"__fbBatchedBridgeConfig" callback:
-   ^(NSError *error) {
-     if (error) {
-       [[RCTRedBox sharedInstance] showError:error];
-     }
-
-     dispatch_semaphore_signal(semaphore);
-   }];
-
-  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW);
+                  asGlobalObjectNamed:@"__fbBatchedBridgeConfig"
+                             callback:^(NSError *error) {
+    if (error) {
+      [[RCTRedBox sharedInstance] showError:error];
+    }
+  }];
 
   NSURL *bundleURL = _parentBridge.bundleURL;
   if (_javaScriptExecutor == nil) {
@@ -349,53 +351,41 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     RCTLatestExecutor = nil;
   }
 
-  void (^mainThreadInvalidate)(void) = ^{
-    RCTAssertMainThread();
+  [_mainDisplayLink invalidate];
+  _mainDisplayLink = nil;
 
-    [_mainDisplayLink invalidate];
-    _mainDisplayLink = nil;
-
-    // Invalidate modules
-    dispatch_group_t group = dispatch_group_create();
-    for (RCTModuleData *moduleData in _modules) {
-      if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
-        [moduleData dispatchBlock:^{
-          [(id<RCTInvalidating>)moduleData.instance invalidate];
-        } dispatchGroup:group];
-      }
-      moduleData.queue = nil;
+  // Invalidate modules
+  dispatch_group_t group = dispatch_group_create();
+  for (RCTModuleData *moduleData in _modules) {
+    if (moduleData.instance == _javaScriptExecutor) {
+      continue;
     }
-    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+
+    if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
+      [moduleData dispatchBlock:^{
+        [(id<RCTInvalidating>)moduleData.instance invalidate];
+      } dispatchGroup:group];
+    }
+    moduleData.queue = nil;
+  }
+
+  dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+    [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+      [_jsDisplayLink invalidate];
+      _jsDisplayLink = nil;
+
+      [_javaScriptExecutor invalidate];
+      _javaScriptExecutor = nil;
+
+      if (RCTProfileIsProfiling()) {
+        RCTProfileUnhookModules(self);
+      }
       _modules = nil;
       _modulesByName = nil;
       _frameUpdateObservers = nil;
-    });
-  };
 
-  if (!_javaScriptExecutor) {
-
-    // No JS thread running
-    mainThreadInvalidate();
-    return;
-  }
-
-  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-
-    /**
-     * JS Thread deallocations
-     */
-    [_javaScriptExecutor invalidate];
-    _javaScriptExecutor = nil;
-
-    [_jsDisplayLink invalidate];
-    _jsDisplayLink = nil;
-
-    /**
-     * Main Thread deallocations
-     */
-    dispatch_async(dispatch_get_main_queue(), mainThreadInvalidate);
-
-  }];
+    }];
+  });
 }
 
 #pragma mark - RCTBridge methods
