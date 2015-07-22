@@ -315,7 +315,7 @@ exports.examples = [
       return (
         <View>
           <WithLabel label="true">
-            <TextInput password={true} style={styles.default} value="abc" />
+            <TextInput password={true} style={styles.default} defaultValue="abc" />
           </WithLabel>
         </View>
       );
@@ -332,11 +332,11 @@ exports.examples = [
         <View>
           <TextInput
             style={[styles.default, {color: 'blue'}]}
-            value="Blue"
+            defaultValue="Blue"
           />
           <TextInput
             style={[styles.default, {color: 'green'}]}
-            value="Green"
+            defaultValue="Green"
           />
         </View>
       );
@@ -383,7 +383,7 @@ exports.examples = [
           <WithLabel label="clearTextOnFocus">
             <TextInput
               placeholder="text is cleared on focus"
-              value="text is cleared on focus"
+              defaultValue="text is cleared on focus"
               style={styles.default}
               clearTextOnFocus={true}
             />
@@ -391,7 +391,7 @@ exports.examples = [
           <WithLabel label="selectTextOnFocus">
             <TextInput
               placeholder="text is selected on focus"
-              value="text is selected on focus"
+              defaultValue="text is selected on focus"
               style={styles.default}
               selectTextOnFocus={true}
             />

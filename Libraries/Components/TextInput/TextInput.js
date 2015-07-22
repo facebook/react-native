@@ -246,6 +246,12 @@ var TextInput = React.createClass({
      */
     value: PropTypes.string,
     /**
+     * Provides an initial value that will change when the user starts typing.
+     * Useful for simple use-cases where you don't want to deal with listening
+     * to events and updating the value prop to keep the controlled state in sync.
+     */
+    defaultValue: PropTypes.string,
+    /**
      * When the clear button should appear on the right side of the text view
      */
     clearButtonMode: PropTypes.oneOf([
@@ -348,12 +354,17 @@ var TextInput = React.createClass({
     }
   },
 
+  _getText: function(): ?string {
+    return typeof this.props.value === 'string' ?
+      this.props.value :
+      this.props.defaultValue;
+  },
+
   _renderIOS: function() {
     var textContainer;
 
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
-
     if (!props.multiline) {
       for (var propKey in onlyMultiline) {
         if (props[propKey]) {
@@ -370,7 +381,7 @@ var TextInput = React.createClass({
           onBlur={this._onBlur}
           onChange={this._onChange}
           onSelectionChangeShouldSetResponder={() => true}
-          text={this.props.value}
+          text={this._getText()}
           mostRecentEventCount={this.state.mostRecentEventCount}
         />;
     } else {
@@ -407,7 +418,7 @@ var TextInput = React.createClass({
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
-          text={this.props.value}
+          text={this._getText()}
         />;
     }
 
@@ -457,7 +468,7 @@ var TextInput = React.createClass({
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
-        text={this.props.value}
+        text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
       />;
