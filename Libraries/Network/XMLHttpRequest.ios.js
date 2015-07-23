@@ -35,7 +35,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
   _didCreateRequest(requestId: number): void {
     this._requestId = requestId;
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
-      'didUploadProgress',
+      'didSendNetworkData',
       (args) => this._didUploadProgress.call(this, args[0], args[1], args[2])
     ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(

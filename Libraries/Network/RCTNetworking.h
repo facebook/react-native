@@ -14,4 +14,3 @@
 @interface RCTNetworking : NSObject <RCTBridgeModule>
 
 @end
-
