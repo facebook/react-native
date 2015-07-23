@@ -10,6 +10,9 @@
 #import "RCTURLRequestHandler.h"
 #import "RCTInvalidating.h"
 
+/**
+ * This is the default RCTURLRequestHandler implementation for HTTP requests.
+ */
 @interface RCTHTTPRequestHandler : NSObject <RCTURLRequestHandler, RCTInvalidating>
 
 @end

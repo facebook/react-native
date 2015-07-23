@@ -27,7 +27,11 @@ var mapWithSeparator = require('mapWithSeparator');
 var ElementProperties = React.createClass({
   propTypes: {
     hierarchy: PropTypes.array.isRequired,
-    style: PropTypes.array.isRequired,
+    style: PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.array,
+      PropTypes.number,
+    ]),
   },
 
   render: function() {
