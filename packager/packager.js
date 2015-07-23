@@ -226,6 +226,13 @@ function getAppMiddleware(options) {
     transformerPath = path.resolve(process.cwd(), transformerPath);
   }
 
+  var polyfillModuleNames = [];
+  if (options.platform != 'web') {
+    polyfillModuleNames.push(require.resolve(
+      '../Libraries/JavaScriptAppEngine/polyfills/document.js'
+    ));
+  }
+
   return ReactPackager.middleware({
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
@@ -234,11 +241,7 @@ function getAppMiddleware(options) {
     transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
-    polyfillModuleNames: [
-      require.resolve(
-        '../Libraries/JavaScriptAppEngine/polyfills/document.js'
-      ),
-    ],
+    polyfillModuleNames: polyfillModuleNames,
   });
 }
 
