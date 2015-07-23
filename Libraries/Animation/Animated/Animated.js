@@ -479,7 +479,13 @@ class SpringAnimation extends Animation {
     if (this._tension !== 0) {
       isDisplacement = Math.abs(this._toValue - position) <= this._restDisplacementThreshold;
     }
+
     if (isOvershooting || (isVelocity && isDisplacement)) {
+      if (this._tension !== 0) {
+        // Ensure that we end up with a round value
+        this._onUpdate(this._toValue);
+      }
+
       this.__debouncedOnEnd({finished: true});
       return;
     }
