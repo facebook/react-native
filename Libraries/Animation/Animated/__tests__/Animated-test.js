@@ -127,6 +127,19 @@ describe('Animated', () => {
     Animated.spring(anim, {toValue: 0, velocity: 0}).start(callback);
     expect(callback).toBeCalled();
   });
+
+  it('send toValue when a spring stops', () => {
+    var anim = new Animated.Value(0);
+    var listener = jest.genMockFunction();
+    anim.addListener(listener);
+    Animated.spring(anim, {toValue: 15}).start();
+    jest.runAllTimers();
+    var lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
+    expect(lastValue).not.toBe(15);
+    expect(lastValue).toBeCloseTo(15);
+    expect(anim.__getValue()).toBe(15);
+  });
+
 });
 
 

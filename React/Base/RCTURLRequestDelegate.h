@@ -16,10 +16,10 @@
 @protocol RCTURLRequestDelegate <NSObject>
 
 /**
- * Call this when you first receives a response from the server. This should
- * include response headers, etc.
+ * Call this when you send request data to the server. This is used to track
+ * upload progress, so should be called multiple times for large request bodies.
  */
-- (void)URLRequest:(id)requestToken didUploadProgress:(double)progress total:(double)total;
+- (void)URLRequest:(id)requestToken didSendDataWithProgress:(int64_t)bytesSent;
 
 /**
  * Call this when you first receives a response from the server. This should

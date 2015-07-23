@@ -50,8 +50,8 @@ RCT_EXPORT_MODULE()
   return [@[@"http", @"https", @"file"] containsObject:[request.URL.scheme lowercaseString]];
 }
 
-- (id)sendRequest:(NSURLRequest *)request
-     withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
+                         withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_session && [self isValid]) {
@@ -68,9 +68,10 @@ RCT_EXPORT_MODULE()
   return task;
 }
 
-- (void)cancelRequest:(NSURLSessionDataTask *)requestToken
+- (void)cancelRequest:(NSURLSessionDataTask *)task
 {
-  [requestToken cancel];
+  [task cancel];
+  [_delegates removeObjectForKey:task];
 }
 
 #pragma mark - NSURLSession delegate
@@ -81,9 +82,8 @@ RCT_EXPORT_MODULE()
     totalBytesSent:(int64_t)totalBytesSent
 totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
-  [[_delegates objectForKey:task] URLRequest:task didUploadProgress:(double)totalBytesSent total:(double)totalBytesExpectedToSend];
+  [[_delegates objectForKey:task] URLRequest:task didSendDataWithProgress:totalBytesSent];
 }
-
 
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)task

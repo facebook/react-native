@@ -20,7 +20,7 @@ var StyleSheet = require('StyleSheet');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 
-var REACT_DEVTOOLS_HOOK: ?Object = typeof window !== 'undefined' ? window.__REACT_DEVTOOLS_BACKEND__ : null;
+var REACT_DEVTOOLS_HOOK: ?Object = typeof window !== 'undefined' ? window.__REACT_DEVTOOLS_GLOBAL_HOOK__ : null;
 
 if (REACT_DEVTOOLS_HOOK) {
   // required for devtools to be able to edit react native styles
@@ -34,7 +34,7 @@ class Inspector extends React.Component {
     super(props);
 
     this.state = {
-      devtoolsBackend: null,
+      devtoolsAgent: null,
       panelPos: 'bottom',
       inspecting: true,
       perfing: false,
@@ -45,14 +45,10 @@ class Inspector extends React.Component {
   componentDidMount() {
     if (REACT_DEVTOOLS_HOOK) {
       this.attachToDevtools = this.attachToDevtools.bind(this);
-      REACT_DEVTOOLS_HOOK.addStartupListener(this.attachToDevtools);
+      REACT_DEVTOOLS_HOOK.on('react-devtools', this.attachToDevtools);
       // if devtools is already started
-      // TODO(jared): should addStartupListener just go ahead and call the
-      // listener if the devtools is already started? might be unexpected...
-      // is there some name other than `addStartupListener` that would be
-      // better?
-      if (REACT_DEVTOOLS_HOOK.backend) {
-        this.attachToDevtools(REACT_DEVTOOLS_HOOK.backend);
+      if (REACT_DEVTOOLS_HOOK.reactDevtoolsAgent) {
+        this.attachToDevtools(REACT_DEVTOOLS_HOOK.reactDevtoolsAgent);
       }
     }
   }
@@ -62,13 +58,13 @@ class Inspector extends React.Component {
       this._subs.map(fn => fn());
     }
     if (REACT_DEVTOOLS_HOOK) {
-      REACT_DEVTOOLS_HOOK.removeStartupListener(this.attachToDevtools);
+      REACT_DEVTOOLS_HOOK.off('react-devtools', this.attachToDevtools);
     }
   }
 
-  attachToDevtools(backend: Object) {
+  attachToDevtools(agent: Object) {
     var _hideWait = null;
-    var hlSub = backend.sub('highlight', ({node, name, props}) => {
+    var hlSub = agent.sub('highlight', ({node, name, props}) => {
       clearTimeout(_hideWait);
       UIManager.measure(node, (x, y, width, height, left, top) => {
         this.setState({
@@ -80,7 +76,10 @@ class Inspector extends React.Component {
         });
       });
     });
-    var hideSub = backend.sub('hideHighlight', () => {
+    var hideSub = agent.sub('hideHighlight', () => {
+      if (this.state.inspected === null) {
+        return;
+      }
       // we wait to actually hide in order to avoid flicker
       _hideWait = setTimeout(() => {
         this.setState({
@@ -90,12 +89,12 @@ class Inspector extends React.Component {
     });
     this._subs = [hlSub, hideSub];
 
-    backend.on('shutdown', () => {
-      this.setState({devtoolsBackend: null});
+    agent.on('shutdown', () => {
+      this.setState({devtoolsAgent: null});
       this._subs = null;
     });
     this.setState({
-      devtoolsBackend: backend,
+      devtoolsAgent: agent,
     });
   }
 
@@ -114,8 +113,8 @@ class Inspector extends React.Component {
   }
 
   onTouchInstance(instance: Object, frame: Object, pointerY: number) {
-    if (this.state.devtoolsBackend) {
-      this.state.devtoolsBackend.selectFromReactInstance(instance, true);
+    if (this.state.devtoolsAgent) {
+      this.state.devtoolsAgent.selectFromReactInstance(instance, true);
     }
     var hierarchy = InspectorUtils.getOwnerHierarchy(instance);
     var publicInstance = instance.getPublicInstance();
@@ -159,7 +158,7 @@ class Inspector extends React.Component {
           />}
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
-            devtoolsIsOpen={!!this.state.devtoolsBackend}
+            devtoolsIsOpen={!!this.state.devtoolsAgent}
             inspecting={this.state.inspecting}
             perfing={this.state.perfing}
             setPerfing={this.setPerfing.bind(this)}

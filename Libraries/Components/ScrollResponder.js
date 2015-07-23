@@ -470,7 +470,11 @@ var ScrollResponderMixin = {
   },
 
   scrollResponderKeyboardDidShow: function(e: Event) {
-    this.keyboardWillOpenTo = null;
+    // TODO(7693961): The event for DidShow is not available on iOS yet.
+    // Use the one from WillShow and do not assign.
+    if (e) {
+      this.keyboardWillOpenTo = e;
+    }
     this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
   },
 
