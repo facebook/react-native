@@ -158,40 +158,41 @@ function _applyTransformOrigin(
   MatrixMath.multiplyInto(matrix, matrix, untranslate);
 }
 
+/**
+ * Accepts the user passed in "transformOrigin" property, which
+ * in the future could be a something other than an object, and
+ * normalizes it to an {x, y, z} point.
+ * 
+ * Right now this function is little more than an optimized
+ * Object.assign, but in the future it could be more complicated.
+ */
 function _normalizeOrigin(input: Object): Object {
   var output = { x: 0, y: 0, z: 0 };
-
-  if (typeof input === 'string') {
-    // user is using string short-hand.
-  } else if (typeof input === 'object') {
-    if (input.x) {
-      invariant(
-        typeof input.x === 'number',
-        'transformOrigin expects a number for x'
-      );
-      output.x = input.x;
-    }
-    if (input.y) {
-      invariant(
-          typeof input.y === 'number',
-          'transformOrigin expects a number for y'
-      );
-      output.y = input.y;
-    }
-    if (input.z) {
-      invariant(
-          typeof input.z === 'number',
-          'transformOrigin expects a number for z'
-      );
-      output.z = input.z;
-    }
-  } else {
-    invariant(
+  invariant(
       false,
       'transformOrigin should be a string or an object'
+  );
+  if (input.x) {
+    invariant(
+      typeof input.x === 'number',
+      'transformOrigin expects a number for x'
     );
+    output.x = input.x;
   }
-
+  if (input.y) {
+    invariant(
+        typeof input.y === 'number',
+        'transformOrigin expects a number for y'
+    );
+    output.y = input.y;
+  }
+  if (input.z) {
+    invariant(
+        typeof input.z === 'number',
+        'transformOrigin expects a number for z'
+    );
+    output.z = input.z;
+  }
   return output;
 }
 
