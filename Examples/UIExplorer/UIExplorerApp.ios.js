@@ -17,7 +17,7 @@
 'use strict';
 
 var React = require('react-native');
-var UIExplorerList = require('./UIExplorerList');
+var UIExplorerList = require('./UIExplorerList.ios');
 var {
   AppRegistry,
   NavigatorIOS,
