@@ -28,6 +28,11 @@ var TransformPropTypes = {
       ReactPropTypes.shape({translateY: ReactPropTypes.number})
     ])
   ),
+  transformOrigin: ReactPropTypes.shape({
+    x: ReactPropTypes.number,
+    y: ReactPropTypes.number,
+    z: ReactPropTypes.number,
+  }),
 
   /*
    * `transformMatrix` accepts a 4x4 matrix expressed as a row-major ordered
