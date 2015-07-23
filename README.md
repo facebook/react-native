@@ -1,11 +1,10 @@
 # React Native [![Build Status](https://travis-ci.org/facebook/react-native.svg?branch=master)](https://travis-ci.org/facebook/react-native)
 
-React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and
-[React](http://facebook.github.io/react). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.
+React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and [React](http://facebook.github.io/react). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.
 
 ## Native iOS Components
 
-With React Native, you can use the standard platform components such as `UITabBar` and `UINavigationController` on iOS.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as _TabBarIOS_ and _NavigatorIOS_.
+With React Native, you can use the standard platform components such as `UITabBar` and `UINavigationController` on iOS. This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as _TabBarIOS_ and _NavigatorIOS_.
 
 ```javascript
 var React = require('react-native');
@@ -24,9 +23,17 @@ var App = React.createClass({
 });
 ```
 
+## No need for App Store submits
+
+According to [Apple's latest guidelines regarding javascript](https://developer.apple.com/programs/ios/information) you may now download and run javascript from a remote server. 
+
+> 3.3.2 An Application may not download or install executable code. Interpreted code may only be used in an Application if all scripts, code and interpreters are packaged in the Application and not downloaded. The only exception to the foregoing is scripts and code downloaded and run by Apple's built-in WebKit framework or JavascriptCore, provided that such scripts and code do not change the primary purpose of the Application by providing features or functionality that are inconsistent with the intended and advertised purpose of the Application as submitted to the App Store.
+
+We've made an [app available on iTunes](https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8) which showcases this. 
+
 ## Asynchronous Execution
 
-All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.
+All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well. This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more. As a result, React Native apps are naturally fluid and responsive. The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.
 
 ![](http://facebook.github.io/react-native/img/chrome_breakpoint.png)
 
