@@ -53,7 +53,6 @@ var warning = require('warning');
  * },
  * ```
  */
-
 var Image = React.createClass({
   propTypes: {
     style: StyleSheetPropType(ImageStylePropTypes),
@@ -68,16 +67,20 @@ var Image = React.createClass({
     /**
      * A static image to display while downloading the final image off the
      * network.
+     * @platform ios
      */
     defaultSource: PropTypes.shape({
       uri: PropTypes.string,
     }),
     /**
-     * Whether this element should be revealed as an accessible element.
+     * When true, indicates the image is an accessibility element.
+     * @platform ios
      */
     accessible: PropTypes.bool,
     /**
-     * Custom string to display for accessibility.
+     * The text that's read by the screen reader when the user interacts with
+     * the image.
+     * @platform ios
      */
     accessibilityLabel: PropTypes.string,
     /**
@@ -86,6 +89,7 @@ var Image = React.createClass({
      * of the image will be stretched.  This is useful for creating resizable
      * rounded buttons, shadows, and other resizable assets.  More info on
      * [Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets)
+     * @platform ios
      */
     capInsets: EdgeInsetsPropType,
     /**
@@ -100,32 +104,32 @@ var Image = React.createClass({
     testID: PropTypes.string,
     /**
      * Invoked on mount and layout changes with
-     *
-     *   {nativeEvent: {layout: {x, y, width, height}}}.
+     * `{nativeEvent: {layout: {x, y, width, height}}}`.
      */
     onLayout: PropTypes.func,
     /**
      * Invoked on load start
+     * @platform ios
      */
     onLoadStart: PropTypes.func,
     /**
-     * Invoked on download progress with
-     *
-     *   {nativeEvent: {loaded, total}}.
+     * Invoked on download progress with `{nativeEvent: {loaded, total}}`
+     * @platform ios
      */
     onProgress: PropTypes.func,
     /**
-     * Invoked on load error
-     *
-     *   {nativeEvent: {error}}.
+     * Invoked on load error with `{nativeEvent: {error}}`
+     * @platform ios
      */
     onError: PropTypes.func,
     /**
      * Invoked when load completes successfully
+     * @platform ios
      */
     onLoad: PropTypes.func,
     /**
      * Invoked when load either succeeds or fails
+     * @platform ios
      */
     onLoadEnd: PropTypes.func,
   },
