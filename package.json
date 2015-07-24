@@ -71,7 +71,7 @@
     "underscore": "1.7.0",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
-    "ws": "0.4.31",
+    "ws": "^0.7.2",
     "yargs": "1.3.2"
   },
   "devDependencies": {
