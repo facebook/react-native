@@ -61,7 +61,7 @@
     "optimist": "0.6.1",
     "promise": "^7.0.3",
     "react-timer-mixin": "^0.13.1",
-    "react-tools": "0.13.2",
+    "react-tools": "git://github.com/facebook/react#b4e74e38e43ac53af8acd62c78c9213be0194245",
     "rebound": "^0.0.12",
     "sane": "^1.1.2",
     "semver": "^4.3.6",
