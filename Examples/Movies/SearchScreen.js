@@ -308,7 +308,7 @@ var NoMovies = React.createClass({
   render: function() {
     var text = '';
     if (this.props.filter) {
-      text = `No results for “${this.props.filter}”`;
+      text = `No results for "${this.props.filter}"`;
     } else if (!this.props.isLoading) {
       // If we're looking at the latest movies, aren't currently loading, and
       // still have no results, show a message
