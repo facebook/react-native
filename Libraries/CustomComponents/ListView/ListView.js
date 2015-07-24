@@ -252,6 +252,10 @@ var ListView = React.createClass({
     };
   },
 
+  getInnerViewNode: function() {
+    return this.refs[SCROLLVIEW_REF].getInnerViewNode();
+  },
+
   componentWillMount: function() {
     // this data should never trigger a render pass, so don't put in state
     this.scrollProperties = {

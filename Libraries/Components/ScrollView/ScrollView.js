@@ -286,19 +286,8 @@ var ScrollView = React.createClass({
   },
 
   scrollTo: function(destY?: number, destX?: number) {
-    if (Platform.OS === 'android') {
-      RCTUIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        RCTUIManager.RCTScrollView.Commands.scrollTo,
-        [destX || 0, destY || 0]
-      );
-    } else {
-      RCTUIManager.scrollTo(
-        React.findNodeHandle(this),
-        destX || 0,
-        destY || 0
-      );
-    }
+    // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
+    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
   },
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
