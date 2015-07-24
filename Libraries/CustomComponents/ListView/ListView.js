@@ -386,14 +386,13 @@ var ListView = React.createClass({
     Object.assign(props, {
       onScroll: this._onScroll,
       stickyHeaderIndices: sectionHeaderIndices,
-      children: [header, bodyComponents, footer],
     });
 
     // TODO(ide): Use function refs so we can compose with the scroll
     // component's original ref instead of clobbering it
     return React.cloneElement(renderScrollComponent(props), {
       ref: SCROLLVIEW_REF,
-    });
+    }, header, bodyComponents, footer);
   },
 
   /**

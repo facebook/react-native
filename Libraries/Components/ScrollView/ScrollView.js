@@ -309,6 +309,21 @@ var ScrollView = React.createClass({
     );
   },
 
+  handleScroll: function(e: Event) {
+    if (__DEV__) {
+      if (this.props.onScroll && !this.props.scrollEventThrottle) {
+        console.log(
+          'You specified `onScroll` on a <ScrollView> but not ' +
+          '`scrollEventThrottle`. You will only receive one event. ' +
+          'Using `16` you get all the events but be aware that it may ' +
+          'cause frame drops, use a bigger number if you don\'t need as ' +
+          'much precision.'
+        );
+      }
+    }
+    this.scrollResponderHandleScroll(e);
+  },
+
   render: function() {
     var contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
@@ -323,21 +338,6 @@ var ScrollView = React.createClass({
         'ScrollView child layout (' + JSON.stringify(childLayoutProps) +
           ') must by applied through the contentContainerStyle prop.'
       );
-    }
-    if (__DEV__) {
-      if (this.props.onScroll && !this.props.scrollEventThrottle) {
-        var onScroll = this.props.onScroll;
-        this.props.onScroll = function() {
-          console.log(
-            'You specified `onScroll` on a <ScrollView> but not ' +
-            '`scrollEventThrottle`. You will only receive one event. ' +
-            'Using `16` you get all the events but be aware that it may ' +
-            'cause frame drops, use a bigger number if you don\'t need as ' +
-            'much precision.'
-          );
-          onScroll.apply(this, arguments);
-        };
-      }
     }
 
     var contentContainer =
@@ -373,7 +373,7 @@ var ScrollView = React.createClass({
       onStartShouldSetResponder: this.scrollResponderHandleStartShouldSetResponder,
       onStartShouldSetResponderCapture: this.scrollResponderHandleStartShouldSetResponderCapture,
       onScrollShouldSetResponder: this.scrollResponderHandleScrollShouldSetResponder,
-      onScroll: this.scrollResponderHandleScroll,
+      onScroll: this.handleScroll,
       onResponderGrant: this.scrollResponderHandleResponderGrant,
       onResponderTerminationRequest: this.scrollResponderHandleTerminationRequest,
       onResponderTerminate: this.scrollResponderHandleTerminate,
