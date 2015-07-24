@@ -346,6 +346,10 @@ var TextInput = React.createClass({
     isInAParentText: React.PropTypes.bool
   },
 
+  clear: function() {
+    this.setNativeProps({text: ''});
+  },
+
   render: function() {
     if (Platform.OS === 'ios') {
       return this._renderIOS();

@@ -20,11 +20,9 @@ var StyleSheet = require('StyleSheet');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 
-var REACT_DEVTOOLS_HOOK: ?Object = typeof window !== 'undefined' ? window.__REACT_DEVTOOLS_GLOBAL_HOOK__ : null;
-
-if (REACT_DEVTOOLS_HOOK) {
+if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
   // required for devtools to be able to edit react native styles
-  REACT_DEVTOOLS_HOOK.resolveRNStyle = require('flattenStyle');
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.resolveRNStyle = require('flattenStyle');
 }
 
 class Inspector extends React.Component {
@@ -43,12 +41,12 @@ class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    if (REACT_DEVTOOLS_HOOK) {
+    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
       this.attachToDevtools = this.attachToDevtools.bind(this);
-      REACT_DEVTOOLS_HOOK.on('react-devtools', this.attachToDevtools);
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
       // if devtools is already started
-      if (REACT_DEVTOOLS_HOOK.reactDevtoolsAgent) {
-        this.attachToDevtools(REACT_DEVTOOLS_HOOK.reactDevtoolsAgent);
+      if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
+        this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
       }
     }
   }
@@ -57,8 +55,8 @@ class Inspector extends React.Component {
     if (this._subs) {
       this._subs.map(fn => fn());
     }
-    if (REACT_DEVTOOLS_HOOK) {
-      REACT_DEVTOOLS_HOOK.off('react-devtools', this.attachToDevtools);
+    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
     }
   }
 

@@ -118,19 +118,17 @@ static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvo
   NSString *name = [NSString stringWithFormat:@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(invocation.selector)];
   SEL newSel = RCTProfileProxySelector(invocation.selector);
 
-  RCTProfileLock(
-    if ([object_getClass(self) instancesRespondToSelector:newSel]) {
-      invocation.selector = newSel;
-      RCTProfileBeginEvent();
-      [invocation invoke];
-      RCTProfileEndEvent(name, @"objc_call,modules,auto", nil);
-    } else if ([self respondsToSelector:invocation.selector]) {
-      [invocation invoke];
-    } else {
-      // Use original selector to don't change error message
-      [self doesNotRecognizeSelector:invocation.selector];
-    }
-  );
+  if ([object_getClass(self) instancesRespondToSelector:newSel]) {
+    invocation.selector = newSel;
+    RCTProfileBeginEvent();
+    [invocation invoke];
+    RCTProfileEndEvent(name, @"objc_call,modules,auto", nil);
+  } else if ([self respondsToSelector:invocation.selector]) {
+    [invocation invoke];
+  } else {
+    // Use original selector to don't change error message
+    [self doesNotRecognizeSelector:invocation.selector];
+  }
 }
 
 static IMP RCTProfileMsgForward(NSObject *, SEL);
@@ -192,15 +190,13 @@ void RCTProfileHookModules(RCTBridge *bridge)
 
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
-  RCTProfileLock(
-    for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
-      Class proxyClass = object_getClass(moduleData.instance);
-      if (moduleData.cls != proxyClass) {
-        object_setClass(moduleData.instance, moduleData.cls);
-        objc_disposeClassPair(proxyClass);
-      }
-    };
-  );
+  for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
+    Class proxyClass = object_getClass(moduleData.instance);
+    if (moduleData.cls != proxyClass) {
+      object_setClass(moduleData.instance, moduleData.cls);
+      objc_disposeClassPair(proxyClass);
+    }
+  };
 }
 
 

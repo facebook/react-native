@@ -262,6 +262,7 @@ var SearchScreen = React.createClass({
   ) {
     return (
       <MovieCell
+        key={movie.id}
         onSelect={() => this.selectMovie(movie)}
         onHighlight={() => highlightRowFunc(sectionID, rowID)}
         onUnhighlight={() => highlightRowFunc(null, null)}

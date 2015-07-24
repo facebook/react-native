@@ -85,6 +85,11 @@ function installConsoleErrorReporter() {
       return;
     }
     var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+    if (str.slice(0, 10) === '"Warning: ') {
+      // React warnings use console.error so that a stack trace is shown, but
+      // we don't (currently) want these to show a redbox
+      return;
+    }
     var error: any = new Error('console.error: ' + str);
     error.framesToPop = 1;
     reportException(error, /* isFatal */ false);
