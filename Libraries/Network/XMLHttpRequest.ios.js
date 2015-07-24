@@ -102,17 +102,19 @@ class XMLHttpRequest extends XMLHttpRequestBase {
   }
 
   sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+    var body;
     if (typeof data === 'string') {
-      data = {string: data};
-    }
-    if (data instanceof FormData) {
-      data = {formData: data.getParts()};
+      body = {string: data};
+    } else if (data instanceof FormData) {
+      body = {formData: data.getParts()};
+    } else {
+      body = data;
     }
     RCTNetworking.sendRequest(
       {
         method,
         url,
-        data,
+        body,
         headers,
         incrementalUpdates: this.onreadystatechange ? true : false,
       },
