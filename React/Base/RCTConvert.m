@@ -1075,24 +1075,64 @@ BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json)
   }
 
   @try {
-    // Get converted value
+
     NSMethodSignature *signature = [RCTConvert methodSignatureForSelector:type];
-    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-    [invocation setArgument:&type atIndex:1];
-    [invocation setArgument:&json atIndex:2];
-    [invocation invokeWithTarget:[RCTConvert class]];
-    NSUInteger length = [signature methodReturnLength];
-    void *value = malloc(length);
-    [invocation getReturnValue:value];
+    switch (signature.methodReturnType[0]) {
 
-    // Set converted value
-    signature = [target methodSignatureForSelector:setter];
-    invocation = [NSInvocation invocationWithMethodSignature:signature];
-    [invocation setArgument:&setter atIndex:1];
-    [invocation setArgument:value atIndex:2];
-    [invocation invokeWithTarget:target];
-    free(value);
+#define RCT_SET_CASE(_value, _type) \
+      case _value: { \
+        _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
+        void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
+        set(target, setter, convert([RCTConvert class], type, json)); \
+        break; \
+      }
 
+        RCT_SET_CASE(':', SEL)
+        RCT_SET_CASE('*', const char *)
+        RCT_SET_CASE('c', char)
+        RCT_SET_CASE('C', unsigned char)
+        RCT_SET_CASE('s', short)
+        RCT_SET_CASE('S', unsigned short)
+        RCT_SET_CASE('i', int)
+        RCT_SET_CASE('I', unsigned int)
+        RCT_SET_CASE('l', long)
+        RCT_SET_CASE('L', unsigned long)
+        RCT_SET_CASE('q', long long)
+        RCT_SET_CASE('Q', unsigned long long)
+        RCT_SET_CASE('f', float)
+        RCT_SET_CASE('d', double)
+        RCT_SET_CASE('B', BOOL)
+        RCT_SET_CASE('^', void *)
+
+      case '@': {
+        id (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;
+        void (*set)(id, SEL, id) = (typeof(set))objc_msgSend;
+        set(target, setter, convert([RCTConvert class], type, json));
+        break;
+      }
+      case '{':
+      default: {
+
+        // Get converted value
+        void *value = malloc(signature.methodReturnLength);
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+        [invocation setTarget:[RCTConvert class]];
+        [invocation setSelector:type];
+        [invocation setArgument:&json atIndex:2];
+        [invocation invoke];
+        [invocation getReturnValue:value];
+
+        // Set converted value
+        signature = [target methodSignatureForSelector:setter];
+        invocation = [NSInvocation invocationWithMethodSignature:signature];
+        [invocation setArgument:&setter atIndex:1];
+        [invocation setArgument:value atIndex:2];
+        [invocation invokeWithTarget:target];
+        free(value);
+
+        break;
+      }
+    }
     return YES;
   }
   @catch (NSException *exception) {
@@ -1128,22 +1168,60 @@ BOOL RCTCopyProperty(id target, id source, NSString *keyPath)
     return NO;
   }
 
-  // Get value
   NSMethodSignature *signature = [source methodSignatureForSelector:getter];
-  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-  [invocation setArgument:&getter atIndex:1];
-  [invocation invokeWithTarget:source];
-  NSUInteger length = [signature methodReturnLength];
-  void *value = malloc(length);
-  [invocation getReturnValue:value];
+  switch (signature.methodReturnType[0]) {
 
-  // Set value
-  signature = [target methodSignatureForSelector:setter];
-  invocation = [NSInvocation invocationWithMethodSignature:signature];
-  [invocation setArgument:&setter atIndex:1];
-  [invocation setArgument:value atIndex:2];
-  [invocation invokeWithTarget:target];
-  free(value);
+#define RCT_COPY_CASE(_value, _type) \
+    case _value: { \
+      _type (*get)(id, SEL) = (typeof(get))objc_msgSend; \
+      void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
+      set(target, setter, get(source, getter)); \
+      break; \
+    }
 
+      RCT_COPY_CASE(':', SEL)
+      RCT_COPY_CASE('*', const char *)
+      RCT_COPY_CASE('c', char)
+      RCT_COPY_CASE('C', unsigned char)
+      RCT_COPY_CASE('s', short)
+      RCT_COPY_CASE('S', unsigned short)
+      RCT_COPY_CASE('i', int)
+      RCT_COPY_CASE('I', unsigned int)
+      RCT_COPY_CASE('l', long)
+      RCT_COPY_CASE('L', unsigned long)
+      RCT_COPY_CASE('q', long long)
+      RCT_COPY_CASE('Q', unsigned long long)
+      RCT_COPY_CASE('f', float)
+      RCT_COPY_CASE('d', double)
+      RCT_COPY_CASE('B', BOOL)
+      RCT_COPY_CASE('^', void *)
+
+    case '@': {
+      id (*get)(id, SEL) = (typeof(get))objc_msgSend;
+      void (*set)(id, SEL, id) = (typeof(set))objc_msgSend;
+      set(target, setter, get(source, getter));
+      break;
+    }
+    case '{':
+    default: {
+
+      // Get value
+      void *value = malloc(signature.methodReturnLength);
+      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+      [invocation setArgument:&getter atIndex:1];
+      [invocation invokeWithTarget:source];
+      [invocation getReturnValue:value];
+
+      // Set value
+      signature = [target methodSignatureForSelector:setter];
+      invocation = [NSInvocation invocationWithMethodSignature:signature];
+      [invocation setArgument:&setter atIndex:1];
+      [invocation setArgument:value atIndex:2];
+      [invocation invokeWithTarget:target];
+      free(value);
+
+      break;
+    }
+  }
   return YES;
 }

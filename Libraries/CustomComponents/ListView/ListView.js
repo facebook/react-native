@@ -252,6 +252,10 @@ var ListView = React.createClass({
     };
   },
 
+  getInnerViewNode: function() {
+    return this.refs[SCROLLVIEW_REF].getInnerViewNode();
+  },
+
   componentWillMount: function() {
     // this data should never trigger a render pass, so don't put in state
     this.scrollProperties = {
@@ -386,14 +390,13 @@ var ListView = React.createClass({
     Object.assign(props, {
       onScroll: this._onScroll,
       stickyHeaderIndices: sectionHeaderIndices,
-      children: [header, bodyComponents, footer],
     });
 
     // TODO(ide): Use function refs so we can compose with the scroll
     // component's original ref instead of clobbering it
     return React.cloneElement(renderScrollComponent(props), {
       ref: SCROLLVIEW_REF,
-    });
+    }, header, bodyComponents, footer);
   },
 
   /**

@@ -91,7 +91,7 @@ RCT_NOT_IMPLEMENTED(-init)
   [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) { \
     _logic \
     [invocation setArgument:&value atIndex:index]; \
-  }]; \
+  }];
 
     void (^addBlockArgument)(void) = ^{
       RCT_ARG_BLOCK(
