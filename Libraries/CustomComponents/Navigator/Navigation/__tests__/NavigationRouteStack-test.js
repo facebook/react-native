@@ -201,7 +201,7 @@ describe('NavigationRouteStack:', () => {
 
     expect(stack2).not.toBe(stack1);
     expect(stack2.toArray()).toEqual(['x', 'b']);
-    expect(stack2.index).toBe(1);
+    expect(stack2.index).toBe(0);
   });
 
   it('replaces route at negative index', () => {
