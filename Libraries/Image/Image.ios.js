@@ -26,7 +26,6 @@ var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
 
 /**
@@ -150,6 +149,12 @@ var Image = React.createClass({
   },
 
   render: function() {
+    for (var prop in cfg.nativeOnly) {
+      if (this.props[prop] !== undefined) {
+        console.warn('Prop `' + prop + ' = ' + this.props[prop] + '` should ' +
+          'not be set directly on Image.');
+      }
+    }
     var source = resolveAssetSource(this.props.source) || {};
     var defaultSource = (this.props.defaultSource && resolveAssetSource(this.props.defaultSource)) || {};
 
@@ -180,7 +185,15 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTImageView = requireNativeComponent('RCTImageView', null);
-var RCTNetworkImageView = (NativeModules.NetworkImageViewManager) ? requireNativeComponent('RCTNetworkImageView', null) : RCTImageView;
+var cfg = {
+  nativeOnly: {
+    src: true,
+    defaultImageSrc: true,
+    imageTag: true,
+    progressHandlerRegistered: true,
+  },
+};
+var RCTImageView = requireNativeComponent('RCTImageView', Image, cfg);
+var RCTNetworkImageView = (NativeModules.NetworkImageViewManager) ? requireNativeComponent('RCTNetworkImageView', Image, cfg) : RCTImageView;
 
 module.exports = Image;
