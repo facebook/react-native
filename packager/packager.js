@@ -245,11 +245,17 @@ function getAppMiddleware(options) {
   });
 }
 
+function cors(req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+}
+
 function runServer(
   options,
   readyCallback
 ) {
   var app = connect()
+    .use(cors)
     .use(loadRawBody)
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
