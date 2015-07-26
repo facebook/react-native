@@ -119,6 +119,9 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
   code
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
+    .replace(replacePatterns.REQUIRE_IGNORE_RE, function(match) {
+      return match.indexOf('window') > -1 ||  match.indexOf('global') > -1 ? match : '';
+    })
     .replace(replacePatterns.IMPORT_RE, (match, pre, quot, dep, post) => {
       deps.push(dep);
       return match;
