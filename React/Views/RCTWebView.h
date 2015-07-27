@@ -19,6 +19,7 @@ extern NSString *const RCTJSNavigationScheme;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, strong) NSDictionary *schemes;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
