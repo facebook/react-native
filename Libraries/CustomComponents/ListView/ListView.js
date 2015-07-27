@@ -390,6 +390,13 @@ var ListView = React.createClass({
     Object.assign(props, {
       onScroll: this._onScroll,
       stickyHeaderIndices: sectionHeaderIndices,
+
+      // Do not pass these events downstream to ScrollView since they will be
+      // registered in ListView's own ScrollResponder.Mixin
+      onKeyboardWillShow: undefined,
+      onKeyboardWillHide: undefined,
+      onKeyboardDidShow: undefined,
+      onKeyboardDidHide: undefined,
     });
 
     // TODO(ide): Use function refs so we can compose with the scroll
