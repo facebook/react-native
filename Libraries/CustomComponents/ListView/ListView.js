@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -252,6 +252,10 @@ var ListView = React.createClass({
     };
   },
 
+  getInnerViewNode: function() {
+    return this.refs[SCROLLVIEW_REF].getInnerViewNode();
+  },
+
   componentWillMount: function() {
     // this data should never trigger a render pass, so don't put in state
     this.scrollProperties = {
@@ -386,14 +390,20 @@ var ListView = React.createClass({
     Object.assign(props, {
       onScroll: this._onScroll,
       stickyHeaderIndices: sectionHeaderIndices,
-      children: [header, bodyComponents, footer],
+
+      // Do not pass these events downstream to ScrollView since they will be
+      // registered in ListView's own ScrollResponder.Mixin
+      onKeyboardWillShow: undefined,
+      onKeyboardWillHide: undefined,
+      onKeyboardDidShow: undefined,
+      onKeyboardDidHide: undefined,
     });
 
     // TODO(ide): Use function refs so we can compose with the scroll
     // component's original ref instead of clobbering it
     return React.cloneElement(renderScrollComponent(props), {
       ref: SCROLLVIEW_REF,
-    });
+    }, header, bodyComponents, footer);
   },
 
   /**

@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -56,8 +56,9 @@ var PropTypes = React.PropTypes;
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
 var SCENE_DISABLED_NATIVE_PROPS = {
+  pointerEvents: 'none',
   style: {
-    left: SCREEN_WIDTH,
+    top: SCREEN_HEIGHT,
     opacity: 0,
   },
 };
@@ -107,7 +108,7 @@ var styles = StyleSheet.create({
     top: 0,
   },
   disabledScene: {
-    left: SCREEN_WIDTH,
+    top: SCREEN_HEIGHT,
   },
   transitioner: {
     flex: 1,
@@ -529,15 +530,18 @@ var Navigator = React.createClass({
   _enableScene: function(sceneIndex) {
     // First, determine what the defined styles are for scenes in this navigator
     var sceneStyle = flattenStyle([styles.baseScene, this.props.sceneStyle]);
-    // Then restore the left value for this scene
+    // Then restore the pointer events and top value for this scene
     var enabledSceneNativeProps = {
-      left: sceneStyle.left,
+      pointerEvents: 'auto',
+      style: {
+        top: sceneStyle.top,
+      },
     };
     if (sceneIndex !== this.state.transitionFromIndex &&
         sceneIndex !== this.state.presentedIndex) {
       // If we are not in a transition from this index, make sure opacity is 0
       // to prevent the enabled scene from flashing over the presented scene
-      enabledSceneNativeProps.opacity = 0;
+      enabledSceneNativeProps.style.opacity = 0;
     }
     this.refs['scene_' + sceneIndex] &&
       this.refs['scene_' + sceneIndex].setNativeProps(enabledSceneNativeProps);
@@ -1021,8 +1025,10 @@ var Navigator = React.createClass({
 
   _renderScene: function(route, i) {
     var disabledSceneStyle = null;
+    var disabledScenePointerEvents = 'auto';
     if (i !== this.state.presentedIndex) {
       disabledSceneStyle = styles.disabledScene;
+      disabledScenePointerEvents = 'none';
     }
     return (
       <View
@@ -1031,6 +1037,7 @@ var Navigator = React.createClass({
         onStartShouldSetResponderCapture={() => {
           return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
         }}
+        pointerEvents={disabledScenePointerEvents}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
         {this.props.renderScene(
           route,

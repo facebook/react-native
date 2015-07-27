@@ -358,13 +358,17 @@ Server.prototype.processRequest = function(req, res, next) {
   building.then(
     function(p) {
       if (requestType === 'bundle') {
-        res.end(p.getSource({
+        var bundleSource = p.getSource({
           inlineSourceMap: options.inlineSourceMap,
           minify: options.minify,
-        }));
+        });
+        res.setHeader('Content-Type', 'application/javascript');
+        res.end(bundleSource);
         Activity.endEvent(startReqEventId);
       } else if (requestType === 'map') {
-        res.end(JSON.stringify(p.getSourceMap()));
+        var sourceMap = JSON.stringify(p.getSourceMap());
+        res.setHeader('Content-Type', 'application/json');
+        res.end(sourceMap);
         Activity.endEvent(startReqEventId);
       }
     },
