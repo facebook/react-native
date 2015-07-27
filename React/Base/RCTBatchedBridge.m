@@ -282,7 +282,14 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
         return;
       }
 
-      [[RCTRedBox sharedInstance] dismiss];
+      static BOOL shouldDismiss = NO;
+      if (shouldDismiss) {
+        [[RCTRedBox sharedInstance] dismiss];
+      }
+      static dispatch_once_t onceToken;
+      dispatch_once(&onceToken, ^{
+        shouldDismiss = YES;
+      });
 
       RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
       sourceCodeModule.scriptURL = bundleURL;
