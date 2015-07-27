@@ -4,7 +4,7 @@ title: Direct Manipulation
 layout: docs
 category: Guides
 permalink: docs/direct-manipulation.html
-next: linking-libraries
+next: linking-libraries-ios
 ---
 
 It is sometimes necessary to make changes directly to a component

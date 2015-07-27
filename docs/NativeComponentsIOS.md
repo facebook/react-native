@@ -1,9 +1,9 @@
 ---
-id: nativecomponentsios
+id: native-components-ios
 title: Native UI Components (iOS)
 layout: docs
 category: Guides
-permalink: docs/nativecomponentsios.html
+permalink: docs/native-components-ios.html
 next: direct-manipulation
 ---
 
