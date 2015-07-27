@@ -12,36 +12,33 @@
 
 #import <objc/runtime.h>
 
-static void *const RCTDownloadTaskWrapperCompletionBlockKey = (void *)&RCTDownloadTaskWrapperCompletionBlockKey;
-static void *const RCTDownloadTaskWrapperProgressBlockKey = (void *)&RCTDownloadTaskWrapperProgressBlockKey;
+@interface NSObject (RCTDownloadTaskWrapper)
 
-@interface NSURLSessionTask (RCTDownloadTaskWrapper)
-
-@property (nonatomic, copy, setter=rct_setCompletionBlock:) RCTDataCompletionBlock rct_completionBlock;
-@property (nonatomic, copy, setter=rct_setProgressBlock:) RCTDataProgressBlock rct_progressBlock;
+@property (nonatomic, copy) RCTDataCompletionBlock reactCompletionBlock;
+@property (nonatomic, copy) RCTDataProgressBlock reactProgressBlock;
 
 @end
 
-@implementation NSURLSessionTask (RCTDownloadTaskWrapper)
+@implementation NSObject (RCTDownloadTaskWrapper)
 
-- (RCTDataCompletionBlock)rct_completionBlock
+- (RCTDataCompletionBlock)reactCompletionBlock
 {
-  return objc_getAssociatedObject(self, RCTDownloadTaskWrapperCompletionBlockKey);
+  return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)rct_setCompletionBlock:(RCTDataCompletionBlock)completionBlock
+- (void)setReactCompletionBlock:(RCTDataCompletionBlock)completionBlock
 {
-  objc_setAssociatedObject(self, RCTDownloadTaskWrapperCompletionBlockKey, completionBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+  objc_setAssociatedObject(self, @selector(reactCompletionBlock), completionBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (RCTDataProgressBlock)rct_progressBlock
+- (RCTDataProgressBlock)reactProgressBlock
 {
-  return objc_getAssociatedObject(self, RCTDownloadTaskWrapperProgressBlockKey);
+  return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)rct_setProgressBlock:(RCTDataProgressBlock)progressBlock
+- (void)setReactProgressBlock:(RCTDataProgressBlock)progressBlock
 {
-  objc_setAssociatedObject(self, RCTDownloadTaskWrapperProgressBlockKey, progressBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+  objc_setAssociatedObject(self, @selector(reactProgressBlock), progressBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 @end
@@ -63,9 +60,8 @@ static void *const RCTDownloadTaskWrapperProgressBlockKey = (void *)&RCTDownload
 - (NSURLSessionDownloadTask *)downloadData:(NSURL *)url progressBlock:(RCTDataProgressBlock)progressBlock completionBlock:(RCTDataCompletionBlock)completionBlock
 {
   NSURLSessionDownloadTask *task = [_URLSession downloadTaskWithURL:url];
-  task.rct_completionBlock = completionBlock;
-  task.rct_progressBlock = progressBlock;
-
+  task.reactCompletionBlock = completionBlock;
+  task.reactProgressBlock = progressBlock;
   return task;
 }
 
@@ -73,28 +69,28 @@ static void *const RCTDownloadTaskWrapperProgressBlockKey = (void *)&RCTDownload
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
-  if (downloadTask.rct_completionBlock) {
+  if (downloadTask.reactCompletionBlock) {
     NSData *data = [NSData dataWithContentsOfURL:location];
     dispatch_async(dispatch_get_main_queue(), ^{
-      downloadTask.rct_completionBlock(downloadTask.response, data, nil);
+      downloadTask.reactCompletionBlock(downloadTask.response, data, nil);
     });
   }
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)didWriteData totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite;
 {
-  if (downloadTask.rct_progressBlock) {
+  if (downloadTask.reactProgressBlock) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      downloadTask.rct_progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
+      downloadTask.reactProgressBlock(totalBytesWritten, totalBytesExpectedToWrite);
     });
   }
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-  if (error && task.rct_completionBlock) {
+  if (error && task.reactCompletionBlock) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      task.rct_completionBlock(nil, nil, error);
+      task.reactCompletionBlock(nil, nil, error);
     });
   }
 }
