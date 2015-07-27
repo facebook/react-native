@@ -148,7 +148,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
 {
   for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
     [moduleData dispatchBlock:^{
-      Class moduleClass = moduleData.cls;
+      Class moduleClass = moduleData.moduleClass;
       Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
 
       if (!proxyClass) {
@@ -192,8 +192,8 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 {
   for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
     Class proxyClass = object_getClass(moduleData.instance);
-    if (moduleData.cls != proxyClass) {
-      object_setClass(moduleData.instance, moduleData.cls);
+    if (moduleData.moduleClass != proxyClass) {
+      object_setClass(moduleData.instance, moduleData.moduleClass);
       objc_disposeClassPair(proxyClass);
     }
   };
