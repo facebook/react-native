@@ -48,26 +48,21 @@ static dispatch_queue_t RCTImageLoaderQueue(void)
 }
 
 @implementation RCTImageLoader
-
-+ (ALAssetsLibrary *)assetsLibrary
 {
-  static ALAssetsLibrary *assetsLibrary = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    assetsLibrary = [[ALAssetsLibrary alloc] init];
-  });
-  return assetsLibrary;
+  ALAssetsLibrary *_assetsLibrary;
 }
 
-+ (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                             bridge:(RCTBridge *)bridge
+@synthesize bridge = _bridge;
+
+RCT_EXPORT_MODULE()
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                            callback:(RCTImageLoaderCompletionBlock)callback
 {
   return [self loadImageWithTag:imageTag
                            size:CGSizeZero
                           scale:0
                      resizeMode:UIViewContentModeScaleToFill
-                         bridge:bridge
                   progressBlock:nil
                 completionBlock:callback];
 }
@@ -116,11 +111,18 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
   return nil;
 }
 
-+ (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+- (ALAssetsLibrary *)assetsLibrary
+{
+  if (!_assetsLibrary) {
+    _assetsLibrary = [[ALAssetsLibrary alloc] init];
+  }
+  return _assetsLibrary;
+}
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(UIViewContentMode)resizeMode
-                                             bridge:(RCTBridge *)bridge
                                       progressBlock:(RCTImageLoaderProgressBlock)progress
                                     completionBlock:(RCTImageLoaderCompletionBlock)completion
 {
@@ -229,7 +231,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
       }];
     }
   } else if ([imageTag hasPrefix:@"rct-image-store://"]) {
-    [bridge.imageStoreManager getImageForTag:imageTag withBlock:^(UIImage *image) {
+    [_bridge.imageStoreManager getImageForTag:imageTag withBlock:^(UIImage *image) {
       if (image) {
         RCTDispatchCallbackOnMainQueue(completion, nil, image);
       } else {
@@ -270,6 +272,20 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 + (BOOL)isRemoteImage:(NSString *)imageTag
 {
   return [imageTag hasPrefix:@"http://"] || [imageTag hasPrefix:@"https://"];
+}
+
+@end
+
+@implementation RCTBridge (RCTImageLoader)
+
+- (RCTImageLoader *)imageLoader
+{
+  return self.modules[RCTBridgeModuleNameForClass([RCTImageLoader class])];
+}
+
+- (ALAssetsLibrary *)assetsLibrary
+{
+  return [self.imageLoader assetsLibrary];
 }
 
 @end

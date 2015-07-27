@@ -411,7 +411,7 @@ exports.examples = [
             style={styles.multiline}
           />
           <TextInput
-            placeholder="mutliline text input with font styles and placeholder"
+            placeholder="multiline text input with font styles and placeholder"
             multiline={true}
             clearTextOnFocus={true}
             autoCorrect={true}
@@ -421,7 +421,7 @@ exports.examples = [
             style={[styles.multiline, styles.multilineWithFontStyles]}
           />
           <TextInput
-            placeholder="uneditable mutliline text input"
+            placeholder="uneditable multiline text input"
             editable={false}
             multiline={true}
             style={styles.multiline}

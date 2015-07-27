@@ -15,17 +15,14 @@ var EventEmitter = require('EventEmitter');
 var Image = require('Image');
 var NavigationContext = require('NavigationContext');
 var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
 
-var createReactNativeComponentClass =
-  require('createReactNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 var invariant = require('invariant');
 var logError = require('logError');
-var merge = require('merge');
 
 var TRANSITIONER_REF = 'transitionerRef';
 
@@ -35,37 +32,6 @@ var __uid = 0;
 function getuid() {
   return __uid++;
 }
-
-var RCTNavigator = createReactNativeComponentClass({
-  validAttributes: merge(ReactNativeViewAttributes.UIView, {
-    requestedTopOfStack: true
-  }),
-  uiViewClassName: 'RCTNavigator',
-});
-
-var RCTNavigatorItem = createReactNativeComponentClass({
-  validAttributes: {
-    // TODO: Remove or fix the attributes that are not fully functional.
-    //  NavigatorIOS does not use them all, because some are problematic
-    title: true,
-    barTintColor: true,
-    leftButtonIcon: true,
-    leftButtonTitle: true,
-    onNavLeftButtonTap: true,
-    rightButtonIcon: true,
-    rightButtonTitle: true,
-    onNavRightButtonTap: true,
-    backButtonIcon: true,
-    backButtonTitle: true,
-    tintColor: true,
-    translucent: true,
-    navigationBarHidden: true,
-    shadowHidden: true,
-    titleTextColor: true,
-    style: true,
-  },
-  uiViewClassName: 'RCTNavItem',
-});
 
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
@@ -710,5 +676,8 @@ var styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+var RCTNavigator = requireNativeComponent('RCTNavigator');
+var RCTNavigatorItem = requireNativeComponent('RCTNavItem');
 
 module.exports = NavigatorIOS;

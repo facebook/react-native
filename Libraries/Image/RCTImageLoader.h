@@ -9,37 +9,31 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTBridge.h"
+
 @class ALAssetsLibrary;
-@class RCTBridge;
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t written, int64_t total);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id /* UIImage or CAAnimation */);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* UIImage or CAAnimation */);
 typedef void (^RCTImageLoaderCancellationBlock)(void);
 
-@interface RCTImageLoader : NSObject
+@interface RCTImageLoader : NSObject <RCTBridgeModule>
 
 /**
- * The shared asset library instance.
+ * Loads the specified image at the highest available resolution.
+ * Can be called from any thread, will always call callback on main thread.
  */
-+ (ALAssetsLibrary *)assetsLibrary;
-
-/**
- * Can be called from any thread.
- * Will always call callback on main thread.
- */
-+ (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                             bridge:(RCTBridge *)bridge
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                            callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
  * As above, but includes target size, scale and resizeMode, which are used to
  * select the optimal dimensions for the loaded image.
  */
-+ (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(UIViewContentMode)resizeMode
-                                             bridge:(RCTBridge *)bridge
                                       progressBlock:(RCTImageLoaderProgressBlock)progress
                                     completionBlock:(RCTImageLoaderCompletionBlock)completion;
 
@@ -52,5 +46,19 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Is the specified image tag a remote image?
  */
 + (BOOL)isRemoteImage:(NSString *)imageTag;
+
+@end
+
+@interface RCTBridge (RCTImageLoader)
+
+/**
+ * The shared image loader instance
+ */
+@property (nonatomic, readonly) RCTImageLoader *imageLoader;
+
+/**
+ * The shared asset library instance.
+ */
+@property (nonatomic, readonly) ALAssetsLibrary *assetsLibrary;
 
 @end

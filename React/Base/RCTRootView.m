@@ -169,8 +169,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     }
 
     [_contentView removeFromSuperview];
-    _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
-                                                      bridge:bridge];
+    _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
     _contentView.backgroundColor = self.backgroundColor;
     [self insertSubview:_contentView atIndex:0];
 

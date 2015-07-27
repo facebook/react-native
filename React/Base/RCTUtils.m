@@ -386,7 +386,7 @@ NSData *RCTGzipData(NSData *input, float level)
     return input;
   }
 
-  void *libz = dlopen("libz.dylib", RTLD_NOW);
+  void *libz = dlopen("/usr/lib/libz.dylib", RTLD_LAZY);
   int (*deflateInit2_)(z_streamp, int, int, int, int, int, const char *, int) = dlsym(libz, "deflateInit2_");
   int (*deflate)(z_streamp, int) = dlsym(libz, "deflate");
   int (*deflateEnd)(z_streamp) = dlsym(libz, "deflateEnd");
