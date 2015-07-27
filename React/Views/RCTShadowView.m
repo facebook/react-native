@@ -86,9 +86,44 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   : 0;
 }
 
+/*
+ * Sets the measure function on the cssNode, when the
+ * aspectRatio rectangle is set. This helps calculate
+ * the height of the node based on width of parent and
+ * maintains the aspect ratio of the node.
+ */
+static css_dim_t RCTAspectRatioMeasure(void *context, float width)
+{
+  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
+  if (isnan(width)) {
+    width = shadowView.aspectRatio.width;
+  }
+  
+  CGFloat computedHeight = 0.0f;
+  if (shadowView.aspectRatio.width > 0) {
+    computedHeight = width * (shadowView.aspectRatio.height / shadowView.aspectRatio.width);
+  }
+  
+  css_dim_t result;
+  result.dimensions[CSS_WIDTH] = width;
+  result.dimensions[CSS_HEIGHT] = computedHeight;
+  return result;
+}
+
 - (void)fillCSSNode:(css_node_t *)node
 {
   node->children_count = (int)_reactSubviews.count;
+}
+
+// Aspect Ratio
+- (void)setAspectRatio:(CGSize)aspectRatio {
+  _aspectRatio = aspectRatio;
+  if (aspectRatio.width && aspectRatio.height) {
+    self.cssNode->measure = RCTAspectRatioMeasure;
+  } else {
+    self.cssNode->measure = nil;
+  }
+  [self dirtyLayout];
 }
 
 // The absolute stuff is so that we can take into account our absolute position when rounding in order to

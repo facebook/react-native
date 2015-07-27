@@ -112,6 +112,12 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 @property (nonatomic, assign) CGFloat flex;
 
 /**
+ * Makes the box rigid, and sizes itself in flex with the
+ * defined aspect ratio of the CGSize rectangle.
+ */
+@property (nonatomic, assign) CGSize aspectRatio;
+
+/**
  * Calculate property changes that need to be propagated to the view.
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
  * on the main thread in order to update the view.

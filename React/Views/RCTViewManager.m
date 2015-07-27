@@ -275,4 +275,14 @@ RCT_REMAP_SHADOW_PROPERTY(position, positionType, css_position_type_t)
 
 RCT_REMAP_SHADOW_PROPERTY(onLayout, hasOnLayout, BOOL)
 
+RCT_CUSTOM_SHADOW_PROPERTY(aspectRatio, CGSize, RCTShadowView) {
+  if ([view respondsToSelector:@selector(setAspectRatio:)]) {
+    if ([json isKindOfClass:NSDictionary.class]) {
+      [view setAspectRatio:[RCTConvert CGSize:json]];
+    } else {
+      [view setAspectRatio:CGSizeMake([RCTConvert CGFloat:json], 1.0f)];
+    }
+  }
+}
+
 @end

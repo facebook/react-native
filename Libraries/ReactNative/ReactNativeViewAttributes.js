@@ -35,6 +35,12 @@ ReactNativeViewAttributes.RCTView = merge(
   // many subviews that extend outside its bound. The subviews must also have
   // overflow: hidden, as should the containing view (or one of its superviews).
   removeClippedSubviews: true,
+
+  // This property makes the view resize in the same aspect ratio as the 
+  // `aspectRatio` rectangle. As the width changes due to flex layout,
+  // the height will change in proportion with same aspect ratio.
+  aspectRatio: true,
+
 });
 
 module.exports = ReactNativeViewAttributes;

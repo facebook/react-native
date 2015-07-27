@@ -183,6 +183,21 @@ var View = React.createClass({
     style: stylePropType,
 
     /**
+     * Makes the view resize in a fixed `aspectRatio` as the prop. It can be
+     * a number or a rectangle. As the width changes due to flex layout,
+     * the height will change in proportion with same aspect ratio. Use this
+     * to wrap images and other components, where you would like the aspect
+     * ratio to be maintained.
+     */
+    aspectRatio: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.shape({
+        width: PropTypes.number,
+        height: PropTypes.number,
+      }),
+    ]),
+
+    /**
      * This is a special performance property exposed by RCTView and is useful
      * for scrolling content when there are many subviews, most of which are
      * offscreen. For this property to be effective, it must be applied to a
