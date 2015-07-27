@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.requires_arc        = true
   s.platform            = :ios, "7.0"
   s.prepare_command     = 'npm install --production'
-  s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
+  s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli", "local-cli"
   s.header_mappings_dir = "."
 
   s.subspec 'Core' do |ss|
