@@ -103,6 +103,7 @@
       _highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
       [self.layer addSublayer:_highlightLayer];
     }
+    _highlightLayer.position = (CGPoint){_contentInset.left, _contentInset.top};
     _highlightLayer.path = highlightPath.CGPath;
   } else {
     [_highlightLayer removeFromSuperlayer];
