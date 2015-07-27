@@ -29,12 +29,12 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
                   successCallback:(RCTResponseSenderBlock)successCallback
                   errorCallback:(RCTResponseErrorBlock)errorCallback)
 {
-  [RCTImageLoader loadImageWithTag:imageTag bridge:_bridge callback:^(NSError *loadError, UIImage *loadedImage) {
+  [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
     if (loadError) {
       errorCallback(loadError);
       return;
     }
-    [[RCTImageLoader assetsLibrary] writeImageToSavedPhotosAlbum:[loadedImage CGImage] metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
+    [_bridge.assetsLibrary writeImageToSavedPhotosAlbum:[loadedImage CGImage] metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
       if (saveError) {
         RCTLogWarn(@"Error saving cropped image: %@", saveError);
         errorCallback(saveError);
@@ -96,7 +96,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   BOOL __block calledCallback = NO;
   NSMutableArray *assets = [[NSMutableArray alloc] init];
 
-  [[RCTImageLoader assetsLibrary] enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
+  [_bridge.assetsLibrary enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
     if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:ALAssetsGroupPropertyName]])) {
 
       if (assetType == nil || [assetType isEqualToString:@"Photos"]) {

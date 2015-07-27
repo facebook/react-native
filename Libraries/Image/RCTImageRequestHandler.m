@@ -15,9 +15,6 @@
 #import "RCTUtils.h"
 
 @implementation RCTImageRequestHandler
-{
-  NSInteger _currentToken;
-}
 
 RCT_EXPORT_MODULE()
 
@@ -31,9 +28,10 @@ RCT_EXPORT_MODULE()
 - (id)sendRequest:(NSURLRequest *)request
      withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  NSNumber *requestToken = @(++_currentToken);
   NSString *URLString = [request.URL absoluteString];
-  [RCTImageLoader loadImageWithTag:URLString bridge:_bridge callback:^(NSError *error, UIImage *image) {
+
+  __block RCTImageLoaderCancellationBlock requestToken = nil;
+  requestToken = [_bridge.imageLoader loadImageWithTag:URLString callback:^(NSError *error, UIImage *image) {
     if (error) {
       [delegate URLRequest:requestToken didCompleteWithError:error];
       return;
@@ -60,6 +58,13 @@ RCT_EXPORT_MODULE()
   }];
 
   return requestToken;
+}
+
+- (void)cancelRequest:(id /* RCTImageLoaderCancellationBlock */)requestToken
+{
+  if (requestToken) {
+    ((RCTImageLoaderCancellationBlock)requestToken)();
+  }
 }
 
 @end
