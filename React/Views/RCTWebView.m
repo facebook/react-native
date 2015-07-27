@@ -45,7 +45,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
-    _schemes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:@"*"];
+    _schemes = @{ @"*": @YES };
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
     [self addSubview:_webView];
@@ -87,7 +87,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   if (!cookiesEnabled) {
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    for (NSHTTPCookie *cookie in [storage cookies]) {
+    for (NSHTTPCookie *cookie in storage.cookies) {
       [storage deleteCookie:cookie];
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -181,14 +181,14 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   NSString *scheme = request.URL.scheme;
   
   NSNumber *catchAllScheme;
-  if ([_schemes objectForKey:@"*"] == nil) {
-    catchAllScheme = [NSNumber numberWithBool:YES];
+  if (_schemes[@"*"] == nil) {
+    catchAllScheme = @YES;
   }
   else {
-    catchAllScheme = [_schemes valueForKey:@"*"];
+    catchAllScheme = _schemes[@"*"];
   }
   
-  NSNumber *schemeInSchemes = [_schemes objectForKey:scheme];
+  NSNumber *schemeInSchemes = _schemes[scheme];
   
   if ((schemeInSchemes != nil && ![schemeInSchemes boolValue])
       || (schemeInSchemes == nil && ![catchAllScheme boolValue])) {
