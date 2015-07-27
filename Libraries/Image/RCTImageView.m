@@ -120,13 +120,12 @@ RCT_NOT_IMPLEMENTED(-init)
       };
     }
 
-    [RCTImageLoader loadImageWithTag:_src
-                                size:self.bounds.size
-                               scale:RCTScreenScale()
-                          resizeMode:self.contentMode
-                              bridge:_bridge
-                       progressBlock:progressHandler
-                     completionBlock:^(NSError *error, id image) {
+    [_bridge.imageLoader loadImageWithTag:_src
+                                     size:self.bounds.size
+                                    scale:RCTScreenScale()
+                               resizeMode:self.contentMode
+                            progressBlock:progressHandler
+                          completionBlock:^(NSError *error, id image) {
 
       if ([image isKindOfClass:[CAAnimation class]]) {
         [self.layer addAnimation:image forKey:@"contents"];

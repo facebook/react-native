@@ -112,7 +112,7 @@ RCT_EXPORT_MODULE()
 {
   UIImage *cachedImage = [_memCache objectForKey:url];
   if (cachedImage) {
-    block(cachedImage, nil);
+    completionBlock(nil, cachedImage);
     return ^{};
   }
 
