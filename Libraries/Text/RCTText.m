@@ -17,6 +17,7 @@
 {
   NSTextStorage *_textStorage;
   NSMutableArray *_reactSubviews;
+  CAShapeLayer *_highlightLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -78,8 +79,36 @@
   NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
   CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:textFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
+
+  __block UIBezierPath *highlightPath = nil;
+  [layoutManager.textStorage enumerateAttributesInRange:glyphRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, __unused BOOL *stop){
+    if ([attrs[RCTIsHighlightedAttributeName] boolValue]) {
+      [layoutManager enumerateEnclosingRectsForGlyphRange:range withinSelectedGlyphRange:range inTextContainer:textContainer usingBlock:^(CGRect r, __unused BOOL *s){
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(r, -2, -2) cornerRadius:2];
+        if (highlightPath) {
+          [highlightPath appendPath:path];
+        } else {
+          highlightPath = path;
+        }
+      }];
+    }
+  }];
+
+  if (highlightPath) {
+    if (!_highlightLayer) {
+      _highlightLayer = [CAShapeLayer layer];
+      _highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
+      [self.layer addSublayer:_highlightLayer];
+    }
+    _highlightLayer.position = (CGPoint){_contentInset.left, _contentInset.top};
+    _highlightLayer.path = highlightPath.CGPath;
+  } else {
+    [_highlightLayer removeFromSuperlayer];
+    _highlightLayer = nil;
+  }
 }
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point

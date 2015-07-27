@@ -135,7 +135,7 @@ class RouteStack {
     );
 
     var routes = this._routes.set(index, route);
-    return this._update(this._index, routes);
+    return this._update(index, routes);
   }
 
   _update(index: number, routes: List): RouteStack {

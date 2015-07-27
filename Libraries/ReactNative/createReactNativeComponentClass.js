@@ -18,6 +18,7 @@ var ReactNativeBaseComponent = require('ReactNativeBaseComponent');
 type ReactNativeBaseComponentViewConfig = {
   validAttributes: Object;
   uiViewClassName: string;
+  propTypes?: Object,
 }
 
 /**
@@ -36,6 +37,7 @@ var createReactNativeComponentClass = function(
   };
   Constructor.displayName = viewConfig.uiViewClassName;
   Constructor.viewConfig = viewConfig;
+  Constructor.propTypes = viewConfig.propTypes;
   Constructor.prototype = new ReactNativeBaseComponent(viewConfig);
   Constructor.prototype.constructor = Constructor;
 

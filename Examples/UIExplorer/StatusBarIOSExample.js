@@ -83,6 +83,26 @@ exports.examples = [{
       </View>
     );
   },
+}, {
+  title: 'Status Bar Network Activity Indicator',
+  render() {
+    return (
+      <View>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => StatusBarIOS.setNetworkActivityIndicatorVisible(true)}>
+          <View style={styles.button}>
+            <Text>setNetworkActivityIndicatorVisible(true)</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => StatusBarIOS.setNetworkActivityIndicatorVisible(false)}>
+          <View style={styles.button}>
+            <Text>setNetworkActivityIndicatorVisible(false)</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    );
+  },
 }];
 
 var styles = StyleSheet.create({
