@@ -110,11 +110,11 @@ RCT_NOT_IMPLEMENTED(-init)
 
     RCTImageLoaderProgressBlock progressHandler = nil;
     if (_onProgress) {
-      progressHandler =  ^(int64_t loaded, int64_t total) {
+      progressHandler = ^(int64_t loaded, int64_t total) {
         NSDictionary *event = @{
           @"target": self.reactTag,
-          @"loaded": @(loaded),
-          @"total": @(total),
+          @"loaded": @((double)loaded),
+          @"total": @((double)total),
         };
         [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
       };
