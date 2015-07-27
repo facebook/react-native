@@ -121,23 +121,30 @@ class UIExplorerList extends React.Component {
     );
   }
 
-  componentWillMount() {
-    this.props.navigator.navigationContext.addListener('didfocus', function(event) {
-      if (event.data.route.title === 'UIExplorer') {
-        Settings.set({visibleExample: null});
-      }
-    });
-  }
-
   componentDidMount() {
-    var visibleExampleTitle = Settings.get('visibleExample');
-    if (visibleExampleTitle) {
-      var predicate = (example) => example.title === visibleExampleTitle;
-      var foundExample = APIS.find(predicate) || COMPONENTS.find(predicate);
-      if (foundExample) {
-        setTimeout(() => this._openExample(foundExample), 100);
+    var wasUIExplorer = false;
+    var didOpenExample = false;
+
+    this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+      var isUIExplorer = event.data.route.title === 'UIExplorer';
+
+      if (!didOpenExample && isUIExplorer) {
+        didOpenExample = true;
+
+        var visibleExampleTitle = Settings.get('visibleExample');
+        if (visibleExampleTitle) {
+          var predicate = (example) => example.title === visibleExampleTitle;
+          var foundExample = APIS.find(predicate) || COMPONENTS.find(predicate);
+          if (foundExample) {
+            setTimeout(() => this._openExample(foundExample), 100);
+          }
+        } else if (!wasUIExplorer && isUIExplorer) {
+          Settings.set({visibleExample: null});
+        }
       }
-    }
+
+      wasUIExplorer = isUIExplorer;
+    });
   }
 
   renderAdditionalView(renderRow: Function, renderTextInput: Function): React.Component {

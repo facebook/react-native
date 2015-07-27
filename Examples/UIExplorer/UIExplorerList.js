@@ -166,15 +166,6 @@ class UIExplorerList extends React.Component {
 
   componentDidMount() {
     this._search(this.state.searchText);
-
-    var visibleExampleTitle = Settings.get('visibleExample');
-    if (visibleExampleTitle) {
-      var predicate = (example) => example.title === visibleExampleTitle;
-      var foundExample = APIS.find(predicate) || COMPONENTS.find(predicate);
-      if (foundExample) {
-        setTimeout(() => this._openExample(foundExample), 100);
-      }
-    }
   }
 
   render() {
