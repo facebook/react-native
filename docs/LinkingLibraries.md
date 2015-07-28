@@ -1,9 +1,9 @@
 ---
-id: linking-libraries
-title: Linking Libraries
+id: linking-libraries-ios
+title: Linking Libraries (iOS)
 layout: docs
 category: Guides
-permalink: docs/linking-libraries.html
+permalink: docs/linking-libraries-ios.html
 next: debugging
 ---
 

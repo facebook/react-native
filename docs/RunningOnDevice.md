@@ -1,10 +1,10 @@
 ---
-id: runningondevice
-title: Running On Device
+id: running-on-device-ios
+title: Running On Device (iOS)
 layout: docs
 category: Guides
-permalink: docs/runningondevice.html
-next: embedded-app
+permalink: docs/running-on-device-ios.html
+next: embedded-app-ios
 ---
 
 Note that running on device requires [Apple Developer account](https://developer.apple.com/register/index.action) and provisioning your iPhone. This guide covers only React Native specific topic.

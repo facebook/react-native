@@ -1,9 +1,9 @@
 ---
-id: embedded-app
-title: Integration with Existing App
+id: embedded-app-ios
+title: Integrating with Existing Apps (iOS)
 layout: docs
 category: Guides
-permalink: docs/embedded-app.html
+permalink: docs/embedded-app-ios.html
 next: javascript-environment
 ---
 
