@@ -11,6 +11,7 @@
 
 #import <objc/message.h>
 
+#import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
@@ -34,51 +35,72 @@
 
 RCT_NOT_IMPLEMENTED(-init)
 
+void RCTParseObjCMethodName(NSString **, NSArray **);
+void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes)
+{
+  static NSRegularExpression *typeNameRegex;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSString *unusedPattern = @"(?:__unused|__attribute__\\(\\(unused\\)\\))";
+    NSString *constPattern = @"(?:const)";
+    NSString *nullabilityPattern = @"(?:__nullable|__nonnull|nullable|nonnull|__attribute__\\(\\(nonnull\\)\\)|__attribute__\\(\\(nullable\\)\\))";
+    NSString *annotationPattern = [NSString stringWithFormat:@"(?:(?:%@|%@|%@)\\s*)",
+                                   unusedPattern, constPattern, nullabilityPattern];
+    NSString *pattern = [NSString stringWithFormat:@"(?<=:)(\\s*\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\))?\\s*\\w+",
+                         annotationPattern];
+    typeNameRegex = [[NSRegularExpression alloc] initWithPattern:pattern options:0 error:NULL];
+  });
+
+  // Extract argument types
+  NSString *methodName = *objCMethodName;
+  NSRange methodRange = {0, methodName.length};
+  NSMutableArray *arguments = [NSMutableArray array];
+  [typeNameRegex enumerateMatchesInString:methodName options:0 range:methodRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
+    NSRange range = [result rangeAtIndex:2];
+    [arguments addObject:range.length ? [methodName substringWithRange:range] : @"id"];
+  }];
+  *argTypes = [arguments copy];
+
+  // Remove the parameter types and names
+  methodName = [typeNameRegex stringByReplacingMatchesInString:methodName options:0
+                                                         range:methodRange
+                                                  withTemplate:@""];
+
+  // Remove whitespace
+  methodName = [methodName stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+  methodName = [methodName stringByReplacingOccurrencesOfString:@" " withString:@""];
+
+  // Strip trailing semicolon
+  if ([methodName hasSuffix:@";"]) {
+    methodName = [methodName substringToIndex:methodName.length - 1];
+  }
+
+  *objCMethodName = methodName;
+}
+
 - (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName
                            moduleClass:(Class)moduleClass
 {
   if ((self = [super init])) {
-    static NSRegularExpression *typeRegex;
-    static NSRegularExpression *selectorRegex;
-    if (!typeRegex) {
-      NSString *unusedPattern = @"(?:__unused|__attribute__\\(\\(unused\\)\\))";
-      NSString *constPattern = @"(?:const)";
-      NSString *nullabilityPattern = @"(?:__nullable|__nonnull|nullable|nonnull)";
-      NSString *annotationPattern = [NSString stringWithFormat:@"(?:(?:%@|%@|%@)\\s*)",
-                                     unusedPattern, constPattern, nullabilityPattern];
-      NSString *pattern = [NSString stringWithFormat:@"\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\)", annotationPattern];
-      typeRegex = [[NSRegularExpression alloc] initWithPattern:pattern options:0 error:NULL];
 
-      selectorRegex = [[NSRegularExpression alloc] initWithPattern:@"(?<=:).*?(?=[a-zA-Z_]+:|$)" options:0 error:NULL];
-    }
-
-    NSMutableArray *argumentNames = [NSMutableArray array];
-    [typeRegex enumerateMatchesInString:objCMethodName options:0 range:NSMakeRange(0, objCMethodName.length) usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
-      NSString *argumentName = [objCMethodName substringWithRange:[result rangeAtIndex:1]];
-      [argumentNames addObject:argumentName];
-    }];
-
-    // Remove the parameters' type and name
-    objCMethodName = [selectorRegex stringByReplacingMatchesInString:objCMethodName
-                                                             options:0
-                                                               range:NSMakeRange(0, objCMethodName.length)
-                                                        withTemplate:@""];
-    // Remove any spaces since `selector : (Type)name` is a valid syntax
-    objCMethodName = [objCMethodName stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSArray *argTypes;
+    RCTParseObjCMethodName(&objCMethodName, &argTypes);
 
     _moduleClass = moduleClass;
-    _moduleClassName = NSStringFromClass(_moduleClass);
     _selector = NSSelectorFromString(objCMethodName);
+    RCTAssert(_selector, @"%@ is not a valid selector", objCMethodName);
+
     _JSMethodName = JSMethodName.length > 0 ? JSMethodName : ({
-      NSString *methodName = NSStringFromSelector(_selector);
+      NSString *methodName = objCMethodName;
       NSRange colonRange = [methodName rangeOfString:@":"];
-      if (colonRange.length) {
+      if (colonRange.location != NSNotFound) {
         methodName = [methodName substringToIndex:colonRange.location];
       }
+      RCTAssert(methodName.length, @"%@ is not a valid JS function name, please"
+                " supply an alternative using RCT_REMAP_METHOD()", objCMethodName);
       methodName;
     });
-
 
     // Get method signature
     _methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
@@ -123,8 +145,8 @@ RCT_NOT_IMPLEMENTED(-init)
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
       const char *argumentType = [_methodSignature getArgumentTypeAtIndex:i];
 
-      NSString *argumentName = argumentNames[i - 2];
-      SEL selector = NSSelectorFromString([argumentName stringByAppendingString:@":"]);
+      NSString *selName = argTypes[i - 2];
+      SEL selector = NSSelectorFromString([selName stringByAppendingString:@":"]);
       if ([RCTConvert respondsToSelector:selector]) {
         switch (argumentType[0]) {
 
@@ -174,9 +196,9 @@ case _value: { \
             default:
               defaultCase(argumentType);
           }
-        } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
+        } else if ([selName isEqualToString:@"RCTResponseSenderBlock"]) {
           addBlockArgument();
-        } else if ([argumentName isEqualToString:@"RCTResponseErrorBlock"]) {
+        } else if ([selName isEqualToString:@"RCTResponseErrorBlock"]) {
           RCT_ARG_BLOCK(
 
             if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
@@ -192,10 +214,10 @@ case _value: { \
                                     arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
             } : ^(__unused NSError *error) {});
           )
-        } else if ([argumentName isEqualToString:@"RCTPromiseResolveBlock"]) {
+        } else if ([selName isEqualToString:@"RCTPromiseResolveBlock"]) {
           RCTAssert(i == numberOfArguments - 2,
                     @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
-                    _moduleClassName, objCMethodName);
+                    _moduleClass, objCMethodName);
           RCT_ARG_BLOCK(
             if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
               RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise resolver ID", index,
@@ -212,10 +234,10 @@ case _value: { \
             });
           )
           _functionKind = RCTJavaScriptFunctionKindAsync;
-        } else if ([argumentName isEqualToString:@"RCTPromiseRejectBlock"]) {
+        } else if ([selName isEqualToString:@"RCTPromiseRejectBlock"]) {
           RCTAssert(i == numberOfArguments - 1,
                     @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
-                    _moduleClassName, objCMethodName);
+                    _moduleClass, objCMethodName);
           RCT_ARG_BLOCK(
             if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
               RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise rejecter ID", index,
@@ -236,7 +258,7 @@ case _value: { \
 
           // Unknown argument type
           RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
-              " to support this type.", argumentName, [self methodName]);
+              " to support this type.", selName, [self methodName]);
         }
     }
 

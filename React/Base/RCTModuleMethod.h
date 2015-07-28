@@ -18,8 +18,8 @@ typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
 
 @interface RCTModuleMethod : NSObject
 
-@property (nonatomic, copy, readonly) NSString *moduleClassName;
 @property (nonatomic, copy, readonly) NSString *JSMethodName;
+@property (nonatomic, strong, readonly) Class moduleClass;
 @property (nonatomic, assign, readonly) SEL selector;
 @property (nonatomic, assign, readonly) RCTJavaScriptFunctionKind functionKind;
 

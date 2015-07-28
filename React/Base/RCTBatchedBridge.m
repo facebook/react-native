@@ -670,7 +670,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   }
 
   RCTProfileEndEvent(@"Invoke callback", @"objc_call", @{
-    @"module": method.moduleClassName,
+    @"module": NSStringFromClass(method.moduleClass),
     @"method": method.JSMethodName,
     @"selector": NSStringFromSelector(method.selector),
     @"args": RCTJSONStringify(RCTNullIfNil(params), NULL),
