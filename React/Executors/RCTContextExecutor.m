@@ -557,4 +557,13 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   }), @"js_call,json_call", (@{@"objectName": objectName}))];
 }
 
+RCT_EXPORT_METHOD(setContextName:(NSString *)name)
+{
+  if (JSGlobalContextSetName) {
+    JSStringRef JSName = JSStringCreateWithCFString((__bridge CFStringRef)name);
+    JSGlobalContextSetName(_context.ctx, JSName);
+    JSStringRelease(JSName);
+  }
+}
+
 @end
