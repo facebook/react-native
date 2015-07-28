@@ -146,6 +146,16 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   _parentBridge.executorClass = executorClass;
 }
 
+- (NSURL *)bundleURL
+{
+  return _parentBridge.bundleURL;
+}
+
+- (void)setBundleURL:(NSURL *)bundleURL
+{
+  _parentBridge.bundleURL = bundleURL;
+}
+
 - (BOOL)isLoading
 {
   return _loading;
