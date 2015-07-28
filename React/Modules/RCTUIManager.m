@@ -368,13 +368,11 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
   return _viewRegistry[reactTag];
 }
 
-- (void)setFrame:(CGRect)frame forRootView:(UIView *)rootView
+- (void)setFrame:(CGRect)frame forView:(UIView *)view
 {
   RCTAssertMainThread();
 
-  NSNumber *reactTag = rootView.reactTag;
-  RCTAssert(RCTIsReactRootView(reactTag), @"Specified view %@ is not a root view", reactTag);
-
+  NSNumber *reactTag = view.reactTag;
   dispatch_async(_shadowQueue, ^{
     RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
     RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);

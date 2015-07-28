@@ -37,6 +37,7 @@ var COMPONENTS = [
   require('./ListViewGridLayoutExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
+  require('./ModalExample'),
   require('./Navigator/NavigatorExample'),
   require('./NavigatorIOSColorsExample'),
   require('./NavigatorIOSExample'),
