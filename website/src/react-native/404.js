@@ -9,7 +9,7 @@
 
 var React = require('React');
 
-var four_oh_four = React.createClass({
+var fourOhFour = React.createClass({
   render: function() {
     return (
       <html>
@@ -22,4 +22,4 @@ var four_oh_four = React.createClass({
   }
 });
 
-module.exports = four_oh_four;
+module.exports = fourOhFour;
