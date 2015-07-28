@@ -87,10 +87,9 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 }
 
 /*
- * Sets the measure function on the cssNode, when the
- * aspectRatio rectangle is set. This helps calculate
- * the height of the node based on width of parent and
- * maintains the aspect ratio of the node.
+ * Sets the measure function on the cssNode, when the aspectRatio rectangle is
+ * set. This helps calculate the height of the node based on width of the parent
+ * and maintains the aspect ratio of the node.
  */
 static css_dim_t RCTAspectRatioMeasure(void *context, float width)
 {
