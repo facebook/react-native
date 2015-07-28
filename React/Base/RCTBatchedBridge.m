@@ -281,6 +281,9 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     });
   } else {
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartLoadingNotification
+                                                        object:self
+                                                      userInfo:@{ @"bridge": self }];
     RCTProfileBeginEvent();
     RCTPerformanceLoggerStart(RCTPLScriptDownload);
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];

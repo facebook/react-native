@@ -24,6 +24,11 @@
 RCT_EXTERN NSString *const RCTReloadNotification;
 
 /**
+ * This notification fires when the bridge starts loading.
+ */
+RCT_EXTERN NSString *const RCTJavaScriptWillStartLoadingNotification;
+
+/**
  * This notification fires when the bridge has finished loading.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
