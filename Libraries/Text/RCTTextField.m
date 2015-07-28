@@ -186,6 +186,11 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                eventCount:_nativeEventCount];
 }
 
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+{
+  return _blurOnSubmit;
+}
+
 - (BOOL)becomeFirstResponder
 {
   _jsRequestingFirstResponder = YES;
