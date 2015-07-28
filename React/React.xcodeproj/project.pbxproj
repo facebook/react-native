@@ -197,6 +197,7 @@
 		14435CE41AAC4AE100FC20F4 /* RCTMapManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMapManager.m; sourceTree = "<group>"; };
 		146459241B06C49500B389AA /* RCTFPSGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFPSGraph.h; sourceTree = "<group>"; };
 		146459251B06C49500B389AA /* RCTFPSGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFPSGraph.m; sourceTree = "<group>"; };
+		1482F9E61B55B927000ADFF3 /* RCTBridgeDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeDelegate.h; sourceTree = "<group>"; };
 		14C2CA6F1B3AC63800E6CBB2 /* RCTModuleMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuleMethod.h; sourceTree = "<group>"; };
 		14C2CA701B3AC63800E6CBB2 /* RCTModuleMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleMethod.m; sourceTree = "<group>"; };
 		14C2CA721B3AC64300E6CBB2 /* RCTModuleData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuleData.h; sourceTree = "<group>"; };
@@ -482,6 +483,7 @@
 				1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */,
 				83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */,
 				83CBBA501A601E3B00E9B192 /* RCTUtils.m */,
+				1482F9E61B55B927000ADFF3 /* RCTBridgeDelegate.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";

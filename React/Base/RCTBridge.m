@@ -137,6 +137,22 @@ dispatch_queue_t RCTJSThread;
   });
 }
 
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                   launchOptions:(NSDictionary *)launchOptions
+{
+  RCTAssertMainThread();
+
+  if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLTTI);
+
+    _delegate = delegate;
+    _launchOptions = [launchOptions copy];
+    [self setUp];
+    [self bindKeys];
+  }
+  return self;
+}
+
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
                     launchOptions:(NSDictionary *)launchOptions
