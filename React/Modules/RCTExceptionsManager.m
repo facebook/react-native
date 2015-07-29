@@ -36,14 +36,35 @@ RCT_EXPORT_MODULE()
   return [self initWithDelegate:nil];
 }
 
+- (void)postExceptionNotification:(NSString *)error stack:(NSArray *)stack
+{
+  NSDictionary *userInfo = @{@"error": error, @"stack": [self prettifyStack:stack]};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTExceptionRaised
+                                                      object:nil
+                                                    userInfo:userInfo];
+}
+
+- (NSMutableString *)prettifyStack:(NSArray *)stack
+{
+  NSMutableString *prettyStack = [NSMutableString stringWithString:@"\n"];
+  for (NSDictionary *frame in stack) {
+    [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+  }
+  
+  return prettyStack;
+}
+
 RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
                   stack:(NSArray *)stack)
 {
+  [self postExceptionNotification:message stack:stack];
+  
   // TODO(#7070533): report a soft error to the server
   if (_delegate) {
     [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
     return;
   }
+  
   [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
 }
 
@@ -51,6 +72,8 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray *)stack
                   exceptionId:(__unused NSNumber *)exceptionId)
 {
+  [self postExceptionNotification:message stack:stack];
+  
   if (_delegate) {
     [_delegate handleFatalJSExceptionWithMessage:message stack:stack];
     return;
@@ -75,13 +98,8 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
         message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
       }
 
-      NSMutableString *prettyStack = [NSMutableString stringWithString:@"\n"];
-      for (NSDictionary *frame in stack) {
-        [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
-      }
-
       NSString *name = [@"Unhandled JS Exception: " stringByAppendingString:message];
-      [NSException raise:name format:@"Message: %@, stack: %@", message, prettyStack];
+      [NSException raise:name format:@"Message: %@, stack: %@", message, [self prettifyStack:stack]];
     }
   }
 }
