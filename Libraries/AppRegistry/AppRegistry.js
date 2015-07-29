@@ -22,9 +22,11 @@ if (__DEV__) {
 
 var runnables = {};
 
+type ComponentProvider = () => ReactClass<any, any, any>;
+
 type AppConfig = {
   appKey: string;
-  component: ReactClass<any, any, any>;
+  component?: ComponentProvider;
   run?: Function;
 };
 
@@ -46,12 +48,13 @@ var AppRegistry = {
       if (appConfig.run) {
         AppRegistry.registerRunnable(appConfig.appKey, appConfig.run);
       } else {
+        invariant(appConfig.component, 'No component provider passed in');
         AppRegistry.registerComponent(appConfig.appKey, appConfig.component);
       }
     }
   },
 
-  registerComponent: function(appKey: string, getComponentFunc: Function): string {
+  registerComponent: function(appKey: string, getComponentFunc: ComponentProvider): string {
     runnables[appKey] = {
       run: (appParameters) =>
         renderApplication(getComponentFunc(), appParameters.initialProps, appParameters.rootTag)
