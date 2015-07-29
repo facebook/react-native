@@ -75,6 +75,7 @@ var APIS = [
   require('./TimerExample'),
   require('./VibrationIOSExample'),
   require('./XHRExample'),
+  require('./ImageEditingExample'),
 ];
 
 // Register suitable examples for snapshot tests

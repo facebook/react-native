@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
 {
   return [self loadImageWithTag:imageTag
                            size:CGSizeZero
-                          scale:0
+                          scale:1
                      resizeMode:UIViewContentModeScaleToFill
                   progressBlock:nil
                 completionBlock:callback];
