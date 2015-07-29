@@ -149,8 +149,6 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
                                                     size:(CGSize)size
                                                    scale:(CGFloat)scale
                                               resizeMode:(UIViewContentMode)resizeMode
-                                               tintColor:(UIColor *)tintColor
-                                         backgroundColor:(UIColor *)backgroundColor
                                            progressBlock:(RCTDataProgressBlock)progressBlock
                                                    block:(RCTImageDownloadBlock)block
 {
@@ -170,27 +168,10 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
       CGSize destSize = RCTTargetSizeForClipRect(imageRect);
 
       // Opacity optimizations
-      UIColor *blendColor = nil;
       BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-      if (!opaque && backgroundColor) {
-        CGFloat alpha;
-        [backgroundColor getRed:NULL green:NULL blue:NULL alpha:&alpha];
-        if (alpha > 0.999) { // no benefit to blending if background is translucent
-          opaque = YES;
-          blendColor = backgroundColor;
-        }
-      }
 
       // Decompress image at required size
       UIGraphicsBeginImageContextWithOptions(destSize, opaque, scale);
-      if (blendColor) {
-        [blendColor setFill];
-        UIRectFill((CGRect){CGPointZero, destSize});
-      }
-      if (tintColor) {
-        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        [tintColor setFill];
-      }
       [image drawInRect:imageRect];
       image = UIGraphicsGetImageFromCurrentImageContext();
       UIGraphicsEndImageContext();

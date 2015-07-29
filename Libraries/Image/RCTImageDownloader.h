@@ -38,8 +38,6 @@ typedef void (^RCTImageDownloadCancellationBlock)(void);
                                                     size:(CGSize)size
                                                    scale:(CGFloat)scale
                                               resizeMode:(UIViewContentMode)resizeMode
-                                               tintColor:(UIColor *)tintColor
-                                         backgroundColor:(UIColor *)backgroundColor
                                            progressBlock:(RCTDataProgressBlock)progressBlock
                                                    block:(RCTImageDownloadBlock)block;
 

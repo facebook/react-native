@@ -226,7 +226,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
         RCTDispatchCallbackOnMainQueue(completion, error, image);
       }];
     } else {
-      return [[RCTImageDownloader sharedInstance] downloadImageForURL:url size:size scale:scale resizeMode:resizeMode tintColor:nil backgroundColor:nil progressBlock:progress block:^(UIImage *image, NSError *error) {
+      return [[RCTImageDownloader sharedInstance] downloadImageForURL:url size:size scale:scale resizeMode:resizeMode progressBlock:progress block:^(UIImage *image, NSError *error) {
          RCTDispatchCallbackOnMainQueue(completion, error, image);
       }];
     }
