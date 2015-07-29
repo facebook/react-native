@@ -94,7 +94,21 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
 - (UIImageView *)generateCalloutImageAccessory:(NSDictionary *)config
 {
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(36, 36), NO, 0.0);
+  // Default width / height is 54
+  int imageWidth = 54;
+  int imageHeight = 54;
+
+  if (config[@"imageSize"] != nil) {
+    if ([config[@"imageSize"] objectForKey:@"height"] != nil) {
+      imageHeight = [RCTConvert int:config[@"imageSize"][@"height"]];
+    }
+
+    if ([config[@"imageSize"] objectForKey:@"width"] != nil) {
+      imageWidth = [RCTConvert int:config[@"imageSize"][@"width"]];
+    }
+  }
+
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(imageWidth, imageHeight), NO, 0.0);
   UIImage *blank = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
 
