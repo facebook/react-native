@@ -1,15 +1,22 @@
-//
-//  RCTModuleMethodTests.m
-//  UIExplorer
-//
-//  Created by Nick Lockwood on 28/07/2015.
-//  Copyright (c) 2015 Facebook. All rights reserved.
-//
+/**
+ * The examples provided by Facebook are for non-commercial testing and
+ * evaluation purposes only.
+ *
+ * Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 #import "RCTModuleMethod.h"
+#import "RCTLog.h"
 
 @interface RCTModuleMethodTests : XCTestCase
 
@@ -17,94 +24,40 @@
 
 @implementation RCTModuleMethodTests
 
-extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes);
+- (void)doFooWithBar:(__unused NSString *)bar { }
 
-- (void)testOneArgument
+- (void)testNonnull
 {
-  NSArray *argTypes;
-  NSString *methodName = @"foo:(NSInteger)foo";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo:");
-  XCTAssertEqual(argTypes.count, (NSUInteger)1);
-  XCTAssertEqualObjects(argTypes[0], @"NSInteger");
-}
+  NSString *methodName = @"doFooWithBar:(nonnull NSString *)bar";
+  RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                               JSMethodName:nil
+                                                                moduleClass:[self class]];
 
-- (void)testTwoArguments
-{
-  NSArray *argTypes;
-  NSString *methodName = @"foo:(NSInteger)foo bar:(BOOL)bar";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
-  XCTAssertEqual(argTypes.count, (NSUInteger)2);
-  XCTAssertEqualObjects(argTypes[0], @"NSInteger");
-  XCTAssertEqualObjects(argTypes[1], @"BOOL");
-}
+  {
+    __block BOOL loggedError = NO;
+    RCTPerformBlockWithLogFunction(^{
+      [method invokeWithBridge:nil module:self arguments:@[@"Hello World"]];
+    }, ^(RCTLogLevel level,
+         __unused NSString *fileName,
+         __unused NSNumber *lineNumber,
+         __unused NSString *message) {
+      loggedError = (level == RCTLogLevelError);
+    });
+    XCTAssertFalse(loggedError);
+  }
 
-- (void)testSpaces
-{
-  NSArray *argTypes;
-  NSString *methodName = @"foo : (NSInteger)foo bar : (BOOL) bar";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
-  XCTAssertEqual(argTypes.count, (NSUInteger)2);
-  XCTAssertEqualObjects(argTypes[0], @"NSInteger");
-  XCTAssertEqualObjects(argTypes[1], @"BOOL");
-}
-
-- (void)testNewlines
-{
-  NSArray *argTypes;
-  NSString *methodName = @"foo : (NSInteger)foo\nbar : (BOOL) bar";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
-  XCTAssertEqual(argTypes.count, (NSUInteger)2);
-  XCTAssertEqualObjects(argTypes[0], @"NSInteger");
-  XCTAssertEqualObjects(argTypes[1], @"BOOL");
-}
-
-- (void)testUnnamedArgs
-{
-  NSArray *argTypes;
-  NSString *methodName = @"foo:(NSInteger)foo:(BOOL)bar";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo::");
-  XCTAssertEqual(argTypes.count, (NSUInteger)2);
-  XCTAssertEqualObjects(argTypes[0], @"NSInteger");
-  XCTAssertEqualObjects(argTypes[1], @"BOOL");
-}
-
-- (void)testUntypedUnnamedArgs
-{
-  NSArray *argTypes;
-  NSString *methodName = @"foo:foo:bar:bar";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo:::");
-  XCTAssertEqual(argTypes.count, (NSUInteger)3);
-  XCTAssertEqualObjects(argTypes[0], @"id");
-  XCTAssertEqualObjects(argTypes[1], @"id");
-  XCTAssertEqualObjects(argTypes[2], @"id");
-}
-
-- (void)testAttributes
-{
-  NSArray *argTypes;
-  NSString *methodName = @"foo:(__attribute__((nonnull)) NSString *)foo bar:(__unused BOOL)bar";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
-  XCTAssertEqual(argTypes.count, (NSUInteger)2);
-  XCTAssertEqualObjects(argTypes[0], @"NSString");
-  XCTAssertEqualObjects(argTypes[1], @"BOOL");
-}
-
-- (void)testSemicolonStripping
-{
-  NSArray *argTypes;
-  NSString *methodName = @"foo:(NSString *)foo bar:(BOOL)bar;";
-  RCTParseObjCMethodName(&methodName, &argTypes);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
-  XCTAssertEqual(argTypes.count, (NSUInteger)2);
-  XCTAssertEqualObjects(argTypes[0], @"NSString");
-  XCTAssertEqualObjects(argTypes[1], @"BOOL");
+  {
+    __block BOOL loggedError = NO;
+    RCTPerformBlockWithLogFunction(^{
+      [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+    }, ^(RCTLogLevel level,
+         __unused NSString *fileName,
+         __unused NSNumber *lineNumber,
+         __unused NSString *message) {
+      loggedError = (level == RCTLogLevelError);
+    });
+    XCTAssertTrue(loggedError);
+  }
 }
 
 @end
