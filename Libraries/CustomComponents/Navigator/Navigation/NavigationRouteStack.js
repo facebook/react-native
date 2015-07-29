@@ -2,64 +2,119 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule NavigationRouteStack
+ * @flow
  */
 'use strict';
 
 var immutable = require('immutable');
 var invariant = require('invariant');
 
+type IterationCallback = (route: any, index: number, key: string) => void;
+
 var {List} = immutable;
 
+function isRouteEmpty(route: any): boolean {
+  return (route === undefined || route === null || route === '') || false;
+}
+
+var _nextID = 0;
+
+class RouteNode {
+  key: string;
+  value: any;
+  constructor(route: any) {
+    // Key value gets bigger incrementally. Developer can compare the
+    // keys of two routes then know which route is added to the stack
+    // earlier.
+    this.key = String(_nextID++);
+
+    this.value = route;
+  }
+}
+
 /**
- * The immutable routes stack.
+ * The immutable route stack.
  */
 class RouteStack {
   _index: number;
 
-  _routes: List;
+  _routeNodes: List<RouteNode>;
 
-  constructor(index: number, routes: List) {
+  constructor(index: number, routeNodes: List<RouteNode>) {
     invariant(
-      routes.size > 0,
+      routeNodes.size > 0,
       'size must not be empty'
     );
 
     invariant(
-      index > -1 && index <= routes.size - 1,
+      index > -1 && index <= routeNodes.size - 1,
       'index out of bound'
     );
 
-    this._routes = routes;
+    this._routeNodes = routeNodes;
     this._index = index;
   }
 
+  /* $FlowFixMe - get/set properties not yet supported */
   get size(): number {
-    return this._routes.size;
+    return this._routeNodes.size;
   }
 
+  /* $FlowFixMe - get/set properties not yet supported */
   get index(): number {
     return this._index;
   }
 
-  toArray(): Array {
-    return this._routes.toJS();
+  toArray(): Array<any> {
+    var result = [];
+    var ii = 0;
+    var nodes = this._routeNodes;
+    while (ii < nodes.size) {
+      result.push(nodes.get(ii).value);
+      ii++;
+    }
+    return result;
   }
 
   get(index: number): any {
-    if (index < 0 || index > this._routes.size - 1) {
+    if (index < 0 || index > this._routeNodes.size - 1) {
       return null;
     }
-    return this._routes.get(index);
+    return this._routeNodes.get(index).value;
+  }
+
+  /**
+   * Returns the key associated with the route.
+   * When a route is added to a stack, the stack creates a key for this route.
+   * The key will persist until the initial stack and its derived stack
+   * no longer contains this route.
+   */
+  keyOf(route: any): ?string {
+    if (isRouteEmpty(route)) {
+      return null;
+    }
+    var index = this.indexOf(route);
+    return index > -1 ?
+      this._routeNodes.get(index).key :
+      null;
   }
 
   indexOf(route: any): number {
-    return this._routes.indexOf(route);
+    if (isRouteEmpty(route)) {
+      return -1;
+    }
+
+    var finder = (node) => {
+      return (node: RouteNode).value === route;
+    };
+
+    return this._routeNodes.findIndex(finder, this);
   }
 
   slice(begin: ?number, end: ?number): RouteStack {
-    var routes = this._routes.slice(begin, end);
-    var index = Math.min(this._index, routes.size - 1);
-    return this._update(index, routes);
+    var routeNodes = this._routeNodes.slice(begin, end);
+    var index = Math.min(this._index, routeNodes.size - 1);
+    return this._update(index, routeNodes);
   }
 
   /**
@@ -67,21 +122,20 @@ class RouteStack {
    * starting at this stack size.
    */
   push(route: any): RouteStack {
+
     invariant(
-      route === 0 ||
-      route === false ||
-      !!route,
+      !isRouteEmpty(route),
       'Must supply route to push'
     );
 
-    invariant(this._routes.indexOf(route) === -1, 'route must be unique');
+    invariant(this._routeNodes.indexOf(route) === -1, 'route must be unique');
 
     // When pushing, removes the rest of the routes past the current index.
-    var routes = this._routes.withMutations((list: List) => {
-      list.slice(0, this._index + 1).push(route);
+    var routeNodes = this._routeNodes.withMutations((list: List) => {
+      list.slice(0, this._index + 1).push(new RouteNode(route));
     });
 
-    return this._update(routes.size - 1, routes);
+    return this._update(routeNodes.size - 1, routeNodes);
   }
 
   /**
@@ -89,20 +143,20 @@ class RouteStack {
    * excluding the last index in this stack.
    */
   pop(): RouteStack {
-    invariant(this._routes.size > 1, 'shoud not pop routes stack to empty');
+    invariant(this._routeNodes.size > 1, 'shoud not pop routeNodes stack to empty');
 
     // When popping, removes the rest of the routes past the current index.
-    var routes = this._routes.slice(0, this._index);
-    return this._update(routes.size - 1, routes);
+    var routeNodes = this._routeNodes.slice(0, this._index);
+    return this._update(routeNodes.size - 1, routeNodes);
   }
 
   jumpToIndex(index: number): RouteStack {
     invariant(
-      index > -1 && index < this._routes.size,
+      index > -1 && index < this._routeNodes.size,
       'index out of bound'
     );
 
-    return this._update(index, this._routes);
+    return this._update(index, this._routeNodes);
   }
 
   /**
@@ -113,9 +167,7 @@ class RouteStack {
    */
   replaceAtIndex(index: number, route: any): RouteStack {
     invariant(
-      route === 0 ||
-      route === false ||
-      !!route,
+      !isRouteEmpty(route),
       'Must supply route to replace'
     );
 
@@ -123,26 +175,37 @@ class RouteStack {
       return this;
     }
 
-    invariant(this._routes.indexOf(route) === -1, 'route must be unique');
+    invariant(this.indexOf(route) === -1, 'route must be unique');
 
     if (index < 0) {
-      index += this._routes.size;
+      index += this._routeNodes.size;
     }
 
     invariant(
-      index > -1 && index < this._routes.size,
+      index > -1 && index < this._routeNodes.size,
       'index out of bound'
     );
 
-    var routes = this._routes.set(index, route);
-    return this._update(index, routes);
+    var routeNodes = this._routeNodes.set(index, new RouteNode(route));
+    return this._update(index, routeNodes);
   }
 
-  _update(index: number, routes: List): RouteStack {
-    if (this._index === index && this._routes === routes) {
+  // Iterations
+  forEach(callback: IterationCallback, context: ?Object): void {
+    var ii = 0;
+    var nodes = this._routeNodes;
+    while (ii < nodes.size) {
+      var node = nodes.get(ii);
+      callback(node.value, ii, node.key);
+      ii++;
+    }
+  }
+
+  _update(index: number, routeNodes: List): RouteStack {
+    if (this._index === index && this._routeNodes === routeNodes) {
       return this;
     }
-    return new RouteStack(index, routes);
+    return new RouteStack(index, routeNodes);
   }
 }
 
@@ -151,12 +214,17 @@ class RouteStack {
  * stack of routes.
  */
 class NavigationRouteStack extends RouteStack {
-  constructor(index: number, routes: Array) {
+  constructor(index: number, routeNodes: Array<any>) {
     // For now, `RouteStack` internally,  uses an immutable `List` to keep
-    // track of routes. Since using `List` is really just the implementation
-    // detail, we don't want to accept `routes` as `list` from constructor
+    // track of routeNodes. Since using `List` is really just the implementation
+    // detail, we don't want to accept `routeNodes` as `list` from constructor
     // for developer.
-    super(index, new List(routes));
+    var nodes = routeNodes.map((route) => {
+      invariant(!isRouteEmpty(route), 'route must not be mepty');
+      return new RouteNode(route);
+    });
+
+    super(index, new List(nodes));
   }
 }
 
