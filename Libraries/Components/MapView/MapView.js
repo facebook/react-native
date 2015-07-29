@@ -191,6 +191,21 @@ var MapView = React.createClass({
           /**
            * Is being used when type == image. use the same input as for Image
            */
+          imageSize: React.PropTypes.shape({
+            /**
+             * Width of the image to be initialized
+             */
+            width: React.PropTypes.number,
+
+            /**
+             * Height of the image to be initialized
+             */
+            height: React.PropTypes.number
+          }),
+
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
           image: React.PropTypes.string,
 
           /**
@@ -223,6 +238,21 @@ var MapView = React.createClass({
          * Additional config parameters to pass to the callout.
          */
         config: React.PropTypes.shape({
+
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
+          imageSize: React.PropTypes.shape({
+            /**
+             * Width of the image to be initialized
+             */
+            width: React.PropTypes.number,
+
+            /**
+             * Height of the image to be initialized
+             */
+            height: React.PropTypes.number
+          }),
 
           /**
            * Is being used when type == image. use the same input as for Image
