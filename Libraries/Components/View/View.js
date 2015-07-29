@@ -97,6 +97,15 @@ var View = React.createClass({
     accessibilityLabel: PropTypes.string,
 
     /**
+     * Indicates to accessibility services to treat UI component like a
+     * native one. Works for Android only.
+     */
+    accessibilityComponentType: PropTypes.oneOf([
+      'none',
+      'button',
+    ]),
+
+    /**
      * Provides additional traits to screen reader. By default no traits are
      * provided unless specified otherwise in element
      */

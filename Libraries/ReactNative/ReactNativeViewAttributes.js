@@ -19,6 +19,7 @@ ReactNativeViewAttributes.UIView = {
   pointerEvents: true,
   accessible: true,
   accessibilityLabel: true,
+  accessibilityComponentType: true,
   accessibilityTraits: true,
   testID: true,
   onLayout: true,
