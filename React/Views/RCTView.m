@@ -523,7 +523,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
                                      _backgroundColor.CGColor,
                                      self.clipsToBounds);
 
-  const CGRect contentsCenter = ({
+  CGRect contentsCenter = ({
     CGSize size = image.size;
     UIEdgeInsets insets = image.capInsets;
     CGRectMake(
@@ -540,6 +540,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     [image drawInRect:(CGRect){CGPointZero, size}];
     image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
   layer.backgroundColor = NULL;
