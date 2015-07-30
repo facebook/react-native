@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTDevLoadingView.h"
 #import "RCTDefines.h"
+#import "RCTUtils.h"
 
 #if RCT_DEV
 
@@ -40,7 +41,7 @@ static void RCTDevLoadingViewSetup()
 
 - (instancetype)init
 {
-  if (self = [super init]) {
+  if ((self = [super init]) && !RCTRunningInTestEnvironment()) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(willStartLoading:)
                                                  name:RCTJavaScriptWillStartLoadingNotification
