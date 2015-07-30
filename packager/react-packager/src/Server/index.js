@@ -363,7 +363,13 @@ Server.prototype.processRequest = function(req, res, next) {
           minify: options.minify,
         });
         res.setHeader('Content-Type', 'application/javascript');
-        res.end(bundleSource);
+        res.setHeader('ETag', p.calculateETag());
+        if (req.headers['if-none-match'] === res.getHeader('ETag')) {
+          res.statusCode = 304;
+          res.end();
+        } else {
+          res.end(bundleSource);
+        }
         Activity.endEvent(startReqEventId);
       } else if (requestType === 'map') {
         var sourceMap = JSON.stringify(p.getSourceMap());

@@ -12,6 +12,7 @@ var _ = require('underscore');
 var base64VLQ = require('./base64-vlq');
 var UglifyJS = require('uglify-js');
 var ModuleTransport = require('../lib/ModuleTransport');
+var crypto = require('crypto');
 
 module.exports = Package;
 
@@ -257,6 +258,11 @@ Package.prototype.getJSModulePaths = function() {
   }).map(function(module) {
     return module.sourcePath;
   });
+};
+
+Package.prototype.calculateETag = function() {
+  var eTag = crypto.createHash('md5').update(this._source).digest('hex');
+  return eTag;
 };
 
 Package.prototype.getDebugInfo = function() {
