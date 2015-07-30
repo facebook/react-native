@@ -10,7 +10,8 @@ cache:
 before_install:
   - brew update
 install:
-  - brew reinstall flow xctool nvm
+  - brew reinstall xctool nvm
+  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - mkdir -p .nvm
   - cp $(brew --prefix nvm)/nvm-exec .nvm/
   - export NVM_DIR=.nvm
