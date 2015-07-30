@@ -44,6 +44,7 @@ var AccessibilityTraits = [
   'pageTurn',
 ];
 
+
 // <<<<< WARNING >>>>>
 // If adding any properties to View that could change the way layout-only status
 // works on iOS, make sure to update ReactNativeViewAttributes.js and
@@ -103,6 +104,18 @@ var View = React.createClass({
     accessibilityComponentType: PropTypes.oneOf([
       'none',
       'button',
+    ]),
+
+    /**
+     * Indicates to accessibility services whether the user should be notified
+     * when this view changes. Works for Android API >= 19 only.
+     * See http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion
+     * for references.
+     */
+    accessibilityLiveRegion: PropTypes.oneOf([
+      'none',
+      'polite',
+      'assertive',
     ]),
 
     /**
