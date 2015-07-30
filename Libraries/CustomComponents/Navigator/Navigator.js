@@ -59,6 +59,7 @@ var SCENE_DISABLED_NATIVE_PROPS = {
   pointerEvents: 'none',
   style: {
     top: SCREEN_HEIGHT,
+    bottom: -SCREEN_HEIGHT,
     opacity: 0,
   },
 };
@@ -109,6 +110,7 @@ var styles = StyleSheet.create({
   },
   disabledScene: {
     top: SCREEN_HEIGHT,
+    bottom: -SCREEN_HEIGHT,
   },
   transitioner: {
     flex: 1,
@@ -535,6 +537,7 @@ var Navigator = React.createClass({
       pointerEvents: 'auto',
       style: {
         top: sceneStyle.top,
+        bottom: sceneStyle.bottom,
       },
     };
     if (sceneIndex !== this.state.transitionFromIndex &&
