@@ -9,6 +9,10 @@ var View = require('View');
 
 var styles = StyleSheet.create({
 
+    scroll: {
+        WebkitOverflowScrolling: 'touch',
+    },
+
     horizontal: {
         alignItems: 'flex-start',
     },
@@ -43,9 +47,10 @@ var ScrollView = React.createClass({
 
     render: function() {
         var style = [
-            this.props.style,
+            styles.scroll,            
             (this.props.horizontal ? styles.horizontal : null),
             (this.props.horizontal ? {overflowX: 'scroll'} : {overflowY: 'scroll'}),
+            this.props.style,
         ];
 
         var containerStyle = [

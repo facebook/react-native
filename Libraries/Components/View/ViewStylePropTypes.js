@@ -47,6 +47,7 @@ var ViewStylePropTypes = {
   overflow: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
   overflowX: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
   overflowY: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
+  WebkitOverflowScrolling: ReactPropTypes.string,
   background: ReactPropTypes.string,
   cursor: ReactPropTypes.string,
 };
