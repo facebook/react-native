@@ -77,6 +77,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   PointPropType: require('PointPropType'),
 
   addons: {
+    InteractionMixin: require('InteractionMixin'),
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,
     PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
