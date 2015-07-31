@@ -67,7 +67,7 @@ var Image = React.createClass({
     render: function() {
         var uri = !this.props.source.capInsets && this.props.source.uri;
         var style = webifyStyle([this.state.style, this.props.style]);
-        return <img style={style} src={uri} />;
+        return <img {...this.props} style={style} src={uri} />;
     },
 
 });

@@ -64,21 +64,16 @@ var ScrollView = React.createClass({
 
     _onScroll: function(e) {
         if (this.props.onScroll) {
-            var nativeEvent = Object.assign({}, e.nativeEvent, {
-                layoutMeasurement: this.refs.scrollView.measure(),
-                contentSize: {
-                    width: this.refs.containerView.measure().width,
-                    height: this.refs.containerView.measure().height,
-                },
-                contentOffset: {
-                    x: this.refs.scrollView.getDOMNode().scrollLeft,
-                    y: this.refs.scrollView.getDOMNode().scrollTop,
-                },
-            });
-
-            this.props.onScroll(Object.assign({}, e, {
-                nativeEvent: nativeEvent,
-            }));
+            e.nativeEvent.layoutMeasurement = this.refs.scrollView.measure();
+            e.nativeEvent.contentSize = {
+                width: this.refs.containerView.measure().width,
+                height: this.refs.containerView.measure().height,
+            };
+            e.nativeEvent.contentOffset = {
+                x: this.refs.scrollView.getDOMNode().scrollLeft,
+                y: this.refs.scrollView.getDOMNode().scrollTop,
+            };
+            this.props.onScroll(e);
         }
     },
 

@@ -234,6 +234,7 @@ var TouchableHighlight = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}
         onMouseEnter={this._showUnderlay}
         onMouseLeave={this._hideUnderlay}
+        onClick={this.touchableHandlePress}
         >
         {cloneWithProps(
           onlyChild(this.props.children),

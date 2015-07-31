@@ -68,7 +68,6 @@ var View = React.createClass({
                 onTouchMove={this._onTouchMove}
                 onTouchEnd={this._onTouchEnd}
                 onTouchCancel={this._onTouchCancel}
-                onClick={this.props.onClick || this.props.onPress}
             />
         );
     },
