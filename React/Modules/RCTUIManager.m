@@ -14,6 +14,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import "Layout.h"
+#import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
 #import "RCTBridge.h"
@@ -41,6 +42,8 @@ static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_b
     RCTTraverseViewNodes(subview, block);
   }
 }
+
+NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
 
 @interface RCTAnimation : NSObject
 
@@ -269,8 +272,31 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
     _rootViewTags = [[NSMutableSet alloc] init];
 
     _bridgeTransactionListeners = [[NSMutableSet alloc] init];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveNewContentSizeMultiplier)
+                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                               object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)didReceiveNewContentSizeMultiplier
+{
+  __weak RCTUIManager *weakSelf = self;
+  dispatch_async(self.methodQueue, ^{
+    __weak RCTUIManager *strongSelf = weakSelf;
+    if (strongSelf) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
+                                                          object:strongSelf];
+      [strongSelf batchDidComplete];
+    }
+  });
 }
 
 - (BOOL)isValid

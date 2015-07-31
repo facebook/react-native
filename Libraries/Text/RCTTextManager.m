@@ -9,6 +9,7 @@
 
 #import "RCTTextManager.h"
 
+#import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
@@ -49,6 +50,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textDecorationStyle, NSUnderlineStyle)
 RCT_EXPORT_SHADOW_PROPERTY(textDecorationColor, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(textDecorationLine, RCTTextDecorationLineType)
 RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
+RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
@@ -69,6 +71,7 @@ RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
       RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
 
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
+        [(RCTShadowText *)shadowView setFontSizeMultiplier:self.bridge.accessibilityManager.multiplier];
         [(RCTShadowText *)shadowView recomputeText];
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
         RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'",
