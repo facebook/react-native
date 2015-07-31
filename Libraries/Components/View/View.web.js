@@ -53,10 +53,16 @@ var View = React.createClass({
 
     render: function() {
         var style = webifyStyle(this.props.style);
+
+        // I don't like this at all but
+        // componentDidUpdate is not being fired reliably
+        // Not sure what's going on...
+        setTimeout(this._onLayout, 50);
+
         return (
             <div
-                ref="div"
                 {...this.props}
+                ref="div"
                 style={style}
                 onTouchStart={this._onTouchStart}
                 onTouchMove={this._onTouchMove}
@@ -67,8 +73,8 @@ var View = React.createClass({
         );
     },
 
-    componentDidUpdate: function(prevProps, prevState) {
-        if (!this.props.onLayout) {
+    _onLayout: function() {
+        if (!this.props.onLayout || !this.refs.div) {
             return;
         }
         var measure = this.measure();
