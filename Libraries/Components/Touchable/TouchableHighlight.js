@@ -224,6 +224,7 @@ var TouchableHighlight = React.createClass({
     return (
       <View
         ref={UNDERLAY_REF}
+        {...this.props}
         style={this.state.underlayStyle}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
@@ -233,7 +234,7 @@ var TouchableHighlight = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}
         onMouseEnter={this._showUnderlay}
         onMouseLeave={this._hideUnderlay}
-        {...this.props}>
+        >
         {cloneWithProps(
           onlyChild(this.props.children),
           {
