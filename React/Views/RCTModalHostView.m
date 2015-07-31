@@ -73,7 +73,7 @@ RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
   [super didMoveToSuperview];
 
   if (self.superview) {
-    [self.backingViewController presentViewController:_modalViewController animated:self.animated completion:nil];
+    [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:nil];
   } else {
     [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
   }

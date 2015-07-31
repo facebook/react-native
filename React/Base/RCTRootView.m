@@ -110,9 +110,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   _contentView.backgroundColor = backgroundColor;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
-  return _backingViewController ?: [super backingViewController];
+  return _reactViewController ?: [super reactViewController];
 }
 
 - (BOOL)canBecomeFirstResponder

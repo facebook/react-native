@@ -43,6 +43,15 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
 
 @end
 
+void RCTSetViewProperty(NSString *name, NSString *keyPath, SEL type,
+                        id view, id defaultView, id json)
+{
+  if ((json && !RCTSetProperty(view, keyPath, type, json)) ||
+      (!json && !RCTCopyProperty(view, defaultView, keyPath))) {
+    RCTLogError(@"%@ does not have setter for `%@` property", [view class], name);
+  }
+}
+
 @implementation RCTViewManager
 
 @synthesize bridge = _bridge;
@@ -144,19 +153,9 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView) {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {
-    if (json) {
-      view.borderRadius = [RCTConvert CGFloat:json];
-    } else if ([view respondsToSelector:@selector(borderRadius)]) {
-      view.borderRadius = [defaultView borderRadius];
-    } else {
-      view.borderRadius = defaultView.layer.cornerRadius;
-    }
+    view.borderRadius = json ? [RCTConvert CGFloat:json] : defaultView.borderRadius;
   } else {
-    if (json) {
-      view.layer.cornerRadius = [RCTConvert CGFloat:json];
-    } else {
-      view.layer.cornerRadius = defaultView.layer.cornerRadius;
-    }
+    view.layer.cornerRadius = json ? [RCTConvert CGFloat:json] : defaultView.layer.cornerRadius;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
@@ -245,9 +244,7 @@ RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat)
-RCT_CUSTOM_SHADOW_PROPERTY(borderWidth, CGFloat, __unused RCTShadowView) {
-  [view setBorderWidth:[RCTConvert CGFloat:json]];
-}
+RCT_EXPORT_SHADOW_PROPERTY(borderWidth, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(marginTop, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(marginRight, CGFloat)

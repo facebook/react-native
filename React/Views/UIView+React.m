@@ -87,7 +87,7 @@
   self.backgroundColor = inheritedBackgroundColor;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
   id responder = [self nextResponder];
   while (responder) {
@@ -99,14 +99,14 @@
   return nil;
 }
 
-- (void)addControllerToClosestParent:(UIViewController *)controller
+- (void)reactAddControllerToClosestParent:(UIViewController *)controller
 {
   if (!controller.parentViewController) {
     UIView *parentView = (UIView *)self.reactSuperview;
     while (parentView) {
-      if (parentView.backingViewController) {
-        [parentView.backingViewController addChildViewController:controller];
-        [controller didMoveToParentViewController:parentView.backingViewController];
+      if (parentView.reactViewController) {
+        [parentView.reactViewController addChildViewController:controller];
+        [controller didMoveToParentViewController:parentView.reactViewController];
         break;
       }
       parentView = (UIView *)parentView.reactSuperview;

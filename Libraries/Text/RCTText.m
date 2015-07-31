@@ -62,7 +62,7 @@
   [_reactSubviews removeObject:subview];
 }
 
-- (NSMutableArray *)reactSubviews
+- (NSArray *)reactSubviews
 {
   return _reactSubviews;
 }

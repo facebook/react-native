@@ -229,7 +229,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
 + (UIEdgeInsets)contentInsetsForView:(UIView *)view
 {
   while (view) {
-    UIViewController *controller = view.backingViewController;
+    UIViewController *controller = view.reactViewController;
     if (controller) {
       return (UIEdgeInsets){
         controller.topLayoutGuide.length, 0,
