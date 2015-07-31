@@ -6,6 +6,10 @@
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var webifyStyle = require('webifyStyle');
+var ImageResizeMode = require('ImageResizeMode');
+var ImageStylePropTypes = require('ImageStylePropTypes');
+var StyleSheetPropType = require('StyleSheetPropType');
+var EdgeInsetsPropType = require('EdgeInsetsPropType');
 
 var styles = StyleSheet.create({
 
@@ -18,15 +22,17 @@ var styles = StyleSheet.create({
 var Image = React.createClass({
 
     propTypes: {
-        resizeMode: React.PropTypes.string, // TODO
+        style: StyleSheetPropType(ImageStylePropTypes),
+        source: React.PropTypes.shape({
+            uri: React.PropTypes.string,
+        }),
+        capInsets: EdgeInsetsPropType,
+        resizeMode: React.PropTypes.oneOf(['contain', 'stretch']),
+        onLayout: React.PropTypes.func,
     },
 
     statics: {
-        resizeMode: {
-            cover: "cover",
-            contain: "contain",
-            stretch: "stretch",
-        },
+        resizeMode: ImageResizeMode,
     },
 
     getInitialState: function() {
