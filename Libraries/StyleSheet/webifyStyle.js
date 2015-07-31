@@ -9,6 +9,41 @@ var precomputeStyle = require('precomputeStyle');
 
 var styleKeyMap = {
 
+    flex: function(value) {
+        return {
+            flex: value,
+            WebkitFlex: value,
+        };
+    },
+
+    flexDirection: function(value) {
+        return {
+            flexDirection: value,
+            WebkitFlexDirection: value,
+        };
+    },
+
+    alignItems: function(value) {
+        return {
+            alignItems: value,
+            WebkitAlignItems: value,
+        };
+    },
+
+    justifyContent: function(value) {
+        return {
+            justifyContent: value,
+            WebkitJustifyContent: value,
+        };
+    },
+
+    alignSelf: function(value) {
+        return {
+            alignSelf: value,
+            WebkitAlignSelf: value,
+        };
+    },
+
     shadowColor: function(value, allValues) {
         var color = value || 'transparent';
         var width = 0;
@@ -36,7 +71,9 @@ var styleKeyMap = {
     },
 
     lineHeight: function(value) {
-        return {lineHeight: `${value}px`};
+        return {
+            lineHeight: `${value}px`,
+        };
     },
 
     paddingHorizontal: function(value) {
@@ -68,12 +105,20 @@ var styleKeyMap = {
     },
 
     transformMatrix: function(value) {
-        return {transform: `matrix3d(${value})`};
+        var cssValue = `matrix3d(${value})`;
+        return {
+            transform: cssValue,
+            WebkitTransform: cssValue,
+        };
     },
 
     transform: function(value) {
         var transformMatrix = precomputeStyle({transform: value}).transformMatrix;
-        return {transform: `matrix3d(${transformMatrix})`};
+        var cssValue = `matrix3d(${transformMatrix})`;
+        return {
+            transform: cssValue,
+            WebkitTransform: cssValue,
+        };
     },
 
 }
