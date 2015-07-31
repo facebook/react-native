@@ -52,7 +52,7 @@ RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
-      RCTLogError(@"Invalid view returned from registry, expecting RKWebView, got: %@", view);
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     }
     [view goBack];
   }];
@@ -63,7 +63,7 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     id view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
-      RCTLogError(@"Invalid view returned from registry, expecting RKWebView, got: %@", view);
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     }
     [view goForward];
   }];
@@ -75,7 +75,7 @@ RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
-      RCTLogMustFix(@"Invalid view returned from registry, expecting RKWebView, got: %@", view);
+      RCTLogMustFix(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     }
     [view reload];
   }];
