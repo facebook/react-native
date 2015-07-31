@@ -23,10 +23,12 @@ typedef void (^RCTArgumentBlock)(RCTBridge *, NSInvocation *, NSUInteger, id);
 
 - (instancetype)initWithType:(NSString *)type
                  nullability:(RCTNullability)nullability
+                      unused:(BOOL)unused
 {
   if ((self = [super init])) {
     _type = [type copy];
     _nullability = nullability;
+    _unused = unused;
   }
   return self;
 }
@@ -61,7 +63,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
     NSString *constPattern = @"(?:const)";
     NSString *nullablePattern = @"(?:__nullable|nullable|__attribute__\\(\\(nullable\\)\\))";
     NSString *nonnullPattern = @"(?:__nonnull|nonnull|__attribute__\\(\\(nonnull\\)\\))";
-    NSString *annotationPattern = [NSString stringWithFormat:@"(?:(?:%@|%@|(%@)|(%@))\\s*)",
+    NSString *annotationPattern = [NSString stringWithFormat:@"(?:(?:(%@)|%@|(%@)|(%@))\\s*)",
                                    unusedPattern, constPattern, nullablePattern, nonnullPattern];
     NSString *pattern = [NSString stringWithFormat:@"(?<=:)(\\s*\\(%1$@?(\\w+?)(?:\\s*\\*)?%1$@?\\))?\\s*\\w+",
                          annotationPattern];
@@ -73,11 +75,14 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
   NSRange methodRange = {0, methodName.length};
   NSMutableArray *args = [NSMutableArray array];
   [typeNameRegex enumerateMatchesInString:methodName options:0 range:methodRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
-    NSRange typeRange = [result rangeAtIndex:4];
+    NSRange typeRange = [result rangeAtIndex:5];
     NSString *type = typeRange.length ? [methodName substringWithRange:typeRange] : @"id";
-    RCTNullability nullability = [result rangeAtIndex:2].length ? RCTNullable :
-      [result rangeAtIndex:3].length ? RCTNonnullable : RCTNullabilityUnspecified;
-    [args addObject:[[RCTMethodArgument alloc] initWithType:type nullability:nullability]];
+    BOOL unused = ([result rangeAtIndex:2].length > 0);
+    RCTNullability nullability = [result rangeAtIndex:3].length ? RCTNullable :
+      [result rangeAtIndex:4].length ? RCTNonnullable : RCTNullabilityUnspecified;
+    [args addObject:[[RCTMethodArgument alloc] initWithType:type
+                                                nullability:nullability
+                                                     unused:unused]];
   }];
   *arguments = [args copy];
 
@@ -153,18 +158,9 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       )
     };
 
-    void (^defaultCase)(const char *) = ^(const char *argumentType) {
-      static const char *blockType = @encode(typeof(^{}));
-      if (!strcmp(argumentType, blockType)) {
-        addBlockArgument();
-      } else {
-        RCT_ARG_BLOCK( id value = json; )
-      }
-    };
-
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
       const char *objcType = [_methodSignature getArgumentTypeAtIndex:i];
-
+      BOOL isNullableType = NO;
       RCTMethodArgument *argument = arguments[i - 2];
       NSString *typeName = argument.type;
       SEL selector = NSSelectorFromString([typeName stringByAppendingString:@":"]);
@@ -173,6 +169,9 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
 #define RCT_CONVERT_CASE(_value, _type) \
 case _value: { \
+  if (RCT_DEBUG && ([@#_type hasSuffix:@"*"] || [@#_type hasSuffix:@"Ref"] || [@#_type isEqualToString:@"id"])) { \
+    isNullableType = YES; \
+  } \
   _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
   RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
   break; \
@@ -198,6 +197,7 @@ case _value: { \
 
           case '{': {
             [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
+
               NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
               void *returnValue = malloc(methodSignature.methodReturnLength);
               NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
@@ -214,8 +214,15 @@ case _value: { \
             break;
           }
 
-          default:
-            defaultCase(objcType);
+          default: {
+            static const char *blockType = @encode(typeof(^{}));
+            if (!strcmp(objcType, blockType)) {
+              addBlockArgument();
+            } else {
+              RCTLogError(@"Unsupported argument type '%@' in method %@.",
+                          typeName, [self methodName]);
+            }
+          }
         }
       } else if ([typeName isEqualToString:@"RCTResponseSenderBlock"]) {
         addBlockArgument();
@@ -278,17 +285,43 @@ case _value: { \
 
         // Unknown argument type
         RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
-            " to support this type.", typeName, [self methodName]);
+                    " to support this type.", typeName, [self methodName]);
       }
 
       if (RCT_DEBUG) {
+
         RCTNullability nullability = argument.nullability;
+        if (!isNullableType) {
+          if (nullability == RCTNullable) {
+            RCTLogError(@"Argument %tu (%@) of %@.%@ is marked as nullable, but "
+                        "is not a nullable type.", i - 2, typeName,
+                        RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+          }
+          nullability = RCTNonnullable;
+        }
+
+        /**
+         * Special case - Numbers are not nullable in Android, so we
+         * don't support this for now. In future we may allow it.
+         */
+        if ([typeName isEqualToString:@"NSNumber"]) {
+          BOOL unspecified = (nullability == RCTNullabilityUnspecified);
+          if (!argument.unused && (nullability == RCTNullable || unspecified)) {
+            RCTLogError(@"Argument %tu (NSNumber) of %@.%@ %@, but React requires "
+                        "that all NSNumber arguments are explicitly marked as "
+                        "`nonnull` to ensure compatibility with Android.", i - 2,
+                        RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
+                        unspecified ? @"has unspecified nullability" : @"is marked as nullable");
+          }
+          nullability = RCTNonnullable;
+        }
+
         if (nullability == RCTNonnullable) {
           RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
           argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
             if (json == nil || json == (id)kCFNull) {
-              RCTLogError(@"Argument %tu of %@.%@ must not be null", index,
-                          RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+              RCTLogError(@"Argument %tu (%@) of %@.%@ must not be null", index,
+                          typeName, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
               id null = nil;
               [invocation setArgument:&null atIndex:index + 2];
             } else {

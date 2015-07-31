@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
 {
   RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL];
   webSocket.delegate = self;
@@ -67,12 +67,12 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(NSNumber *)socketID)
   [webSocket open];
 }
 
-RCT_EXPORT_METHOD(send:(NSString *)message socketID:(NSNumber *)socketID)
+RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] send:message];
 }
 
-RCT_EXPORT_METHOD(close:(NSNumber *)socketID)
+RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] close];
   _sockets[socketID] = nil;

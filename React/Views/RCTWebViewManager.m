@@ -47,7 +47,7 @@ RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
   };
 }
 
-RCT_EXPORT_METHOD(goBack:(NSNumber *)reactTag)
+RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
@@ -58,7 +58,7 @@ RCT_EXPORT_METHOD(goBack:(NSNumber *)reactTag)
   }];
 }
 
-RCT_EXPORT_METHOD(goForward:(NSNumber *)reactTag)
+RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     id view = viewRegistry[reactTag];
@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(goForward:(NSNumber *)reactTag)
 }
 
 
-RCT_EXPORT_METHOD(reload:(NSNumber *)reactTag)
+RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];

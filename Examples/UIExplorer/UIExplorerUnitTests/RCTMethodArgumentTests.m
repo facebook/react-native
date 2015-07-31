@@ -128,4 +128,17 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
 }
 
+- (void)testUnused
+{
+  NSArray *arguments;
+  NSString *methodName = @"foo:(__unused NSString *)foo bar:(NSNumber *)bar";
+  RCTParseObjCMethodName(&methodName, &arguments);
+  XCTAssertEqualObjects(methodName, @"foo:bar:");
+  XCTAssertEqual(arguments.count, (NSUInteger)2);
+  XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
+  XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"NSNumber");
+  XCTAssertTrue(((RCTMethodArgument *)arguments[0]).unused);
+  XCTAssertFalse(((RCTMethodArgument *)arguments[1]).unused);
+}
+
 @end

@@ -76,7 +76,7 @@ RCT_DEPRECATED_VIEW_PROPERTY(throttleScrollCallbackMS, scrollEventThrottle)
   };
 }
 
-RCT_EXPORT_METHOD(getContentSize:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(getContentSize:(NSNumber *)reactTag
   }];
 }
 
-RCT_EXPORT_METHOD(calculateChildFrames:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
                     callback:(RCTResponseSenderBlock)callback)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
@@ -107,7 +107,6 @@ RCT_EXPORT_METHOD(calculateChildFrames:(NSNumber *)reactTag
     }
 
     NSArray *childFrames = [((RCTScrollView *)view) calculateChildFramesData];
-
     if (childFrames) {
       callback(@[childFrames]);
     }

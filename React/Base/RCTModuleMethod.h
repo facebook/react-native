@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, RCTNullability) {
 
 @property (nonatomic, copy, readonly) NSString *type;
 @property (nonatomic, readonly) RCTNullability nullability;
+@property (nonatomic, readonly) BOOL unused;
 
 @end
 

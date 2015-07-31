@@ -166,7 +166,7 @@ RCT_EXPORT_MODULE()
  * calculating the timer's target time. We calculate this by passing in
  * Date.now() from JS and then subtracting that from the current time here.
  */
-RCT_EXPORT_METHOD(createTimer:(NSNumber *)callbackID
+RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
                   duration:(NSTimeInterval)jsDuration
                   jsSchedulingTime:(NSDate *)jsSchedulingTime
                   repeats:(BOOL)repeats)
@@ -200,15 +200,11 @@ RCT_EXPORT_METHOD(createTimer:(NSNumber *)callbackID
   [self startTimers];
 }
 
-RCT_EXPORT_METHOD(deleteTimer:(NSNumber *)timerID)
+RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
 {
-  if (timerID) {
-    _timers[timerID] = nil;
-    if (_timers.count == 0) {
-      [self stopTimers];
-    }
-  } else {
-    RCTLogWarn(@"Called deleteTimer: with a nil timerID");
+  _timers[timerID] = nil;
+  if (_timers.count == 0) {
+    [self stopTimers];
   }
 }
 

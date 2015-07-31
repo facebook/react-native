@@ -378,7 +378,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
   }];
 }
 
-RCT_EXPORT_METHOD(cancelRequest:(NSNumber *)requestID)
+RCT_EXPORT_METHOD(cancelRequest:(nonnull NSNumber *)requestID)
 {
   [_tasksByRequestID[requestID] cancel];
   [_tasksByRequestID removeObjectForKey:requestID];

@@ -18,6 +18,18 @@
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
 
+static BOOL RCTLogsError(void (^block)(void))
+{
+  __block BOOL loggedError = NO;
+  RCTPerformBlockWithLogFunction(block, ^(RCTLogLevel level,
+                                          __unused NSString *fileName,
+                                          __unused NSNumber *lineNumber,
+                                          __unused NSString *message) {
+    loggedError = (level == RCTLogLevelError);
+  });
+  return loggedError;
+}
+
 @interface RCTModuleMethodTests : XCTestCase
 
 @end
@@ -32,31 +44,59 @@
   RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
                                                                JSMethodName:nil
                                                                 moduleClass:[self class]];
+  XCTAssertFalse(RCTLogsError(^{
+    [method invokeWithBridge:nil module:self arguments:@[@"Hello World"]];
+  }));
 
+  XCTAssertTrue(RCTLogsError(^{
+    [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+  }));
+}
+
+- (void)doFooWithNumber:(__unused NSNumber *)n { }
+- (void)doFooWithDouble:(__unused double)n { }
+- (void)doFooWithInteger:(__unused NSInteger)n { }
+
+- (void)testNumbersNonnull
+{
   {
-    __block BOOL loggedError = NO;
-    RCTPerformBlockWithLogFunction(^{
-      [method invokeWithBridge:nil module:self arguments:@[@"Hello World"]];
-    }, ^(RCTLogLevel level,
-         __unused NSString *fileName,
-         __unused NSNumber *lineNumber,
-         __unused NSString *message) {
-      loggedError = (level == RCTLogLevelError);
-    });
-    XCTAssertFalse(loggedError);
+    // Specifying an NSNumber param without nonnull isn't allowed
+    XCTAssertTrue(RCTLogsError(^{
+      NSString *methodName = @"doFooWithNumber:(NSNumber *)n";
+      (void)[[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                               JSMethodName:nil
+                                                moduleClass:[self class]];
+    }));
   }
 
   {
-    __block BOOL loggedError = NO;
-    RCTPerformBlockWithLogFunction(^{
+    NSString *methodName = @"doFooWithNumber:(nonnull NSNumber *)n";
+    RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                                 JSMethodName:nil
+                                                                  moduleClass:[self class]];
+    XCTAssertTrue(RCTLogsError(^{
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
-    }, ^(RCTLogLevel level,
-         __unused NSString *fileName,
-         __unused NSNumber *lineNumber,
-         __unused NSString *message) {
-      loggedError = (level == RCTLogLevelError);
-    });
-    XCTAssertTrue(loggedError);
+    }));
+  }
+
+  {
+    NSString *methodName = @"doFooWithDouble:(double)n";
+    RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                                 JSMethodName:nil
+                                                                  moduleClass:[self class]];
+    XCTAssertTrue(RCTLogsError(^{
+      [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+    }));
+  }
+
+  {
+    NSString *methodName = @"doFooWithInteger:(NSInteger)n";
+    RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                                 JSMethodName:nil
+                                                                  moduleClass:[self class]];
+    XCTAssertTrue(RCTLogsError(^{
+      [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+    }));
   }
 }
 
