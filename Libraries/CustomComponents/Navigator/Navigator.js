@@ -937,14 +937,24 @@ var Navigator = React.createClass({
       index += this.state.routeStack.length;
     }
 
-    if (this.state.routeStack.length <= index) {
+    if (index > this.state.routeStack.length) {
       return;
     }
 
     var nextRouteStack = this.state.routeStack.slice();
     var nextAnimationModeStack = this.state.sceneConfigStack.slice();
-    nextRouteStack[index] = route;
-    nextAnimationModeStack[index] = this.props.configureScene(route);
+
+    // replacing an existing route in the routeStack
+    if (index < this.state.routeStack.length) {
+      nextRouteStack[index] = route;
+      nextAnimationModeStack[index] = this.props.configureScene(route);
+    } else {
+    // adding a new route to the very end of the current routeStack
+      nextRouteStack = nextRouteStack.concat([route]);
+      nextAnimationModeStack = nextAnimationModeStack.concat([
+        this.props.configureScene(route),
+      ]);
+    }
 
     if (index === this.state.presentedIndex) {
       this._emitWillFocus(route);
