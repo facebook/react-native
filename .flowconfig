@@ -22,6 +22,8 @@
 
 # See https://github.com/facebook/flow/issues/442
 .*/react-tools/node_modules/commoner/lib/reader.js
+.*/react-tools/src/vendor/core/emptyFunction.js
+.*/react-tools/src/vendor/core/warning.js
 
 # Ignore jest
 .*/node_modules/jest-cli/.*
