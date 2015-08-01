@@ -69,9 +69,11 @@ type Config = {
   delete?: Anim;
 }
 
-function configureNext(config: Config, onAnimationDidEnd?: Function, onError?: Function) {
+function configureNext(config: Config, onAnimationDidEnd?: Function) {
   configChecker({config}, 'config', 'LayoutAnimation.configureNext');
-  RCTUIManager.configureNextLayoutAnimation(config, onAnimationDidEnd, onError);
+  RCTUIManager.configureNextLayoutAnimation(
+    config, onAnimationDidEnd || function() {}, function() { /* unused */ }
+  );
 }
 
 function create(duration: number, type, creationProp): Config {
