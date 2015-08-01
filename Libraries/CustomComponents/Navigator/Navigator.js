@@ -971,6 +971,40 @@ var Navigator = React.createClass({
   },
 
   /**
+   * Removes a scene from the stack
+   */
+  removeAtIndex: function(index, cb) {
+    if (index < 0) {
+      index += this.state.routeStack.length;
+    }
+
+    if (index >= this.state.routeStack.length) {
+      return;
+    }
+
+    var nextRouteStack = this.state.routeStack.slice();
+    var nextAnimationModeStack = this.state.sceneConfigStack.slice();
+
+    nextRouteStack.splice(index, 1);
+    nextAnimationModeStack.splice(index, 1);
+
+    if (index < this.state.presentedIndex) {
+      // remove a route which is before the currently active route
+      this.state.presentedIndex = this.state.presentedIndex - 1;
+    } else if (index == this.state.presentedIndex) {
+      // return if trying to remove currently active route
+      return;
+    }
+
+    this.setState({
+      routeStack: nextRouteStack,
+      sceneConfigStack: nextAnimationModeStack,
+    }, () => {
+      cb && cb();
+    });
+  },
+
+  /**
    * Replaces the current scene in the stack.
    */
   replace: function(route) {
