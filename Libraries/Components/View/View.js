@@ -227,6 +227,7 @@ var View = React.createClass({
      * interaction/animation.
      */
     renderToHardwareTextureAndroid: PropTypes.bool,
+    collapsable: PropTypes.bool,
   },
 
   render: function() {
