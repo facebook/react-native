@@ -52,6 +52,8 @@ var TextInputState = {
     if (this._currentlyFocusedID === textFieldID && textFieldID !== null) {
       this._currentlyFocusedID = null;
       RCTUIManager.blur(textFieldID);
+    } else {
+      RCTUIManager.blurView(textFieldID);
     }
   }
 };

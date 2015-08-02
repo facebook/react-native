@@ -757,6 +757,20 @@ RCT_EXPORT_METHOD(manageChildren:(NSNumber *)containerReactTag
   }
 }
 
+- (void)endEditingForShadowView:(NSNumber *)reactTag manager:(RCTUIManager *)uiManager viewRegistry:(RCTSparseArray *)viewRegistry
+{
+  RCTShadowView *shadowView = uiManager.shadowViewRegistry[reactTag];
+
+  for(RCTShadowView *subview in [shadowView reactSubviews]) {
+    if([[subview reactSubviews] count] > 0) {
+      [uiManager endEditingForShadowView:subview.reactTag manager:uiManager viewRegistry:viewRegistry];
+    } else {
+      UIView *view = viewRegistry[subview.reactTag];
+      [view resignFirstResponder];
+    }
+  }
+}
+
 static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
 {
   // TODO: cache respondsToSelector tests
@@ -911,6 +925,14 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
   [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     UIView *currentResponder = viewRegistry[reactTag];
     [currentResponder resignFirstResponder];
+  }];
+}
+
+RCT_EXPORT_METHOD(blurView:(NSNumber *)reactTag)
+{
+  if (!reactTag) return;
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
+      [uiManager endEditingForShadowView:reactTag manager:uiManager viewRegistry:viewRegistry];
   }];
 }
 
