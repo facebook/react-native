@@ -13,13 +13,21 @@ var React = require('React');
 var HeaderLinks = require('HeaderLinks');
 
 var Site = React.createClass({
+  _renderTitle: function() {
+    if (this.props.title) {
+      return (<title>React Native | {this.props.title} </title>);
+    } else {
+      return (<title>React Native | A framework for building native apps using React</title>);
+    }
+  },
+
   render: function() {
     return (
       <html>
         <head>
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-          <title>React Native | A framework for building native apps using React</title>
+          {this._renderTitle()}
           <meta name="viewport" content="width=device-width" />
           <meta property="og:title" content="React Native | A framework for building native apps using React" />
           <meta property="og:type" content="website" />
