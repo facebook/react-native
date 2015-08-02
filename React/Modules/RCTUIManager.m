@@ -757,16 +757,16 @@ RCT_EXPORT_METHOD(manageChildren:(NSNumber *)containerReactTag
   }
 }
 
-- (void)endEditingForShadowView:(NSNumber *)reactTag manager:(RCTUIManager *)uiManager viewRegistry:(RCTSparseArray *)viewRegistry
+- (void)endEditingForShadowView:(NSNumber *)reactTag
 {
-  RCTShadowView *shadowView = uiManager.shadowViewRegistry[reactTag];
-
-  for(RCTShadowView *subview in [shadowView reactSubviews]) {
-    if([[subview reactSubviews] count] > 0) {
-      [uiManager endEditingForShadowView:subview.reactTag manager:uiManager viewRegistry:viewRegistry];
-    } else {
-      UIView *view = viewRegistry[subview.reactTag];
-      [view resignFirstResponder];
+  UIView *view = self.viewRegistry[reactTag];
+  if (view) {
+    [view endEditing:YES];
+  } else {
+    RCTShadowView *shadowView = self.shadowViewRegistry[reactTag];
+    // Recurse through the shadow hierarchy when the shadow view has no backing UIView
+    for (RCTShadowView *subview in [shadowView reactSubviews]) {
+      [self endEditingForShadowView:subview.reactTag];
     }
   }
 }
@@ -932,7 +932,7 @@ RCT_EXPORT_METHOD(blurView:(NSNumber *)reactTag)
 {
   if (!reactTag) return;
   [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
-      [uiManager endEditingForShadowView:reactTag manager:uiManager viewRegistry:viewRegistry];
+    [uiManager endEditingForShadowView:reactTag];
   }];
 }
 
