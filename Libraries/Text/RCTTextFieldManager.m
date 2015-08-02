@@ -58,6 +58,14 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
+RCT_CUSTOM_VIEW_PROPERTY(manualInput, BOOL, RCTTextField)
+{
+  if (json && [RCTConvert BOOL:json]) {
+    view.inputView = [UIView new];
+  } else {
+    view.inputView = nil;
+  }
+}
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {

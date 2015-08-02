@@ -280,6 +280,10 @@ var TextInput = React.createClass({
      * The color of the textInput underline. Is only supported on Android.
      */
     underlineColorAndroid: PropTypes.string,
+    /*
+     * If true, an empty inputView is assigned to the text field
+    */
+    manualInput: PropTypes.bool,
   },
 
   /**

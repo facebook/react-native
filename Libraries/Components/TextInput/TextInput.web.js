@@ -80,6 +80,10 @@ var TextInput = React.createClass({
          */
         value: PropTypes.string,
 
+        /*
+        * If true, the text field will not be editable
+        */
+        manualInput: PropTypes.bool,
     },
 
     getDefaultProps: function() {
@@ -95,7 +99,7 @@ var TextInput = React.createClass({
                 {...this.props}
                 onChange={this._onChange}
                 onKeyDown={this._onKeyDown}
-                disabled={!this.props.editable}
+                disabled={!this.props.editable || manualInput}
                 type={this.props.password ? "password" : "text"}
                 style={webifyStyle(this.props.style)}
             />
