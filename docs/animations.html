@@ -362,54 +362,7 @@ make them customizable, React Native exposes a
     pop<span class="token punctuation">:</span> CustomLeftToRightGesture<span class="token punctuation">,</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p><a href="https://rnplay.org/apps/HPy6UA" target="_blank">Run this example</a></p><p>For further information about customizing scene transitions, <a href="https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js" target="_blank">read the
-source</a>.</p><h3><a class="anchor" name="animationexperimental-deprecated"></a>AnimationExperimental <em>(Deprecated)</em> <a class="hash-link" href="#animationexperimental-deprecated">#</a></h3><p>As the name would suggest, this was only ever an experimental API and it
-is <strong>not recommended to use this on your apps</strong>. It has some rough edges
-and is not under active development. It is built on top of CoreAnimation
-explicit animations.</p><p>If you choose to use it anyways, here is what you need to know:</p><ul><li>You will need to include <code>RCTAnimationExperimental.xcodeproj</code> and add
-<code>libRCTAnimationExperimental.a</code> to <code>Build Phases</code>.</li><li>Suited only for static &quot;fire and forget&quot; animations - not continuous gestures.</li><li>Hit detection will not work as expected because animations occur on
-the presentation layer.</li></ul><div class="prism language-javascript"><span class="token keyword">var</span> AnimationExperimental <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;AnimationExperimental&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">var</span> App <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  <span class="token function">componentDidMount<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    AnimationExperimental<span class="token punctuation">.</span><span class="token function">startAnimation<span class="token punctuation">(</span></span>
-      <span class="token punctuation">{</span>
-        node<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_box<span class="token punctuation">,</span>
-        duration<span class="token punctuation">:</span> <span class="token number">1000</span><span class="token punctuation">,</span>
-        easing<span class="token punctuation">:</span> <span class="token string">&#x27;easeInOutBack&#x27;</span><span class="token punctuation">,</span>
-        property<span class="token punctuation">:</span> <span class="token string">&#x27;scaleXY&#x27;</span><span class="token punctuation">,</span>
-        toValue<span class="token punctuation">:</span> <span class="token punctuation">{</span> x<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span> y<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-      <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span> justifyContent<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span> alignItems<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-        &lt;View ref<span class="token operator">=</span><span class="token punctuation">{</span>component <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_box <span class="token operator">=</span> component<span class="token punctuation">}</span>
-              style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>width<span class="token punctuation">:</span> <span class="token number">200</span><span class="token punctuation">,</span> height<span class="token punctuation">:</span> <span class="token number">200</span><span class="token punctuation">,</span> backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;red&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
-      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-    <span class="token punctuation">)</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p><img src="/react-native/img/AnimationExperimentalScaleXY.gif" alt=""></p><p>Now to demonstrate a known issue, and one of the reasons why it is
-recommended not to use <code>AnimationExperimental</code> currently, let&#x27;s try to
-animate <code>opacity</code> from 1 to 0.5:</p><div class="prism language-javascript">AnimationExperimental<span class="token punctuation">.</span><span class="token function">startAnimation<span class="token punctuation">(</span></span>
-  <span class="token punctuation">{</span>
-    node<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_box<span class="token punctuation">,</span>
-    duration<span class="token punctuation">:</span> <span class="token number">1000</span><span class="token punctuation">,</span>
-    easing<span class="token punctuation">:</span> <span class="token string">&#x27;easeInOutBack&#x27;</span><span class="token punctuation">,</span>
-    property<span class="token punctuation">:</span> <span class="token string">&#x27;opacity&#x27;</span><span class="token punctuation">,</span>
-    fromValue<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    toValue<span class="token punctuation">:</span> <span class="token number">0.5</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span></div><p><img src="/react-native/img/AnimationExperimentalOpacity.gif" alt=""></p><h3><a class="anchor" name="pop-unsupported-not-recommended"></a>Pop <em>(Unsupported, not recommended)</em> <a class="hash-link" href="#pop-unsupported-not-recommended">#</a></h3><p><a href="https://github.com/facebook/pop" target="_blank">Facebook Pop</a> &quot;supports spring and
-decay dynamic animations, making it useful for building realistic,
-physics-based interactions.&quot;</p><p>This is not officially supported or recommended because the direction is
-to move towards JavaScript-driven animations, but if you must use it,
-you can find the code to integrate with React Native
-<a href="https://github.com/facebook/react-native/issues/1365#issuecomment-104792251" target="_blank">here</a>.
-Please do not open questions specific to Pop on the React Native issues,
-StackOverflow is a better place to answer those questions as it is not
-considered to be part of the core.</p></div><div class="docs-prevnext"><a class="docs-next" href="accessibility.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
+source</a>.</p></div><div class="docs-prevnext"><a class="docs-next" href="accessibility.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
