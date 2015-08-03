@@ -775,7 +775,8 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     NSString *log = RCTProfileEnd(self);
     NSURL *bundleURL = _parentBridge.bundleURL;
-    NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", bundleURL.scheme, bundleURL.host, bundleURL.port];
+    NSString *port = bundleURL.port ? [@":" stringByAppendingString:bundleURL.port.stringValue] : @"";
+    NSString *URLString = [NSString stringWithFormat:@"%@://%@%@/profile", bundleURL.scheme, bundleURL.host, port];
     NSURL *URL = [NSURL URLWithString:URLString];
     NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
     URLRequest.HTTPMethod = @"POST";
