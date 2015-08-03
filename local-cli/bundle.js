@@ -30,7 +30,7 @@ function getBundle(flags) {
     transformModulePath: require.resolve('../packager/transformer.js'),
     assetRoots: assetRoots,
     cacheVersion: '2',
-    blacklistRE: blacklist('ios'),
+    blacklistRE: blacklist(flags.platform),
   };
 
   var url = flags.url ? flags.url.replace(/\.js$/i, '.bundle?dev=') : URL_PATH;
@@ -42,7 +42,7 @@ function getBundle(flags) {
     .done(function(bundle) {
       console.log('Build complete');
       fs.writeFile(outPath, bundle.getSource({
-        inlineSourceMap: false,
+        inlineSourceMap: flags.inlineSource,
         minify: flags.minify
       }), function(err) {
         if (err) {
@@ -62,8 +62,10 @@ function showHelp() {
     'Options:',
     '  --dev\t\tsets DEV flag to true',
     '  --minify\tminify js bundle',
+    '  --inlineSource\t\tspecify whether or not to include inline source maps',
     '  --root\t\tadd another root(s) to be used in bundling in this project',
     '  --assetRoots\t\tspecify the root directories of app assets',
+    '  --platform\t\tspecify the platform for which you are building',
     '  --out\t\tspecify the output file',
     '  --url\t\tspecify the bundle file url',
   ].join('\n'));
@@ -76,8 +78,10 @@ module.exports = {
       help: args.indexOf('--help') !== -1,
       dev: args.indexOf('--dev') !== -1,
       minify: args.indexOf('--minify') !== -1,
+      inlineSource: args.indexOf('--inlineSource') !== -1,
       root: args.indexOf('--root') !== -1 ? args[args.indexOf('--root') + 1] : false,
       assetRoots: args.indexOf('--assetRoots') !== -1 ? args[args.indexOf('--assetRoots') + 1] : false,
+      platform: args.indexOf('--platform') !== -1 ? args[args.indexOf('--platform') + 1] : false,
       out: args.indexOf('--out') !== -1 ? args[args.indexOf('--out') + 1] : false,
       url: args.indexOf('--url') !== -1 ? args[args.indexOf('--url') + 1] : false,
     }

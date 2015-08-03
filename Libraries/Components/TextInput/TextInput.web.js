@@ -99,7 +99,7 @@ var TextInput = React.createClass({
                 {...this.props}
                 onChange={this._onChange}
                 onKeyDown={this._onKeyDown}
-                disabled={!this.props.editable || manualInput}
+                disabled={!this.props.editable || this.props.manualInput}
                 type={this.props.password ? "password" : "text"}
                 style={webifyStyle(this.props.style)}
             />
