@@ -141,9 +141,9 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 
             BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
             ALAssetRepresentation *representation = [asset defaultRepresentation];
+            ALAssetOrientation orientation = ALAssetOrientationUp;
 
             UIImage *image;
-            ALAssetOrientation orientation = ALAssetOrientationUp;
             NSError *error = nil;
             if (useMaximumSize) {
               image = [UIImage imageWithCGImage:representation.fullResolutionImage
