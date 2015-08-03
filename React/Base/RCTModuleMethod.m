@@ -51,6 +51,14 @@ typedef void (^RCTArgumentBlock)(RCTBridge *, NSInvocation *, NSUInteger, id);
   NSArray *_argumentBlocks;
 }
 
+static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
+                                id valueOrType, const char *issue)
+{
+  RCTLogError(@"Argument %tu (%@) of %@.%@ %s", index, valueOrType,
+              RCTBridgeModuleNameForClass(method->_moduleClass),
+              method->_JSMethodName, issue);
+}
+
 RCT_NOT_IMPLEMENTED(-init)
 
 void RCTParseObjCMethodName(NSString **, NSArray **);
@@ -129,6 +137,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
     // Get method signature
     _methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
+    RCTAssert(_methodSignature, @"%@ is not a recognized Objective-C method.", objCMethodName);
 
     // Process arguments
     NSUInteger numberOfArguments = _methodSignature.numberOfArguments;
@@ -140,12 +149,12 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
     [invocation setArgument:&value atIndex:(index) + 2]; \
   }];
 
+    __weak RCTModuleMethod *weakSelf = self;
     void (^addBlockArgument)(void) = ^{
       RCT_ARG_BLOCK(
 
         if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
-          RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
-                      json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+          RCTLogArgumentError(weakSelf, index, json, "should be a function");
           return;
         }
 
@@ -230,8 +239,7 @@ case _value: { \
         RCT_ARG_BLOCK(
 
           if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
-            RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
-                        json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+            RCTLogArgumentError(weakSelf, index, json, "should be a function");
             return;
           }
 
@@ -248,8 +256,7 @@ case _value: { \
                   _moduleClass, objCMethodName);
         RCT_ARG_BLOCK(
           if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
-            RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise resolver ID", index,
-                        json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+            RCTLogArgumentError(weakSelf, index, json, "should be a promise resolver function");
             return;
           }
 
@@ -267,8 +274,7 @@ case _value: { \
                   _moduleClass, objCMethodName);
         RCT_ARG_BLOCK(
           if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
-            RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise rejecter ID", index,
-                        json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+            RCTLogArgumentError(weakSelf, index, json, "should be a promise rejecter function");
             return;
           }
 
@@ -293,9 +299,8 @@ case _value: { \
         RCTNullability nullability = argument.nullability;
         if (!isNullableType) {
           if (nullability == RCTNullable) {
-            RCTLogError(@"Argument %tu (%@) of %@.%@ is marked as nullable, but "
-                        "is not a nullable type.", i - 2, typeName,
-                        RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+            RCTLogArgumentError(weakSelf, i - 2, typeName, "is marked as "
+                                "nullable, but is not a nullable type.");
           }
           nullability = RCTNonnullable;
         }
@@ -307,11 +312,11 @@ case _value: { \
         if ([typeName isEqualToString:@"NSNumber"]) {
           BOOL unspecified = (nullability == RCTNullabilityUnspecified);
           if (!argument.unused && (nullability == RCTNullable || unspecified)) {
-            RCTLogError(@"Argument %tu (NSNumber) of %@.%@ %@, but React requires "
-                        "that all NSNumber arguments are explicitly marked as "
-                        "`nonnull` to ensure compatibility with Android.", i - 2,
-                        RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
-                        unspecified ? @"has unspecified nullability" : @"is marked as nullable");
+            RCTLogArgumentError(weakSelf, i - 2, typeName,
+              [unspecified ? @"has unspecified nullability" : @"is marked as nullable"
+               stringByAppendingString: @" but React requires that all NSNumber "
+               "arguments are explicitly marked as `nonnull` to ensure "
+               "compatibility with Android."].UTF8String);
           }
           nullability = RCTNonnullable;
         }
@@ -320,8 +325,7 @@ case _value: { \
           RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
           argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
             if (json == nil || json == (id)kCFNull) {
-              RCTLogError(@"Argument %tu (%@) of %@.%@ must not be null", index,
-                          typeName, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+              RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
               id null = nil;
               [invocation setArgument:&null atIndex:index + 2];
             } else {
