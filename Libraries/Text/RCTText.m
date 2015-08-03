@@ -84,17 +84,20 @@
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
 
   __block UIBezierPath *highlightPath = nil;
-  [layoutManager.textStorage enumerateAttributesInRange:glyphRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, __unused BOOL *stop){
-    if ([attrs[RCTIsHighlightedAttributeName] boolValue]) {
-      [layoutManager enumerateEnclosingRectsForGlyphRange:range withinSelectedGlyphRange:range inTextContainer:textContainer usingBlock:^(CGRect r, __unused BOOL *s){
-        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(r, -2, -2) cornerRadius:2];
-        if (highlightPath) {
-          [highlightPath appendPath:path];
-        } else {
-          highlightPath = path;
-        }
-      }];
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+  [layoutManager.textStorage enumerateAttribute:RCTIsHighlightedAttributeName inRange:characterRange options:0 usingBlock:^(NSNumber *value, NSRange range, BOOL *_) {
+    if (!value.boolValue) {
+      return;
     }
+
+    [layoutManager enumerateEnclosingRectsForGlyphRange:range withinSelectedGlyphRange:range inTextContainer:textContainer usingBlock:^(CGRect enclosingRect, __unused BOOL *__) {
+      UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
+      if (highlightPath) {
+        [highlightPath appendPath:path];
+      } else {
+        highlightPath = path;
+      }
+    }];
   }];
 
   if (highlightPath) {
@@ -128,6 +131,22 @@
     reactTag = [_textStorage attribute:RCTReactTagAttributeName atIndex:characterIndex effectiveRange:NULL];
   }
   return reactTag;
+}
+
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (!self.window) {
+    self.layer.contents = nil;
+    if (_highlightLayer) {
+      [_highlightLayer removeFromSuperlayer];
+      _highlightLayer = nil;
+    }
+  } else if (_textStorage.length) {
+    [self setNeedsDisplay];
+  }
 }
 
 #pragma mark - Accessibility
