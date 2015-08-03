@@ -73,6 +73,7 @@ RCT_EXPORT_MODULE()
 static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
                                        CGSize size, CGFloat scale,
                                        UIViewContentMode resizeMode,
+                                       ALAssetOrientation orientation,
                                        NSError **error)
 {
   NSUInteger length = (NSUInteger)representation.size;
@@ -103,7 +104,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 
   if (imageRef) {
     UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale
-                                   orientation:(UIImageOrientation)representation.orientation];
+                                   orientation:(UIImageOrientation)orientation];
     CGImageRelease(imageRef);
     return image;
   }
@@ -142,13 +143,14 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
             ALAssetRepresentation *representation = [asset defaultRepresentation];
 
             UIImage *image;
+            ALAssetOrientation orientation = ALAssetOrientationUp;
             NSError *error = nil;
             if (useMaximumSize) {
               image = [UIImage imageWithCGImage:representation.fullResolutionImage
                                           scale:scale
-                                    orientation:(UIImageOrientation)representation.orientation];
+                                    orientation:(UIImageOrientation)orientation];
             } else {
-              image = RCTScaledImageForAsset(representation, size, scale, resizeMode, &error);
+              image = RCTScaledImageForAsset(representation, size, scale, resizeMode, orientation, &error);
             }
 
             RCTDispatchCallbackOnMainQueue(completion, error, image);
