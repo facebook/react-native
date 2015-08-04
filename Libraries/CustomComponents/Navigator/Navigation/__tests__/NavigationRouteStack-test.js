@@ -31,6 +31,10 @@ jest
 
 var NavigationRouteStack = require('NavigationRouteStack');
 
+function assetStringNotEmpty(str) {
+  expect(!!str && typeof str === 'string').toBe(true);
+}
+
 describe('NavigationRouteStack:', () => {
   // Different types of routes.
   var ROUTES = [
@@ -340,5 +344,63 @@ describe('NavigationRouteStack:', () => {
       ['a', 0, true],
       ['b', 1, true],
     ]);
+  });
+
+  // Diff
+  it('subtracts stack', () => {
+    var stack1 = new NavigationRouteStack(2, ['a', 'b', 'c']);
+    var stack2 = stack1.pop().pop().push('x').push('y');
+
+    var diff = stack1.subtract(stack2);
+
+    var result = diff.toJS().map((record) => {
+      assetStringNotEmpty(record.key);
+      return {
+        index: record.index,
+        route: record.route,
+      };
+    });
+
+    // route `b` and `c` are no longer in the stack.
+    expect(result).toEqual([
+      {
+        index: 1,
+        route: 'b',
+      },
+      {
+        index: 2,
+        route: 'c',
+      },
+    ]);
+  });
+
+  it('only subtracts the derived stack', () => {
+    var stack1 = new NavigationRouteStack(2, ['a', 'b', 'c']);
+    var stack2 = new NavigationRouteStack(0, ['a']);
+    var diff = stack1.subtract(stack2);
+
+    var result = diff.toJS().map((record) => {
+      assetStringNotEmpty(record.key);
+      return {
+        index: record.index,
+        route: record.route,
+      };
+    });
+
+    expect(result).toEqual([
+      {
+        index: 0,
+        route: 'a',
+      },
+      {
+        index: 1,
+        route: 'b',
+      },
+      {
+        index: 2,
+        route: 'c',
+      },
+    ]);
+
   });
 });

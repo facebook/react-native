@@ -11,7 +11,7 @@ var invariant = require('invariant');
 
 type IterationCallback = (route: any, index: number, key: string) => void;
 
-var {List} = immutable;
+var {List, Set} = immutable;
 
 function isRouteEmpty(route: any): boolean {
   return (route === undefined || route === null || route === '') || false;
@@ -31,6 +31,12 @@ class RouteNode {
     this.value = route;
   }
 }
+
+var StackDiffRecord = immutable.Record({
+  key: null,
+  route: null,
+  index: null,
+});
 
 /**
  * The immutable route stack.
@@ -199,6 +205,25 @@ class RouteStack {
       callback(node.value, ii, node.key);
       ii++;
     }
+  }
+
+  /**
+   * Returns a Set excluding any routes contained within the stack given.
+   */
+  subtract(stack: RouteStack): Set<StackDiffRecord> {
+    var items = [];
+    this._routeNodes.forEach((node: RouteNode, index: number) => {
+      if (!stack._routeNodes.contains(node)) {
+        items.push(
+          new StackDiffRecord({
+            route: node.value,
+            index: index,
+            key: node.key,
+          })
+        );
+      }
+    });
+    return new Set(items);
   }
 
   _update(index: number, routeNodes: List): RouteStack {
