@@ -26,6 +26,7 @@
 require('RCTDebugComponentOwnership');
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
+require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;
