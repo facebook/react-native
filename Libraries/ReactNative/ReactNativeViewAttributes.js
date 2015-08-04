@@ -23,6 +23,7 @@ ReactNativeViewAttributes.UIView = {
   accessibilityLiveRegion: true,
   accessibilityTraits: true,
   testID: true,
+  shouldRasterizeIOS: true,
   onLayout: true,
   onAccessibilityTap: true,
   onMagicTap: true,
