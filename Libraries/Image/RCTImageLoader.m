@@ -127,7 +127,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
   if ([imageTag hasPrefix:@"assets-library://"]) {
-    [[self assetsLibrary] assetForURL:[NSURL URLWithString:imageTag] resultBlock:^(ALAsset *asset) {
+    [[self assetsLibrary] assetForURL:[RCTConvert NSURL:imageTag] resultBlock:^(ALAsset *asset) {
       if (asset) {
         // ALAssetLibrary API is async and will be multi-threaded. Loading a few full
         // resolution images at once will spike the memory up to store the image data,
@@ -210,7 +210,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
     }];
     return ^{};
   } else if ([imageTag hasPrefix:@"http"]) {
-    NSURL *url = [NSURL URLWithString:imageTag];
+    NSURL *url = [RCTConvert NSURL:imageTag];
     if (!url) {
       NSString *errorMessage = [NSString stringWithFormat:@"Invalid URL: %@", imageTag];
       RCTDispatchCallbackOnMainQueue(completionBlock, RCTErrorWithMessage(errorMessage), nil);

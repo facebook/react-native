@@ -10,6 +10,7 @@
 #import "RCTRedBox.h"
 
 #import "RCTBridge.h"
+#import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTUtils.h"
 
@@ -102,7 +103,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, nil) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[stackFrameJSON length]];
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-  request.URL = [NSURL URLWithString:@"http://localhost:8081/open-stack-frame"];
+  request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
   request.HTTPMethod = @"POST";
   request.HTTPBody = stackFrameJSON;
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];

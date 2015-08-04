@@ -777,7 +777,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     NSURL *bundleURL = _parentBridge.bundleURL;
     NSString *port = bundleURL.port ? [@":" stringByAppendingString:bundleURL.port.stringValue] : @"";
     NSString *URLString = [NSString stringWithFormat:@"%@://%@%@/profile", bundleURL.scheme, bundleURL.host, port];
-    NSURL *URL = [NSURL URLWithString:URLString];
+    NSURL *URL = [RCTConvert NSURL:URLString];
     NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
     URLRequest.HTTPMethod = @"POST";
     [URLRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
