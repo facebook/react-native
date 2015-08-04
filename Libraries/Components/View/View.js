@@ -205,6 +205,21 @@ var View = React.createClass({
      * interaction/animation.
      */
     renderToHardwareTextureAndroid: PropTypes.bool,
+
+    /**
+     * Whether this view should be rendered as a bitmap before compositing.
+     *
+     * On iOS, this is useful for animations and interactions that do not
+     * modify this component's dimensions nor its children; for example, when
+     * translating the position of a static view, rasterization allows the
+     * renderer to reuse a cached bitmap of a static view and quickly composite
+     * it during each frame.
+     *
+     * Rasterization incurs an off-screen drawing pass and the bitmap consumes
+     * memory. Test and measure when using this property.
+     * @platform ios
+     */
+    shouldRasterizeIOS: PropTypes.bool,
   },
 
   render: function() {
