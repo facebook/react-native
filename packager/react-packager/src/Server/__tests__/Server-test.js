@@ -20,7 +20,7 @@ jest.setMock('worker-farm', function() { return function() {}; })
     .setMock('uglify-js')
     .dontMock('../');
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 describe('processRequest', function() {
   var server;
@@ -39,6 +39,7 @@ describe('processRequest', function() {
       requestHandler(
         { url: requrl },
         {
+          setHeader: jest.genMockFunction(),
           end: function(res) {
             resolve(res);
           }

@@ -33,7 +33,7 @@ var WithLabel = React.createClass({
         {this.props.children}
       </View>
     );
-  }
+  },
 });
 
 var TextEventsExample = React.createClass({
@@ -41,13 +41,17 @@ var TextEventsExample = React.createClass({
     return {
       curText: '<No Event>',
       prevText: '<No Event>',
+      prev2Text: '<No Event>',
     };
   },
 
   updateText: function(text) {
-    this.setState({
-      curText: text,
-      prevText: this.state.curText,
+    this.setState((state) => {
+      return {
+        curText: text,
+        prevText: state.curText,
+        prev2Text: state.prevText,
+      };
     });
   },
 
@@ -73,12 +77,42 @@ var TextEventsExample = React.createClass({
         />
         <Text style={styles.eventLabel}>
           {this.state.curText}{'\n'}
-          (prev: {this.state.prevText})
+          (prev: {this.state.prevText}){'\n'}
+          (prev2: {this.state.prev2Text})
         </Text>
       </View>
     );
   }
 });
+
+class RewriteExample extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render() {
+    var limit = 20;
+    var remainder = limit - this.state.text.length;
+    var remainderColor = remainder > 5 ? 'blue' : 'red';
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          maxLength={limit}
+          onChangeText={(text) => {
+            text = text.replace(/ /g, '_');
+            this.setState({text});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+        <Text style={[styles.remainder, {color: remainderColor}]}>
+          {remainder}
+        </Text>
+      </View>
+    );
+  }
+}
 
 var styles = StyleSheet.create({
   page: {
@@ -125,14 +159,22 @@ var styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    width: 120,
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
+    width: 115,
+    alignItems: 'flex-end',
     marginRight: 10,
     paddingTop: 2,
   },
+  rewriteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  remainder: {
+    textAlign: 'right',
+    width: 24,
+  },
 });
 
+exports.displayName = (undefined: ?string);
 exports.title = '<TextInput>';
 exports.description = 'Single and multi-line text inputs.';
 exports.examples = [
@@ -140,6 +182,12 @@ exports.examples = [
     title: 'Auto-focus',
     render: function() {
       return <TextInput autoFocus={true} style={styles.default} />;
+    }
+  },
+  {
+    title: "Live Re-Write (<sp>  ->  '_') + maxLength",
+    render: function() {
+      return <RewriteExample />;
     }
   },
   {
@@ -267,7 +315,7 @@ exports.examples = [
       return (
         <View>
           <WithLabel label="true">
-            <TextInput password={true} style={styles.default} value="abc" />
+            <TextInput password={true} style={styles.default} defaultValue="abc" />
           </WithLabel>
         </View>
       );
@@ -275,7 +323,7 @@ exports.examples = [
   },
   {
     title: 'Event handling',
-    render: function(): ReactElement { return <TextEventsExample /> },
+    render: function(): ReactElement { return <TextEventsExample />; },
   },
   {
     title: 'Colored input text',
@@ -284,11 +332,11 @@ exports.examples = [
         <View>
           <TextInput
             style={[styles.default, {color: 'blue'}]}
-            value="Blue"
+            defaultValue="Blue"
           />
           <TextInput
             style={[styles.default, {color: 'green'}]}
-            value="Green"
+            defaultValue="Green"
           />
         </View>
       );
@@ -335,7 +383,7 @@ exports.examples = [
           <WithLabel label="clearTextOnFocus">
             <TextInput
               placeholder="text is cleared on focus"
-              value="text is cleared on focus"
+              defaultValue="text is cleared on focus"
               style={styles.default}
               clearTextOnFocus={true}
             />
@@ -343,7 +391,7 @@ exports.examples = [
           <WithLabel label="selectTextOnFocus">
             <TextInput
               placeholder="text is selected on focus"
-              value="text is selected on focus"
+              defaultValue="text is selected on focus"
               style={styles.default}
               selectTextOnFocus={true}
             />
@@ -363,7 +411,7 @@ exports.examples = [
             style={styles.multiline}
           />
           <TextInput
-            placeholder="mutliline text input with font styles and placeholder"
+            placeholder="multiline text input with font styles and placeholder"
             multiline={true}
             clearTextOnFocus={true}
             autoCorrect={true}
@@ -373,7 +421,7 @@ exports.examples = [
             style={[styles.multiline, styles.multilineWithFontStyles]}
           />
           <TextInput
-            placeholder="uneditable mutliline text input"
+            placeholder="uneditable multiline text input"
             editable={false}
             multiline={true}
             style={styles.multiline}

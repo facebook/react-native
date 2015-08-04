@@ -26,8 +26,10 @@ var {
 var TabBarExample = React.createClass({
   statics: {
     title: '<TabBarIOS>',
-    description: 'Tab-based navigation.'
+    description: 'Tab-based navigation.',
   },
+
+  displayName: 'TabBarExample',
 
   getInitialState: function() {
     return {
@@ -37,11 +39,11 @@ var TabBarExample = React.createClass({
     };
   },
 
-  _renderContent: function(color: string, pageText: string) {
+  _renderContent: function(color: string, pageText: string, num?: number) {
     return (
       <View style={[styles.tabContent, {backgroundColor: color}]}>
         <Text style={styles.tabText}>{pageText}</Text>
-        <Text style={styles.tabText}>{this.state.presses} re-renders of the More tab</Text>
+        <Text style={styles.tabText}>{num} re-renders of the {pageText}</Text>
       </View>
     );
   },
@@ -49,8 +51,8 @@ var TabBarExample = React.createClass({
   render: function() {
     return (
       <TabBarIOS
-        tintColor="black"
-        barTintColor="#3abeff">
+        tintColor="white"
+        barTintColor="darkslateblue">
         <TabBarIOS.Item
           title="Blue Tab"
           selected={this.state.selectedTab === 'blueTab'}
@@ -71,7 +73,7 @@ var TabBarExample = React.createClass({
               notifCount: this.state.notifCount + 1,
             });
           }}>
-          {this._renderContent('#783E33', 'Red Tab')}
+          {this._renderContent('#783E33', 'Red Tab', this.state.notifCount)}
         </TabBarIOS.Item>
         <TabBarIOS.Item
           systemIcon="more"
@@ -82,7 +84,7 @@ var TabBarExample = React.createClass({
               presses: this.state.presses + 1
             });
           }}>
-          {this._renderContent('#21551C', 'Green Tab')}
+          {this._renderContent('#21551C', 'Green Tab', this.state.presses)}
         </TabBarIOS.Item>
       </TabBarIOS>
     );

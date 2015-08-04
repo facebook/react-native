@@ -11,11 +11,10 @@ next: navigator-comparison
 
 When using React Native, you're going to be running your JavaScript code in two environments:
 
-* In the simulator and on the phone: [JavaScriptCore](http://trac.webkit.org/wiki/JavaScriptCore) which is the JavaScript engine that powers Safari and web views. Due to the absence of writable executable memory in iOS apps, it doesn't run with JIT.
+* On iOS simulators and devices, Android emulators and devices React Native uses [JavaScriptCore](http://trac.webkit.org/wiki/JavaScriptCore) which is the JavaScript engine that powers Safari. On iOS JSC doesn't use JIT due to the absence of writable executable memory in iOS apps.
 * When using Chrome debugging, it runs all the JavaScript code within Chrome itself and communicates with Objective-C via WebSocket. So you are using [V8](https://code.google.com/p/v8/).
 
 While both environments are very similar, you may end up hitting some inconsistencies. We're likely going to experiment with other JS engines in the future, so it's best to avoid relying on specifics of any runtime.
-
 
 ## JavaScript Syntax Transformers
 

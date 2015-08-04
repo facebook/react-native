@@ -7,228 +7,362 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTCache.h"
+// Adapted from https://github.com/nicklockwood/OSCache
 
-#import <UIKit/UIKit.h>
-#import <sys/xattr.h>
+#import "RCTCache.h"
 
 #import "RCTAssert.h"
 
-static NSString *const RCTCacheSubdirectoryName = @"React";
-static NSString *const RCTKeyExtendedAttributeName = @"com.facebook.React.RCTCacheManager.Key";
-static NSMapTable *RCTLivingCachesByName;
+#import <TargetConditionals.h>
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
 
-static NSError *RCTPOSIXError(int errorNumber)
-{
-  NSDictionary *userInfo = @{
-    NSLocalizedDescriptionKey: @(strerror(errorNumber))
-  };
-  return [NSError errorWithDomain:NSPOSIXErrorDomain code:errorNumber userInfo:userInfo];
-}
+@interface RCTCacheEntry : NSObject
 
-static NSString *RCTGetExtendedAttribute(NSURL *fileURL, NSString *key, NSError **error)
-{
-  const char *path = fileURL.fileSystemRepresentation;
-  ssize_t length = getxattr(path, key.UTF8String, NULL, 0, 0, 0);
-  if (length <= 0) {
-    if (error) *error = RCTPOSIXError(errno);
-    return nil;
-  }
-
-  char *buffer = malloc(length);
-  length = getxattr(path, key.UTF8String, buffer, length, 0, 0);
-  if (length > 0) {
-    return [[NSString alloc] initWithBytesNoCopy:buffer length:length encoding:NSUTF8StringEncoding freeWhenDone:YES];
-  }
-
-  free(buffer);
-  if (error) *error = RCTPOSIXError(errno);
-  return nil;
-}
-
-static BOOL RCTSetExtendedAttribute(NSURL *fileURL, NSString *key, NSString *value, NSError **error)
-{
-  const char *path = fileURL.fileSystemRepresentation;
-
-  int result;
-  if (value) {
-    const char *valueUTF8String = value.UTF8String;
-    result = setxattr(path, key.UTF8String, valueUTF8String, strlen(valueUTF8String), 0, 0);
-  } else {
-    result = removexattr(path, key.UTF8String, 0);
-  }
-
-  if (result) {
-    if (error) *error = RCTPOSIXError(errno);
-    return NO;
-  }
-
-  return YES;
-}
-
-#pragma mark - Cache Record -
-
-@interface RCTCacheRecord : NSObject
-
-@property (readonly) NSUUID *UUID;
-@property (readonly, weak) dispatch_queue_t queue;
-@property (nonatomic, copy) NSData *data;
+@property (nonatomic, strong) NSObject *object;
+@property (nonatomic, assign) NSUInteger cost;
+@property (nonatomic, assign) NSInteger sequenceNumber;
 
 @end
 
-@implementation RCTCacheRecord
+@implementation RCTCacheEntry
 
-- (instancetype)initWithUUID:(NSUUID *)UUID
+@end
+
+@interface RCTCache_Private : NSObject
+
+@property (nonatomic, unsafe_unretained) id<RCTCacheDelegate> delegate;
+@property (nonatomic, assign) NSUInteger countLimit;
+@property (nonatomic, assign) NSUInteger totalCostLimit;
+@property (nonatomic, copy) NSString *name;
+
+@property (nonatomic, strong) NSMutableDictionary *cache;
+@property (nonatomic, assign) NSUInteger totalCost;
+@property (nonatomic, assign) NSInteger sequenceNumber;
+
+@end
+
+@implementation RCTCache_Private
 {
-  if ((self = [super init])) {
-    _UUID = [UUID copy];
+  BOOL _delegateRespondsToWillEvictObject;
+  BOOL _delegateRespondsToShouldEvictObject;
+  BOOL _currentlyCleaning;
+  NSMutableArray *_entryPool;
+  NSLock *_lock;
+}
+
+- (id)init
+{
+  if ((self = [super init]))
+  {
+    //create storage
+    _cache = [[NSMutableDictionary alloc] init];
+    _entryPool = [[NSMutableArray alloc] init];
+    _lock = [[NSLock alloc] init];
+    _totalCost = 0;
+
+#if TARGET_OS_IPHONE
+
+    //clean up in the event of a memory warning
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanUpAllObjects) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+
+#endif
+
   }
   return self;
 }
 
-- (void)enqueueBlock:(dispatch_block_t)block
+- (void)dealloc
 {
-  dispatch_queue_t queue = _queue;
-  if (!queue) {
-    NSString *queueName = [NSString stringWithFormat:@"com.facebook.React.RCTCache.%@", _UUID.UUIDString];
-    queue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
-    _queue = queue;
-  }
-
-  dispatch_async(queue, block);
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-@end
-
-#pragma mark - Cache
-
-@implementation RCTCache
+- (void)setDelegate:(id<RCTCacheDelegate>)delegate
 {
-  NSString *_name;
-  NSFileManager *_fileManager;
-  NSMutableDictionary *_storage;
-  NSURL *_cacheDirectoryURL;
+  _delegate = delegate;
+  _delegateRespondsToShouldEvictObject = [delegate respondsToSelector:@selector(cache:shouldEvictObject:)];
+  _delegateRespondsToWillEvictObject = [delegate respondsToSelector:@selector(cache:willEvictObject:)];
 }
 
-+ (void)initialize
+- (void)setCountLimit:(NSUInteger)countLimit
 {
-  if (self == [RCTCache class]) {
-    RCTLivingCachesByName = [NSMapTable strongToWeakObjectsMapTable];
-  }
+  [_lock lock];
+  _countLimit = countLimit;
+  [_lock unlock];
+  [self cleanUp:NO];
 }
 
-- (instancetype)init
+- (void)setTotalCostLimit:(NSUInteger)totalCostLimit
 {
-  return [self initWithName:@"default"];
+  [_lock lock];
+  _totalCostLimit = totalCostLimit;
+  [_lock unlock];
+  [self cleanUp:NO];
 }
 
-- (instancetype)initWithName:(NSString *)name
+- (NSUInteger)count
 {
-  RCTAssertParam(name);
-  RCTAssert(name.length < NAME_MAX, @"Name must be fewer than %i characters in length.", NAME_MAX);
-  RCTCache *cachedCache = [RCTLivingCachesByName objectForKey:name];
-  if (cachedCache) {
-    self = cachedCache;
-    return self;
-  }
+  return [_cache count];
+}
 
-  if ((self = [super init])) {
-    _name = [name copy];
-    _fileManager = [[NSFileManager alloc] init];
-    _storage = [NSMutableDictionary dictionary];
+- (void)cleanUp:(BOOL)keepEntries
+{
+  [_lock lock];
+  NSUInteger maxCount = _countLimit ?: INT_MAX;
+  NSUInteger maxCost = _totalCostLimit ?: INT_MAX;
+  NSUInteger totalCount = _cache.count;
+  NSMutableArray *keys = [_cache.allKeys mutableCopy];
+  while (totalCount > maxCount || _totalCost > maxCost)
+  {
+    NSInteger lowestSequenceNumber = INT_MAX;
+    RCTCacheEntry *lowestEntry = nil;
+    id lowestKey = nil;
 
-    NSURL *cacheDirectoryURL = [[_fileManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
-    cacheDirectoryURL = [cacheDirectoryURL URLByAppendingPathComponent:RCTCacheSubdirectoryName isDirectory:YES];
-    _cacheDirectoryURL = [cacheDirectoryURL URLByAppendingPathComponent:name isDirectory:YES];
-    [_fileManager createDirectoryAtURL:_cacheDirectoryURL withIntermediateDirectories:YES attributes:nil error:NULL];
-
-    NSArray *fileURLs = [_fileManager contentsOfDirectoryAtURL:_cacheDirectoryURL includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:NULL];
-    for (NSURL *fileURL in fileURLs) {
-      NSUUID *UUID = [[NSUUID alloc] initWithUUIDString:fileURL.lastPathComponent];
-      if (!UUID) continue;
-
-      NSString *key = RCTGetExtendedAttribute(fileURL, RCTKeyExtendedAttributeName, NULL);
-      if (!key) {
-        [_fileManager removeItemAtURL:fileURL error:NULL];
-        continue;
+    //remove oldest items until within limit
+    for (id key in keys)
+    {
+      RCTCacheEntry *entry = _cache[key];
+      if (entry.sequenceNumber < lowestSequenceNumber)
+      {
+        lowestSequenceNumber = entry.sequenceNumber;
+        lowestEntry = entry;
+        lowestKey = key;
       }
+    }
 
-      _storage[key] = [[RCTCacheRecord alloc] initWithUUID:UUID];
+    if (lowestKey)
+    {
+      [keys removeObject:lowestKey];
+      if (!_delegateRespondsToShouldEvictObject ||
+          [_delegate cache:(RCTCache *)self shouldEvictObject:lowestEntry.object])
+      {
+        if (_delegateRespondsToWillEvictObject)
+        {
+          _currentlyCleaning = YES;
+          [self.delegate cache:(RCTCache *)self willEvictObject:lowestEntry.object];
+          _currentlyCleaning = NO;
+        }
+        [_cache removeObjectForKey:lowestKey];
+        _totalCost -= lowestEntry.cost;
+        totalCount --;
+        if (keepEntries)
+        {
+          [_entryPool addObject:lowestEntry];
+          lowestEntry.object = nil;
+        }
+      }
     }
   }
-  return self;
+  [_lock unlock];
 }
 
-- (BOOL)hasDataForKey:(NSString *)key
+- (void)cleanUpAllObjects
 {
-  return _storage[key] != nil;
+  [_lock lock];
+  if (_delegateRespondsToShouldEvictObject || _delegateRespondsToWillEvictObject)
+  {
+    NSArray *keys = [_cache allKeys];
+    if (_delegateRespondsToShouldEvictObject)
+    {
+      //sort, oldest first (in case we want to use that information in our eviction test)
+      keys = [keys sortedArrayUsingComparator:^NSComparisonResult(id key1, id key2) {
+        RCTCacheEntry *entry1 = self->_cache[key1];
+        RCTCacheEntry *entry2 = self->_cache[key2];
+        return (NSComparisonResult)MIN(1, MAX(-1, entry1.sequenceNumber - entry2.sequenceNumber));
+      }];
+    }
+
+    //remove all items individually
+    for (id key in keys)
+    {
+      RCTCacheEntry *entry = _cache[key];
+      if (!_delegateRespondsToShouldEvictObject || [_delegate cache:(RCTCache *)self shouldEvictObject:entry.object])
+      {
+        if (_delegateRespondsToWillEvictObject)
+        {
+          _currentlyCleaning = YES;
+          [_delegate cache:(RCTCache *)self willEvictObject:entry.object];
+          _currentlyCleaning = NO;
+        }
+        [_cache removeObjectForKey:key];
+        _totalCost -= entry.cost;
+      }
+    }
+  }
+  else
+  {
+    _totalCost = 0;
+    [_cache removeAllObjects];
+    _sequenceNumber = 0;
+  }
+  [_lock unlock];
 }
 
-- (void)fetchDataForKey:(NSString *)key completionHandler:(void (^)(NSData *))completionHandler
+- (void)resequence
 {
-  NSParameterAssert(key.length > 0);
-  NSParameterAssert(completionHandler != nil);
-  RCTCacheRecord *record = _storage[key];
-  if (!record) {
-    completionHandler(nil);
+  //sort, oldest first
+  NSArray *entries = [[_cache allValues] sortedArrayUsingComparator:^NSComparisonResult(RCTCacheEntry *entry1, RCTCacheEntry *entry2) {
+    return (NSComparisonResult)MIN(1, MAX(-1, entry1.sequenceNumber - entry2.sequenceNumber));
+  }];
+
+  //renumber items
+  NSInteger index = 0;
+  for (RCTCacheEntry *entry in entries)
+  {
+    entry.sequenceNumber = index++;
+  }
+}
+
+- (id)objectForKey:(id)key
+{
+  [_lock lock];
+  RCTCacheEntry *entry = _cache[key];
+  entry.sequenceNumber = _sequenceNumber++;
+  if (_sequenceNumber < 0)
+  {
+    [self resequence];
+  }
+  id object = entry.object;
+  [_lock unlock];
+  return object;
+}
+
+- (id)objectForKeyedSubscript:(id<NSCopying>)key
+{
+  return [self objectForKey:key];
+}
+
+- (void)setObject:(id)obj forKey:(id)key
+{
+  [self setObject:obj forKey:key cost:0];
+}
+
+- (void)setObject:(id)obj forKeyedSubscript:(id<NSCopying>)key
+{
+  [self setObject:obj forKey:key cost:0];
+}
+
+- (void)setObject:(id)obj forKey:(id)key cost:(NSUInteger)g
+{
+  if (!obj)
+  {
+    [self removeObjectForKey:key];
     return;
   }
-
-  [record enqueueBlock:^{
-    if (!record.data) {
-      record.data = [NSData dataWithContentsOfURL:[_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString]];
-    }
-    completionHandler(record.data);
-  }];
+  RCTAssert(!_currentlyCleaning, @"It is not possible to modify cache from within the implementation of this delegate method.");
+  [_lock lock];
+  _totalCost -= [_cache[key] cost];
+  _totalCost += g;
+  RCTCacheEntry *entry = _cache[key];
+  if (!entry) {
+    entry = [[RCTCacheEntry alloc] init];
+    _cache[key] = entry;
+  }
+  entry.object = obj;
+  entry.cost = g;
+  entry.sequenceNumber = _sequenceNumber++;
+  if (_sequenceNumber < 0)
+  {
+    [self resequence];
+  }
+  [_lock unlock];
+  [self cleanUp:YES];
 }
 
-- (void)setData:(NSData *)data forKey:(NSString *)key
+- (void)removeObjectForKey:(id)key
 {
-  NSParameterAssert(key.length > 0);
-  RCTCacheRecord *record = _storage[key];
-  if (!record) {
-    if (!data) return;
-
-    record = [[RCTCacheRecord alloc] initWithUUID:[NSUUID UUID]];
-    _storage[key] = record;
+  RCTAssert(!_currentlyCleaning, @"It is not possible to modify cache from within the implementation of this delegate method.");
+  [_lock lock];
+  RCTCacheEntry *entry = _cache[key];
+  if (entry) {
+    _totalCost -= entry.cost;
+    entry.object = nil;
+    [_entryPool addObject:entry];
+    [_cache removeObjectForKey:key];
   }
-
-  NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
-
-  UIBackgroundTaskIdentifier identifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
-  [record enqueueBlock:^{
-    if (data) {
-      [data writeToURL:fileURL options:NSDataWritingAtomic error:NULL];
-      RCTSetExtendedAttribute(fileURL, RCTKeyExtendedAttributeName, key, NULL);
-    } else {
-      [_fileManager removeItemAtURL:fileURL error:NULL];
-    }
-
-    if (identifier != UIBackgroundTaskInvalid) {
-      [[UIApplication sharedApplication] endBackgroundTask:identifier];
-    }
-  }];
+  [_lock unlock];
 }
 
-- (void)removeAllData
+- (void)removeAllObjects
 {
-  UIBackgroundTaskIdentifier identifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
-  dispatch_group_t group = dispatch_group_create();
-
-  for (RCTCacheRecord *record in _storage.allValues) {
-    NSURL *fileURL = [_cacheDirectoryURL URLByAppendingPathComponent:record.UUID.UUIDString];
-    dispatch_group_async(group, record.queue, ^{
-      [_fileManager removeItemAtURL:fileURL error:NULL];
-    });
+  RCTAssert(!_currentlyCleaning, @"It is not possible to modify cache from within the implementation of this delegate method.");
+  [_lock lock];
+  _totalCost = 0;
+  _sequenceNumber = 0;
+  for (RCTCacheEntry *entry in _cache.allValues)
+  {
+    entry.object = nil;
+    [_entryPool addObject:entry];
   }
-
-  if (identifier != UIBackgroundTaskInvalid) {
-    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-      [[UIApplication sharedApplication] endBackgroundTask:identifier];
-    });
-  }
-
-  [_storage removeAllObjects];
+  [_cache removeAllObjects];
+  [_lock unlock];
 }
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
+                                  objects:(id __unsafe_unretained [])buffer
+                                    count:(NSUInteger)len
+{
+  [_lock lock];
+  NSUInteger count = [_cache countByEnumeratingWithState:state objects:buffer count:len];
+  [_lock unlock];
+  return count;
+}
+
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block
+{
+  [_lock lock];
+  [_cache enumerateKeysAndObjectsUsingBlock:block];
+  [_lock unlock];
+}
+
+//handle unimplemented methods
+
+- (BOOL)isKindOfClass:(Class)aClass
+{
+  //pretend that we're an RCTCache if anyone asks
+  if (aClass == [RCTCache class] || aClass == [NSCache class])
+  {
+    return YES;
+  }
+  return [super isKindOfClass:aClass];
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+  //protect against calls to unimplemented NSCache methods
+  NSMethodSignature *signature = [super methodSignatureForSelector:selector];
+  if (!signature)
+  {
+    signature = [NSCache instanceMethodSignatureForSelector:selector];
+  }
+  return signature;
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+
+  [invocation invokeWithTarget:nil];
+
+#pragma clang diagnostic pop
+}
+
+@end
+
+@implementation RCTCache
+
++ (id)alloc
+{
+  return (RCTCache *)[RCTCache_Private alloc];
+}
+
+- (id)objectForKeyedSubscript:(__unused id<NSCopying>)key { return nil; }
+- (void)setObject:(__unused id)obj forKeyedSubscript:(__unused id<NSCopying>)key {}
+- (void)enumerateKeysAndObjectsUsingBlock:(__unused void (^)(id, id, BOOL *))block { }
+- (NSUInteger)countByEnumeratingWithState:(__unused NSFastEnumerationState *)state
+                                  objects:(__unused __unsafe_unretained id [])buffer
+                                    count:(__unused NSUInteger)len { return 0; }
 
 @end

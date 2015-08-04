@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.4.4"
+  s.version             = "0.8.0"
   s.summary             = "Build high quality mobile apps using React."
   s.description         = <<-DESC
                             React Native apps are built using the React JS
@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.default_subspec     = 'Core'
   s.requires_arc        = true
   s.platform            = :ios, "7.0"
-  s.prepare_command     = 'npm install'
+  s.prepare_command     = 'npm install --production'
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
   s.header_mappings_dir = "."
 

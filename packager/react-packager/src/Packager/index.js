@@ -11,7 +11,7 @@
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
-var Promise = require('bluebird');
+var Promise = require('promise');
 var Transformer = require('../JSTransformer');
 var DependencyResolver = require('../DependencyResolver');
 var Package = require('./Package');
@@ -20,8 +20,8 @@ var ModuleTransport = require('../lib/ModuleTransport');
 var declareOpts = require('../lib/declareOpts');
 var imageSize = require('image-size');
 
-var sizeOf = Promise.promisify(imageSize);
-var readFile = Promise.promisify(fs.readFile);
+var sizeOf = Promise.denodeify(imageSize);
+var readFile = Promise.denodeify(fs.readFile);
 
 var validateOpts = declareOpts({
   projectRoots: {
@@ -159,16 +159,17 @@ Packager.prototype._transformModule = function(ppackage, module) {
   }
 
   var resolver = this._resolver;
-  return transform.then(function(transformed) {
-    var code = resolver.wrapModule(module, transformed.code);
-    return new ModuleTransport({
-      code: code,
-      map: transformed.map,
-      sourceCode: transformed.sourceCode,
-      sourcePath: transformed.sourcePath,
-      virtual: transformed.virtual,
-    });
-  });
+  return transform.then(
+    transformed => resolver.wrapModule(module, transformed.code).then(
+      code => new ModuleTransport({
+        code: code,
+        map: transformed.map,
+        sourceCode: transformed.sourceCode,
+        sourcePath: transformed.sourcePath,
+        virtual: transformed.virtual,
+      })
+    )
+  );
 };
 
 Packager.prototype.getGraphDebugInfo = function() {
@@ -206,7 +207,9 @@ Packager.prototype.generateAssetModule = function(ppackage, module) {
   return Promise.all([
     sizeOf(module.path),
     this._assetServer.getAssetData(relPath),
-  ]).spread(function(dimensions, assetData) {
+  ]).then(function(res) {
+    var dimensions = res[0];
+    var assetData = res[1];
     var img = {
       __packager_asset: true,
       fileSystemLocation: path.dirname(module.path),

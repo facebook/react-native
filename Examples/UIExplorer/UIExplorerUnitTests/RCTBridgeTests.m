@@ -1,4 +1,16 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * The examples provided by Facebook are for non-commercial testing and
+ * evaluation purposes only.
+ *
+ * Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
@@ -12,7 +24,7 @@
 
 @property (nonatomic, strong, readonly) RCTBridge *batchedBridge;
 
-- (void)_handleBuffer:(id)buffer context:(NSNumber *)context;
+- (void)_handleBuffer:(id)buffer;
 - (void)setUp;
 
 @end
@@ -45,7 +57,6 @@ RCT_EXPORT_MODULE()
 - (void)executeJSCall:(__unused NSString *)name
                method:(__unused NSString *)method
             arguments:(__unused NSArray *)arguments
-              context:(__unused NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
   onComplete(nil, nil);
@@ -79,24 +90,18 @@ RCT_EXPORT_MODULE()
 {
   RCTBridge *_bridge;
   BOOL _testMethodCalled;
-  dispatch_queue_t _queue;
 }
 @end
 
 @implementation RCTBridgeTests
 
-RCT_EXPORT_MODULE(TestModule)
+@synthesize methodQueue = _methodQueue;
 
-- (dispatch_queue_t)methodQueue
-{
-  return _queue;
-}
+RCT_EXPORT_MODULE(TestModule)
 
 - (void)setUp
 {
   [super setUp];
-
-  _queue = dispatch_queue_create("com.facebook.React.TestQueue", DISPATCH_QUEUE_SERIAL);
 
   _bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                   moduleProvider:^{ return @[self]; }
@@ -149,9 +154,9 @@ RCT_EXPORT_MODULE(TestModule)
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args], @[], @1234567];
 
-  [_bridge.batchedBridge _handleBuffer:buffer context:RCTGetExecutorID(executor)];
+  [_bridge.batchedBridge _handleBuffer:buffer];
 
-  dispatch_sync(_queue, ^{
+  dispatch_sync(_methodQueue, ^{
     // clear the queue
     XCTAssertTrue(_testMethodCalled);
   });

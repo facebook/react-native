@@ -12,9 +12,11 @@
 
 #import "Layout.h"
 #import "RCTAnimationType.h"
+#import "RCTTextDecorationLineType.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
+
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -37,6 +39,7 @@
 + (NSUInteger)NSUInteger:(id)json;
 
 + (NSArray *)NSArray:(id)json;
++ (NSSet *)NSSet:(id)json;
 + (NSDictionary *)NSDictionary:(id)json;
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;
@@ -46,11 +49,15 @@
 + (NSURL *)NSURL:(id)json;
 + (NSURLRequest *)NSURLRequest:(id)json;
 
+typedef NSURL RCTFileURL;
++ (RCTFileURL *)RCTFileURL:(id)json;
+
 + (NSDate *)NSDate:(id)json;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
 
 + (NSTextAlignment)NSTextAlignment:(id)json;
++ (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
@@ -95,6 +102,9 @@ typedef NSArray NSDictionaryArray;
 typedef NSArray NSURLArray;
 + (NSURLArray *)NSURLArray:(id)json;
 
+typedef NSArray RCTFileURLArray;
++ (RCTFileURLArray *)RCTFileURLArray:(id)json;
+
 typedef NSArray NSNumberArray;
 + (NSNumberArray *)NSNumberArray:(id)json;
 
@@ -110,8 +120,9 @@ typedef NSArray CGColorArray;
 typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
-typedef BOOL css_clip_t;
+typedef BOOL css_clip_t, css_backface_visibility_t;
 + (css_clip_t)css_clip_t:(id)json;
++ (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;
 + (css_justify_t)css_justify_t:(id)json;
 + (css_align_t)css_align_t:(id)json;
@@ -120,6 +131,7 @@ typedef BOOL css_clip_t;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
++ (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 
 @end
 

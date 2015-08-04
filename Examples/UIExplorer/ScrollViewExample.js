@@ -23,6 +23,7 @@ var {
   Image
 } = React;
 
+exports.displayName = (undefined: ?string);
 exports.title = '<ScrollView>';
 exports.description = 'Component that enables scrolling through child components';
 exports.examples = [

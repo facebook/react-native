@@ -9,6 +9,8 @@
 
 #import "RCTLog.h"
 
+#include <asl.h>
+
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
@@ -57,6 +59,25 @@ RCTLogFunction RCTDefaultLogFunction = ^(
   );
   fprintf(stderr, "%s\n", log.UTF8String);
   fflush(stderr);
+
+  int aslLevel = ASL_LEVEL_ERR;
+  switch(level) {
+    case RCTLogLevelInfo:
+      aslLevel = ASL_LEVEL_NOTICE;
+      break;
+    case RCTLogLevelWarning:
+      aslLevel = ASL_LEVEL_WARNING;
+      break;
+    case RCTLogLevelError:
+      aslLevel = ASL_LEVEL_ERR;
+      break;
+    case RCTLogLevelMustFix:
+      aslLevel = ASL_LEVEL_EMERG;
+      break;
+    default:
+      aslLevel = ASL_LEVEL_DEBUG;
+  }
+  asl_log(NULL, NULL, aslLevel, "%s", message.UTF8String);
 };
 
 void RCTSetLogFunction(RCTLogFunction logFunction)

@@ -34,6 +34,11 @@ RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
 /**
+ * This notification fires when the bridge created all registered native modules
+ */
+RCT_EXTERN NSString *const RCTDidCreateNativeModules;
+
+/**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
  * The bridge will call this block to instatiate the modules, and will
@@ -117,6 +122,11 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Use this to check if the bridge is currently loading.
  */
 @property (nonatomic, readonly, getter=isLoading) BOOL loading;
+
+/**
+ * The block passed in the constructor with pre-initialized modules
+ */
+@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
 /**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.

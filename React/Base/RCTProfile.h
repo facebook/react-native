@@ -20,8 +20,8 @@
  * before before using it.
  */
 
-NSString *const RCTProfileDidStartProfiling;
-NSString *const RCTProfileDidEndProfiling;
+RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
+RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 
 #if RCT_DEV
 
@@ -103,6 +103,16 @@ RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *
   RCTProfileEndEvent([NSString stringWithFormat:@"[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd)], category, arguments); \
 }
 
+/**
+ * Hook into a bridge instance to log all bridge module's method calls
+ */
+RCT_EXTERN void RCTProfileHookModules(RCTBridge *);
+
+/**
+ * Unhook from a given bridge instance's modules
+ */
+RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
+
 #else
 
 #define RCTProfileBeginFlowEvent()
@@ -124,5 +134,8 @@ RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *
 #define RCTProfileImmediateEvent(...)
 
 #define RCTProfileBlock(block, ...) block
+
+#define RCTProfileHookModules(...)
+#define RCTProfileUnhookModules(...)
 
 #endif

@@ -26,6 +26,8 @@ var {
 } = React;
 var TimerMixin = require('react-timer-mixin');
 
+var invariant = require('invariant');
+
 var MovieCell = require('./MovieCell');
 var MovieScreen = require('./MovieScreen');
 
@@ -73,7 +75,7 @@ var SearchScreen = React.createClass({
     this.searchMovies('');
   },
 
-  _urlForQueryAndPage: function(query: string, pageNumber: ?number): string {
+  _urlForQueryAndPage: function(query: string, pageNumber: number): string {
     var apiKey = API_KEYS[this.state.queryNumber % API_KEYS.length];
     if (query) {
       return (
@@ -174,6 +176,7 @@ var SearchScreen = React.createClass({
     });
 
     var page = resultsCache.nextPageNumberForQuery[query];
+    invariant(page != null, 'Next page number for "%s" is missing', query);
     fetch(this._urlForQueryAndPage(query, page))
       .then((response) => response.json())
       .catch((error) => {
@@ -259,6 +262,7 @@ var SearchScreen = React.createClass({
   ) {
     return (
       <MovieCell
+        key={movie.id}
         onSelect={() => this.selectMovie(movie)}
         onHighlight={() => highlightRowFunc(sectionID, rowID)}
         onUnhighlight={() => highlightRowFunc(null, null)}
@@ -304,7 +308,7 @@ var NoMovies = React.createClass({
   render: function() {
     var text = '';
     if (this.props.filter) {
-      text = `No results for “${this.props.filter}”`;
+      text = `No results for "${this.props.filter}"`;
     } else if (!this.props.isLoading) {
       // If we're looking at the latest movies, aren't currently loading, and
       // still have no results, show a message

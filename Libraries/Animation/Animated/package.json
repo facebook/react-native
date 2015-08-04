@@ -1,0 +1,13 @@
+{
+  "name": "react-animated",
+  "description": "Animated provides powerful mechanisms for animating your React views",
+  "version": "0.1.0",
+  "keywords": [
+    "react",
+    "animated",
+    "animation"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "Animated.js",
+  "readmeFilename": "README.md"
+}

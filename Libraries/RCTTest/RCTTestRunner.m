@@ -16,7 +16,7 @@
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
 
-#define TIMEOUT_SECONDS 240
+#define TIMEOUT_SECONDS 60
 
 @interface RCTBridge (RCTTestRunner)
 
@@ -27,20 +27,27 @@
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_testController;
+  RCTBridgeModuleProviderBlock _moduleProvider;
 }
 
-- (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir
+- (instancetype)initWithApp:(NSString *)app
+         referenceDirectory:(NSString *)referenceDirectory
+             moduleProvider:(RCTBridgeModuleProviderBlock)block
 {
   RCTAssertParam(app);
-  RCTAssertParam(referenceDir);
+  RCTAssertParam(referenceDirectory);
 
   if ((self = [super init])) {
+
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
     _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
-    _testController.referenceImagesDirectory = referenceDir;
+    _testController.referenceImagesDirectory = referenceDirectory;
+    _moduleProvider = [block copy];
+
 #if RUNNING_ON_CI
     _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+    RCTAssert(_scriptURL != nil, @"Could not locate main.jsBundle");
 #else
     _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
 #endif
@@ -73,16 +80,20 @@ RCT_NOT_IMPLEMENTED(-init)
   }];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:_scriptURL
-                                                      moduleName:moduleName
-                                                   launchOptions:nil];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
+                                            moduleProvider:_moduleProvider
+                                             launchOptions:nil];
+
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName];
   rootView.initialProperties = initialProps;
   rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
   NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);
   RCTTestModule *testModule = rootView.bridge.batchedBridge.modules[testModuleName];
+  RCTAssert(_testController != nil, @"_testController should not be nil");
   testModule.controller = _testController;
   testModule.testSelector = test;
   testModule.view = rootView;
@@ -93,21 +104,25 @@ RCT_NOT_IMPLEMENTED(-init)
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
-  while ([date timeIntervalSinceNow] > 0 && ![testModule isDone] && error == nil) {
+  while ([date timeIntervalSinceNow] > 0 && testModule.status == RCTTestStatusPending && error == nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
   [rootView removeFromSuperview];
-  RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
-  vc.view = nil;
+
+  NSArray *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
+    return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
+  }]];
+  RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
+
   [[RCTRedBox sharedInstance] dismiss];
   if (expectErrorBlock) {
     RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
-  } else if (error) {
-    RCTAssert(error == nil, @"RedBox error: %@", error);
   } else {
-    RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
+    RCTAssert(error == nil, @"RedBox error: %@", error);
+    RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
+    RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
   }
 }
 

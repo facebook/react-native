@@ -7,8 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <AdSupport/ASIdentifierManager.h>
-
 #import "RCTBridgeModule.h"
 
 @interface RCTAdSupport : NSObject <RCTBridgeModule>

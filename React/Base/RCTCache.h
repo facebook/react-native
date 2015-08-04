@@ -9,21 +9,48 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RCTCache : NSObject
+/**
+ * RCTCache is a simple LRU cache implementation, based on the API of NSCache,
+ * but with known, deterministic behavior. The cache will always remove items
+ * outside of the specified cost/count limits, and will be automatically
+ * cleared in the event of a memory warning.
+ */
+@interface RCTCache : NSCache <NSFastEnumeration>
 
-- (instancetype)init; // name = @"default"
-- (instancetype)initWithName:(NSString *)name;
+/**
+ * The total number of objects currently resident in the cache.
+ */
+@property (nonatomic, readonly) NSUInteger count;
 
-@property (nonatomic, assign) NSUInteger maximumDiskSize; // in bytes
+/**
+ * The total cost of the objects currently resident in the cache.
+ */
+@property (nonatomic, readonly) NSUInteger totalCost;
 
-#pragma mark - Retrieval
+/**
+ * Subscripting support
+ */
+- (id)objectForKeyedSubscript:(id<NSCopying>)key;
+- (void)setObject:(id)obj forKeyedSubscript:(id<NSCopying>)key;
 
-- (BOOL)hasDataForKey:(NSString *)key;
-- (void)fetchDataForKey:(NSString *)key completionHandler:(void (^)(NSData *data))completionHandler;
+/**
+ * Enumerate cached objects
+ */
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block;
 
-#pragma mark - Insertion
+@end
 
-- (void)setData:(NSData *)data forKey:(NSString *)key;
-- (void)removeAllData;
+@protocol RCTCacheDelegate <NSCacheDelegate>
+@optional
+
+/**
+ * Should the specified object be evicted from the cache?
+ */
+- (BOOL)cache:(RCTCache *)cache shouldEvictObject:(id)entry;
+
+/**
+ * The specified object is about to be evicted from the cache.
+ */
+- (void)cache:(RCTCache *)cache willEvictObject:(id)entry;
 
 @end

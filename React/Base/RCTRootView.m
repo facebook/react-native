@@ -17,6 +17,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPerformanceLogger.h"
 #import "RCTSourceCode.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
@@ -168,8 +169,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     }
 
     [_contentView removeFromSuperview];
-    _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
-                                                      bridge:bridge];
+    _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
     _contentView.backgroundColor = self.backgroundColor;
     [self insertSubview:_contentView atIndex:0];
 
@@ -247,6 +247,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
+  RCTPerformanceLoggerEnd(RCTPLTTI);
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!_contentHasAppeared) {
       _contentHasAppeared = YES;

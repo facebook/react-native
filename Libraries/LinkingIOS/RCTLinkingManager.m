@@ -37,11 +37,6 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_queue_create("com.facebook.React.LinkingManager", DISPATCH_QUEUE_SERIAL);
-}
-
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication

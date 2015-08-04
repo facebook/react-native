@@ -12,13 +12,13 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
+var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 
 var RCTUIManager = NativeModules.UIManager;
-var RCTUIManagerDeprecated = NativeModules.UIManager;
 var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
 
 var warning = require('warning');
@@ -351,7 +351,19 @@ var ScrollResponderMixin = {
    * can also be used to quickly scroll to any element we want to focus
    */
   scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
-    RCTUIManagerDeprecated.scrollTo(React.findNodeHandle(this), offsetX, offsetY);
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        React.findNodeHandle(this),
+        RCTUIManager.RCTScrollView.Commands.scrollTo,
+        [offsetX, offsetY],
+      );
+    } else {
+      RCTUIManager.scrollTo(
+        React.findNodeHandle(this),
+        offsetX,
+        offsetY
+      );
+    }
   },
 
   /**
@@ -359,7 +371,7 @@ var ScrollResponderMixin = {
    * @param {object} rect Should have shape {x, y, width, height}
    */
   scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
-    RCTUIManagerDeprecated.zoomToRect(React.findNodeHandle(this), rect);
+    RCTUIManager.zoomToRect(React.findNodeHandle(this), rect);
   },
 
   /**
@@ -377,7 +389,7 @@ var ScrollResponderMixin = {
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
     RCTUIManager.measureLayout(
       nodeHandle,
-      React.findNodeHandle(this),
+      React.findNodeHandle(this.getInnerViewNode()),
       this.scrollResponderTextInputFocusError,
       this.scrollResponderInputMeasureAndScrollToKeyboard
     );
@@ -429,6 +441,10 @@ var ScrollResponderMixin = {
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardWillHide', this.scrollResponderKeyboardWillHide);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidShow', this.scrollResponderKeyboardDidShow);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidHide', this.scrollResponderKeyboardDidHide);
+    warning(this.getInnerViewNode, 'You need to implement getInnerViewNode in '
+       + this.constructor.displayName + ' to get full'
+       + 'functionality from ScrollResponder mixin. See example of ListView and'
+       + ' ScrollView.');
   },
 
   /**
@@ -469,9 +485,13 @@ var ScrollResponderMixin = {
     this.props.onKeyboardWillHide && this.props.onKeyboardWillHide(e);
   },
 
-  scrollResponderKeyboardDidShow: function() {
-    this.keyboardWillOpenTo = null;
-    this.props.onKeyboardDidShow && this.props.onKeyboardDidShow();
+  scrollResponderKeyboardDidShow: function(e: Event) {
+    // TODO(7693961): The event for DidShow is not available on iOS yet.
+    // Use the one from WillShow and do not assign.
+    if (e) {
+      this.keyboardWillOpenTo = e;
+    }
+    this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
   },
 
   scrollResponderKeyboardDidHide: function() {

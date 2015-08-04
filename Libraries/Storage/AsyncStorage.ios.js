@@ -183,7 +183,7 @@ var AsyncStorage = {
 
   /**
    * multiSet and multiMerge take arrays of key-value array pairs that match
-   * the output of multiGet, e.g. Returns a `Promise` object.
+   * the output of multiGet. Returns a `Promise` object.
    *
    *   multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
    */

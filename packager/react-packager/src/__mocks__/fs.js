@@ -51,7 +51,7 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
     var node = getToNode(filepath);
     // dir check
     if (node && typeof node === 'object' && node.SYMLINK == null) {
-      callback(new Error('Trying to read a dir, ESIDR, or whatever'));
+      callback(new Error('Error readFile a dir: ' + filepath));
     }
     return callback(null, node);
   } catch (e) {
@@ -59,12 +59,13 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
   }
 });
 
-fs.lstat.mockImpl(function(filepath, callback) {
+fs.stat.mockImpl(function(filepath, callback) {
   var node;
   try {
     node = getToNode(filepath);
   } catch (e) {
-    return callback(e);
+    callback(e);
+    return;
   }
 
   var mtime = {
@@ -73,7 +74,12 @@ fs.lstat.mockImpl(function(filepath, callback) {
     }
   };
 
-  if (node && typeof node === 'object' && node.SYMLINK == null) {
+  if (node.SYMLINK) {
+    fs.stat(node.SYMLINK, callback);
+    return;
+  }
+
+  if (node && typeof node === 'object') {
     callback(null, {
       isDirectory: function() {
         return true;
@@ -89,9 +95,6 @@ fs.lstat.mockImpl(function(filepath, callback) {
         return false;
       },
       isSymbolicLink: function() {
-        if (typeof node === 'object' && node.SYMLINK) {
-          return true;
-        }
         return false;
       },
       mtime: mtime,
@@ -113,6 +116,9 @@ function getToNode(filepath) {
   }
   var node = filesystem;
   parts.slice(1).forEach(function(part) {
+    if (node && node.SYMLINK) {
+      node = getToNode(node.SYMLINK);
+    }
     node = node[part];
   });
 
