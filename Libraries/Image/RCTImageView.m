@@ -177,21 +177,14 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 }
 
-- (void)willMoveToSuperview:(UIView *)newSuperview
+- (void)didMoveToWindow
 {
-  [super willMoveToSuperview:newSuperview];
+  [super didMoveToWindow];
 
-  if (!newSuperview) {
+  if (!self.window) {
     [self.layer removeAnimationForKey:@"contents"];
     self.image = nil;
-  }
-}
-
-- (void)didMoveToSuperview
-{
-  [super didMoveToSuperview];
-
-  if (self.superview && self.src) {
+  } else if (self.src) {
     [self reloadImage];
   }
 }
