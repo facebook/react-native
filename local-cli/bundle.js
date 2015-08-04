@@ -5,7 +5,7 @@ var chalk = require('chalk');
 var blacklist = require('../packager/blacklist.js');
 var ReactPackager = require('../packager/react-packager');
 
-var OUT_PATH = 'iOS/main.jsbundle';
+var OUT_PATH = 'ios/main.jsbundle';
 var URL_PATH = '/index.ios.bundle?dev=';
 
 function getBundle(flags) {

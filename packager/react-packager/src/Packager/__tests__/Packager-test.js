@@ -13,7 +13,8 @@ jest
   .dontMock('underscore')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
-  .dontMock('../');
+  .dontMock('../')
+  .setMock('chalk', { dim: function(s) { return s; } });
 
 jest.mock('fs');
 
