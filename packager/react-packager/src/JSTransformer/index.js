@@ -121,7 +121,9 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
   });
 };
 
-function TransformError() {}
+function TransformError() {
+  Error.captureStackTrace && Error.captureStackTrace(this, TransformError);
+}
 util.inherits(TransformError, SyntaxError);
 
 function formatError(err, filename, source) {
