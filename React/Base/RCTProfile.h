@@ -78,7 +78,7 @@ NSDictionary *RCTProfileGetMemoryUsage(BOOL);
  * Exposes device cpu usage metrics - Note this does not include JS Runtime CPU usage
  */
 
-NSNumber *RCTProfileGetCPUUsage();
+NSNumber *RCTProfileGetCPUUsage(void);
 
 /**
  * This pair of macros implicitly handle the event ID when beginning and ending
