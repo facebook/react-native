@@ -13,7 +13,7 @@ function crawl(roots, options) {
     // Make sure we're dealing with a version of watchman
     // that's using `watch-project`
     // TODO(amasad): properly expose (and document) used sane internals.
-    return fileWatcher.getWatchers().then(([watcher]) => !!watcher.watchProjectInfo.root);
+    return fileWatcher.getWatchers().then(([watcher]) => !!watcher.watchProjectInfo && !!watcher.watchProjectInfo.root);
   }).then(isWatchman => {
     if (isWatchman) {
       return watchmanCrawl(roots, options);
