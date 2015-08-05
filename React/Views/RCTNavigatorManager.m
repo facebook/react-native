@@ -36,7 +36,7 @@ RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)
 }
 
 // TODO: remove error callbacks
-RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reactTag
                   errorCallback:(__unused RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {

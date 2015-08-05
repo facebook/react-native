@@ -59,6 +59,7 @@ var SCENE_DISABLED_NATIVE_PROPS = {
   pointerEvents: 'none',
   style: {
     top: SCREEN_HEIGHT,
+    bottom: -SCREEN_HEIGHT,
     opacity: 0,
   },
 };
@@ -109,6 +110,7 @@ var styles = StyleSheet.create({
   },
   disabledScene: {
     top: SCREEN_HEIGHT,
+    bottom: -SCREEN_HEIGHT,
   },
   transitioner: {
     flex: 1,
@@ -535,6 +537,7 @@ var Navigator = React.createClass({
       pointerEvents: 'auto',
       style: {
         top: sceneStyle.top,
+        bottom: sceneStyle.bottom,
       },
     };
     if (sceneIndex !== this.state.transitionFromIndex &&
@@ -922,7 +925,19 @@ var Navigator = React.createClass({
   },
 
   pop: function() {
-    this._popN(1);
+    if (this.state.transitionQueue.length) {
+      // This is the workaround to prevent user from firing multiple `pop()`
+      // calls that may pop the routes beyond the limit.
+      // Because `this.state.presentedIndex` does not update until the
+      // transition starts, we can't reliably use `this.state.presentedIndex`
+      // to know whether we can safely keep popping the routes or not at this
+      //  moment.
+      return;
+    }
+
+    if (this.state.presentedIndex > 0) {
+      this._popN(1);
+    }
   },
 
   /**

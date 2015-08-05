@@ -18,11 +18,6 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-// Special scheme that allow JS to notify the WebView to emit
-// navigation event.
-//
-// JavaScript Example:
-//   window.location.href = 'react-js-navigation://hello'
 NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>

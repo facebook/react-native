@@ -149,7 +149,11 @@ RCT_EXPORT_MODULE()
 
 - (void)executeApplicationScript:(NSString *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  NSDictionary *message = @{@"method": @"executeApplicationScript", @"url": [URL absoluteString], @"inject": _injectedObjects};
+  NSDictionary *message = @{
+    @"method": @"executeApplicationScript",
+    @"url": RCTNullIfNil([URL absoluteString]),
+    @"inject": _injectedObjects,
+  };
   [self sendMessage:message waitForReply:^(NSError *error, NSDictionary *reply) {
     onComplete(error);
   }];

@@ -17,9 +17,6 @@ var sharedBlacklist = [
   'node_modules/react-tools/src/React.js',
   'node_modules/react-tools/src/renderers/shared/event/EventPropagators.js',
   'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
-  'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderSyntheticEvent.js',
-  'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderTouchHistoryStore.js',
-  'node_modules/react-tools/src/renderers/shared/reconciler/ReactInstanceHandles.js',
   'node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js',
 ];
 

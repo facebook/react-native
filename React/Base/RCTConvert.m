@@ -779,31 +779,33 @@ static BOOL RCTFontIsCondensed(UIFont *font)
            withFamily:json[@"fontFamily"]
                  size:json[@"fontSize"]
                weight:json[@"fontWeight"]
-                style:json[@"fontStyle"]];
+                style:json[@"fontStyle"]
+          scaleMultiplier:1.0f];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
-  return [self UIFont:font withFamily:nil size:json weight:nil style:nil];
+  return [self UIFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:json style:nil];
+  return [self UIFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:nil style:json];
+  return [self UIFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
 {
-  return [self UIFont:font withFamily:json size:nil weight:nil style:nil];
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style
+   scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
   NSString *const RCTDefaultFontFamily = @"System";
@@ -828,6 +830,9 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
   // Get font attributes
   fontSize = [self CGFloat:size] ?: fontSize;
+  if (scaleMultiplier > 0.0 && scaleMultiplier != 1.0) {
+    fontSize = round(fontSize * scaleMultiplier);
+  }
   familyName = [self NSString:family] ?: familyName;
   isItalic = style ? [self RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [self RCTFontWeight:weight] : fontWeight;

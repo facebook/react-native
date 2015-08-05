@@ -146,6 +146,21 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   _parentBridge.executorClass = executorClass;
 }
 
+- (NSURL *)bundleURL
+{
+  return _parentBridge.bundleURL;
+}
+
+- (void)setBundleURL:(NSURL *)bundleURL
+{
+  _parentBridge.bundleURL = bundleURL;
+}
+
+- (id<RCTBridgeDelegate>)delegate
+{
+  return _parentBridge.delegate;
+}
+
 - (BOOL)isLoading
 {
   return _loading;
@@ -162,7 +177,17 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
-  for (id<RCTBridgeModule> module in self.moduleProvider ? self.moduleProvider() : nil) {
+
+  NSArray *extraModules = nil;
+  if (self.delegate) {
+    if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
+      extraModules = [self.delegate extraModulesForBridge:_parentBridge];
+    }
+  } else if (self.moduleProvider) {
+    extraModules = self.moduleProvider();
+  }
+
+  for (id<RCTBridgeModule> module in extraModules) {
     preregisteredModules[RCTBridgeModuleNameForClass([module class])] = module;
   }
 
@@ -251,7 +276,6 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     }
   }];
 
-  NSURL *bundleURL = _parentBridge.bundleURL;
   if (_javaScriptExecutor == nil) {
 
     /**
@@ -260,21 +284,15 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
      */
     _loading = NO;
 
-  } else if (!bundleURL) {
-
-    // Allow testing without a script
-    dispatch_async(dispatch_get_main_queue(), ^{
-      _loading = NO;
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                          object:_parentBridge
-                                                        userInfo:@{ @"bridge": self }];
-    });
   } else {
 
-    RCTProfileBeginEvent();
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartLoadingNotification
+                                                        object:self
+                                                      userInfo:@{ @"bridge": self }];
     RCTPerformanceLoggerStart(RCTPLScriptDownload);
-    RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
-    [loader loadBundleAtURL:bundleURL onComplete:^(NSError *error, NSString *script) {
+    RCTProfileBeginEvent();
+    NSURL *sourceURL = self.delegate ? [self.delegate sourceURLForBridge:_parentBridge] : self.bundleURL;
+    void (^loadCallback)(NSError *, NSString *) = ^(NSError *error, NSString *script) {
       RCTPerformanceLoggerEnd(RCTPLScriptDownload);
       RCTProfileEndEvent(@"JavaScript download", @"init,download", @[]);
 
@@ -293,7 +311,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
       });
 
       RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
-      sourceCodeModule.scriptURL = bundleURL;
+      sourceCodeModule.scriptURL = sourceURL;
       sourceCodeModule.scriptText = script;
       if (error) {
 
@@ -313,7 +331,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
       } else {
 
-        [self enqueueApplicationScript:script url:bundleURL onComplete:^(NSError *loadError) {
+        [self enqueueApplicationScript:script url:sourceURL onComplete:^(NSError *loadError) {
 
           if (loadError) {
             [[RCTRedBox sharedInstance] showError:loadError];
@@ -332,7 +350,22 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
                                                             userInfo:@{ @"bridge": self }];
         }];
       }
-    }];
+    };
+
+    if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
+      [self.delegate loadSourceForBridge:_parentBridge withBlock:loadCallback];
+    } else if (sourceURL) {
+      [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+                                onComplete:loadCallback];
+    } else {
+      // Allow testing without a script
+      dispatch_async(dispatch_get_main_queue(), ^{
+        _loading = NO;
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                            object:_parentBridge
+                                                          userInfo:@{ @"bridge": self }];
+      });
+    }
   }
 }
 
@@ -657,7 +690,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   }
 
   RCTProfileEndEvent(@"Invoke callback", @"objc_call", @{
-    @"module": method.moduleClassName,
+    @"module": NSStringFromClass(method.moduleClass),
     @"method": method.JSMethodName,
     @"selector": NSStringFromSelector(method.selector),
     @"args": RCTJSONStringify(RCTNullIfNil(params), NULL),
@@ -742,7 +775,8 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     NSString *log = RCTProfileEnd(self);
     NSURL *bundleURL = _parentBridge.bundleURL;
-    NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", bundleURL.scheme, bundleURL.host, bundleURL.port];
+    NSString *port = bundleURL.port ? [@":" stringByAppendingString:bundleURL.port.stringValue] : @"";
+    NSString *URLString = [NSString stringWithFormat:@"%@://%@%@/profile", bundleURL.scheme, bundleURL.host, port];
     NSURL *URL = [NSURL URLWithString:URLString];
     NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
     URLRequest.HTTPMethod = @"POST";

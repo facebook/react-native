@@ -29,7 +29,7 @@
 /**
  * This method finds and returns the containing view controller for the view.
  */
-- (UIViewController *)backingViewController;
+- (UIViewController *)reactViewController;
 
 /**
  * This method attaches the specified controller as a child of the
@@ -37,7 +37,7 @@
  * controller is found (which may happen if the view is not currently
  * attached to the view hierarchy).
  */
-- (void)addControllerToClosestParent:(UIViewController *)controller;
+- (void)reactAddControllerToClosestParent:(UIViewController *)controller;
 
 /**
  * Responder overrides - to be deprecated.

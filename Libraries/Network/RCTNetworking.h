@@ -9,8 +9,18 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTBridgeModule.h"
+#import "RCTBridge.h"
+#import "RCTDownloadTask.h"
 
 @interface RCTNetworking : NSObject <RCTBridgeModule>
+
+- (RCTDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request
+                             completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
+
+@end
+
+@interface RCTBridge (RCTNetworking)
+
+@property (nonatomic, readonly) RCTNetworking *networking;
 
 @end

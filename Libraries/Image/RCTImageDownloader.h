@@ -9,24 +9,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTDownloadTaskWrapper.h"
+#import "RCTBridge.h"
+#import "RCTImageLoader.h"
 
-typedef void (^RCTDataDownloadBlock)(NSData *data, NSError *error);
-typedef void (^RCTImageDownloadBlock)(UIImage *image, NSError *error);
-typedef void (^RCTImageDownloadCancellationBlock)(void);
-
-@interface RCTImageDownloader : NSObject
-
-+ (RCTImageDownloader *)sharedInstance;
-
-/**
- * Downloads a block of raw data and returns it. Note that the callback block
- * will not be executed on the same thread you called the method from, nor on
- * the main thread. Returns a token that can be used to cancel the download.
- */
-- (RCTImageDownloadCancellationBlock)downloadDataForURL:(NSURL *)url
-                                          progressBlock:(RCTDataProgressBlock)progressBlock
-                                                  block:(RCTDataDownloadBlock)block;
+@interface RCTImageDownloader : NSObject <RCTBridgeModule>
 
 /**
  * Downloads an image and decompresses it a the size specified. The compressed
@@ -34,13 +20,17 @@ typedef void (^RCTImageDownloadCancellationBlock)(void);
  * will not be executed on the same thread you called the method from, nor on
  * the main thread. Returns a token that can be used to cancel the download.
  */
-- (RCTImageDownloadCancellationBlock)downloadImageForURL:(NSURL *)url
-                                                    size:(CGSize)size
-                                                   scale:(CGFloat)scale
-                                              resizeMode:(UIViewContentMode)resizeMode
-                                               tintColor:(UIColor *)tintColor
-                                         backgroundColor:(UIColor *)backgroundColor
-                                           progressBlock:(RCTDataProgressBlock)progressBlock
-                                                   block:(RCTImageDownloadBlock)block;
+- (RCTImageLoaderCancellationBlock)downloadImageForURL:(NSURL *)url
+                                                  size:(CGSize)size
+                                                 scale:(CGFloat)scale
+                                            resizeMode:(UIViewContentMode)resizeMode
+                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                       completionBlock:(RCTImageLoaderCompletionBlock)block;
+
+@end
+
+@interface RCTBridge (RCTImageDownloader)
+
+@property (nonatomic, readonly) RCTImageDownloader *imageDownloader;
 
 @end

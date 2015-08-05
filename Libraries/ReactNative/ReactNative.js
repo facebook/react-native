@@ -52,7 +52,7 @@ var resolveDefaultProps = function(element) {
 };
 
 // Experimental optimized element creation
-var augmentElement = function(element: ReactElement) {
+var augmentElement = function(element: ReactElement): ReactElement {
   if (__DEV__) {
     invariant(
       false,

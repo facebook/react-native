@@ -12,15 +12,42 @@
 'use strict';
 
 type FormDataValue = any;
-type FormDataPart = [string, FormDataValue];
+type FormDataNameValuePair = [string, FormDataValue];
+
+type Headers = {[name: string]: string};
+type FormDataPart = {
+  string: string;
+  headers: Headers;
+} | {
+  uri: string;
+  headers: Headers;
+  name?: string;
+  type?: string;
+};
 
 /**
  * Polyfill for XMLHttpRequest2 FormData API, allowing multipart POST requests
  * with mixed data (string, native files) to be submitted via XMLHttpRequest.
+ *
+ * Example:
+ *
+ *   var photo = {
+ *     uri: uriFromCameraRoll,
+ *     type: 'image/jpeg',
+ *     name: 'photo.jpg',
+ *   };
+ *
+ *   var body = new FormData();
+ *   body.append('authToken', 'secret');
+ *   body.append('photo', photo);
+ *   body.append('title', 'A beautiful photo!');
+ *
+ *   xhr.open('POST', serverURL);
+ *   xhr.send(body);
  */
 class FormData {
-  _parts: Array<FormDataPart>;
-  _partsByKey: {[key: string]: FormDataPart};
+  _parts: Array<FormDataNameValuePair>;
+  _partsByKey: {[key: string]: FormDataNameValuePair};
 
   constructor() {
     this._parts = [];
@@ -42,24 +69,25 @@ class FormData {
     this._partsByKey[key] = parts;
   }
 
-  getParts(): Array<FormDataValue> {
+  getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
-      if (typeof value === 'string') {
-        return {
-          string: value,
-          headers: {
-            'content-disposition': 'form-data; name="' + name + '"',
-          },
-        };
-      }
       var contentDisposition = 'form-data; name="' + name + '"';
-      if (typeof value.name === 'string') {
-        contentDisposition += '; filename="' + value.name + '"';
+      var headers: Headers = {'content-disposition': contentDisposition};
+      if (typeof value === 'string') {
+        return {string: value, headers};
       }
-      return {
-        ...value,
-        headers: {'content-disposition': contentDisposition},
-      };
+
+      // The body part is a "blob", which in React Native just means
+      // an object with a `uri` attribute. Optionally, it can also
+      // have a `name` and `type` attribute to specify filename and
+      // content type (cf. web Blob interface.)
+      if (typeof value.name === 'string') {
+        headers['content-disposition'] += '; filename="' + value.name + '"';
+      }
+      if (typeof value.type === 'string') {
+        headers['content-type'] = value.type;
+      }
+      return {...value, headers};
     });
   }
 }

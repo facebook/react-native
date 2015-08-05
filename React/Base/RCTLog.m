@@ -22,7 +22,7 @@
 
 @end
 
-static NSString *const RCTLogPrefixStack = @"RCTLogPrefixStack";
+static NSString *const RCTLogFunctionStack = @"RCTLogFunctionStack";
 
 const char *RCTLogLevels[] = {
   "info",
@@ -107,17 +107,42 @@ void RCTAddLogFunction(RCTLogFunction logFunction)
   }
 }
 
-void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
+/**
+ * returns the topmost stacked log function for the current thread, which
+ * may not be the same as the current value of RCTCurrentLogFunction.
+ */
+static RCTLogFunction RCTGetLocalLogFunction()
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-  NSMutableArray *prefixStack = threadDictionary[RCTLogPrefixStack];
-  if (!prefixStack) {
-    prefixStack = [[NSMutableArray alloc] init];
-    threadDictionary[RCTLogPrefixStack] = prefixStack;
+  NSArray *functionStack = threadDictionary[RCTLogFunctionStack];
+  RCTLogFunction logFunction = [functionStack lastObject];
+  if (logFunction) {
+    return logFunction;
   }
-  [prefixStack addObject:prefix];
+  return RCTCurrentLogFunction;
+}
+
+void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFunction logFunction)
+{
+  NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+  NSMutableArray *functionStack = threadDictionary[RCTLogFunctionStack];
+  if (!functionStack) {
+    functionStack = [[NSMutableArray alloc] init];
+    threadDictionary[RCTLogFunctionStack] = functionStack;
+  }
+  [functionStack addObject:logFunction];
   block();
-  [prefixStack removeLastObject];
+  [functionStack removeLastObject];
+}
+
+void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
+{
+  RCTLogFunction logFunction = RCTGetLocalLogFunction();
+  if (logFunction) {
+    RCTPerformBlockWithLogFunction(block, ^(RCTLogLevel level, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+      logFunction(level, fileName, lineNumber, [prefix stringByAppendingString:message]);
+    });
+  }
 }
 
 NSString *RCTFormatLog(
@@ -165,8 +190,8 @@ void _RCTLogFormat(
   int lineNumber,
   NSString *format, ...)
 {
-
-  BOOL log = RCT_DEBUG || (RCTCurrentLogFunction != nil);
+  RCTLogFunction logFunction = RCTGetLocalLogFunction();
+  BOOL log = RCT_DEBUG || (logFunction != nil);
   if (log && level >= RCTCurrentLogThreshold) {
 
     // Get message
@@ -175,18 +200,10 @@ void _RCTLogFormat(
     NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
     va_end(args);
 
-    // Add prefix
-    NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-    NSArray *prefixStack = threadDictionary[RCTLogPrefixStack];
-    NSString *prefix = [prefixStack lastObject];
-    if (prefix) {
-      message = [prefix stringByAppendingString:message];
-    }
-
     // Call log function
-    RCTCurrentLogFunction(
-      level, fileName ? @(fileName) : nil, (lineNumber >= 0) ? @(lineNumber) : nil, message
-    );
+    if (logFunction) {
+      logFunction(level, fileName ? @(fileName) : nil, (lineNumber >= 0) ? @(lineNumber) : nil, message);
+    }
 
 #if RCT_DEBUG // Red box is only available in debug mode
 

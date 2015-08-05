@@ -67,36 +67,33 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat borderWidth;
 @property (nonatomic, assign) CGFloat borderTopWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderRightWidth;
 
-- (void)setBorderWidth:(CGFloat)value;
-
 /**
  * Margin. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat margin;
+@property (nonatomic, assign) CGFloat marginVertical;
+@property (nonatomic, assign) CGFloat marginHorizontal;
 @property (nonatomic, assign) CGFloat marginTop;
 @property (nonatomic, assign) CGFloat marginLeft;
 @property (nonatomic, assign) CGFloat marginBottom;
 @property (nonatomic, assign) CGFloat marginRight;
 
-- (void)setMargin:(CGFloat)margin;
-- (void)setMarginVertical:(CGFloat)margin;
-- (void)setMarginHorizontal:(CGFloat)margin;
-
 /**
  * Padding. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat padding;
+@property (nonatomic, assign) CGFloat paddingVertical;
+@property (nonatomic, assign) CGFloat paddingHorizontal;
 @property (nonatomic, assign) CGFloat paddingTop;
 @property (nonatomic, assign) CGFloat paddingLeft;
 @property (nonatomic, assign) CGFloat paddingBottom;
 @property (nonatomic, assign) CGFloat paddingRight;
-
-- (void)setPadding:(CGFloat)padding;
-- (void)setPaddingVertical:(CGFloat)padding;
-- (void)setPaddingHorizontal:(CGFloat)padding;
 
 - (UIEdgeInsets)paddingAsInsets;
 
