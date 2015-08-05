@@ -309,7 +309,7 @@ RCT_EXPORT_MODULE()
     self.showFPS = !_showFPS;
   }]];
 
-  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Inspect Element" handler:^{
+  [items addObject:[[RCTDevMenuItem alloc] initWithTitle:@"Toggle Element Inspector" handler:^{
     [_bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
   }]];
 
