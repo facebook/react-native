@@ -55,6 +55,7 @@ var AndroidTextInputAttributes = {
   text: true,
   testID: true,
   underlineColorAndroid: true,
+  editable : true,
 };
 
 var viewConfigAndroid = {
@@ -143,7 +144,6 @@ var TextInput = React.createClass({
     ]),
     /**
      * If false, text is not editable. The default value is true.
-     * @platform ios
      */
     editable: PropTypes.bool,
     /**
@@ -497,6 +497,7 @@ var TextInput = React.createClass({
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
+        editable={this.props.editable}
       />;
 
     return (
