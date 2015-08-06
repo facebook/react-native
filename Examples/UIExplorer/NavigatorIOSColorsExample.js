@@ -65,8 +65,8 @@ var NavigatorIOSColors = React.createClass({
         }}
         tintColor="#FFFFFF"
         barTintColor="#183E63"
-        titleTextColor="#FFFFFF"
         translucent={true}
+        titleStyle={styles.navTitle}
       />
     );
   },
@@ -84,6 +84,11 @@ var styles = StyleSheet.create({
   emptyPageText: {
     margin: 10,
   },
+  navTitle: {
+    color: '#545454',
+    fontFamily: 'Bodoni Ornaments',
+    fontSize: 18,
+  }
 });
 
 NavigatorIOSColors.external = true;

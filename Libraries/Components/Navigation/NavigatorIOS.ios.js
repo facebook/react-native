@@ -16,6 +16,9 @@ var Image = require('Image');
 var NavigationContext = require('NavigationContext');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var React = require('React');
+var StyleSheet = require('StyleSheet');
+var StyleSheetPropType = require('StyleSheetPropType');
+var TextStylePropTypes = require('TextStylePropTypes');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -24,6 +27,7 @@ var invariant = require('invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+var flattenStyle = require('flattenStyle');
 
 var TRANSITIONER_REF = 'transitionerRef';
 
@@ -312,9 +316,23 @@ var NavigatorIOS = React.createClass({
     barTintColor: PropTypes.string,
 
     /**
+     * @deprecated
+     * Use `titleStyle.color` instead.
+     *
      * The default text color of the navigation bar title
      */
     titleTextColor: PropTypes.string,
+
+    /**
+     * The style of the navigation bar title
+     */
+    titleStyle: StyleSheetPropType({
+      color: TextStylePropTypes.color,
+      fontFamily: TextStylePropTypes.fontFamily,
+      fontSize: TextStylePropTypes.fontSize,
+      fontStyle: TextStylePropTypes.fontStyle,
+      fontWeight: TextStylePropTypes.fontWeight,
+    }),
 
     /**
      * A Boolean value that indicates whether the navigation bar is translucent by default
@@ -642,6 +660,14 @@ var NavigatorIOS = React.createClass({
       this.state.updatingAllIndicesAtOrBeyond != null &&
       this.state.updatingAllIndicesAtOrBeyond >= i;
     var Component = component;
+    var titleStyles = flattenStyle(this.props.titleStyle);
+    if (!titleStyles) {
+      titleStyles = {};
+    }
+    if (this.props.titleTextColor) {
+      console.warning('titleTextColor is deprecated, use titleStyles instead.');
+      titleStyles.color = this.props.titleTextColor;
+    }
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
@@ -651,7 +677,12 @@ var NavigatorIOS = React.createClass({
             styles.stackItem,
             itemWrapperStyle,
             wrapperStyle
-          ]}>
+          ]}
+          titleTextColor={titleStyles.color}
+          titleFontSize={titleStyles.fontSize}
+          titleFontWeight={titleStyles.fontWeight}
+          titleFontStyle={titleStyles.fontStyle}
+          titleFontFamily={titleStyles.fontFamily}>
           <Component
             navigator={this.navigator}
             route={route}
