@@ -18,6 +18,9 @@
 .*/node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js
 
 
+# Ignore flow-bin
+.*/node_modules/flow-bin/.*
+
 # Ignore commoner tests
 .*/node_modules/commoner/test/.*
 
