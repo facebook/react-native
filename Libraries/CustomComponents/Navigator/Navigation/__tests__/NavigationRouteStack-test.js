@@ -330,19 +330,46 @@ describe('NavigationRouteStack:', () => {
     var stack = new NavigationRouteStack(0, ['a', 'b']);
     var logs = [];
     var keys = {};
+    var context = {name: 'yo'};
 
-    stack.forEach((route, index, key) => {
-      logs.push([
-        route,
-        index,
-        (typeof key === 'string' && key.length > 0 && !(key in keys)),
-      ]);
-      keys[key] = true;
-    });
+    stack.forEach(function (route, index, key) {
+      assetStringNotEmpty(key);
+      if (!keys.hasOwnProperty(key)) {
+        keys[key] = true;
+        logs.push([
+          route,
+          index,
+          this.name,
+        ]);
+      }
+    }, context);
 
     expect(logs).toEqual([
-      ['a', 0, true],
-      ['b', 1, true],
+      ['a', 0, 'yo'],
+      ['b', 1, 'yo'],
+    ]);
+  });
+
+  it('Maps to an array', () => {
+    var stack = new NavigationRouteStack(0, ['a', 'b']);
+    var keys = {};
+    var context = {name: 'yo'};
+
+    var logs = stack.mapToArray(function(route, index, key) {
+      assetStringNotEmpty(key);
+      if (!keys.hasOwnProperty(key)) {
+        keys[key] = true;
+        return [
+          route,
+          index,
+          this.name,
+        ];
+      }
+    }, context);
+
+    expect(logs).toEqual([
+      ['a', 0, 'yo'],
+      ['b', 1, 'yo'],
     ]);
   });
 

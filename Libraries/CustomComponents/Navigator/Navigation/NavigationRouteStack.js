@@ -202,9 +202,17 @@ class RouteStack {
     var nodes = this._routeNodes;
     while (ii < nodes.size) {
       var node = nodes.get(ii);
-      callback(node.value, ii, node.key);
+      callback.call(context, node.value, ii, node.key);
       ii++;
     }
+  }
+
+  mapToArray(callback: IterationCallback, context: ?Object): Array<any> {
+    var result = [];
+    this.forEach((route, index, key) => {
+      result.push(callback.call(context, route, index, key));
+    });
+    return result;
   }
 
   /**
