@@ -22,7 +22,6 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
 
 @implementation RCTImageDownloader
 {
-  NSURLCache *_cache;
   dispatch_queue_t _processingQueue;
   NSMutableDictionary *_pendingBlocks;
   RCTDownloadTaskWrapper *_downloadTaskWrapper;

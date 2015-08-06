@@ -17,6 +17,8 @@ typedef void (^RCTImageDownloadCancellationBlock)(void);
 
 @interface RCTImageDownloader : NSObject
 
+@property (nonatomic, strong) NSURLCache *cache;
+
 + (RCTImageDownloader *)sharedInstance;
 
 /**
