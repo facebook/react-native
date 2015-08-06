@@ -152,12 +152,12 @@ var TouchableHighlight = React.createClass({
     this.props.onPressOut && this.props.onPressOut();
   },
 
-  touchableHandlePress: function() {
+  touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._showUnderlay();
     this._hideTimeout = this.setTimeout(this._hideUnderlay,
       this.props.delayPressOut || 100);
-    this.props.onPress && this.props.onPress();
+    this.props.onPress && this.props.onPress(e);
   },
 
   touchableHandleLongPress: function() {
