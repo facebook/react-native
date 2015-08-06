@@ -17,7 +17,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-typedef void (^RCTArgumentBlock)(RCTBridge *, NSInvocation *, NSUInteger, id);
+typedef void (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
 @implementation RCTMethodArgument
 
@@ -47,7 +47,7 @@ typedef void (^RCTArgumentBlock)(RCTBridge *, NSInvocation *, NSUInteger, id);
 {
   Class _moduleClass;
   SEL _selector;
-  NSMethodSignature *_methodSignature;
+  NSInvocation *_invocation;
   NSArray *_argumentBlocks;
 }
 
@@ -135,16 +135,20 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       methodName;
     });
 
-    // Get method signature
-    _methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
-    RCTAssert(_methodSignature, @"%@ is not a recognized Objective-C method.", objCMethodName);
+    // Create method invocation
+    NSMethodSignature *methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
+    RCTAssert(methodSignature, @"%@ is not a recognized Objective-C method.", objCMethodName);
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+    [invocation setSelector:_selector];
+    [invocation retainArguments];
+    _invocation = invocation;
 
     // Process arguments
-    NSUInteger numberOfArguments = _methodSignature.numberOfArguments;
+    NSUInteger numberOfArguments = methodSignature.numberOfArguments;
     NSMutableArray *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
 
 #define RCT_ARG_BLOCK(_logic) \
-  [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) { \
+  [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
     _logic \
     [invocation setArgument:&value atIndex:(index) + 2]; \
   }];
@@ -168,7 +172,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
     };
 
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
-      const char *objcType = [_methodSignature getArgumentTypeAtIndex:i];
+      const char *objcType = [methodSignature getArgumentTypeAtIndex:i];
       BOOL isNullableType = NO;
       RCTMethodArgument *argument = arguments[i - 2];
       NSString *typeName = argument.type;
@@ -176,45 +180,54 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       if ([RCTConvert respondsToSelector:selector]) {
         switch (objcType[0]) {
 
-#define RCT_CONVERT_CASE(_value, _type) \
-case _value: { \
-  if (RCT_DEBUG && ([@#_type hasSuffix:@"*"] || [@#_type hasSuffix:@"Ref"] || [@#_type isEqualToString:@"id"])) { \
-    isNullableType = YES; \
-  } \
-  _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
-  RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
-  break; \
-}
+#define RCT_CASE(_value, _type) \
+          case _value: { \
+            _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
+            RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
+            break; \
+          }
 
-          RCT_CONVERT_CASE(':', SEL)
-          RCT_CONVERT_CASE('*', const char *)
-          RCT_CONVERT_CASE('c', char)
-          RCT_CONVERT_CASE('C', unsigned char)
-          RCT_CONVERT_CASE('s', short)
-          RCT_CONVERT_CASE('S', unsigned short)
-          RCT_CONVERT_CASE('i', int)
-          RCT_CONVERT_CASE('I', unsigned int)
-          RCT_CONVERT_CASE('l', long)
-          RCT_CONVERT_CASE('L', unsigned long)
-          RCT_CONVERT_CASE('q', long long)
-          RCT_CONVERT_CASE('Q', unsigned long long)
-          RCT_CONVERT_CASE('f', float)
-          RCT_CONVERT_CASE('d', double)
-          RCT_CONVERT_CASE('B', BOOL)
-          RCT_CONVERT_CASE('@', id)
-          RCT_CONVERT_CASE('^', void *)
+          RCT_CASE(_C_CHR, char)
+          RCT_CASE(_C_UCHR, unsigned char)
+          RCT_CASE(_C_SHT, short)
+          RCT_CASE(_C_USHT, unsigned short)
+          RCT_CASE(_C_INT, int)
+          RCT_CASE(_C_UINT, unsigned int)
+          RCT_CASE(_C_LNG, long)
+          RCT_CASE(_C_ULNG, unsigned long)
+          RCT_CASE(_C_LNG_LNG, long long)
+          RCT_CASE(_C_ULNG_LNG, unsigned long long)
+          RCT_CASE(_C_FLT, float)
+          RCT_CASE(_C_DBL, double)
+          RCT_CASE(_C_BOOL, BOOL)
 
-          case '{': {
-            [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
+#define RCT_NULLABLE_CASE(_value, _type) \
+          case _value: { \
+            isNullableType = YES; \
+            _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
+            RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
+            break; \
+          }
 
-              NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
-              void *returnValue = malloc(methodSignature.methodReturnLength);
-              NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-              [_invocation setTarget:[RCTConvert class]];
-              [_invocation setSelector:selector];
-              [_invocation setArgument:&json atIndex:2];
-              [_invocation invoke];
-              [_invocation getReturnValue:returnValue];
+          RCT_NULLABLE_CASE(_C_SEL, SEL)
+          RCT_NULLABLE_CASE(_C_CHARPTR, const char *)
+          RCT_NULLABLE_CASE(_C_PTR, void *)
+          RCT_NULLABLE_CASE(_C_ID, id)
+
+          case _C_STRUCT_B: {
+
+            NSMethodSignature *typeSignature = [RCTConvert methodSignatureForSelector:selector];
+            NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
+            [typeInvocation setSelector:selector];
+            [typeInvocation setTarget:[RCTConvert class]];
+
+            [argumentBlocks addObject:
+             ^(__unused RCTBridge *bridge, NSUInteger index, id json) {
+
+              void *returnValue = malloc(typeSignature.methodReturnLength);
+              [typeInvocation setArgument:&json atIndex:2];
+              [typeInvocation invoke];
+              [typeInvocation getReturnValue:returnValue];
 
               [invocation setArgument:returnValue atIndex:index + 2];
 
@@ -323,13 +336,13 @@ case _value: { \
 
         if (nullability == RCTNonnullable) {
           RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
-          argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
+          argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSUInteger index, id json) {
             if (json == nil || json == (id)kCFNull) {
               RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
               id null = nil;
               [invocation setArgument:&null atIndex:index + 2];
             } else {
-              oldBlock(bridge, invocation, index, json);
+              oldBlock(bridge, index, json);
             }
           };
         }
@@ -370,22 +383,17 @@ case _value: { \
     }
   }
 
-  // Create invocation (we can't re-use this as it wouldn't be thread-safe)
-  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:_methodSignature];
-  [invocation setArgument:&_selector atIndex:1];
-  [invocation retainArguments];
-
   // Set arguments
   NSUInteger index = 0;
   for (id json in arguments) {
     id arg = RCTNilIfNull(json);
     RCTArgumentBlock block = _argumentBlocks[index];
-    block(bridge, invocation, index, arg);
+    block(bridge, index, arg);
     index++;
   }
 
   // Invoke method
-  [invocation invokeWithTarget:module];
+  [_invocation invokeWithTarget:module];
 }
 
 - (NSString *)methodName

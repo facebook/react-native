@@ -541,7 +541,7 @@ RCT_STYLE_PROPERTY(FlexDirection, flexDirection, flex_direction, css_flex_direct
 RCT_STYLE_PROPERTY(JustifyContent, justifyContent, justify_content, css_justify_t)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, align_self, css_align_t)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, align_items, css_align_t)
-RCT_STYLE_PROPERTY(PositionType, positionType, position_type, css_position_type_t)
+RCT_STYLE_PROPERTY(Position, position, position_type, css_position_type_t)
 RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
 
 - (void)setBackgroundColor:(UIColor *)color

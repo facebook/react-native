@@ -43,15 +43,6 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
 
 @end
 
-void RCTSetViewProperty(NSString *name, NSString *keyPath, SEL type,
-                        id view, id defaultView, id json)
-{
-  if ((json && !RCTSetProperty(view, keyPath, type, json)) ||
-      (!json && !RCTCopyProperty(view, defaultView, keyPath))) {
-    RCTLogError(@"%@ does not have setter for `%@` property", [view class], name);
-  }
-}
-
 @implementation RCTViewManager
 
 @synthesize bridge = _bridge;
@@ -273,8 +264,8 @@ RCT_EXPORT_SHADOW_PROPERTY(flexWrap, css_wrap_type_t)
 RCT_EXPORT_SHADOW_PROPERTY(justifyContent, css_justify_t)
 RCT_EXPORT_SHADOW_PROPERTY(alignItems, css_align_t)
 RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
-RCT_REMAP_SHADOW_PROPERTY(position, positionType, css_position_type_t)
+RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
 
-RCT_REMAP_SHADOW_PROPERTY(onLayout, hasOnLayout, BOOL)
+RCT_EXPORT_SHADOW_PROPERTY(onLayout, BOOL)
 
 @end

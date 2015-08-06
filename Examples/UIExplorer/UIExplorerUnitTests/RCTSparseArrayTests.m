@@ -25,10 +25,10 @@
 
 - (void)testDictionary
 {
-  NSObject<RCTViewNodeProtocol> *myView = [[UIView alloc] init];
+  id<RCTComponent> myView = [[UIView alloc] init];
   myView.reactTag = @4;
 
-  NSObject<RCTViewNodeProtocol> *myOtherView = [[UIView alloc] init];
+  id<RCTComponent> myOtherView = [[UIView alloc] init];
   myOtherView.reactTag = @5;
 
   RCTSparseArray *registry = [[RCTSparseArray alloc] init];

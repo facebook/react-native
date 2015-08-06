@@ -9,8 +9,6 @@
 
 #import "RCTUIManager.h"
 
-#import <objc/message.h>
-
 #import <AVFoundation/AVFoundation.h>
 
 #import "Layout.h"
@@ -18,6 +16,8 @@
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTComponent.h"
+#import "RCTComponentData.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
@@ -30,15 +30,12 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTViewManager.h"
-#import "RCTViewNodeProtocol.h"
 #import "UIView+React.h"
 
-typedef void (^react_view_node_block_t)(id<RCTViewNodeProtocol>);
-
-static void RCTTraverseViewNodes(id<RCTViewNodeProtocol> view, react_view_node_block_t block)
+static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>))
 {
   if (view.reactTag) block(view);
-  for (id<RCTViewNodeProtocol> subview in view.reactSubviews) {
+  for (id<RCTComponent> subview in view.reactSubviews) {
     RCTTraverseViewNodes(subview, block);
   }
 }
@@ -199,10 +196,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   RCTLayoutAnimation *_layoutAnimation; // Main thread only
 
   // Keyed by viewName
-  NSMutableDictionary *_defaultShadowViews; // RCT thread only
-  NSMutableDictionary *_defaultViews; // Main thread only
-  NSDictionary *_viewManagers;
-  NSDictionary *_viewConfigs;
+  NSDictionary *_componentDataByName;
 
   NSMutableSet *_bridgeTransactionListeners;
 }
@@ -216,42 +210,6 @@ RCT_EXPORT_MODULE()
  */
 extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
-/**
- * This function derives the view name automatically
- * from the module name.
- */
-static NSString *RCTViewNameForModuleName(NSString *moduleName)
-{
-  NSString *name = moduleName;
-  RCTAssert(name.length, @"Invalid moduleName '%@'", moduleName);
-  if ([name hasSuffix:@"Manager"]) {
-    name = [name substringToIndex:name.length - @"Manager".length];
-  }
-  return name;
-}
-
-// TODO: only send name once instead of a dictionary of name and type keyed by name
-static NSDictionary *RCTViewConfigForModule(Class managerClass)
-{
-  unsigned int count = 0;
-  Method *methods = class_copyMethodList(object_getClass(managerClass), &count);
-  NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithCapacity:count];
-  for (unsigned int i = 0; i < count; i++) {
-    Method method = methods[i];
-    NSString *methodName = NSStringFromSelector(method_getName(method));
-    if ([methodName hasPrefix:@"getPropConfig"]) {
-      NSRange nameRange = [methodName rangeOfString:@"_"];
-      if (nameRange.length) {
-        NSString *name = [methodName substringFromIndex:nameRange.location + 1];
-        NSString *type = [managerClass valueForKey:methodName];
-        props[name] = type;
-      }
-    }
-  }
-  free(methods);
-  return props;
-}
-
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -260,10 +218,6 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
 
     _pendingUIBlocksLock = [[NSLock alloc] init];
 
-    _defaultShadowViews = [[NSMutableDictionary alloc] init];
-    _defaultViews = [[NSMutableDictionary alloc] init];
-
-    _viewManagerRegistry = [[RCTSparseArray alloc] init];
     _shadowViewRegistry = [[RCTSparseArray alloc] init];
     _viewRegistry = [[RCTSparseArray alloc] init];
 
@@ -335,19 +289,15 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
   _shadowViewRegistry = [[RCTSparseArray alloc] init];
 
   // Get view managers from bridge
-  NSMutableDictionary *viewManagers = [[NSMutableDictionary alloc] init];
-  NSMutableDictionary *viewConfigs = [[NSMutableDictionary alloc] init];
-  [_bridge.modules enumerateKeysAndObjectsUsingBlock:
-   ^(NSString *moduleName, RCTViewManager *manager, __unused BOOL *stop) {
+  NSMutableDictionary *componentDataByName = [[NSMutableDictionary alloc] init];
+  for (RCTViewManager *manager in _bridge.modules.allValues) {
     if ([manager isKindOfClass:[RCTViewManager class]]) {
-      NSString *viewName = RCTViewNameForModuleName(moduleName);
-      viewManagers[viewName] = manager;
-      viewConfigs[viewName] = RCTViewConfigForModule([manager class]);
+      RCTComponentData *componentData = [[RCTComponentData alloc] initWithManager:manager];
+      componentDataByName[componentData.name] = componentData;
     }
-  }];
+  }
 
-  _viewManagers = [viewManagers copy];
-  _viewConfigs = [viewConfigs copy];
+  _componentDataByName = [componentDataByName copy];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -435,8 +385,8 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
  */
 - (void)_purgeChildren:(NSArray *)children fromRegistry:(RCTSparseArray *)registry
 {
-  for (id<RCTViewNodeProtocol> child in children) {
-    RCTTraverseViewNodes(registry[child.reactTag], ^(id<RCTViewNodeProtocol> subview) {
+  for (id<RCTComponent> child in children) {
+    RCTTraverseViewNodes(registry[child.reactTag], ^(id<RCTComponent> subview) {
       RCTAssert(![subview isReactRootView], @"Root views should not be unregistered");
       if ([subview conformsToProtocol:@protocol(RCTInvalidating)]) {
         [(id<RCTInvalidating>)subview invalidate];
@@ -529,7 +479,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
   // properties that aren't related to layout.
   NSMutableArray *updateBlocks = [[NSMutableArray alloc] init];
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
-    RCTViewManager *manager = _viewManagerRegistry[shadowView.reactTag];
+    RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
     RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
     if (block) [updateBlocks addObject:block];
   }
@@ -601,7 +551,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
     /**
      * TODO(tadeu): Remove it once and for all
      */
-    for (id<RCTViewNodeProtocol> node in _bridgeTransactionListeners) {
+    for (id<RCTComponent> node in _bridgeTransactionListeners) {
       [node reactBridgeDidFinishTransaction];
     }
   };
@@ -625,7 +575,7 @@ static NSDictionary *RCTViewConfigForModule(Class managerClass)
  */
 RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containerID)
 {
-  id<RCTViewNodeProtocol> container = _shadowViewRegistry[containerID];
+  id<RCTComponent> container = _shadowViewRegistry[containerID];
   RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
 
   NSUInteger subviewsCount = [container reactSubviews].count;
@@ -648,7 +598,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
  *
  * @returns Array of removed items.
  */
-- (NSArray *)_childrenToRemoveFromContainer:(id<RCTViewNodeProtocol>)container
+- (NSArray *)_childrenToRemoveFromContainer:(id<RCTComponent>)container
                                   atIndices:(NSArray *)atIndices
 {
   // If there are no indices to move or the container has no subviews don't bother
@@ -672,7 +622,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
   return removedChildren;
 }
 
-- (void)_removeChildren:(NSArray *)children fromContainer:(id<RCTViewNodeProtocol>)container
+- (void)_removeChildren:(NSArray *)children fromContainer:(id<RCTComponent>)container
 {
   for (id removedChild in children) {
     [container removeReactSubview:removedChild];
@@ -749,7 +699,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
         removeAtIndices:(NSArray *)removeAtIndices
                registry:(RCTSparseArray *)registry
 {
-  id<RCTViewNodeProtocol> container = registry[containerReactTag];
+  id<RCTComponent> container = registry[containerReactTag];
   RCTAssert(moveFromIndices.count == moveToIndices.count, @"moveFromIndices had size %tu, moveToIndices had size %tu", moveFromIndices.count, moveToIndices.count);
   RCTAssert(addChildReactTags.count == addAtIndices.count, @"there should be at least one React child to add");
 
@@ -781,87 +731,19 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
   }
 }
 
-static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
-{
-  // TODO: cache respondsToSelector tests
-  if ([manager respondsToSelector:setter]) {
-
-    if (value == (id)kCFNull) {
-      value = nil;
-    }
-
-    void (^block)() = ^{
-      ((void (*)(id, SEL, id, id, id))objc_msgSend)(manager, setter, value, view, defaultView);
-    };
-
-    if (RCT_DEBUG) {
-      NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([manager class]));
-      NSString *logPrefix = [NSString stringWithFormat:
-                             @"Error setting property '%@' of %@ with tag #%@: ",
-                             key, viewName, [view reactTag]];
-
-      RCTPerformBlockWithLogPrefix(block, logPrefix);
-    } else {
-      block();
-    }
-
-    return YES;
-  }
-  return NO;
-}
-
-static void RCTSetViewProps(NSDictionary *props, UIView *view,
-                            UIView *defaultView, RCTViewManager *manager)
-{
-  [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, __unused BOOL *stop) {
-
-    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forView:withDefaultView:", key]);
-    RCTCallPropertySetter(key, setter, obj, view, defaultView, manager);
-
-  }];
-}
-
-static void RCTSetShadowViewProps(NSDictionary *props, RCTShadowView *shadowView,
-                                  RCTShadowView *defaultView, RCTViewManager *manager)
-{
-  [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, __unused BOOL *stop) {
-
-    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:forShadowView:withDefaultView:", key]);
-    RCTCallPropertySetter(key, setter, obj, shadowView, defaultView, manager);
-
-  }];
-
-  // Update layout
-  [shadowView updateLayout];
-}
-
 RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
                   viewName:(NSString *)viewName
                   rootTag:(__unused NSNumber *)rootTag
                   props:(NSDictionary *)props)
 {
-  RCTViewManager *manager = _viewManagers[viewName];
-  if (manager == nil) {
-    RCTLogWarn(@"No manager class found for view with module name \"%@\"", viewName);
-    manager = [[RCTViewManager alloc] init];
+  RCTComponentData *componentData = _componentDataByName[viewName];
+  if (componentData == nil) {
+    RCTLogError(@"No component found for view with name \"%@\"", viewName);
   }
 
-  // Register manager
-  _viewManagerRegistry[reactTag] = manager;
-
-  RCTShadowView *shadowView = [manager shadowView];
-  if (shadowView) {
-
-    // Generate default view, used for resetting default props
-    if (!_defaultShadowViews[viewName]) {
-      _defaultShadowViews[viewName] = [manager shadowView];
-    }
-
-    // Set properties
-    shadowView.viewName = viewName;
-    shadowView.reactTag = reactTag;
-    RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], manager);
-  }
+  // Register shadow view
+  RCTShadowView *shadowView = [componentData createShadowViewWithTag:reactTag];
+  [componentData setProps:props forShadowView:shadowView];
   _shadowViewRegistry[reactTag] = shadowView;
 
   // Shadow view is the source of truth for background color this is a little
@@ -870,51 +752,30 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   UIColor *backgroundColor = shadowView.backgroundColor;
 
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
-    RCTAssertMainThread();
-
-    UIView *view = [manager view];
-    if (view) {
-
-      // Generate default view, used for resetting default props
-      if (!uiManager->_defaultViews[viewName]) {
-        // Note the default is setup after the props are read for the first time
-        // ever for this className - this is ok because we only use the default
-        // for restoring defaults, which never happens on first creation.
-        uiManager->_defaultViews[viewName] = [manager view];
-      }
-
-      // Set properties
-      view.reactTag = reactTag;
-      view.backgroundColor = backgroundColor;
-      if ([view isKindOfClass:[UIView class]]) {
-        view.multipleTouchEnabled = YES;
-        view.userInteractionEnabled = YES; // required for touch handling
-        view.layer.allowsGroupOpacity = YES; // required for touch handling
-      }
-      RCTSetViewProps(props, view, uiManager->_defaultViews[viewName], manager);
-
-      if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
-        [uiManager->_bridgeTransactionListeners addObject:view];
-      }
+    id<RCTComponent> view = [componentData createViewWithTag:reactTag];
+    if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
+      [(UIView *)view setBackgroundColor:backgroundColor];
+    }
+    [componentData setProps:props forView:view];
+    if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
+      [uiManager->_bridgeTransactionListeners addObject:view];
     }
     viewRegistry[reactTag] = view;
   }];
 }
 
-// TODO: remove viewName param as it isn't needed
 RCT_EXPORT_METHOD(updateView:(nonnull NSNumber *)reactTag
-                  viewName:(__unused NSString *)_
+                  viewName:(NSString *)viewName
                   props:(NSDictionary *)props)
 {
-  RCTViewManager *viewManager = _viewManagerRegistry[reactTag];
-  NSString *viewName = RCTViewNameForModuleName(RCTBridgeModuleNameForClass([viewManager class]));
+  RCTComponentData *componentData = _componentDataByName[viewName];
 
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  RCTSetShadowViewProps(props, shadowView, _defaultShadowViews[viewName], viewManager);
+  [componentData setProps:props forShadowView:shadowView];
 
-  [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
-    RCTSetViewProps(props, view, uiManager->_defaultViews[viewName], viewManager);
+    [componentData setProps:props forView:view];
   }];
 }
 
@@ -962,8 +823,8 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   RCTProfileBeginEvent();
   // Gather blocks to be executed now that all view hierarchy manipulations have
   // been completed (note that these may still take place before layout has finished)
-  for (RCTViewManager *manager in _viewManagers.allValues) {
-    RCTViewManagerUIBlock uiBlock = [manager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
+  for (RCTComponentData *componentData in _componentDataByName.allValues) {
+    RCTViewManagerUIBlock uiBlock = [componentData.manager uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
     [self addUIBlock:uiBlock];
   }
 
@@ -1356,7 +1217,8 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
   } mutableCopy];
 
-  for (RCTViewManager *manager in _viewManagers.allValues) {
+  for (RCTComponentData *componentData in _componentDataByName.allValues) {
+    RCTViewManager *manager = componentData.manager;
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customBubblingEventTypes))) {
       NSDictionary *eventTypes = [manager customBubblingEventTypes];
       for (NSString *eventName in eventTypes) {
@@ -1417,7 +1279,8 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
   } mutableCopy];
 
-  for (RCTViewManager *manager in _viewManagers.allValues) {
+  for (RCTComponentData *componentData in _componentDataByName.allValues) {
+    RCTViewManager *manager = componentData.manager;
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customDirectEventTypes))) {
       NSDictionary *eventTypes = [manager customDirectEventTypes];
       if (RCT_DEV) {
@@ -1453,9 +1316,9 @@ RCT_EXPORT_METHOD(clearJSResponder)
     },
   } mutableCopy];
 
-  [_viewManagers enumerateKeysAndObjectsUsingBlock:
-   ^(NSString *name, RCTViewManager *manager, __unused BOOL *stop) {
-
+  [_componentDataByName enumerateKeysAndObjectsUsingBlock:
+   ^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
+    RCTViewManager *manager = componentData.manager;
     NSMutableDictionary *constantsNamespace =
      [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
 
@@ -1469,7 +1332,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
     }
 
     // Add native props
-    constantsNamespace[@"NativeProps"] = _viewConfigs[name];
+    constantsNamespace[@"NativeProps"] = [componentData viewConfig];
 
     allJSConstants[name] = [constantsNamespace copy];
   }];

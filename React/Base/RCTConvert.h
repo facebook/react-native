@@ -137,21 +137,6 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 @end
 
 /**
- * This function will attempt to set a property using a json value by first
- * inferring the correct type from all available information, and then
- * applying an appropriate conversion method. If the property does not
- * exist, or the type cannot be inferred, the function will return NO.
- */
-RCT_EXTERN BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
-
-/**
- * This function attempts to copy a property from the source object to the
- * destination object using KVC. If the property does not exist, or cannot
- * be set, it will do nothing and return NO.
- */
-RCT_EXTERN BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
-
-/**
  * Underlying implementations of RCT_XXX_CONVERTER macros. Ignore these.
  */
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);

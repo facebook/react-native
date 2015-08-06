@@ -25,6 +25,7 @@
 }
 
 RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-initWithCoder:coder)
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {

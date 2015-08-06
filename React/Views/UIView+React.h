@@ -9,11 +9,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTViewNodeProtocol.h"
+#import "RCTComponent.h"
 
 //TODO: let's try to eliminate this category if possible
 
-@interface UIView (React) <RCTViewNodeProtocol>
+@interface UIView (React) <RCTComponent>
 
 /**
  * Used by the UIIManager to set the view frame.

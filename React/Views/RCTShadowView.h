@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "Layout.h"
-#import "RCTViewNodeProtocol.h"
+#import "RCTComponent.h"
 
 @class RCTSparseArray;
 
@@ -32,14 +32,14 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
  * 3. If a node is "computed" and the constraint passed from above is identical to the constraint used to
  *    perform the last computation, we skip laying out the subtree entirely.
  */
-@interface RCTShadowView : NSObject <RCTViewNodeProtocol>
+@interface RCTShadowView : NSObject <RCTComponent>
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
-@property (nonatomic, assign) BOOL hasOnLayout;
+@property (nonatomic, assign, getter=hasOnLayout) BOOL onLayout;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
@@ -104,7 +104,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 @property (nonatomic, assign) css_justify_t justifyContent;
 @property (nonatomic, assign) css_align_t alignSelf;
 @property (nonatomic, assign) css_align_t alignItems;
-@property (nonatomic, assign) css_position_type_t positionType;
+@property (nonatomic, assign) css_position_type_t position;
 @property (nonatomic, assign) css_wrap_type_t flexWrap;
 @property (nonatomic, assign) CGFloat flex;
 

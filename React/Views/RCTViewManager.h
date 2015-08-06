@@ -21,11 +21,6 @@
 
 typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *viewRegistry);
 
-/**
- * Underlying implementation of RCT_EXPORT_XXX macros. Ignore this.
- */
-RCT_EXTERN void RCTSetViewProperty(NSString *, NSString *, SEL, id, id, id);
-
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
 /**
@@ -105,35 +100,28 @@ RCT_EXTERN void RCTSetViewProperty(NSString *, NSString *, SEL, id, id, id);
 /**
  * This handles the simple case, where JS and native property names match.
  */
-#define RCT_EXPORT_VIEW_PROPERTY(name, type) RCT_REMAP_VIEW_PROPERTY(name, name, type)
-
-#define RCT_EXPORT_SHADOW_PROPERTY(name, type) RCT_REMAP_SHADOW_PROPERTY(name, name, type)
+#define RCT_EXPORT_VIEW_PROPERTY(name, type) \
++ (NSArray *)propConfig_##name { return @[@#type]; }
 
 /**
- * This macro maps a named property on the module to an arbitrary key path
- * within the view or shadowView.
+ * This macro maps a named property to an arbitrary key path in the view.
  */
-#define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)                      \
-RCT_CUSTOM_VIEW_PROPERTY(name, type, UIView) {                            \
-  RCTSetViewProperty(@#name, @#keyPath, @selector(type:), view, defaultView, json); \
-}
-
-#define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                    \
-RCT_CUSTOM_SHADOW_PROPERTY(name, type, RCTShadowView) {                   \
-  RCTSetViewProperty(@#name, @#keyPath, @selector(type:), view, defaultView, json); \
-}
+#define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type) \
++ (NSArray *)propConfig_##name { return @[@#type, @#keyPath]; }
 
 /**
- * These macros can be used when you need to provide custom logic for setting
+ * This macro can be used when you need to provide custom logic for setting
  * view properties. The macro should be followed by a method body, which can
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
-+ (NSString *)getPropConfigView_##name { return @#type; } \
+RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
 - (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
-#define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
-+ (NSString *)getPropConfigShadow_##name { return @#type; } \
-- (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
+/**
+ * This macro is used to map properties to the shadow view, instead of the view.
+ */
+#define RCT_EXPORT_SHADOW_PROPERTY(name, type) \
++ (NSArray *)propConfigShadow_##name { return @[@#type]; }
 
 @end

@@ -48,6 +48,11 @@ NSArray *RCTGetModuleClasses(void)
   return RCTModuleClasses;
 }
 
+/**
+ * Register the given class as a bridge module. All modules must be registered
+ * prior to the first bridge initialization.
+ */
+void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
   static dispatch_once_t onceToken;
@@ -57,7 +62,7 @@ void RCTRegisterModule(Class moduleClass)
 
   RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
             @"%@ does not conform to the RCTBridgeModule protocol",
-            NSStringFromClass(moduleClass));
+            moduleClass);
 
   // Register module
   [RCTModuleClasses addObject:moduleClass];

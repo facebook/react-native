@@ -244,7 +244,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   return self;
 }
 
-- (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
   RCTPerformanceLoggerEnd(RCTPLTTI);

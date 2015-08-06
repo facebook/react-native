@@ -144,7 +144,7 @@ RCT_ENUM_CONVERTER(CTTextAlignment, (@{
 + (ARTBrush *)ARTBrush:(id)json
 {
   NSArray *arr = [self NSArray:json];
-  NSUInteger type = [self NSUInteger:arr[0]];
+  NSUInteger type = [self NSUInteger:arr.firstObject];
   switch (type) {
     case 0: // solid color
       // These are probably expensive allocations since it's often the same value.

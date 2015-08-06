@@ -55,13 +55,6 @@ RCT_EXTERN NSString *const RCTDidCreateNativeModules;
 typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
 
 /**
- * Register the given class as a bridge module. All modules must be registered
- * prior to the first bridge initialization.
- *
- */
-RCT_EXTERN void RCTRegisterModule(Class);
-
-/**
  * This function returns the module name for a given class.
  */
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
@@ -70,7 +63,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
-
 
 /**
  * Creates a new bridge with a custom RCTBridgeDelegate.
