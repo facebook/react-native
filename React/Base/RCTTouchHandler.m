@@ -23,18 +23,18 @@
 @implementation RCTTouchHandler
 {
   __weak RCTBridge *_bridge;
-  BOOL _dispatchedInitialTouches;
 
   /**
    * Arrays managed in parallel tracking native touch object along with the
    * native view that was touched, and the React touch data dictionary.
-   * This must be kept track of because `UIKit` destroys the touch targets
-   * if touches are canceled and we have no other way to recover this information.
+   * These must be kept track of because `UIKit` destroys the touch targets
+   * if touches are canceled, and we have no other way to recover this info.
    */
   NSMutableOrderedSet *_nativeTouches;
   NSMutableArray *_reactTouches;
   NSMutableArray *_touchViews;
 
+  BOOL _dispatchedInitialTouches;
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
 }
@@ -218,22 +218,29 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   return NO;
 }
 
-- (void)handleGestureUpdate:(UIGestureRecognizer *)gesture {
-  // If the gesture just recognized, send all the touches over to JS as if they just began
+- (void)handleGestureUpdate:(__unused UIGestureRecognizer *)gesture
+{
+  // If gesture just recognized, send all touches to JS as if they just began.
   if (self.state == UIGestureRecognizerStateBegan) {
     [self _updateAndDispatchTouches:[_nativeTouches set] eventName:@"topTouchStart" originatingTime:0];
 
-    // We store this flag separately from `state` because after a gesture is recognized, its `state` changes immediately but its action (that is, this method) isn't fired until dependent gesture recognizers have failed. We only want to send move/end/cancel touch updates if we've sent the touchStart events.
+    // We store this flag separately from `state` because after a gesture is
+    // recognized, its `state` changes immediately but its action (this
+    // method) isn't fired until dependent gesture recognizers have failed. We
+    // only want to send move/end/cancel touches if we've sent the touchStart.
     _dispatchedInitialTouches = YES;
   }
-  // For the other states, we could dispatch the updates here but since we specifically send info about which touches changed, it's simpler to dispatch the updates from the raw touch methods below.
+
+  // For the other states, we could dispatch the updates here but since we
+  // specifically send info about which touches changed, it's simpler to
+  // dispatch the updates from the raw touch methods below.
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
 
-  // "start" has to record new touches before extracting the event.
+  // "start" has to record new touches beforeckirjiuhucekbebjditeucultigvijfe extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
   if (_dispatchedInitialTouches) {
@@ -296,7 +303,8 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   return NO;
 }
 
-- (void)reset {
+- (void)reset
+{
   _dispatchedInitialTouches = NO;
 }
 

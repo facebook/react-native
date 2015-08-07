@@ -15,27 +15,31 @@
 
 @implementation RCTModuleData
 {
-  id _consts;
-
-  NSDictionary *_config;
+  NSDictionary *_constants;
   NSArray *_methods;
+  NSString *_queueName;
 }
 
 - (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                             uid:(NSNumber *)uid
+                        moduleID:(NSNumber *)moduleID
                         instance:(id<RCTBridgeModule>)instance
 {
   if ((self = [super init])) {
     _javaScriptExecutor = javaScriptExecutor;
-    _uid = uid;
+    _moduleID = moduleID;
     _instance = instance;
     _moduleClass = [instance class];
     _name = RCTBridgeModuleNameForClass(_moduleClass);
 
+    // Must be done at init time to ensure it's called on main thread
+    RCTAssertMainThread();
     if ([_instance respondsToSelector:@selector(constantsToExport)]) {
-      _consts = [_instance constantsToExport];
+      _constants = [_instance constantsToExport];
     }
 
+    // Must be done at init time due to race conditions
+    // Also, the queue setup isn't thread safe due ti static name cache
+    [self queue];
   }
   return self;
 }
@@ -68,32 +72,28 @@ RCT_NOT_IMPLEMENTED(-init);
 
     _methods = [moduleMethods copy];
   }
-
   return _methods;
 }
 
 - (NSDictionary *)config
 {
-  if (!_config) {
-    NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
-    config[@"moduleID"] = _uid;
-    config[@"methods"] = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
+  config[@"moduleID"] = _moduleID;
 
-    if (_consts) {
-      config[@"constants"] = _consts;
-    }
-
-    [self.methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger idx, __unused BOOL *stop) {
-      config[@"methods"][method.JSMethodName] = @{
-        @"methodID": @(idx),
-        @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
-      };
-    }];
-
-    _config = [config copy];
+  if (_constants) {
+    config[@"constants"] = _constants;
   }
 
-  return _config;
+  NSMutableDictionary *methodconfig = [[NSMutableDictionary alloc] init];
+  [self.methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger idx, __unused BOOL *stop) {
+    methodconfig[method.JSMethodName] = @{
+      @"methodID": @(idx),
+      @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
+    };
+  }];
+  config[@"methods"] = [methodconfig copy];
+
+  return [config copy];
 }
 
 - (dispatch_queue_t)queue
@@ -105,19 +105,9 @@ RCT_NOT_IMPLEMENTED(-init);
     }
     if (!_queue) {
 
-      // Need to cache queueNames because they aren't retained by dispatch_queue
-      static NSMutableDictionary *queueNames;
-      if (!queueNames) {
-        queueNames = [[NSMutableDictionary alloc] init];
-      }
-      NSString *queueName = queueNames[_name];
-      if (!queueName) {
-        queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", _name];
-        queueNames[_name] = queueName;
-      }
-
-      // Create new queue
-      _queue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+      // Create new queue (store queueName, as it isn't retained by dispatch_queue)
+      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", _name];
+      _queue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
 
       // assign it to the module
       if (implementsMethodQueue) {
@@ -133,7 +123,6 @@ RCT_NOT_IMPLEMENTED(-init);
       }
     }
   }
-
   return _queue;
 }
 

@@ -154,7 +154,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
       }
     });
 
-
     dispatch_group_notify(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
       [weakSelf injectJSONConfiguration:config onComplete:^(__unused NSError *error) {}];
 
@@ -278,13 +277,17 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   RCTLatestExecutor = _javaScriptExecutor;
 
   for (id<RCTBridgeModule> module in _modulesByName.allValues) {
+
+    // Bridge must be set before moduleData is set up, as methodQueue
+    // initialization requires it (View Managers get their queue by calling
+    // self.bridge.uiManager.methodQueue)
     if ([module respondsToSelector:@selector(setBridge:)]) {
       module.bridge = self;
     }
 
     RCTModuleData *moduleData = [[RCTModuleData alloc] initWithExecutor:_javaScriptExecutor
-                                                                  uid:@(_moduleDataByID.count)
-                                                             instance:module];
+                                                               moduleID:@(_moduleDataByID.count)
+                                                               instance:module];
     [_moduleDataByID addObject:moduleData];
   }
 
@@ -304,10 +307,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
   for (RCTModuleData *moduleData in _moduleDataByID) {
     config[moduleData.name] = moduleData.config;
-
-
-    // HACK(tadeu): Ensure the queue has been loaded, make it lazy later inside RCTModuleMap
-    (void)[moduleData queue];
 
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:moduleData];
