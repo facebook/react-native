@@ -67,6 +67,10 @@ var AppRegistry = {
     return appKey;
   },
 
+  getAppKeys: function(): Array<string> {
+    return Object.keys(runnables);
+  },
+
   runApplication: function(appKey: string, appParameters: any): void {
     console.log(
       'Running application "' + appKey + '" with appParams: ' +
