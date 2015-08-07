@@ -140,7 +140,8 @@ var View = React.createClass({
     onMagicTap: PropTypes.func,
 
     /**
-     * Used to locate this view in end-to-end tests.
+     * Used to locate this view in end-to-end tests. NB: disables the 'layout-only
+     * view removal' optimization for this view!
      */
     testID: PropTypes.string,
 
