@@ -14,6 +14,12 @@
 #import "RCTLog.h"
 
 @implementation RCTModuleData
+{
+  id _consts;
+
+  NSDictionary *_config;
+  NSArray *_methods;
+}
 
 - (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
                              uid:(NSNumber *)uid
@@ -26,102 +32,109 @@
     _moduleClass = [instance class];
     _name = RCTBridgeModuleNameForClass(_moduleClass);
 
-    [self loadMethods];
-    [self generateConfig];
-    [self setQueue];
+    if ([_instance respondsToSelector:@selector(constantsToExport)]) {
+      _consts = [_instance constantsToExport];
+    }
+
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(-init);
 
-- (void)loadMethods
+- (NSArray *)methods
 {
-  NSMutableArray *moduleMethods = [[NSMutableArray alloc] init];
-  unsigned int methodCount;
-  Method *methods = class_copyMethodList(object_getClass(_moduleClass), &methodCount);
+  if (!_methods) {
+    NSMutableArray *moduleMethods = [[NSMutableArray alloc] init];
+    unsigned int methodCount;
+    Method *methods = class_copyMethodList(object_getClass(_moduleClass), &methodCount);
 
-  for (unsigned int i = 0; i < methodCount; i++) {
-    Method method = methods[i];
-    SEL selector = method_getName(method);
-    if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
-      IMP imp = method_getImplementation(method);
-      NSArray *entries = ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
-      RCTModuleMethod *moduleMethod =
-      [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
-                                         JSMethodName:entries[0]
-                                          moduleClass:_moduleClass];
+    for (unsigned int i = 0; i < methodCount; i++) {
+      Method method = methods[i];
+      SEL selector = method_getName(method);
+      if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
+        IMP imp = method_getImplementation(method);
+        NSArray *entries = ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
+        RCTModuleMethod *moduleMethod =
+        [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
+                                           JSMethodName:entries[0]
+                                            moduleClass:_moduleClass];
 
-      [moduleMethods addObject:moduleMethod];
+        [moduleMethods addObject:moduleMethod];
+      }
     }
+
+    free(methods);
+
+    _methods = [moduleMethods copy];
   }
 
-  free(methods);
-
-  _methods = [moduleMethods copy];
+  return _methods;
 }
 
-- (void)generateConfig
+- (NSDictionary *)config
 {
-  NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
-  config[@"moduleID"] = _uid;
-  config[@"methods"] = [[NSMutableDictionary alloc] init];
+  if (!_config) {
+    NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
+    config[@"moduleID"] = _uid;
+    config[@"methods"] = [[NSMutableDictionary alloc] init];
 
-  if ([_instance respondsToSelector:@selector(constantsToExport)]) {
-    id consts = [_instance constantsToExport];
-    if (consts) {
-      config[@"constants"] = consts;
+    if (_consts) {
+      config[@"constants"] = _consts;
     }
+
+    [self.methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger idx, __unused BOOL *stop) {
+      config[@"methods"][method.JSMethodName] = @{
+        @"methodID": @(idx),
+        @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
+      };
+    }];
+
+    _config = [config copy];
   }
 
-  [_methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger idx, __unused BOOL *stop) {
-    config[@"methods"][method.JSMethodName] = @{
-      @"methodID": @(idx),
-      @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
-    };
-  }];
-
-  _config = [config copy];
+  return _config;
 }
 
-- (void)setQueue
+- (dispatch_queue_t)queue
 {
-  dispatch_queue_t queue = nil;
-  BOOL implementsMethodQueue = [_instance respondsToSelector:@selector(methodQueue)];
-  if (implementsMethodQueue) {
-    queue = [_instance methodQueue];
-  }
-  if (!queue) {
-
-    // Need to cache queueNames because they aren't retained by dispatch_queue
-    static NSMutableDictionary *queueNames;
-    if (!queueNames) {
-      queueNames = [[NSMutableDictionary alloc] init];
-    }
-    NSString *queueName = queueNames[_name];
-    if (!queueName) {
-      queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", _name];
-      queueNames[_name] = queueName;
-    }
-
-    // Create new queue
-    queue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
-
-    // assign it to the module
+  if (!_queue) {
+    BOOL implementsMethodQueue = [_instance respondsToSelector:@selector(methodQueue)];
     if (implementsMethodQueue) {
-      @try {
-        [(id)_instance setValue:queue forKey:@"methodQueue"];
+      _queue = [_instance methodQueue];
+    }
+    if (!_queue) {
+
+      // Need to cache queueNames because they aren't retained by dispatch_queue
+      static NSMutableDictionary *queueNames;
+      if (!queueNames) {
+        queueNames = [[NSMutableDictionary alloc] init];
       }
-      @catch (NSException *exception) {
-        RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
-                    "permitted. You must either return a pre-initialized "
-                    "queue, or @synthesize the methodQueue to let the bridge "
-                    "create a queue for you.", _name);
+      NSString *queueName = queueNames[_name];
+      if (!queueName) {
+        queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", _name];
+        queueNames[_name] = queueName;
+      }
+
+      // Create new queue
+      _queue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+
+      // assign it to the module
+      if (implementsMethodQueue) {
+        @try {
+          [(id)_instance setValue:_queue forKey:@"methodQueue"];
+        }
+        @catch (NSException *exception) {
+          RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
+                      "permitted. You must either return a pre-initialized "
+                      "queue, or @synthesize the methodQueue to let the bridge "
+                      "create a queue for you.", _name);
+        }
       }
     }
   }
 
-  _queue = queue;
+  return _queue;
 }
 
 - (void)dispatchBlock:(dispatch_block_t)block
@@ -132,13 +145,13 @@ RCT_NOT_IMPLEMENTED(-init);
 - (void)dispatchBlock:(dispatch_block_t)block
         dispatchGroup:(dispatch_group_t)group
 {
-  if (_queue == RCTJSThread) {
+  if (self.queue == RCTJSThread) {
     [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
-  } else if (_queue) {
+  } else if (self.queue) {
     if (group != NULL) {
-      dispatch_group_async(group, _queue, block);
+      dispatch_group_async(group, self.queue, block);
     } else {
-      dispatch_async(_queue, block);
+      dispatch_async(self.queue, block);
     }
   }
 }

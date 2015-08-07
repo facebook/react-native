@@ -468,7 +468,8 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
                        sourceURL:(NSURL *)sourceURL
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  RCTAssert(sourceURL != nil, @"url should not be nil");
+  RCTAssertParam(script);
+  RCTAssertParam(sourceURL);
 
   __weak RCTContextExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{

@@ -37,7 +37,7 @@
 {
   if ((self = [super initWithFrame:frame])) {
     _redColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
-    self.windowLevel = CGFLOAT_MAX;
+    self.windowLevel = UIWindowLevelAlert + 1000;
     self.backgroundColor = _redColor;
     self.hidden = YES;
 

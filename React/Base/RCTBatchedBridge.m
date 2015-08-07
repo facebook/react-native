@@ -70,6 +70,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   NSMutableSet *_frameUpdateObservers;
   NSMutableArray *_scheduledCalls;
   RCTSparseArray *_scheduledCallbacks;
+  NSURL *_sourceURL;
 }
 
 @synthesize valid = _valid;
@@ -101,77 +102,119 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
       [_mainDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
 
-    /**
-     * Initialize and register bridge modules *before* adding the display link
-     * so we don't have threading issues
-     */
-    [self registerModules];
 
-    /**
-     * If currently profiling, hook into the current instance
-     */
-    if (RCTProfileIsProfiling()) {
-      RCTProfileHookModules(self);
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartLoadingNotification
+                                                        object:self
+                                                      userInfo:@{ @"bridge": self }];
 
-    /**
-     * Start the application script
-     */
-    [self initJS];
+    [self start];
   }
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
-                    moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
-                    launchOptions:(__unused NSDictionary *)launchOptions)
-
-- (void)setUp {}
-- (void)bindKeys {}
-
-- (void)reload
+- (void)start
 {
-  [_parentBridge reload];
+  _sourceURL = self.delegate ? [self.delegate sourceURLForBridge:_parentBridge] : self.bundleURL;
+
+  __weak RCTBatchedBridge *weakSelf = self;
+
+  __block NSString *sourceCode;
+  __block NSString *config;
+
+  dispatch_queue_t bridgeQueue = dispatch_queue_create("com.facebook.react.RCTBridgeQueue", DISPATCH_QUEUE_CONCURRENT);
+  dispatch_group_t initModulesAndLoadSource = dispatch_group_create();
+
+  dispatch_group_enter(initModulesAndLoadSource);
+  [weakSelf loadSource:^(NSError *error, NSString *source) {
+    if (error) {
+      RCTLogError(@"%@", error);
+    } else {
+      sourceCode = source;
+    }
+
+    dispatch_group_leave(initModulesAndLoadSource);
+  }];
+
+  [self initModules];
+
+  dispatch_group_enter(initModulesAndLoadSource);
+  dispatch_async(bridgeQueue, ^{
+    dispatch_group_t setupJSExecutorAndModuleConfig = dispatch_group_create();
+    dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      [weakSelf setupExecutor];
+    });
+
+    dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      if (weakSelf.isValid) {
+        config = [weakSelf moduleConfig];
+
+        if (RCTProfileIsProfiling()) {
+          RCTProfileHookModules(weakSelf);
+        }
+      }
+    });
+
+
+    dispatch_group_notify(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      [weakSelf injectJSONConfiguration:config onComplete:^(__unused NSError *error) {}];
+
+      dispatch_group_leave(initModulesAndLoadSource);
+    });
+  });
+
+  dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
+    if (sourceCode) {
+      [weakSelf executeSourceCode:sourceCode];
+    }
+  });
 }
 
-- (Class)executorClass
+- (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
 {
-  return _parentBridge.executorClass ?: [RCTContextExecutor class];
+    RCTPerformanceLoggerStart(RCTPLScriptDownload);
+    RCTProfileBeginEvent();
+
+    RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSString *source) {
+      RCTPerformanceLoggerEnd(RCTPLScriptDownload);
+      RCTProfileEndEvent(@"JavaScript download", @"init,download", @[]);
+
+      if (error) {
+        NSArray *stack = [error userInfo][@"stack"];
+        if (stack) {
+          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
+                                             withStack:stack];
+        } else {
+          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
+                                           withDetails:[error localizedFailureReason]];
+        }
+
+        NSDictionary *userInfo = @{@"bridge": self, @"error": error};
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                            object:_parentBridge
+                                                          userInfo:userInfo];
+      }
+
+      _onSourceLoad(error, source);
+    };
+
+    if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
+      [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
+    } else if (_sourceURL) {
+      [RCTJavaScriptLoader loadBundleAtURL:_sourceURL
+                                onComplete:onSourceLoad];
+    } else {
+      // Allow testing without a script
+      dispatch_async(dispatch_get_main_queue(), ^{
+        _loading = NO;
+        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                            object:_parentBridge
+                                                          userInfo:@{ @"bridge": self }];
+      });
+      onSourceLoad(nil, nil);
+    }
 }
 
-- (void)setExecutorClass:(Class)executorClass
-{
-  RCTAssertMainThread();
-
-  _parentBridge.executorClass = executorClass;
-}
-
-- (NSURL *)bundleURL
-{
-  return _parentBridge.bundleURL;
-}
-
-- (void)setBundleURL:(NSURL *)bundleURL
-{
-  _parentBridge.bundleURL = bundleURL;
-}
-
-- (id<RCTBridgeDelegate>)delegate
-{
-  return _parentBridge.delegate;
-}
-
-- (BOOL)isLoading
-{
-  return _loading;
-}
-
-- (BOOL)isValid
-{
-  return _valid;
-}
-
-- (void)registerModules
+- (void)initModules
 {
   RCTAssertMainThread();
 
@@ -234,9 +277,6 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   _javaScriptExecutor = _modulesByName[RCTBridgeModuleNameForClass(self.executorClass)];
   RCTLatestExecutor = _javaScriptExecutor;
 
-  [_javaScriptExecutor setUp];
-
-  // Set bridge
   for (id<RCTBridgeModule> module in _modulesByName.allValues) {
     if ([module respondsToSelector:@selector(setBridge:)]) {
       module.bridge = self;
@@ -246,127 +286,144 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
                                                                   uid:@(_moduleDataByID.count)
                                                              instance:module];
     [_moduleDataByID addObject:moduleData];
-
-    if ([module conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
-      [_frameUpdateObservers addObject:moduleData];
-    }
   }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules
                                                       object:self];
 }
 
-- (void)initJS
-{
-  RCTAssertMainThread();
 
-  // Inject module data into JS context
+- (void)setupExecutor
+{
+  [_javaScriptExecutor setUp];
+
+}
+
+- (NSString *)moduleConfig
+{
   NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
   for (RCTModuleData *moduleData in _moduleDataByID) {
     config[moduleData.name] = moduleData.config;
+
+    if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
+      [_frameUpdateObservers addObject:moduleData];
+    }
   }
-  NSString *configJSON = RCTJSONStringify(@{
+
+  return RCTJSONStringify(@{
     @"remoteModuleConfig": config,
   }, NULL);
+}
+
+- (void)injectJSONConfiguration:(NSString *)configJSON
+                     onComplete:(void (^)(NSError *))onComplete
+{
+  if (!self.isValid) {
+    return;
+  }
+
   [_javaScriptExecutor injectJSONText:configJSON
                   asGlobalObjectNamed:@"__fbBatchedBridgeConfig"
                              callback:^(NSError *error) {
     if (error) {
       [[RCTRedBox sharedInstance] showError:error];
     }
+    onComplete(error);
   }];
+}
 
-  if (_javaScriptExecutor == nil) {
+- (void)executeSourceCode:(NSString *)sourceCode
+{
+  _loading = NO;
+
+  if (!self.isValid || !_javaScriptExecutor) {
+    return;
+  }
+
+  RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
+  sourceCodeModule.scriptURL = _sourceURL;
+  sourceCodeModule.scriptText = sourceCode;
+
+  static BOOL shouldDismiss = NO;
+  if (shouldDismiss) {
+    [[RCTRedBox sharedInstance] dismiss];
+  }
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    shouldDismiss = YES;
+  });
+
+  [self enqueueApplicationScript:sourceCode url:_sourceURL onComplete:^(NSError *loadError) {
+
+    if (loadError) {
+      [[RCTRedBox sharedInstance] showError:loadError];
+      return;
+    }
 
     /**
-     * HACK (tadeu): If it failed to connect to the debugger, set loading to NO
-     * so we can attempt to reload again.
+     * Register the display link to start sending js calls after everything
+     * is setup
      */
-    _loading = NO;
+    NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
+    [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
 
-  } else {
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartLoadingNotification
-                                                        object:self
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
+                                                        object:_parentBridge
                                                       userInfo:@{ @"bridge": self }];
-    RCTPerformanceLoggerStart(RCTPLScriptDownload);
-    RCTProfileBeginEvent();
-    NSURL *sourceURL = self.delegate ? [self.delegate sourceURLForBridge:_parentBridge] : self.bundleURL;
-    void (^loadCallback)(NSError *, NSString *) = ^(NSError *error, NSString *script) {
-      RCTPerformanceLoggerEnd(RCTPLScriptDownload);
-      RCTProfileEndEvent(@"JavaScript download", @"init,download", @[]);
+  }];
+}
 
-      _loading = NO;
-      if (!self.isValid) {
-        return;
-      }
 
-      static BOOL shouldDismiss = NO;
-      if (shouldDismiss) {
-        [[RCTRedBox sharedInstance] dismiss];
-      }
-      static dispatch_once_t onceToken;
-      dispatch_once(&onceToken, ^{
-        shouldDismiss = YES;
-      });
+RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
+                    moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
+                    launchOptions:(__unused NSDictionary *)launchOptions)
 
-      RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
-      sourceCodeModule.scriptURL = sourceURL;
-      sourceCodeModule.scriptText = script;
-      if (error) {
+/**
+ * Prevent super from calling setUp (that'd create another batchedBridge)
+ */
+- (void)setUp {}
+- (void)bindKeys {}
 
-        NSArray *stack = [error userInfo][@"stack"];
-        if (stack) {
-          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
-                                             withStack:stack];
-        } else {
-          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
-                                           withDetails:[error localizedFailureReason]];
-        }
+- (void)reload
+{
+  [_parentBridge reload];
+}
 
-        NSDictionary *userInfo = @{@"bridge": self, @"error": error};
-        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
-                                                            object:_parentBridge
-                                                          userInfo:userInfo];
+- (Class)executorClass
+{
+  return _parentBridge.executorClass ?: [RCTContextExecutor class];
+}
 
-      } else {
+- (void)setExecutorClass:(Class)executorClass
+{
+  RCTAssertMainThread();
 
-        [self enqueueApplicationScript:script url:sourceURL onComplete:^(NSError *loadError) {
+  _parentBridge.executorClass = executorClass;
+}
 
-          if (loadError) {
-            [[RCTRedBox sharedInstance] showError:loadError];
-            return;
-          }
+- (NSURL *)bundleURL
+{
+  return _parentBridge.bundleURL;
+}
 
-          /**
-           * Register the display link to start sending js calls after everything
-           * is setup
-           */
-          NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
-          [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
+- (void)setBundleURL:(NSURL *)bundleURL
+{
+  _parentBridge.bundleURL = bundleURL;
+}
 
-          [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                              object:_parentBridge
-                                                            userInfo:@{ @"bridge": self }];
-        }];
-      }
-    };
+- (id<RCTBridgeDelegate>)delegate
+{
+  return _parentBridge.delegate;
+}
 
-    if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
-      [self.delegate loadSourceForBridge:_parentBridge withBlock:loadCallback];
-    } else if (sourceURL) {
-      [RCTJavaScriptLoader loadBundleAtURL:sourceURL
-                                onComplete:loadCallback];
-    } else {
-      // Allow testing without a script
-      dispatch_async(dispatch_get_main_queue(), ^{
-        _loading = NO;
-        [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                            object:_parentBridge
-                                                          userInfo:@{ @"bridge": self }];
-      });
-    }
-  }
+- (BOOL)isLoading
+{
+  return _loading;
+}
+
+- (BOOL)isValid
+{
+  return _valid;
 }
 
 - (NSDictionary *)modules
@@ -751,14 +808,14 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
 
-  [self.perfStats.uiGraph onTick:displayLink.timestamp];
+  _modulesByName == nil ?: [self.perfStats.uiGraph onTick:displayLink.timestamp];
 }
 
 - (void)startProfiling
 {
   RCTAssertMainThread();
 
-  if (![_parentBridge.bundleURL.scheme isEqualToString:@"http"]) {
+  if (![_sourceURL.scheme isEqualToString:@"http"]) {
     RCTLogError(@"To run the profiler you must be running from the dev server");
     return;
   }
@@ -774,10 +831,8 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     NSString *log = RCTProfileEnd(self);
-    NSURL *bundleURL = _parentBridge.bundleURL;
-    NSString *port = bundleURL.port ? [@":" stringByAppendingString:bundleURL.port.stringValue] : @"";
-    NSString *URLString = [NSString stringWithFormat:@"%@://%@%@/profile", bundleURL.scheme, bundleURL.host, port];
-    NSURL *URL = [RCTConvert NSURL:URLString];
+    NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", _sourceURL.scheme, _sourceURL.host, _sourceURL.port];
+    NSURL *URL = [NSURL URLWithString:URLString];
     NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
     URLRequest.HTTPMethod = @"POST";
     [URLRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

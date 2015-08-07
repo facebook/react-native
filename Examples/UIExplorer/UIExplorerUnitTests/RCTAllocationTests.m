@@ -103,10 +103,6 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     (void)bridge;
   }
 
-  /**
-   * Sleep on the main thread to allow js thread deallocations then run the runloop
-   * to allow the module to be deallocated on the main thread
-   */
   RUN_RUNLOOP_WHILE(module.isValid)
   XCTAssertFalse(module.isValid, @"AllocationTestModule should have been invalidated by the bridge");
 }

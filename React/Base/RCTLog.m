@@ -208,7 +208,7 @@ void _RCTLogFormat(
 #if RCT_DEBUG // Red box is only available in debug mode
 
     // Log to red box
-    if (level >= RCTLOG_REDBOX_LEVEL) {
+    if ([UIApplication sharedApplication] && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray *stackSymbols = [NSThread callStackSymbols];
       NSMutableArray *stack = [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
       [stackSymbols enumerateObjectsUsingBlock:^(NSString *frameSymbols, NSUInteger idx, __unused BOOL *stop) {
