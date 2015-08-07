@@ -15,7 +15,6 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAc
 
 @interface RCTAccessibilityManager ()
 
-@property (nonatomic, copy) NSDictionary *multipliers;
 @property (nonatomic, copy) NSString *contentSizeCategory;
 @property (nonatomic, assign) CGFloat multiplier;
 
@@ -24,6 +23,7 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAc
 @implementation RCTAccessibilityManager
 
 @synthesize bridge = _bridge;
+@synthesize multipliers = _multipliers;
 
 RCT_EXPORT_MODULE()
 
@@ -80,9 +80,14 @@ RCT_EXPORT_MODULE()
 {
   if (_contentSizeCategory != contentSizeCategory) {
     _contentSizeCategory = [contentSizeCategory copy];
-    self.multiplier = [self multiplierForContentSizeCategory:_contentSizeCategory];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTAccessibilityManagerDidUpdateMultiplierNotification object:self];
+    [self invalidateMultiplier];
   }
+}
+
+- (void)invalidateMultiplier
+{
+  self.multiplier = [self multiplierForContentSizeCategory:_contentSizeCategory];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTAccessibilityManagerDidUpdateMultiplierNotification object:self];
 }
 
 - (CGFloat)multiplierForContentSizeCategory:(NSString *)category
@@ -93,6 +98,14 @@ RCT_EXPORT_MODULE()
     m = @1.0;
   }
   return m.doubleValue;
+}
+
+- (void)setMultipliers:(NSDictionary *)multipliers
+{
+  if (_multipliers != multipliers) {
+    _multipliers = [multipliers copy];
+    [self invalidateMultiplier];
+  }
 }
 
 - (NSDictionary *)multipliers
