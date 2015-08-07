@@ -362,8 +362,10 @@ id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cance
   alertView.title = title;
   alertView.message = message;
   alertView.delegate = delegate;
-  [alertView addButtonWithTitle:cancelButtonTitle];
-  alertView.cancelButtonIndex = 0;
+  if (cancelButtonTitle != nil) {
+    [alertView addButtonWithTitle:cancelButtonTitle];
+    alertView.cancelButtonIndex = 0;
+  }
   for (NSString *buttonTitle in otherButtonTitles)
   {
     [alertView addButtonWithTitle:buttonTitle];
