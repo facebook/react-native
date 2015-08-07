@@ -117,7 +117,7 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
-  [UIApplication sharedApplication].networkActivityIndicatorVisible = visible;
+  RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
 @end
