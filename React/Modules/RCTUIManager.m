@@ -454,7 +454,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     [areNew addObject:@(shadowView.isNewView)];
     [parentsAreNew addObject:@(shadowView.superview.isNewView)];
     id event = (id)kCFNull;
-    if (shadowView.hasOnLayout) {
+    if (shadowView.onLayout) {
       event = @{
         @"target": shadowView.reactTag,
         @"layout": @{
