@@ -199,14 +199,16 @@ RCT_NOT_IMPLEMENTED(-init)
 
 #if TARGET_IPHONE_SIMULATOR
 
-  __weak RCTBridge *weakSelf = self;
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   // reload in current mode
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-                                   [weakSelf reload];
+                                 action:^(__unused UIKeyCommand *command) 
+                                 {
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                                                        object:nil
+                                                                                      userInfo:nil];
                                  }];
 
 #endif
