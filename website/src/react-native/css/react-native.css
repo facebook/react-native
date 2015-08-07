@@ -967,6 +967,15 @@ div[data-twttr-id] iframe {
   font-size: 13px;
 }
 
+.platform {
+  background-color: hsl(198, 100%, 87%);
+  border-radius: 5px;
+  margin-right: 5px;
+  padding: 0 5px;
+  font-size: 13px;
+  font-weight: normal;
+}
+
 .edit-github {
   font-size: 15px;
   font-weight: normal;
