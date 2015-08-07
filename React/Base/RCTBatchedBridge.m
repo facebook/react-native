@@ -305,6 +305,10 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   for (RCTModuleData *moduleData in _moduleDataByID) {
     config[moduleData.name] = moduleData.config;
 
+
+    // HACK(tadeu): Ensure the queue has been loaded, make it lazy later inside RCTModuleMap
+    (void)[moduleData queue];
+
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:moduleData];
     }
