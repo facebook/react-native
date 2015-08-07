@@ -43,6 +43,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
                   failureCallback:(__unused RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"Unable to show action sheet from app extension");
+    return;
+  }
+  
   UIActionSheet *actionSheet = [UIActionSheet new];
 
   actionSheet.title = options[@"title"];
