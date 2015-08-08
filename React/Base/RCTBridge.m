@@ -235,6 +235,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   RCTAssertMainThread();
 
+  _bundleURL = [self.delegate sourceURLForBridge:self] ?: _bundleURL;
   _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 

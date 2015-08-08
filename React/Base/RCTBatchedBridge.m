@@ -70,7 +70,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   NSMutableSet *_frameUpdateObservers;
   NSMutableArray *_scheduledCalls;
   RCTSparseArray *_scheduledCallbacks;
-  NSURL *_sourceURL;
 }
 
 @synthesize valid = _valid;
@@ -114,8 +113,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
 
 - (void)start
 {
-  _sourceURL = self.delegate ? [self.delegate sourceURLForBridge:_parentBridge] : self.bundleURL;
-
   __weak RCTBatchedBridge *weakSelf = self;
 
   __block NSString *sourceCode;
@@ -198,9 +195,8 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
 
     if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
       [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
-    } else if (_sourceURL) {
-      [RCTJavaScriptLoader loadBundleAtURL:_sourceURL
-                                onComplete:onSourceLoad];
+    } else if (self.bundleURL) {
+      [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:onSourceLoad];
     } else {
       // Allow testing without a script
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -307,7 +303,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
   for (RCTModuleData *moduleData in _moduleDataByID) {
     config[moduleData.name] = moduleData.config;
-
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:moduleData];
     }
@@ -344,7 +339,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   }
 
   RCTSourceCode *sourceCodeModule = self.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
-  sourceCodeModule.scriptURL = _sourceURL;
+  sourceCodeModule.scriptURL = self.bundleURL;
   sourceCodeModule.scriptText = sourceCode;
 
   static BOOL shouldDismiss = NO;
@@ -356,7 +351,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
     shouldDismiss = YES;
   });
 
-  [self enqueueApplicationScript:sourceCode url:_sourceURL onComplete:^(NSError *loadError) {
+  [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
 
     if (loadError) {
       [[RCTRedBox sharedInstance] showError:loadError];
@@ -818,7 +813,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 {
   RCTAssertMainThread();
 
-  if (![_sourceURL.scheme isEqualToString:@"http"]) {
+  if (![self.bundleURL.scheme isEqualToString:@"http"]) {
     RCTLogError(@"To run the profiler you must be running from the dev server");
     return;
   }
@@ -834,7 +829,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     NSString *log = RCTProfileEnd(self);
-    NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", _sourceURL.scheme, _sourceURL.host, _sourceURL.port];
+    NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", self.bundleURL.scheme, self.bundleURL.host, self.bundleURL.port];
     NSURL *URL = [NSURL URLWithString:URLString];
     NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
     URLRequest.HTTPMethod = @"POST";

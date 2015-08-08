@@ -7,14 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import "RCTBridgeModule.h"
 
-@interface RCTDevLoadingView : NSObject
-
-+ (instancetype)sharedInstance;
-
-- (void)showWithURL:(NSURL *)URL;
-- (void)hide;
+@interface RCTDevLoadingView : NSObject <RCTBridgeModule>
 
 @end
