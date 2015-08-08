@@ -144,9 +144,9 @@ var ComponentDoc = React.createClass({
           this.renderCompose(name)
         )}
         {Object.keys(props)
-          .sort((a, b) => {
-            a = props[a];
-            b = props[b];
+          .sort((nameA, nameB) => {
+            var a = props[nameA];
+            var b = props[nameB];
 
             if (a.platforms && !b.platforms) {
               return 1;
@@ -154,7 +154,13 @@ var ComponentDoc = React.createClass({
             if (b.platforms && !a.platforms) {
               return -1;
             }
-            return a.name < b.name;
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+            return 0;
           })
           .map((name) =>
           this.renderProp(name, props[name])
