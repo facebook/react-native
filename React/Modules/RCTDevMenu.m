@@ -444,7 +444,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || !_bridge) {
+  if (_actionSheet || !_bridge || RCTRunningInAppExtension()) {
     return;
   }
 
