@@ -183,7 +183,10 @@ var WebView = React.createClass({
     callback?: ?(error: ?Error, result: ?string) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), script, function(err, value) {
+      // wrap script in JSON.stringify to preserve type of return result through iOS's string based interface
+      var wrappedScript = 'JSON.stringify(eval("' + script + '"))';
+
+      RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrappedScript, function(err, value) {
         // iOS returns a string for the result of stringByEvaluatingJavaScriptFromString.
         // --> attempt to JSON.parse value, if we fail, just return as a string value.
         try {
@@ -191,6 +194,7 @@ var WebView = React.createClass({
         } catch(e) { }
 
         callback && callback(err, value);
+
         if (err) {
           reject(err);
         } else {
