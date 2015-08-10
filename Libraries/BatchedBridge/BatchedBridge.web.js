@@ -11,6 +11,7 @@ var BatchedBridge = {
         
     UIManager: {
 
+      layoutAnimationDisabled: true,
       customBubblingEventTypes: {},
       customDirectEventTypes: {},
       Dimensions: {},
