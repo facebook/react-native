@@ -40,6 +40,10 @@ var NativeModules = {
   SourceCode: {
     scriptURL: null,
   },
+  BuildInfo: {
+    appVersion: '0',
+    buildVersion: '0',
+  },
 };
 
 module.exports = NativeModules;

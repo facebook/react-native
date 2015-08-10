@@ -170,7 +170,7 @@ RCT_EXPORT_MODULE(TestModule)
 }
 
 RCT_EXPORT_METHOD(testMethod:(NSInteger)integer
-                  number:(NSNumber *)number
+                  number:(nonnull NSNumber *)number
                   string:(NSString *)string
                   dictionary:(NSDictionary *)dict
                   callback:(RCTResponseSenderBlock)callback)

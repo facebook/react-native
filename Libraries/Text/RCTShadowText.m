@@ -9,6 +9,9 @@
 
 #import "RCTShadowText.h"
 
+#import "RCTAccessibilityManager.h"
+#import "RCTUIManager.h"
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowRawText.h"
@@ -51,14 +54,29 @@ static css_dim_t RCTMeasure(void *context, float width)
     _letterSpacing = NAN;
     _isHighlighted = NO;
     _textDecorationStyle = NSUnderlineStyleSingle;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contentSizeMultiplierDidChange:)
+                                                 name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
+                                               object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (NSString *)description
 {
   NSString *superDescription = super.description;
   return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; text: %@>", [self attributedString].string];
+}
+
+- (void)contentSizeMultiplierDidChange:(NSNotification *)note
+{
+  [self dirtyLayout];
+  [self dirtyText];
 }
 
 - (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
@@ -190,7 +208,9 @@ static css_dim_t RCTMeasure(void *context, float width)
     [self _addAttribute:NSBackgroundColorAttributeName withValue:self.backgroundColor toAttributedString:attributedString];
   }
 
-  UIFont *font = [RCTConvert UIFont:nil withFamily:fontFamily size:fontSize weight:fontWeight style:fontStyle];
+  UIFont *font = [RCTConvert UIFont:nil withFamily:fontFamily
+                               size:fontSize weight:fontWeight style:fontStyle
+                    scaleMultiplier:(_allowFontScaling && _fontSizeMultiplier > 0.0 ? _fontSizeMultiplier : 1.0)];
   [self _addAttribute:NSFontAttributeName withValue:font toAttributedString:attributedString];
   [self _addAttribute:NSKernAttributeName withValue:letterSpacing toAttributedString:attributedString];
   [self _addAttribute:RCTReactTagAttributeName withValue:self.reactTag toAttributedString:attributedString];
@@ -232,8 +252,9 @@ static css_dim_t RCTMeasure(void *context, float width)
   [attributedString enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(0, [attributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
     if (value) {
       NSParagraphStyle *paragraphStyle = (NSParagraphStyle *)value;
-      if ([paragraphStyle maximumLineHeight] > _lineHeight) {
-        self.lineHeight = [paragraphStyle maximumLineHeight];
+      CGFloat maximumLineHeight = round([paragraphStyle maximumLineHeight] / self.fontSizeMultiplier);
+      if (maximumLineHeight > self.lineHeight) {
+        self.lineHeight = maximumLineHeight;
       }
       hasParagraphStyle = YES;
     }
@@ -247,8 +268,9 @@ static css_dim_t RCTMeasure(void *context, float width)
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.alignment = _textAlign;
     paragraphStyle.baseWritingDirection = _writingDirection;
-    paragraphStyle.minimumLineHeight = _lineHeight;
-    paragraphStyle.maximumLineHeight = _lineHeight;
+    CGFloat lineHeight = round(_lineHeight * self.fontSizeMultiplier);
+    paragraphStyle.minimumLineHeight = lineHeight;
+    paragraphStyle.maximumLineHeight = lineHeight;
     [attributedString addAttribute:NSParagraphStyleAttributeName
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];
@@ -320,5 +342,27 @@ RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
 RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
 RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
+
+- (void)setAllowFontScaling:(BOOL)allowFontScaling
+{
+  _allowFontScaling = allowFontScaling;
+  for (RCTShadowView *child in [self reactSubviews]) {
+    if ([child isKindOfClass:[RCTShadowText class]]) {
+      [(RCTShadowText *)child setAllowFontScaling:allowFontScaling];
+    }
+  }
+  [self dirtyText];
+}
+
+- (void)setFontSizeMultiplier:(CGFloat)fontSizeMultiplier
+{
+  _fontSizeMultiplier = fontSizeMultiplier;
+  for (RCTShadowView *child in [self reactSubviews]) {
+    if ([child isKindOfClass:[RCTShadowText class]]) {
+      [(RCTShadowText *)child setFontSizeMultiplier:fontSizeMultiplier];
+    }
+  }
+  [self dirtyText];
+}
 
 @end

@@ -144,7 +144,6 @@ class FormUploader extends React.Component {
     CameraRoll.getPhotos(
       {first: PAGE_SIZE},
       (data) => {
-        console.log('isMounted', this._isMounted);
         if (!this._isMounted) {
           return;
         }

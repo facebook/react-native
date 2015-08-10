@@ -44,6 +44,7 @@ var AccessibilityTraits = [
   'pageTurn',
 ];
 
+
 // <<<<< WARNING >>>>>
 // If adding any properties to View that could change the way layout-only status
 // works on iOS, make sure to update ReactNativeViewAttributes.js and
@@ -95,6 +96,27 @@ var View = React.createClass({
      * children and accumulating all the Text nodes separated by space.
      */
     accessibilityLabel: PropTypes.string,
+
+    /**
+     * Indicates to accessibility services to treat UI component like a
+     * native one. Works for Android only.
+     */
+    accessibilityComponentType: PropTypes.oneOf([
+      'none',
+      'button',
+    ]),
+
+    /**
+     * Indicates to accessibility services whether the user should be notified
+     * when this view changes. Works for Android API >= 19 only.
+     * See http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion
+     * for references.
+     */
+    accessibilityLiveRegion: PropTypes.oneOf([
+      'none',
+      'polite',
+      'assertive',
+    ]),
 
     /**
      * Provides additional traits to screen reader. By default no traits are
@@ -205,6 +227,7 @@ var View = React.createClass({
      * interaction/animation.
      */
     renderToHardwareTextureAndroid: PropTypes.bool,
+    collapsable: PropTypes.bool,
   },
 
   render: function() {

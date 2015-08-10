@@ -17,6 +17,7 @@
 
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
+#import "RCTModuleMethod.h"
 #import "RCTRootView.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
@@ -61,6 +62,11 @@ RCT_EXPORT_MODULE();
 {
   _valid = NO;
 }
+
+RCT_EXPORT_METHOD(test:(__unused NSString *)a
+                      :(__unused NSNumber *)b
+                      :(__unused RCTResponseSenderBlock)c
+                      :(__unused RCTResponseErrorBlock)d) {}
 
 @end
 
@@ -122,6 +128,19 @@ RCT_EXPORT_MODULE();
 
   RUN_RUNLOOP_WHILE(weakModule)
   XCTAssertNil(weakModule, @"AllocationTestModule should have been deallocated");
+}
+
+- (void)testModuleMethodsAreDeallocated
+{
+  __weak RCTModuleMethod *weakMethod;
+  @autoreleasepool {
+    __autoreleasing RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:@"test:(NSString *)a :(nonnull NSNumber *)b :(RCTResponseSenderBlock)c :(RCTResponseErrorBlock)d" JSMethodName:@"" moduleClass:[AllocationTestModule class]];
+    weakMethod = method;
+    XCTAssertNotNil(method, @"RCTModuleMethod should have been created");
+  }
+
+  RUN_RUNLOOP_WHILE(weakMethod)
+  XCTAssertNil(weakMethod, @"RCTModuleMethod should have been deallocated");
 }
 
 - (void)testJavaScriptExecutorIsDeallocated

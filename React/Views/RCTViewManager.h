@@ -21,6 +21,11 @@
 
 typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *viewRegistry);
 
+/**
+ * Underlying implementation of RCT_EXPORT_XXX macros. Ignore this.
+ */
+RCT_EXTERN void RCTSetViewProperty(NSString *, NSString *, SEL, id, id, id);
+
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
 /**
@@ -108,20 +113,14 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * This macro maps a named property on the module to an arbitrary key path
  * within the view or shadowView.
  */
-#define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)                           \
-RCT_CUSTOM_VIEW_PROPERTY(name, type, UIView) {                                 \
-  if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
-      (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
-    RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
-  } \
+#define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)                      \
+RCT_CUSTOM_VIEW_PROPERTY(name, type, UIView) {                            \
+  RCTSetViewProperty(@#name, @#keyPath, @selector(type:), view, defaultView, json); \
 }
 
-#define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                         \
-RCT_CUSTOM_SHADOW_PROPERTY(name, type, RCTShadowView) {                        \
-  if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
-      (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
-    RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
-  } \
+#define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                    \
+RCT_CUSTOM_SHADOW_PROPERTY(name, type, RCTShadowView) {                   \
+  RCTSetViewProperty(@#name, @#keyPath, @selector(type:), view, defaultView, json); \
 }
 
 /**
@@ -136,30 +135,5 @@ RCT_CUSTOM_SHADOW_PROPERTY(name, type, RCTShadowView) {                        \
 #define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
 + (NSString *)getPropConfigShadow_##name { return @#type; } \
 - (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
-
-/**
- * These are useful in cases where the module's superclass handles a
- * property, but you wish to "unhandle" it, so it will be ignored.
- */
-#define RCT_IGNORE_VIEW_PROPERTY(name) \
-- (void)set_##name:(id)value forView:(id)view withDefaultView:(id)defaultView {}
-
-#define RCT_IGNORE_SHADOW_PROPERTY(name) \
-- (void)set_##name:(id)value forShadowView:(id)view withDefaultView:(id)defaultView {}
-
-/**
- * Used for when view property names change. Will log an error when used.
- */
-#define RCT_DEPRECATED_VIEW_PROPERTY(oldName, newName) \
-- (void)set_##oldName:(id)json forView:(id)view withDefaultView:(id)defaultView { \
-  RCTLogError(@"Property '%s' has been replaced by '%s'.", #oldName, #newName); \
-  [self set_##newName:json forView:view withDefaultView:defaultView]; \
-}
-
-#define RCT_DEPRECATED_SHADOW_PROPERTY(oldName, newName) \
-- (void)set_##oldName:(id)json forShadowView:(id)view withDefaultView:(id)defaultView { \
-  RCTLogError(@"Property '%s' has been replaced by '%s'.", #oldName, #newName); \
-  [self set_##newName:json forView:view withDefaultView:defaultView]; \
-}
 
 @end

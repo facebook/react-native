@@ -24,6 +24,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   Image: require('Image'),
   ListView: require('ListView'),
   MapView: require('MapView'),
+  Modal: require('Modal'),
   Navigator: require('Navigator'),
   NavigatorIOS: require('NavigatorIOS'),
   PickerIOS: require('PickerIOS'),

@@ -22,8 +22,6 @@ install:
 
 script:
 - |
-  nvm use iojs-v2
-
   if [ "$TEST_TYPE" = objc ]
   then
 
