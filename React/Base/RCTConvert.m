@@ -664,12 +664,29 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   NSURL *URL = [self NSURL:path];
   NSString *scheme = [URL.scheme lowercaseString];
-  if ([scheme isEqualToString:@"file"]) {
-
-    if ([NSThread currentThread] == [NSThread mainThread]) {
-      // Image may reside inside a .car file, in which case we have no choice
-      // but to use +[UIImage imageNamed] - but this method isn't thread safe
-      image = [UIImage imageNamed:path];
+  if (path && [scheme isEqualToString:@"file"]) {
+    if (RCT_DEBUG || [NSThread currentThread] == [NSThread mainThread]) {
+      if ([URL.path hasPrefix:[[NSBundle mainBundle] resourcePath]]) {
+        // Image may reside inside a .car file, in which case we have no choice
+        // but to use +[UIImage imageNamed] - but this method isn't thread safe
+        static NSMutableDictionary *XCAssetMap = nil;
+        if (!XCAssetMap) {
+          XCAssetMap = [[NSMutableDictionary alloc] init];
+        }
+        NSNumber *isAsset = XCAssetMap[path];
+        if (!isAsset || isAsset.boolValue) {
+          image = [UIImage imageNamed:path];
+          if (RCT_DEBUG && image) {
+            // If we succeeded in loading the image via imageNamed, and the
+            // method wasn't called on the main thread, that's a coding error
+            RCTAssertMainThread();
+          }
+        }
+        if (!isAsset) {
+          // Avoid calling `+imageNamed` again in future if it's not needed.
+          XCAssetMap[path] = @(image != nil);
+        }
+      }
     }
 
     if (!image) {
@@ -678,13 +695,6 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
         path = [path stringByAppendingPathExtension:@"png"];
       }
       image = [UIImage imageWithContentsOfFile:path];
-    }
-
-    // We won't warn about nil images because there are legitimate cases
-    // where we find out if a string is an image by using this method, but
-    // we do enforce thread-safe API usage with the following check
-    if (RCT_DEBUG && !image && [UIImage imageNamed:path]) {
-      RCTAssertMainThread();
     }
 
   } else if ([scheme isEqualToString:@"data"]) {
