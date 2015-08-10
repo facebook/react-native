@@ -59,7 +59,11 @@ const validateOpts = declareOpts({
   platforms: {
     type: 'array',
     default: ['ios', 'android'],
-  }
+  },
+  cache: {
+    type: 'object',
+    required: true,
+  },
 });
 
 class DependencyGraph {
@@ -67,6 +71,7 @@ class DependencyGraph {
     this._opts = validateOpts(options);
     this._hasteMap = Object.create(null);
     this._immediateResolutionCache = Object.create(null);
+    this._cache = this._opts.cache;
     this.load();
   }
 
@@ -84,17 +89,21 @@ class DependencyGraph {
     });
     this._crawling.then((files) => Activity.endEvent(crawlActivity));
 
-    this._fastfs = new Fastfs(this._opts.roots,this._opts.fileWatcher, {
+    this._fastfs = new Fastfs(this._opts.roots, this._opts.fileWatcher, {
       ignore: this._opts.ignoreFilePath,
       crawling: this._crawling,
     });
 
     this._fastfs.on('change', this._processFileChange.bind(this));
 
-    this._moduleCache = new ModuleCache(this._fastfs);
+    this._moduleCache = new ModuleCache(this._fastfs, this._cache);
 
     this._loading = Promise.all([
-      this._fastfs.build().then(() => this._buildHasteMap()),
+      this._fastfs.build()
+        .then(() => {
+          const hasteActivity = Activity.startEvent('haste map');
+          this._buildHasteMap().then(() => Activity.endEvent(hasteActivity));
+        }),
       this._buildAssetMap_DEPRECATED(),
     ]);
 
@@ -141,7 +150,7 @@ class DependencyGraph {
         () => this._resolveNodeDependency(fromModule, toModuleName)
       ).then(
         cacheResult,
-        forgive
+        forgive,
       );
     }
 
