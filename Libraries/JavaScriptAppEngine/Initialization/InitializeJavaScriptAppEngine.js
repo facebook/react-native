@@ -128,6 +128,10 @@ function setupProfile() {
   require('BridgeProfiling').swizzleReactPerf();
 }
 
+function setUpProcessEnv() {
+  GLOBAL.process = {env: {NODE_ENV: __DEV__ ? 'development' : 'production'}};
+}
+
 setUpRedBoxErrorHandler();
 setUpTimers();
 setUpAlert();
@@ -137,3 +141,4 @@ setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
 setupProfile();
+setUpProcessEnv();
