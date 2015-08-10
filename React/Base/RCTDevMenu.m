@@ -212,7 +212,7 @@ RCT_EXPORT_MODULE()
     }
   } else if (![sourceCodeModule.scriptURL isFileURL]) {
     // Live reloading is disabled when running from bundled JS file
-    _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:sourceCodeModule.scriptURL];
+    _liveReloadURL = [[NSURL alloc] initWithString:@"onchange" relativeToURL:sourceCodeModule.scriptURL.baseURL];
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
