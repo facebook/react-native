@@ -101,7 +101,7 @@ class DependencyGraph {
     this._loading = Promise.all([
       this._fastfs.build()
         .then(() => {
-          const hasteActivity = Activity.startEvent('haste map');
+          const hasteActivity = Activity.startEvent('Building Haste Map');
           this._buildHasteMap().then(() => Activity.endEvent(hasteActivity));
         }),
       this._buildAssetMap_DEPRECATED(),
@@ -518,9 +518,18 @@ class DependencyGraph {
     fastfs.on('change', this._processAssetChange_DEPRECATED.bind(this));
 
     return fastfs.build().then(
-      () => fastfs.findFilesByExts(this._opts.assetExts).map(
-        file => this._processAsset_DEPRECATED(file)
-      )
+      () => {
+        const processAsset_DEPRECATEDActivity = Activity.startEvent(
+          'Building (deprecated) Asset Map',
+        );
+
+        const assets = fastfs.findFilesByExts(this._opts.assetExts).map(
+          file => this._processAsset_DEPRECATED(file)
+        );
+
+        Activity.endEvent(processAsset_DEPRECATEDActivity);
+        return assets;
+      }
     );
   }
 
