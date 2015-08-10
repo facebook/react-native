@@ -142,7 +142,14 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
-RCT_EXTERN void RCTLogConvertError(id, const char *);
+
+/**
+ * This macro is used for logging conversion errors. This is just used to
+ * avoid repeating the same boilerplate for every error message.
+ */
+#define RCTLogConvertError(json, typeName) \
+RCTLogError(@"JSON value '%@' of type %@ cannot be converted to %@", \
+json, [json classForCoder], typeName)
 
 /**
  * This macro is used for creating simple converter functions that just call
@@ -165,7 +172,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
       return code;                             \
     }                                          \
     @catch (__unused NSException *e) {         \
-      RCTLogConvertError(json, #type);         \
+      RCTLogConvertError(json, @#type);        \
       json = nil;                              \
       return code;                             \
     }                                          \

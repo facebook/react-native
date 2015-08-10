@@ -16,12 +16,6 @@
 
 @implementation RCTConvert
 
-void RCTLogConvertError(id json, const char *type)
-{
-  RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to %s",
-              json, [json classForCoder], type);
-}
-
 RCT_CONVERTER(id, id, self)
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
@@ -53,11 +47,11 @@ RCT_CONVERTER(NSString *, NSString, description)
     });
     NSNumber *number = [formatter numberFromString:json];
     if (!number) {
-      RCTLogConvertError(json, "a number");
+      RCTLogConvertError(json, @"a number");
     }
     return number;
   } else if (json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a number");
+    RCTLogConvertError(json, @"a number");
   }
   return nil;
 }
@@ -97,7 +91,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
 
     // Check if it has a scheme
-    if ([path rangeOfString:@"[a-zA-Z][a-zA-Z._-]+:" options:NSRegularExpressionSearch].location == 0) {
+    if ([path rangeOfString:@":"].location != NSNotFound) {
       path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
       URL = [NSURL URLWithString:path];
       if (URL) {
@@ -117,7 +111,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     return [NSURL fileURLWithPath:path];
   }
   @catch (__unused NSException *e) {
-    RCTLogConvertError(json, "a valid URL");
+    RCTLogConvertError(json, @"a valid URL");
     return nil;
   }
 }
@@ -162,7 +156,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
     return date;
   } else if (json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a date");
+    RCTLogConvertError(json, @"a date");
   }
   return nil;
 }
@@ -339,7 +333,7 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
       result[i] = [RCTConvert CGFloat:json[fields[i]]];
     }
   } else if (RCT_DEBUG && json && json != (id)kCFNull) {
-    RCTLogConvertError(json, type);
+    RCTLogConvertError(json, @(type));
   }
 }
 
@@ -627,7 +621,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   }
   else if (RCT_DEBUG && json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a color");
+    RCTLogConvertError(json, @"a color");
   }
 
   // Default color
@@ -665,7 +659,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     path = [self NSString:json[@"uri"]];
     scale = [self CGFloat:json[@"scale"]];
   } else {
-    RCTLogConvertError(json, "an image");
+    RCTLogConvertError(json, @"an image");
   }
 
   NSURL *URL = [self NSURL:path];
@@ -696,7 +690,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else {
-    RCTLogConvertError(json, "an image. Only local files or data URIs are supported");
+    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
   }
 
   if (scale > 0) {
