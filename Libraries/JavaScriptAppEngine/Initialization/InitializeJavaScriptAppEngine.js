@@ -90,7 +90,7 @@ function setUpAlert() {
         message: '' + text,
         buttons: [{'cancel': 'OK'}],
       };
-      RCTAlertManager.alertWithArgs(alertOpts, null);
+      RCTAlertManager.alertWithArgs(alertOpts, function () {});
     };
   }
 }
