@@ -14,6 +14,7 @@ var {
 
 var SampleApp = React.createClass({
   render: function() {
+    console.log(this.props);
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
