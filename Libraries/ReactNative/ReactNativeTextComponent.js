@@ -55,7 +55,6 @@ assign(ReactNativeTextComponent.prototype, {
           ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(
             this._rootNodeID
           ),
-          'RCTRawText',
           {text: this._stringText}
         );
       }

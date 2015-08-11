@@ -115,7 +115,6 @@ var NativeMethodsMixin = {
 
     RCTUIManager.updateView(
       findNodeHandle(this),
-      this.viewConfig.uiViewClassName,
       props
     );
   },
