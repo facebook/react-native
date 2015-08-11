@@ -134,11 +134,11 @@ static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvo
 static IMP RCTProfileMsgForward(NSObject *, SEL);
 static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
 {
-  IMP imp = _objc_msgForward;
+  IMP imp = (IMP)_objc_msgForward;
 #if !defined(__arm64__)
   NSMethodSignature *signature = [self methodSignatureForSelector:selector];
   if (signature.methodReturnType[0] == _C_STRUCT_B && signature.methodReturnLength > 8) {
-    imp = _objc_msgForward_stret;
+    imp = (IMP)_objc_msgForward_stret;
   }
 #endif
   return imp;
