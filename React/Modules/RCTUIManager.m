@@ -244,7 +244,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 {
   __weak RCTUIManager *weakSelf = self;
   dispatch_async(self.methodQueue, ^{
-    __weak RCTUIManager *strongSelf = weakSelf;
+    RCTUIManager *strongSelf = weakSelf;
     if (strongSelf) {
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                           object:strongSelf];

@@ -468,7 +468,7 @@ RCT_EXPORT_METHOD(reload)
                  ^(__unused NSData *data, NSURLResponse *response, NSError *error) {
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      __strong RCTDevMenu *strongSelf = weakSelf;
+      RCTDevMenu *strongSelf = weakSelf;
       if (strongSelf && strongSelf->_liveReloadEnabled) {
         NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)response;
         if (!error && HTTPResponse.statusCode == 205) {
