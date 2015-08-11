@@ -820,6 +820,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
 - (void)batchDidComplete
 {
   RCTProfileBeginEvent();
+
   // Gather blocks to be executed now that all view hierarchy manipulations have
   // been completed (note that these may still take place before layout has finished)
   for (RCTComponentData *componentData in _componentDataByName.allValues) {
@@ -871,8 +872,13 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTProfileEndFlowEvent();
     RCTProfileBeginEvent();
-    for (dispatch_block_t block in previousPendingUIBlocks) {
-      block();
+    @try {
+      for (dispatch_block_t block in previousPendingUIBlocks) {
+        block();
+      }
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
     }
     RCTProfileEndEvent(@"UIManager flushUIBlocks", @"objc_call", @{
       @"count": @(previousPendingUIBlocks.count),
@@ -1043,7 +1049,7 @@ RCT_EXPORT_METHOD(setMainScrollViewTag:(nonnull NSNumber *)reactTag)
         uiManager.mainScrollView = (id<RCTScrollableProtocol>)view;
         uiManager.mainScrollView.nativeMainScrollDelegate = uiManager.nativeMainScrollDelegate;
       } else {
-        RCTAssert(NO, @"Tag #%@ does not conform to RCTScrollableProtocol", reactTag);
+        RCTLogError(@"Tag #%@ does not conform to RCTScrollableProtocol", reactTag);
       }
     } else {
       uiManager.mainScrollView = nil;

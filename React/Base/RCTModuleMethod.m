@@ -17,7 +17,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-typedef void (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
+typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
 @implementation RCTMethodArgument
 
@@ -166,6 +166,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
   _logic \
   [invocation setArgument:&value atIndex:(index) + 2]; \
+  return YES; \
 }];
 
   __weak RCTModuleMethod *weakSelf = self;
@@ -174,7 +175,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
       if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
         RCTLogArgumentError(weakSelf, index, json, "should be a function");
-        return;
+        return NO;
       }
 
       // Marked as autoreleasing, because NSInvocation doesn't retain arguments
@@ -268,13 +269,13 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
         if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
           RCTLogArgumentError(weakSelf, index, json, "should be a function");
-          return;
+          return NO;
         }
 
         // Marked as autoreleasing, because NSInvocation doesn't retain arguments
         __autoreleasing id value = (json ? ^(NSError *error) {
           [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                   method:@"invokeCallbackAndReturnFlushedQueue"
+                                     method:@"invokeCallbackAndReturnFlushedQueue"
                                 arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
         } : ^(__unused NSError *error) {});
       )
@@ -285,7 +286,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       RCT_ARG_BLOCK(
         if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
           RCTLogArgumentError(weakSelf, index, json, "should be a promise resolver function");
-          return;
+          return NO;
         }
 
         // Marked as autoreleasing, because NSInvocation doesn't retain arguments
@@ -302,7 +303,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       RCT_ARG_BLOCK(
         if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
           RCTLogArgumentError(weakSelf, index, json, "should be a promise rejecter function");
-          return;
+          return NO;
         }
 
         // Marked as autoreleasing, because NSInvocation doesn't retain arguments
@@ -350,12 +351,11 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       if (nullability == RCTNonnullable) {
         RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
         argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSUInteger index, id json) {
-          if (json == nil || json == (id)kCFNull) {
+          if (json == nil) {
             RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
-            id null = nil;
-            [invocation setArgument:&null atIndex:index + 2];
+            return NO;
           } else {
-            oldBlock(bridge, index, json);
+            return oldBlock(bridge, index, json);
           }
         };
       }
@@ -408,9 +408,11 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
   // Set arguments
   NSUInteger index = 0;
   for (id json in arguments) {
-    id arg = RCTNilIfNull(json);
     RCTArgumentBlock block = _argumentBlocks[index];
-    block(bridge, index, arg);
+    if (!block(bridge, index, RCTNilIfNull(json))) {
+      // Invalid argument, abort
+      return;
+    }
     index++;
   }
 
