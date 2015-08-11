@@ -765,12 +765,11 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(updateView:(nonnull NSNumber *)reactTag
-                  viewName:(NSString *)viewName
+                  viewName:(__unused NSString *)viewName // not reliable, do not use
                   props:(NSDictionary *)props)
 {
-  RCTComponentData *componentData = _componentDataByName[viewName];
-
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
   [componentData setProps:props forShadowView:shadowView];
 
   [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
