@@ -69,8 +69,9 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setImage:(UIImage *)image
 {
+  image = image ?: _defaultImage;
   if (image != super.image) {
-    super.image = image ?: _defaultImage;
+    super.image = image;
     [self _updateImage];
   }
 }
