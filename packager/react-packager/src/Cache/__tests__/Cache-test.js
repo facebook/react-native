@@ -52,6 +52,14 @@ describe('JSTransformer Cache', () => {
     });
 
     pit('supports storing multiple fields', () => {
+      require('fs').stat.mockImpl((file, callback) => {
+        callback(null, {
+          mtime: {
+            getTime: () => {}
+          }
+        });
+      });
+
       var cache = new Cache({
         projectRoots: ['/rootDir'],
         transformModulePath: 'x.js',
