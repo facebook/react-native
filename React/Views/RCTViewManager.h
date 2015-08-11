@@ -48,40 +48,27 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 - (RCTShadowView *)shadowView;
 
 /**
- * Returns a dictionary of config data passed to JS that defines eligible events
- * that can be placed on native views. This should return bubbling
- * directly-dispatched event types and specify what names should be used to
- * subscribe to either form (bubbling/capturing).
- *
- * Returned dictionary should be of the form: @{
- *   @"onTwirl": {
- *     @"phasedRegistrationNames": @{
- *       @"bubbled": @"onTwirl",
- *       @"captured": @"onTwirlCaptured"
- *     }
- *   }
- * }
+ * Returns an array of names of events that can be sent by native views. This
+ * should return bubbling, directly-dispatched event types. The event name
+ * should not include a prefix such as 'on' or 'top', as this will be applied
+ * as needed. When subscribing to the event, use the 'Captured' suffix to
+ * indicate the captured form, or omit the suffix for the bubbling form.
  *
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-- (NSDictionary *)customBubblingEventTypes;
+- (NSArray *)customBubblingEventTypes;
 
 /**
- * Returns a dictionary of config data passed to JS that defines eligible events
- * that can be placed on native views. This should return non-bubbling
- * directly-dispatched event types.
- *
- * Returned dictionary should be of the form: @{
- *   @"onTwirl": {
- *     @"registrationName": @"onTwirl"
- *   }
- * }
+ * Returns an array of names of events that can be sent by native views. This
+ * should return non-bubbling, directly-dispatched event types. The event name
+ * should not include a prefix such as 'on' or 'top', as this will be applied
+ * as needed.
  *
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customDirectEventTypes] when overriding it.
  */
-- (NSDictionary *)customDirectEventTypes;
+- (NSArray *)customDirectEventTypes;
 
 /**
  * Called to notify manager that layout has finished, in case any calculated

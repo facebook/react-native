@@ -32,6 +32,15 @@ RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString);
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
 
+- (NSArray *)customDirectEventTypes
+{
+  return @[
+    @"loadingStart",
+    @"loadingFinish",
+    @"loadingError",
+  ];
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{

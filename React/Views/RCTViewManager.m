@@ -22,24 +22,24 @@
 @implementation RCTConvert(UIAccessibilityTraits)
 
 RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
-                                        @"none": @(UIAccessibilityTraitNone),
-                                        @"button": @(UIAccessibilityTraitButton),
-                                        @"link": @(UIAccessibilityTraitLink),
-                                        @"header": @(UIAccessibilityTraitHeader),
-                                        @"search": @(UIAccessibilityTraitSearchField),
-                                        @"image": @(UIAccessibilityTraitImage),
-                                        @"selected": @(UIAccessibilityTraitSelected),
-                                        @"plays": @(UIAccessibilityTraitPlaysSound),
-                                        @"key": @(UIAccessibilityTraitKeyboardKey),
-                                        @"text": @(UIAccessibilityTraitStaticText),
-                                        @"summary": @(UIAccessibilityTraitSummaryElement),
-                                        @"disabled": @(UIAccessibilityTraitNotEnabled),
-                                        @"frequentUpdates": @(UIAccessibilityTraitUpdatesFrequently),
-                                        @"startsMedia": @(UIAccessibilityTraitStartsMediaSession),
-                                        @"adjustable": @(UIAccessibilityTraitAdjustable),
-                                        @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
-                                        @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
-                                        }), UIAccessibilityTraitNone, unsignedLongLongValue)
+  @"none": @(UIAccessibilityTraitNone),
+  @"button": @(UIAccessibilityTraitButton),
+  @"link": @(UIAccessibilityTraitLink),
+  @"header": @(UIAccessibilityTraitHeader),
+  @"search": @(UIAccessibilityTraitSearchField),
+  @"image": @(UIAccessibilityTraitImage),
+  @"selected": @(UIAccessibilityTraitSelected),
+  @"plays": @(UIAccessibilityTraitPlaysSound),
+  @"key": @(UIAccessibilityTraitKeyboardKey),
+  @"text": @(UIAccessibilityTraitStaticText),
+  @"summary": @(UIAccessibilityTraitSummaryElement),
+  @"disabled": @(UIAccessibilityTraitNotEnabled),
+  @"frequentUpdates": @(UIAccessibilityTraitUpdatesFrequently),
+  @"startsMedia": @(UIAccessibilityTraitStartsMediaSession),
+  @"adjustable": @(UIAccessibilityTraitAdjustable),
+  @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
+  @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
+}), UIAccessibilityTraitNone, unsignedLongLongValue)
 
 @end
 
@@ -64,14 +64,34 @@ RCT_EXPORT_MODULE()
   return [[RCTShadowView alloc] init];
 }
 
-- (NSDictionary *)customBubblingEventTypes
+- (NSArray *)customBubblingEventTypes
 {
-  return nil;
+  return @[
+
+    // Generic events
+    @"press",
+    @"change",
+    @"change",
+    @"focus",
+    @"blur",
+    @"submitEditing",
+    @"endEditing",
+
+    // Touch events
+    @"touchStart",
+    @"touchMove",
+    @"touchCancel",
+    @"touchEnd",
+  ];
 }
 
-- (NSDictionary *)customDirectEventTypes
+- (NSArray *)customDirectEventTypes
 {
-  return nil;
+  return @[
+    @"layout",
+    @"accessibilityTap",
+    @"magicTap",
+  ];
 }
 
 - (NSDictionary *)constantsToExport
@@ -172,11 +192,11 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
 }
 RCT_CUSTOM_VIEW_PROPERTY(onAccessibilityTap, BOOL, __unused RCTView)
 {
-  view.accessibilityTapHandler = [self eventHandlerWithName:@"topAccessibilityTap" json:json];
+  view.accessibilityTapHandler = [self eventHandlerWithName:@"accessibilityTap" json:json];
 }
 RCT_CUSTOM_VIEW_PROPERTY(onMagicTap, BOOL, __unused RCTView)
 {
-  view.magicTapHandler = [self eventHandlerWithName:@"topMagicTap" json:json];
+  view.magicTapHandler = [self eventHandlerWithName:@"magicTap" json:json];
 }
 
 - (RCTViewEventHandler)eventHandlerWithName:(NSString *)eventName json:(id)json

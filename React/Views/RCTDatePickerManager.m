@@ -53,7 +53,7 @@ RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
     @"target": sender.reactTag,
     @"timestamp": @([sender.date timeIntervalSince1970] * 1000.0)
   };
-  [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [self.bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 - (NSDictionary *)constantsToExport

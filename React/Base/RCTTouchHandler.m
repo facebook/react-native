@@ -13,6 +13,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
@@ -189,6 +190,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     [reactTouches addObject:[touch copy]];
   }
 
+  eventName = RCTNormalizeInputEventName(eventName);
   [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
                     args:@[eventName, reactTouches, changedIndexes]];
 }
@@ -244,7 +246,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
   if (_dispatchedInitialTouches) {
-    [self _updateAndDispatchTouches:touches eventName:@"topTouchStart" originatingTime:event.timestamp];
+    [self _updateAndDispatchTouches:touches eventName:@"touchStart" originatingTime:event.timestamp];
     self.state = UIGestureRecognizerStateChanged;
   } else {
     self.state = UIGestureRecognizerStateBegan;
@@ -256,7 +258,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   [super touchesMoved:touches withEvent:event];
 
   if (_dispatchedInitialTouches) {
-    [self _updateAndDispatchTouches:touches eventName:@"topTouchMove" originatingTime:event.timestamp];
+    [self _updateAndDispatchTouches:touches eventName:@"touchMove" originatingTime:event.timestamp];
     self.state = UIGestureRecognizerStateChanged;
   }
 }
@@ -266,7 +268,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   [super touchesEnded:touches withEvent:event];
 
   if (_dispatchedInitialTouches) {
-    [self _updateAndDispatchTouches:touches eventName:@"topTouchEnd" originatingTime:event.timestamp];
+    [self _updateAndDispatchTouches:touches eventName:@"touchEnd" originatingTime:event.timestamp];
 
     if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
       self.state = UIGestureRecognizerStateEnded;
@@ -282,7 +284,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   [super touchesCancelled:touches withEvent:event];
 
   if (_dispatchedInitialTouches) {
-    [self _updateAndDispatchTouches:touches eventName:@"topTouchCancel" originatingTime:event.timestamp];
+    [self _updateAndDispatchTouches:touches eventName:@"touchCancel" originatingTime:event.timestamp];
 
     if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
       self.state = UIGestureRecognizerStateCancelled;

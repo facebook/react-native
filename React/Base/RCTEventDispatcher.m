@@ -11,8 +11,20 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTUtils.h"
 
 const NSInteger RCTTextUpdateLagWarningThreshold = 3;
+
+NSString *RCTNormalizeInputEventName(NSString *eventName)
+{
+  if ([eventName hasPrefix:@"on"]) {
+    eventName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 2} withString:@"top"];
+  } else if (![eventName hasPrefix:@"top"]) {
+    eventName = [[@"top" stringByAppendingString:[eventName substringToIndex:1].uppercaseString]
+                 stringByAppendingString:[eventName substringFromIndex:1]];
+  }
+  return eventName;
+}
 
 static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
@@ -33,7 +45,9 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
                       eventName:(NSString *)eventName
                            body:(NSDictionary *)body
 {
-  RCTAssertParam(eventName);
+  if (RCT_DEBUG) {
+    RCTAssertParam(eventName);
+  }
 
   if ((self = [super init])) {
     _viewTag = viewTag;
@@ -105,9 +119,12 @@ RCT_EXPORT_MODULE()
 
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
 {
-  RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-    @"Event body dictionary must include a 'target' property containing a React tag");
+  if (RCT_DEBUG) {
+    RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
+      @"Event body dictionary must include a 'target' property containing a React tag");
+  }
 
+  name = RCTNormalizeInputEventName(name);
   [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
                     args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]];
 }
@@ -118,11 +135,11 @@ RCT_EXPORT_MODULE()
                    eventCount:(NSInteger)eventCount
 {
   static NSString *events[] = {
-    @"topFocus",
-    @"topBlur",
-    @"topChange",
-    @"topSubmitEditing",
-    @"topEndEditing",
+    @"focus",
+    @"blur",
+    @"change",
+    @"submitEditing",
+    @"endEditing",
   };
 
   [self sendInputEventWithName:events[type] body:text ? @{
@@ -165,7 +182,7 @@ RCT_EXPORT_MODULE()
     [arguments addObject:event.viewTag];
   }
 
-  [arguments addObject:event.eventName];
+  [arguments addObject:RCTNormalizeInputEventName(event.eventName)];
 
   if (event.body) {
     [arguments addObject:event.body];

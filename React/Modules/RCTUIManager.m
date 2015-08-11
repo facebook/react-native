@@ -502,7 +502,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
         if (event != (id)kCFNull) {
-          [self.bridge.eventDispatcher sendInputEventWithName:@"topLayout" body:event];
+          [self.bridge.eventDispatcher sendInputEventWithName:@"layout" body:event];
         }
         if (callback && completionsCalled == frames.count - 1) {
           callback(@[@(finished)]);
@@ -1116,181 +1116,56 @@ RCT_EXPORT_METHOD(clearJSResponder)
   }];
 }
 
-// TODO: these event types should be distributed among the modules
-// that declare them. Also, events should be registerable by any class
-// that can call event handlers, not just UIViewManagers. This code
-// also seems highly redundant - every event has the same properties.
-- (NSDictionary *)customBubblingEventTypes
+- (NSDictionary *)bubblingEventsConfig
 {
-  NSMutableDictionary *customBubblingEventTypesConfigs = [@{
-    // Bubble dispatched events
-    @"topTap": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onPress",
-        @"captured": @"onPressCapture"
-      }
-    },
-    @"topVisibleCellsChange": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onVisibleCellsChange",
-        @"captured": @"onVisibleCellsChangeCapture"
-      }
-    },
-    @"topNavigateBack": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onNavigationComplete",
-        @"captured": @"onNavigationCompleteCapture"
-      }
-    },
-    @"topNavLeftButtonTap": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onNavLeftButtonTap",
-        @"captured": @"onNavLefttButtonTapCapture"
-      }
-    },
-    @"topNavRightButtonTap": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onNavRightButtonTap",
-        @"captured": @"onNavRightButtonTapCapture"
-      }
-    },
-    @"topChange": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onChange",
-        @"captured": @"onChangeCapture"
-      }
-    },
-    @"topFocus": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onFocus",
-        @"captured": @"onFocusCapture"
-      }
-    },
-    @"topBlur": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onBlur",
-        @"captured": @"onBlurCapture"
-      }
-    },
-    @"topSubmitEditing": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onSubmitEditing",
-        @"captured": @"onSubmitEditingCapture"
-      }
-    },
-    @"topEndEditing": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onEndEditing",
-        @"captured": @"onEndEditingCapture"
-      }
-    },
-    @"topTextInput": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onTextInput",
-        @"captured": @"onTextInputCapture"
-      }
-    },
-    @"topTouchStart": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onTouchStart",
-        @"captured": @"onTouchStartCapture"
-      }
-    },
-    @"topTouchMove": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onTouchMove",
-        @"captured": @"onTouchMoveCapture"
-      }
-    },
-    @"topTouchCancel": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onTouchCancel",
-        @"captured": @"onTouchCancelCapture"
-      }
-    },
-    @"topTouchEnd": @{
-      @"phasedRegistrationNames": @{
-        @"bubbled": @"onTouchEnd",
-        @"captured": @"onTouchEndCapture"
-      }
-    },
-  } mutableCopy];
-
+  NSMutableDictionary *customBubblingEventTypesConfigs = [[NSMutableDictionary alloc] init];
   for (RCTComponentData *componentData in _componentDataByName.allValues) {
     RCTViewManager *manager = componentData.manager;
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customBubblingEventTypes))) {
-      NSDictionary *eventTypes = [manager customBubblingEventTypes];
-      for (NSString *eventName in eventTypes) {
-        RCTAssert(!customBubblingEventTypesConfigs[eventName],
-                  @"Event '%@' registered multiple times.", eventName);
+      NSArray *events = [manager customBubblingEventTypes];
+      if (RCT_DEBUG) {
+        RCTAssert(!events || [events isKindOfClass:[NSArray class]],
+                  @"customBubblingEventTypes must return an array, but %@ returned %@",
+                  [manager class], [events class]);
       }
-      [customBubblingEventTypesConfigs addEntriesFromDictionary:eventTypes];
+      for (NSString *eventName in events) {
+        NSString *topName = RCTNormalizeInputEventName(eventName);
+        if (!customBubblingEventTypesConfigs[topName]) {
+          NSString *bubbleName = [topName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+          customBubblingEventTypesConfigs[topName] = @{
+            @"phasedRegistrationNames": @{
+              @"bubbled": bubbleName,
+              @"captured": [bubbleName stringByAppendingString:@"Capture"],
+            }
+          };
+        }
+      }
     }
   };
 
   return customBubblingEventTypesConfigs;
 }
 
-- (NSDictionary *)customDirectEventTypes
+- (NSDictionary *)directEventsConfig
 {
-  NSMutableDictionary *customDirectEventTypes = [@{
-    @"topScrollBeginDrag": @{
-      @"registrationName": @"onScrollBeginDrag"
-    },
-    @"topScroll": @{
-      @"registrationName": @"onScroll"
-    },
-    @"topScrollEndDrag": @{
-      @"registrationName": @"onScrollEndDrag"
-    },
-    @"topScrollAnimationEnd": @{
-      @"registrationName": @"onScrollAnimationEnd"
-    },
-    @"topLayout": @{
-      @"registrationName": @"onLayout"
-    },
-    @"topSelectionChange": @{
-      @"registrationName": @"onSelectionChange"
-    },
-    @"topMomentumScrollBegin": @{
-      @"registrationName": @"onMomentumScrollBegin"
-    },
-    @"topMomentumScrollEnd": @{
-      @"registrationName": @"onMomentumScrollEnd"
-    },
-    @"topPullToRefresh": @{
-      @"registrationName": @"onPullToRefresh"
-    },
-    @"topLoadingStart": @{
-      @"registrationName": @"onLoadingStart"
-    },
-    @"topLoadingFinish": @{
-      @"registrationName": @"onLoadingFinish"
-    },
-    @"topLoadingError": @{
-      @"registrationName": @"onLoadingError"
-    },
-    @"topAccessibilityTap": @{
-      @"registrationName": @"onAccessibilityTap"
-    },
-    @"topMagicTap": @{
-      @"registrationName": @"onMagicTap"
-    },
-  } mutableCopy];
-
+  NSMutableDictionary *customDirectEventTypes = [[NSMutableDictionary alloc] init];
   for (RCTComponentData *componentData in _componentDataByName.allValues) {
     RCTViewManager *manager = componentData.manager;
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customDirectEventTypes))) {
-      NSDictionary *eventTypes = [manager customDirectEventTypes];
-      if (RCT_DEV) {
-        for (NSString *eventName in eventTypes) {
-          id eventType = customDirectEventTypes[eventName];
-          RCTAssert(!eventType || [eventType isEqual:eventTypes[eventName]],
-                    @"Event '%@' registered multiple times with different "
-                    "properties.", eventName);
+      NSArray *events = [manager customDirectEventTypes];
+      if (RCT_DEBUG) {
+        RCTAssert(!events || [events isKindOfClass:[NSArray class]],
+                  @"customDirectEventTypes must return an array, but %@ returned %@",
+                  [manager class], [events class]);
+      }
+      for (NSString *eventName in events) {
+        NSString *topName = RCTNormalizeInputEventName(eventName);
+        if (!customDirectEventTypes[topName]) {
+          customDirectEventTypes[topName] = @{
+            @"registrationName": [topName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
+          };
         }
       }
-      [customDirectEventTypes addEntriesFromDictionary:eventTypes];
     }
   };
 
@@ -1300,8 +1175,8 @@ RCT_EXPORT_METHOD(clearJSResponder)
 - (NSDictionary *)constantsToExport
 {
   NSMutableDictionary *allJSConstants = [@{
-    @"customBubblingEventTypes": [self customBubblingEventTypes],
-    @"customDirectEventTypes": [self customDirectEventTypes],
+    @"customBubblingEventTypes": [self bubblingEventsConfig],
+    @"customDirectEventTypes": [self directEventsConfig],
     @"Dimensions": @{
       @"window": @{
         @"width": @(RCTScreenSize().width),

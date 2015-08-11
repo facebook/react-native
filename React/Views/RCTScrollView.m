@@ -98,12 +98,12 @@ RCT_NOT_IMPLEMENTED(-init)
 - (NSString *)eventName
 {
   static NSString *events[] = {
-    @"topScrollBeginDrag",
-    @"topScroll",
-    @"topScrollEndDrag",
-    @"topMomentumScrollBegin",
-    @"topMomentumScrollEnd",
-    @"topScrollAnimationEnd",
+    @"scrollBeginDrag",
+    @"scroll",
+    @"scrollEndDrag",
+    @"momentumScrollBegin",
+    @"momentumScrollEnd",
+    @"scrollAnimationEnd",
   };
 
   return events[_type];
@@ -123,7 +123,7 @@ RCT_NOT_IMPLEMENTED(-init)
     userData[@"updatedChildFrames"] = updatedChildFrames;
     newEvent->_userData = userData;
   }
-  
+
   return newEvent;
 }
 

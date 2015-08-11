@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
 - (void)onChange:(RCTSwitch *)sender
 {
   if (sender.wasOn != sender.on) {
-    [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:@{
+    [self.bridge.eventDispatcher sendInputEventWithName:@"change" body:@{
        @"target": sender.reactTag,
        @"value": @(sender.on)
      }];

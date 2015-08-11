@@ -22,7 +22,7 @@
 #import "RCTUtils.h"
 
 #ifndef RCT_JSC_PROFILER
-#if RCT_DEV && DEBUG
+#if RCT_DEV && RCT_DEBUG
 #define RCT_JSC_PROFILER 1
 #else
 #define RCT_JSC_PROFILER 0

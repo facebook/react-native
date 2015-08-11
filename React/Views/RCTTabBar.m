@@ -154,7 +154,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
   RCTTabBarItem *tab = [self reactSubviews][index];
-  [_eventDispatcher sendInputEventWithName:@"topTap" body:@{@"target": tab.reactTag}];
+  [_eventDispatcher sendInputEventWithName:@"press" body:@{@"target": tab.reactTag}];
   return NO;
 }
 

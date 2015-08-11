@@ -308,7 +308,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_bridge.eventDispatcher sendInputEventWithName:@"topNavigationProgress" body:@{
+    [_bridge.eventDispatcher sendInputEventWithName:@"navigationProgress" body:@{
       @"fromIndex": @(_currentlyTransitioningFrom),
       @"toIndex": @(_currentlyTransitioningTo),
       @"progress": @(nextProgress),
@@ -416,7 +416,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)handleTopOfStackChanged
 {
-  [_bridge.eventDispatcher sendInputEventWithName:@"topNavigateBack" body:@{
+  [_bridge.eventDispatcher sendInputEventWithName:@"navigationComplete" body:@{
     @"target":self.reactTag,
     @"stackLength":@(_navigationController.viewControllers.count)
   }];

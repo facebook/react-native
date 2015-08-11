@@ -111,4 +111,16 @@ RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
   }];
 }
 
+- (NSArray *)customDirectEventTypes
+{
+  return @[
+    @"scrollBeginDrag",
+    @"scroll",
+    @"scrollEndDrag",
+    @"scrollAnimationEnd",
+    @"momentumScrollBegin",
+    @"momentumScrollEnd",
+  ];
+}
+
 @end

@@ -151,7 +151,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       @"url": [request.URL absoluteString],
       @"navigationType": @(navigationType)
     }];
-    [_eventDispatcher sendInputEventWithName:@"topLoadingStart" body:event];
+    [_eventDispatcher sendInputEventWithName:@"loadingStart" body:event];
   }
 
   // JS Navigation handler
@@ -174,7 +174,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     @"code": @(error.code),
     @"description": [error localizedDescription],
   }];
-  [_eventDispatcher sendInputEventWithName:@"topLoadingError" body:event];
+  [_eventDispatcher sendInputEventWithName:@"loadingError" body:event];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
@@ -185,7 +185,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
   if (!webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
-    [_eventDispatcher sendInputEventWithName:@"topLoadingFinish" body:[self baseEvent]];
+    [_eventDispatcher sendInputEventWithName:@"loadingFinish" body:[self baseEvent]];
   }
 }
 
