@@ -757,6 +757,20 @@ RCT_EXPORT_METHOD(manageChildren:(NSNumber *)containerReactTag
   }
 }
 
+- (void)endEditingForShadowView:(NSNumber *)reactTag
+{
+  UIView *view = self.viewRegistry[reactTag];
+  if (view) {
+    [view endEditing:YES];
+  } else {
+    RCTShadowView *shadowView = self.shadowViewRegistry[reactTag];
+    // Recurse through the shadow hierarchy when the shadow view has no backing UIView
+    for (RCTShadowView *subview in [shadowView reactSubviews]) {
+      [self endEditingForShadowView:subview.reactTag];
+    }
+  }
+}
+
 static BOOL RCTCallPropertySetter(NSString *key, SEL setter, id value, id view, id defaultView, RCTViewManager *manager)
 {
   // TODO: cache respondsToSelector tests
@@ -911,6 +925,14 @@ RCT_EXPORT_METHOD(blur:(NSNumber *)reactTag)
   [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     UIView *currentResponder = viewRegistry[reactTag];
     [currentResponder resignFirstResponder];
+  }];
+}
+
+RCT_EXPORT_METHOD(blurView:(NSNumber *)reactTag)
+{
+  if (!reactTag) return;
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
+    [uiManager endEditingForShadowView:reactTag];
   }];
 }
 
