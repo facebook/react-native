@@ -103,7 +103,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 
   if (imageRef) {
     UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale
-                                   orientation:(UIImageOrientation)representation.orientation];
+                                   orientation:UIImageOrientationUp];
     CGImageRelease(imageRef);
     return image;
   }
