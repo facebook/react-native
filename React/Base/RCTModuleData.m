@@ -88,7 +88,7 @@ RCT_NOT_IMPLEMENTED(-init);
   [self.methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger idx, __unused BOOL *stop) {
     methodconfig[method.JSMethodName] = @{
       @"methodID": @(idx),
-      @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
+      @"type": method.functionType == RCTFunctionTypePromise ? @"remoteAsync" : @"remote",
     };
   }];
   config[@"methods"] = [methodconfig copy];

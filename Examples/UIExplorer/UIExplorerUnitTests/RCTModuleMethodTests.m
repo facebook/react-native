@@ -63,9 +63,11 @@ static BOOL RCTLogsError(void (^block)(void))
     // Specifying an NSNumber param without nonnull isn't allowed
     XCTAssertTrue(RCTLogsError(^{
       NSString *methodName = @"doFooWithNumber:(NSNumber *)n";
-      (void)[[RCTModuleMethod alloc] initWithObjCMethodName:methodName
-                                               JSMethodName:nil
-                                                moduleClass:[self class]];
+      RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                                   JSMethodName:nil
+                                                                    moduleClass:[self class]];
+      // Invoke method to trigger parsing
+      [method invokeWithBridge:nil module:self arguments:@[@1]];
     }));
   }
 

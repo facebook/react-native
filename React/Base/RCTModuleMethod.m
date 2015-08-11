@@ -46,9 +46,10 @@ typedef void (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 @implementation RCTModuleMethod
 {
   Class _moduleClass;
-  SEL _selector;
   NSInvocation *_invocation;
   NSArray *_argumentBlocks;
+  NSString *_objCMethodName;
+  SEL _selector;
 }
 
 static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
@@ -117,13 +118,8 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 {
   if ((self = [super init])) {
 
-    NSArray *arguments;
-    RCTParseObjCMethodName(&objCMethodName, &arguments);
-
     _moduleClass = moduleClass;
-    _selector = NSSelectorFromString(objCMethodName);
-    RCTAssert(_selector, @"%@ is not a valid selector", objCMethodName);
-
+    _objCMethodName = [objCMethodName copy];
     _JSMethodName = JSMethodName.length > 0 ? JSMethodName : ({
       NSString *methodName = objCMethodName;
       NSRange colonRange = [methodName rangeOfString:@":"];
@@ -135,26 +131,139 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       methodName;
     });
 
-    // Create method invocation
-    NSMethodSignature *methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
-    RCTAssert(methodSignature, @"%@ is not a recognized Objective-C method.", objCMethodName);
-    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-    [invocation setSelector:_selector];
-    [invocation retainArguments];
-    _invocation = invocation;
+    if ([_objCMethodName rangeOfString:@"RCTPromise"].length) {
+      _functionType = RCTFunctionTypePromise;
+    } else {
+      _functionType = RCTFunctionTypeNormal;
+    }
+  }
 
-    // Process arguments
-    NSUInteger numberOfArguments = methodSignature.numberOfArguments;
-    NSMutableArray *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
+  return self;
+}
+
+- (void)processMethodSignature
+{
+  NSArray *arguments;
+  NSString *objCMethodName = _objCMethodName;
+  RCTParseObjCMethodName(&objCMethodName, &arguments);
+
+  _selector = NSSelectorFromString(objCMethodName);
+  RCTAssert(_selector, @"%@ is not a valid selector", objCMethodName);
+
+  // Create method invocation
+  NSMethodSignature *methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
+  RCTAssert(methodSignature, @"%@ is not a recognized Objective-C method.", objCMethodName);
+  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+  [invocation setSelector:_selector];
+  [invocation retainArguments];
+  _invocation = invocation;
+
+  // Process arguments
+  NSUInteger numberOfArguments = methodSignature.numberOfArguments;
+  NSMutableArray *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
 
 #define RCT_ARG_BLOCK(_logic) \
-  [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
-    _logic \
-    [invocation setArgument:&value atIndex:(index) + 2]; \
-  }];
+[argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
+  _logic \
+  [invocation setArgument:&value atIndex:(index) + 2]; \
+}];
 
-    __weak RCTModuleMethod *weakSelf = self;
-    void (^addBlockArgument)(void) = ^{
+  __weak RCTModuleMethod *weakSelf = self;
+  void (^addBlockArgument)(void) = ^{
+    RCT_ARG_BLOCK(
+
+      if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
+        RCTLogArgumentError(weakSelf, index, json, "should be a function");
+        return;
+      }
+
+      // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+      __autoreleasing id value = (json ? ^(NSArray *args) {
+        [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                 method:@"invokeCallbackAndReturnFlushedQueue"
+                              arguments:@[json, args]];
+      } : ^(__unused NSArray *unused) {});
+    )
+  };
+
+  for (NSUInteger i = 2; i < numberOfArguments; i++) {
+    const char *objcType = [methodSignature getArgumentTypeAtIndex:i];
+    BOOL isNullableType = NO;
+    RCTMethodArgument *argument = arguments[i - 2];
+    NSString *typeName = argument.type;
+    SEL selector = NSSelectorFromString([typeName stringByAppendingString:@":"]);
+    if ([RCTConvert respondsToSelector:selector]) {
+      switch (objcType[0]) {
+
+#define RCT_CASE(_value, _type) \
+        case _value: { \
+          _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
+          RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
+          break; \
+        }
+
+        RCT_CASE(_C_CHR, char)
+        RCT_CASE(_C_UCHR, unsigned char)
+        RCT_CASE(_C_SHT, short)
+        RCT_CASE(_C_USHT, unsigned short)
+        RCT_CASE(_C_INT, int)
+        RCT_CASE(_C_UINT, unsigned int)
+        RCT_CASE(_C_LNG, long)
+        RCT_CASE(_C_ULNG, unsigned long)
+        RCT_CASE(_C_LNG_LNG, long long)
+        RCT_CASE(_C_ULNG_LNG, unsigned long long)
+        RCT_CASE(_C_FLT, float)
+        RCT_CASE(_C_DBL, double)
+        RCT_CASE(_C_BOOL, BOOL)
+
+#define RCT_NULLABLE_CASE(_value, _type) \
+        case _value: { \
+          isNullableType = YES; \
+          _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
+          RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
+          break; \
+        }
+
+        RCT_NULLABLE_CASE(_C_SEL, SEL)
+        RCT_NULLABLE_CASE(_C_CHARPTR, const char *)
+        RCT_NULLABLE_CASE(_C_PTR, void *)
+        RCT_NULLABLE_CASE(_C_ID, id)
+
+        case _C_STRUCT_B: {
+
+          NSMethodSignature *typeSignature = [RCTConvert methodSignatureForSelector:selector];
+          NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
+          [typeInvocation setSelector:selector];
+          [typeInvocation setTarget:[RCTConvert class]];
+
+          [argumentBlocks addObject:
+           ^(__unused RCTBridge *bridge, NSUInteger index, id json) {
+
+            void *returnValue = malloc(typeSignature.methodReturnLength);
+            [typeInvocation setArgument:&json atIndex:2];
+            [typeInvocation invoke];
+            [typeInvocation getReturnValue:returnValue];
+
+            [invocation setArgument:returnValue atIndex:index + 2];
+
+            free(returnValue);
+          }];
+          break;
+        }
+
+        default: {
+          static const char *blockType = @encode(typeof(^{}));
+          if (!strcmp(objcType, blockType)) {
+            addBlockArgument();
+          } else {
+            RCTLogError(@"Unsupported argument type '%@' in method %@.",
+                        typeName, [self methodName]);
+          }
+        }
+      }
+    } else if ([typeName isEqualToString:@"RCTResponseSenderBlock"]) {
+      addBlockArgument();
+    } else if ([typeName isEqualToString:@"RCTResponseErrorBlock"]) {
       RCT_ARG_BLOCK(
 
         if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
@@ -163,202 +272,115 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
         }
 
         // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-        __autoreleasing id value = (json ? ^(NSArray *args) {
+        __autoreleasing id value = (json ? ^(NSError *error) {
           [bridge _invokeAndProcessModule:@"BatchedBridge"
                                    method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, args]];
-        } : ^(__unused NSArray *unused) {});
+                                arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
+        } : ^(__unused NSError *error) {});
       )
-    };
-
-    for (NSUInteger i = 2; i < numberOfArguments; i++) {
-      const char *objcType = [methodSignature getArgumentTypeAtIndex:i];
-      BOOL isNullableType = NO;
-      RCTMethodArgument *argument = arguments[i - 2];
-      NSString *typeName = argument.type;
-      SEL selector = NSSelectorFromString([typeName stringByAppendingString:@":"]);
-      if ([RCTConvert respondsToSelector:selector]) {
-        switch (objcType[0]) {
-
-#define RCT_CASE(_value, _type) \
-          case _value: { \
-            _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
-            RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
-            break; \
-          }
-
-          RCT_CASE(_C_CHR, char)
-          RCT_CASE(_C_UCHR, unsigned char)
-          RCT_CASE(_C_SHT, short)
-          RCT_CASE(_C_USHT, unsigned short)
-          RCT_CASE(_C_INT, int)
-          RCT_CASE(_C_UINT, unsigned int)
-          RCT_CASE(_C_LNG, long)
-          RCT_CASE(_C_ULNG, unsigned long)
-          RCT_CASE(_C_LNG_LNG, long long)
-          RCT_CASE(_C_ULNG_LNG, unsigned long long)
-          RCT_CASE(_C_FLT, float)
-          RCT_CASE(_C_DBL, double)
-          RCT_CASE(_C_BOOL, BOOL)
-
-#define RCT_NULLABLE_CASE(_value, _type) \
-          case _value: { \
-            isNullableType = YES; \
-            _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
-            RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
-            break; \
-          }
-
-          RCT_NULLABLE_CASE(_C_SEL, SEL)
-          RCT_NULLABLE_CASE(_C_CHARPTR, const char *)
-          RCT_NULLABLE_CASE(_C_PTR, void *)
-          RCT_NULLABLE_CASE(_C_ID, id)
-
-          case _C_STRUCT_B: {
-
-            NSMethodSignature *typeSignature = [RCTConvert methodSignatureForSelector:selector];
-            NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
-            [typeInvocation setSelector:selector];
-            [typeInvocation setTarget:[RCTConvert class]];
-
-            [argumentBlocks addObject:
-             ^(__unused RCTBridge *bridge, NSUInteger index, id json) {
-
-              void *returnValue = malloc(typeSignature.methodReturnLength);
-              [typeInvocation setArgument:&json atIndex:2];
-              [typeInvocation invoke];
-              [typeInvocation getReturnValue:returnValue];
-
-              [invocation setArgument:returnValue atIndex:index + 2];
-
-              free(returnValue);
-            }];
-            break;
-          }
-
-          default: {
-            static const char *blockType = @encode(typeof(^{}));
-            if (!strcmp(objcType, blockType)) {
-              addBlockArgument();
-            } else {
-              RCTLogError(@"Unsupported argument type '%@' in method %@.",
-                          typeName, [self methodName]);
-            }
-          }
-        }
-      } else if ([typeName isEqualToString:@"RCTResponseSenderBlock"]) {
-        addBlockArgument();
-      } else if ([typeName isEqualToString:@"RCTResponseErrorBlock"]) {
-        RCT_ARG_BLOCK(
-
-          if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
-            RCTLogArgumentError(weakSelf, index, json, "should be a function");
-            return;
-          }
-
-          // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-          __autoreleasing id value = (json ? ^(NSError *error) {
-            [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                     method:@"invokeCallbackAndReturnFlushedQueue"
-                                  arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
-          } : ^(__unused NSError *error) {});
-        )
-      } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
-        RCTAssert(i == numberOfArguments - 2,
-                  @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
-                  _moduleClass, objCMethodName);
-        RCT_ARG_BLOCK(
-          if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
-            RCTLogArgumentError(weakSelf, index, json, "should be a promise resolver function");
-            return;
-          }
-
-          // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-          __autoreleasing RCTPromiseResolveBlock value = (^(id result) {
-            [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                     method:@"invokeCallbackAndReturnFlushedQueue"
-                                  arguments:@[json, result ? @[result] : @[]]];
-          });
-        )
-        _functionKind = RCTJavaScriptFunctionKindAsync;
-      } else if ([typeName isEqualToString:@"RCTPromiseRejectBlock"]) {
-        RCTAssert(i == numberOfArguments - 1,
-                  @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
-                  _moduleClass, objCMethodName);
-        RCT_ARG_BLOCK(
-          if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
-            RCTLogArgumentError(weakSelf, index, json, "should be a promise rejecter function");
-            return;
-          }
-
-          // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-          __autoreleasing RCTPromiseRejectBlock value = (^(NSError *error) {
-            NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
-            [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                     method:@"invokeCallbackAndReturnFlushedQueue"
-                                  arguments:@[json, @[errorJSON]]];
-          });
-        )
-        _functionKind = RCTJavaScriptFunctionKindAsync;
-      } else {
-
-        // Unknown argument type
-        RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
-                    " to support this type.", typeName, [self methodName]);
-      }
-
-      if (RCT_DEBUG) {
-
-        RCTNullability nullability = argument.nullability;
-        if (!isNullableType) {
-          if (nullability == RCTNullable) {
-            RCTLogArgumentError(weakSelf, i - 2, typeName, "is marked as "
-                                "nullable, but is not a nullable type.");
-          }
-          nullability = RCTNonnullable;
+    } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
+      RCTAssert(i == numberOfArguments - 2,
+                @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
+                _moduleClass, objCMethodName);
+      RCT_ARG_BLOCK(
+        if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+          RCTLogArgumentError(weakSelf, index, json, "should be a promise resolver function");
+          return;
         }
 
-        /**
-         * Special case - Numbers are not nullable in Android, so we
-         * don't support this for now. In future we may allow it.
-         */
-        if ([typeName isEqualToString:@"NSNumber"]) {
-          BOOL unspecified = (nullability == RCTNullabilityUnspecified);
-          if (!argument.unused && (nullability == RCTNullable || unspecified)) {
-            RCTLogArgumentError(weakSelf, i - 2, typeName,
-              [unspecified ? @"has unspecified nullability" : @"is marked as nullable"
-               stringByAppendingString: @" but React requires that all NSNumber "
-               "arguments are explicitly marked as `nonnull` to ensure "
-               "compatibility with Android."].UTF8String);
-          }
-          nullability = RCTNonnullable;
+        // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+        __autoreleasing RCTPromiseResolveBlock value = (^(id result) {
+          [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                   method:@"invokeCallbackAndReturnFlushedQueue"
+                                arguments:@[json, result ? @[result] : @[]]];
+        });
+      )
+    } else if ([typeName isEqualToString:@"RCTPromiseRejectBlock"]) {
+      RCTAssert(i == numberOfArguments - 1,
+                @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
+                _moduleClass, objCMethodName);
+      RCT_ARG_BLOCK(
+        if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+          RCTLogArgumentError(weakSelf, index, json, "should be a promise rejecter function");
+          return;
         }
 
-        if (nullability == RCTNonnullable) {
-          RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
-          argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSUInteger index, id json) {
-            if (json == nil || json == (id)kCFNull) {
-              RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
-              id null = nil;
-              [invocation setArgument:&null atIndex:index + 2];
-            } else {
-              oldBlock(bridge, index, json);
-            }
-          };
-        }
-      }
+        // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+        __autoreleasing RCTPromiseRejectBlock value = (^(NSError *error) {
+          NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
+          [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                   method:@"invokeCallbackAndReturnFlushedQueue"
+                                arguments:@[json, @[errorJSON]]];
+        });
+      )
+    } else {
+
+      // Unknown argument type
+      RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
+                  " to support this type.", typeName, [self methodName]);
     }
 
-    _argumentBlocks = [argumentBlocks copy];
+    if (RCT_DEBUG) {
+
+      RCTNullability nullability = argument.nullability;
+      if (!isNullableType) {
+        if (nullability == RCTNullable) {
+          RCTLogArgumentError(weakSelf, i - 2, typeName, "is marked as "
+                              "nullable, but is not a nullable type.");
+        }
+        nullability = RCTNonnullable;
+      }
+
+      /**
+       * Special case - Numbers are not nullable in Android, so we
+       * don't support this for now. In future we may allow it.
+       */
+      if ([typeName isEqualToString:@"NSNumber"]) {
+        BOOL unspecified = (nullability == RCTNullabilityUnspecified);
+        if (!argument.unused && (nullability == RCTNullable || unspecified)) {
+          RCTLogArgumentError(weakSelf, i - 2, typeName,
+            [unspecified ? @"has unspecified nullability" : @"is marked as nullable"
+             stringByAppendingString: @" but React requires that all NSNumber "
+             "arguments are explicitly marked as `nonnull` to ensure "
+             "compatibility with Android."].UTF8String);
+        }
+        nullability = RCTNonnullable;
+      }
+
+      if (nullability == RCTNonnullable) {
+        RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
+        argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSUInteger index, id json) {
+          if (json == nil || json == (id)kCFNull) {
+            RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
+            id null = nil;
+            [invocation setArgument:&null atIndex:index + 2];
+          } else {
+            oldBlock(bridge, index, json);
+          }
+        };
+      }
+    }
   }
 
-  return self;
+  _argumentBlocks = [argumentBlocks copy];
+}
+
+- (SEL)selector
+{
+  if (_selector == NULL) {
+    [self processMethodSignature];
+  }
+  return _selector;
 }
 
 - (void)invokeWithBridge:(RCTBridge *)bridge
                   module:(id)module
                arguments:(NSArray *)arguments
 {
+  if (_argumentBlocks == nil) {
+    [self processMethodSignature];
+  }
+
   if (RCT_DEBUG) {
 
     // Sanity check
@@ -371,7 +393,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       NSInteger expectedCount = _argumentBlocks.count;
 
       // Subtract the implicit Promise resolver and rejecter functions for implementations of async functions
-      if (_functionKind == RCTJavaScriptFunctionKindAsync) {
+      if (_functionType == RCTFunctionTypePromise) {
         actualCount -= 2;
         expectedCount -= 2;
       }
@@ -398,6 +420,9 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
 - (NSString *)methodName
 {
+  if (_selector == NULL) {
+    [self processMethodSignature];
+  }
   return [NSString stringWithFormat:@"-[%@ %@]", _moduleClass,
           NSStringFromSelector(_selector)];
 }
