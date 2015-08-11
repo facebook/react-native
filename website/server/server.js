@@ -10,12 +10,12 @@
 "use strict";
 var connect = require('connect');
 var http = require('http');
-var optimist = require('optimist');
 var path = require('path');
 var reactMiddleware = require('react-page-middleware');
 var convert = require('./convert.js');
 
-var argv = optimist.argv;
+var yargs = require('yargs');
+var argv = yargs.argv;
 
 var PROJECT_ROOT = path.resolve(__dirname, '..');
 var FILE_SERVE_ROOT = path.join(PROJECT_ROOT, 'src');

@@ -10,10 +10,12 @@
 var fs = require('fs')
 var glob = require('glob');
 var mkdirp = require('mkdirp');
-var optimist = require('optimist');
+var yargs = require('yargs');
 var path = require('path');
 var extractDocs = require('./extractDocs');
-var argv = optimist.argv;
+
+var yargs = require('yargs');
+var argv = yargs.argv;
 
 function splitHeader(content) {
   var lines = content.split('\n');
