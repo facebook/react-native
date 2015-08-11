@@ -27,43 +27,17 @@
   if ((self = [super initWithFrame:CGRectZero])) {
     RCTAssert(eventDispatcher, @"eventDispatcher is a required parameter");
     _eventDispatcher = eventDispatcher;
-    [self addTarget:self action:@selector(_textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
-    [self addTarget:self action:@selector(_textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
-    [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
-    [self addTarget:self action:@selector(_textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
+    [self addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+    [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
+    [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
+    [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     _reactSubviews = [[NSMutableArray alloc] init];
-    self.delegate = self;
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
-
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-  if (_maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
-    return YES;
-  }
-  NSUInteger allowedLength = _maxLength.integerValue - textField.text.length + range.length;
-  if (string.length > allowedLength) {
-    if (string.length > 1) {
-      // Truncate the input string so the result is exactly maxLength
-      NSString *limitedString = [string substringToIndex:allowedLength];
-      NSMutableString *newString = textField.text.mutableCopy;
-      [newString replaceCharactersInRange:range withString:limitedString];
-      textField.text = newString;
-      // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
-                                                          offset:(range.location + allowedLength)];
-      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
-      [self _textFieldDidChange];
-    }
-    return NO;
-  } else {
-    return YES;
-  }
-}
 
 - (void)setText:(NSString *)text
 {
@@ -73,7 +47,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     [super setText:text];
     self.selectedTextRange = selection; // maintain cursor position/selection - this is robust to out of bounds
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %ld events ahead of JS - try to make your JS faster.", self.text, (long)eventLag);
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }
 }
 
@@ -154,7 +128,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   return self.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
-- (void)_textFieldDidChange
+- (void)textFieldDidChange
 {
   _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
@@ -163,14 +137,14 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                eventCount:_nativeEventCount];
 }
 
-- (void)_textFieldEndEditing
+- (void)textFieldEndEditing
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
                                      text:self.text
                                eventCount:_nativeEventCount];
 }
-- (void)_textFieldSubmitEditing
+- (void)textFieldSubmitEditing
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                  reactTag:self.reactTag
@@ -178,7 +152,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                eventCount:_nativeEventCount];
 }
 
-- (void)_textFieldBeginEditing
+- (void)textFieldBeginEditing
 {
   if (_selectTextOnFocus) {
     dispatch_async(dispatch_get_main_queue(), ^{

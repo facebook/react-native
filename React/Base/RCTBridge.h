@@ -9,6 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTBridgeDelegate.h"
 #import "RCTBridgeModule.h"
 #import "RCTDefines.h"
 #import "RCTFrameUpdate.h"
@@ -22,6 +23,11 @@
  * This notification triggers a reload of all bridges currently running.
  */
 RCT_EXTERN NSString *const RCTReloadNotification;
+
+/**
+ * This notification fires when the bridge starts loading.
+ */
+RCT_EXTERN NSString *const RCTJavaScriptWillStartLoadingNotification;
 
 /**
  * This notification fires when the bridge has finished loading.
@@ -49,13 +55,6 @@ RCT_EXTERN NSString *const RCTDidCreateNativeModules;
 typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
 
 /**
- * Register the given class as a bridge module. All modules must be registered
- * prior to the first bridge initialization.
- *
- */
-RCT_EXTERN void RCTRegisterModule(Class);
-
-/**
  * This function returns the module name for a given class.
  */
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
@@ -66,6 +65,20 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @interface RCTBridge : NSObject <RCTInvalidating>
 
 /**
+ * Creates a new bridge with a custom RCTBridgeDelegate.
+ *
+ * All the interaction with the JavaScript context should be done using the bridge
+ * instance of the RCTBridgeModules. Modules will be automatically instantiated
+ * using the default contructor, but you can optionally pass in an array of
+ * pre-initialized module instances if they require additional init parameters
+ * or configuration.
+ */
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                   launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+
+/**
+ * DEPRECATED: Use initWithDelegate:launchOptions: instead
+ *
  * The designated initializer. This creates a new bridge on top of the specified
  * executor. The bridge should then be used for all subsequent communication
  * with the JavaScript code running in the executor. Modules will be automatically
@@ -93,9 +106,18 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 /**
  * URL of the script that was loaded into the bridge.
  */
-@property (nonatomic, copy) NSURL *bundleURL;
+@property (nonatomic, strong) NSURL *bundleURL;
 
+/**
+ * The class of the executor currently being used *or* to be used after the next
+ * reload.
+ */
 @property (nonatomic, strong) Class executorClass;
+
+/**
+ * The delegate provided during the bridge initialization
+ */
+@property (nonatomic, weak, readonly) id<RCTBridgeDelegate> delegate;
 
 /**
  * The event dispatcher is a wrapper around -enqueueJSCall:args: that provides a

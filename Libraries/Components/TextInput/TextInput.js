@@ -47,6 +47,7 @@ var AndroidTextInputAttributes = {
   textAlign: true,
   textAlignVertical: true,
   keyboardType: true,
+  mostRecentEventCount: true,
   multiline: true,
   password: true,
   placeholder: true,
@@ -54,6 +55,7 @@ var AndroidTextInputAttributes = {
   text: true,
   testID: true,
   underlineColorAndroid: true,
+  editable : true,
 };
 
 var viewConfigAndroid = {
@@ -142,7 +144,6 @@ var TextInput = React.createClass({
     ]),
     /**
      * If false, text is not editable. The default value is true.
-     * @platform ios
      */
     editable: PropTypes.bool,
     /**
@@ -481,6 +482,7 @@ var TextInput = React.createClass({
         textAlign={textAlign}
         textAlignVertical={textAlignVertical}
         keyboardType={this.props.keyboardType}
+        mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
@@ -495,6 +497,7 @@ var TextInput = React.createClass({
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
+        editable={this.props.editable}
       />;
 
     return (
@@ -519,6 +522,12 @@ var TextInput = React.createClass({
   },
 
   _onChange: function(event: Event) {
+    if (Platform.OS === 'android') {
+      // Android expects the event count to be updated as soon as possible.
+      this.refs.input.setNativeProps({
+        mostRecentEventCount: event.nativeEvent.eventCount,
+      });
+    }
     var text = event.nativeEvent.text;
     var eventCount = event.nativeEvent.eventCount;
     this.props.onChange && this.props.onChange(event);

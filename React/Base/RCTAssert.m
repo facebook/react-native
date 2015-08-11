@@ -11,6 +11,8 @@
 
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
 
+static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
+
 RCTAssertFunction RCTCurrentAssertFunction = nil;
 
 NSException *_RCTNotImplementedException(SEL, Class);
@@ -20,26 +22,6 @@ NSException *_RCTNotImplementedException(SEL cmd, Class cls)
                    "for the class %@", sel_getName(cmd), cls];
   return [NSException exceptionWithName:@"RCTNotDesignatedInitializerException"
                                  reason:msg userInfo:nil];
-}
-
-void _RCTAssertFormat(
-  BOOL condition,
-  const char *fileName,
-  int lineNumber,
-  const char *function,
-  NSString *format, ...)
-{
-  if (RCTCurrentAssertFunction) {
-
-    va_list args;
-    va_start(args, format);
-    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-    va_end(args);
-
-    RCTCurrentAssertFunction(
-      condition, @(fileName), @(lineNumber), @(function), message
-    );
-  }
 }
 
 void RCTSetAssertFunction(RCTAssertFunction assertFunction)
@@ -56,7 +38,7 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
 {
   RCTAssertFunction existing = RCTCurrentAssertFunction;
   if (existing) {
-    RCTCurrentAssertFunction = ^(BOOL condition,
+    RCTCurrentAssertFunction = ^(NSString *condition,
                                  NSString *fileName,
                                  NSNumber *lineNumber,
                                  NSString *function,
@@ -68,6 +50,34 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
   } else {
     RCTCurrentAssertFunction = assertFunction;
   }
+}
+
+/**
+ * returns the topmost stacked assert function for the current thread, which
+ * may not be the same as the current value of RCTCurrentAssertFunction.
+ */
+static RCTAssertFunction RCTGetLocalAssertFunction()
+{
+  NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+  NSArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  RCTAssertFunction assertFunction = [functionStack lastObject];
+  if (assertFunction) {
+    return assertFunction;
+  }
+  return RCTCurrentAssertFunction;
+}
+
+void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction assertFunction)
+{
+  NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+  NSMutableArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  if (!functionStack) {
+    functionStack = [[NSMutableArray alloc] init];
+    threadDictionary[RCTAssertFunctionStack] = functionStack;
+  }
+  [functionStack addObject:assertFunction];
+  block();
+  [functionStack removeLastObject];
 }
 
 NSString *RCTCurrentThreadName(void)
@@ -83,4 +93,23 @@ NSString *RCTCurrentThreadName(void)
     }
   }
   return threadName;
+}
+
+void _RCTAssertFormat(
+  const char *condition,
+  const char *fileName,
+  int lineNumber,
+  const char *function,
+  NSString *format, ...)
+{
+  RCTAssertFunction assertFunction = RCTGetLocalAssertFunction();
+  if (assertFunction) {
+
+    va_list args;
+    va_start(args, format);
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+
+    assertFunction(@(condition), @(fileName), @(lineNumber), @(function), message);
+  }
 }

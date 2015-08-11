@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTJavaScriptExecutor.h"
+#import "RCTBridgeDelegate.h"
 
 @class RCTBridge;
 
@@ -20,8 +20,6 @@
  */
 @interface RCTJavaScriptLoader : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-
-- (void)loadBundleAtURL:(NSURL *)moduleURL onComplete:(void (^)(NSError *, NSString *))onComplete;
++ (void)loadBundleAtURL:(NSURL *)moduleURL onComplete:(RCTSourceLoadBlock)onComplete;
 
 @end

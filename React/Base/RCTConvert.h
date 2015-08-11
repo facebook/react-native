@@ -91,7 +91,8 @@ typedef NSURL RCTFileURL;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style;
+              size:(id)size weight:(id)weight style:(id)style
+   scaleMultiplier:(CGFloat)scaleMultiplier;
 
 typedef NSArray NSStringArray;
 + (NSStringArray *)NSStringArray:(id)json;
@@ -136,27 +137,19 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 @end
 
 /**
- * This function will attempt to set a property using a json value by first
- * inferring the correct type from all available information, and then
- * applying an appropriate conversion method. If the property does not
- * exist, or the type cannot be inferred, the function will return NO.
- */
-RCT_EXTERN BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
-
-/**
- * This function attempts to copy a property from the source object to the
- * destination object using KVC. If the property does not exist, or cannot
- * be set, it will do nothing and return NO.
- */
-RCT_EXTERN BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
-
-/**
  * Underlying implementations of RCT_XXX_CONVERTER macros. Ignore these.
  */
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
-RCT_EXTERN void RCTLogConvertError(id, const char *);
+
+/**
+ * This macro is used for logging conversion errors. This is just used to
+ * avoid repeating the same boilerplate for every error message.
+ */
+#define RCTLogConvertError(json, typeName) \
+RCTLogError(@"JSON value '%@' of type %@ cannot be converted to %@", \
+json, [json classForCoder], typeName)
 
 /**
  * This macro is used for creating simple converter functions that just call
@@ -179,7 +172,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
       return code;                             \
     }                                          \
     @catch (__unused NSException *e) {         \
-      RCTLogConvertError(json, #type);         \
+      RCTLogConvertError(json, @#type);        \
       json = nil;                              \
       return code;                             \
     }                                          \

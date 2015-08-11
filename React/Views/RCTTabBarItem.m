@@ -82,9 +82,9 @@
   _barItem.badgeValue = oldItem.badgeValue;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
-  return self.superview.backingViewController;
+  return self.superview.reactViewController;
 }
 
 @end

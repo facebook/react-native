@@ -206,6 +206,7 @@ var TouchableHighlight = React.createClass({
   render: function() {
     return (
       <View
+        accessible={true}
         ref={UNDERLAY_REF}
         style={this.state.underlayStyle}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
@@ -218,7 +219,6 @@ var TouchableHighlight = React.createClass({
           onlyChild(this.props.children),
           {
             ref: CHILD_REF,
-            accessible: true,
             testID: this.props.testID,
           }
         )}

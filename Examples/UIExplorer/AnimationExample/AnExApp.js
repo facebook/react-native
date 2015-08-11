@@ -38,9 +38,11 @@ class Circle extends React.Component {
     super();
     this._onLongPress = this._onLongPress.bind(this);
     this._toggleIsActive = this._toggleIsActive.bind(this);
-    this.state = {isActive: false};
-    this.state.pan = new Animated.ValueXY(); // Vectors reduce boilerplate.  (step1: uncomment)
-    this.state.pop = new Animated.Value(0);  // Initial value.               (step2a: uncomment)
+    this.state = {
+      isActive: false,
+      pan: new Animated.ValueXY(), // Vectors reduce boilerplate.  (step1: uncomment)
+      pop: new Animated.Value(0),  // Initial value.               (step2a: uncomment)
+    };
   }
 
   _onLongPress(): void {

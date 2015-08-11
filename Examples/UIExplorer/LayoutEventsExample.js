@@ -49,8 +49,7 @@ var LayoutEventExample = React.createClass({
       () => {
         console.log('layout animation done.');
         this.addWrapText();
-      },
-      (error) => { throw new Error(JSON.stringify(error)); }
+      }
     );
     this.setState({
       viewStyle: {

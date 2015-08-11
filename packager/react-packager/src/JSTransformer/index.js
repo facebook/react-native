@@ -10,7 +10,6 @@
 
 var fs = require('fs');
 var Promise = require('promise');
-var Cache = require('./Cache');
 var workerFarm = require('worker-farm');
 var declareOpts = require('../lib/declareOpts');
 var util = require('util');
@@ -33,35 +32,20 @@ var validateOpts = declareOpts({
     type: 'array',
     default: [],
   },
-  cacheVersion: {
-    type: 'string',
-    default: '1.0',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
   transformModulePath: {
     type:'string',
     required: false,
   },
-  nonPersistent: {
-    type: 'boolean',
-    default: false,
+  cache: {
+    type: 'object',
+    required: true,
   },
 });
 
 function Transformer(options) {
   var opts = validateOpts(options);
 
-  this._cache = opts.nonPersistent
-    ? new DummyCache()
-    : new Cache({
-      resetCache: options.resetCache,
-      cacheVersion: options.cacheVersion,
-      projectRoots: options.projectRoots,
-      transformModulePath: options.transformModulePath,
-    });
+  this._cache = opts.cache;
 
   if (options.transformModulePath != null) {
     this._workers = workerFarm(
@@ -75,7 +59,6 @@ function Transformer(options) {
 
 Transformer.prototype.kill = function() {
   this._workers && workerFarm.end(this._workers);
-  return this._cache.end();
 };
 
 Transformer.prototype.invalidateFile = function(filePath) {
@@ -88,7 +71,8 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
   }
 
   var transform = this._transform;
-  return this._cache.get(filePath, function() {
+  return this._cache.get(filePath, 'transformedSource', function() {
+    // TODO: use fastfs to avoid reading file from disk again
     return readFile(filePath)
       .then(function(buffer) {
         var sourceCode = buffer.toString();
@@ -121,7 +105,9 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
   });
 };
 
-function TransformError() {}
+function TransformError() {
+  Error.captureStackTrace && Error.captureStackTrace(this, TransformError);
+}
 util.inherits(TransformError, SyntaxError);
 
 function formatError(err, filename, source) {
@@ -155,10 +141,3 @@ function formatBabelError(err, filename) {
   error.description = err.message;
   return error;
 }
-
-function DummyCache() {}
-DummyCache.prototype.get = function(filePath, loaderCb) {
-  return loaderCb();
-};
-DummyCache.prototype.end =
-DummyCache.prototype.invalidate = function(){};

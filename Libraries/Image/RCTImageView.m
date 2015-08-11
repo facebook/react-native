@@ -69,8 +69,9 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setImage:(UIImage *)image
 {
+  image = image ?: _defaultImage;
   if (image != super.image) {
-    super.image = image ?: _defaultImage;
+    super.image = image;
     [self _updateImage];
   }
 }
@@ -110,11 +111,11 @@ RCT_NOT_IMPLEMENTED(-init)
 
     RCTImageLoaderProgressBlock progressHandler = nil;
     if (_onProgress) {
-      progressHandler =  ^(int64_t loaded, int64_t total) {
+      progressHandler = ^(int64_t loaded, int64_t total) {
         NSDictionary *event = @{
           @"target": self.reactTag,
-          @"loaded": @(loaded),
-          @"total": @(total),
+          @"loaded": @((double)loaded),
+          @"total": @((double)total),
         };
         [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
       };
@@ -177,21 +178,14 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 }
 
-- (void)willMoveToSuperview:(UIView *)newSuperview
+- (void)didMoveToWindow
 {
-  [super willMoveToSuperview:newSuperview];
+  [super didMoveToWindow];
 
-  if (!newSuperview) {
+  if (!self.window) {
     [self.layer removeAnimationForKey:@"contents"];
     self.image = nil;
-  }
-}
-
-- (void)didMoveToSuperview
-{
-  [super didMoveToSuperview];
-
-  if (self.superview && self.src) {
+  } else if (self.src) {
     [self reloadImage];
   }
 }

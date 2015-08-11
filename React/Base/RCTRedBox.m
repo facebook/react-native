@@ -10,6 +10,7 @@
 #import "RCTRedBox.h"
 
 #import "RCTBridge.h"
+#import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTUtils.h"
 
@@ -36,7 +37,7 @@
 {
   if ((self = [super initWithFrame:frame])) {
     _redColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
-    self.windowLevel = CGFLOAT_MAX;
+    self.windowLevel = UIWindowLevelAlert + 1000;
     self.backgroundColor = _redColor;
     self.hidden = YES;
 
@@ -102,7 +103,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, nil) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[stackFrameJSON length]];
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-  request.URL = [NSURL URLWithString:@"http://localhost:8081/open-stack-frame"];
+  request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
   request.HTTPMethod = @"POST";
   request.HTTPBody = stackFrameJSON;
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
@@ -204,7 +205,12 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   }
 
   cell.textLabel.text = stackFrame[@"methodName"];
-  cell.detailTextLabel.text = cell.detailTextLabel.text = [NSString stringWithFormat:@"%@:%@", [stackFrame[@"file"] lastPathComponent], stackFrame[@"lineNumber"]];
+
+  NSString *fileAndLine = stackFrame[@"file"];
+  if (fileAndLine) {
+    fileAndLine = [fileAndLine stringByAppendingFormat:@":%@", stackFrame[@"lineNumber"]];
+    cell.detailTextLabel.text = cell.detailTextLabel.text = fileAndLine;
+  }
   return cell;
 }
 

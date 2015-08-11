@@ -9,6 +9,7 @@
 
 #import "RCTActionSheetManager.h"
 
+#import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -72,13 +73,13 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
   NSMutableArray *items = [NSMutableArray array];
-  id message = options[@"message"];
-  id url = options[@"url"];
-  if ([message isKindOfClass:[NSString class]]) {
+  NSString *message = [RCTConvert NSString:options[@"message"]];
+  if (message) {
     [items addObject:message];
   }
-  if ([url isKindOfClass:[NSString class]]) {
-    [items addObject:[NSURL URLWithString:url]];
+  NSURL *URL = [RCTConvert NSURL:options[@"url"]];
+  if (URL) {
+    [items addObject:URL];
   }
   if ([items count] == 0) {
     failureCallback(@[@"No `url` or `message` to share"]);

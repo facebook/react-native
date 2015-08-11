@@ -61,42 +61,66 @@ RCT_NOT_IMPLEMENTED(-init)
   [self invalidate];
 }
 
+- (BOOL)validateRequestToken:(id)requestToken
+{
+  if (![requestToken isEqual:_requestToken]) {
+    if (RCT_DEBUG) {
+      RCTAssert([requestToken isEqual:_requestToken],
+                @"Unrecognized request token: %@", requestToken);
+    }
+    if (_completionBlock) {
+      _completionBlock(_response, _data, [NSError errorWithDomain:RCTErrorDomain code:0
+        userInfo:@{NSLocalizedDescriptionKey: @"Unrecognized request token."}]);
+      [self invalidate];
+    }
+    return NO;
+  }
+  return YES;
+}
+
 - (void)URLRequest:(id)requestToken didSendDataWithProgress:(int64_t)bytesSent
 {
-  RCTAssert([requestToken isEqual:_requestToken], @"Unrecognized request token: %@", requestToken);
-  if (_uploadProgressBlock) {
-    _uploadProgressBlock(bytesSent, _request.HTTPBody.length);
+  if ([self validateRequestToken:requestToken]) {
+    if (_uploadProgressBlock) {
+      _uploadProgressBlock(bytesSent, _request.HTTPBody.length);
+    }
   }
 }
 
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response
 {
-  RCTAssert([requestToken isEqual:_requestToken], @"Unrecognized request token: %@", requestToken);
-  _response = response;
-  if (_responseBlock) {
-    _responseBlock(response);
+  if ([self validateRequestToken:requestToken]) {
+    _response = response;
+    if (_responseBlock) {
+      _responseBlock(response);
+    }
   }
 }
 
 - (void)URLRequest:(id)requestToken didReceiveData:(NSData *)data
 {
-  RCTAssert([requestToken isEqual:_requestToken], @"Unrecognized request token: %@", requestToken);
-  if (!_data) {
-    _data = [[NSMutableData alloc] init];
-  }
-  [_data appendData:data];
-  if (_incrementalDataBlock) {
-    _incrementalDataBlock(data);
-  }
-  if (_downloadProgressBlock && _response.expectedContentLength > 0) {
-    _downloadProgressBlock(_data.length, _response.expectedContentLength);
+  if ([self validateRequestToken:requestToken]) {
+    if (!_data) {
+      _data = [[NSMutableData alloc] init];
+    }
+    [_data appendData:data];
+    if (_incrementalDataBlock) {
+      _incrementalDataBlock(data);
+    }
+    if (_downloadProgressBlock && _response.expectedContentLength > 0) {
+      _downloadProgressBlock(_data.length, _response.expectedContentLength);
+    }
   }
 }
 
 - (void)URLRequest:(id)requestToken didCompleteWithError:(NSError *)error
 {
-  _completionBlock(_response, _data, error);
-  [self invalidate];
+  if ([self validateRequestToken:requestToken]) {
+    if (_completionBlock) {
+      _completionBlock(_response, _data, error);
+      [self invalidate];
+    }
+  }
 }
 
 @end

@@ -52,7 +52,7 @@
     @"value": [self titleForSegmentAtIndex:sender.selectedSegmentIndex],
     @"selectedSegmentIndex": @(sender.selectedSegmentIndex)
   };
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end

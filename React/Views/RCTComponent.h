@@ -7,19 +7,21 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <CoreGraphics/CoreGraphics.h>
+
 /**
- * Logical node in a tree of application components. Both `ShadowView`s and
- * `UIView+React`s conform to this. Allows us to write utilities that
- * reason about trees generally.
+ * Logical node in a tree of application components. Both `ShadowView` and
+ * `UIView` conforms to this. Allows us to write utilities that reason about
+ * trees generally.
  */
-@protocol RCTViewNodeProtocol <NSObject>
+@protocol RCTComponent <NSObject>
 
 @property (nonatomic, copy) NSNumber *reactTag;
 
-- (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex;
-- (void)removeReactSubview:(id<RCTViewNodeProtocol>)subview;
-- (NSMutableArray *)reactSubviews;
-- (id<RCTViewNodeProtocol>)reactSuperview;
+- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex;
+- (void)removeReactSubview:(id<RCTComponent>)subview;
+- (NSArray *)reactSubviews;
+- (id<RCTComponent>)reactSuperview;
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 
 // View/ShadowView is a root view
@@ -36,6 +38,7 @@
 
 // TODO: this is kinda dumb - let's come up with a
 // better way of identifying root React views please!
-static inline BOOL RCTIsReactRootView(NSNumber *reactTag) {
+static inline BOOL RCTIsReactRootView(NSNumber *reactTag)
+{
   return reactTag.integerValue % 10 == 1;
 }

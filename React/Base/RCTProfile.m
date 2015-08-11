@@ -134,11 +134,11 @@ static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvo
 static IMP RCTProfileMsgForward(NSObject *, SEL);
 static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
 {
-  IMP imp = _objc_msgForward;
+  IMP imp = (IMP)_objc_msgForward;
 #if !defined(__arm64__)
   NSMethodSignature *signature = [self methodSignatureForSelector:selector];
   if (signature.methodReturnType[0] == _C_STRUCT_B && signature.methodReturnLength > 8) {
-    imp = _objc_msgForward_stret;
+    imp = (IMP)_objc_msgForward_stret;
   }
 #endif
   return imp;
@@ -146,7 +146,7 @@ static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
 
 void RCTProfileHookModules(RCTBridge *bridge)
 {
-  for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
+  for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     [moduleData dispatchBlock:^{
       Class moduleClass = moduleData.moduleClass;
       Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
@@ -190,7 +190,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
 
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
-  for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
+  for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     Class proxyClass = object_getClass(moduleData.instance);
     if (moduleData.moduleClass != proxyClass) {
       object_setClass(moduleData.instance, moduleData.moduleClass);

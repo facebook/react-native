@@ -13,7 +13,7 @@
 
 @class ALAssetsLibrary;
 
-typedef void (^RCTImageLoaderProgressBlock)(int64_t written, int64_t total);
+typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* UIImage or CAAnimation */);
 typedef void (^RCTImageLoaderCancellationBlock)(void);
 
@@ -34,8 +34,8 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(UIViewContentMode)resizeMode
-                                      progressBlock:(RCTImageLoaderProgressBlock)progress
-                                    completionBlock:(RCTImageLoaderCompletionBlock)completion;
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
  * Is the specified image tag an asset library image?

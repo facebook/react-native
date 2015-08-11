@@ -51,10 +51,20 @@ CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
   sourceSize.width *= scale;
   sourceSize.height *= scale;
 
-  // Calculate aspect ratios if needed (don't bother if resizeMode == stretch)
-  CGFloat aspect = 0.0, targetAspect = 0.0;
+  CGFloat aspect = sourceSize.width / sourceSize.height;
+  // If only one dimension in destSize is non-zero (for example, an Image
+  // with `flex: 1` whose height is indeterminate), calculate the unknown
+  // dimension based on the aspect ratio of sourceSize
+  if (destSize.width == 0) {
+    destSize.width = destSize.height * aspect;
+  }
+  if (destSize.height == 0) {
+    destSize.height = destSize.width / aspect;
+  }
+  
+  // Calculate target aspect ratio if needed (don't bother if resizeMode == stretch)
+  CGFloat targetAspect = 0.0;
   if (resizeMode != UIViewContentModeScaleToFill) {
-    aspect = sourceSize.width / sourceSize.height;
     targetAspect = destSize.width / destSize.height;
     if (aspect == targetAspect) {
       resizeMode = UIViewContentModeScaleToFill;

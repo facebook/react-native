@@ -51,8 +51,7 @@ var LayoutEventsTest = React.createClass({
       () => {
         debug('layout animation done.');
         this.checkLayout(this.addWrapText);
-      },
-      (error) => { throw new Error(JSON.stringify(error)); }
+      }
     );
     this.setState({viewStyle: {margin: 60}});
   },

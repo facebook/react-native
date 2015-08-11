@@ -17,12 +17,12 @@ var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
 var Set = require('Set');
+var SpringConfig = require('SpringConfig');
 var Text = require('Text');
 var View = require('View');
 var invariant = require('invariant');
 
 var flattenStyle = require('flattenStyle');
-var rebound = require('rebound');
 var requestAnimationFrame = require('requestAnimationFrame');
 
 import type InterpolationConfigType from 'Interpolation';
@@ -351,12 +351,12 @@ class SpringAnimation extends Animation {
         config.tension === undefined && config.friction === undefined,
         'You can only define bounciness/speed or tension/friction but not both',
       );
-      springConfig = rebound.SpringConfig.fromBouncinessAndSpeed(
+      springConfig = SpringConfig.fromBouncinessAndSpeed(
         withDefault(config.bounciness, 8),
         withDefault(config.speed, 12),
       );
     } else {
-      springConfig = rebound.SpringConfig.fromOrigamiTensionAndFriction(
+      springConfig = SpringConfig.fromOrigamiTensionAndFriction(
         withDefault(config.tension, 40),
         withDefault(config.friction, 7),
       );

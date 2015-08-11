@@ -1,5 +1,6 @@
 'use strict';
 
+const Activity = require('../Activity');
 const Promise = require('promise');
 const {EventEmitter} = require('events');
 
@@ -28,6 +29,7 @@ class Fastfs extends EventEmitter {
     );
 
     return this._crawling.then(files => {
+      const fastfsActivity = Activity.startEvent('Building in-memory fs');
       files.forEach(filePath => {
         if (filePath.match(rootsPattern)) {
           const newFile = new File(filePath, { isDir: false });
@@ -44,6 +46,7 @@ class Fastfs extends EventEmitter {
           }
         }
       });
+      Activity.endEvent(fastfsActivity);
       this._fileWatcher.on('all', this._processFileChange.bind(this));
     });
   }

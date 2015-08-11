@@ -60,7 +60,7 @@ RCT_EXTERN NSString *RCTFormatLog(
 extern RCTLogFunction RCTDefaultLogFunction;
 
 /**
- * These methods get and set the current logging threshold. This is the level
+ * These methods get and set the global logging threshold. This is the level
  * below which logs will be ignored. Default is RCTLogLevelInfo for debug and
  * RCTLogLevelError for production.
  */
@@ -68,7 +68,7 @@ RCT_EXTERN void RCTSetLogThreshold(RCTLogLevel threshold);
 RCT_EXTERN RCTLogLevel RCTGetLogThreshold(void);
 
 /**
- * These methods get and set the current logging function called by the RCTLogXX
+ * These methods get and set the global logging function called by the RCTLogXX
  * macros. You can use these to replace the standard behavior with custom log
  * functionality.
  */
@@ -81,6 +81,13 @@ RCT_EXTERN RCTLogFunction RCTGetLogFunction(void);
  * extra service without changing the default behavior.
  */
 RCT_EXTERN void RCTAddLogFunction(RCTLogFunction logFunction);
+
+/**
+ * This method temporarily overrides the log function while performing the
+ * specified block. This is useful for testing purposes (to detect if a given
+ * function logs something) or to suppress or override logging temporarily.
+ */
+RCT_EXTERN void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFunction logFunction);
 
 /**
  * This method adds a conditional prefix to any messages logged within the scope
