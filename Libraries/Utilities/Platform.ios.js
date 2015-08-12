@@ -14,6 +14,7 @@
 
 var Platform = {
   OS: 'ios',
+  isFast: true,
 };
 
 module.exports = Platform;

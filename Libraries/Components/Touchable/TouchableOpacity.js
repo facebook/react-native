@@ -18,6 +18,7 @@ var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var EventPluginUtils = require('EventPluginUtils');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
@@ -153,6 +154,26 @@ var TouchableOpacity = React.createClass({
     );
   },
 
+  // Clicks
+
+  _onMouseEnter: function() {
+    if (!EventPluginUtils.useTouchEvents) {
+      this.touchableHandleActivePressIn();
+    }
+  },
+
+  _onMouseLeave: function() {
+    if (!EventPluginUtils.useTouchEvents) {
+      this.touchableHandleActivePressOut();
+    }
+  },
+
+  _onClick: function() {
+    if (!EventPluginUtils.useTouchEvents) {
+      this.touchableHandlePress();
+    }
+  },
+
   render: function() {
     return (
       <Animated.View
@@ -165,9 +186,9 @@ var TouchableOpacity = React.createClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
-        onMouseEnter={this._opacityActive}
-        onMouseLeave={this._opacityInactive}
-        onClick={this.touchableHandlePress}>
+        onMouseEnter={this._onMouseEnter}
+        onMouseLeave={this._onMouseLeave}
+        onClick={this._onClick}>
         {this.props.children}
       </Animated.View>
     );

@@ -19,6 +19,7 @@ var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var EventPluginUtils = require('EventPluginUtils');
 var View = require('View');
 
 var cloneWithProps = require('cloneWithProps');
@@ -106,6 +107,7 @@ var TouchableHighlight = React.createClass({
         TOUCHABLE_PROPS.style,
         INACTIVE_UNDERLAY_PROPS.style,
         props.style,
+        props.disabled && {opacity: 0.66},
       ]
     };
   },
@@ -220,6 +222,26 @@ var TouchableHighlight = React.createClass({
     }
   },
 
+  // Clicks
+
+  _onMouseEnter: function() {
+    if (!EventPluginUtils.useTouchEvents) {
+      this.touchableHandleActivePressIn();
+    }
+  },
+
+  _onMouseLeave: function() {
+    if (!EventPluginUtils.useTouchEvents) {
+      this.touchableHandleActivePressOut();
+    }
+  },
+
+  _onClick: function() {
+    if (!EventPluginUtils.useTouchEvents) {
+      this.touchableHandlePress();
+    }
+  },
+
   render: function() {
     return (
       <View
@@ -232,9 +254,9 @@ var TouchableHighlight = React.createClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
-        onMouseEnter={this._showUnderlay}
-        onMouseLeave={this._hideUnderlay}
-        onClick={this.touchableHandlePress}
+        onMouseEnter={this._onMouseEnter}
+        onMouseLeave={this._onMouseLeave}
+        onClick={this._onClick}
         >
         {cloneWithProps(
           onlyChild(this.props.children),

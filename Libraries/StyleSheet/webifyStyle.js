@@ -7,19 +7,42 @@ var merge = require('merge');
 var flattenStyle = require('flattenStyle');
 var precomputeStyle = require('precomputeStyle');
 
+var legacyFlexAlignItemsMap = {
+    'center': 'center',
+    'stretch': 'stretch',
+    'flex-start': 'start',
+    'flex-end': 'end',
+};
+
+var legacyFlexJustifyContentMap = {
+    'center': 'center',
+    'stretch': 'justify',
+    'flex-start': 'start',
+    'flex-end': 'end',
+    'space-between': 'justify',
+};
+
 var styleKeyMap = {
 
     flex: function(value) {
         return {
             flex: value,
             WebkitFlex: value,
+            WebkitBoxFlex: value,
         };
     },
 
     flexDirection: function(value) {
+        var oldValue;
+        if (value == 'row') {
+            oldValue = 'horizontal';
+        } else {
+            oldValue = 'vertical';
+        }
         return {
             flexDirection: value,
             WebkitFlexDirection: value,
+            WebkitBoxOrient: oldValue,
         };
     },
 
@@ -27,6 +50,7 @@ var styleKeyMap = {
         return {
             alignItems: value,
             WebkitAlignItems: value,
+            WebkitBoxAlign: legacyFlexAlignItemsMap[value],
         };
     },
 
@@ -34,6 +58,7 @@ var styleKeyMap = {
         return {
             justifyContent: value,
             WebkitJustifyContent: value,
+            WebkitBoxPack: legacyFlexJustifyContentMap[value],
         };
     },
 

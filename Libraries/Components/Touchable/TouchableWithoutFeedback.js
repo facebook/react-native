@@ -14,6 +14,7 @@
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
+var EventPluginUtils = require('EventPluginUtils');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
 
@@ -108,6 +109,14 @@ var TouchableWithoutFeedback = React.createClass({
     return this.props.delayPressOut || 0;
   },
 
+  // Clicks
+
+  _onClick: function() {
+    if (!EventPluginUtils.useTouchEvents) {
+      this.touchableHandlePress();
+    }
+  },
+
   render: function(): ReactElement {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     return (React: any).cloneElement(onlyChild(this.props.children), {
@@ -119,7 +128,7 @@ var TouchableWithoutFeedback = React.createClass({
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
-      onClick: this.touchableHandlePress,
+      onClick: this._onClick,
     });
   }
 });

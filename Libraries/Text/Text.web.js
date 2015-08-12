@@ -23,36 +23,60 @@ var Text = React.createClass({
     },
 
     render: function() {
-        var style = webifyStyle(this.props.style);
+        var style = webifyStyle([this.props.style, {flexDirection: 'row'}]);
 
         var innerElements = this.props.children;
-        if (typeof innerElements == 'string' && innerElements.indexOf('\n') >= 0) {
-            var textParts = innerElements.split('\n');
-            var textPartsIncludingNewlines = [];
-            for (var i in textParts) {
-                if (i > 0) {
-                    textPartsIncludingNewlines.push('\n');
+        if (typeof innerElements == 'string') {
+            if (innerElements.indexOf('\n') >= 0) {
+                var textParts = innerElements.split('\n');
+                var textPartsIncludingNewlines = [];
+                for (var i in textParts) {
+                    if (i > 0) {
+                        textPartsIncludingNewlines.push('\n');
+                    }
+                    textPartsIncludingNewlines.push(textParts[i]);
                 }
-                textPartsIncludingNewlines.push(textParts[i]);
+                innerElements = textPartsIncludingNewlines.map(this._renderInnerText);
             }
-            innerElements = textPartsIncludingNewlines.map(this._renderInnerElement);
+        } else if (innerElements) {
+            innerElements = innerElements.map(this._renderChild)
         }
 
-        return (
-            <span
-                {...this.props}
-                style={style}
-                onClick={this.props.onPress}
-                children={innerElements}
-                />
-        );
+        if (this.props.isChild) {
+            return (
+                <span
+                    {...this.props}
+                    isChild={true}
+                    style={style}
+                    children={innerElements}
+                    />
+            );
+
+        } else {
+            return (
+                <div
+                    {...this.props}
+                    style={style}
+                    children={innerElements}
+                    />
+            );
+        }
     },
 
-    _renderInnerElement: function(text) {
+    _renderInnerText: function(text) {
         if (text == '\n') {
             return <br/>;
         }
-        return <Text>{text}</Text>
+        return <span>{text}</span>
+    },
+
+    _renderChild: function(child) {
+        if (typeof object != 'object') {
+            return this._renderInnerText(child);
+        }
+        return React.cloneElement(child, {
+            isChild: true,
+        });
     },
 
 });
