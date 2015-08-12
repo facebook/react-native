@@ -23,8 +23,6 @@ var Text = React.createClass({
     },
 
     render: function() {
-        var style = webifyStyle([this.props.style, {flexDirection: 'row'}]);
-
         var innerElements = this.props.children;
         if (typeof innerElements == 'string') {
             if (innerElements.indexOf('\n') >= 0) {
@@ -43,6 +41,7 @@ var Text = React.createClass({
         }
 
         if (this.props.isChild) {
+            var style = webifyStyle(this.props.style);
             return (
                 <span
                     {...this.props}
@@ -53,6 +52,7 @@ var Text = React.createClass({
             );
 
         } else {
+            var style = webifyStyle([this.props.style, {display: 'inline-block'}]);
             return (
                 <div
                     {...this.props}
@@ -71,12 +71,12 @@ var Text = React.createClass({
     },
 
     _renderChild: function(child) {
-        if (typeof object != 'object') {
-            return this._renderInnerText(child);
+        if (React.isValidElement(child)) {
+            return React.cloneElement(child, {
+                isChild: true,
+            });
         }
-        return React.cloneElement(child, {
-            isChild: true,
-        });
+        return this._renderInnerText(child);
     },
 
 });
