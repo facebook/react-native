@@ -9,7 +9,7 @@
 'use strict';
 
 jest
-  .setMock('worker-farm', function() { return function() {};})
+  .setMock('worker-farm', () => () => undefined)
   .dontMock('underscore')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
@@ -19,11 +19,11 @@ jest.mock('fs');
 
 var Promise = require('promise');
 
-describe('Packager', function() {
+describe('Bundler', function() {
   var getDependencies;
   var wrapModule;
-  var Packager;
-  var packager;
+  var Bundler;
+  var bundler;
   var assetServer;
   var modules;
 
@@ -37,7 +37,7 @@ describe('Packager', function() {
       };
     });
 
-    Packager = require('../');
+    Bundler = require('../');
 
     require('fs').statSync.mockImpl(function() {
       return {
@@ -53,7 +53,7 @@ describe('Packager', function() {
       getAssetData: jest.genMockFn(),
     };
 
-    packager = new Packager({
+    bundler = new Bundler({
       projectRoots: ['/root'],
       assetServer: assetServer,
     });
@@ -118,8 +118,8 @@ describe('Packager', function() {
     });
   });
 
-  pit('create a package', function() {
-    return packager.package('/root/foo.js', true, 'source_map_url')
+  pit('create a bundle', function() {
+    return bundler.bundle('/root/foo.js', true, 'source_map_url')
       .then(function(p) {
         expect(p.addModule.mock.calls[0][0]).toEqual({
           code: 'lol transformed /root/foo.js lol',
@@ -204,7 +204,7 @@ describe('Packager', function() {
   });
 
   pit('gets the list of dependencies', function() {
-    return packager.getDependencies('/root/foo.js', true)
+    return bundler.getDependencies('/root/foo.js', true)
       .then(({dependencies}) => {
         expect(dependencies).toEqual([
           {

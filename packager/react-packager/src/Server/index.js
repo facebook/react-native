@@ -12,7 +12,7 @@ var url = require('url');
 var path = require('path');
 var declareOpts = require('../lib/declareOpts');
 var FileWatcher = require('../FileWatcher');
-var Packager = require('../Packager');
+var Bundler = require('../Bundler');
 var Activity = require('../Activity');
 var AssetServer = require('../AssetServer');
 var Promise = require('promise');
@@ -68,7 +68,7 @@ function Server(options) {
   var opts = validateOpts(options);
 
   this._projectRoots = opts.projectRoots;
-  this._packages = Object.create(null);
+  this._bundles = Object.create(null);
   this._changeWatchers = [];
 
   var assetGlobs = opts.assetExts.map(function(ext) {
@@ -105,40 +105,40 @@ function Server(options) {
     assetExts: opts.assetExts,
   });
 
-  var packagerOpts = Object.create(opts);
-  packagerOpts.fileWatcher = this._fileWatcher;
-  packagerOpts.assetServer = this._assetServer;
-  this._packager = new Packager(packagerOpts);
+  var bundlerOpts = Object.create(opts);
+  bundlerOpts.fileWatcher = this._fileWatcher;
+  bundlerOpts.assetServer = this._assetServer;
+  this._bundler = new Bundler(bundlerOpts);
 
   var onFileChange = this._onFileChange.bind(this);
   this._fileWatcher.on('all', onFileChange);
 
   var self = this;
   this._debouncedFileChangeHandler = _.debounce(function(filePath) {
-    self._rebuildPackages(filePath);
+    self._rebuildBundles(filePath);
     self._informChangeWatchers();
   }, 50);
 }
 
 Server.prototype._onFileChange = function(type, filepath, root) {
   var absPath = path.join(root, filepath);
-  this._packager.invalidateFile(absPath);
+  this._bundler.invalidateFile(absPath);
   // Make sure the file watcher event runs through the system before
-  // we rebuild the packages.
+  // we rebuild the bundles.
   this._debouncedFileChangeHandler(absPath);
 };
 
-Server.prototype._rebuildPackages = function() {
-  var buildPackage = this.buildPackage.bind(this);
-  var packages = this._packages;
+Server.prototype._rebuildBundles = function() {
+  var buildBundle = this.buildBundle.bind(this);
+  var bundles = this._bundles;
 
-  Object.keys(packages).forEach(function(optionsJson) {
+  Object.keys(bundles).forEach(function(optionsJson) {
     var options = JSON.parse(optionsJson);
     // Wait for a previous build (if exists) to finish.
-    packages[optionsJson] = (packages[optionsJson] || Promise.resolve()).finally(function() {
+    bundles[optionsJson] = (bundles[optionsJson] || Promise.resolve()).finally(function() {
       // With finally promise callback we can't change the state of the promise
       // so we need to reassign the promise.
-      packages[optionsJson] = buildPackage(options).then(function(p) {
+      bundles[optionsJson] = buildBundle(options).then(function(p) {
         // Make a throwaway call to getSource to cache the source string.
         p.getSource({
           inlineSourceMap: options.inlineSourceMap,
@@ -147,7 +147,7 @@ Server.prototype._rebuildPackages = function() {
         return p;
       });
     });
-    return packages[optionsJson];
+    return bundles[optionsJson];
   });
 };
 
@@ -168,11 +168,11 @@ Server.prototype._informChangeWatchers = function() {
 Server.prototype.end = function() {
   Promise.all([
     this._fileWatcher.end(),
-    this._packager.kill(),
+    this._bundler.kill(),
   ]);
 };
 
-var packageOpts = declareOpts({
+var bundleOpts = declareOpts({
   sourceMapUrl: {
     type: 'string',
     required: false,
@@ -199,10 +199,10 @@ var packageOpts = declareOpts({
   },
 });
 
-Server.prototype.buildPackage = function(options) {
-  var opts = packageOpts(options);
+Server.prototype.buildBundle = function(options) {
+  var opts = bundleOpts(options);
 
-  return this._packager.package(
+  return this._bundler.bundle(
     opts.entryFile,
     opts.runModule,
     opts.sourceMapUrl,
@@ -210,13 +210,13 @@ Server.prototype.buildPackage = function(options) {
   );
 };
 
-Server.prototype.buildPackageFromUrl = function(reqUrl) {
+Server.prototype.buildBundleFromUrl = function(reqUrl) {
   var options = getOptionsFromUrl(reqUrl);
-  return this.buildPackage(options);
+  return this.buildBundle(options);
 };
 
 Server.prototype.getDependencies = function(main) {
-  return this._packager.getDependencies(main);
+  return this._bundler.getDependencies(main);
 };
 
 Server.prototype._processDebugRequest = function(reqUrl, res) {
@@ -224,13 +224,13 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
   var pathname = url.parse(reqUrl).pathname;
   var parts = pathname.split('/').filter(Boolean);
   if (parts.length === 1) {
-    ret += '<div><a href="/debug/packages">Cached Packages</a></div>';
+    ret += '<div><a href="/debug/bundles">Cached Bundles</a></div>';
     ret += '<div><a href="/debug/graph">Dependency Graph</a></div>';
     res.end(ret);
-  } else if (parts[1] === 'packages') {
-    ret += '<h1> Cached Packages </h1>';
-    Promise.all(Object.keys(this._packages).map(function(optionsJson) {
-      return this._packages[optionsJson].then(function(p) {
+  } else if (parts[1] === 'bundles') {
+    ret += '<h1> Cached Bundles </h1>';
+    Promise.all(Object.keys(this._bundles).map(function(optionsJson) {
+      return this._bundles[optionsJson].then(function(p) {
         ret += '<div><h2>' + optionsJson + '</h2>';
         ret += p.getDebugInfo();
       });
@@ -244,7 +244,7 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
     );
   } else if (parts[1] === 'graph'){
     ret += '<h1> Dependency Graph </h2>';
-    ret += this._packager.getGraphDebugInfo();
+    ret += this._bundler.getGraphDebugInfo();
     res.end(ret);
   } else {
     res.writeHead('404');
@@ -352,9 +352,9 @@ Server.prototype.processRequest = function(req, res, next) {
   var startReqEventId = Activity.startEvent('request:' + req.url);
   var options = getOptionsFromUrl(req.url);
   var optionsJson = JSON.stringify(options);
-  var building = this._packages[optionsJson] || this.buildPackage(options);
+  var building = this._bundles[optionsJson] || this.buildBundle(options);
 
-  this._packages[optionsJson] = building;
+  this._bundles[optionsJson] = building;
   building.then(
     function(p) {
       if (requestType === 'bundle') {
@@ -376,7 +376,7 @@ Server.prototype.processRequest = function(req, res, next) {
   ).done();
 };
 
-Server.prototype._handleError = function(res, packageID, error) {
+Server.prototype._handleError = function(res, bundleID, error) {
   res.writeHead(error.status || 500, {
     'Content-Type': 'application/json; charset=UTF-8',
   });
@@ -390,7 +390,7 @@ Server.prototype._handleError = function(res, packageID, error) {
     res.end(JSON.stringify(error));
 
     if (error.type === 'NotFoundError') {
-      delete this._packages[packageID];
+      delete this._bundles[bundleID];
     }
   } else {
     console.error(error.stack || error);

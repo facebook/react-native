@@ -24,7 +24,7 @@ var Promise = require('promise');
 
 describe('processRequest', function() {
   var server;
-  var Packager;
+  var Bundler;
   var FileWatcher;
 
   var options = {
@@ -57,10 +57,10 @@ describe('processRequest', function() {
   var triggerFileChange;
 
   beforeEach(function() {
-    Packager = require('../../Packager');
+    Bundler = require('../../Bundler');
     FileWatcher = require('../../FileWatcher');
 
-    Packager.prototype.package = jest.genMockFunction().mockImpl(function() {
+    Bundler.prototype.bundle = jest.genMockFunction().mockImpl(function() {
       return Promise.resolve({
         getSource: function() {
           return 'this is the source';
@@ -81,7 +81,7 @@ describe('processRequest', function() {
       return this;
     };
 
-    Packager.prototype.invalidateFile = invalidatorFunc;
+    Bundler.prototype.invalidateFile = invalidatorFunc;
 
     var Server = require('../');
     server = new Server(options);
@@ -121,7 +121,7 @@ describe('processRequest', function() {
       'index.ios.includeRequire.bundle'
     ).then(function(response) {
       expect(response).toEqual('this is the source');
-      expect(Packager.prototype.package).toBeCalledWith(
+      expect(Bundler.prototype.bundle).toBeCalledWith(
         'index.ios.js',
         true,
         'index.ios.includeRequire.map',
@@ -142,7 +142,7 @@ describe('processRequest', function() {
 
 
   describe('file changes', function() {
-    pit('invalides files in package when file is updated', function() {
+    pit('invalides files in bundle when file is updated', function() {
       return makeRequest(
         requestHandler,
         'mybundle.bundle?runModule=true'
@@ -153,9 +153,9 @@ describe('processRequest', function() {
       });
     });
 
-    pit('rebuilds the packages that contain a file when that file is changed', function() {
-      var packageFunc = jest.genMockFunction();
-      packageFunc
+    pit('rebuilds the bundles that contain a file when that file is changed', function() {
+      var bundleFunc = jest.genMockFunction();
+      bundleFunc
         .mockReturnValueOnce(
           Promise.resolve({
             getSource: function() {
@@ -173,7 +173,7 @@ describe('processRequest', function() {
           })
         );
 
-      Packager.prototype.package = packageFunc;
+      Bundler.prototype.bundle = bundleFunc;
 
       var Server = require('../../Server');
       server = new Server(options);
@@ -184,13 +184,13 @@ describe('processRequest', function() {
       return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .then(function(response) {
           expect(response).toEqual('this is the first source');
-          expect(packageFunc.mock.calls.length).toBe(1);
+          expect(bundleFunc.mock.calls.length).toBe(1);
           triggerFileChange('all','path/file.js', options.projectRoots[0]);
           jest.runAllTimers();
           jest.runAllTimers();
         })
         .then(function() {
-          expect(packageFunc.mock.calls.length).toBe(2);
+          expect(bundleFunc.mock.calls.length).toBe(2);
           return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
             .then(function(response) {
               expect(response).toEqual('this is the rebuilt source');
@@ -259,12 +259,12 @@ describe('processRequest', function() {
     });
   });
 
-  describe('buildPackage(options)', function() {
-    it('Calls the packager with the correct args', function() {
-      server.buildPackage({
+  describe('buildBundle(options)', function() {
+    it('Calls the bundler with the correct args', function() {
+      server.buildBundle({
         entryFile: 'foo file'
       });
-      expect(Packager.prototype.package).toBeCalledWith(
+      expect(Bundler.prototype.bundle).toBeCalledWith(
         'foo file',
         true,
         undefined,
@@ -273,10 +273,10 @@ describe('processRequest', function() {
     });
   });
 
-  describe('buildPackageFromUrl(options)', function() {
-    it('Calls the packager with the correct args', function() {
-      server.buildPackageFromUrl('/path/to/foo.bundle?dev=false&runModule=false');
-      expect(Packager.prototype.package).toBeCalledWith(
+  describe('buildBundleFromUrl(options)', function() {
+    it('Calls the bundler with the correct args', function() {
+      server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false');
+      expect(Bundler.prototype.bundle).toBeCalledWith(
         'path/to/foo.js',
         false,
         '/path/to/foo.map',

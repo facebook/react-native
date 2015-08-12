@@ -22,18 +22,23 @@ exports.middleware = function(options) {
   return server.processRequest.bind(server);
 };
 
-exports.buildPackage = function(options, packageOptions) {
+
+// Renamed "package" to "bundle". But maintain backwards
+// compat.
+exports.buildPackage =
+exports.buildBundle = function(options, bundleOptions) {
   var server = createServer(options);
-  return server.buildPackage(packageOptions)
+  return server.buildBundle(bundleOptions)
     .then(function(p) {
       server.end();
       return p;
     });
 };
 
-exports.buildPackageFromUrl = function(options, reqUrl) {
+exports.buildPackageFromUrl =
+exports.buildBundleFromUrl = function(options, reqUrl) {
   var server = createServer(options);
-  return server.buildPackageFromUrl(reqUrl)
+  return server.buildBundleFromUrl(reqUrl)
     .then(function(p) {
       server.end();
       return p;

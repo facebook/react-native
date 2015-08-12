@@ -13,7 +13,6 @@ const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
 const Fastfs = require('../fastfs');
 const ModuleCache = require('../ModuleCache');
 const Promise = require('promise');
-const _ = require('underscore');
 const crawl = require('../crawlers');
 const debug = require('debug')('DependencyGraph');
 const declareOpts = require('../../lib/declareOpts');
