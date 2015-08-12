@@ -479,8 +479,8 @@ describe('HasteDependencyResolver', function() {
       }, code).then(processedCode => {
 
         expect(processedCode).toEqual([
-          '__d(\'test module\',["changed","Y"],function(global,' +
-            ' require, requireDynamic, requireLazy, module, exports) {  ' +
+          '__d(\'test module\',["changed","Y"],function(global, require,' +
+            ' module, exports) {  ' +
             "import'x';",
           "import 'changed';",
           "import 'changed' ;",

@@ -17,6 +17,10 @@ class AssetModule_DEPRECATED extends Module {
     return Promise.resolve([]);
   }
 
+  getAsyncDependencies() {
+    return Promise.resolve([]);
+  }
+
   getPlainObject() {
     const {name, resolution} = getAssetDataFromName(this.path);
 

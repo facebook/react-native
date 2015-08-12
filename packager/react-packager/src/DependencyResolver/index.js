@@ -176,8 +176,7 @@ function defineModuleCode({moduleName, code, deps}) {
     `__d(`,
     `'${moduleName}',`,
     `${deps},`,
-    'function(global, require, ',
-    'requireDynamic, requireLazy, module, exports) {',
+    'function(global, require, module, exports) {',
     `  ${code}`,
     '\n});',
   ].join('');

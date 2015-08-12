@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 'use strict';
 
 const Promise = require('promise');
@@ -69,6 +77,10 @@ class Module {
     this._cache.invalidate(this.path);
   }
 
+  getAsyncDependencies() {
+    return this._read().then(data => data.asyncDependencies);
+  }
+
   _read() {
     if (!this._reading) {
       this._reading = this._fastfs.readFile(this.path).then(content => {
@@ -85,7 +97,9 @@ class Module {
         if ('extern' in moduleDocBlock) {
           data.dependencies = [];
         } else {
-          data.dependencies = extractRequires(content);
+          var dependencies = extractRequires(content);
+          data.dependencies = dependencies.sync;
+          data.asyncDependencies = dependencies.async;
         }
 
         return data;
@@ -124,20 +138,68 @@ class Module {
 /**
  * Extract all required modules from a `code` string.
  */
-var blockCommentRe = /\/\*(.|\n)*?\*\//g;
-var lineCommentRe = /\/\/.+(\n|$)/g;
+const blockCommentRe = /\/\*(.|\n)*?\*\//g;
+const lineCommentRe = /\/\/.+(\n|$)/g;
+const trailingCommaRe = /,\s*$/g;
+const removeSpacesRe = /\s/g;
+const quotesRe = /'/g;
 function extractRequires(code /*: string*/) /*: Array<string>*/ {
-  var deps = [];
+  var deps = {
+    sync: [],
+    async: [],
+  };
 
   code
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
+    // Parse sync dependencies. See comment below for further detils.
     .replace(replacePatterns.IMPORT_RE, (match, pre, quot, dep, post) => {
-      deps.push(dep);
+      deps.sync.push(dep);
       return match;
     })
-    .replace(replacePatterns.REQUIRE_RE, function(match, pre, quot, dep, post) {
-      deps.push(dep);
+    // Parse the sync dependencies this module has. When the module is
+    // required, all it's sync dependencies will be loaded into memory.
+    // Sync dependencies can be defined either using `require` or the ES6
+    // `import` syntax:
+    //   var dep1 = require('dep1');
+    .replace(replacePatterns.REQUIRE_RE, (match, pre, quot, dep, post) => {
+      deps.sync.push(dep);
+    })
+    // Parse async dependencies this module has. As opposed to what happens
+    // with sync dependencies, when the module is required, it's async
+    // dependencies won't be loaded into memory. This is deferred till the
+    // code path gets to a `require.ensure` statement. The syntax is similar
+    // to webpack's one:
+    //   require.ensure(['dep1', 'dep2'], () => {
+    //     var dep1 = require('dep1');
+    //     var dep2 = require('dep2');
+    //     // do something with dep1 and dep2
+    //   });
+    .replace(replacePatterns.REQUIRE_ENSURE_RE, (match, dep, post) => {
+      dep = dep
+        .replace(blockCommentRe, '')
+        .replace(lineCommentRe, '')
+        .replace(trailingCommaRe, '')
+        .replace(removeSpacesRe, '')
+        .replace(quotesRe, '"');
+
+      if (dep) {
+        try {
+          dep = JSON.parse('[' + dep + ']');
+        } catch(e) {
+          throw 'Error processing `require.ensure` while attemping to parse ' +
+                'dependencies `[' + dep + ']`: ' + e;
+        }
+
+        dep.forEach(d => {
+          if (typeof d !== 'string') {
+            throw 'Error processing `require.ensure`: dependencies `[' +
+                  d + ']` must be string literals';
+          }
+        });
+
+        deps.async.push(dep);
+      }
     });
 
   return deps;
