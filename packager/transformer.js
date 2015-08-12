@@ -23,6 +23,7 @@ function transform(srcTxt, filename, options) {
       'es6.blockScoping',
       'es6.classes',
       'es6.destructuring',
+      'es6.modules',
       'es6.parameters.rest',
       'es6.properties.computed',
       'es6.properties.shorthand',
