@@ -67,7 +67,7 @@
     "sane": "^1.1.2",
     "semver": "^4.3.6",
     "source-map": "0.1.31",
-    "stacktrace-parser": "frantic/stacktrace-parser#493c5e5638",
+    "stacktrace-parser": "0.1.2",
     "uglify-js": "2.4.16",
     "underscore": "1.7.0",
     "wordwrap": "^1.0.0",
