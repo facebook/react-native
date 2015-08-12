@@ -15,9 +15,6 @@
 #import "RCTNetworking.h"
 #import "RCTUtils.h"
 
-CGSize RCTTargetSizeForClipRect(CGRect);
-CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
-
 @implementation RCTImageDownloader
 {
   NSURLCache *_cache;
@@ -131,14 +128,14 @@ RCT_EXPORT_MODULE()
     UIImage *image = [UIImage imageWithData:data scale:scale];
     if (image && !CGSizeEqualToSize(size, CGSizeZero)) {
 
-      // Get scale and size
-      CGRect imageRect = RCTClipRect(image.size, scale, size, scale, resizeMode);
-      CGSize destSize = RCTTargetSizeForClipRect(imageRect);
+      // Get destination size
+      CGSize targetSize = RCTTargetSize(image.size, image.scale,
+                                      size, scale, resizeMode, NO);
 
       // Decompress image at required size
       BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-      UIGraphicsBeginImageContextWithOptions(destSize, opaque, scale);
-      [image drawInRect:imageRect];
+      UIGraphicsBeginImageContextWithOptions(targetSize, opaque, scale);
+      [image drawInRect:(CGRect){CGPointZero, targetSize}];
       image = UIGraphicsGetImageFromCurrentImageContext();
       UIGraphicsEndImageContext();
     }

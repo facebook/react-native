@@ -85,8 +85,8 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
   }
 
   CGSize sourceSize = representation.dimensions;
-  CGRect targetRect = RCTClipRect(sourceSize, representation.scale, size, scale, resizeMode);
-  CGSize targetSize = targetRect.size;
+  CGSize targetSize = RCTTargetSize(sourceSize, representation.scale,
+                                    size, scale, resizeMode, NO);
 
   NSDictionary *options = @{
     (id)kCGImageSourceShouldAllowFloat: @YES,
