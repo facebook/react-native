@@ -39,7 +39,10 @@ var MovieScreen = React.createClass({
             style={styles.detailsImage}
           />
           <View style={styles.rightPane}>
-            <Text style={styles.movieTitle}>{this.props.movie.title}</Text>
+            <Text adjustsFontSizeToFit={true}
+                  numberOfLines={2}
+                  minimumFontScale={.25}
+                  style={styles.movieTitle}>{this.props.movie.title}</Text>
             <Text>{this.props.movie.year}</Text>
             <View style={styles.mpaaWrapper}>
               <Text style={styles.mpaaText}>
@@ -50,7 +53,9 @@ var MovieScreen = React.createClass({
           </View>
         </View>
         <View style={styles.separator} />
-        <Text>
+        <Text adjustsFontSizeToFit={true}
+              minimumFontScale={.25}
+              style={styles.movieSynopsis}>
           {this.props.movie.synopsis}
         </Text>
         <View style={styles.separator} />
@@ -113,8 +118,13 @@ var styles = StyleSheet.create({
   },
   movieTitle: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 56,
     fontWeight: '500',
+  },
+  movieSynopsis: {
+    flex: 1,
+    fontSize: 26,
+    height: 160,
   },
   rating: {
     marginTop: 10,

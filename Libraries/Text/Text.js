@@ -31,6 +31,8 @@ const viewConfig = {
     numberOfLines: true,
     lineBreakMode: true,
     allowFontScaling: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -111,6 +113,15 @@ const Text = React.createClass({
      * @platform ios
      */
     allowFontScaling: React.PropTypes.bool,
+    /**
+     * Specifies that font should shrink to fit container size.
+     */
+    adjustsFontSizeToFit: React.PropTypes.bool,
+    /**
+     * Minimum amount that a font should scale down to fit container.
+     * Used in conjuction with adjustsFontSizeToFit
+     */
+    minimumFontScale: React.PropTypes.number,
   },
   getDefaultProps(): Object {
     return {
