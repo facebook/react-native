@@ -83,22 +83,26 @@ HasteDependencyResolver.prototype.getDependencies = function(main, options) {
 
   var depGraph = this._depGraph;
   var self = this;
-  return depGraph.load().then(
-    () => depGraph.getOrderedDependencies(main).then(
-      dependencies => {
+  return depGraph
+    .load()
+    .then(() => Promise.all([
+      depGraph.getOrderedDependencies(main),
+      depGraph.getAsyncDependencies(main),
+    ]))
+    .then(([dependencies, asyncDependencies]) => {
         const mainModuleId = dependencies[0].id;
         self._prependPolyfillDependencies(
           dependencies,
-          opts.dev
+          opts.dev,
         );
 
         return {
           mainModuleId: mainModuleId,
-          dependencies: dependencies
+          dependencies: dependencies,
+          asyncDependencies: asyncDependencies,
         };
       }
-    )
-  );
+    );
 };
 
 HasteDependencyResolver.prototype._prependPolyfillDependencies = function(

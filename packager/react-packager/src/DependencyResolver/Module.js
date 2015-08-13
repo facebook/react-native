@@ -198,6 +198,8 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
           }
         });
 
+        // TODO: throw error if there are duplicate dependencies
+
         deps.async.push(dep);
       }
     });

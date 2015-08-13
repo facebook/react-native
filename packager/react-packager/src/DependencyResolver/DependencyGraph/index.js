@@ -162,33 +162,7 @@ class DependencyGraph {
 
   getOrderedDependencies(entryPath) {
     return this.load().then(() => {
-      const absPath = this._getAbsolutePath(entryPath);
-
-      if (absPath == null) {
-        throw new NotFoundError(
-          'Could not find source file at %s',
-          entryPath
-        );
-      }
-
-      const absolutePath = path.resolve(absPath);
-
-      if (absolutePath == null) {
-        throw new NotFoundError(
-          'Cannot find entry file %s in any of the roots: %j',
-          entryPath,
-          this._opts.roots
-        );
-      }
-
-      const platformExt = getPlatformExt(entryPath);
-      if (platformExt && this._opts.platforms.indexOf(platformExt) > -1) {
-        this._platformExt = platformExt;
-      } else {
-        this._platformExt = null;
-      }
-
-      const entry = this._moduleCache.getModule(absolutePath);
+      const entry = this._getModuleForEntryPath(entryPath);
       const deps = [];
       const visited = Object.create(null);
       visited[entry.hash()] = true;
@@ -225,7 +199,23 @@ class DependencyGraph {
       };
 
       return collect(entry)
-        .then(() => Promise.all(deps.map(dep => dep.getPlainObject())));
+        .then(() => Promise.all(deps.map(dep => dep.getPlainObject())))
+        .then();
+    });
+  }
+
+  getAsyncDependencies(entryPath) {
+    return this.load().then(() => {
+      const mod = this._getModuleForEntryPath(entryPath);
+      return mod.getAsyncDependencies().then(bundles =>
+        Promise
+          .all(bundles.map(bundle =>
+            Promise.all(bundle.map(
+              dep => this.resolveDependency(mod, dep)
+            ))
+          ))
+          .then(bs => bs.map(bundle => bundle.map(dep => dep.path)))
+      );
     });
   }
 
@@ -243,6 +233,36 @@ class DependencyGraph {
     }
 
     return null;
+  }
+
+  _getModuleForEntryPath(entryPath) {
+    const absPath = this._getAbsolutePath(entryPath);
+
+    if (absPath == null) {
+      throw new NotFoundError(
+        'Could not find source file at %s',
+        entryPath
+      );
+    }
+
+    const absolutePath = path.resolve(absPath);
+
+    if (absolutePath == null) {
+      throw new NotFoundError(
+        'Cannot find entry file %s in any of the roots: %j',
+        entryPath,
+        this._opts.roots
+      );
+    }
+
+    const platformExt = getPlatformExt(entryPath);
+    if (platformExt && this._opts.platforms.indexOf(platformExt) > -1) {
+      this._platformExt = platformExt;
+    } else {
+      this._platformExt = null;
+    }
+
+    return this._moduleCache.getModule(absolutePath);
   }
 
   _resolveHasteDependency(fromModule, toModuleName) {
