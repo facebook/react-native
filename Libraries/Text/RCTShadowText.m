@@ -88,6 +88,8 @@ static css_dim_t RCTMeasure(void *context, float width)
   NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width];
   [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
     RCTText *view = viewRegistry[self.reactTag];
+    view.adjustsFontSizeToFit = self.adjustsFontSizeToFit;
+    view.minimumFontScale = self.minimumFontScale;
     view.textStorage = textStorage;
   }];
 
@@ -327,6 +329,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   [self dirtyText];                            \
 }
 
+RCT_TEXT_PROPERTY(AdjustsFontSizeToFit, _adjustsFontSizeToFit, BOOL)
 RCT_TEXT_PROPERTY(Color, _color, UIColor *)
 RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *)
 RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat)
@@ -335,12 +338,13 @@ RCT_TEXT_PROPERTY(FontStyle, _fontStyle, NSString *)
 RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
+RCT_TEXT_PROPERTY(MinimumFontScale, _minimumFontScale, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
 RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
-RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
-RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
-RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
+RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *)
+RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType)
+RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle)
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
 
 - (void)setAllowFontScaling:(BOOL)allowFontScaling
