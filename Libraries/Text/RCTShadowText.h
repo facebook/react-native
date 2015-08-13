@@ -32,6 +32,8 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) RCTTextDecorationLineType textDecorationLine;
 @property (nonatomic, assign) CGFloat fontSizeMultiplier;
 @property (nonatomic, assign) BOOL allowFontScaling;
+@property (nonatomic, assign) BOOL adjustsFontSizeToFit;
+@property (nonatomic, assign) CGFloat minimumFontScale;
 
 - (void)recomputeText;
 
