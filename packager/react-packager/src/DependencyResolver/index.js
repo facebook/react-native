@@ -11,6 +11,7 @@
 var path = require('path');
 var DependencyGraph = require('./DependencyGraph');
 var replacePatterns = require('./replacePatterns');
+var Polyfill = require('./Polyfill');
 var declareOpts = require('../lib/declareOpts');
 var Promise = require('promise');
 
@@ -83,25 +84,28 @@ HasteDependencyResolver.prototype.getDependencies = function(main, options) {
 
   var depGraph = this._depGraph;
   var self = this;
+
   return depGraph
     .load()
     .then(() => Promise.all([
       depGraph.getOrderedDependencies(main),
       depGraph.getAsyncDependencies(main),
     ]))
-    .then(([dependencies, asyncDependencies]) => {
-        const mainModuleId = dependencies[0].id;
-        self._prependPolyfillDependencies(
-          dependencies,
-          opts.dev,
-        );
+    .then(
+       ([dependencies, asyncDependencies]) => dependencies[0].getName().then(
+         mainModuleId => {
+           self._prependPolyfillDependencies(
+             dependencies,
+             opts.dev,
+           );
 
-        return {
-          mainModuleId: mainModuleId,
-          dependencies: dependencies,
-          asyncDependencies: asyncDependencies,
-        };
-      }
+           return {
+             mainModuleId,
+             dependencies,
+             asyncDependencies,
+           };
+         }
+       )
     );
 };
 
@@ -122,7 +126,7 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
   ].concat(this._polyfillModuleNames);
 
   var polyfillModules = polyfillModuleNames.map(
-    (polyfillModuleName, idx) => ({
+    (polyfillModuleName, idx) => new Polyfill({
       path: polyfillModuleName,
       id: polyfillModuleName,
       dependencies: polyfillModuleNames.slice(0, idx),
@@ -134,23 +138,26 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
 };
 
 HasteDependencyResolver.prototype.wrapModule = function(module, code) {
-  if (module.isPolyfill) {
+  if (module.isPolyfill()) {
     return Promise.resolve(code);
   }
 
   const resolvedDeps = Object.create(null);
   const resolvedDepsArr = [];
 
-  return Promise.all(
-    module.dependencies.map(depName => {
-      return this._depGraph.resolveDependency(module, depName)
-        .then((dep) => dep && dep.getPlainObject().then(mod => {
-          if (mod) {
-            resolvedDeps[depName] = mod.id;
-            resolvedDepsArr.push(mod.id);
-          }
-        }));
-    })
+  return module.getDependencies().then(
+      dependencies => Promise.all(dependencies.map(
+        depName => this._depGraph.resolveDependency(module, depName)
+          .then(depModule => {
+            if (depModule) {
+              return depModule.getName().then(name => {
+                resolvedDeps[depName] = name;
+                resolvedDepsArr.push(name);
+              });
+            }
+          })
+      )
+    )
   ).then(() => {
     const relativizeCode = (codeMatch, pre, quot, depName, post) => {
       const depId = resolvedDeps[depName];
@@ -161,13 +168,15 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
       }
     };
 
-    return defineModuleCode({
-      code: code
+    return module.getName().then(
+      name => defineModuleCode({
+        code: code
         .replace(replacePatterns.IMPORT_RE, relativizeCode)
         .replace(replacePatterns.REQUIRE_RE, relativizeCode),
-      deps: JSON.stringify(resolvedDepsArr),
-      moduleName: module.id,
-    });
+        deps: JSON.stringify(resolvedDepsArr),
+        moduleName: name,
+      })
+    );
   });
 };
 

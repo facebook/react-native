@@ -109,29 +109,24 @@ class Module {
     return this._reading;
   }
 
-  getPlainObject() {
-    return Promise.all([
-      this.getName(),
-      this.getDependencies(),
-    ]).then(([name, dependencies]) => this.addReference({
-      path: this.path,
-      isJSON: path.extname(this.path) === '.json',
-      isAsset: false,
-      isAsset_DEPRECATED: false,
-      isPolyfill: false,
-      resolution: undefined,
-      id: name,
-      dependencies
-    }));
-  }
-
   hash() {
     return `Module : ${this.path}`;
   }
 
-  addReference(obj) {
-    Object.defineProperty(obj, '_ref', { value: this });
-    return obj;
+  isJSON() {
+    return path.extname(this.path) === '.json';
+  }
+
+  isAsset() {
+    return false;
+  }
+
+  isPolyfill() {
+    return false;
+  }
+
+  isAsset_DEPRECATED() {
+    return false;
   }
 }
 

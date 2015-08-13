@@ -110,10 +110,6 @@ class DependencyGraph {
   }
 
   resolveDependency(fromModule, toModuleName) {
-    if (fromModule._ref) {
-      fromModule = fromModule._ref;
-    }
-
     const resHash = resolutionHash(fromModule.path, toModuleName);
 
     if (this._immediateResolutionCache[resHash]) {
@@ -199,8 +195,7 @@ class DependencyGraph {
       };
 
       return collect(entry)
-        .then(() => Promise.all(deps.map(dep => dep.getPlainObject())))
-        .then();
+        .then(() => deps);
     });
   }
 

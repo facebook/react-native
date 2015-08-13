@@ -25,6 +25,7 @@ jest
   .dontMock('../../DependencyResolver/AssetModule')
   .dontMock('../../DependencyResolver/Module')
   .dontMock('../../DependencyResolver/Package')
+  .dontMock('../../DependencyResolver/Polyfill')
   .dontMock('../../DependencyResolver/ModuleCache');
 
 const Promise = require('promise');
@@ -51,17 +52,6 @@ describe('BundlesLayout', () => {
   });
 
   describe('generate', () => {
-    const polyfills = [
-      'polyfills/prelude_dev.js',
-      'polyfills/prelude.js',
-      'polyfills/require.js',
-      'polyfills/polyfills.js',
-      'polyfills/console.js',
-      'polyfills/error-guard.js',
-      'polyfills/String.prototype.es6.js',
-      'polyfills/Array.prototype.es6.js',
-    ];
-
     function newBundlesLayout() {
       const resolver = new DependencyResolver({
         projectRoots: ['/root'],
@@ -79,18 +69,10 @@ describe('BundlesLayout', () => {
         return null;
       }
 
-      return bundles.map(bundle => {
-        return bundle
-          .filter(module => { // filter polyfills
-            for (let p of polyfills) {
-              if (module.id.indexOf(p) !== -1) {
-                return false;
-              }
-            }
-            return true;
-          })
-          .map(module => module.path);
-      });
+      return bundles.map(
+        bundle => bundle.filter(module => !module.isPolyfill())
+                        .map(module => module.path)
+      );
     }
 
     pit('should bundle dependant modules', () => {

@@ -5,6 +5,13 @@ const Promise = require('promise');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
 class AssetModule extends Module {
+  constructor(...args) {
+    super(...args);
+    const { resolution, name, type } = getAssetDataFromName(this.path);
+    this.resolution = resolution;
+    this._name = name;
+    this._type = type;
+  }
 
   isHaste() {
     return Promise.resolve(false);
@@ -23,27 +30,21 @@ class AssetModule extends Module {
   }
 
   getName() {
-    return super.getName().then(id => {
-      const {name, type} = getAssetDataFromName(this.path);
-      return id.replace(/\/[^\/]+$/, `/${name}.${type}`);
-    });
-  }
-
-  getPlainObject() {
-    return this.getName().then(name => this.addReference({
-      path: this.path,
-      isJSON: false,
-      isAsset: true,
-      isAsset_DEPRECATED: false,
-      isPolyfill: false,
-      resolution: getAssetDataFromName(this.path).resolution,
-      id: name,
-      dependencies: [],
-    }));
+    return super.getName().then(
+      id => id.replace(/\/[^\/]+$/, `/${this._name}.${this._type}`)
+    );
   }
 
   hash() {
     return `AssetModule : ${this.path}`;
+  }
+
+  isJSON() {
+    return false;
+  }
+
+  isAsset() {
+    return true;
   }
 }
 

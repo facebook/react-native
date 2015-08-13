@@ -58,29 +58,50 @@ describe('Bundler', function() {
       assetServer: assetServer,
     });
 
+
+    function createModule({
+      path,
+      id,
+      dependencies,
+      isAsset,
+      isAsset_DEPRECATED,
+      isJSON,
+      resolution,
+    }) {
+      return {
+        path,
+        resolution,
+        getDependencies() { return Promise.resolve(dependencies); },
+        getName() { return Promise.resolve(id); },
+        isJSON() { return isJSON; },
+        isAsset() { return isAsset; },
+        isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
+      };
+    }
+
     modules = [
-      {id: 'foo', path: '/root/foo.js', dependencies: []},
-      {id: 'bar', path: '/root/bar.js', dependencies: []},
-      {
-        id: 'image!img',
+      createModule({id: 'foo', path: '/root/foo.js', dependencies: []}),
+      createModule({id: 'bar', path: '/root/bar.js', dependencies: []}),
+      createModule({
         path: '/root/img/img.png',
+        id: 'image!img',
         isAsset_DEPRECATED: true,
         dependencies: [],
         resolution: 2,
-      },
-      {
+      }),
+      createModule({
         id: 'new_image.png',
         path: '/root/img/new_image.png',
         isAsset: true,
         resolution: 2,
         dependencies: []
-      },
-      {
+      }),
+      createModule({
         id: 'package/file.json',
         path: '/root/file.json',
         isJSON: true,
         dependencies: [],
-      },
+      }),
     ];
 
     getDependencies.mockImpl(function() {
@@ -203,41 +224,11 @@ describe('Bundler', function() {
       });
   });
 
-  pit('gets the list of dependencies', function() {
+  pit('gets the list of dependencies from the resolver', function() {
     return bundler.getDependencies('/root/foo.js', true)
-      .then(({dependencies}) => {
-        expect(dependencies).toEqual([
-          {
-            dependencies: [],
-            id: 'foo',
-            path: '/root/foo.js',
-          },
-          {
-            dependencies: [],
-            id: 'bar',
-            path: '/root/bar.js',
-          },
-          {
-            dependencies: [],
-            id: 'image!img',
-            isAsset_DEPRECATED: true,
-            path: '/root/img/img.png',
-            resolution: 2,
-          },
-          {
-            dependencies: [],
-            id: 'new_image.png',
-            isAsset: true,
-            path: '/root/img/new_image.png',
-            resolution: 2,
-          },
-          {
-            dependencies: [],
-            id: 'package/file.json',
-            isJSON: true,
-            path: '/root/file.json',
-          },
-        ]);
-      });
+      .then(
+        () => expect(getDependencies)
+                .toBeCalledWith('/root/foo.js', { dev: true })
+      );
   });
 });

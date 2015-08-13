@@ -125,26 +125,24 @@ class Bundler {
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
-    return this.getDependencies(main, isDev)
-               .then(function(result) {
-                 Activity.endEvent(findEventId);
-                 transformEventId = Activity.startEvent('transform');
+    return this.getDependencies(main, isDev).then((result) => {
+      Activity.endEvent(findEventId);
+      transformEventId = Activity.startEvent('transform');
 
-                 bundle.setMainModuleId(result.mainModuleId);
-                 return Promise.all(
-                   result.dependencies.map(transformModule)
-                 );
-               })
-               .then(function(transformedModules) {
-                 Activity.endEvent(transformEventId);
+      bundle.setMainModuleId(result.mainModuleId);
+      return Promise.all(
+        result.dependencies.map(transformModule)
+      );
+    }).then((transformedModules) => {
+      Activity.endEvent(transformEventId);
 
-                 transformedModules.forEach(function(moduleTransport) {
-                   bundle.addModule(moduleTransport);
-                 });
+      transformedModules.forEach(function(moduleTransport) {
+        bundle.addModule(moduleTransport);
+      });
 
-                 bundle.finalize({ runMainModule: runModule });
-                 return bundle;
-               });
+      bundle.finalize({ runMainModule: runModule });
+      return bundle;
+    });
   }
 
   invalidateFile(filePath) {
@@ -158,11 +156,11 @@ class Bundler {
   _transformModule(bundle, module) {
     let transform;
 
-    if (module.isAsset_DEPRECATED) {
+    if (module.isAsset_DEPRECATED()) {
       transform = this.generateAssetModule_DEPRECATED(bundle, module);
-    } else if (module.isAsset) {
+    } else if (module.isAsset()) {
       transform = this.generateAssetModule(bundle, module);
-    } else if (module.isJSON) {
+    } else if (module.isJSON()) {
       transform = generateJSONModule(module);
     } else {
       transform = this._transformer.loadFileAndTransform(
@@ -189,12 +187,15 @@ class Bundler {
   }
 
   generateAssetModule_DEPRECATED(bundle, module) {
-    return sizeOf(module.path).then(function(dimensions) {
+    return Promise.all([
+      sizeOf(module.path),
+      module.getName(),
+    ]).then(([dimensions, id]) => {
       const img = {
         __packager_asset: true,
         isStatic: true,
         path: module.path,
-        uri: module.id.replace(/^[^!]+!/, ''),
+        uri: id.replace(/^[^!]+!/, ''),
         width: dimensions.width / module.resolution,
         height: dimensions.height / module.resolution,
         deprecated: true,
