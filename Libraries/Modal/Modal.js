@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -24,15 +25,27 @@ class Modal extends React.Component {
       return null;
     }
 
+    if (this.props.transparent) {
+      var containerBackgroundColor = {backgroundColor: 'transparent'};
+    }
+
     return (
-      <RCTModalHostView animated={this.props.animated} style={styles.modal}>
-        <View style={styles.container}>
+      <RCTModalHostView
+        animated={this.props.animated}
+        transparent={this.props.transparent}
+        style={styles.modal}>
+        <View style={[styles.container, containerBackgroundColor]}>
           {this.props.children}
         </View>
       </RCTModalHostView>
     );
   }
 }
+
+Modal.propTypes = {
+  animated: PropTypes.bool,
+  transparent: PropTypes.bool,
+};
 
 var styles = StyleSheet.create({
   modal: {

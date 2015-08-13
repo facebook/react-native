@@ -81,4 +81,21 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:coder)
   }
 }
 
+- (void)invalidate
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+  });
+}
+
+- (BOOL)isTransparent
+{
+  return _modalViewController.modalPresentationStyle == UIModalPresentationCustom;
+}
+
+- (void)setTransparent:(BOOL)transparent
+{
+  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationCustom : UIModalPresentationFullScreen;
+}
+
 @end
