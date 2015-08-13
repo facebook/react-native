@@ -35,6 +35,8 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) BOOL adjustsFontSizeToFit;
 @property (nonatomic, assign) CGFloat minimumFontScale;
 @property (nonatomic, assign) CGFloat opacity;
+@property (nonatomic, assign) BOOL adjustsFontSizeToFit;
+@property (nonatomic, assign) CGFloat minimumFontScale;
 
 - (void)recomputeText;
 

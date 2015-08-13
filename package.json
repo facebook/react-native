@@ -1,24 +1,18 @@
 {
   "name": "react-native",
-  "version": "0.12.0",
+  "version": "0.8.0",
   "description": "A framework for building native apps using React",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
-  "engines": {
-    "node": ">=4"
-  },
   "jest": {
-    "scriptPreprocessor": "jestSupport/preprocessor.js",
+    "scriptPreprocessor": "jestSupport/scriptPreprocess.js",
     "setupEnvScriptFile": "jestSupport/env.js",
-    "moduleNameMapper": {
-      "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
-      "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
-    },
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "packager/react-packager/src/Activity/"
     ],
     "testFileExtensions": [
       "js"
@@ -32,7 +26,7 @@
   "files": [
     "React",
     "React.podspec",
-    "ReactAndroid",
+    "Examples/SampleApp",
     "Libraries",
     "packager",
     "cli.js",
@@ -41,63 +35,50 @@
     "LICENSE",
     "PATENTS",
     "README.md",
-    "jestSupport",
-    ".flowconfig"
+    "jestSupport"
   ],
   "scripts": {
-    "test": "NODE_ENV=test jest",
-    "lint": "eslint Examples/ Libraries/",
-    "start": "./packager/packager.sh || true"
+    "test": "jest",
+    "lint": "node linter.js Examples/ Libraries/",
+    "start": "./packager/packager.sh"
   },
   "bin": {
-    "react-native": "local-cli/wrong-react-native.js"
+    "react-native-start": "packager/packager.sh"
   },
   "dependencies": {
-    "absolute-path": "^0.0.0",
-    "art": "^0.10.0",
-    "babel": "^5.8.23",
-    "babel-core": "^5.8.23",
-    "bser": "^1.0.2",
-    "chalk": "^1.1.1",
-    "connect": "^2.8.3",
-    "debug": "^2.2.0",
-    "event-target-shim": "^1.0.5",
-    "fbjs-haste": "^0.3.2",
-    "fbjs-scripts": "^0.3.0",
-    "graceful-fs": "^4.1.2",
-    "image-size": "^0.3.5",
-    "immutable": "^3.7.5",
-    "joi": "^6.6.1",
-    "jstransform": "^11.0.3",
-    "module-deps": "^3.9.1",
-    "node-fetch": "^1.3.3",
-    "opn": "^3.0.2",
-    "optimist": "^0.6.1",
-    "progress": "^1.1.8",
-    "promise": "^7.0.4",
-    "react-haste": "^0.14.0",
-    "react-timer-mixin": "^0.13.2",
-    "rebound": "^0.0.13",
-    "regenerator": "^0.8.36",
-    "sane": "^1.2.0",
-    "semver": "^5.0.1",
-    "source-map": "^0.4.4",
-    "stacktrace-parser": "^0.1.3",
-    "uglify-js": "^2.4.24",
-    "underscore": "^1.8.3",
+    "absolute-path": "0.0.0",
+    "babel": "5.8.21",
+    "babel-core": "5.8.21",
+    "chalk": "1.0.0",
+    "connect": "2.8.3",
+    "debug": "2.1.0",
+    "graceful-fs": "3.0.6",
+    "image-size": "0.3.5",
+    "immutable": "^3.7.4",
+    "joi": "5.1.0",
+    "jstransform": "11.0.1",
+    "module-deps": "3.5.6",
+    "optimist": "0.6.1",
+    "promise": "^7.0.3",
+    "react-timer-mixin": "^0.13.1",
+    "react-tools": "git://github.com/facebook/react#b4e74e38e43ac53af8acd62c78c9213be0194245",
+    "rebound": "^0.0.12",
+    "regenerator": "0.8.36",
+    "sane": "^1.1.2",
+    "semver": "^4.3.6",
+    "source-map": "0.1.31",
+    "stacktrace-parser": "frantic/stacktrace-parser#493c5e5638",
+    "uglify-js": "2.4.16",
+    "underscore": "1.7.0",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
-    "ws": "^0.8.0",
-    "yargs": "^3.24.0",
-    "yeoman-environment": "^1.2.7",
-    "yeoman-generator": "^0.20.3"
+    "ws": "^0.7.2",
+    "yargs": "1.3.2"
   },
   "devDependencies": {
-    "jest-cli": "0.7.1",
-    "babel-eslint": "4.1.1",
-    "eslint": "1.3.1",
-    "eslint-plugin-react": "3.3.1",
-    "portfinder": "0.4.0",
-    "temp": "0.8.3"
+    "jest-cli": "facebook/jest#0.5.x",
+    "babel-eslint": "3.1.5",
+    "eslint": "0.21.2",
+    "eslint-plugin-react": "2.3.0"
   }
 }

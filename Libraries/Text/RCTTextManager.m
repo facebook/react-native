@@ -62,6 +62,8 @@ RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(adjustsFontSizeToFit, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(minimumFontScale, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(opacity, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(adjustsFontSizeToFit, BOOL)
+RCT_EXPORT_SHADOW_PROPERTY(minimumFontScale, CGFloat)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
