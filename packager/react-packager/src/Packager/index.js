@@ -182,10 +182,6 @@ Packager.prototype._transformModule = function(ppackage, module) {
   );
 };
 
-Packager.prototype.getGraphDebugInfo = function() {
-  return this._resolver.getDebugInfo();
-};
-
 Packager.prototype.generateAssetModule_DEPRECATED = function(ppackage, module) {
   return sizeOf(module.path).then(function(dimensions) {
     var img = {
