@@ -57,7 +57,7 @@ var app = connect()
   .use(connect.compress())
   .use(connect.errorHandler());
 
-var portToUse = port || 8080;
+var portToUse = port || 8079;
 var server = http.createServer(app);
 server.listen(portToUse, function(){
   console.log('Open http://localhost:' + portToUse + '/react-native/index.html');

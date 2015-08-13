@@ -56,6 +56,14 @@ const validateOpts = declareOpts({
       'parse',
     ],
   },
+  platforms: {
+    type: 'array',
+    default: ['ios', 'android'],
+  },
+  cache: {
+    type: 'object',
+    required: true,
+  },
 });
 
 class DependencyGraph {
@@ -63,6 +71,7 @@ class DependencyGraph {
     this._opts = validateOpts(options);
     this._hasteMap = Object.create(null);
     this._immediateResolutionCache = Object.create(null);
+    this._cache = this._opts.cache;
     this.load();
   }
 
@@ -80,17 +89,21 @@ class DependencyGraph {
     });
     this._crawling.then((files) => Activity.endEvent(crawlActivity));
 
-    this._fastfs = new Fastfs(this._opts.roots,this._opts.fileWatcher, {
+    this._fastfs = new Fastfs(this._opts.roots, this._opts.fileWatcher, {
       ignore: this._opts.ignoreFilePath,
       crawling: this._crawling,
     });
 
     this._fastfs.on('change', this._processFileChange.bind(this));
 
-    this._moduleCache = new ModuleCache(this._fastfs);
+    this._moduleCache = new ModuleCache(this._fastfs, this._cache);
 
     this._loading = Promise.all([
-      this._fastfs.build().then(() => this._buildHasteMap()),
+      this._fastfs.build()
+        .then(() => {
+          const hasteActivity = Activity.startEvent('Building Haste Map');
+          this._buildHasteMap().then(() => Activity.endEvent(hasteActivity));
+        }),
       this._buildAssetMap_DEPRECATED(),
     ]);
 
@@ -137,7 +150,7 @@ class DependencyGraph {
         () => this._resolveNodeDependency(fromModule, toModuleName)
       ).then(
         cacheResult,
-        forgive
+        forgive,
       );
     }
 
@@ -167,6 +180,13 @@ class DependencyGraph {
           entryPath,
           this._opts.roots
         );
+      }
+
+      const platformExt = getPlatformExt(entryPath);
+      if (platformExt && this._opts.platforms.indexOf(platformExt) > -1) {
+        this._platformExt = platformExt;
+      } else {
+        this._platformExt = null;
       }
 
       const entry = this._moduleCache.getModule(absolutePath);
@@ -237,16 +257,14 @@ class DependencyGraph {
     }
 
     return p.then((realModuleName) => {
-      let dep = this._hasteMap[realModuleName];
-
+      let dep = this._getHasteModule(realModuleName);
       if (dep && dep.type === 'Module') {
         return dep;
       }
 
       let packageName = realModuleName;
-
       while (packageName && packageName !== '.') {
-        dep = this._hasteMap[packageName];
+        dep = this._getHasteModule(packageName);
         if (dep && dep.type === 'Package') {
           break;
         }
@@ -349,6 +367,9 @@ class DependencyGraph {
       let file;
       if (this._fastfs.fileExists(potentialModulePath)) {
         file = potentialModulePath;
+      } else if (this._platformExt != null &&
+                 this._fastfs.fileExists(potentialModulePath + '.' + this._platformExt + '.js')) {
+        file = potentialModulePath + '.' + this._platformExt + '.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.js')) {
         file = potentialModulePath + '.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {
@@ -419,15 +440,32 @@ class DependencyGraph {
   }
 
   _updateHasteMap(name, mod) {
-    if (this._hasteMap[name]) {
-      debug('WARNING: conflicting haste modules: ' + name);
-      if (mod.type === 'Package' &&
-          this._hasteMap[name].type === 'Module') {
-        // Modules takes precendence over packages.
-        return;
-      }
+    if (this._hasteMap[name] == null) {
+      this._hasteMap[name] = [];
     }
-    this._hasteMap[name] = mod;
+
+    if (mod.type === 'Module') {
+      // Modules takes precendence over packages.
+      this._hasteMap[name].unshift(mod);
+    } else {
+      this._hasteMap[name].push(mod);
+    }
+  }
+
+  _getHasteModule(name) {
+    if (this._hasteMap[name]) {
+      const modules = this._hasteMap[name];
+      if (this._platformExt != null) {
+        for (let i = 0; i < modules.length; i++) {
+          if (getPlatformExt(modules[i].path) === this._platformExt) {
+            return modules[i];
+          }
+        }
+      }
+
+      return modules[0];
+    }
+    return null;
   }
 
   _isNodeModulesDir(file) {
@@ -480,9 +518,18 @@ class DependencyGraph {
     fastfs.on('change', this._processAssetChange_DEPRECATED.bind(this));
 
     return fastfs.build().then(
-      () => fastfs.findFilesByExts(this._opts.assetExts).map(
-        file => this._processAsset_DEPRECATED(file)
-      )
+      () => {
+        const processAsset_DEPRECATEDActivity = Activity.startEvent(
+          'Building (deprecated) Asset Map',
+        );
+
+        const assets = fastfs.findFilesByExts(this._opts.assetExts).map(
+          file => this._processAsset_DEPRECATED(file)
+        );
+
+        Activity.endEvent(processAsset_DEPRECATEDActivity);
+        return assets;
+      }
     );
   }
 
@@ -511,12 +558,17 @@ class DependencyGraph {
       return;
     }
 
+    /*eslint no-labels: 0 */
     if (type === 'delete' || type === 'change') {
-      _.each(this._hasteMap, (mod, name) => {
-        if (mod.path === absPath) {
-          delete this._hasteMap[name];
+      loop: for (let name in this._hasteMap) {
+        let modules = this._hasteMap[name];
+        for (var i = 0; i < modules.length; i++) {
+          if (modules[i].path === absPath) {
+            modules.splice(i, 1);
+            break loop;
+          }
         }
-      });
+      }
 
       if (type === 'delete') {
         return;
@@ -564,6 +616,15 @@ function normalizePath(modulePath) {
   }
 
   return modulePath.replace(/\/$/, '');
+}
+
+// Extract platform extension: index.ios.js -> ios
+function getPlatformExt(file) {
+  const parts = path.basename(file).split('.');
+  if (parts.length < 3) {
+    return null;
+  }
+  return parts[parts.length - 2];
 }
 
 util.inherits(NotFoundError, Error);

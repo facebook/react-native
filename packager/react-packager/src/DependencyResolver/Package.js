@@ -5,11 +5,12 @@ const path = require('path');
 
 class Package {
 
-  constructor(file, fastfs) {
+  constructor(file, fastfs, cache) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this._fastfs = fastfs;
     this.type = 'Package';
+    this._cache = cache;
   }
 
   getMain() {
@@ -33,11 +34,19 @@ class Package {
   }
 
   isHaste() {
-    return this._read().then(json => !!json.name);
+    return this._cache.get(this.path, 'haste', () =>
+      this._read().then(json => !!json.name)
+    );
   }
 
   getName() {
-    return this._read().then(json => json.name);
+    return this._cache.get(this.path, 'name', () =>
+      this._read().then(json => json.name)
+    );
+  }
+
+  invalidate() {
+    this._cache.invalidate(this.path);
   }
 
   redirectRequire(name) {

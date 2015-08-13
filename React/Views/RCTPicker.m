@@ -100,7 +100,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
     @"newValue": [self valueForRow:row]
   };
 
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end

@@ -12,6 +12,7 @@ var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var Promise = require('promise');
+var Cache = require('../Cache');
 var Transformer = require('../JSTransformer');
 var DependencyResolver = require('../DependencyResolver');
 var Package = require('./Package');
@@ -78,6 +79,15 @@ function Packager(options) {
 
   opts.projectRoots.forEach(verifyRootExists);
 
+  this._cache = opts.nonPersistent
+    ? new DummyCache()
+    : new Cache({
+      resetCache: opts.resetCache,
+      cacheVersion: opts.cacheVersion,
+      projectRoots: opts.projectRoots,
+      transformModulePath: opts.transformModulePath,
+    });
+
   this._resolver = new DependencyResolver({
     projectRoots: opts.projectRoots,
     blacklistRE: opts.blacklistRE,
@@ -87,15 +97,14 @@ function Packager(options) {
     assetRoots: opts.assetRoots,
     fileWatcher: opts.fileWatcher,
     assetExts: opts.assetExts,
+    cache: this._cache,
   });
 
   this._transformer = new Transformer({
     projectRoots: opts.projectRoots,
     blacklistRE: opts.blacklistRE,
-    cacheVersion: opts.cacheVersion,
-    resetCache: opts.resetCache,
+    cache: this._cache,
     transformModulePath: opts.transformModulePath,
-    nonPersistent: opts.nonPersistent,
   });
 
   this._projectRoots = opts.projectRoots;
@@ -103,7 +112,8 @@ function Packager(options) {
 }
 
 Packager.prototype.kill = function() {
-  return this._transformer.kill();
+  this._transformer.kill();
+  return this._cache.end();
 };
 
 Packager.prototype.package = function(main, runModule, sourceMapUrl, isDev) {
@@ -265,6 +275,15 @@ function getPathRelativeToRoot(roots, absPath) {
 function verifyRootExists(root) {
   // Verify that the root exists.
   assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
+}
+
+class DummyCache {
+  get(filepath, field, loaderCb) {
+    return loaderCb();
+  }
+
+  end(){}
+  invalidate(filepath){}
 }
 
 module.exports = Packager;

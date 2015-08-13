@@ -110,9 +110,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   _contentView.backgroundColor = backgroundColor;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
-  return _backingViewController ?: [super backingViewController];
+  return _reactViewController ?: [super reactViewController];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -244,7 +244,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   return self;
 }
 
-- (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
   RCTPerformanceLoggerEnd(RCTPLTTI);
@@ -261,7 +261,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   super.frame = frame;
   if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setFrame:frame forRootView:self];
+    [_bridge.uiManager setFrame:frame forView:self];
   }
 }
 

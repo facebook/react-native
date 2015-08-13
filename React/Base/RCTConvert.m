@@ -16,12 +16,6 @@
 
 @implementation RCTConvert
 
-void RCTLogConvertError(id json, const char *type)
-{
-  RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to %s",
-              json, [json classForCoder], type);
-}
-
 RCT_CONVERTER(id, id, self)
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
@@ -53,11 +47,11 @@ RCT_CONVERTER(NSString *, NSString, description)
     });
     NSNumber *number = [formatter numberFromString:json];
     if (!number) {
-      RCTLogConvertError(json, "a number");
+      RCTLogConvertError(json, @"a number");
     }
     return number;
   } else if (json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a number");
+    RCTLogConvertError(json, @"a number");
   }
   return nil;
 }
@@ -97,7 +91,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
 
     // Check if it has a scheme
-    if ([path rangeOfString:@"[a-zA-Z][a-zA-Z._-]+:" options:NSRegularExpressionSearch].location == 0) {
+    if ([path rangeOfString:@":"].location != NSNotFound) {
       path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
       URL = [NSURL URLWithString:path];
       if (URL) {
@@ -117,7 +111,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     return [NSURL fileURLWithPath:path];
   }
   @catch (__unused NSException *e) {
-    RCTLogConvertError(json, "a valid URL");
+    RCTLogConvertError(json, @"a valid URL");
     return nil;
   }
 }
@@ -162,7 +156,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
     return date;
   } else if (json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a date");
+    RCTLogConvertError(json, @"a date");
   }
   return nil;
 }
@@ -339,7 +333,7 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
       result[i] = [RCTConvert CGFloat:json[fields[i]]];
     }
   } else if (RCT_DEBUG && json && json != (id)kCFNull) {
-    RCTLogConvertError(json, type);
+    RCTLogConvertError(json, @(type));
   }
 }
 
@@ -627,7 +621,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   }
   else if (RCT_DEBUG && json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a color");
+    RCTLogConvertError(json, @"a color");
   }
 
   // Default color
@@ -665,7 +659,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     path = [self NSString:json[@"uri"]];
     scale = [self CGFloat:json[@"scale"]];
   } else {
-    RCTLogConvertError(json, "an image");
+    RCTLogConvertError(json, @"an image");
   }
 
   NSURL *URL = [self NSURL:path];
@@ -696,7 +690,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else {
-    RCTLogConvertError(json, "an image. Only local files or data URIs are supported");
+    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
   }
 
   if (scale > 0) {
@@ -779,31 +773,33 @@ static BOOL RCTFontIsCondensed(UIFont *font)
            withFamily:json[@"fontFamily"]
                  size:json[@"fontSize"]
                weight:json[@"fontWeight"]
-                style:json[@"fontStyle"]];
+                style:json[@"fontStyle"]
+          scaleMultiplier:1.0f];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
-  return [self UIFont:font withFamily:nil size:json weight:nil style:nil];
+  return [self UIFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:json style:nil];
+  return [self UIFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:nil style:json];
+  return [self UIFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
 {
-  return [self UIFont:font withFamily:json size:nil weight:nil style:nil];
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style
+   scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
   NSString *const RCTDefaultFontFamily = @"System";
@@ -828,6 +824,9 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
   // Get font attributes
   fontSize = [self CGFloat:size] ?: fontSize;
+  if (scaleMultiplier > 0.0 && scaleMultiplier != 1.0) {
+    fontSize = round(fontSize * scaleMultiplier);
+  }
   familyName = [self NSString:family] ?: familyName;
   isItalic = style ? [self RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [self RCTFontWeight:weight] : fontWeight;
@@ -1051,177 +1050,3 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
 }), RCTAnimationTypeEaseInEaseOut, integerValue)
 
 @end
-
-BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json)
-{
-  // Split keypath
-  NSArray *parts = [keyPath componentsSeparatedByString:@"."];
-  NSString *key = [parts lastObject];
-  for (NSUInteger i = 0; i < parts.count - 1; i++) {
-    target = [target valueForKey:parts[i]];
-    if (!target) {
-      return NO;
-    }
-  }
-
-  // Get property setter
-  SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                     [[key substringToIndex:1] uppercaseString],
-                                     [key substringFromIndex:1]]);
-
-  // Fail early
-  if (![target respondsToSelector:setter]) {
-    return NO;
-  }
-
-  @try {
-
-    NSMethodSignature *signature = [RCTConvert methodSignatureForSelector:type];
-    switch (signature.methodReturnType[0]) {
-
-#define RCT_SET_CASE(_value, _type) \
-      case _value: { \
-        _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
-        void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
-        set(target, setter, convert([RCTConvert class], type, json)); \
-        break; \
-      }
-
-        RCT_SET_CASE(':', SEL)
-        RCT_SET_CASE('*', const char *)
-        RCT_SET_CASE('c', char)
-        RCT_SET_CASE('C', unsigned char)
-        RCT_SET_CASE('s', short)
-        RCT_SET_CASE('S', unsigned short)
-        RCT_SET_CASE('i', int)
-        RCT_SET_CASE('I', unsigned int)
-        RCT_SET_CASE('l', long)
-        RCT_SET_CASE('L', unsigned long)
-        RCT_SET_CASE('q', long long)
-        RCT_SET_CASE('Q', unsigned long long)
-        RCT_SET_CASE('f', float)
-        RCT_SET_CASE('d', double)
-        RCT_SET_CASE('B', BOOL)
-        RCT_SET_CASE('^', void *)
-
-      case '@': {
-        id (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;
-        void (*set)(id, SEL, id) = (typeof(set))objc_msgSend;
-        set(target, setter, convert([RCTConvert class], type, json));
-        break;
-      }
-      case '{':
-      default: {
-
-        // Get converted value
-        void *value = malloc(signature.methodReturnLength);
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-        [invocation setTarget:[RCTConvert class]];
-        [invocation setSelector:type];
-        [invocation setArgument:&json atIndex:2];
-        [invocation invoke];
-        [invocation getReturnValue:value];
-
-        // Set converted value
-        signature = [target methodSignatureForSelector:setter];
-        invocation = [NSInvocation invocationWithMethodSignature:signature];
-        [invocation setArgument:&setter atIndex:1];
-        [invocation setArgument:value atIndex:2];
-        [invocation invokeWithTarget:target];
-        free(value);
-
-        break;
-      }
-    }
-    return YES;
-  }
-  @catch (NSException *exception) {
-    RCTLogError(@"Exception thrown while attempting to set property '%@' of \
-                '%@' with value '%@': %@", key, [target class], json, exception);
-    return NO;
-  }
-}
-
-BOOL RCTCopyProperty(id target, id source, NSString *keyPath)
-{
-  // Split keypath
-  NSArray *parts = [keyPath componentsSeparatedByString:@"."];
-  NSString *key = [parts lastObject];
-  for (NSUInteger i = 0; i < parts.count - 1; i++) {
-    source = [source valueForKey:parts[i]];
-    target = [target valueForKey:parts[i]];
-    if (!source || !target) {
-      return NO;
-    }
-  }
-
-  // Get property getter
-  SEL getter = NSSelectorFromString(key);
-
-  // Get property setter
-  SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                     [[key substringToIndex:1] uppercaseString],
-                                     [key substringFromIndex:1]]);
-
-  // Fail early
-  if (![source respondsToSelector:getter] || ![target respondsToSelector:setter]) {
-    return NO;
-  }
-
-  NSMethodSignature *signature = [source methodSignatureForSelector:getter];
-  switch (signature.methodReturnType[0]) {
-
-#define RCT_COPY_CASE(_value, _type) \
-    case _value: { \
-      _type (*get)(id, SEL) = (typeof(get))objc_msgSend; \
-      void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
-      set(target, setter, get(source, getter)); \
-      break; \
-    }
-
-      RCT_COPY_CASE(':', SEL)
-      RCT_COPY_CASE('*', const char *)
-      RCT_COPY_CASE('c', char)
-      RCT_COPY_CASE('C', unsigned char)
-      RCT_COPY_CASE('s', short)
-      RCT_COPY_CASE('S', unsigned short)
-      RCT_COPY_CASE('i', int)
-      RCT_COPY_CASE('I', unsigned int)
-      RCT_COPY_CASE('l', long)
-      RCT_COPY_CASE('L', unsigned long)
-      RCT_COPY_CASE('q', long long)
-      RCT_COPY_CASE('Q', unsigned long long)
-      RCT_COPY_CASE('f', float)
-      RCT_COPY_CASE('d', double)
-      RCT_COPY_CASE('B', BOOL)
-      RCT_COPY_CASE('^', void *)
-
-    case '@': {
-      id (*get)(id, SEL) = (typeof(get))objc_msgSend;
-      void (*set)(id, SEL, id) = (typeof(set))objc_msgSend;
-      set(target, setter, get(source, getter));
-      break;
-    }
-    case '{':
-    default: {
-
-      // Get value
-      void *value = malloc(signature.methodReturnLength);
-      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-      [invocation setArgument:&getter atIndex:1];
-      [invocation invokeWithTarget:source];
-      [invocation getReturnValue:value];
-
-      // Set value
-      signature = [target methodSignatureForSelector:setter];
-      invocation = [NSInvocation invocationWithMethodSignature:signature];
-      [invocation setArgument:&setter atIndex:1];
-      [invocation setArgument:value atIndex:2];
-      [invocation invokeWithTarget:target];
-      free(value);
-
-      break;
-    }
-  }
-  return YES;
-}

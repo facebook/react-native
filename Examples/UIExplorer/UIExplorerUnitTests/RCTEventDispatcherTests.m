@@ -64,7 +64,7 @@
   _eventDispatcher = [[RCTEventDispatcher alloc] init];
   ((id<RCTBridgeModule>)_eventDispatcher).bridge = _bridge;
 
-  _eventName = @"sampleEvent";
+  _eventName = RCTNormalizeInputEventName(@"sampleEvent");
   _body = @{ @"foo": @"bar" };
   _testEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                            eventName:_eventName
@@ -125,7 +125,7 @@
 
 - (void)testDifferentEventTypesDontCoalesce
 {
-  NSString *firstEventName = @"firstEvent";
+  NSString *firstEventName = RCTNormalizeInputEventName(@"firstEvent");
   RCTTestEvent *firstEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                                            eventName:firstEventName
                                                                 body:_body];

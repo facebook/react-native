@@ -11,19 +11,19 @@ before_install:
   - brew update
 install:
   - brew reinstall xctool nvm
+  - rm -Rf `node -p "require('os').tmpDir()"`/jest_preprocess_cache
   - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - mkdir -p .nvm
   - cp $(brew --prefix nvm)/nvm-exec .nvm/
   - export NVM_DIR=.nvm
   - source $(brew --prefix nvm)/nvm.sh
   - nvm install iojs-v2
+  - nvm use iojs-v2
   - npm config set spin=false
   - npm install
 
 script:
 - |
-  nvm use iojs-v2
-
   if [ "$TEST_TYPE" = objc ]
   then
 
@@ -38,7 +38,7 @@ script:
   then
 
     cd website
-    npm install
+    $(which npm) install
     ./setup.sh
     if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
       # Automatically publish the website

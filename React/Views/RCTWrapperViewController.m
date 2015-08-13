@@ -124,13 +124,13 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
 
 - (void)handleNavLeftButtonTapped
 {
-  [_eventDispatcher sendInputEventWithName:@"topNavLeftButtonTap"
+  [_eventDispatcher sendInputEventWithName:@"navLeftButtonTap"
                                       body:@{@"target":_navItem.reactTag}];
 }
 
 - (void)handleNavRightButtonTapped
 {
-  [_eventDispatcher sendInputEventWithName:@"topNavRightButtonTap"
+  [_eventDispatcher sendInputEventWithName:@"navRightButtonTap"
                                       body:@{@"target":_navItem.reactTag}];
 }
 

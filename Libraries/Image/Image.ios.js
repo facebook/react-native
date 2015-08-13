@@ -173,7 +173,7 @@ var Image = React.createClass({
         resizeMode={resizeMode}
         tintColor={tintColor}
         src={source.uri}
-        defaultSrc={defaultSource.uri}
+        defaultImageSrc={defaultSource.uri}
       />
     );
   }

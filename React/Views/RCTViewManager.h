@@ -48,40 +48,27 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 - (RCTShadowView *)shadowView;
 
 /**
- * Returns a dictionary of config data passed to JS that defines eligible events
- * that can be placed on native views. This should return bubbling
- * directly-dispatched event types and specify what names should be used to
- * subscribe to either form (bubbling/capturing).
- *
- * Returned dictionary should be of the form: @{
- *   @"onTwirl": {
- *     @"phasedRegistrationNames": @{
- *       @"bubbled": @"onTwirl",
- *       @"captured": @"onTwirlCaptured"
- *     }
- *   }
- * }
+ * Returns an array of names of events that can be sent by native views. This
+ * should return bubbling, directly-dispatched event types. The event name
+ * should not include a prefix such as 'on' or 'top', as this will be applied
+ * as needed. When subscribing to the event, use the 'Captured' suffix to
+ * indicate the captured form, or omit the suffix for the bubbling form.
  *
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-- (NSDictionary *)customBubblingEventTypes;
+- (NSArray *)customBubblingEventTypes;
 
 /**
- * Returns a dictionary of config data passed to JS that defines eligible events
- * that can be placed on native views. This should return non-bubbling
- * directly-dispatched event types.
- *
- * Returned dictionary should be of the form: @{
- *   @"onTwirl": {
- *     @"registrationName": @"onTwirl"
- *   }
- * }
+ * Returns an array of names of events that can be sent by native views. This
+ * should return non-bubbling, directly-dispatched event types. The event name
+ * should not include a prefix such as 'on' or 'top', as this will be applied
+ * as needed.
  *
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customDirectEventTypes] when overriding it.
  */
-- (NSDictionary *)customDirectEventTypes;
+- (NSArray *)customDirectEventTypes;
 
 /**
  * Called to notify manager that layout has finished, in case any calculated
@@ -100,66 +87,28 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 /**
  * This handles the simple case, where JS and native property names match.
  */
-#define RCT_EXPORT_VIEW_PROPERTY(name, type) RCT_REMAP_VIEW_PROPERTY(name, name, type)
-
-#define RCT_EXPORT_SHADOW_PROPERTY(name, type) RCT_REMAP_SHADOW_PROPERTY(name, name, type)
+#define RCT_EXPORT_VIEW_PROPERTY(name, type) \
++ (NSArray *)propConfig_##name { return @[@#type]; }
 
 /**
- * This macro maps a named property on the module to an arbitrary key path
- * within the view or shadowView.
+ * This macro maps a named property to an arbitrary key path in the view.
  */
-#define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)                           \
-RCT_CUSTOM_VIEW_PROPERTY(name, type, UIView) {                                 \
-  if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
-      (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
-    RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
-  } \
-}
-
-#define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type)                         \
-RCT_CUSTOM_SHADOW_PROPERTY(name, type, RCTShadowView) {                        \
-  if ((json && !RCTSetProperty(view, @#keyPath, @selector(type:), json)) ||    \
-      (!json && !RCTCopyProperty(view, defaultView, @#keyPath))) {             \
-    RCTLogError(@"%@ does not have setter for `%s` property", [view class], #name); \
-  } \
-}
+#define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type) \
++ (NSArray *)propConfig_##name { return @[@#type, @#keyPath]; }
 
 /**
- * These macros can be used when you need to provide custom logic for setting
+ * This macro can be used when you need to provide custom logic for setting
  * view properties. The macro should be followed by a method body, which can
  * refer to "json", "view" and "defaultView" to implement the required logic.
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
-+ (NSString *)getPropConfigView_##name { return @#type; } \
+RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
 - (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
 
-#define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
-+ (NSString *)getPropConfigShadow_##name { return @#type; } \
-- (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
-
 /**
- * These are useful in cases where the module's superclass handles a
- * property, but you wish to "unhandle" it, so it will be ignored.
+ * This macro is used to map properties to the shadow view, instead of the view.
  */
-#define RCT_IGNORE_VIEW_PROPERTY(name) \
-- (void)set_##name:(id)value forView:(id)view withDefaultView:(id)defaultView {}
-
-#define RCT_IGNORE_SHADOW_PROPERTY(name) \
-- (void)set_##name:(id)value forShadowView:(id)view withDefaultView:(id)defaultView {}
-
-/**
- * Used for when view property names change. Will log an error when used.
- */
-#define RCT_DEPRECATED_VIEW_PROPERTY(oldName, newName) \
-- (void)set_##oldName:(id)json forView:(id)view withDefaultView:(id)defaultView { \
-  RCTLogError(@"Property '%s' has been replaced by '%s'.", #oldName, #newName); \
-  [self set_##newName:json forView:view withDefaultView:defaultView]; \
-}
-
-#define RCT_DEPRECATED_SHADOW_PROPERTY(oldName, newName) \
-- (void)set_##oldName:(id)json forShadowView:(id)view withDefaultView:(id)defaultView { \
-  RCTLogError(@"Property '%s' has been replaced by '%s'.", #oldName, #newName); \
-  [self set_##newName:json forView:view withDefaultView:defaultView]; \
-}
+#define RCT_EXPORT_SHADOW_PROPERTY(name, type) \
++ (NSArray *)propConfigShadow_##name { return @[@#type]; }
 
 @end

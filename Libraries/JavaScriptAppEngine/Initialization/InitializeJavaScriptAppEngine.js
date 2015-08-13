@@ -26,6 +26,7 @@
 require('RCTDebugComponentOwnership');
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
+require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;
@@ -89,7 +90,7 @@ function setUpAlert() {
         message: '' + text,
         buttons: [{'cancel': 'OK'}],
       };
-      RCTAlertManager.alertWithArgs(alertOpts, null);
+      RCTAlertManager.alertWithArgs(alertOpts, function () {});
     };
   }
 }
@@ -128,6 +129,10 @@ function setupProfile() {
   require('BridgeProfiling').swizzleReactPerf();
 }
 
+function setUpProcessEnv() {
+  GLOBAL.process = {env: {NODE_ENV: __DEV__ ? 'development' : 'production'}};
+}
+
 setUpRedBoxErrorHandler();
 setUpTimers();
 setUpAlert();
@@ -137,3 +142,4 @@ setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
 setupProfile();
+setUpProcessEnv();

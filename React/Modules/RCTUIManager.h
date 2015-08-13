@@ -14,6 +14,12 @@
 #import "RCTInvalidating.h"
 #import "RCTViewManager.h"
 
+/**
+ * Posted right before re-render happens. This is a chance for views to invalidate their state so
+ * next render cycle will pick up updated views and layout appropriately.
+ */
+RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
+
 @protocol RCTScrollableProtocol;
 
 /**
@@ -40,10 +46,10 @@
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
 
 /**
- * Update the frame of a root view. This might be in response to a screen rotation
+ * Update the frame of a view. This might be in response to a screen rotation
  * or some other layout event outside of the React-managed view hierarchy.
  */
-- (void)setFrame:(CGRect)frame forRootView:(UIView *)rootView;
+- (void)setFrame:(CGRect)frame forView:(UIView *)view;
 
 /**
  * Update the background color of a root view. This is usually triggered by

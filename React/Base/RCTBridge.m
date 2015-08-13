@@ -18,6 +18,7 @@
 #import "RCTUtils.h"
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
+NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
@@ -47,6 +48,11 @@ NSArray *RCTGetModuleClasses(void)
   return RCTModuleClasses;
 }
 
+/**
+ * Register the given class as a bridge module. All modules must be registered
+ * prior to the first bridge initialization.
+ */
+void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
   static dispatch_once_t onceToken;
@@ -56,7 +62,7 @@ void RCTRegisterModule(Class moduleClass)
 
   RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
             @"%@ does not conform to the RCTBridgeModule protocol",
-            NSStringFromClass(moduleClass));
+            moduleClass);
 
   // Register module
   [RCTModuleClasses addObject:moduleClass];
@@ -136,6 +142,22 @@ dispatch_queue_t RCTJSThread;
   });
 }
 
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                   launchOptions:(NSDictionary *)launchOptions
+{
+  RCTAssertMainThread();
+
+  if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLTTI);
+
+    _delegate = delegate;
+    _launchOptions = [launchOptions copy];
+    [self setUp];
+    [self bindKeys];
+  }
+  return self;
+}
+
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
                     launchOptions:(NSDictionary *)launchOptions
@@ -177,14 +199,16 @@ RCT_NOT_IMPLEMENTED(-init)
 
 #if TARGET_IPHONE_SIMULATOR
 
-  __weak RCTBridge *weakSelf = self;
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   // reload in current mode
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-                                   [weakSelf reload];
+                                 action:^(__unused UIKeyCommand *command) 
+                                 {
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                                                        object:nil
+                                                                                      userInfo:nil];
                                  }];
 
 #endif
@@ -211,6 +235,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   RCTAssertMainThread();
 
+  _bundleURL = [self.delegate sourceURLForBridge:self] ?: _bundleURL;
   _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 

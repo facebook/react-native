@@ -8,7 +8,7 @@ const replacePatterns = require('./replacePatterns');
 
 class Module {
 
-  constructor(file, fastfs, moduleCache) {
+  constructor(file, fastfs, moduleCache, cache) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -18,34 +18,41 @@ class Module {
 
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
+    this._cache = cache;
   }
 
   isHaste() {
-    return this._read().then(data => !!data.id);
+    return this._cache.get(this.path, 'haste', () =>
+      this._read().then(data => !!data.id)
+    );
   }
 
   getName() {
-    return this._read().then(data => {
-      if (data.id) {
-        return data.id;
-      }
+    return this._cache.get(
+      this.path,
+      'name',
+      () => this._read().then(data => {
+        if (data.id) {
+          return data.id;
+        }
 
-      const p = this.getPackage();
+        const p = this.getPackage();
 
-      if (!p) {
-        // Name is full path
-        return this.path;
-      }
+        if (!p) {
+          // Name is full path
+          return this.path;
+        }
 
-      return p.getName()
-        .then(name => {
-          if (!name) {
-            return this.path;
-          }
+        return p.getName()
+          .then(name => {
+            if (!name) {
+              return this.path;
+            }
 
-          return path.join(name, path.relative(p.root, this.path));
-        });
-    });
+            return path.join(name, path.relative(p.root, this.path));
+          });
+      })
+    );
   }
 
   getPackage() {
@@ -53,7 +60,13 @@ class Module {
   }
 
   getDependencies() {
-    return this._read().then(data => data.dependencies);
+    return this._cache.get(this.path, 'dependencies', () =>
+      this._read().then(data => data.dependencies)
+    );
+  }
+
+  invalidate() {
+    this._cache.invalidate(this.path);
   }
 
   _read() {

@@ -37,6 +37,7 @@ var COMPONENTS = [
   require('./ListViewGridLayoutExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
+  require('./ModalExample'),
   require('./Navigator/NavigatorExample'),
   require('./NavigatorIOSColorsExample'),
   require('./NavigatorIOSExample'),
@@ -74,6 +75,7 @@ var APIS = [
   require('./TimerExample'),
   require('./VibrationIOSExample'),
   require('./XHRExample'),
+  require('./ImageEditingExample'),
 ];
 
 // Register suitable examples for snapshot tests

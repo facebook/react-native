@@ -39,8 +39,10 @@ typedef enum {
   NSMutableArray *_reactSubviews;
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
+  BOOL _recomputeBorder;
   float _paddingMetaProps[META_PROP_COUNT];
   float _marginMetaProps[META_PROP_COUNT];
+  float _borderMetaProps[META_PROP_COUNT];
 }
 
 @synthesize reactTag = _reactTag;
@@ -247,6 +249,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     for (int ii = 0; ii < META_PROP_COUNT; ii++) {
       _paddingMetaProps[ii] = CSS_UNDEFINED;
       _marginMetaProps[ii] = CSS_UNDEFINED;
+      _borderMetaProps[ii] = CSS_UNDEFINED;
     }
 
     _newView = YES;
@@ -449,26 +452,19 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
 #define RCT_BORDER_PROPERTY(prop, metaProp)            \
 - (void)setBorder##prop##Width:(CGFloat)value          \
 {                                                      \
-  _cssNode->style.border[CSS_##metaProp] = value;      \
-  [self dirtyLayout];                                  \
+  _borderMetaProps[META_PROP_##metaProp] = value;      \
+  _recomputeBorder = YES;                              \
 }                                                      \
 - (CGFloat)border##prop##Width                         \
 {                                                      \
-  return _cssNode->style.border[META_PROP_##metaProp]; \
+  return _borderMetaProps[META_PROP_##metaProp];       \
 }
 
+RCT_BORDER_PROPERTY(, ALL)
 RCT_BORDER_PROPERTY(Top, TOP)
 RCT_BORDER_PROPERTY(Left, LEFT)
 RCT_BORDER_PROPERTY(Bottom, BOTTOM)
 RCT_BORDER_PROPERTY(Right, RIGHT)
-
-- (void)setBorderWidth:(CGFloat)value
-{
-  for (int i = 0; i < 4; i++) {
-    _cssNode->style.border[i] = value;
-  }
-  [self dirtyLayout];
-}
 
 // Dimensions
 
@@ -545,7 +541,7 @@ RCT_STYLE_PROPERTY(FlexDirection, flexDirection, flex_direction, css_flex_direct
 RCT_STYLE_PROPERTY(JustifyContent, justifyContent, justify_content, css_justify_t)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, align_self, css_align_t)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, align_items, css_align_t)
-RCT_STYLE_PROPERTY(PositionType, positionType, position_type, css_position_type_t)
+RCT_STYLE_PROPERTY(Position, position, position_type, css_position_type_t)
 RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
 
 - (void)setBackgroundColor:(UIColor *)color
@@ -562,12 +558,16 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   if (_recomputeMargin) {
     RCTProcessMetaProps(_marginMetaProps, _cssNode->style.margin);
   }
-  if (_recomputePadding || _recomputeMargin) {
+  if (_recomputeBorder) {
+    RCTProcessMetaProps(_borderMetaProps, _cssNode->style.border);
+  }
+  if (_recomputePadding || _recomputeMargin || _recomputeBorder) {
     [self dirtyLayout];
   }
   [self fillCSSNode:_cssNode];
   _recomputeMargin = NO;
   _recomputePadding = NO;
+  _recomputeBorder = NO;
 }
 
 @end

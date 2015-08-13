@@ -47,7 +47,7 @@
 RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
   return _tabController;
 }
@@ -92,13 +92,13 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here whenever a transaction has finished
-  [self addControllerToClosestParent:_tabController];
+  [self reactAddControllerToClosestParent:_tabController];
 
   if (_tabsChanged) {
 
     NSMutableArray *viewControllers = [NSMutableArray array];
     for (RCTTabBarItem *tab in [self reactSubviews]) {
-      UIViewController *controller = tab.backingViewController;
+      UIViewController *controller = tab.reactViewController;
       if (!controller) {
         controller = [[RCTWrapperViewController alloc] initWithContentView:tab
                                                            eventDispatcher:_eventDispatcher];
@@ -154,7 +154,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
   RCTTabBarItem *tab = [self reactSubviews][index];
-  [_eventDispatcher sendInputEventWithName:@"topTap" body:@{@"target": tab.reactTag}];
+  [_eventDispatcher sendInputEventWithName:@"press" body:@{@"target": tab.reactTag}];
   return NO;
 }
 

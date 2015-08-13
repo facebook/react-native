@@ -94,7 +94,7 @@ extern dispatch_queue_t RCTJSThread;
 #define RCT_EXPORT_MODULE(js_name) \
   RCT_EXTERN void RCTRegisterModule(Class); \
   + (NSString *)moduleName { return @#js_name; } \
-  + (void)load { RCTRegisterModule([self class]); }
+  + (void)load { RCTRegisterModule(self); }
 
 /**
  * Wrap the parameter line of your method implementation with this macro to

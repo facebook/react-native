@@ -253,12 +253,12 @@ var ReactNativeMount = {
     RCTUIManager.removeSubviewsFromContainerWithID(containerTag);
   },
 
-  getNode: function<T>(id: T): T {
-    return id;
+  getNode: function(rootNodeID: string): number {
+    return ReactNativeTagHandles.rootNodeIDToTag[rootNodeID];
   },
 
-  getID: function<T>(id: T): T {
-    return id;
+  getID: function(nativeTag: number): string {
+    return ReactNativeTagHandles.tagToRootNodeID[nativeTag];
   }
 };
 

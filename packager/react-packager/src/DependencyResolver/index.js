@@ -45,7 +45,11 @@ var validateOpts = declareOpts({
   assetExts: {
     type: 'array',
     required: true,
-  }
+  },
+  cache: {
+    type: 'object',
+    required: true,
+  },
 });
 
 function HasteDependencyResolver(options) {
@@ -60,6 +64,7 @@ function HasteDependencyResolver(options) {
         (opts.blacklistRE && opts.blacklistRE.test(filepath));
     },
     fileWatcher: opts.fileWatcher,
+    cache: opts.cache,
   });
 
 

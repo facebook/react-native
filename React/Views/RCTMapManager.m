@@ -75,7 +75,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
                                 }
                             };
 
-    [self.bridge.eventDispatcher sendInputEventWithName:@"topTap" body:event];
+    [self.bridge.eventDispatcher sendInputEventWithName:@"press" body:event];
   }
 }
 
@@ -116,7 +116,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
       @"annotationId": annotation.identifier
     };
 
-  [self.bridge.eventDispatcher sendInputEventWithName:@"topTap" body:event];
+  [self.bridge.eventDispatcher sendInputEventWithName:@"press" body:event];
 }
 
 
@@ -222,7 +222,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
       @"longitudeDelta": @(FLUSH_NAN(region.span.longitudeDelta)),
     }
   };
-  [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [self.bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end

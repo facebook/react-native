@@ -15,23 +15,10 @@
 #import "RCTUtils.h"
 
 @implementation RCTJavaScriptLoader
-{
-  __weak RCTBridge *_bridge;
-}
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-{
-  RCTAssert(bridge, @"bridge parameter is required");
-
-  if ((self = [super init])) {
-    _bridge = bridge;
-  }
-  return self;
-}
 
 RCT_NOT_IMPLEMENTED(-init)
 
-- (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(void (^)(NSError *, NSString *))onComplete
++ (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete
 {
   // Sanitize the script URL
   scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];

@@ -69,9 +69,11 @@ type Config = {
   delete?: Anim;
 }
 
-function configureNext(config: Config, onAnimationDidEnd?: Function, onError?: Function) {
+function configureNext(config: Config, onAnimationDidEnd?: Function) {
   configChecker({config}, 'config', 'LayoutAnimation.configureNext');
-  RCTUIManager.configureNextLayoutAnimation(config, onAnimationDidEnd, onError);
+  RCTUIManager.configureNextLayoutAnimation(
+    config, onAnimationDidEnd || function() {}, function() { /* unused */ }
+  );
 }
 
 function create(duration: number, type, creationProp): Config {
@@ -107,8 +109,32 @@ var Presets = {
   },
 };
 
+/**
+ * Automatically animates views to their new positions when the
+ * next layout happens.
+ *
+ * A common way to use this API is to call `LayoutAnimation.configureNext`
+ * before calling `setState`.
+ */
 var LayoutAnimation = {
+  /**
+   * Schedules an animation to happen on the next layout.
+   *
+   * @param config Specifies animation properties:
+   *
+   *   - `duration` in milliseconds
+   *   - `create`, config for animating in new views (see `Anim` type)
+   *   - `update`, config for animating views that have been updated
+   * (see `Anim` type)
+   *
+   * @param onAnimationDidEnd Called when the animation finished.
+   * Only supported on iOS.
+   * @param onError Called on error. Only supported on iOS.
+   */
   configureNext,
+  /**
+   * Helper for creating a config for `configureNext`.
+   */
   create,
   Types,
   Properties,
