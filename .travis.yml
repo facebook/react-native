@@ -38,7 +38,7 @@ script:
   then
 
     cd website
-    npm install
+    $(which npm) install
     ./setup.sh
     if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
       # Automatically publish the website
