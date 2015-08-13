@@ -598,6 +598,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../Libraries/**",
 					"$(SRCROOT)/../../React/**",
 				);
 				INFOPLIST_FILE = "iOS/Info.plist";
@@ -614,6 +615,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../Libraries/**",
 					"$(SRCROOT)/../../React/**",
 				);
 				INFOPLIST_FILE = "iOS/Info.plist";
