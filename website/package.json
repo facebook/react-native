@@ -3,6 +3,7 @@
     "start": "node server/server.js"
   },
   "dependencies": {
+    "bluebird": "^2.9.21",
     "connect": "2.8.3",
     "esprima-fb": "latest",
     "fs.extra": "latest",
@@ -14,8 +15,5 @@
     "react-docgen": "^1.1.0",
     "react-page-middleware": "git://github.com/facebook/react-page-middleware.git",
     "request": "latest"
-  },
-  "devDependencies": {
-    "bluebird": "^2.9.21"
   }
 }
