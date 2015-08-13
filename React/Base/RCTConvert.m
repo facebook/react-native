@@ -29,38 +29,33 @@ RCT_NUMBER_CONVERTER(uint64_t, unsignedLongLongValue);
 RCT_NUMBER_CONVERTER(NSInteger, integerValue)
 RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
 
-RCT_CUSTOM_CONVERTER(NSArray *, NSArray, [NSArray arrayWithArray:json])
+/**
+ * This macro is used for creating converter functions for directly
+ * representable json values that require no conversion.
+ */
+#if RCT_DEBUG
+#define RCT_JSON_CONVERTER(type)           \
++ (type *)type:(id)json                    \
+{                                          \
+  if ([json isKindOfClass:[type class]]) { \
+    return json;                           \
+  } else if (json) {                       \
+    RCTLogConvertError(json, @#type);      \
+  }                                        \
+  return nil;                              \
+}
+#else
+#define RCT_JSON_CONVERTER(type)           \
++ (type *)type:(id)json { return json; }
+#endif
+
+RCT_JSON_CONVERTER(NSArray)
+RCT_JSON_CONVERTER(NSDictionary)
+RCT_JSON_CONVERTER(NSString)
+RCT_JSON_CONVERTER(NSNumber)
+
 RCT_CUSTOM_CONVERTER(NSSet *, NSSet, [NSSet setWithArray:json])
-RCT_CUSTOM_CONVERTER(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
-RCT_CONVERTER(NSString *, NSString, description)
-
-+ (NSNumber *)NSNumber:(id)json
-{
-  if ([json isKindOfClass:[NSNumber class]]) {
-    return json;
-  } else if ([json isKindOfClass:[NSString class]]) {
-    static NSNumberFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      formatter = [[NSNumberFormatter alloc] init];
-      formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    });
-    NSNumber *number = [formatter numberFromString:json];
-    if (!number) {
-      RCTLogConvertError(json, @"a number");
-    }
-    return number;
-  } else if (json && json != (id)kCFNull) {
-    RCTLogConvertError(json, @"a number");
-  }
-  return nil;
-}
-
-+ (NSData *)NSData:(id)json
-{
-  // TODO: should we automatically decode base64 data? Probably not...
-  return [[self NSString:json] dataUsingEncoding:NSUTF8StringEncoding];
-}
+RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncoding])
 
 + (NSIndexSet *)NSIndexSet:(id)json
 {
@@ -79,7 +74,7 @@ RCT_CONVERTER(NSString *, NSString, description)
 + (NSURL *)NSURL:(id)json
 {
   NSString *path = [self NSString:json];
-  if (!path.length) {
+  if (!path) {
     return nil;
   }
 
@@ -155,7 +150,7 @@ RCT_CONVERTER(NSString *, NSString, description)
                   "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
     }
     return date;
-  } else if (json && json != (id)kCFNull) {
+  } else if (json) {
     RCTLogConvertError(json, @"a date");
   }
   return nil;
@@ -169,7 +164,7 @@ RCT_CUSTOM_CONVERTER(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFro
 
 NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
 {
-  if (!json || json == (id)kCFNull) {
+  if (!json) {
     return defaultValue;
   }
   if ([json isKindOfClass:[NSNumber class]]) {
@@ -180,13 +175,12 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
     return defaultValue;
   }
-
-  if (![json isKindOfClass:[NSString class]]) {
+  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]]) {
     RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@",
                 typeName, [json classForCoder], json);
   }
   id value = mapping[json];
-  if (!value && [json description].length > 0) {
+  if (RCT_DEBUG && !value && [json description].length > 0) {
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [[mapping allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)]);
   }
   return value ?: defaultValue;
@@ -332,7 +326,7 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
     for (NSUInteger i = 0; i < count; i++) {
       result[i] = [RCTConvert CGFloat:json[fields[i]]];
     }
-  } else if (RCT_DEBUG && json && json != (id)kCFNull) {
+  } else if (json) {
     RCTLogConvertError(json, @(type));
   }
 }
@@ -619,8 +613,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
                              blue:[self CGFloat:json[@"b"]]
                             alpha:[self CGFloat:json[@"a"] ?: @1]];
 
-  }
-  else if (RCT_DEBUG && json && json != (id)kCFNull) {
+  } else if (json) {
     RCTLogConvertError(json, @"a color");
   }
 
@@ -646,7 +639,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   // TODO: we might as well cache the result of these checks (and possibly the
   // image itself) so as to reduce overhead on subsequent checks of the same input
 
-  if (!json || json == (id)kCFNull) {
+  if (!json) {
     return nil;
   }
 
@@ -933,12 +926,24 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
   return values;
 }
 
-RCT_ARRAY_CONVERTER(NSString)
-RCT_ARRAY_CONVERTER(NSDictionary)
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(RCTFileURL)
-RCT_ARRAY_CONVERTER(NSNumber)
 RCT_ARRAY_CONVERTER(UIColor)
+
+/**
+ * This macro is used for creating converter functions for directly
+ * representable json array values that require no conversion.
+ */
+#if RCT_DEBUG
+#define RCT_JSON_ARRAY_CONVERTER(type) RCT_ARRAY_CONVERTER(type)
+#else
+#define RCT_JSON_ARRAY_CONVERTER(type) + (NSArray *)type##Array:(id)json { return json; }
+#endif
+
+RCT_JSON_ARRAY_CONVERTER(NSArray)
+RCT_JSON_ARRAY_CONVERTER(NSString)
+RCT_JSON_ARRAY_CONVERTER(NSDictionary)
+RCT_JSON_ARRAY_CONVERTER(NSNumber)
 
 // Can't use RCT_ARRAY_CONVERTER due to bridged cast
 + (NSArray *)CGColorArray:(id)json
