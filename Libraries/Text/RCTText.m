@@ -13,6 +13,12 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
+@interface RCTText ()
+
+@property NSAttributedString *originalString;
+
+@end
+
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
@@ -25,7 +31,9 @@
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [[NSTextStorage alloc] init];
     _reactSubviews = [NSMutableArray array];
-
+    _minimumFontScale = .5;
+    _adjustsFontSizeToFitWidth = YES;
+    
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
 
@@ -70,6 +78,10 @@
 - (void)setTextStorage:(NSTextStorage *)textStorage
 {
   _textStorage = textStorage;
+  //This produces an NSMutableAttributedString and not an NSTextStorage
+  //(Perhaps resolve by doing this on purpose instead of via this mutableCopy side effect?)
+  _originalString = [textStorage mutableCopy];
+
   [self setNeedsDisplay];
 }
 
@@ -77,8 +89,12 @@
 {
   NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
   NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
-  CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+
+  CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
+  if (_adjustsFontSizeToFitWidth) {
+    textFrame = [self updateToFitFrame:textFrame];
+  }
 
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:textFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
@@ -147,6 +163,101 @@
   } else if (_textStorage.length) {
     [self setNeedsDisplay];
   }
+}
+
+#pragma mark Sizing
+
+- (CGRect)updateToFitFrame:(CGRect)frame
+{
+  NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
+  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
+  [textContainer setLineBreakMode:NSLineBreakByWordWrapping];
+  
+  NSRange glyphRange = NSMakeRange(0, _textStorage.length);
+
+  [self resetDrawnTextStorage];
+
+  CGSize requiredSize = [self calculateSize:_textStorage];
+  NSInteger linesRequired = [self numberOfLinesRequired:layoutManager];
+
+  __block BOOL hitMinimumScale = NO;
+  while ((requiredSize.height > CGRectGetHeight(frame) ||
+         requiredSize.width > CGRectGetWidth(frame) ||
+         (linesRequired > textContainer.maximumNumberOfLines &&
+          textContainer.maximumNumberOfLines != 0))
+         && !hitMinimumScale)
+  {
+    [_textStorage beginEditing];
+    [_textStorage enumerateAttribute:NSFontAttributeName
+                             inRange:glyphRange
+                             options:0
+                          usingBlock:^(UIFont *font, NSRange range, BOOL *stop)
+    {
+      if (font) {
+        UIFont *originalFont = [_originalString attribute:NSFontAttributeName
+                                                  atIndex:range.location
+                                           effectiveRange:&range];
+        UIFont *newFont = [font fontWithSize:font.pointSize - .5];
+        if (newFont.pointSize > originalFont.pointSize * self.minimumFontScale) {
+          [_textStorage removeAttribute:NSFontAttributeName range:range];
+          [_textStorage addAttribute:NSFontAttributeName value:newFont range:range];
+        } else {
+          hitMinimumScale = YES;
+        }
+      }
+    }];
+    [_textStorage endEditing];
+
+    linesRequired = [self numberOfLinesRequired:layoutManager];
+    requiredSize = [self calculateSize:_textStorage];
+  }
+
+  //Vertically center draw position
+  frame.origin.y = _contentInset.top + round((CGRectGetHeight(frame) - requiredSize.height) / 2);
+  return frame;
+}
+
+// Via Apple Text Layout Programming Guide
+// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/TextLayout/Tasks/CountLines.html
+- (NSInteger)numberOfLinesRequired:(NSLayoutManager *)layoutManager
+{
+  NSInteger numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
+  NSRange lineRange;
+  for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+    (void) [layoutManager lineFragmentRectForGlyphAtIndex:index
+                                           effectiveRange:&lineRange];
+    index = NSMaxRange(lineRange);
+  }
+
+  return numberOfLines;
+}
+
+// Via Apple Text Layout Programming Guide
+//https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/TextLayout/Tasks/StringHeight.html
+- (CGSize)calculateSize:(NSTextStorage *)storage
+{
+  NSLayoutManager *layoutManager = [storage.layoutManagers firstObject];
+  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
+  (void) [layoutManager glyphRangeForTextContainer:textContainer];
+  return [layoutManager usedRectForTextContainer:textContainer].size;
+}
+
+//Start fresh with the original drawn string each time, in case frame has gotten larger
+- (void)resetDrawnTextStorage
+{
+  [_textStorage beginEditing];
+
+  NSRange originalRange = NSMakeRange(0, _originalString.length);
+  [_textStorage setAttributes:@{} range:originalRange];
+
+  [_originalString enumerateAttributesInRange:originalRange
+                                      options:0
+                                   usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop)
+  {
+    [_textStorage setAttributes:attrs range:range];
+  }];
+
+  [_textStorage endEditing];
 }
 
 #pragma mark - Accessibility
