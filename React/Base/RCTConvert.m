@@ -559,37 +559,66 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
 
     // Parse color
-    double red = 0, green = 0, blue = 0;
-    double alpha = 1.0;
+    enum {
+      MODE_RGB = 0,
+      MODE_HSB = 1,
+    };
+    struct {
+      union {
+        struct {
+          double r, g, b;
+        } rgb;
+        struct {
+          double h, s, b;
+        } hsb;
+      };
+      double a;
+      unsigned int mode: 1;
+    } components = {
+      .a = 1.0,
+      .mode = MODE_RGB,
+    };
+
     if ([colorString hasPrefix:@"#"]) {
       uint32_t redInt = 0, greenInt = 0, blueInt = 0;
       if (colorString.length == 4) { // 3 digit hex
         sscanf([colorString UTF8String], "#%01x%01x%01x", &redInt, &greenInt, &blueInt);
         // expand to 6 digit hex
-        red = redInt | (redInt << 4);
-        green = greenInt | (greenInt << 4);
-        blue = blueInt | (blueInt << 4);
+        components.rgb.r = redInt / 15.0;
+        components.rgb.g = greenInt / 15.0;
+        components.rgb.b = blueInt / 15.0;
       } else if (colorString.length == 7) { // 6 digit hex
         sscanf(colorString.UTF8String, "#%02x%02x%02x", &redInt, &greenInt, &blueInt);
-        red = redInt;
-        green = greenInt;
-        blue = blueInt;
+        components.rgb.r = redInt / 255.0;
+        components.rgb.g = greenInt / 255.0;
+        components.rgb.b = blueInt / 255.0;
       } else {
         RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long.", colorString);
-        alpha = -1;
+        components.a = -1;
       }
-    } else if ([colorString hasPrefix:@"rgba("]) {
-      sscanf(colorString.UTF8String, "rgba(%lf,%lf,%lf,%lf)", &red, &green, &blue, &alpha);
-    } else if ([colorString hasPrefix:@"rgb("]) {
-      sscanf(colorString.UTF8String, "rgb(%lf,%lf,%lf)", &red, &green, &blue);
+    } else if (4 == sscanf(colorString.UTF8String, "rgba(%lf,%lf,%lf,%lf)", &components.rgb.r, &components.rgb.g, &components.rgb.b, &components.a) ||
+               3 == sscanf(colorString.UTF8String, "rgb(%lf,%lf,%lf)", &components.rgb.r, &components.rgb.g, &components.rgb.b)) {
+      components.rgb.r /= 255.0;
+      components.rgb.g /= 255.0;
+      components.rgb.b /= 255.0;
+    } else if (4 == sscanf(colorString.UTF8String, "hsla(%lf,%lf%%,%lf%%,%lf)", &components.hsb.h, &components.hsb.s, &components.hsb.b, &components.a) ||
+               3 == sscanf(colorString.UTF8String, "hsl(%lf,%lf%%,%lf%%)", &components.hsb.h, &components.hsb.s, &components.hsb.b)) {
+      components.hsb.h /= 360.0;
+      components.hsb.s /= 100.0;
+      components.hsb.b /= 100.0;
+      components.mode = MODE_HSB;
     } else {
       RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb or a valid CSS color name.", colorString);
-      alpha = -1;
+      components.a = -1;
     }
-    if (alpha < 0) {
+    if (components.a < 0) {
       RCTLogError(@"Invalid color string '%@'", colorString);
     } else {
-      color = [UIColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:alpha];
+      if (components.mode == MODE_RGB) {
+        color = [UIColor colorWithRed:components.rgb.r green:components.rgb.g blue:components.rgb.b alpha:components.a];
+      } else {
+        color = [UIColor colorWithHue:components.hsb.h saturation:components.hsb.s brightness:components.hsb.b alpha:components.a];
+      }
     }
 
   } else if ([json isKindOfClass:[NSArray class]]) {
@@ -608,10 +637,19 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   } else if ([json isKindOfClass:[NSDictionary class]]) {
 
     // Color dictionary
-    color = [UIColor colorWithRed:[self CGFloat:json[@"r"]]
-                            green:[self CGFloat:json[@"g"]]
-                             blue:[self CGFloat:json[@"b"]]
-                            alpha:[self CGFloat:json[@"a"] ?: @1]];
+    if (json[@"r"]) {
+      color = [UIColor colorWithRed:[self CGFloat:json[@"r"]]
+                              green:[self CGFloat:json[@"g"]]
+                               blue:[self CGFloat:json[@"b"]]
+                              alpha:[self CGFloat:json[@"a"] ?: @1]];
+    } else if (json[@"h"]) {
+      color = [UIColor colorWithHue:[self CGFloat:json[@"h"]]
+                         saturation:[self CGFloat:json[@"s"]]
+                         brightness:[self CGFloat:json[@"b"]]
+                              alpha:[self CGFloat:json[@"a"] ?: @1]];
+    } else {
+      RCTLogError(@"Expected dictionary with keys {r,g,b} or {h,s,b}, got: %@", [json allKeys]);
+    }
 
   } else if (json) {
     RCTLogConvertError(json, @"a color");
