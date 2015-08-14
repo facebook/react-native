@@ -178,15 +178,15 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                             moduleProvider:nil
                                              launchOptions:nil];
-  __weak id rootContentView;
+  __weak UIView *rootContentView;
   @autoreleasepool {
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@""];
     RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))
-    XCTAssertTrue([rootContentView isValid], @"RCTContentView should be valid");
+    XCTAssertTrue(rootContentView.userInteractionEnabled, @"RCTContentView should be valid");
     (void)rootView;
   }
 
-  XCTAssertFalse([rootContentView isValid], @"RCTContentView should have been invalidated");
+  XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
 }
 
 - (void)testUnderlyingBridgeIsDeallocated
