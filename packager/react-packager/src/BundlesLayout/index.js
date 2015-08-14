@@ -26,6 +26,8 @@ class BundlesLayout {
   constructor(options) {
     const opts = validateOpts(options);
     this._resolver = opts.dependencyResolver;
+
+    this._moduleToBundle = Object.create(null);
   }
 
   generateLayout(entryPaths, isDev) {
@@ -44,9 +46,10 @@ class BundlesLayout {
           .then(modulesDeps => {
             let syncDependencies = Object.create(null);
             modulesDeps.forEach(moduleDeps => {
-              moduleDeps.dependencies.forEach(dep =>
+              moduleDeps.dependencies.forEach(dep => {
                 syncDependencies[dep.path] = dep
-              );
+                this._moduleToBundle[dep.path] = bundles.length;
+              });
               pending = pending.concat(moduleDeps.asyncDependencies);
             });
 
@@ -59,6 +62,10 @@ class BundlesLayout {
           });
       },
     );
+  }
+
+  getBundleIDForModule(path) {
+    return this._moduleToBundle[path];
   }
 }
 

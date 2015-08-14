@@ -146,5 +146,42 @@ describe('BundlesLayout', () => {
         ])
       );
     });
+
+    pit('separate cache in which bundle is each dependency', () => {
+      DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        switch (path) {
+          case '/root/index.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/index.js'), dep('/root/a.js')],
+              asyncDependencies: [['/root/b.js']],
+            });
+          case '/root/a.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/a.js')],
+              asyncDependencies: [],
+            });
+          case '/root/b.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/b.js')],
+              asyncDependencies: [['/root/c.js']],
+            });
+          case '/root/c.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/c.js')],
+              asyncDependencies: [],
+            });
+          default:
+            throw 'Undefined path: ' + path;
+        }
+      });
+
+      var layout = newBundlesLayout();
+      return layout.generateLayout(['/root/index.js']).then(() => {
+        expect(layout.getBundleIDForModule('/root/index.js')).toBe(0);
+        expect(layout.getBundleIDForModule('/root/a.js')).toBe(0);
+        expect(layout.getBundleIDForModule('/root/b.js')).toBe(1);
+        expect(layout.getBundleIDForModule('/root/c.js')).toBe(2);
+      });
+    });
   });
 });
