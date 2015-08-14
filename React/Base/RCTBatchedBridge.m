@@ -62,6 +62,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
 @implementation RCTBatchedBridge
 {
   BOOL _loading;
+  BOOL _valid;
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
   NSMutableArray *_moduleDataByID;
   RCTModuleMap *_modulesByName;
@@ -71,8 +72,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   NSMutableArray *_scheduledCalls;
   RCTSparseArray *_scheduledCallbacks;
 }
-
-@synthesize valid = _valid;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {

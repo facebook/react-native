@@ -223,11 +223,6 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (BOOL)isValid
-{
-  return NO;
-}
-
 - (void)dealloc
 {
   [_updateTask cancel];

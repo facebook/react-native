@@ -244,11 +244,6 @@ RCT_NOT_IMPLEMENTED(-init)
   return _batchedBridge.loading;
 }
 
-- (BOOL)isValid
-{
-  return _batchedBridge.isValid;
-}
-
 - (void)invalidate
 {
   RCTAssertMainThread();
@@ -260,7 +255,7 @@ RCT_NOT_IMPLEMENTED(-init)
 + (void)logMessage:(NSString *)message level:(NSString *)level
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (!RCTGetLatestExecutor().isValid) {
+    if (![RCTGetLatestExecutor() isValid]) {
       return;
     }
 

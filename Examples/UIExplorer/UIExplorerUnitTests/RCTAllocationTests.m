@@ -42,15 +42,16 @@ _Pragma("clang diagnostic pop")
 @end
 
 @interface AllocationTestModule : NSObject<RCTBridgeModule, RCTInvalidating>
+
+@property (nonatomic, assign, getter=isValid) BOOL valid;
+
 @end
 
 @implementation AllocationTestModule
 
 RCT_EXPORT_MODULE();
 
-@synthesize valid = _valid;
-
-- (id)init
+- (instancetype)init
 {
   if ((self = [super init])) {
     _valid = YES;

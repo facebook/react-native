@@ -253,11 +253,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   });
 }
 
-- (BOOL)isValid
-{
-  return _viewRegistry != nil;
-}
-
 - (void)invalidate
 {
   /**
@@ -325,7 +320,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   __weak RCTUIManager *weakSelf = self;
   dispatch_async(_shadowQueue, ^{
     RCTUIManager *strongSelf = weakSelf;
-    if (!strongSelf.isValid) {
+    if (!_viewRegistry) {
       return;
     }
     RCTShadowView *shadowView = [[RCTShadowView alloc] init];
@@ -369,7 +364,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   __weak RCTUIManager *weakSelf = self;
   dispatch_async(_shadowQueue, ^{
     RCTUIManager *strongSelf = weakSelf;
-    if (!strongSelf.isValid) {
+    if (!_viewRegistry) {
       return;
     }
     RCTShadowView *rootShadowView = strongSelf->_shadowViewRegistry[reactTag];
@@ -410,14 +405,14 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     return;
   }
 
-  if (!self.isValid) {
+  if (!_viewRegistry) {
     return;
   }
 
   __weak RCTUIManager *weakViewManager = self;
   dispatch_block_t outerBlock = ^{
     RCTUIManager *strongViewManager = weakViewManager;
-    if (strongViewManager && strongViewManager.isValid) {
+    if (strongViewManager && strongViewManager->_viewRegistry) {
       block(strongViewManager, strongViewManager->_viewRegistry);
     }
   };

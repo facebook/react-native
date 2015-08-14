@@ -11,7 +11,6 @@
 
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
-#import "RCTInvalidating.h"
 
 /**
  * Developer menu, useful for exposing extra functionality when debugging.

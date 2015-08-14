@@ -164,6 +164,7 @@ RCT_EXPORT_MODULE()
   _manifest = [[NSMutableDictionary alloc] init];
   _haveSetup = NO;
 }
+
 - (BOOL)isValid
 {
   return _haveSetup;

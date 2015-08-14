@@ -112,11 +112,6 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
-- (BOOL)isValid
-{
-  return _bridge != nil;
-}
-
 - (void)invalidate
 {
   [self stopTimers];
@@ -130,7 +125,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startTimers
 {
-  if (![self isValid] || _timers.count == 0) {
+  if (!_bridge || _timers.count == 0) {
     return;
   }
 

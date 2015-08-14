@@ -292,14 +292,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   [_bridge.uiManager registerRootView:self];
 }
 
-- (BOOL)isValid
-{
-  return self.userInteractionEnabled;
-}
-
 - (void)invalidate
 {
-  if (self.isValid) {
+  if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
     [_bridge enqueueJSCall:@"ReactNative.unmountComponentAtNodeAndRemoveContainer"
