@@ -22,6 +22,7 @@ var _initialNotification = RCTPushNotificationManager &&
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+var NOTIF_REGISTER_ERROR_EVENT = 'remoteNotificationsRegisteredError';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -88,8 +89,8 @@ class PushNotificationIOS {
    */
   static addEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notification' || type === 'register' || type === 'error',
+      'PushNotificationIOS only supports `notification`, `register` and `error` events'
     );
     var listener;
     if (type === 'notification') {
@@ -104,6 +105,14 @@ class PushNotificationIOS {
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
+        }
+      );
+    } else if(type === 'error'){
+      listener = RCTDeviceEventEmitter.addListener(
+        NOTIF_REGISTER_ERROR_EVENT,
+        (registrationError) => {
+          var key = Object.keys(registrationError)[0]; 
+          handler(key, registrationError[key]);
         }
       );
     }
@@ -180,8 +189,8 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notification' || type === 'register' || type === 'error',
+      'PushNotificationIOS only supports `notification`, `register` and `error` events'
     );
     var listener = _notifHandlers.get(handler);
     if (!listener) {

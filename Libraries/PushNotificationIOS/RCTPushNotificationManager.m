@@ -26,6 +26,7 @@
 
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+NSString *const RCTRemoteNotificationRegisteredError = @"RemoteNotificationRegisteredError";
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -59,6 +60,10 @@ RCT_EXPORT_MODULE()
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRemoteNotificationsRegistered:)
                                                  name:RCTRemoteNotificationsRegistered
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRemoteNotificationRegisteredError:)
+                                                 name:RCTRemoteNotificationRegisteredError
                                                object:nil];
   }
   return self;
@@ -105,6 +110,13 @@ RCT_EXPORT_MODULE()
                                                     userInfo:notification];
 }
 
++ (void)application:(__unused UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationRegisteredError
+                                                      object:self
+                                                    userInfo:error.userInfo];
+}
+
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
@@ -115,6 +127,11 @@ RCT_EXPORT_MODULE()
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
                                               body:notification.userInfo];
+}
+- (void)handleRemoteNotificationRegisteredError:(NSNotification *)notification
+{
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegisteredError"
+                                              body:[notification userInfo]];
 }
 
 /**
@@ -152,17 +169,17 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
     types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   }
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_8_0
+if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
 
   id notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
   [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
   [[UIApplication sharedApplication] registerForRemoteNotifications];
 
-#else
+}else{
 
   [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
 
-#endif
+}
 
 }
 
