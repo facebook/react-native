@@ -140,12 +140,12 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary *)query
                                  completionBlock:(void (^)(NSURLRequest *request))block
 {
-  NSURL *URL = [RCTConvert NSURL:query[@"url"]];
+  NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-  request.HTTPMethod = [[RCTConvert NSString:query[@"method"]] uppercaseString] ?: @"GET";
+  request.HTTPMethod = [[RCTConvert NSString:RCTNilIfNull(query[@"method"])] uppercaseString] ?: @"GET";
   request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
 
-  NSDictionary *data = [RCTConvert NSDictionary:query[@"data"]];
+  NSDictionary *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary *result) {
     if (error) {
       RCTLogError(@"Error processing request body: %@", error);
@@ -220,7 +220,7 @@ RCT_EXPORT_MODULE()
  * - @"contentType" (NSString): the content type header of the request
  *
  */
-- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary *)query callback:
+- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(nullable NSDictionary *)query callback:
 (RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary *result))callback
 {
   if (!query) {
