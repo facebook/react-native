@@ -112,7 +112,7 @@ class PushNotificationIOS {
         NOTIF_REGISTER_ERROR_EVENT,
         (registrationError) => {
           var key = Object.keys(registrationError)[0]; 
-          handler(key, registrationError[key]);
+          handler(registrationError[key], key);
         }
       );
     }
