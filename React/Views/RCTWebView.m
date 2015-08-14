@@ -40,6 +40,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
+    _schemes = @{ @"*": @YES };
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
     [self addSubview:_webView];
@@ -68,6 +69,24 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (NSURL *)URL
 {
   return _webView.request.URL;
+}
+
+- (void)setCacheEnabled:(BOOL)cacheEnabled
+{
+  if (!cacheEnabled) {
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+  }
+}
+
+- (void)setCookiesEnabled:(BOOL)cookiesEnabled
+{
+  if (!cookiesEnabled) {
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in storage.cookies) {
+      [storage deleteCookie:cookie];
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+  }
 }
 
 - (void)setURL:(NSURL *)URL
@@ -153,9 +172,26 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     }];
     [_eventDispatcher sendInputEventWithName:@"loadingStart" body:event];
   }
+  
+  NSString *scheme = request.URL.scheme;
+  
+  NSNumber *catchAllScheme;
+  if (_schemes[@"*"] == nil) {
+    catchAllScheme = @YES;
+  }
+  else {
+    catchAllScheme = _schemes[@"*"];
+  }
+  
+  NSNumber *schemeInSchemes = _schemes[scheme];
+  
+  if ((schemeInSchemes != nil && ![schemeInSchemes boolValue])
+      || (schemeInSchemes == nil && ![catchAllScheme boolValue])) {
+    return NO;
+  }
 
   // JS Navigation handler
-  return ![request.URL.scheme isEqualToString:RCTJSNavigationScheme];
+  return ![scheme isEqualToString:RCTJSNavigationScheme];
 }
 
 - (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error

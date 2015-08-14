@@ -87,6 +87,9 @@ var WebView = React.createClass({
     renderError: PropTypes.func, // view to show if there's an error
     renderLoading: PropTypes.func, // loading indicator to show
     bounces: PropTypes.bool,
+    cacheEnabled: PropTypes.bool,
+    cookiesEnabled: PropTypes.bool,
+    schemes: PropTypes.object,
     scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -161,6 +164,9 @@ var WebView = React.createClass({
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
+        cacheEnabled={this.props.cacheEnabled}
+        cookiesEnabled={this.props.cookiesEnabled}
+        schemes={this.props.schemes}
         scrollEnabled={this.props.scrollEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
