@@ -152,18 +152,13 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
     types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   }
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_8_0
-
-  id notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-  [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
-  [[UIApplication sharedApplication] registerForRemoteNotifications];
-
-#else
-
-  [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
-
-#endif
-
+  if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) { // iOS 8
+    id notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+  } else {
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
+  }
 }
 
 RCT_EXPORT_METHOD(abandonPermissions)
