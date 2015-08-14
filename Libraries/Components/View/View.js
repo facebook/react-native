@@ -44,13 +44,6 @@ var AccessibilityTraits = [
   'pageTurn',
 ];
 
-
-// <<<<< WARNING >>>>>
-// If adding any properties to View that could change the way layout-only status
-// works on iOS, make sure to update ReactNativeViewAttributes.js and
-// RCTShadowView.m (in the -[RCTShadowView isLayoutOnly] method).
-// <<<<< WARNING >>>>>
-
 /**
  * The most fundamental component for building UI, `View` is a
  * container that supports layout with flexbox, style, some touch handling, and
