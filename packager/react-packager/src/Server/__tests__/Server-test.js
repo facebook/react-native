@@ -110,7 +110,24 @@ describe('processRequest', () => {
         'index.ios.js',
         true,
         'index.ios.includeRequire.map',
-        true
+        true,
+        undefined
+      );
+    });
+  });
+
+  pit('passes in the platform param', function() {
+    return makeRequest(
+      requestHandler,
+      'index.bundle?platform=ios'
+    ).then(function(response) {
+      expect(response).toEqual('this is the source');
+      expect(Bundler.prototype.bundle).toBeCalledWith(
+        'index.js',
+        true,
+        'index.map',
+        true,
+        'ios',
       );
     });
   });
@@ -241,7 +258,8 @@ describe('processRequest', () => {
         'foo file',
         true,
         undefined,
-        true
+        true,
+        undefined
       );
     });
   });
@@ -253,7 +271,8 @@ describe('processRequest', () => {
         'path/to/foo.js',
         false,
         '/path/to/foo.map',
-        false
+        false,
+        undefined
       );
     });
   });

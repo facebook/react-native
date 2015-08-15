@@ -88,6 +88,10 @@ const bundleOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  platform: {
+    type: 'string',
+    required: false,
+  }
 });
 
 class Server {
@@ -152,12 +156,12 @@ class Server {
 
   buildBundle(options) {
     const opts = bundleOpts(options);
-
     return this._bundler.bundle(
       opts.entryFile,
       opts.runModule,
       opts.sourceMapUrl,
-      opts.dev
+      opts.dev,
+      opts.platform
     );
   }
 
@@ -425,6 +429,7 @@ class Server {
         'inlineSourceMap',
         false
       ),
+      platform: urlObj.query.platform,
     };
   }
 

@@ -77,6 +77,10 @@ var getDependenciesValidateOpts = declareOpts({
     type: 'boolean',
     default: true,
   },
+  platform: {
+    type: 'string',
+    required: false,
+  },
 });
 
 HasteDependencyResolver.prototype.getDependencies = function(main, options) {
@@ -85,28 +89,27 @@ HasteDependencyResolver.prototype.getDependencies = function(main, options) {
   var depGraph = this._depGraph;
   var self = this;
 
-  return depGraph
-    .load()
-    .then(() => Promise.all([
-      depGraph.getOrderedDependencies(main),
-      depGraph.getAsyncDependencies(main),
-    ]))
-    .then(
-       ([dependencies, asyncDependencies]) => dependencies[0].getName().then(
-         mainModuleId => {
-           self._prependPolyfillDependencies(
-             dependencies,
-             opts.dev,
-           );
+  depGraph.setup({ platform: opts.platform });
 
-           return {
-             mainModuleId,
-             dependencies,
-             asyncDependencies,
-           };
-         }
-       )
-    );
+  return Promise.all([
+    depGraph.getOrderedDependencies(main),
+    depGraph.getAsyncDependencies(main),
+  ]).then(
+    ([dependencies, asyncDependencies]) => dependencies[0].getName().then(
+      mainModuleId => {
+        self._prependPolyfillDependencies(
+          dependencies,
+          opts.dev,
+        );
+
+        return {
+          mainModuleId,
+          dependencies,
+          asyncDependencies,
+        };
+      }
+    )
+  );
 };
 
 HasteDependencyResolver.prototype._prependPolyfillDependencies = function(

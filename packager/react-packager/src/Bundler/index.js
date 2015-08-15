@@ -118,14 +118,14 @@ class Bundler {
     return this._cache.end();
   }
 
-  bundle(main, runModule, sourceMapUrl, isDev) {
+  bundle(main, runModule, sourceMapUrl, isDev, platform) {
     const bundle = new Bundle(sourceMapUrl);
 
     const transformModule = this._transformModule.bind(this, bundle);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
-    return this.getDependencies(main, isDev).then((result) => {
+    return this.getDependencies(main, isDev, platform).then((result) => {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
 
@@ -149,8 +149,8 @@ class Bundler {
     this._transformer.invalidateFile(filePath);
   }
 
-  getDependencies(main, isDev) {
-    return this._resolver.getDependencies(main, { dev: isDev });
+  getDependencies(main, isDev, platform) {
+    return this._resolver.getDependencies(main, { dev: isDev, platform });
   }
 
   _transformModule(bundle, module) {
