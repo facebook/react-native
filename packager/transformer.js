@@ -35,6 +35,7 @@ function transform(srcTxt, filename, options) {
       'react',
       'regenerator',
     ],
+    plugins: ['node-env-inline'],
     sourceFileName: filename,
     sourceMaps: false,
     extra: options || {},
