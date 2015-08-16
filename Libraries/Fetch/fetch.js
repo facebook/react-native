@@ -17,13 +17,13 @@
 
 if(typeof self === 'undefined'){
   if(typeof global !== 'undefined'){
-    self = global;
+    global.self = global;
   }
   else if(typeof window !== 'undefined'){
-    self = window;
+    window.self = window;
   }
   else{
-    self = {};
+    var self = {};
   }
 }
 
