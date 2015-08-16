@@ -15,7 +15,17 @@
 /* eslint-disable */
 'use strict';
 
-var self = {};
+if(typeof self === 'undefined'){
+  if(typeof global !== 'undefined'){
+    self = global;
+  }
+  else if(typeof window !== 'undefined'){
+    self = window;
+  }
+  else{
+    self = {};
+  }
+}
 
 /**
  * Copyright (c) 2014 GitHub, Inc.
