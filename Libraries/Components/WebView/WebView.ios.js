@@ -205,6 +205,9 @@ var WebView = React.createClass({
   },
 
   onLoadingStart: function(event: Event) {
+    this.setState({
+      viewState: WebViewState.LOADING,
+    });
     this.updateNavigationState(event);
   },
 
