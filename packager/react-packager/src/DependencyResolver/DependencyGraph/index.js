@@ -294,7 +294,7 @@ class DependencyGraph {
   }
 
   _resolveNodeDependency(fromModule, toModuleName) {
-    if (toModuleName[0] === '.' || toModuleName[1] === '/') {
+    if (toModuleName[0] === '.' || toModuleName[0] === '/') {
       const potentialModulePath = isAbsolutePath(toModuleName) ?
               toModuleName :
               path.join(path.dirname(fromModule.path), toModuleName);
