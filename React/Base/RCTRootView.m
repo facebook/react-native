@@ -58,6 +58,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
 {
   RCTAssertMainThread();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
@@ -69,6 +70,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
     _bridge = bridge;
     _moduleName = moduleName;
+    _initialProperties = [initialProperties copy];
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
 
@@ -81,7 +83,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                              selector:@selector(hideLoadingView)
                                                  name:RCTContentDidAppearNotification
                                                object:self];
-    if (!_bridge.batchedBridge.isLoading) {
+    if (!_bridge.loading) {
       [self bundleFinishedLoading:_bridge.batchedBridge];
     }
 
@@ -92,13 +94,14 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
+                initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL
                                             moduleProvider:nil
                                              launchOptions:launchOptions];
 
-  return [self initWithBridge:bridge moduleName:moduleName];
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
@@ -158,30 +161,30 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  [self bundleFinishedLoading:bridge];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self bundleFinishedLoading:bridge];
+  });
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!bridge.isValid) {
-      return;
-    }
+  if (!bridge.valid) {
+    return;
+  }
 
-    [_contentView removeFromSuperview];
-    _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
-    _contentView.backgroundColor = self.backgroundColor;
-    [self insertSubview:_contentView atIndex:0];
+  [_contentView removeFromSuperview];
+  _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
+  _contentView.backgroundColor = self.backgroundColor;
+  [self insertSubview:_contentView atIndex:0];
 
-    NSString *moduleName = _moduleName ?: @"";
-    NSDictionary *appParameters = @{
-      @"rootTag": _contentView.reactTag,
-      @"initialProps": _initialProperties ?: @{},
-    };
+  NSString *moduleName = _moduleName ?: @"";
+  NSDictionary *appParameters = @{
+    @"rootTag": _contentView.reactTag,
+    @"initialProps": _initialProperties ?: @{},
+  };
 
-    [bridge enqueueJSCall:@"AppRegistry.runApplication"
-                     args:@[moduleName, appParameters]];
-  });
+  [bridge enqueueJSCall:@"AppRegistry.runApplication"
+                   args:@[moduleName, appParameters]];
 }
 
 - (void)layoutSubviews

@@ -87,8 +87,7 @@ RCT_NOT_IMPLEMENTED(-init)
                                             moduleProvider:_moduleProvider
                                              launchOptions:nil];
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName];
-  rootView.initialProperties = initialProps;
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProps];
   rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
   NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);

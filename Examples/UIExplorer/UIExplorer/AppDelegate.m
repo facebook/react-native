@@ -30,7 +30,8 @@
                                             launchOptions:launchOptions];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                                   moduleName:@"UIExplorerApp"];
+                                                   moduleName:@"UIExplorerApp"
+                                            initialProperties:nil];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [[UIViewController alloc] init];
