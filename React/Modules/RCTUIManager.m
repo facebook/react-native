@@ -41,6 +41,9 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
 }
 
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
+NSString *const RCTUIManagerDidRegisterRootViewNotification = @"RCTUIManagerDidRegisterRootViewNotification";
+NSString *const RCTUIManagerDidRemoveRootViewNotification = @"RCTUIManagerDidRemoveRootViewNotification";
+NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
 @interface RCTAnimation : NSObject
 
@@ -331,6 +334,10 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     strongSelf->_shadowViewRegistry[shadowView.reactTag] = shadowView;
     [strongSelf->_rootViewTags addObject:reactTag];
   });
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRegisterRootViewNotification
+                                                      object:self
+                                                    userInfo:@{ RCTUIManagerRootViewKey: rootView }];
 }
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
@@ -637,6 +644,10 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
     UIView *rootView = viewRegistry[rootReactTag];
     [uiManager _purgeChildren:rootView.reactSubviews fromRegistry:viewRegistry];
     viewRegistry[rootReactTag] = nil;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRemoveRootViewNotification
+                                                        object:uiManager
+                                                      userInfo:@{ RCTUIManagerRootViewKey: rootView }];
   }];
 }
 
