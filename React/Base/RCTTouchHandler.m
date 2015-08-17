@@ -48,9 +48,9 @@
 
     _bridge = bridge;
     _dispatchedInitialTouches = NO;
-    _nativeTouches = [[NSMutableOrderedSet alloc] init];
-    _reactTouches = [[NSMutableArray alloc] init];
-    _touchViews = [[NSMutableArray alloc] init];
+    _nativeTouches = [NSMutableOrderedSet new];
+    _reactTouches = [NSMutableArray new];
+    _touchViews = [NSMutableArray new];
 
     // `cancelsTouchesInView` is needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
                   originatingTime:(__unused CFTimeInterval)originatingTime
 {
   // Update touches
-  NSMutableArray *changedIndexes = [[NSMutableArray alloc] init];
+  NSMutableArray *changedIndexes = [NSMutableArray new];
   for (UITouch *touch in touches) {
     NSInteger index = [_nativeTouches indexOfObject:touch];
     if (index == NSNotFound) {

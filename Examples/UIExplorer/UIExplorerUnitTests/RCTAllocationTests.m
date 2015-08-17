@@ -94,7 +94,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
 - (void)testModulesAreInvalidated
 {
-  AllocationTestModule *module = [[AllocationTestModule alloc] init];
+  AllocationTestModule *module = [AllocationTestModule new];
   @autoreleasepool {
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                               moduleProvider:^{
@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 {
   __weak AllocationTestModule *weakModule;
   @autoreleasepool {
-    AllocationTestModule *module = [[AllocationTestModule alloc] init];
+    AllocationTestModule *module = [AllocationTestModule new];
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                 moduleProvider:^{
                                   return @[module];

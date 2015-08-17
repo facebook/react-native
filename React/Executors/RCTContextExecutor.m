@@ -142,7 +142,7 @@ static JSValueRef RCTConsoleProfile(JSContextRef context, __unused JSObjectRef o
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    profiles = [[NSMutableArray alloc] init];
+    profiles = [NSMutableArray new];
   });
 
   static int profileCounter = 1;

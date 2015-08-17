@@ -171,7 +171,7 @@ void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFunction logFunct
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
   NSMutableArray *functionStack = threadDictionary[RCTLogFunctionStack];
   if (!functionStack) {
-    functionStack = [[NSMutableArray alloc] init];
+    functionStack = [NSMutableArray new];
     threadDictionary[RCTLogFunctionStack] = functionStack;
   }
   [functionStack addObject:logFunction];
@@ -196,12 +196,12 @@ NSString *RCTFormatLog(
   NSNumber *lineNumber,
   NSString *message
 ) {
-  NSMutableString *log = [[NSMutableString alloc] init];
+  NSMutableString *log = [NSMutableString new];
   if (timestamp) {
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      formatter = [[NSDateFormatter alloc] init];
+      formatter = [NSDateFormatter new];
       formatter.dateFormat = formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS ";
     });
     [log appendString:[formatter stringFromDate:timestamp]];

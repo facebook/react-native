@@ -125,7 +125,7 @@ RCT_EXPORT_MODULE()
                              object:nil];
 
     _defaults = [NSUserDefaults standardUserDefaults];
-    _settings = [[NSMutableDictionary alloc] init];
+    _settings = [NSMutableDictionary new];
     _extraMenuItems = [NSMutableArray array];
 
     // Delay setup until after Bridge init
@@ -331,7 +331,7 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
-  UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  UIActionSheet *actionSheet = [UIActionSheet new];
   actionSheet.title = @"React Native: Development";
   actionSheet.delegate = self;
 

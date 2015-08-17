@@ -89,10 +89,10 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
      */
     _valid = YES;
     _loading = YES;
-    _moduleDataByID = [[NSMutableArray alloc] init];
-    _frameUpdateObservers = [[NSMutableSet alloc] init];
-    _scheduledCalls = [[NSMutableArray alloc] init];
-    _scheduledCallbacks = [[RCTSparseArray alloc] init];
+    _moduleDataByID = [NSMutableArray new];
+    _frameUpdateObservers = [NSMutableSet new];
+    _scheduledCalls = [NSMutableArray new];
+    _scheduledCallbacks = [RCTSparseArray new];
     _jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)];
 
     if (RCT_DEV) {
@@ -213,7 +213,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   RCTAssertMainThread();
 
   // Register passed-in module instances
-  NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *preregisteredModules = [NSMutableDictionary new];
 
   NSArray *extraModules = nil;
   if (self.delegate) {
@@ -229,7 +229,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   }
 
   // Instantiate modules
-  _moduleDataByID = [[NSMutableArray alloc] init];
+  _moduleDataByID = [NSMutableArray new];
   NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
   for (Class moduleClass in RCTGetModuleClasses()) {
      NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
@@ -241,7 +241,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
        // Preregistered instances takes precedence, no questions asked
        if (!preregisteredModules[moduleName]) {
          // It's OK to have a name collision as long as the second instance is nil
-         RCTAssert([[moduleClass alloc] init] == nil,
+         RCTAssert([moduleClass new] == nil,
                    @"Attempted to register RCTBridgeModule class %@ for the name "
                    "'%@', but name was already registered by class %@", moduleClass,
                    moduleName, [modulesByName[moduleName] class]);
@@ -254,7 +254,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
        }
      } else {
        // Module name hasn't been used before, so go ahead and instantiate
-       module = [[moduleClass alloc] init];
+       module = [moduleClass new];
      }
      if (module) {
        modulesByName[moduleName] = module;
@@ -299,7 +299,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
 
 - (NSString *)moduleConfig
 {
-  NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *config = [NSMutableDictionary new];
   for (RCTModuleData *moduleData in _moduleDataByID) {
     config[moduleData.name] = moduleData.config;
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
@@ -667,7 +667,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     }
     NSMutableOrderedSet *set = [buckets objectForKey:moduleData];
     if (!set) {
-      set = [[NSMutableOrderedSet alloc] init];
+      set = [NSMutableOrderedSet new];
       [buckets setObject:set forKey:moduleData];
     }
     [set addObject:@(i)];
@@ -785,8 +785,8 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   )
 
   if (calls.count > 0) {
-    _scheduledCalls = [[NSMutableArray alloc] init];
-    _scheduledCallbacks = [[RCTSparseArray alloc] init];
+    _scheduledCalls = [NSMutableArray new];
+    _scheduledCallbacks = [RCTSparseArray new];
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"processBatch"
                                 arguments:@[[calls valueForKey:@"js_args"]]];

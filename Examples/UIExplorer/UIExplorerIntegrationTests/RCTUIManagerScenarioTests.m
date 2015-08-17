@@ -45,11 +45,11 @@
 {
   [super setUp];
 
-  _uiManager = [[RCTUIManager alloc] init];
+  _uiManager = [RCTUIManager new];
 
   // Register 20 views to use in the tests
   for (NSInteger i = 1; i <= 20; i++) {
-    UIView *registeredView = [[UIView alloc] init];
+    UIView *registeredView = [UIView new];
     [registeredView setReactTag:@(i)];
     _uiManager.viewRegistry[i] = registeredView;
   }

@@ -57,7 +57,7 @@ void RCTRegisterModule(Class moduleClass)
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    RCTModuleClasses = [[NSMutableArray alloc] init];
+    RCTModuleClasses = [NSMutableArray new];
   });
 
   RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],

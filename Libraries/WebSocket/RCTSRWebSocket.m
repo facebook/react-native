@@ -297,16 +297,16 @@ RCT_NOT_IMPLEMENTED(-init)
 
   _delegateDispatchQueue = dispatch_get_main_queue();
 
-  _readBuffer = [[NSMutableData alloc] init];
-  _outputBuffer = [[NSMutableData alloc] init];
+  _readBuffer = [NSMutableData new];
+  _outputBuffer = [NSMutableData new];
 
-  _currentFrameData = [[NSMutableData alloc] init];
+  _currentFrameData = [NSMutableData new];
 
-  _consumers = [[NSMutableArray alloc] init];
+  _consumers = [NSMutableArray new];
 
-  _consumerPool = [[RCTSRIOConsumerPool alloc] init];
+  _consumerPool = [RCTSRIOConsumerPool new];
 
-  _scheduledRunloops = [[NSMutableSet alloc] init];
+  _scheduledRunloops = [NSMutableSet new];
 
   [self _initializeStreams];
 
@@ -506,7 +506,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
 
   if (_secure) {
-    NSMutableDictionary *SSLOptions = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *SSLOptions = [NSMutableDictionary new];
 
     [_outputStream setProperty:(__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL forKey:(__bridge id)kCFStreamPropertySocketSecurityLevel];
 
@@ -1478,7 +1478,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     consumer = [_bufferedConsumers lastObject];
     [_bufferedConsumers removeLastObject];
   } else {
-    consumer = [[RCTSRIOConsumer alloc] init];
+    consumer = [RCTSRIOConsumer new];
   }
 
   [consumer setupWithScanner:scanner handler:handler bytesNeeded:bytesNeeded readToCurrentFrame:readToCurrentFrame unmaskBytes:unmaskBytes];
@@ -1579,7 +1579,7 @@ static NSRunLoop *networkRunLoop = nil;
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    networkThread = [[_RCTSRRunLoopThread alloc] init];
+    networkThread = [_RCTSRRunLoopThread new];
     networkThread.name = @"com.squareup.SocketRocket.NetworkThread";
     [networkThread start];
     networkRunLoop = networkThread.runLoop;

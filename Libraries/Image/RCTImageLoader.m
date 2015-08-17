@@ -114,7 +114,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 - (ALAssetsLibrary *)assetsLibrary
 {
   if (!_assetsLibrary) {
-    _assetsLibrary = [[ALAssetsLibrary alloc] init];
+    _assetsLibrary = [ALAssetsLibrary new];
   }
   return _assetsLibrary;
 }
@@ -181,7 +181,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 
     PHAsset *asset = [results firstObject];
 
-    PHImageRequestOptions *imageOptions = [[PHImageRequestOptions alloc] init];
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
 
     BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
     CGSize targetSize;

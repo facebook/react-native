@@ -161,7 +161,7 @@ RCT_EXPORT_MODULE()
     RCTDeleteStorageDirectory();
   }
   _clearOnInvalidate = NO;
-  _manifest = [[NSMutableDictionary alloc] init];
+  _manifest = [NSMutableDictionary new];
   _haveSetup = NO;
 }
 
@@ -199,10 +199,10 @@ RCT_EXPORT_MODULE()
   if (!_haveSetup) {
     NSDictionary *errorOut;
     NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), nil, &errorOut);
-    _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [[NSMutableDictionary alloc] init];
+    _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [NSMutableDictionary new];
     if (error) {
       RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
-      _manifest = [[NSMutableDictionary alloc] init];
+      _manifest = [NSMutableDictionary new];
     }
     _haveSetup = YES;
   }
@@ -377,7 +377,7 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
 
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
-  _manifest = [[NSMutableDictionary alloc] init];
+  _manifest = [NSMutableDictionary new];
   NSError *error = RCTDeleteStorageDirectory();
   if (callback) {
     callback(@[RCTNullIfNil(error)]);

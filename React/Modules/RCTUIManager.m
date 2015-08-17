@@ -219,16 +219,16 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
     _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
 
-    _pendingUIBlocksLock = [[NSLock alloc] init];
+    _pendingUIBlocksLock = [NSLock new];
 
-    _shadowViewRegistry = [[RCTSparseArray alloc] init];
-    _viewRegistry = [[RCTSparseArray alloc] init];
+    _shadowViewRegistry = [RCTSparseArray new];
+    _viewRegistry = [RCTSparseArray new];
 
     // Internal resources
-    _pendingUIBlocks = [[NSMutableArray alloc] init];
-    _rootViewTags = [[NSMutableSet alloc] init];
+    _pendingUIBlocks = [NSMutableArray new];
+    _rootViewTags = [NSMutableSet new];
 
-    _bridgeTransactionListeners = [[NSMutableSet alloc] init];
+    _bridgeTransactionListeners = [NSMutableSet new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
@@ -284,10 +284,10 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
 
   _bridge = bridge;
-  _shadowViewRegistry = [[RCTSparseArray alloc] init];
+  _shadowViewRegistry = [RCTSparseArray new];
 
   // Get view managers from bridge
-  NSMutableDictionary *componentDataByName = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
   for (RCTViewManager *manager in _bridge.modules.allValues) {
     if ([manager isKindOfClass:[RCTViewManager class]]) {
       RCTComponentData *componentData = [[RCTComponentData alloc] initWithManager:manager];
@@ -326,7 +326,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     if (!_viewRegistry) {
       return;
     }
-    RCTShadowView *shadowView = [[RCTShadowView alloc] init];
+    RCTShadowView *shadowView = [RCTShadowView new];
     shadowView.reactTag = reactTag;
     shadowView.frame = frame;
     shadowView.backgroundColor = rootView.backgroundColor;
@@ -479,7 +479,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   // reactSetFrame: has been called. Note that if reactSetFrame: is not called,
   // these won't be called either, so this is not a suitable place to update
   // properties that aren't related to layout.
-  NSMutableArray *updateBlocks = [[NSMutableArray alloc] init];
+  NSMutableArray *updateBlocks = [NSMutableArray new];
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
     RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
@@ -870,7 +870,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   // processing the pending blocks in another thread.
   [_pendingUIBlocksLock lock];
   NSArray *previousPendingUIBlocks = _pendingUIBlocks;
-  _pendingUIBlocks = [[NSMutableArray alloc] init];
+  _pendingUIBlocks = [NSMutableArray new];
   [_pendingUIBlocksLock unlock];
 
   // Execute the previously queued UI blocks
@@ -1130,7 +1130,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
 - (NSDictionary *)bubblingEventsConfig
 {
-  NSMutableDictionary *customBubblingEventTypesConfigs = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *customBubblingEventTypesConfigs = [NSMutableDictionary new];
   for (RCTComponentData *componentData in _componentDataByName.allValues) {
     RCTViewManager *manager = componentData.manager;
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customBubblingEventTypes))) {
@@ -1160,7 +1160,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
 - (NSDictionary *)directEventsConfig
 {
-  NSMutableDictionary *customDirectEventTypes = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *customDirectEventTypes = [NSMutableDictionary new];
   for (RCTComponentData *componentData in _componentDataByName.allValues) {
     RCTViewManager *manager = componentData.manager;
     if (RCTClassOverridesInstanceMethod([manager class], @selector(customDirectEventTypes))) {

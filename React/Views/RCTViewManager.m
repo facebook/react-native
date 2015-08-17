@@ -56,12 +56,12 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTView alloc] init];
+  return [RCTView new];
 }
 
 - (RCTShadowView *)shadowView
 {
-  return [[RCTShadowView alloc] init];
+  return [RCTShadowView new];
 }
 
 - (NSArray *)customBubblingEventTypes

@@ -98,7 +98,7 @@ RCT_NOT_IMPLEMENTED(-init)
   testModule.view = rootView;
 
   UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
-  vc.view = [[UIView alloc] init];
+  vc.view = [UIView new];
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];

@@ -31,7 +31,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:coder)
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
-    _modalViewController = [[RCTModalHostViewController alloc] init];
+    _modalViewController = [RCTModalHostViewController new];
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
 
     __weak RCTModalHostView *weakSelf = self;

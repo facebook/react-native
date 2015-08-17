@@ -65,7 +65,7 @@ static NSString *RCTGenerateFormBoundary()
 
   parts = [formData mutableCopy];
   _callback = callback;
-  multipartBody = [[NSMutableData alloc] init];
+  multipartBody = [NSMutableData new];
   boundary = RCTGenerateFormBoundary();
 
   return [_networker processDataForHTTPQuery:parts[0] callback:^(NSError *error, NSDictionary *result) {
@@ -132,7 +132,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _tasksByRequestID = [[NSMutableDictionary alloc] init];
+    _tasksByRequestID = [NSMutableDictionary new];
   }
   return self;
 }
@@ -248,7 +248,7 @@ RCT_EXPORT_MODULE()
   }
   NSDictionaryArray *formData = [RCTConvert NSDictionaryArray:query[@"formData"]];
   if (formData) {
-    RCTHTTPFormDataHelper *formDataHelper = [[RCTHTTPFormDataHelper alloc] init];
+    RCTHTTPFormDataHelper *formDataHelper = [RCTHTTPFormDataHelper new];
     formDataHelper.networker = self;
     return [formDataHelper process:formData callback:callback];
   }

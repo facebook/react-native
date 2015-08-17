@@ -78,7 +78,7 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _paused = YES;
-    _timers = [[RCTSparseArray alloc] init];
+    _timers = [RCTSparseArray new];
 
     for (NSString *name in @[UIApplicationWillResignActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -134,7 +134,7 @@ RCT_EXPORT_MODULE()
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
+  NSMutableArray *timersToCall = [NSMutableArray new];
   for (RCTTimer *timer in _timers.allObjects) {
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];

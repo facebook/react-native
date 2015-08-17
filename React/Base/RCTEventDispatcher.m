@@ -99,8 +99,8 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _eventQueue = [[NSMutableDictionary alloc] init];
-    _eventQueueLock = [[NSLock alloc] init];
+    _eventQueue = [NSMutableDictionary new];
+    _eventQueueLock = [NSLock new];
   }
   return self;
 }
@@ -176,7 +176,7 @@ RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSMutableArray *arguments = [[NSMutableArray alloc] init];
+  NSMutableArray *arguments = [NSMutableArray new];
 
   if (event.viewTag) {
     [arguments addObject:event.viewTag];
@@ -201,7 +201,7 @@ RCT_EXPORT_MODULE()
 {
   [_eventQueueLock lock];
    NSDictionary *eventQueue = _eventQueue;
-  _eventQueue = [[NSMutableDictionary alloc] init];
+  _eventQueue = [NSMutableDictionary new];
   _paused = YES;
   [_eventQueueLock unlock];
 

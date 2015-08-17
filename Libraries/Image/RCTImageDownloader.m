@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
   static RCTImageDownloader *sharedInstance;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    sharedInstance = [[RCTImageDownloader alloc] init];
+    sharedInstance = [RCTImageDownloader new];
   });
   return sharedInstance;
 }

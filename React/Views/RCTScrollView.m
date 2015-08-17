@@ -387,7 +387,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
     _scrollEventThrottle = 0.0;
     _lastScrollDispatchTime = CACurrentMediaTime();
-    _cachedChildFrames = [[NSMutableArray alloc] init];
+    _cachedChildFrames = [NSMutableArray new];
 
     [self addSubview:_scrollView];
   }
@@ -582,7 +582,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (NSArray *)calculateChildFramesData
 {
-    NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
+    NSMutableArray *updatedChildFrames = [NSMutableArray new];
     [[_contentView reactSubviews] enumerateObjectsUsingBlock:
      ^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
 

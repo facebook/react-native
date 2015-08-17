@@ -60,7 +60,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 + (NSIndexSet *)NSIndexSet:(id)json
 {
   json = [self NSNumberArray:json];
-  NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
+  NSMutableIndexSet *indexSet = [NSMutableIndexSet new];
   for (NSNumber *number in json) {
     NSInteger index = number.integerValue;
     if (RCT_DEBUG && index < 0) {
@@ -139,7 +139,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      formatter = [[NSDateFormatter alloc] init];
+      formatter = [NSDateFormatter new];
       formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
       formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
       formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -383,7 +383,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   static RCTCache *colorCache = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    colorCache = [[RCTCache alloc] init];
+    colorCache = [RCTCache new];
     colorCache.countLimit = 128;
   });
   UIColor *color = colorCache[json];
@@ -702,7 +702,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
         // but to use +[UIImage imageNamed] - but this method isn't thread safe
         static NSMutableDictionary *XCAssetMap = nil;
         if (!XCAssetMap) {
-          XCAssetMap = [[NSMutableDictionary alloc] init];
+          XCAssetMap = [NSMutableDictionary new];
         }
         NSNumber *isAsset = XCAssetMap[path];
         if (!isAsset || isAsset.boolValue) {
@@ -986,7 +986,7 @@ RCT_JSON_ARRAY_CONVERTER(NSNumber)
 // Can't use RCT_ARRAY_CONVERTER due to bridged cast
 + (NSArray *)CGColorArray:(id)json
 {
-  NSMutableArray *colors = [[NSMutableArray alloc] init];
+  NSMutableArray *colors = [NSMutableArray new];
   for (id value in [self NSArray:json]) {
     [colors addObject:(__bridge id)[self CGColor:value]];
   }
