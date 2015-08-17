@@ -10,16 +10,22 @@
 
 var chalk = require('chalk');
 var exec = require('child_process').exec;
+var url = require('url');
 var Activity = require('./react-packager/src/Activity');
 
 var hasWarned = {};
-var DISABLE_FLOW_CHECK = true; // temporarily disable while we figure out versioning issues.
 
 function getFlowTypeCheckMiddleware(options) {
   return function(req, res, next) {
-    var isBundle = req.url.indexOf('.bundle') !== -1;
-    if (DISABLE_FLOW_CHECK || options.skipflow || !isBundle) {
+    var reqObj = url.parse(req.url);
+    var isFlowCheck =  (reqObj.path.match(/^\/flow\//));
+
+    if (!isFlowCheck) {
       return next();
+    }
+    if (options.skipflow) {
+      _endSkipFlow(res);
+      return;
     }
     if (options.flowroot || options.projectRoots.length === 1) {
       var flowroot = options.flowroot || options.projectRoots[0];
@@ -28,7 +34,8 @@ function getFlowTypeCheckMiddleware(options) {
         hasWarned.noRoot = true;
         console.warn('flow: No suitable root');
       }
-      return next();
+      _endFlowBad(res);
+      return;
     }
     exec('command -v flow >/dev/null 2>&1', function(error, stdout) {
       if (error) {
@@ -37,7 +44,8 @@ function getFlowTypeCheckMiddleware(options) {
           console.warn(chalk.yellow('flow: Skipping because not installed.  Install with ' +
             '`brew install flow`.'));
         }
-        return next();
+        _endFlowBad(res);
+        return;
       } else {
         return doFlowTypecheck(res, flowroot, next);
       }
@@ -51,7 +59,8 @@ function doFlowTypecheck(res, flowroot, next) {
   exec(flowCmd, function(flowError, stdout, stderr) {
     Activity.endEvent(eventId);
     if (!flowError) {
-      return next();
+      _endFlowOk(res);
+      return;
     } else {
       try {
         var flowResponse = JSON.parse(stdout);
@@ -73,7 +82,7 @@ function doFlowTypecheck(res, flowroot, next) {
           errorNum++;
         });
         var error = {
-          status: 500,
+          status: 200,
           message: 'Flow found type errors.  If you think these are wrong, ' +
             'make sure your flow bin and .flowconfig are up to date, or ' +
             'disable with --skipflow.',
@@ -102,10 +111,36 @@ function doFlowTypecheck(res, flowroot, next) {
             ));
           }
         }
-        return next();
+        _endFlowBad(res);
+        return;
       }
     }
   });
+}
+
+function _endRes(res, message, code, silentError) {
+  res.writeHead(code, {
+    'Content-Type': 'application/json; charset=UTF-8',
+  });
+  res.end(JSON.stringify({
+    message: message,
+    errors: [],
+    silentError: silentError,
+  }));
+}
+
+function _endFlowOk(res) {
+  _endRes(res, 'No Flow Error', '200', true);
+}
+
+function _endFlowBad(res) {
+  // we want to show that flow failed
+  // status 200 is need for the fetch to not be rejected
+  _endRes(res, 'Flow failed to run! Please look at the console for more details.', '200', false);
+}
+
+function _endSkipFlow(res) {
+  _endRes(res, 'Flow was skipped, check the server options', '200', true);
 }
 
 module.exports = getFlowTypeCheckMiddleware;
