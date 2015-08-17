@@ -15,7 +15,6 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
 var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
-var RCTScrollViewConsts = RCTScrollView.Constants;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
@@ -27,6 +26,7 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
+var dismissKeyboard = require('dismissKeyboard');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
@@ -156,9 +156,9 @@ var ScrollView = React.createClass({
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.
      *   - 'on-drag', the keyboard is dismissed when a drag begins.
-     *   - 'interactive', the keyboard is dismissed interactively with the drag
-     *     and moves in synchrony with the touch; dragging upwards cancels the
-     *     dismissal.
+     *   - 'interactive', the keyboard is dismissed interactively with the drag and moves in
+     *     synchrony with the touch; dragging upwards cancels the dismissal.
+     *     On android this is not supported and it will have the same behavior as 'none'.
      */
     keyboardDismissMode: PropTypes.oneOf([
       'none', // default
@@ -170,7 +170,6 @@ var ScrollView = React.createClass({
      * is up dismisses the keyboard. When true, the scroll view will not catch
      * taps, and the keyboard will not dismiss automatically. The default value
      * is false.
-     * @platform ios
      */
     keyboardShouldPersistTaps: PropTypes.bool,
     /**
@@ -310,6 +309,11 @@ var ScrollView = React.createClass({
         );
       }
     }
+    if (Platform.OS === 'android') {
+      if (this.props.keyboardDismissMode === 'on-drag') {
+        dismissKeyboard();
+      }
+    }
     this.scrollResponderHandleScroll(e);
   },
 
@@ -380,13 +384,6 @@ var ScrollView = React.createClass({
       } else {
         ScrollViewClass = AndroidScrollView;
       }
-      var keyboardDismissModeConstants = {
-        'none': RCTScrollViewConsts.KeyboardDismissMode.None, // default
-        'interactive': RCTScrollViewConsts.KeyboardDismissMode.Interactive,
-        'on-drag': RCTScrollViewConsts.KeyboardDismissMode.OnDrag,
-      };
-      props.keyboardDismissMode = props.keyboardDismissMode ?
-        keyboardDismissModeConstants[props.keyboardDismissMode] : undefined;
     }
     invariant(
       ScrollViewClass !== undefined,

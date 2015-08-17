@@ -27,7 +27,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _callbacks = [[NSMutableDictionary alloc] init];
+    _callbacks = [NSMutableDictionary new];
   }
   return self;
 }
@@ -41,7 +41,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
                   failureCallback:(__unused RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
-  UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  UIActionSheet *actionSheet = [UIActionSheet new];
 
   actionSheet.title = options[@"title"];
 

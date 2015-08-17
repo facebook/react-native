@@ -142,7 +142,7 @@ static JSValueRef RCTConsoleProfile(JSContextRef context, __unused JSObjectRef o
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    profiles = [[NSMutableArray alloc] init];
+    profiles = [NSMutableArray new];
   });
 
   static int profileCounter = 1;
@@ -558,7 +558,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   }), @"js_call,json_call", (@{@"objectName": objectName}))];
 }
 
-RCT_EXPORT_METHOD(setContextName:(NSString *)name)
+RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 {
   if (JSGlobalContextSetName != NULL) {
     JSStringRef JSName = JSStringCreateWithCFString((__bridge CFStringRef)name);

@@ -8,19 +8,16 @@
  */
 'use strict';
 
-var fs = require('fs');
-var Promise = require('promise');
-var workerFarm = require('worker-farm');
-var declareOpts = require('../lib/declareOpts');
-var util = require('util');
-var ModuleTransport = require('../lib/ModuleTransport');
+const ModuleTransport = require('../lib/ModuleTransport');
+const Promise = require('promise');
+const declareOpts = require('../lib/declareOpts');
+const fs = require('fs');
+const util = require('util');
+const workerFarm = require('worker-farm');
 
-var readFile = Promise.denodeify(fs.readFile);
+const readFile = Promise.denodeify(fs.readFile);
 
-module.exports = Transformer;
-Transformer.TransformError = TransformError;
-
-var validateOpts = declareOpts({
+const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
     required: true,
@@ -42,38 +39,45 @@ var validateOpts = declareOpts({
   },
 });
 
-function Transformer(options) {
-  var opts = validateOpts(options);
+// Avoid memory leaks caused in workers. This number seems to be a good enough number
+// to avoid any memory leak while not slowing down initial builds.
+// TODO(amasad): Once we get bundle splitting, we can drive this down a bit more.
+const MAX_CALLS_PER_WORKER = 600;
 
-  this._cache = opts.cache;
+class Transformer {
+  constructor(options) {
+    const opts = validateOpts(options);
 
-  if (options.transformModulePath != null) {
-    this._workers = workerFarm(
-      {autoStart: true, maxConcurrentCallsPerWorker: 1},
-      options.transformModulePath
-    );
+    this._cache = opts.cache;
 
-    this._transform = Promise.denodeify(this._workers);
-  }
-}
+    if (opts.transformModulePath != null) {
+      this._workers = workerFarm({
+        autoStart: true,
+        maxConcurrentCallsPerWorker: 1,
+        maxCallsPerWorker: MAX_CALLS_PER_WORKER,
+      }, opts.transformModulePath);
 
-Transformer.prototype.kill = function() {
-  this._workers && workerFarm.end(this._workers);
-};
-
-Transformer.prototype.invalidateFile = function(filePath) {
-  this._cache.invalidate(filePath);
-};
-
-Transformer.prototype.loadFileAndTransform = function(filePath) {
-  if (this._transform == null) {
-    return Promise.reject(new Error('No transfrom module'));
+      this._transform = Promise.denodeify(this._workers);
+    }
   }
 
-  var transform = this._transform;
-  return this._cache.get(filePath, 'transformedSource', function() {
-    // TODO: use fastfs to avoid reading file from disk again
-    return readFile(filePath)
+  kill() {
+    this._workers && workerFarm.end(this._workers);
+  }
+
+  invalidateFile(filePath) {
+    this._cache.invalidate(filePath);
+  }
+
+  loadFileAndTransform(filePath) {
+    if (this._transform == null) {
+      return Promise.reject(new Error('No transfrom module'));
+    }
+
+    var transform = this._transform;
+    return this._cache.get(filePath, 'transformedSource', function() {
+      // TODO: use fastfs to avoid reading file from disk again
+      return readFile(filePath)
       .then(function(buffer) {
         var sourceCode = buffer.toString();
 
@@ -102,8 +106,13 @@ Transformer.prototype.loadFileAndTransform = function(filePath) {
       }).catch(function(err) {
         throw formatError(err, filePath);
       });
-  });
-};
+    });
+  }
+}
+
+module.exports = Transformer;
+
+Transformer.TransformError = TransformError;
 
 function TransformError() {
   Error.captureStackTrace && Error.captureStackTrace(this, TransformError);

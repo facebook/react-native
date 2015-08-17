@@ -5,8 +5,14 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule bar
  */
 
- module.exports = setInterval;
+#import <UIKit/UIKit.h>
+
+@interface UIView (RCTViewUnmounting)
+
+- (void)react_remountAllSubviews;
+- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView;
+- (UIView *)react_findClipView;
+
+@end

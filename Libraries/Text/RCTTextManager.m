@@ -25,12 +25,12 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTText alloc] init];
+  return [RCTText new];
 }
 
 - (RCTShadowView *)shadowView
 {
-  return [[RCTShadowText alloc] init];
+  return [RCTShadowText new];
 }
 
 #pragma mark - Shadow properties

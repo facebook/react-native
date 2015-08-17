@@ -9,6 +9,7 @@
 'use strict';
 
 var chalk = require('chalk');
+var events = require('events');
 
 var COLLECTION_PERIOD = 1000;
 
@@ -18,6 +19,7 @@ var _queuedActions = [];
 var _scheduledCollectionTimer = null;
 var _uuid = 1;
 var _enabled = true;
+var _eventEmitter = new events.EventEmitter();
 
 function endEvent(eventId) {
   var eventEndTime = Date.now();
@@ -98,6 +100,7 @@ function _runCollection() {
 
 function _scheduleAction(action) {
   _queuedActions.push(action);
+  _eventEmitter.emit(action.action, action);
 
   if (_scheduledCollectionTimer === null) {
     _scheduledCollectionTimer = setTimeout(_runCollection, COLLECTION_PERIOD);
@@ -171,3 +174,4 @@ exports.endEvent = endEvent;
 exports.signal = signal;
 exports.startEvent = startEvent;
 exports.disable = disable;
+exports.eventEmitter = _eventEmitter;
