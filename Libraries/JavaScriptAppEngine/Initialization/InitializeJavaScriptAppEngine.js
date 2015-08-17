@@ -137,7 +137,8 @@ function setupProfile() {
 }
 
 function setUpProcessEnv() {
-  GLOBAL.process = {env: {NODE_ENV: __DEV__ ? 'development' : 'production'}};
+  GLOBAL.process = GLOBAL.process || {};
+  GLOBAL.process.env = {NODE_ENV: __DEV__ ? 'development' : 'production'};
 }
 
 setUpRedBoxErrorHandler();
