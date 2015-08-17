@@ -56,6 +56,15 @@ class NavMenu extends React.Component {
         <NavButton
           onPress={() => {
             this.props.navigator.push({
+              message: 'Swipe right to dismiss',
+              sceneConfig: Navigator.SceneConfigs.PushFromRightIOS,
+            });
+          }}
+          text="Push from right (matches iOS shadow)"
+        />
+        <NavButton
+          onPress={() => {
+            this.props.navigator.push({
               message: 'Swipe down to dismiss',
               sceneConfig: Navigator.SceneConfigs.FloatFromBottom,
             });
@@ -136,6 +145,7 @@ var TabBarExample = React.createClass({
         style={styles.container}
         initialRoute={{ message: "First Scene", }}
         renderScene={this.renderScene}
+        sceneStyle={{ overflow: 'visible' }}
         configureScene={(route) => {
           if (route.sceneConfig) {
             return route.sceneConfig;
