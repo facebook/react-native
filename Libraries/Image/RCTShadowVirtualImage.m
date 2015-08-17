@@ -43,7 +43,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
                                     scale:scale
                                resizeMode:UIViewContentModeScaleToFill
                             progressBlock:nil
-                          completionBlock:^(NSError *error, UIImage *image) {
+                          completionBlock:^(NSError *error, UIImage *image, NSValue *dimensions) {
 
       dispatch_async(_bridge.uiManager.methodQueue, ^{
         RCTShadowVirtualImage *strongSelf = weakSelf;

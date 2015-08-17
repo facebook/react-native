@@ -42,7 +42,7 @@ RCT_EXPORT_MODULE()
   PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[phAssetID] options:nil];
   if (results.count == 0) {
     NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", phAssetID];
-    completionHandler(RCTErrorWithMessage(errorText), nil);
+    completionHandler(RCTErrorWithMessage(errorText), nil, nil);
     return ^{};
   }
 
@@ -83,9 +83,9 @@ RCT_EXPORT_MODULE()
                                                 options:imageOptions
                                           resultHandler:^(UIImage *result, NSDictionary *info) {
     if (result) {
-      completionHandler(nil, result);
+      completionHandler(nil, result, nil);
     } else {
-      completionHandler(info[PHImageErrorKey], nil);
+      completionHandler(info[PHImageErrorKey], nil, nil);
     }
   }];
 

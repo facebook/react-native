@@ -182,7 +182,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                     scale:RCTScreenScale()
                                                                resizeMode:self.contentMode
                                                             progressBlock:progressHandler
-                                                          completionBlock:^(NSError *error, UIImage *image) {
+                                                          completionBlock:^(NSError *error, UIImage *image, NSValue *dimensions) {
       dispatch_async(dispatch_get_main_queue(), ^{
         if (image.reactKeyframeAnimation) {
           [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
@@ -196,7 +196,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           }
         } else {
           if (_onLoad) {
-            _onLoad(nil);
+            if (dimensions != nil) {
+              CGSize size = [dimensions CGSizeValue];
+              _onLoad(@{
+                @"size": @{
+                  @"height": @(size.height),
+                  @"width": @(size.width),
+                }
+              });
+            }
+            else {
+              _onLoad(nil);
+            }
           }
         }
         if (_onLoadEnd) {

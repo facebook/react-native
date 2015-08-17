@@ -43,7 +43,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return YES;
   } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
     progressHandler(1, 1);
-    completionHandler(nil, image);
+    completionHandler(nil, image, nil);
     return nil;
   }];
 
@@ -53,7 +53,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
-  } completionBlock:^(NSError *loadError, id loadedImage) {
+  } completionBlock:^(NSError *loadError, id loadedImage, __unused NSValue *dimensions) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];
@@ -67,7 +67,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return YES;
   } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
     progressHandler(1, 1);
-    completionHandler(nil, image);
+    completionHandler(nil, image, nil);
     return nil;
   }];
 
@@ -84,7 +84,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
-  } completionBlock:^(NSError *loadError, id loadedImage) {
+  } completionBlock:^(NSError *loadError, id loadedImage, __unused NSValue *dimensions) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];
@@ -99,14 +99,14 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return YES;
   } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
     XCTAssertEqualObjects(imageData, data);
-    completionHandler(nil, image);
+    completionHandler(nil, image, nil);
     return nil;
   }];
 
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[decoder, imageLoader]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:UIViewContentModeScaleToFill completionBlock:^(NSError *decodeError, id decodedImage) {
+  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:UIViewContentModeScaleToFill completionBlock:^(NSError *decodeError, id decodedImage, __unused NSValue *dimensions) {
     XCTAssertEqualObjects(decodedImage, image);
     XCTAssertNil(decodeError);
   }];
@@ -122,7 +122,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return YES;
   } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
     XCTAssertEqualObjects(imageData, data);
-    completionHandler(nil, image);
+    completionHandler(nil, image, nil);
     return nil;
   }];
 
@@ -136,7 +136,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[decoder1, decoder2, imageLoader]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:UIViewContentModeScaleToFill completionBlock:^(NSError *decodeError, id decodedImage) {
+  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:UIViewContentModeScaleToFill completionBlock:^(NSError *decodeError, id decodedImage, __unused NSValue *dimensions) {
     XCTAssertEqualObjects(decodedImage, image);
     XCTAssertNil(decodeError);
   }];

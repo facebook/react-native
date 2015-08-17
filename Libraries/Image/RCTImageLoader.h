@@ -15,7 +15,7 @@
 @class ALAssetsLibrary;
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image, NSValue *dimensions);
 typedef void (^RCTImageLoaderCancellationBlock)(void);
 
 @interface UIImage (React)

@@ -30,7 +30,7 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
                   successCallback:(RCTResponseSenderBlock)successCallback
                   errorCallback:(RCTResponseErrorBlock)errorCallback)
 {
-  [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
+  [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage, NSValue *dimensions) {
     if (loadError) {
       errorCallback(loadError);
       return;

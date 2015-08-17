@@ -109,12 +109,12 @@ RCT_EXPORT_MODULE()
             image = RCTScaledImageForAsset(representation, size, scale, resizeMode, &error);
           }
 
-          completionHandler(error, image);
+          completionHandler(error, image, nil);
         }
       });
     } else {
       NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@ with no error message.", imageURL];
-      completionHandler(RCTErrorWithMessage(errorText), nil);
+      completionHandler(RCTErrorWithMessage(errorText), nil, nil);
     }
   } failureBlock:^(NSError *loadError) {
     if (cancelled) {
@@ -122,7 +122,7 @@ RCT_EXPORT_MODULE()
     }
 
     NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@.\niOS Error: %@", imageURL, loadError];
-    completionHandler(RCTErrorWithMessage(errorText), nil);
+    completionHandler(RCTErrorWithMessage(errorText), nil, nil);
   }];
 
   return ^{
