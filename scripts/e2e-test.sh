@@ -70,5 +70,4 @@ flow --retries 10
 
 node ../node_modules/react-native/packager/packager.js --nonPersistent &
 SERVER_PID=$!
-cd iOS
 xctool -scheme EndToEndTest -sdk iphonesimulator test
