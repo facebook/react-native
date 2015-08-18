@@ -65,8 +65,8 @@ var WebView = React.createClass({
                     style={iframeStyle}
                     src={this.props.url}
                     onLoad={this._onLoad}
-                    onError={this._onError}
-                    />
+                    onError={this._onError}>
+                </iframe>
             </div>
         );
     },

@@ -44,6 +44,7 @@
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
+@property (nonatomic, assign) BOOL inverted;
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 
 @end

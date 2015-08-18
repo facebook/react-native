@@ -8,7 +8,7 @@ var warning = require('warning');
 var BatchedBridge = {
 
   RemoteModules: {
-        
+
     UIManager: {
 
       layoutAnimationDisabled: true,
@@ -32,6 +32,42 @@ var BatchedBridge = {
       configureNextLayoutAnimation: function(config, onAnimationDidEnd, onError) {
         if (onAnimationDidEnd) {
           onAnimationDidEnd();
+        }
+      },
+
+    },
+
+    AppState: {
+
+      getCurrentAppState: function(callback) {
+        if (window.Even_AppState) {
+          return callback(JSON.parse(window.Even_AppState.getCurrentAppState()));
+        } else {
+          return callback('active');
+        }
+      },
+
+    },
+
+    PushNotificationManager: {
+
+      scheduleLocalNotification: function(details) {},
+      setApplicationIconBadgeNumber: function(number) {},
+      getApplicationIconBadgeNumber: function(callback) {},
+
+      requestPermissions: function(permissions) {
+        if (window.Even_PushNotifications) {
+          window.Even_PushNotifications.requestPermissions();
+        }
+      },
+
+      abandonPermissions: function() {},
+
+      checkPermissions: function(callback) {
+        if (window.Even_PushNotifications) {
+          callback(JSON.parse(window.Even_PushNotifications.checkPermissions()));
+        } else {
+          callback({});
         }
       },
 

@@ -12,9 +12,11 @@ function getBundle(flags) {
 
   var outPath = flags.out ? flags.out : OUT_PATH;
 
-  var projectRoots = [path.resolve(__dirname, '../../..')];
+  var projectRoots = [path.resolve(__dirname, '../..')];
   if (flags.root) {
-    projectRoots.push(path.resolve(flags.root));
+    projectRoots = projectRoots.concat(flags.root.split(",").map(function(root) {
+      return path.resolve(root);
+    }));
   }
 
   var assetRoots = [path.resolve(__dirname, '../../..')];
@@ -23,7 +25,6 @@ function getBundle(flags) {
       return path.resolve(root);
     }));
   }
-
 
   var options = {
     projectRoots: projectRoots,

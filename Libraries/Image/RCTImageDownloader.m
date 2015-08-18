@@ -25,6 +25,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
   dispatch_queue_t _processingQueue;
   NSMutableDictionary *_pendingBlocks;
   RCTDownloadTaskWrapper *_downloadTaskWrapper;
+  NSCache *_memCache;
 }
 
 + (RCTImageDownloader *)sharedInstance
@@ -40,6 +41,7 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
 - (instancetype)init
 {
   if ((self = [super init])) {
+    _memCache = [[NSCache alloc] init];
     _cache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 diskCapacity:200 * 1024 * 1024 diskPath:@"React/RCTImageDownloader"];
     _processingQueue = dispatch_queue_create("com.facebook.React.DownloadProcessingQueue", DISPATCH_QUEUE_SERIAL);
     _pendingBlocks = [[NSMutableDictionary alloc] init];
@@ -153,6 +155,12 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
                                            progressBlock:(RCTDataProgressBlock)progressBlock
                                                    block:(RCTImageDownloadBlock)block
 {
+  UIImage *cachedImage = [_memCache objectForKey:url];
+  if (cachedImage) {
+    block(cachedImage, nil);
+    return ^{};
+  }
+
   scale = scale ?: RCTScreenScale();
 
   return [self downloadDataForURL:url progressBlock:progressBlock block:^(NSData *data, NSError *error) {
@@ -162,38 +170,40 @@ CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
     }
 
     UIImage *image = [UIImage imageWithData:data scale:scale];
-    if (image && !CGSizeEqualToSize(size, CGSizeZero)) {
-
-      // Get scale and size
-      CGRect imageRect = RCTClipRect(image.size, scale, size, scale, resizeMode);
-      CGSize destSize = RCTTargetSizeForClipRect(imageRect);
-
-      // Opacity optimizations
-      UIColor *blendColor = nil;
-      BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-      if (!opaque && backgroundColor) {
-        CGFloat alpha;
-        [backgroundColor getRed:NULL green:NULL blue:NULL alpha:&alpha];
-        if (alpha > 0.999) { // no benefit to blending if background is translucent
-          opaque = YES;
-          blendColor = backgroundColor;
-        }
-      }
-
-      // Decompress image at required size
-      UIGraphicsBeginImageContextWithOptions(destSize, opaque, scale);
-      if (blendColor) {
-        [blendColor setFill];
-        UIRectFill((CGRect){CGPointZero, destSize});
-      }
-      if (tintColor) {
-        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        [tintColor setFill];
-      }
-      [image drawInRect:imageRect];
-      image = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
-    }
+//    if (image && !CGSizeEqualToSize(size, CGSizeZero)) {
+//
+//      // Get scale and size
+//      CGRect imageRect = RCTClipRect(image.size, scale, size, scale, resizeMode);
+//      CGSize destSize = RCTTargetSizeForClipRect(imageRect);
+//
+//      // Opacity optimizations
+//      UIColor *blendColor = nil;
+//      BOOL opaque = !RCTImageHasAlpha(image.CGImage);
+//      if (!opaque && backgroundColor) {
+//        CGFloat alpha;
+//        [backgroundColor getRed:NULL green:NULL blue:NULL alpha:&alpha];
+//        if (alpha > 0.999) { // no benefit to blending if background is translucent
+//          opaque = YES;
+//          blendColor = backgroundColor;
+//        }
+//      }
+//
+//      // Decompress image at required size
+//      UIGraphicsBeginImageContextWithOptions(destSize, opaque, scale);
+//      if (blendColor) {
+//        [blendColor setFill];
+//        UIRectFill((CGRect){CGPointZero, destSize});
+//      }
+//      if (tintColor) {
+//        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+//        [tintColor setFill];
+//      }
+//      [image drawInRect:imageRect];
+//      image = UIGraphicsGetImageFromCurrentImageContext();
+//      UIGraphicsEndImageContext();
+//    }
+      
+    [_memCache setObject:image forKey:url];
 
     block(image, nil);
   }];

@@ -112,6 +112,11 @@ var ScrollView = React.createClass({
      */
     centerContent: PropTypes.bool,
     /**
+     * When true, the scroll view will maintain scroll position
+     * assuming new content is added above, not below.
+     */
+    inverted: PropTypes.bool,
+    /**
      * These styles will be applied to the scroll view content container which
      * wraps all of the child views. Example:
      *
@@ -428,6 +433,7 @@ var validAttributes = {
   automaticallyAdjustContentInsets: true,
   bounces: true,
   centerContent: true,
+  inverted: true,
   contentInset: {diff: insetsDiffer},
   contentOffset: {diff: pointsDiffer},
   decelerationRate: true,

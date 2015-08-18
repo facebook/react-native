@@ -296,6 +296,10 @@ var ListView = React.createClass({
     this.setState({highlightedRow: {sectionID, rowID}});
   },
 
+  scrollToEndOnNextLayout: function() {
+    this.scrollProperties.shouldScrollToEndOnNextLayout = true;
+  },
+
   render: function() {
     var bodyComponents = [];
 
@@ -308,17 +312,41 @@ var ListView = React.createClass({
     var footer = this.props.renderFooter && this.props.renderFooter();
     var totalIndex = header ? 1 : 0;
 
-    for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
+    /*
+    If the scroll view is inverted, render higher-number rows first.
+    Otherwise, iterate in ascending order.
+    */
+    var getRangeForCollection = function(collection) {
+      var range = Array.apply(null, {length: collection.length}).map(Number.call, Number)
+      if (this.props.inverted) {
+        range.reverse();
+      }
+      return range;
+    }.bind(this);
+
+    /*
+    If the scroll view is inverted, insert the element at index zero.
+    Otherwise, append the element.
+    */
+    var addElementToCollection = function(collection, element) {
+      if (this.props.inverted) {
+        bodyComponents.splice(0, 0, element);
+      } else {
+        collection.push(element);
+      }
+    }.bind(this);
+
+    getRangeForCollection(allRowIDs).some(function(sectionIdx) {
       var sectionID = dataSource.sectionIdentities[sectionIdx];
       var rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
-        continue;
+        return;
       }
 
       if (this.props.renderSectionHeader) {
         var shouldUpdateHeader = rowCount >= this.state.prevRenderedRowsCount &&
           dataSource.sectionHeaderShouldUpdate(sectionIdx);
-        bodyComponents.push(
+        addElementToCollection(bodyComponents,
           <StaticRenderer
             key={'s_' + sectionID}
             shouldUpdate={!!shouldUpdateHeader}
@@ -332,7 +360,7 @@ var ListView = React.createClass({
         sectionHeaderIndices.push(totalIndex++);
       }
 
-      for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
+      getRangeForCollection(rowIDs).some(function(rowIdx) {
         var rowID = rowIDs[rowIdx];
         var shouldUpdateRow = rowCount >= this.state.prevRenderedRowsCount &&
           dataSource.rowShouldUpdate(sectionIdx, rowIdx);
@@ -356,7 +384,7 @@ var ListView = React.createClass({
               this.onRowHighlighted
             )}
           />;
-        bodyComponents.push(row);
+        addElementToCollection(bodyComponents, row);
         totalIndex++;
 
         if (this.props.renderSeparator &&
@@ -371,17 +399,19 @@ var ListView = React.createClass({
             rowID,
             adjacentRowHighlighted
           );
-          bodyComponents.push(separator);
+          addElementToCollection(bodyComponents, separator);
           totalIndex++;
         }
         if (++rowCount === this.state.curRenderedRowsCount) {
-          break;
+          return true;
         }
-      }
+      }.bind(this));
+
       if (rowCount >= this.state.curRenderedRowsCount) {
-        break;
+        return true;
       }
-    }
+
+    }.bind(this));
 
     var {
       renderScrollComponent,
@@ -400,7 +430,16 @@ var ListView = React.createClass({
     // component's original ref instead of clobbering it
     return React.cloneElement(renderScrollComponent(props), {
       ref: SCROLLVIEW_REF,
+      inverted: this.props.inverted,
+      onLayout: this._onLayout,
     });
+  },
+
+  _onLayout: function(e) {
+    this._measureAndUpdateScrollProps();
+    if (this.props.onLayout) {
+      this.props.onLayout(e);
+    }
   },
 
   /**
@@ -443,6 +482,18 @@ var ListView = React.createClass({
       height : width;
     this._updateVisibleRows();
     this._renderMoreRowsIfNeeded();
+
+    if (!!this.scrollProperties.shouldScrollToEndOnNextLayout) {
+      this.scrollProperties.shouldScrollToEndOnNextLayout = false;
+      this._scrollToEnd();
+    }
+  },
+
+  _scrollToEnd: function() {
+    var offset = this.scrollProperties.contentLength - this.scrollProperties.visibleLength;
+    var offsetX = this.props.horizontal ? offset : 0;
+    var offsetY = this.props.horizontal ? 0 : offset;
+    this.getScrollResponder().scrollTo(offsetY, offsetX);
   },
 
   _updateChildFrames: function(childFrames) {
@@ -463,6 +514,11 @@ var ListView = React.createClass({
   },
 
   _pageInNewRows: function() {
+    if (!this.scrollProperties.pagingAllowed) {
+      return;
+    }
+    this.scrollProperties.pagingAllowed = false;
+
     this.setState((state, props) => {
       var rowsToRender = Math.min(
         state.curRenderedRowsCount + props.pageSize,
@@ -481,6 +537,9 @@ var ListView = React.createClass({
   },
 
   _getDistanceFromEnd: function(scrollProperties) {
+    if (this.props.inverted) {
+      return scrollProperties.offset;
+    }
     return scrollProperties.contentLength -
       scrollProperties.visibleLength -
       scrollProperties.offset;
@@ -556,6 +615,9 @@ var ListView = React.createClass({
   },
 
   _onScroll: function(e) {
+    // wait for a scroll event before paging in new rows
+    this.scrollProperties.pagingAllowed = true;
+
     var isVertical = !this.props.horizontal;
     this.scrollProperties.visibleLength = e.nativeEvent.layoutMeasurement[
       isVertical ? 'height' : 'width'

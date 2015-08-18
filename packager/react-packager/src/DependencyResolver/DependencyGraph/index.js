@@ -123,13 +123,8 @@ class DependencyGraph {
       return result;
     };
 
-    const forgive = () => {
-      console.warn(
-        'Unable to resolve module %s from %s',
-        toModuleName,
-        fromModule.path
-      );
-      return null;
+    const throwUnresolvable = () => {
+      throw new Error(`Unable to resolve module ${toModuleName} from ${fromModule.path}`);
     };
 
     if (!this._isNodeModulesDir(fromModule.path)
@@ -139,14 +134,15 @@ class DependencyGraph {
         () => this._resolveNodeDependency(fromModule, toModuleName)
       ).then(
         cacheResult,
-        forgive
+        throwUnresolvable
       );
     }
 
-    return this._resolveNodeDependency(fromModule, toModuleName)
-      .then(
+    return this._resolveNodeDependency(fromModule, toModuleName).catch(
+        () => this._resolveHasteDependency(fromModule, toModuleName)
+      ).then(
         cacheResult,
-        forgive
+        throwUnresolvable
       );
   }
 

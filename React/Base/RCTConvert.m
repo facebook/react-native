@@ -632,7 +632,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   // Default color
   if (!color) {
-    color = [UIColor whiteColor];
+    color = [UIColor clearColor];
   }
 
   // Cache and return

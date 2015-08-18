@@ -10,6 +10,8 @@ var webifyStyle = require('webifyStyle');
 
 var stylePropType = StyleSheetPropType(TextStylePropTypes);
 
+var __LEGACY_FLEX__ = !!global.__LEGACY_FLEX__;
+
 var Text = React.createClass({
 
     propTypes: {
@@ -35,28 +37,34 @@ var Text = React.createClass({
                     textPartsIncludingNewlines.push(textParts[i]);
                 }
                 innerElements = textPartsIncludingNewlines.map(this._renderInnerText);
+            } else {
+                innerElements = this._renderChild(innerElements);
             }
+        } else if (innerElements instanceof Array) {
+            innerElements = innerElements.map(this._renderChild);
         } else if (innerElements) {
-            innerElements = innerElements.map(this._renderChild)
+            innerElements = this._renderChild(innerElements);
         }
 
-        if (this.props.isChild) {
-            var style = webifyStyle(this.props.style);
+        if (__LEGACY_FLEX__ && !this.props.isChild) {
+            /*
+            2009 flexbox doesn't apply flex styles to spans.
+            Get around this limitation by wrapping the root in a div.
+            */
             return (
-                <span
+                <div
                     {...this.props}
-                    isChild={true}
-                    style={style}
+                    style={webifyStyle(this.props.style)}
                     children={innerElements}
                     />
             );
 
         } else {
-            var style = webifyStyle([this.props.style, {display: 'inline-block'}]);
             return (
-                <div
+                <span
                     {...this.props}
-                    style={style}
+                    isChild={true}
+                    style={webifyStyle(this.props.style)}
                     children={innerElements}
                     />
             );
@@ -64,7 +72,7 @@ var Text = React.createClass({
     },
 
     _renderInnerText: function(text) {
-        if (text == '\n') {
+        if (text === "\n") {
             return <br/>;
         }
         return <span>{text}</span>
@@ -75,6 +83,9 @@ var Text = React.createClass({
             return React.cloneElement(child, {
                 isChild: true,
             });
+        }
+        if (child instanceof Array) {
+            return child.map(this._renderChild);
         }
         return this._renderInnerText(child);
     },

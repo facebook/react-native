@@ -7,62 +7,82 @@ var merge = require('merge');
 var flattenStyle = require('flattenStyle');
 var precomputeStyle = require('precomputeStyle');
 
-var legacyFlexAlignItemsMap = {
-    'center': 'center',
-    'stretch': 'stretch',
-    'flex-start': 'start',
-    'flex-end': 'end',
-};
+var __LEGACY_FLEX__ = !!global.__LEGACY_FLEX__;
 
-var legacyFlexJustifyContentMap = {
-    'center': 'center',
-    'stretch': 'justify',
-    'flex-start': 'start',
-    'flex-end': 'end',
-    'space-between': 'justify',
-};
+if (__LEGACY_FLEX__) {
+    var legacyFlexAlignItemsMap = {
+        'center': 'center',
+        'stretch': 'stretch',
+        'flex-start': 'start',
+        'flex-end': 'end',
+    };
+    var legacyFlexJustifyContentMap = {
+        'center': 'center',
+        'stretch': 'justify',
+        'flex-start': 'start',
+        'flex-end': 'end',
+        'space-between': 'justify',
+    };
+    var legacyFlexDirectionMap = {
+        'row': 'horizontal',
+        'column': 'vertical',
+    };
+}
 
 var styleKeyMap = {
 
     flex: function(value) {
+        if (__LEGACY_FLEX__) {
+            return {
+                WebkitBoxFlex: value,
+            };
+        }
         return {
             flex: value,
             WebkitFlex: value,
-            WebkitBoxFlex: value,
         };
     },
 
     flexDirection: function(value) {
-        var oldValue;
-        if (value == 'row') {
-            oldValue = 'horizontal';
-        } else {
-            oldValue = 'vertical';
+        if (__LEGACY_FLEX__) {
+            return {
+                WebkitBoxOrient: legacyFlexDirectionMap[value],
+            };
         }
         return {
             flexDirection: value,
             WebkitFlexDirection: value,
-            WebkitBoxOrient: oldValue,
         };
     },
 
     alignItems: function(value) {
+        if (__LEGACY_FLEX__) {
+            return {
+                WebkitBoxAlign: legacyFlexAlignItemsMap[value],
+            };
+        }
         return {
             alignItems: value,
             WebkitAlignItems: value,
-            WebkitBoxAlign: legacyFlexAlignItemsMap[value],
         };
     },
 
     justifyContent: function(value) {
+        if (__LEGACY_FLEX__) {
+            return {
+                WebkitBoxPack: legacyFlexJustifyContentMap[value],
+            };
+        }
         return {
             justifyContent: value,
             WebkitJustifyContent: value,
-            WebkitBoxPack: legacyFlexJustifyContentMap[value],
         };
     },
 
     alignSelf: function(value) {
+        if (__LEGACY_FLEX__) {
+            throw new Error("alignSelf not supported");
+        }
         return {
             alignSelf: value,
             WebkitAlignSelf: value,
@@ -126,6 +146,13 @@ var styleKeyMap = {
         return {
             marginTop: value,
             marginBottom: value,
+        };
+    },
+
+    borderImage: function(value) {
+        return {
+            borderImage: value,
+            WebkitBorderImage: value,
         };
     },
 
