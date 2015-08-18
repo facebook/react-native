@@ -775,7 +775,7 @@ static RCTFontWeight RCTWeightOfFont(UIFont *font)
   double weight = [traits[UIFontWeightTrait] doubleValue];
   if (weight == 0.0) {
     for (NSString *name in nameToWeight) {
-      if ([font.fontName.lowercaseString containsString:name]) {
+      if ([font.fontName.lowercaseString rangeOfString:name].location != NSNotFound) {
         return [nameToWeight[name] doubleValue];
       }
     }

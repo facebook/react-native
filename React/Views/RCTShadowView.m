@@ -176,15 +176,15 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   // dirtied, but really we should track which properties have changed and
   // only update those.
 
-  if (!_backgroundColor) {
-    UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
-    if (parentBackgroundColor) {
-      [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
-        UIView *view = viewRegistry[_reactTag];
-        [view reactSetInheritedBackgroundColor:parentBackgroundColor];
-      }];
-    }
-  } else {
+//  if (!_backgroundColor) {
+//    UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
+//    if (parentBackgroundColor) {
+//      [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
+//        UIView *view = viewRegistry[_reactTag];
+//        [view reactSetInheritedBackgroundColor:parentBackgroundColor];
+//      }];
+//    }
+//  } else {
     // Update parent properties for children
     NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
     CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
@@ -195,8 +195,8 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
       properties[RCTBackgroundColorProp] = _backgroundColor;
     }
     return properties;
-  }
-  return parentProperties;
+//  }
+//  return parentProperties;
 }
 
 - (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks
