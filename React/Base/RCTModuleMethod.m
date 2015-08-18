@@ -237,17 +237,14 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
           [typeInvocation setSelector:selector];
           [typeInvocation setTarget:[RCTConvert class]];
 
-          [argumentBlocks addObject:
-           ^(__unused RCTBridge *bridge, NSUInteger index, id json) {
-
+          [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
             void *returnValue = malloc(typeSignature.methodReturnLength);
             [typeInvocation setArgument:&json atIndex:2];
             [typeInvocation invoke];
             [typeInvocation getReturnValue:returnValue];
-
             [invocation setArgument:returnValue atIndex:index + 2];
-
             free(returnValue);
+            return YES;
           }];
           break;
         }
@@ -411,6 +408,8 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
     RCTArgumentBlock block = _argumentBlocks[index];
     if (!block(bridge, index, RCTNilIfNull(json))) {
       // Invalid argument, abort
+      RCTLogArgumentError(self, index, json,
+                          "could not be processed. Aborting method call.");
       return;
     }
     index++;
