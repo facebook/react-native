@@ -78,7 +78,7 @@ var SliderIOS = React.createClass({
     onValueChange: PropTypes.func,
     
     /**
-     * A custom thumb icon for the slider. If no icon is supplied the default thumb is used.
+     * A custom thumb icon for the slider. If no icon is supplied the default thumb is used. Please note that the used approach does not allow you to set the thumb's height and width
      */
     thumb: Image.propTypes.source,
 
