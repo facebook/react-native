@@ -9,5 +9,5 @@
 'use strict';
 
 module.exports = {
-  dim: function(s) { return s; },
+  dim: s =>  s,
 };
