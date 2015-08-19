@@ -41,7 +41,7 @@ typedef struct {
   return (RCTLocationOptions){
     .timeout = [RCTConvert NSTimeInterval:options[@"timeout"]] ?: INFINITY,
     .maximumAge = [RCTConvert NSTimeInterval:options[@"maximumAge"]] ?: INFINITY,
-    .accuracy = [RCTConvert BOOL:options[@"enableHighAccuracy"]] ? kCLLocationAccuracyBest : RCT_DEFAULT_LOCATION_ACCURACY
+    .accuracy = [RCTConvert BOOL:options[@"enableHighAccuracy"]] ? kCLLocationAccuracyBestForNavigation : RCT_DEFAULT_LOCATION_ACCURACY
   };
 }
 
@@ -148,6 +148,16 @@ RCT_EXPORT_MODULE()
   [_locationManager startUpdatingLocation];
 }
 
+- (BOOL) isNewLocation:(CLLocation*) location
+{
+  if ([_lastLocationEvent objectForKey:@"coords"] != [NSNull null]){
+    if([_lastLocationEvent[@"coords"][@"latitude"] doubleValue] != location.coordinate.latitude || [_lastLocationEvent[@"coords"][@"longitude"] doubleValue] != location.coordinate.longitude){
+      return YES;
+    }
+  }
+  return NO;
+}
+
 #pragma mark - Timeout handler
 
 - (void)timeout:(NSTimer *)timer
@@ -247,12 +257,14 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   [self beginLocationUpdates];
 }
 
+
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
   // Create event
   CLLocation *location = [locations lastObject];
+
   _lastLocationEvent = @{
     @"coords": @{
       @"latitude": @(location.coordinate.latitude),
@@ -266,8 +278,8 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
     @"timestamp": @(CFAbsoluteTimeGetCurrent() * 1000.0) // in ms
   };
 
-  // Send event
-  if (_observingLocation) {
+  // Send event if observing, or if new location differs from last location
+  if (_observingLocation || [self isNewLocation:location]) {
     [_bridge.eventDispatcher sendDeviceEventWithName:@"geolocationDidChange"
                                                 body:_lastLocationEvent];
   }
@@ -279,13 +291,10 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
   [_pendingRequests removeAllObjects];
 
-  // Stop updating if not not observing
+  // Stop updating if not observing
   if (!_observingLocation) {
     [_locationManager stopUpdatingLocation];
   }
-
-  // Reset location accuracy
-  _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
