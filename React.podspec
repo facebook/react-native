@@ -58,7 +58,8 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTImage' do |ss|
     ss.dependency         'React/Core'
-    ss.source_files     = ["Libraries/Image/*.{h,m}", "Libraries/Network/*.{h,m}"]
+    ss.dependency         'React/RCTNetwork'
+    ss.source_files     = "Libraries/Image/*.{h,m}"
     ss.preserve_paths   = "Libraries/Image/*.js"
   end
 
