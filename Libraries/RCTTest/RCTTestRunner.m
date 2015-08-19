@@ -11,7 +11,7 @@
 
 #import "FBSnapshotTestController.h"
 #import "RCTAssert.h"
-#import "RCTRedBox.h"
+#import "RCTLog.h"
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
@@ -83,6 +83,13 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)runTest:(SEL)test module:(NSString *)moduleName
    initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
+  __block NSString *error = nil;
+  RCTSetLogFunction(^(RCTLogLevel level, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+    if (level >= RCTLogLevelError) {
+      error = message;
+    }
+  });
+
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
                                             moduleProvider:_moduleProvider
                                              launchOptions:nil];
@@ -102,20 +109,19 @@ RCT_NOT_IMPLEMENTED(-init)
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
-  NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
   while ([date timeIntervalSinceNow] > 0 && testModule.status == RCTTestStatusPending && error == nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-    error = [[RCTRedBox sharedInstance] currentErrorMessage];
   }
   [rootView removeFromSuperview];
+
+  RCTSetLogFunction(RCTDefaultLogFunction);
 
   NSArray *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
     return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
   }]];
   RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
 
-  [[RCTRedBox sharedInstance] dismiss];
   if (expectErrorBlock) {
     RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
   } else {
