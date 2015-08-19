@@ -71,7 +71,11 @@ const validateOpts = declareOpts({
   assetServer: {
     type: 'object',
     required: true,
-  }
+  },
+  transformTimeoutInterval: {
+    type: 'number',
+    required: false,
+  },
 });
 
 class Bundler {

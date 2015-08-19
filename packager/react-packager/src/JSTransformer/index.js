@@ -17,6 +17,14 @@ const workerFarm = require('worker-farm');
 
 const readFile = Promise.denodeify(fs.readFile);
 
+// Avoid memory leaks caused in workers. This number seems to be a good enough number
+// to avoid any memory leak while not slowing down initial builds.
+// TODO(amasad): Once we get bundle splitting, we can drive this down a bit more.
+const MAX_CALLS_PER_WORKER = 600;
+
+// Worker will timeout if one of the callers timeout.
+const DEFAULT_MAX_CALL_TIME = 10000;
+
 const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
@@ -37,16 +45,15 @@ const validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  transformTimeoutInterval: {
+    type: 'number',
+    default: DEFAULT_MAX_CALL_TIME,
+  }
 });
-
-// Avoid memory leaks caused in workers. This number seems to be a good enough number
-// to avoid any memory leak while not slowing down initial builds.
-// TODO(amasad): Once we get bundle splitting, we can drive this down a bit more.
-const MAX_CALLS_PER_WORKER = 600;
 
 class Transformer {
   constructor(options) {
-    const opts = validateOpts(options);
+    const opts = this._opts = validateOpts(options);
 
     this._cache = opts.cache;
 
@@ -55,6 +62,7 @@ class Transformer {
         autoStart: true,
         maxConcurrentCallsPerWorker: 1,
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
+        maxCallTime: opts.transformTimeoutInterval,
       }, opts.transformModulePath);
 
       this._transform = Promise.denodeify(this._workers);
@@ -74,21 +82,21 @@ class Transformer {
       return Promise.reject(new Error('No transfrom module'));
     }
 
-    var transform = this._transform;
-    return this._cache.get(filePath, 'transformedSource', function() {
+    return this._cache.get(
+      filePath,
+      'transformedSource',
       // TODO: use fastfs to avoid reading file from disk again
-      return readFile(filePath)
-      .then(function(buffer) {
-        var sourceCode = buffer.toString();
+      () => readFile(filePath).then(
+        buffer => {
+          const sourceCode = buffer.toString('utf8');
 
-        return transform({
-          sourceCode: sourceCode,
-          filename: filePath,
-        }).then(
-          function(res) {
+          return this._transform({
+            sourceCode,
+            filename: filePath,
+          }).then(res => {
             if (res.error) {
               console.warn(
-                'Error property on the result value form the transformer',
+                'Error property on the result value from the transformer',
                 'module is deprecated and will be removed in future versions.',
                 'Please pass an error object as the first argument to the callback'
               );
@@ -101,14 +109,24 @@ class Transformer {
               sourcePath: filePath,
               sourceCode: sourceCode,
             });
-          }
-        );
-      }).catch(function(err) {
-        throw formatError(err, filePath);
-      });
-    });
+          }).catch(err => {
+            if (err.type === 'TimeoutError') {
+              const timeoutErr = new Error(
+                `TimeoutError: transforming ${filePath} took longer than `
+                `${this._opts.transformTimeoutInterval / 1000} seconds.\n` +
+                `You can adjust timeout via the 'transformTimeoutInterval' option`
+              );
+              timeoutErr.type = 'TimeoutError';
+              throw timeoutErr;
+            }
+
+            throw formatError(err, filePath);
+          });
+        })
+    );
   }
 }
+
 
 module.exports = Transformer;
 

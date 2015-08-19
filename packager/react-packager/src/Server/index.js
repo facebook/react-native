@@ -61,6 +61,10 @@ const validateOpts = declareOpts({
     type: 'array',
     default: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
   },
+  transformTimeoutInterval: {
+    type: 'number',
+    required: false,
+  },
 });
 
 const bundleOpts = declareOpts({
