@@ -22,7 +22,7 @@ exports.middleware = function(options) {
   return server.processRequest.bind(server);
 };
 
-exports.activityEvents = Activity.eventEmitter;
+exports.Activity = Activity;
 
 // Renamed "package" to "bundle". But maintain backwards
 // compat.
