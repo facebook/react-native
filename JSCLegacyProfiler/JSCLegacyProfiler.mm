@@ -8,7 +8,7 @@
 #include "JSProfilerPrivate.h"
 #include "JSStringRef.h"
 
-#include <yajl/yajl_gen.h>
+#include <YAJL/yajl_gen.h>
 
 #define GEN_AND_CHECK(expr) \
   do { \

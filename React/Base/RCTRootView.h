@@ -29,7 +29,8 @@ extern NSString *const RCTContentDidAppearNotification;
  * - Designated initializer -
  */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName NS_DESIGNATED_INITIALIZER;
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
 
 /**
  * - Convenience initializer -
@@ -40,6 +41,7 @@ extern NSString *const RCTContentDidAppearNotification;
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
+                initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
 
 /**
@@ -60,7 +62,7 @@ extern NSString *const RCTContentDidAppearNotification;
  * The default properties to apply to the view when the script bundle
  * is first loaded. Defaults to nil/empty.
  */
-@property (nonatomic, copy) NSDictionary *initialProperties;
+@property (nonatomic, copy, readonly) NSDictionary *initialProperties;
 
 /**
  * The class of the RCTJavaScriptExecutor to use with this view.

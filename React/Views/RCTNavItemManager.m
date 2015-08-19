@@ -18,7 +18,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTNavItem alloc] init];
+  return [RCTNavItem new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(navigationBarHidden, BOOL)

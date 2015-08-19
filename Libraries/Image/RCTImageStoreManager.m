@@ -26,7 +26,7 @@ RCT_EXPORT_MODULE()
   if ((self = [super init])) {
 
     // TODO: need a way to clear this store
-    _store = [[NSMutableDictionary alloc] init];
+    _store = [NSMutableDictionary new];
   }
   return self;
 }

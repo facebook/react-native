@@ -27,6 +27,8 @@ var AccessibilityInfo = require('AccessibilityInfo');
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
+var importantForAccessibilityValues = ['auto', 'yes', 'no', 'no-hide-descendants'];
+
 var AccessibilityAndroidExample = React.createClass({
 
   statics: {
@@ -38,6 +40,8 @@ var AccessibilityAndroidExample = React.createClass({
     return {
       count: 0,
       talkbackEnabled: false,
+      backgroundImportantForAcc: 0,
+      forgroundImportantForAcc: 0,
     };
   },
 
@@ -76,6 +80,18 @@ var AccessibilityAndroidExample = React.createClass({
     this.setState({
       count: ++this.state.count,
       talkbackEnabled: this.state.talkbackEnabled,
+    });
+  },
+
+  _changeBackgroundImportantForAcc: function() {
+    this.setState({
+      backgroundImportantForAcc: (this.state.backgroundImportantForAcc + 1) % 4,
+    });
+  },
+
+  _changeForgroundImportantForAcc: function() {
+    this.setState({
+      forgroundImportantForAcc: (this.state.forgroundImportantForAcc + 1) % 4,
     });
   },
 
@@ -148,6 +164,77 @@ var AccessibilityAndroidExample = React.createClass({
           </TouchableWithoutFeedback>
         </UIExplorerBlock>
 
+        <UIExplorerBlock title="Overlapping views and importantForAccessibility property">
+          <View style={styles.container}>
+            <View
+              style={{
+                position: 'absolute',
+                left: 10,
+                top: 10,
+                right: 10,
+                height: 100,
+                backgroundColor: 'green'}}
+              accessible={true}
+              accessibilityLabel="First layout"
+              importantForAccessibility={
+                importantForAccessibilityValues[this.state.backgroundImportantForAcc]}>
+              <View accessible={true}>
+                <Text style={{fontSize: 25}}>
+                  Hello
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                position: 'absolute',
+                left: 10,
+                top: 25,
+                right: 10,
+                height: 110,
+                backgroundColor: 'yellow', opacity: 0.5}}
+              accessible={true}
+              accessibilityLabel="Second layout"
+              importantForAccessibility={
+                importantForAccessibilityValues[this.state.forgroundImportantForAcc]}>
+              <View accessible={true}>
+                <Text style={{fontSize: 20}}>
+                  world
+                </Text>
+              </View>
+            </View>
+          </View>
+          <TouchableWithoutFeedback onPress={this._changeBackgroundImportantForAcc}>
+            <View style={styles.embedded}>
+              <Text>
+                Change importantForAccessibility for background layout.
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <View accessible={true}>
+            <Text>
+              Background layout importantForAccessibility
+            </Text>
+            <Text>
+              {importantForAccessibilityValues[this.state.backgroundImportantForAcc]}
+            </Text>
+          </View>
+          <TouchableWithoutFeedback onPress={this._changeForgroundImportantForAcc}>
+            <View style={styles.embedded}>
+              <Text>
+                Change importantForAccessibility for forground layout.
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <View accessible={true}>
+            <Text>
+              Forground layout importantForAccessibility
+            </Text>
+            <Text>
+              {importantForAccessibilityValues[this.state.forgroundImportantForAcc]}
+            </Text>
+          </View>
+        </UIExplorerBlock>
+
       </UIExplorerPage>
     );
   },
@@ -157,6 +244,12 @@ var styles = StyleSheet.create({
    embedded: {
     backgroundColor: 'yellow',
     padding:10,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 10,
+    height:150,
   },
 });
 
