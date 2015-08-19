@@ -206,10 +206,10 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
   cell.textLabel.text = stackFrame[@"methodName"];
 
-  NSString *fileAndLine = stackFrame[@"file"];
+  NSString *fileAndLine = [stackFrame[@"file"] lastPathComponent];
   if (fileAndLine) {
     fileAndLine = [fileAndLine stringByAppendingFormat:@":%@", stackFrame[@"lineNumber"]];
-    cell.detailTextLabel.text = cell.detailTextLabel.text = fileAndLine;
+    cell.detailTextLabel.text = fileAndLine;
   }
   return cell;
 }
