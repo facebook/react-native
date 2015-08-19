@@ -9,9 +9,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RCTRedBox : NSObject
+#import "RCTBridge.h"
+#import "RCTBridgeModule.h"
 
-+ (instancetype)sharedInstance;
+@interface RCTRedBox : NSObject <RCTBridgeModule>
 
 - (void)showError:(NSError *)error;
 - (void)showErrorMessage:(NSString *)message;
@@ -19,10 +20,16 @@
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack;
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack;
 
-- (void)setNextBackgroundColor:(UIColor *)color;
-
-- (NSString *)currentErrorMessage;
-
 - (void)dismiss;
+
+@end
+
+/**
+ * This category makes the red box instance available via the RCTBridge, which
+ * is useful for any class that needs to access the red box or error log.
+ */
+@interface RCTBridge (RCTRedBox)
+
+@property (nonatomic, readonly) RCTRedBox *redBox;
 
 @end

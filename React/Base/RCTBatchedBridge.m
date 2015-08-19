@@ -46,12 +46,12 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 
 RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
-static id<RCTJavaScriptExecutor> RCTLatestExecutor = nil;
-id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void);
-id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
-{
-  return RCTLatestExecutor;
-}
+@interface RCTBridge ()
+
++ (instancetype)currentBridge;
++ (void)setCurrentBridge:(RCTBridge *)bridge;
+
+@end
 
 @interface RCTBatchedBridge : RCTBridge
 
@@ -100,6 +100,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
       [_mainDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
 
+    [RCTBridge setCurrentBridge:self];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartLoadingNotification
                                                         object:self
@@ -176,11 +177,11 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
       if (error) {
         NSArray *stack = [error userInfo][@"stack"];
         if (stack) {
-          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
-                                             withStack:stack];
+          [self.redBox showErrorMessage:error.localizedDescription
+                              withStack:stack];
         } else {
-          [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription]
-                                           withDetails:[error localizedFailureReason]];
+          [self.redBox showErrorMessage:error.localizedDescription
+                            withDetails:error.localizedFailureReason];
         }
 
         NSDictionary *userInfo = @{@"bridge": self, @"error": error};
@@ -263,7 +264,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
    * any other module has access to the bridge
    */
   _javaScriptExecutor = _modulesByName[RCTBridgeModuleNameForClass(self.executorClass)];
-  RCTLatestExecutor = _javaScriptExecutor;
 
   for (id<RCTBridgeModule> module in _modulesByName.allValues) {
 
@@ -317,7 +317,7 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
                   asGlobalObjectNamed:@"__fbBatchedBridgeConfig"
                              callback:^(NSError *error) {
     if (error) {
-      [[RCTRedBox sharedInstance] showError:error];
+      [self.redBox showError:error];
     }
     onComplete(error);
   }];
@@ -335,19 +335,10 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   sourceCodeModule.scriptURL = self.bundleURL;
   sourceCodeModule.scriptText = sourceCode;
 
-  static BOOL shouldDismiss = NO;
-  if (shouldDismiss) {
-    [[RCTRedBox sharedInstance] dismiss];
-  }
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    shouldDismiss = YES;
-  });
-
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
 
     if (loadError) {
-      [[RCTRedBox sharedInstance] showError:loadError];
+      [self.redBox showError:loadError];
       return;
     }
 
@@ -436,8 +427,8 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   RCTAssertMainThread();
 
   _valid = NO;
-  if (RCTLatestExecutor == _javaScriptExecutor) {
-    RCTLatestExecutor = nil;
+  if ([RCTBridge currentBridge] == self) {
+    [RCTBridge setCurrentBridge:nil];
   }
 
   [_mainDisplayLink invalidate];
@@ -475,6 +466,16 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
     }];
   });
+}
+
+- (void)logMessage:(NSString *)message level:(NSString *)level
+{
+  if (RCT_DEBUG) {
+    [_javaScriptExecutor executeJSCall:@"RCTLog"
+                                method:@"logIfNoNativeHook"
+                             arguments:@[level, message]
+                              callback:^(__unused id json, __unused NSError *error) {}];
+  }
 }
 
 #pragma mark - RCTBridge methods
@@ -599,7 +600,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
-      [[RCTRedBox sharedInstance] showError:error];
+      [self.redBox showError:error];
     }
 
     if (!self.isValid) {

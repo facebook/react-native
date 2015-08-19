@@ -30,15 +30,13 @@
   NSArray *_lastStackTrace;
 
   UITableViewCell *_cachedMessageCell;
-  UIColor *_redColor;
 }
 
 - (id)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _redColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
     self.windowLevel = UIWindowLevelAlert + 1000;
-    self.backgroundColor = _redColor;
+    self.backgroundColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
     self.hidden = YES;
 
     UIViewController *rootController = [UIViewController new];
@@ -55,7 +53,7 @@
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
     _stackTraceTableView.backgroundColor = [UIColor clearColor];
-    _stackTraceTableView.separatorColor = [[UIColor whiteColor] colorWithAlphaComponent:0.3];
+    _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_rootView addSubview:_stackTraceTableView];
 
@@ -63,7 +61,7 @@
     dismissButton.accessibilityIdentifier = @"redbox-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
-    [dismissButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
+    [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
 
@@ -71,7 +69,7 @@
     reloadButton.accessibilityIdentifier = @"redbox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
-    [reloadButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
+    [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
 
@@ -136,7 +134,6 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (void)dismiss
 {
   self.hidden = YES;
-  self.backgroundColor = _redColor;
   [self resignFirstResponder];
   [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
 }
@@ -193,15 +190,15 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   if (!cell) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-    cell.textLabel.textColor = [[UIColor whiteColor] colorWithAlphaComponent:0.9];
+    cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:0.9];
     cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
     cell.textLabel.numberOfLines = 2;
-    cell.detailTextLabel.textColor = [[UIColor whiteColor] colorWithAlphaComponent:0.7];
+    cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
     cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
     cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     cell.backgroundColor = [UIColor clearColor];
     cell.selectedBackgroundView = [UIView new];
-    cell.selectedBackgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
+    cell.selectedBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.2];
   }
 
   cell.textLabel.text = stackFrame[@"methodName"];
@@ -271,23 +268,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 @implementation RCTRedBox
 {
   RCTRedBoxWindow *_window;
-  UIColor *_nextBackgroundColor;
 }
 
-+ (instancetype)sharedInstance
-{
-  static RCTRedBox *_sharedInstance;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    _sharedInstance = [RCTRedBox new];
-  });
-  return _sharedInstance;
-}
-
-- (void)setNextBackgroundColor:(UIColor *)color
-{
-  _nextBackgroundColor = color;
-}
+RCT_EXPORT_MODULE()
 
 - (void)showError:(NSError *)error
 {
@@ -322,23 +305,10 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!_window) {
-      _window = [[RCTRedBoxWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+      _window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     }
     [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
-    if (_nextBackgroundColor) {
-      _window.backgroundColor = _nextBackgroundColor;
-      _nextBackgroundColor = nil;
-    }
   });
-}
-
-- (NSString *)currentErrorMessage
-{
-  if (_window && !_window.hidden) {
-    return _window.lastErrorMessage;
-  } else {
-    return nil;
-  }
 }
 
 - (void)dismiss
@@ -348,20 +318,32 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 @end
 
+@implementation RCTBridge (RCTRedBox)
+
+- (RCTRedBox *)redBox
+{
+  return self.modules[RCTBridgeModuleNameForClass([RCTRedBox class])];
+}
+
+@end
+
 #else // Disabled
 
 @implementation RCTRedBox
 
-+ (instancetype)sharedInstance { return nil; }
 - (void)showError:(NSError *)message {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow {}
-- (NSString *)currentErrorMessage { return nil; }
-- (void)setNextBackgroundColor:(UIColor *)color {}
 - (void)dismiss {}
+
+@end
+
+@implementation RCTBridge (RCTRedBox)
+
+- (RCTRedBox *)redBox { return nil; }
 
 @end
 

@@ -16,9 +16,10 @@
 #import "RCTDefines.h"
 #import "RCTRedBox.h"
 
-@interface RCTBridge (Logging)
+@interface RCTBridge ()
 
-+ (void)logMessage:(NSString *)message level:(NSString *)level;
++ (RCTBridge *)currentBridge;
+- (void)logMessage:(NSString *)message level:(NSString *)level;
 
 @end
 
@@ -188,7 +189,8 @@ void _RCTLogFormat(
   RCTLogLevel level,
   const char *fileName,
   int lineNumber,
-  NSString *format, ...)
+  NSString *format, ...
+)
 {
   RCTLogFunction logFunction = RCTGetLocalLogFunction();
   BOOL log = RCT_DEBUG || (logFunction != nil);
@@ -224,11 +226,11 @@ void _RCTLogFormat(
           }
         }
       }];
-      [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
+      [[RCTBridge currentBridge].redBox showErrorMessage:message withStack:stack];
     }
 
     // Log to JS executor
-    [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
+    [[RCTBridge currentBridge] logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
 
 #endif
 
