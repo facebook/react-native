@@ -101,7 +101,7 @@ class DependencyGraph {
       this._fastfs.build()
         .then(() => {
           const hasteActivity = Activity.startEvent('Building Haste Map');
-          this._buildHasteMap().then(() => Activity.endEvent(hasteActivity));
+          return this._buildHasteMap().then(() => Activity.endEvent(hasteActivity));
         }),
       this._buildAssetMap_DEPRECATED(),
     ]);
