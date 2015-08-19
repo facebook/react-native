@@ -38,28 +38,38 @@ class BundlesLayout {
       () => pending.length > 0,
       () => bundles,
       () => {
-        const pendingPaths = pending.shift();
-        return Promise
-          .all(pendingPaths.map(path =>
-            this._resolver.getDependencies(path, {dev: isDev})
-          ))
-          .then(modulesDeps => {
-            let syncDependencies = Object.create(null);
-            modulesDeps.forEach(moduleDeps => {
-              moduleDeps.dependencies.forEach(dep => {
-                syncDependencies[dep.path] = dep
-                this._moduleToBundle[dep.path] = bundles.length;
-              });
-              pending = pending.concat(moduleDeps.asyncDependencies);
-            });
+        // pending sync dependencies we still need to explore for the current
+        // pending dependency
+        let pendingSyncDeps = pending.shift();
 
-            syncDependencies = _.values(syncDependencies);
-            if (syncDependencies.length > 0) {
-              bundles.push(syncDependencies);
+        // accum variable for sync dependencies of the current pending
+        // dependency we're processing
+        const syncDependencies = Object.create(null);
+
+        return promiseWhile(
+          () => pendingSyncDeps.length > 0,
+          () => {
+            const dependencies = _.values(syncDependencies);
+            if (dependencies.length > 0) {
+              bundles.push(dependencies);
             }
-
-            return Promise.resolve(bundles);
-          });
+          },
+          () => {
+            const pendingSyncDep = pendingSyncDeps.shift();
+            return this._resolver
+              .getDependencies(pendingSyncDep, {dev: isDev})
+              .then(deps => {
+                deps.dependencies.forEach(dep => {
+                  if (dep.path !== pendingSyncDep && !dep.isPolyfill) {
+                    pendingSyncDeps.push(dep.path);
+                  }
+                  syncDependencies[dep.path] = dep;
+                  this._moduleToBundle[dep.path] = bundles.length;
+                });
+                pending = pending.concat(deps.asyncDependencies);
+              });
+          },
+        );
       },
     );
   }

@@ -12,6 +12,7 @@ jest
   .dontMock('absolute-path')
   .dontMock('crypto')
   .dontMock('underscore')
+  .dontMock('path')
   .dontMock('../index')
   .dontMock('../../lib/getAssetDataFromName')
   .dontMock('../../DependencyResolver/crawlers')
@@ -29,6 +30,7 @@ jest
   .dontMock('../../DependencyResolver/ModuleCache');
 
 const Promise = require('promise');
+const path = require('path');
 
 jest.mock('fs');
 
@@ -38,6 +40,18 @@ describe('BundlesLayout', () => {
   var DependencyResolver;
   var fileWatcher;
   var fs;
+
+  const polyfills = [
+    'polyfills/prelude_dev.js',
+    'polyfills/prelude.js',
+    'polyfills/require.js',
+    'polyfills/polyfills.js',
+    'polyfills/console.js',
+    'polyfills/error-guard.js',
+    'polyfills/String.prototype.es6.js',
+    'polyfills/Array.prototype.es6.js',
+  ];
+  const baseFs = getBaseFs();
 
   beforeEach(() => {
     fs = require('fs');
@@ -54,7 +68,7 @@ describe('BundlesLayout', () => {
   describe('generate', () => {
     function newBundlesLayout() {
       const resolver = new DependencyResolver({
-        projectRoots: ['/root'],
+        projectRoots: ['/root', '/' + __dirname.split('/')[1]],
         fileWatcher: fileWatcher,
         cache: new Cache(),
         assetExts: ['js', 'png'],
@@ -75,8 +89,31 @@ describe('BundlesLayout', () => {
       );
     }
 
+    function setMockFilesystem(mockFs) {
+      fs.__setMockFilesystem(Object.assign(mockFs, baseFs));
+    }
+
+    pit('should bundle single-module app', () => {
+      setMockFilesystem({
+        'root': {
+          'index.js': `
+            /**
+             * @providesModule index
+             */`,
+        }
+      });
+
+      return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
+        modulePaths(bundles).then(paths =>
+          expect(paths).toEqual([
+            ['/root/index.js'],
+          ])
+        )
+      );
+    });
+
     pit('should bundle dependant modules', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -84,7 +121,7 @@ describe('BundlesLayout', () => {
              */
             require("a");`,
           'a.js': `
-            /**,
+            /**
              * @providesModule a
              */`,
         }
@@ -98,7 +135,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should split bundles for async dependencies', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -121,7 +158,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should split into multiple bundles separate async dependencies', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -150,7 +187,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should put related async dependencies into the same bundle', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -177,7 +214,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should fully traverse sync dependencies', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -205,7 +242,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should include sync dependencies async dependencies might have', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -238,7 +275,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should allow duplicated dependencies across bundles', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -273,7 +310,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should put in separate bundles async dependencies of async dependencies', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -307,7 +344,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should dedup same async bundle duplicated dependencies', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -340,7 +377,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should put image dependencies into separate bundles', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -365,7 +402,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should put image dependencies across bundles', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -397,7 +434,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('could async require asset', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -417,7 +454,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should include deprecated assets into separate bundles', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -442,7 +479,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('could async require deprecated asset', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -462,7 +499,7 @@ describe('BundlesLayout', () => {
     });
 
     pit('should put packages into bundles', () => {
-      fs.__setMockFilesystem({
+      setMockFilesystem({
         'root': {
           'index.js': `
             /**
@@ -491,4 +528,22 @@ describe('BundlesLayout', () => {
       );
     });
   });
+
+  function getBaseFs() {
+    const p = path.join(__dirname, '../../../DependencyResolver/polyfills').substring(1);
+    const root = {};
+    let currentPath = root;
+
+    p.split('/').forEach(part => {
+      const child = {};
+      currentPath[part] = child;
+      currentPath = child;
+    });
+
+    polyfills.forEach(polyfill =>
+      currentPath[polyfill.split('/')[1]] = ''
+    );
+
+    return root;
+  }
 });

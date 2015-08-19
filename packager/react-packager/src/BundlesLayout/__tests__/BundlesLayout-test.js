@@ -153,6 +153,37 @@ describe('BundlesLayout', () => {
           case '/root/index.js':
             return Promise.resolve({
               dependencies: [dep('/root/index.js'), dep('/root/a.js')],
+              asyncDependencies: [],
+            });
+          case '/root/a.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/a.js')],
+              asyncDependencies: [['/root/b.js']],
+            });
+          case '/root/b.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/b.js')],
+              asyncDependencies: [],
+            });
+          default:
+            throw 'Undefined path: ' + path;
+        }
+      });
+
+      return newBundlesLayout().generateLayout(['/root/index.js']).then(
+        bundles => expect(bundles).toEqual([
+          [dep('/root/index.js'), dep('/root/a.js')],
+          [dep('/root/b.js')],
+        ])
+      );
+    });
+
+    pit('separate cache in which bundle is each dependency', () => {
+      DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        switch (path) {
+          case '/root/index.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/index.js'), dep('/root/a.js')],
               asyncDependencies: [['/root/b.js']],
             });
           case '/root/a.js':
