@@ -74,7 +74,7 @@ var APIS = [
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
   require('./VibrationIOSExample'),
-  require('./XHRExample'),
+  require('./XHRExample.ios'),
   require('./ImageEditingExample'),
 ];
 
