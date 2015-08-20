@@ -44,6 +44,11 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  */
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
+/**
+ * The UIIManager has the concept of a designated "main scroll view", which is
+ * useful for apps built around a central scrolling content area (e.g. a
+ * timeline).
+ */
 @property (nonatomic, weak) id<RCTScrollableProtocol> mainScrollView;
 
 /**
