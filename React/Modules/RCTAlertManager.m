@@ -28,9 +28,9 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _alerts = [[NSMutableArray alloc] init];
-    _alertCallbacks = [[NSMutableArray alloc] init];
-    _alertButtonKeys = [[NSMutableArray alloc] init];
+    _alerts = [NSMutableArray new];
+    _alertCallbacks = [NSMutableArray new];
+    _alertButtonKeys = [NSMutableArray new];
   }
   return self;
 }

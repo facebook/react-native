@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTReachability.h"
+#import "RCTNetInfo.h"
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
@@ -18,7 +18,7 @@ static NSString *const RCTReachabilityStateNone = @"none";
 static NSString *const RCTReachabilityStateWifi = @"wifi";
 static NSString *const RCTReachabilityStateCell = @"cell";
 
-@implementation RCTReachability
+@implementation RCTNetInfo
 {
   SCNetworkReachabilityRef _reachability;
   NSString *_status;
@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
 
 static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
 {
-  RCTReachability *self = (__bridge id)info;
+  RCTNetInfo *self = (__bridge id)info;
   NSString *status = RCTReachabilityStateUnknown;
   if ((flags & kSCNetworkReachabilityFlagsReachable) == 0 ||
       (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0) {
@@ -51,8 +51,8 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
   if (![status isEqualToString:self->_status]) {
     self->_status = status;
-    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"reachabilityDidChange"
-                                                      body:@{@"network_reachability": status}];
+    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"networkDidChange"
+                                                      body:@{@"network_info": status}];
   }
 }
 
@@ -90,7 +90,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentReachability:(RCTResponseSenderBlock)getSuccess
                   withErrorCallback:(__unused RCTResponseSenderBlock)getError)
 {
-  getSuccess(@[@{@"network_reachability": _status}]);
+  getSuccess(@[@{@"network_info": _status}]);
 }
 
 @end

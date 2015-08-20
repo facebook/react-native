@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
   // while the UIDatePicker is still sending onChange events. To
   // fix this we should maybe subclass UIDatePicker and make it
   // be its own event target.
-  UIDatePicker *picker = [[UIDatePicker alloc] init];
+  UIDatePicker *picker = [UIDatePicker new];
   [picker addTarget:self action:@selector(onChange:)
    forControlEvents:UIControlEventValueChanged];
   return picker;
@@ -58,7 +58,7 @@ RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
 - (NSDictionary *)constantsToExport
 {
-  UIDatePicker *view = [[UIDatePicker alloc] init];
+  UIDatePicker *view = [UIDatePicker new];
   return @{
     @"ComponentHeight": @(view.intrinsicContentSize.height),
     @"ComponentWidth": @(view.intrinsicContentSize.width),

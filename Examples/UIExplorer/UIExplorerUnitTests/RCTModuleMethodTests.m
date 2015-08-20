@@ -35,6 +35,9 @@ static BOOL RCTLogsError(void (^block)(void))
 @end
 
 @implementation RCTModuleMethodTests
+{
+  CGRect _s;
+}
 
 - (void)doFooWithBar:(__unused NSString *)bar { }
 
@@ -56,6 +59,7 @@ static BOOL RCTLogsError(void (^block)(void))
 - (void)doFooWithNumber:(__unused NSNumber *)n { }
 - (void)doFooWithDouble:(__unused double)n { }
 - (void)doFooWithInteger:(__unused NSInteger)n { }
+- (void)doFooWithCGRect:(CGRect)s { _s = s; }
 
 - (void)testNumbersNonnull
 {
@@ -63,9 +67,11 @@ static BOOL RCTLogsError(void (^block)(void))
     // Specifying an NSNumber param without nonnull isn't allowed
     XCTAssertTrue(RCTLogsError(^{
       NSString *methodName = @"doFooWithNumber:(NSNumber *)n";
-      (void)[[RCTModuleMethod alloc] initWithObjCMethodName:methodName
-                                               JSMethodName:nil
-                                                moduleClass:[self class]];
+      RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                                   JSMethodName:nil
+                                                                    moduleClass:[self class]];
+      // Invoke method to trigger parsing
+      [method invokeWithBridge:nil module:self arguments:@[@1]];
     }));
   }
 
@@ -98,6 +104,18 @@ static BOOL RCTLogsError(void (^block)(void))
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
     }));
   }
+}
+
+- (void)testStructArgument
+{
+  NSString *methodName = @"doFooWithCGRect:(CGRect)s";
+  RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                               JSMethodName:nil
+                                                                moduleClass:[self class]];
+
+  CGRect r = CGRectMake(10, 20, 30, 40);
+  [method invokeWithBridge:nil module:self arguments:@[@[@10, @20, @30, @40]]];
+  XCTAssertTrue(CGRectEqualToRect(r, _s));
 }
 
 @end

@@ -61,7 +61,7 @@
   [super setUp];
 
   _bridge = [OCMockObject mockForClass:[RCTBridge class]];
-  _eventDispatcher = [[RCTEventDispatcher alloc] init];
+  _eventDispatcher = [RCTEventDispatcher new];
   ((id<RCTBridgeModule>)_eventDispatcher).bridge = _bridge;
 
   _eventName = RCTNormalizeInputEventName(@"sampleEvent");

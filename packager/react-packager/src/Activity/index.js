@@ -8,19 +8,22 @@
  */
 'use strict';
 
-var chalk = require('chalk');
+const chalk = require('chalk');
+const events = require('events');
 
-var COLLECTION_PERIOD = 1000;
+const COLLECTION_PERIOD = 1000;
 
-var _endedEvents = Object.create(null);
-var _eventStarts = Object.create(null);
-var _queuedActions = [];
-var _scheduledCollectionTimer = null;
-var _uuid = 1;
-var _enabled = true;
+const _endedEvents = Object.create(null);
+const _eventStarts = Object.create(null);
+const _queuedActions = [];
+const _eventEmitter = new events.EventEmitter();
+
+let _scheduledCollectionTimer = null;
+let _uuid = 1;
+let _enabled = true;
 
 function endEvent(eventId) {
-  var eventEndTime = Date.now();
+  const eventEndTime = Date.now();
 
   if (!_eventStarts[eventId]) {
     _throw('event(' + eventId + ') is not a valid event id!');
@@ -39,7 +42,7 @@ function endEvent(eventId) {
 }
 
 function signal(eventName, data) {
-  var signalTime = Date.now();
+  const signalTime = Date.now();
 
   if (eventName == null) {
     _throw('No event name specified');
@@ -58,7 +61,7 @@ function signal(eventName, data) {
 }
 
 function startEvent(eventName, data) {
-  var eventStartTime = Date.now();
+  const eventStartTime = Date.now();
 
   if (eventName == null) {
     _throw('No event name specified');
@@ -68,8 +71,8 @@ function startEvent(eventName, data) {
     data = null;
   }
 
-  var eventId = _uuid++;
-  var action = {
+  const eventId = _uuid++;
+  const action = {
     action: 'startEvent',
     data: data,
     eventId: eventId,
@@ -88,7 +91,7 @@ function disable() {
 
 function _runCollection() {
   /* jshint -W084 */
-  var action;
+  let action;
   while ((action = _queuedActions.shift())) {
     _writeAction(action);
   }
@@ -98,6 +101,7 @@ function _runCollection() {
 
 function _scheduleAction(action) {
   _queuedActions.push(action);
+  _eventEmitter.emit(action.action, action);
 
   if (_scheduledCollectionTimer === null) {
     _scheduledCollectionTimer = setTimeout(_runCollection, COLLECTION_PERIOD);
@@ -114,10 +118,10 @@ function _scheduleAction(action) {
  *  won't be adding such a non-trivial optimization anytime soon)
  */
 function _throw(msg) {
-  var err = new Error(msg);
+  const err = new Error(msg);
 
   // Strip off the call to _throw()
-  var stack = err.stack.split('\n');
+  const stack = err.stack.split('\n');
   stack.splice(1, 1);
   err.stack = stack.join('\n');
 
@@ -129,8 +133,8 @@ function _writeAction(action) {
     return;
   }
 
-  var data = action.data ? ': ' + JSON.stringify(action.data) : '';
-  var fmtTime = new Date(action.tstamp).toLocaleTimeString();
+  const data = action.data ? ': ' + JSON.stringify(action.data) : '';
+  const fmtTime = new Date(action.tstamp).toLocaleTimeString();
 
   switch (action.action) {
     case 'startEvent':
@@ -142,8 +146,8 @@ function _writeAction(action) {
       break;
 
     case 'endEvent':
-      var startAction = _eventStarts[action.eventId];
-      var startData = startAction.data ? ': ' + JSON.stringify(startAction.data) : '';
+      const startAction = _eventStarts[action.eventId];
+      const startData = startAction.data ? ': ' + JSON.stringify(startAction.data) : '';
       console.log(chalk.dim(
         '[' + fmtTime + '] ' +
         '<END>   ' + startAction.eventName +
@@ -171,3 +175,4 @@ exports.endEvent = endEvent;
 exports.signal = signal;
 exports.startEvent = startEvent;
 exports.disable = disable;
+exports.eventEmitter = _eventEmitter;
