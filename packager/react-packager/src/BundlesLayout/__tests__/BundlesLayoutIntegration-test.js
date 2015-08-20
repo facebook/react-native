@@ -78,15 +78,37 @@ describe('BundlesLayout', () => {
       return new BundlesLayout({dependencyResolver: resolver});
     }
 
-    function modulePaths(bundles) {
-      if (!bundles) {
-        return null;
-      }
+    function stripPolyfills(bundle) {
+      return Promise
+        .all([
+          Promise.all(
+            bundle.modules.map(module => module
+              .getName()
+              .then(name => [module, name])
+            ),
+          ),
+          Promise.all(
+            bundle.children.map(childModule => stripPolyfills(childModule)),
+          ),
+        ])
+        .then(([modules, children]) => {
+          modules = modules
+            .filter(([module, name]) => { // filter polyfills
+              for (let p of polyfills) {
+                if (name.indexOf(p) !== -1) {
+                  return false;
+                }
+              }
+              return true;
+            })
+            .map(([module, name]) => module.path);
 
-      return bundles.map(
-        bundle => bundle.filter(module => !module.isPolyfill())
-                        .map(module => module.path)
-      );
+          return {
+            id: bundle.id,
+            modules: modules,
+            children: children,
+          };
+        });
     }
 
     function setMockFilesystem(mockFs) {
@@ -104,10 +126,12 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        modulePaths(bundles).then(paths =>
-          expect(paths).toEqual([
-            ['/root/index.js'],
-          ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [],
+          })
         )
       );
     });
@@ -128,9 +152,13 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js', '/root/a.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js', '/root/a.js'],
+            children: [],
+          })
+        )
       );
     });
 
@@ -150,10 +178,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/a.js'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -178,11 +213,23 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js'],
-          ['/root/b.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [
+              {
+                id: 'bundle.0.1',
+                modules: ['/root/a.js'],
+                children: [],
+              }, {
+                id: 'bundle.0.2',
+                modules: ['/root/b.js'],
+                children: [],
+              },
+            ],
+          })
+        )
       );
     });
 
@@ -206,10 +253,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js', '/root/b.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/a.js', '/root/b.js'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -234,10 +288,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js', '/root/a.js'],
-          ['/root/b.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js', '/root/a.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/b.js'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -267,10 +328,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js', '/root/b.js', '/root/c.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/a.js', '/root/b.js', '/root/c.js'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -301,11 +369,24 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js', '/root/c.js'],
-          ['/root/b.js', '/root/c.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [
+              {
+                id: 'bundle.0.1',
+                modules: ['/root/a.js', '/root/c.js'],
+                children: [],
+              },
+              {
+                id: 'bundle.0.2',
+                modules: ['/root/b.js', '/root/c.js'],
+                children: [],
+              },
+            ],
+          })
+        )
       );
     });
 
@@ -335,11 +416,23 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js'],
-          ['/root/b.js', '/root/c.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [
+              {
+                id: 'bundle.0.1',
+                modules: ['/root/a.js'],
+                children: [{
+                  id: 'bundle.0.1.2',
+                  modules: ['/root/b.js', '/root/c.js'],
+                  children: [],
+                }],
+              },
+            ],
+          })
+        )
       );
     });
 
@@ -369,10 +462,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js', '/root/c.js', '/root/b.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/a.js', '/root/c.js', '/root/b.js'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -394,10 +494,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js', '/root/img.png'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/a.js', '/root/img.png'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -425,11 +532,24 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js', '/root/img.png'],
-          ['/root/b.js', '/root/img.png'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [
+              {
+                id: 'bundle.0.1',
+                modules: ['/root/a.js', '/root/img.png'],
+                children: [],
+              },
+              {
+                id: 'bundle.0.2',
+                modules: ['/root/b.js', '/root/img.png'],
+                children: [],
+              },
+            ],
+          })
+        )
       );
     });
 
@@ -446,10 +566,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/img.png'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/img.png'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -471,10 +598,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/a.js', '/root/img.png'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/a.js', '/root/img.png'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -491,10 +625,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/img.png'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/img.png'],
+              children: [],
+            }],
+          })
+        )
       );
     });
 
@@ -521,10 +662,17 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(modulePaths(bundles)).toEqual([
-          ['/root/index.js'],
-          ['/root/aPackage/client.js'],
-        ])
+        stripPolyfills(bundles).then(resolvedBundles =>
+          expect(resolvedBundles).toEqual({
+            id: 'bundle.0',
+            modules: ['/root/index.js'],
+            children: [{
+              id: 'bundle.0.1',
+              modules: ['/root/aPackage/client.js'],
+              children: [],
+            }],
+          })
+        )
       );
     });
   });

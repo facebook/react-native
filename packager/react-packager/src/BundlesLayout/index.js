@@ -18,6 +18,8 @@ const validateOpts = declareOpts({
   },
 });
 
+const BUNDLE_PREFIX = 'bundle';
+
 /**
  * Class that takes care of separating the graph of dependencies into
  * separate bundles
@@ -31,16 +33,23 @@ class BundlesLayout {
   }
 
   generateLayout(entryPaths, isDev) {
-    const bundles = [];
-    var pending = [entryPaths];
+    var currentBundleID =  0;
+    const rootBundle = {
+      id: BUNDLE_PREFIX + '.' + currentBundleID++,
+      modules: [],
+      children: [],
+    };
+    var pending = [{paths: entryPaths, bundle: rootBundle}];
 
     return promiseWhile(
       () => pending.length > 0,
-      () => bundles,
+      () => rootBundle,
       () => {
+        const {paths, bundle} = pending.shift();
+
         // pending sync dependencies we still need to explore for the current
         // pending dependency
-        let pendingSyncDeps = pending.shift();
+        const pendingSyncDeps = paths;
 
         // accum variable for sync dependencies of the current pending
         // dependency we're processing
@@ -51,22 +60,31 @@ class BundlesLayout {
           () => {
             const dependencies = _.values(syncDependencies);
             if (dependencies.length > 0) {
-              bundles.push(dependencies);
+              bundle.modules = dependencies;
             }
           },
-          () => {
+          index => {
             const pendingSyncDep = pendingSyncDeps.shift();
             return this._resolver
               .getDependencies(pendingSyncDep, {dev: isDev})
               .then(deps => {
                 deps.dependencies.forEach(dep => {
-                  if (dep.path !== pendingSyncDep && !dep.isPolyfill) {
+                  if (dep.path !== pendingSyncDep && !dep.isPolyfill()) {
                     pendingSyncDeps.push(dep.path);
                   }
                   syncDependencies[dep.path] = dep;
-                  this._moduleToBundle[dep.path] = bundles.length;
+                  this._moduleToBundle[dep.path] = bundle.id;
                 });
-                pending = pending.concat(deps.asyncDependencies);
+                deps.asyncDependencies.forEach(asyncDeps => {
+                  const childBundle = {
+                    id: bundle.id + '.' + currentBundleID++,
+                    modules: [],
+                    children: [],
+                  };
+
+                  bundle.children.push(childBundle);
+                  pending.push({paths: asyncDeps, bundle: childBundle});
+                });
               });
           },
         );
@@ -83,11 +101,17 @@ class BundlesLayout {
 // Once it's not satisfied anymore, it returns what the results callback
 // indicates
 function promiseWhile(condition, result, body) {
+  return _promiseWhile(condition, result, body, 0);
+}
+
+function _promiseWhile(condition, result, body, index) {
   if (!condition()) {
     return Promise.resolve(result());
   }
 
-  return body().then(() => promiseWhile(condition, result, body));
+  return body(index).then(() =>
+    _promiseWhile(condition, result, body, index + 1)
+  );
 }
 
 module.exports = BundlesLayout;

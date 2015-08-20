@@ -29,8 +29,15 @@ describe('BundlesLayout', () => {
       });
     }
 
+    function isPolyfill() {
+      return false;
+    }
+
     function dep(path) {
-      return {path};
+      return {
+        path: path,
+        isPolyfill: isPolyfill,
+      };
     }
 
     pit('should bundle sync dependencies', () => {
@@ -52,9 +59,11 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(bundles).toEqual([
-          [dep('/root/index.js'), dep('/root/a.js')],
-        ])
+        expect(bundles).toEqual({
+          id: 'bundle.0',
+          modules: [dep('/root/index.js'), dep('/root/a.js')],
+          children: [],
+        })
       );
     });
 
@@ -77,10 +86,15 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(bundles).toEqual([
-          [dep('/root/index.js')],
-          [dep('/root/a.js')],
-        ])
+        expect(bundles).toEqual({
+          id: 'bundle.0',
+          modules: [dep('/root/index.js')],
+          children: [{
+            id:'bundle.0.1',
+            modules: [dep('/root/a.js')],
+            children: [],
+          }],
+        })
       );
     });
 
@@ -108,11 +122,19 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(bundles).toEqual([
-          [dep('/root/index.js')],
-          [dep('/root/a.js')],
-          [dep('/root/b.js')],
-        ])
+        expect(bundles).toEqual({
+          id: 'bundle.0',
+          modules: [dep('/root/index.js')],
+          children: [{
+            id: 'bundle.0.1',
+            modules: [dep('/root/a.js')],
+              children: [{
+                id: 'bundle.0.1.2',
+                modules: [dep('/root/b.js')],
+                children: [],
+              }],
+          }],
+        })
       );
     });
 
@@ -140,10 +162,15 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        expect(bundles).toEqual([
-          [dep('/root/index.js')],
-          [dep('/root/a.js'), dep('/root/b.js')],
-        ])
+        expect(bundles).toEqual({
+          id: 'bundle.0',
+          modules: [dep('/root/index.js')],
+          children: [{
+            id: 'bundle.0.1',
+            modules: [dep('/root/a.js'), dep('/root/b.js')],
+            children: [],
+          }],
+        })
       );
     });
 
@@ -171,10 +198,15 @@ describe('BundlesLayout', () => {
       });
 
       return newBundlesLayout().generateLayout(['/root/index.js']).then(
-        bundles => expect(bundles).toEqual([
-          [dep('/root/index.js'), dep('/root/a.js')],
-          [dep('/root/b.js')],
-        ])
+        bundles => expect(bundles).toEqual({
+          id: 'bundle.0',
+          modules: [dep('/root/index.js'), dep('/root/a.js')],
+          children: [{
+            id: 'bundle.0.1',
+            modules: [dep('/root/b.js')],
+            children: [],
+          }],
+        })
       );
     });
 
@@ -184,7 +216,7 @@ describe('BundlesLayout', () => {
           case '/root/index.js':
             return Promise.resolve({
               dependencies: [dep('/root/index.js'), dep('/root/a.js')],
-              asyncDependencies: [['/root/b.js']],
+              asyncDependencies: [['/root/b.js'], ['/root/c.js']],
             });
           case '/root/a.js':
             return Promise.resolve({
@@ -194,11 +226,16 @@ describe('BundlesLayout', () => {
           case '/root/b.js':
             return Promise.resolve({
               dependencies: [dep('/root/b.js')],
-              asyncDependencies: [['/root/c.js']],
+              asyncDependencies: [['/root/d.js']],
             });
           case '/root/c.js':
             return Promise.resolve({
               dependencies: [dep('/root/c.js')],
+              asyncDependencies: [],
+            });
+          case '/root/d.js':
+            return Promise.resolve({
+              dependencies: [dep('/root/d.js')],
               asyncDependencies: [],
             });
           default:
@@ -208,10 +245,11 @@ describe('BundlesLayout', () => {
 
       var layout = newBundlesLayout();
       return layout.generateLayout(['/root/index.js']).then(() => {
-        expect(layout.getBundleIDForModule('/root/index.js')).toBe(0);
-        expect(layout.getBundleIDForModule('/root/a.js')).toBe(0);
-        expect(layout.getBundleIDForModule('/root/b.js')).toBe(1);
-        expect(layout.getBundleIDForModule('/root/c.js')).toBe(2);
+        expect(layout.getBundleIDForModule('/root/index.js')).toBe('bundle.0');
+        expect(layout.getBundleIDForModule('/root/a.js')).toBe('bundle.0');
+        expect(layout.getBundleIDForModule('/root/b.js')).toBe('bundle.0.1');
+        expect(layout.getBundleIDForModule('/root/c.js')).toBe('bundle.0.2');
+        expect(layout.getBundleIDForModule('/root/d.js')).toBe('bundle.0.1.3');
       });
     });
   });
