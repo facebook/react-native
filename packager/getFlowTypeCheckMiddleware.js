@@ -89,9 +89,6 @@ function doFlowTypecheck(res, flowroot, next) {
           type: 'FlowError',
           errors: errors,
         };
-        console.error(chalk.yellow('flow: Error running command `' + flowCmd +
-          '`:\n' + JSON.stringify(error))
-        );
         res.writeHead(error.status, {
           'Content-Type': 'application/json; charset=UTF-8',
         });
