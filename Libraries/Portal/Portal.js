@@ -6,7 +6,9 @@
  */
 'use strict';
 
+var Platform = require('Platform');
 var React = require('React');
+var RCTUIManager = require('NativeModules').UIManager;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
@@ -72,7 +74,15 @@ var Portal = React.createClass({
         return [];
       }
       return _portalRef._getOpenModals();
-    }
+    },
+
+    notifyAccessibilityService: function() {
+      if (!_portalRef) {
+        console.error('Calling closeModal but no Portal has been rendered.');
+        return;
+      }
+      _portalRef._notifyAccessibilityService();
+    },
   },
 
   getInitialState: function() {
@@ -106,6 +116,20 @@ var Portal = React.createClass({
     return Object.keys(this.state.modals);
   },
 
+  _notifyAccessibilityService: function() {
+    if (Platform.OS === 'android') {
+      // We need to send accessibility event in a new batch, as otherwise
+      // TextViews have no text set at the moment of populating event.
+      setTimeout(() => {
+        if (this._getOpenModals().length > 0) {
+          RCTUIManager.sendAccessibilityEvent(
+            React.findNodeHandle(this),
+            RCTUIManager.AccessibilityEventTypes.typeWindowStateChanged);
+        }
+      }, 0);
+    }
+  },
+
   render: function() {
     _portalRef = this;
     if (!this.state.modals) {
@@ -119,7 +143,9 @@ var Portal = React.createClass({
       return null;
     }
     return (
-      <View style={styles.modalsContainer}>
+      <View
+        style={styles.modalsContainer}
+        importantForAccessibility="yes">
         {modals}
       </View>
     );
