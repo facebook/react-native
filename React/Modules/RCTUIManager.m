@@ -825,7 +825,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
 
 - (void)batchDidComplete
 {
-  RCTProfileBeginEvent();
+  RCTProfileBeginEvent(0, @"[RCTUIManager batchDidComplete]", nil);
 
   // Gather blocks to be executed now that all view hierarchy manipulations have
   // been completed (note that these may still take place before layout has finished)
@@ -857,7 +857,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
     _nextLayoutAnimation = nil;
   }
 
-  RCTProfileEndEvent(@"[RCTUIManager batchDidComplete]", @"uimanager", @{
+  RCTProfileEndEvent(0, @"uimanager", @{
     @"view_count": @([_viewRegistry count]),
   });
   [self flushUIBlocks];
@@ -877,7 +877,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   RCTProfileBeginFlowEvent();
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTProfileEndFlowEvent();
-    RCTProfileBeginEvent();
+    RCTProfileBeginEvent(0, @"UIManager flushUIBlocks", nil);
     @try {
       for (dispatch_block_t block in previousPendingUIBlocks) {
         block();
@@ -886,7 +886,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
     @catch (NSException *exception) {
       RCTLogError(@"Exception thrown while executing UI block: %@", exception);
     }
-    RCTProfileEndEvent(@"UIManager flushUIBlocks", @"objc_call", @{
+    RCTProfileEndEvent(0, @"objc_call", @{
       @"count": @(previousPendingUIBlocks.count),
     });
   });

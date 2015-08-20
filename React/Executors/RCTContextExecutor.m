@@ -136,18 +136,10 @@ static JSValueRef RCTNoop(JSContextRef context, __unused JSObjectRef object, __u
 
 #if RCT_DEV
 
-static NSMutableArray *profiles;
-
 static JSValueRef RCTConsoleProfile(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], __unused JSValueRef *exception)
 {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    profiles = [NSMutableArray new];
-  });
-
   static int profileCounter = 1;
   NSString *profileName;
-  NSNumber *profileID = _RCTProfileBeginEvent();
 
   if (argumentCount > 0) {
     profileName = RCTJSValueToNSString(context, arguments[0]);
@@ -160,25 +152,14 @@ static JSValueRef RCTConsoleProfile(JSContextRef context, __unused JSObjectRef o
     profileInfo = @[RCTJSValueToNSString(context, arguments[1])];
   }
 
-  [profiles addObjectsFromArray:@[profileName, profileID, profileInfo]];
+  RCTProfileBeginEvent(0, profileName, profileInfo);
 
   return JSValueMakeUndefined(context);
 }
 
 static JSValueRef RCTConsoleProfileEnd(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, __unused size_t argumentCount, __unused const JSValueRef arguments[], __unused JSValueRef *exception)
 {
-  NSString *profileInfo = [profiles lastObject];
-  [profiles removeLastObject];
-  NSNumber *profileID = [profiles lastObject];
-  [profiles removeLastObject];
-  NSString *profileName = [profiles lastObject];
-  [profiles removeLastObject];
-
-  if (argumentCount > 0 && !JSValueIsUndefined(context, arguments[0])) {
-    profileName = RCTJSValueToNSString(context, arguments[0]);
-  }
-
-  _RCTProfileEndEvent(profileID, profileName, @"console", profileInfo);
+  RCTProfileEndEvent(0, @"console", nil);
 
   return JSValueMakeUndefined(context);
 }
@@ -461,7 +442,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     }
 
     onComplete(objcValue, nil);
-  }), @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
+  }), 0, @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
 }
 
 - (void)executeApplicationScript:(NSString *)script
@@ -493,7 +474,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
       }
       onComplete(error);
     }
-  }), @"js_call", (@{ @"url": sourceURL.absoluteString }))];
+  }), 0, @"js_call", (@{ @"url": sourceURL.absoluteString }))];
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
@@ -555,7 +536,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     if (onComplete) {
       onComplete(nil);
     }
-  }), @"js_call,json_call", (@{@"objectName": objectName}))];
+  }), 0, @"js_call,json_call", (@{@"objectName": objectName}))];
 }
 
 RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
