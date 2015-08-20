@@ -822,6 +822,11 @@ class AnimatedStyle extends AnimatedWithChildren {
         style[key] = value.getAnimatedValue();
       }
     }
+    // if a transformOrigin value is set, it must be passed up with `.getAnimatedValue()` since the two are
+    // dependent on one another. This is kind of a hacky way to accomplish this. Open to other suggestions.
+    if (style.transform && !style.transformOrigin && this._style.transformOrigin) {
+      style.transformOrigin = this._style.transformOrigin;
+    }
     return style;
   }
 
