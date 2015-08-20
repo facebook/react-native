@@ -14,6 +14,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		144C5F691AC3E5E300B004E7 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 144C5F681AC3E5D800B004E7 /* libReact.a */; };
 		58C572511AA6229D00CDF9C8 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5724D1AA6224400CDF9C8 /* libRCTText.a */; };
+		5FF8942E1B85571A007731BE /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FF8942D1B8556F8007731BE /* libRCTWebSocket.a */; };
 		832044981B492C2500E297FC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832044951B492C1E00E297FC /* libRCTSettings.a */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		5FF8942C1B8556F8007731BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5FF894281B8556F8007731BE /* RCTWebSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3C86DF461ADF2C930047B81A;
+			remoteInfo = RCTWebSocket;
+		};
 		832044941B492C1E00E297FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8320448F1B492C1E00E297FC /* RCTSettings.xcodeproj */;
@@ -59,6 +67,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = TicTacToe/main.m; sourceTree = "<group>"; };
 		144C5F631AC3E5D800B004E7 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
+		5FF894281B8556F8007731BE /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = ../../Libraries/WebSocket/RCTWebSocket.xcodeproj; sourceTree = "<group>"; };
 		8320448F1B492C1E00E297FC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = ../../Libraries/Settings/RCTSettings.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -67,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FF8942E1B85571A007731BE /* libRCTWebSocket.a in Frameworks */,
 				144C5F691AC3E5E300B004E7 /* libReact.a in Frameworks */,
 				1341803E1AA91802003F314A /* libRCTImage.a in Frameworks */,
 				58C572511AA6229D00CDF9C8 /* libRCTText.a in Frameworks */,
@@ -109,6 +119,7 @@
 		58C572071AA6126D00CDF9C8 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				5FF894281B8556F8007731BE /* RCTWebSocket.xcodeproj */,
 				144C5F631AC3E5D800B004E7 /* React.xcodeproj */,
 				134180381AA917ED003F314A /* RCTImage.xcodeproj */,
 				8320448F1B492C1E00E297FC /* RCTSettings.xcodeproj */,
@@ -121,6 +132,14 @@
 			isa = PBXGroup;
 			children = (
 				58C5724D1AA6224400CDF9C8 /* libRCTText.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5FF894291B8556F8007731BE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5FF8942D1B8556F8007731BE /* libRCTWebSocket.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -206,6 +225,10 @@
 					ProjectRef = 587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */;
 				},
 				{
+					ProductGroup = 5FF894291B8556F8007731BE /* Products */;
+					ProjectRef = 5FF894281B8556F8007731BE /* RCTWebSocket.xcodeproj */;
+				},
+				{
 					ProductGroup = 144C5F641AC3E5D800B004E7 /* Products */;
 					ProjectRef = 144C5F631AC3E5D800B004E7 /* React.xcodeproj */;
 				},
@@ -237,6 +260,13 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 58C5724C1AA6224400CDF9C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		5FF8942D1B8556F8007731BE /* libRCTWebSocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTWebSocket.a;
+			remoteRef = 5FF8942C1B8556F8007731BE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		832044951B492C1E00E297FC /* libRCTSettings.a */ = {
