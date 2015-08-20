@@ -246,12 +246,6 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
                    "'%@', but name was already registered by class %@", moduleClass,
                    moduleName, [modulesByName[moduleName] class]);
        }
-       if ([module class] != moduleClass) {
-         RCTLogInfo(@"RCTBridgeModule of class %@ with name '%@' was encountered "
-                    "in the project, but name was already registered by class %@."
-                    "That's fine if it's intentional - just letting you know.",
-                    moduleClass, moduleName, [modulesByName[moduleName] class]);
-       }
      } else {
        // Module name hasn't been used before, so go ahead and instantiate
        module = [moduleClass new];
