@@ -37,7 +37,7 @@ describe('Animated', () => {
       }
     }, callback);
 
-    expect(anim.getChildren().length).toBe(3);
+    expect(anim.__getChildren().length).toBe(3);
 
     expect(node.__getValue()).toEqual({
       style: {
@@ -65,8 +65,8 @@ describe('Animated', () => {
       },
     });
 
-    node.detach();
-    expect(anim.getChildren().length).toBe(0);
+    node.__detach();
+    expect(anim.__getChildren().length).toBe(0);
 
     anim.setValue(1);
     expect(callback.mock.calls.length).toBe(1);
@@ -74,7 +74,7 @@ describe('Animated', () => {
 
   it('does not detach on updates', () => {
     var anim = new Animated.Value(0);
-    anim.detach = jest.genMockFunction();
+    anim.__detach = jest.genMockFunction();
 
     var c = new Animated.View();
     c.props = {
@@ -84,16 +84,16 @@ describe('Animated', () => {
     };
     c.componentWillMount();
 
-    expect(anim.detach).not.toBeCalled();
+    expect(anim.__detach).not.toBeCalled();
     c.componentWillReceiveProps({
       style: {
         opacity: anim,
       },
     });
-    expect(anim.detach).not.toBeCalled();
+    expect(anim.__detach).not.toBeCalled();
 
     c.componentWillUnmount();
-    expect(anim.detach).toBeCalled();
+    expect(anim.__detach).toBeCalled();
   });
 
 
@@ -442,7 +442,7 @@ describe('Animated Vectors', () => {
       },
     });
 
-    node.detach();
+    node.__detach();
 
     vec.setValue({x: 1, y: 1});
     expect(callback.mock.calls.length).toBe(2);
