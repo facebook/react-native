@@ -90,6 +90,11 @@ var Portal = React.createClass({
   },
 
   _showModal: function(tag: string, component: any) {
+    // We are about to open first modal, so Portal will appear.
+    // Let's disable accessibility for background view on Android.
+    if (this._getOpenModals().length === 0) {
+      this.props.onModalVisibilityChanged(true);
+    }
     // This way state is chained through multiple calls to
     // _showModal, _closeModal correctly.
     this.setState((state) => {
@@ -102,6 +107,11 @@ var Portal = React.createClass({
   _closeModal: function(tag: string) {
     if (!this.state.modals.hasOwnProperty(tag)) {
       return;
+    }
+    // We are about to close last modal, so Portal will disappear.
+    // Let's enable accessibility for application view on Android.
+    if (this._getOpenModals().length === 1) {
+      this.props.onModalVisibilityChanged(false);
     }
     // This way state is chained through multiple calls to
     // _showModal, _closeModal correctly.
