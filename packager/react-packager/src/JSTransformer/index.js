@@ -23,7 +23,7 @@ const readFile = Promise.denodeify(fs.readFile);
 const MAX_CALLS_PER_WORKER = 600;
 
 // Worker will timeout if one of the callers timeout.
-const DEFAULT_MAX_CALL_TIME = 10000;
+const DEFAULT_MAX_CALL_TIME = 30000;
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -112,7 +112,7 @@ class Transformer {
           }).catch(err => {
             if (err.type === 'TimeoutError') {
               const timeoutErr = new Error(
-                `TimeoutError: transforming ${filePath} took longer than `
+                `TimeoutError: transforming ${filePath} took longer than ` +
                 `${this._opts.transformTimeoutInterval / 1000} seconds.\n` +
                 `You can adjust timeout via the 'transformTimeoutInterval' option`
               );
