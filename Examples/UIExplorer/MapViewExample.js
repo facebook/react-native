@@ -22,6 +22,7 @@ var {
   Text,
   TextInput,
   View,
+  SegmentedControlIOS,
 } = React;
 
 var regionText = {
@@ -152,19 +153,25 @@ var MapViewExample = React.createClass({
       mapRegion: null,
       mapRegionInput: null,
       annotations: null,
-      isFirstLoad: true,
+      isFirstLoad: true
     };
   },
 
   render() {
     return (
       <View>
+        <SegmentedControlIOS
+          values={['MapKit', 'OpenStreet', 'Stamen']}
+          selectedIndex={0}
+          onValueChange={this._onTilesSourceChange}
+        />
         <MapView
           style={styles.map}
           onRegionChange={this._onRegionChange}
           onRegionChangeComplete={this._onRegionChangeComplete}
           region={this.state.mapRegion || undefined}
           annotations={this.state.annotations || undefined}
+          tilesSource={this.state.tilesSource}
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}
@@ -204,6 +211,25 @@ var MapViewExample = React.createClass({
       mapRegionInput: region,
       annotations: this._getAnnotations(region),
     });
+  },
+
+  _onTilesSourceChange(source) {
+    console.log(source)
+    if (source === 'MapKit') {
+      this.setState({
+        tilesSource: undefined
+      })
+    }
+    if (source === 'OpenStreet') {
+      this.setState({
+        tilesSource: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png'
+      })
+    }
+    if (source === 'Stamen') {
+      this.setState({
+        tilesSource: 'http://a.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg'
+      })
+    }
   },
 
 });

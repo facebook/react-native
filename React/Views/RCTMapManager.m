@@ -46,6 +46,18 @@ RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
 RCT_EXPORT_VIEW_PROPERTY(annotations, RCTPointAnnotationArray)
+RCT_CUSTOM_VIEW_PROPERTY(tilesSource, NSString, RCTMap)
+{
+  NSArray *toRemove = [view.overlays filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *bindings) {
+    return [object isKindOfClass:[MKTileOverlay class]];
+  }]];
+  [view removeOverlays:toRemove];
+  if (json) {
+    MKTileOverlay *overlay = [[MKTileOverlay alloc] initWithURLTemplate:json];
+    overlay.canReplaceMapContent = YES;
+    [view addOverlay:overlay level:MKOverlayLevelAboveLabels];
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
@@ -159,6 +171,15 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   if (mapView.hasStartedRendering) {
     [self _emitRegionChangeEvent:mapView continuous:NO];
   };
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay
+{
+  if ([overlay isKindOfClass:[MKTileOverlay class]]) {
+    return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+  } else {
+    return nil;
+  }
 }
 
 - (void)mapViewWillStartRenderingMap:(RCTMap *)mapView
