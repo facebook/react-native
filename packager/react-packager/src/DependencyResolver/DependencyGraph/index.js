@@ -79,7 +79,8 @@ class DependencyGraph {
       return this._loading;
     }
 
-    const crawlActivity = Activity.startEvent('fs crawl');
+    const depGraphActivity = Activity.startEvent('Building Dependency Graph');
+    const crawlActivity = Activity.startEvent('Crawling File System');
     const allRoots = this._opts.roots.concat(this._opts.assetRoots_DEPRECATED);
     this._crawling = crawl(allRoots, {
       ignore: this._opts.ignoreFilePath,
@@ -104,7 +105,9 @@ class DependencyGraph {
           return this._buildHasteMap().then(() => Activity.endEvent(hasteActivity));
         }),
       this._buildAssetMap_DEPRECATED(),
-    ]);
+    ]).then(() =>
+      Activity.endEvent(depGraphActivity)
+    );
 
     return this._loading;
   }
