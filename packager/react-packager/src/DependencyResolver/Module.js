@@ -135,9 +135,6 @@ class Module {
  */
 const blockCommentRe = /\/\*(.|\n)*?\*\//g;
 const lineCommentRe = /\/\/.+(\n|$)/g;
-const trailingCommaRe = /,\s*$/g;
-const removeSpacesRe = /\s/g;
-const quotesRe = /'/g;
 function extractRequires(code /*: string*/) /*: Array<string>*/ {
   var deps = {
     sync: [],
@@ -163,40 +160,11 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
     // Parse async dependencies this module has. As opposed to what happens
     // with sync dependencies, when the module is required, it's async
     // dependencies won't be loaded into memory. This is deferred till the
-    // code path gets to a `require.ensure` statement. The syntax is similar
-    // to webpack's one:
-    //   require.ensure(['dep1', 'dep2'], () => {
-    //     var dep1 = require('dep1');
-    //     var dep2 = require('dep2');
-    //     // do something with dep1 and dep2
-    //   });
-    .replace(replacePatterns.REQUIRE_ENSURE_RE, (match, dep, post) => {
-      dep = dep
-        .replace(blockCommentRe, '')
-        .replace(lineCommentRe, '')
-        .replace(trailingCommaRe, '')
-        .replace(removeSpacesRe, '')
-        .replace(quotesRe, '"');
-
-      if (dep) {
-        try {
-          dep = JSON.parse('[' + dep + ']');
-        } catch(e) {
-          throw 'Error processing `require.ensure` while attemping to parse ' +
-                'dependencies `[' + dep + ']`: ' + e;
-        }
-
-        dep.forEach(d => {
-          if (typeof d !== 'string') {
-            throw 'Error processing `require.ensure`: dependencies `[' +
-                  d + ']` must be string literals';
-          }
-        });
-
-        // TODO: throw error if there are duplicate dependencies
-
-        deps.async.push(dep);
-      }
+    // code path gets to the import statement:
+    //   System.import('dep1')
+    .replace(replacePatterns.SYSTEM_IMPORT_RE, (match, pre, quot, dep, post) => {
+      deps.async.push([dep]);
+      return match;
     });
 
   return deps;

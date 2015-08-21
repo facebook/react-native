@@ -169,7 +169,7 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);`,
+            System.import("a");`,
           'a.js': `
             /**,
              * @providesModule a
@@ -199,8 +199,8 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);
-            require.ensure(["b"]);`,
+            System.import("a");
+            System.import("b");`,
           'a.js': `
             /**,
              * @providesModule a
@@ -233,40 +233,6 @@ describe('BundlesLayout', () => {
       );
     });
 
-    pit('should put related async dependencies into the same bundle', () => {
-      setMockFilesystem({
-        'root': {
-          'index.js': `
-            /**
-             * @providesModule index
-             */
-            require.ensure(["a", "b"]);`,
-          'a.js': `
-            /**,
-             * @providesModule a
-             */`,
-          'b.js': `
-            /**
-             * @providesModule b
-             */`,
-        }
-      });
-
-      return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        stripPolyfills(bundles).then(resolvedBundles =>
-          expect(resolvedBundles).toEqual({
-            id: 'bundle.0',
-            modules: ['/root/index.js'],
-            children: [{
-              id: 'bundle.0.1',
-              modules: ['/root/a.js', '/root/b.js'],
-              children: [],
-            }],
-          })
-        )
-      );
-    });
-
     pit('should fully traverse sync dependencies', () => {
       setMockFilesystem({
         'root': {
@@ -275,7 +241,7 @@ describe('BundlesLayout', () => {
              * @providesModule index
              */
             require("a");
-            require.ensure(["b"]);`,
+            System.import("b");`,
           'a.js': `
             /**,
              * @providesModule a
@@ -309,7 +275,7 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);`,
+            System.import("a");`,
           'a.js': `
             /**,
              * @providesModule a
@@ -349,8 +315,8 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);
-            require.ensure(["b"]);`,
+            System.import("a");
+            System.import("b");`,
           'a.js': `
             /**,
              * @providesModule a
@@ -397,12 +363,12 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);`,
+            System.import("a");`,
           'a.js': `
             /**,
              * @providesModule a
              */,
-            require.ensure(["b"]);`,
+            System.import("b");`,
           'b.js': `
             /**
              * @providesModule b
@@ -436,46 +402,6 @@ describe('BundlesLayout', () => {
       );
     });
 
-    pit('should dedup same async bundle duplicated dependencies', () => {
-      setMockFilesystem({
-        'root': {
-          'index.js': `
-            /**
-             * @providesModule index
-             */
-            require.ensure(["a", "b"]);`,
-          'a.js': `
-            /**,
-             * @providesModule a
-             */,
-            require("c");`,
-          'b.js': `
-            /**
-             * @providesModule b
-             */
-            require("c");`,
-          'c.js': `
-            /**
-             * @providesModule c
-             */`,
-        }
-      });
-
-      return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
-        stripPolyfills(bundles).then(resolvedBundles =>
-          expect(resolvedBundles).toEqual({
-            id: 'bundle.0',
-            modules: ['/root/index.js'],
-            children: [{
-              id: 'bundle.0.1',
-              modules: ['/root/a.js', '/root/c.js', '/root/b.js'],
-              children: [],
-            }],
-          })
-        )
-      );
-    });
-
     pit('should put image dependencies into separate bundles', () => {
       setMockFilesystem({
         'root': {
@@ -483,7 +409,7 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);`,
+            System.import("a");`,
           'a.js':`
             /**,
              * @providesModule a
@@ -515,8 +441,8 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);
-            require.ensure(["b"]);`,
+            System.import("a");
+            System.import("b");`,
           'a.js':`
             /**,
              * @providesModule a
@@ -560,7 +486,7 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["./img.png"]);`,
+            System.import("./img.png");`,
           'img.png': '',
         }
       });
@@ -587,7 +513,7 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["a"]);`,
+            System.import("a");`,
           'a.js':`
             /**,
              * @providesModule a
@@ -619,7 +545,7 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["image!img"]);`,
+            System.import("image!img");`,
           'img.png': '',
         }
       });
@@ -646,7 +572,7 @@ describe('BundlesLayout', () => {
             /**
              * @providesModule index
              */
-            require.ensure(["aPackage"]);`,
+            System.import("aPackage");`,
           'aPackage': {
             'package.json': JSON.stringify({
               name: 'aPackage',

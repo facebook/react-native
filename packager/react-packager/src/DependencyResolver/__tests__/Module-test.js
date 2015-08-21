@@ -57,7 +57,7 @@ describe('Module', () => {
     pit('should recognize single dependency', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'require.ensure(["dep1"], function() {});',
+          'index.js': 'System.import("dep1")',
         }
       });
 
@@ -67,67 +67,37 @@ describe('Module', () => {
     pit('should parse single quoted dependencies', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'require.ensure([\'dep1\'], function() {});',
+          'index.js': 'System.import(\'dep1\')',
         }
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
     });
 
-    pit('should recognize multiple dependencies on the same statement', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': 'require.ensure(["dep1", "dep2"], function() {});',
-        }
-      });
-
-      return expectAsyncDependenciesToEqual([['dep1', 'dep2']]);
-    });
-
-    pit('should group async dependencies', () => {
+    pit('should parse multiple async dependencies on the same module', () => {
       fs.__setMockFilesystem({
         'root': {
           'index.js': [
-            'require.ensure(["dep1", "dep2"], function() {});',
-            'require.ensure(["dep3", "dep4"], function() {});',
+            'System.import("dep1")',
+            'System.import("dep2")',
           ].join('\n'),
         }
       });
 
       return expectAsyncDependenciesToEqual([
-        ['dep1', 'dep2'],
-        ['dep3', 'dep4']
+        ['dep1'],
+        ['dep2'],
       ]);
-    });
-
-    pit('shouldn\'t throw with ES6 arrow functions', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': 'require.ensure(["dep1", "dep2"], () => {});',
-        }
-      });
-
-      return expectAsyncDependenciesToEqual([['dep1', 'dep2']]);
     });
 
     pit('parse fine new lines', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'require.ensure(["dep1", \n"dep2"], () => {});',
+          'index.js': 'System.import(\n"dep1"\n)',
         }
       });
 
-      return expectAsyncDependenciesToEqual([['dep1', 'dep2']]);
-    });
-
-    pit('ignore comments', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': 'require.ensure(["dep1", /*comment*/"dep2"], () => {});',
-        }
-      });
-
-      return expectAsyncDependenciesToEqual([['dep1', 'dep2']]);
+      return expectAsyncDependenciesToEqual([['dep1']]);
     });
   });
 });
