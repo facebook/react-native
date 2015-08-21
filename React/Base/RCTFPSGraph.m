@@ -72,7 +72,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (CAShapeLayer *)createGraph:(UIColor *)color
 {
   CGFloat left = _position & RCTFPSGraphPositionLeft ? 0 : _length;
-  CAShapeLayer *graph = [[CAShapeLayer alloc] init];
+  CAShapeLayer *graph = [CAShapeLayer new];
   graph.frame = CGRectMake(left, 0, 2 * _margin + _length, self.frame.size.height);
   graph.backgroundColor = [[color colorWithAlphaComponent:.2] CGColor];
   graph.fillColor = [color CGColor];

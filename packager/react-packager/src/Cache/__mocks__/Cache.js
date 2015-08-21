@@ -8,13 +8,7 @@
  */
 'use strict';
 
-class Cache {
-  get(filepath, field, cb) {
-    return cb(filepath);
-  }
-
-  invalidate(filepath) { }
-  end() { }
-}
-
-module.exports = Cache;
+module.exports = {
+  dim: s =>  s,
+  blue: {bold: {}},
+};

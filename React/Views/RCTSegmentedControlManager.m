@@ -30,7 +30,7 @@ RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 
 - (NSDictionary *)constantsToExport
 {
-  RCTSegmentedControl *view = [[RCTSegmentedControl alloc] init];
+  RCTSegmentedControl *view = [RCTSegmentedControl new];
   return @{
     @"ComponentHeight": @(view.intrinsicContentSize.height),
   };

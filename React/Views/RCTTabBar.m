@@ -36,8 +36,8 @@
 
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
-    _tabViews = [[NSMutableArray alloc] init];
-    _tabController = [[UITabBarController alloc] init];
+    _tabViews = [NSMutableArray new];
+    _tabController = [UITabBarController new];
     _tabController.delegate = self;
     [self addSubview:_tabController.view];
   }

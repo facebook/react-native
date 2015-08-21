@@ -74,7 +74,7 @@ class FormData {
       var contentDisposition = 'form-data; name="' + name + '"';
       var headers: Headers = {'content-disposition': contentDisposition};
       if (typeof value === 'string') {
-        return {string: value, headers};
+        return {string: value, headers, fieldName: name};
       }
 
       // The body part is a "blob", which in React Native just means
@@ -87,7 +87,7 @@ class FormData {
       if (typeof value.type === 'string') {
         headers['content-type'] = value.type;
       }
-      return {...value, headers};
+      return {...value, headers, fieldName: name};
     });
   }
 }

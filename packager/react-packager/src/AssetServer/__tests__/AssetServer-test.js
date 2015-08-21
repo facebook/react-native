@@ -8,22 +8,22 @@ jest
   .mock('crypto')
   .mock('fs');
 
-var Promise = require('promise');
+const Promise = require('promise');
 
-describe('AssetServer', function() {
-  var AssetServer;
-  var crypto;
-  var fs;
+describe('AssetServer', () => {
+  let AssetServer;
+  let crypto;
+  let fs;
 
-  beforeEach(function() {
+  beforeEach(() => {
     AssetServer = require('../');
     crypto = require('crypto');
     fs = require('fs');
   });
 
-  describe('assetServer.get', function() {
-    pit('should work for the simple case', function() {
-      var server = new AssetServer({
+  describe('assetServer.get', () => {
+    pit('should work for the simple case', () => {
+      const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
       });
@@ -40,15 +40,15 @@ describe('AssetServer', function() {
       return Promise.all([
         server.get('imgs/b.png'),
         server.get('imgs/b@1x.png'),
-      ]).then(function(resp) {
-        resp.forEach(function(data) {
-          expect(data).toBe('b image');
-        });
-      });
+      ]).then(resp =>
+        resp.forEach(data =>
+          expect(data).toBe('b image')
+        )
+      );
     });
 
-    pit('should work for the simple case with jpg', function() {
-      var server = new AssetServer({
+    pit('should work for the simple case with jpg', () => {
+      const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpg'],
       });
@@ -65,16 +65,16 @@ describe('AssetServer', function() {
       return Promise.all([
         server.get('imgs/b.jpg'),
         server.get('imgs/b.png'),
-      ]).then(function(data) {
+      ]).then(data =>
         expect(data).toEqual([
           'jpeg image',
           'png image',
-        ]);
-      });
+        ])
+      );
     });
 
-    pit('should pick the bigger one', function() {
-      var server = new AssetServer({
+    pit('should pick the bigger one', () => {
+      const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
       });
@@ -90,13 +90,13 @@ describe('AssetServer', function() {
         }
       });
 
-      return server.get('imgs/b@3x.png').then(function(data) {
-        expect(data).toBe('b4 image');
-      });
+      return server.get('imgs/b@3x.png').then(data =>
+        expect(data).toBe('b4 image')
+      );
     });
 
-    pit('should support multiple project roots', function() {
-      var server = new AssetServer({
+    pit('should support multiple project roots', () => {
+      const server = new AssetServer({
         projectRoots: ['/root', '/root2'],
         assetExts: ['png'],
       });
@@ -116,27 +116,23 @@ describe('AssetServer', function() {
         },
       });
 
-      return server.get('newImages/imgs/b.png').then(function(data) {
-        expect(data).toBe('b1 image');
-      });
+      return server.get('newImages/imgs/b.png').then(data =>
+        expect(data).toBe('b1 image')
+      );
     });
   });
 
-  describe('assetSerer.getAssetData', function() {
-    pit('should get assetData', function() {
-      var hash = {
+  describe('assetSerer.getAssetData', () => {
+    pit('should get assetData', () => {
+      const hash = {
         update: jest.genMockFn(),
         digest: jest.genMockFn(),
       };
 
-      hash.digest.mockImpl(function() {
-        return 'wow such hash';
-      });
-      crypto.createHash.mockImpl(function() {
-        return hash;
-      });
+      hash.digest.mockImpl(() => 'wow such hash');
+      crypto.createHash.mockImpl(() => hash);
 
-      var server = new AssetServer({
+      const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
       });
@@ -152,7 +148,7 @@ describe('AssetServer', function() {
         }
       });
 
-      return server.getAssetData('imgs/b.png').then(function(data) {
+      return server.getAssetData('imgs/b.png').then(data => {
         expect(hash.update.mock.calls.length).toBe(4);
         expect(data).toEqual({
           type: 'png',
@@ -163,20 +159,16 @@ describe('AssetServer', function() {
       });
     });
 
-    pit('should get assetData for non-png images', function() {
-      var hash = {
+    pit('should get assetData for non-png images', () => {
+      const hash = {
         update: jest.genMockFn(),
         digest: jest.genMockFn(),
       };
 
-      hash.digest.mockImpl(function() {
-        return 'wow such hash';
-      });
-      crypto.createHash.mockImpl(function() {
-        return hash;
-      });
+      hash.digest.mockImpl(() => 'wow such hash');
+      crypto.createHash.mockImpl(() => hash);
 
-      var server = new AssetServer({
+      const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpeg'],
       });
@@ -192,7 +184,7 @@ describe('AssetServer', function() {
         }
       });
 
-      return server.getAssetData('imgs/b.jpg').then(function(data) {
+      return server.getAssetData('imgs/b.jpg').then(data => {
         expect(hash.update.mock.calls.length).toBe(4);
         expect(data).toEqual({
           type: 'jpg',

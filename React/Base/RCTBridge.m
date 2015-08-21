@@ -39,8 +39,6 @@ NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
 @end
 
-RCT_EXTERN id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void);
-
 static NSMutableArray *RCTModuleClasses;
 NSArray *RCTGetModuleClasses(void);
 NSArray *RCTGetModuleClasses(void)
@@ -57,7 +55,7 @@ void RCTRegisterModule(Class moduleClass)
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    RCTModuleClasses = [[NSMutableArray alloc] init];
+    RCTModuleClasses = [NSMutableArray new];
   });
 
   RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
@@ -140,6 +138,24 @@ dispatch_queue_t RCTJSThread;
 #endif
 
   });
+}
+
+static RCTBridge *RCTCurrentBridgeInstance = nil;
+
+/**
+ * The last current active bridge instance. This is set automatically whenever
+ * the bridge is accessed. It can be useful for static functions or singletons
+ * that need to access the bridge for purposes such as logging, but should not
+ * be relied upon to return any particular instance, due to race conditions.
+ */
++ (instancetype)currentBridge
+{
+  return RCTCurrentBridgeInstance;
+}
+
++ (void)setCurrentBridge:(RCTBridge *)currentBridge
+{
+  RCTCurrentBridgeInstance = currentBridge;
 }
 
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
@@ -244,11 +260,6 @@ RCT_NOT_IMPLEMENTED(-init)
   return _batchedBridge.loading;
 }
 
-- (BOOL)isValid
-{
-  return _batchedBridge.isValid;
-}
-
 - (void)invalidate
 {
   RCTAssertMainThread();
@@ -257,18 +268,9 @@ RCT_NOT_IMPLEMENTED(-init)
   _batchedBridge = nil;
 }
 
-+ (void)logMessage:(NSString *)message level:(NSString *)level
+- (void)logMessage:(NSString *)message level:(NSString *)level
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!RCTGetLatestExecutor().isValid) {
-      return;
-    }
-
-    [RCTGetLatestExecutor() executeJSCall:@"RCTLog"
-                                   method:@"logIfNoNativeHook"
-                                arguments:@[level, message]
-                                 callback:^(__unused id json, __unused NSError *error) {}];
-  });
+  [_batchedBridge logMessage:message level:level];
 }
 
 - (NSDictionary *)modules

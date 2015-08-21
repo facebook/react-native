@@ -13,20 +13,24 @@
 #import "RCTDefines.h"
 
 /**
- * Returns the optimal context size for an image drawn using the clip rect
- * returned by RCTClipRect.
+ * This function takes an input content size (typically from an image), a target
+ * size and scale that it will be drawn at (typically in a CGContext) and then
+ * calculates the rectangle to draw the image into so that it will be sized and
+ * positioned correctly if drawn using the specified content mode.
  */
-RCT_EXTERN CGSize RCTTargetSizeForClipRect(CGRect clipRect);
+RCT_EXTERN CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
+                                CGFloat destScale, UIViewContentMode resizeMode);
 
 /**
  * This function takes an input content size & scale (typically from an image),
- * a target size & scale that it will be drawn into (typically a CGContext) and
- * then calculates the optimal rectangle to draw the image into so that it will
- * be sized and positioned correctly if drawn using the specified content mode.
+ * a target size & scale at which it will be displayed (typically in a
+ * UIImageView) and then calculates the optimal size at which to redraw the
+ * image so that it will be displayed correctly with the specified content mode.
  */
-RCT_EXTERN CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
-                              CGSize destSize, CGFloat destScale,
-                              UIViewContentMode resizeMode);
+RCT_EXTERN CGSize RCTTargetSize(CGSize sourceSize, CGFloat sourceScale,
+                                CGSize destSize, CGFloat destScale,
+                                UIViewContentMode resizeMode,
+                                BOOL allowUpscaling);
 
 /**
  * This function takes an input content size & scale (typically from an image),

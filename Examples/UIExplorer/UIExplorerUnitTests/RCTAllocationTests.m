@@ -42,15 +42,16 @@ _Pragma("clang diagnostic pop")
 @end
 
 @interface AllocationTestModule : NSObject<RCTBridgeModule, RCTInvalidating>
+
+@property (nonatomic, assign, getter=isValid) BOOL valid;
+
 @end
 
 @implementation AllocationTestModule
 
 RCT_EXPORT_MODULE();
 
-@synthesize valid = _valid;
-
-- (id)init
+- (instancetype)init
 {
   if ((self = [super init])) {
     _valid = YES;
@@ -81,6 +82,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   @autoreleasepool {
     RCTRootView *view = [[RCTRootView alloc] initWithBundleURL:nil
                                                     moduleName:@""
+                                             initialProperties:nil
                                                  launchOptions:nil];
     weakBridge = view.bridge;
     XCTAssertNotNil(weakBridge, @"RCTBridge should have been created");
@@ -92,7 +94,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
 - (void)testModulesAreInvalidated
 {
-  AllocationTestModule *module = [[AllocationTestModule alloc] init];
+  AllocationTestModule *module = [AllocationTestModule new];
   @autoreleasepool {
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                               moduleProvider:^{
@@ -111,7 +113,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 {
   __weak AllocationTestModule *weakModule;
   @autoreleasepool {
-    AllocationTestModule *module = [[AllocationTestModule alloc] init];
+    AllocationTestModule *module = [AllocationTestModule new];
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                 moduleProvider:^{
                                   return @[module];
@@ -177,15 +179,15 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                             moduleProvider:nil
                                              launchOptions:nil];
-  __weak id rootContentView;
+  __weak UIView *rootContentView;
   @autoreleasepool {
-    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@""];
+    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"" initialProperties:nil];
     RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))
-    XCTAssertTrue([rootContentView isValid], @"RCTContentView should be valid");
+    XCTAssertTrue(rootContentView.userInteractionEnabled, @"RCTContentView should be valid");
     (void)rootView;
   }
 
-  XCTAssertFalse([rootContentView isValid], @"RCTContentView should have been invalidated");
+  XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
 }
 
 - (void)testUnderlyingBridgeIsDeallocated
