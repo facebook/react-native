@@ -18,18 +18,13 @@
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic, copy) NSString *lastErrorMessage;
-
 @end
 
 @implementation RCTRedBoxWindow
 {
-  UIView *_rootView;
   UITableView *_stackTraceTableView;
-
+  NSString *_lastErrorMessage;
   NSArray *_lastStackTrace;
-
-  UITableViewCell *_cachedMessageCell;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -41,23 +36,26 @@
 
     UIViewController *rootController = [UIViewController new];
     self.rootViewController = rootController;
-    _rootView = rootController.view;
-    _rootView.backgroundColor = [UIColor clearColor];
+    UIView *rootView = rootController.view;
+    rootView.backgroundColor = [UIColor clearColor];
 
     const CGFloat buttonHeight = 60;
 
-    CGRect detailsFrame = _rootView.bounds;
+    CGRect detailsFrame = rootView.bounds;
     detailsFrame.size.height -= buttonHeight;
 
     _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
+    _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
     _stackTraceTableView.backgroundColor = [UIColor clearColor];
     _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    [_rootView addSubview:_stackTraceTableView];
+    _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+    [rootView addSubview:_stackTraceTableView];
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
     dismissButton.accessibilityIdentifier = @"redbox-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
@@ -66,6 +64,7 @@
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
 
     UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     reloadButton.accessibilityIdentifier = @"redbox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
@@ -76,8 +75,8 @@
     CGFloat buttonWidth = self.bounds.size.width / 2;
     dismissButton.frame = CGRectMake(0, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
-    [_rootView addSubview:dismissButton];
-    [_rootView addSubview:reloadButton];
+    [rootView addSubview:dismissButton];
+    [rootView addSubview:reloadButton];
 
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
 
@@ -93,13 +92,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dealloc
 {
+  _stackTraceTableView.dataSource = nil;
+  _stackTraceTableView.delegate = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)openStackFrameInEditor:(NSDictionary *)stackFrame
 {
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, nil) dataUsingEncoding:NSUTF8StringEncoding];
-  NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)stackFrameJSON.length];
+  NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
   NSMutableURLRequest *request = [NSMutableURLRequest new];
   request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
   request.HTTPMethod = @"POST";
@@ -116,9 +117,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _lastStackTrace = stack;
     _lastErrorMessage = message;
 
-    _cachedMessageCell = [self reuseCell:nil forErrorMessage:message];
     [_stackTraceTableView reloadData];
-    [_stackTraceTableView setNeedsLayout];
 
     if (self.hidden) {
       [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
@@ -204,10 +203,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   cell.textLabel.text = stackFrame[@"methodName"];
 
   NSString *fileAndLine = [stackFrame[@"file"] lastPathComponent];
-  if (fileAndLine) {
-    fileAndLine = [fileAndLine stringByAppendingFormat:@":%@", stackFrame[@"lineNumber"]];
-    cell.detailTextLabel.text = fileAndLine;
-  }
+  cell.detailTextLabel.text = fileAndLine ? [fileAndLine stringByAppendingFormat:@":%@", stackFrame[@"lineNumber"]] : nil;
   return cell;
 }
 
