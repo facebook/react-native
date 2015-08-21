@@ -73,24 +73,7 @@ RCT_EXTERN void RCTProfileEndEvent(uint64_t tag,
                                    NSDictionary *args);
 
 /**
- * Exposes memory usage metrics
- */
-
-NSDictionary *RCTProfileGetMemoryUsage(BOOL);
-
-/**
- * Exposes device cpu usage metrics - Note this does not include JS Runtime CPU usage
- */
-
-NSNumber *RCTProfileGetCPUUsage(void);
-
-/**
- * This pair of macros implicitly handle the event ID when beginning and ending
- * an event, for both simplicity and performance reasons, this method is preferred
- *
- * NOTE: The EndEvent call has to be either, in the same scope of BeginEvent,
- * or in a sub-scope, otherwise the ID stored by BeginEvent won't be accessible
- * for EndEvent, in this case you may want to use the actual C functions.
+ * Collects the initial event information for the event and returns a reference ID
  */
 RCT_EXTERN int RCTProfileBeginAsyncEvent(uint64_t tag,
                                          NSString *name,
@@ -155,9 +138,6 @@ RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
 #define RCTProfileEndAsyncEvent(...)
 
 #define RCTProfileImmediateEvent(...)
-
-#define RCTProfileGetMemoryUsage(...)
-#define RCTProfileGetCPUUsage(...)
 
 #define RCTProfileBlock(block, ...) block
 

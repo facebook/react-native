@@ -18,7 +18,6 @@
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
 #import "RCTSRWebSocket.h"
-#import "RCTProfile.h"
 
 typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary *reply);
 
@@ -110,19 +109,11 @@ RCT_EXPORT_MODULE()
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
   NSError *error = nil;
-  NSDictionary *parsedMessage = RCTJSONParse(message, &error);
-
-  if ([parsedMessage objectForKey:@"method"]) {
-    NSString *methodName = parsedMessage[@"method"];
-    if ([methodName isEqual:@"requestMetrics"]) {
-      [self sendUsageMetrics];
-    }
-  } else if ([parsedMessage objectForKey:@"replyID"]) {
-    NSNumber *messageID = parsedMessage[@"replyID"];
-    RCTWSMessageCallback callback = _callbacks[messageID];
-    if (callback) {
-      callback(error, parsedMessage);
-    }
+  NSDictionary *reply = RCTJSONParse(message, &error);
+  NSNumber *messageID = reply[@"replyID"];
+  RCTWSMessageCallback callback = _callbacks[messageID];
+  if (callback) {
+    callback(error, reply);
   }
 }
 
@@ -188,21 +179,6 @@ RCT_EXPORT_MODULE()
     id objcValue = RCTJSONParse(result, NULL);
     onComplete(objcValue, nil);
   }];
-}
-
-- (void)sendUsageMetrics
-{
-  NSDictionary *memoryUsage = RCTProfileGetMemoryUsage(YES);
-  NSNumber *cpuUsage = RCTProfileGetCPUUsage();
-
-  NSDictionary *message = @{
-                            @"method": @"usageMetrics",
-                            @"memoryUsage": memoryUsage,
-                            @"deviceCPUUsage": cpuUsage
-                            };
-
-  // TODO: handle errors
-  [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary *reply) {}];
 }
 
 - (void)injectJSONText:(NSString *)script asGlobalObjectNamed:(NSString *)objectName callback:(RCTJavaScriptCompleteBlock)onComplete
