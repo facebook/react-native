@@ -94,7 +94,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   BOOL __block foundAfter = NO;
   BOOL __block hasNextPage = NO;
   BOOL __block calledCallback = NO;
-  NSMutableArray *assets = [[NSMutableArray alloc] init];
+  NSMutableArray *assets = [NSMutableArray new];
 
   [_bridge.assetsLibrary enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
     if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:ALAssetsGroupPropertyName]])) {

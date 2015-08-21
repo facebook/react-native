@@ -23,7 +23,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _textStorage = [[NSTextStorage alloc] init];
+    _textStorage = [NSTextStorage new];
     _reactSubviews = [NSMutableArray array];
 
     self.isAccessibilityElement = YES;

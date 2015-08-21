@@ -31,7 +31,7 @@
     [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
-    _reactSubviews = [[NSMutableArray alloc] init];
+    _reactSubviews = [NSMutableArray new];
   }
   return self;
 }

@@ -72,7 +72,7 @@ void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction as
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
   NSMutableArray *functionStack = threadDictionary[RCTAssertFunctionStack];
   if (!functionStack) {
-    functionStack = [[NSMutableArray alloc] init];
+    functionStack = [NSMutableArray new];
     threadDictionary[RCTAssertFunctionStack] = functionStack;
   }
   [functionStack addObject:assertFunction];

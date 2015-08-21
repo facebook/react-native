@@ -29,9 +29,9 @@ var BridgeProfiling = {
     }
   },
 
-  profileEnd(profileName?: string) {
+  profileEnd() {
     if (GLOBAL.__BridgeProfilingIsProfiling) {
-      console.profileEnd(profileName);
+      console.profileEnd();
     }
   },
 
@@ -41,14 +41,14 @@ var BridgeProfiling = {
     ReactPerf.measure = function (objName, fnName, func) {
       func = originalMeasure.call(ReactPerf, objName, fnName, func);
       return function (component) {
-        BridgeProfiling.profile();
-        var ret = func.apply(this, arguments);
         if (GLOBAL.__BridgeProfilingIsProfiling) {
           var name = this._instance && this._instance.constructor &&
             (this._instance.constructor.displayName ||
              this._instance.constructor.name);
-          BridgeProfiling.profileEnd(`${objName}.${fnName}(${name})`);
+          BridgeProfiling.profile(`${objName}.${fnName}(${name})`);
         }
+        var ret = func.apply(this, arguments);
+        BridgeProfiling.profileEnd();
         return ret;
       };
     };

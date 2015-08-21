@@ -20,7 +20,7 @@
 - (UITabBarItem *)barItem
 {
   if (!_barItem) {
-    _barItem = [[UITabBarItem alloc] init];
+    _barItem = [UITabBarItem new];
   }
   return _barItem;
 }

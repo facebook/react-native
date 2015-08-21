@@ -18,7 +18,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTTabBarItem alloc] init];
+  return [RCTTabBarItem new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(selected, BOOL);

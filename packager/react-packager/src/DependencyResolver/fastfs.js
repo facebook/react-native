@@ -155,7 +155,6 @@ class Fastfs extends EventEmitter {
     this._getAndAssertRoot(file.path).addChild(file);
   }
 
-
   _processFileChange(type, filePath, root, fstat) {
     const absPath = path.join(root, filePath);
     if (this._ignore(absPath) || (fstat && fstat.isDirectory())) {
