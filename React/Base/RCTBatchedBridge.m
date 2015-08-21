@@ -238,6 +238,13 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
      // Check if module instance has already been registered for this name
      id<RCTBridgeModule> module = modulesByName[moduleName];
 
+     if ([moduleClass respondsToSelector:@selector(allowedBridgeIDs)]) {
+       NSString *bridgeID = self.parentBridge.launchOptions[@"bridgeID"];
+       if (![[moduleClass allowedBridgeIDs] containsObject:bridgeID]) {
+         continue;
+       }
+     }
+      
      if (module) {
        // Preregistered instances takes precedence, no questions asked
        if (!preregisteredModules[moduleName]) {
