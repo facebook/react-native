@@ -160,10 +160,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
+  RCTAssertMainThread();
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self bundleFinishedLoading:bridge];
-  });
+  [self bundleFinishedLoading:bridge];
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge

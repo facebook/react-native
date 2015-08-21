@@ -186,8 +186,8 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
-    [self bindKeys];
     [self setUp];
+    [self bindKeys];
   }
   return self;
 }
@@ -214,21 +214,18 @@ RCT_NOT_IMPLEMENTED(-init)
                                              object:nil];
 
 #if TARGET_IPHONE_SIMULATOR
-
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   // reload in current mode
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) 
-                                 {
+                                 action:^(__unused UIKeyCommand *command) {
                                     [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
                                                                                         object:nil
                                                                                       userInfo:nil];
                                  }];
 
 #endif
-
 }
 
 - (RCTEventDispatcher *)eventDispatcher
@@ -258,6 +255,11 @@ RCT_NOT_IMPLEMENTED(-init)
 - (BOOL)isLoading
 {
   return _batchedBridge.loading;
+}
+
+- (BOOL)isValid
+{
+  return _batchedBridge.valid;
 }
 
 - (void)invalidate
