@@ -223,4 +223,10 @@ extern dispatch_queue_t RCTJSThread;
  */
 - (void)batchDidComplete;
 
+/**
+ * Array of acceptable bridgeIDs to expose this module to. Do not override to 
+ * expose module to any bridge.
+ */
++ (NSArray *)allowedBridgeIDs;
+
 @end
