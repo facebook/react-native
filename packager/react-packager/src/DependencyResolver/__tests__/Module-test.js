@@ -40,6 +40,7 @@ describe('Module', () => {
   describe('Async Dependencies', () => {
     function expectAsyncDependenciesToEqual(expected) {
       var fastfs = new Fastfs(
+        'test',
         ['/root'],
         fileWatcher,
         {crawling: Promise.resolve(['/root/index.js']), ignore: []},

@@ -89,10 +89,15 @@ class DependencyGraph {
     });
     this._crawling.then((files) => Activity.endEvent(crawlActivity));
 
-    this._fastfs = new Fastfs(this._opts.roots, this._opts.fileWatcher, {
-      ignore: this._opts.ignoreFilePath,
-      crawling: this._crawling,
-    });
+    this._fastfs = new Fastfs(
+      'JavaScript',
+      this._opts.roots,
+      this._opts.fileWatcher,
+      {
+        ignore: this._opts.ignoreFilePath,
+        crawling: this._crawling,
+      }
+    );
 
     this._fastfs.on('change', this._processFileChange.bind(this));
 
@@ -544,6 +549,7 @@ class DependencyGraph {
     this._assetMap_DEPRECATED = Object.create(null);
 
     const fastfs = new Fastfs(
+      'Assets',
       this._opts.assetRoots_DEPRECATED,
       this._opts.fileWatcher,
       { ignore: this._opts.ignoreFilePath, crawling: this._crawling }
