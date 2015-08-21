@@ -9,5 +9,5 @@
 
 'use strict';
 
-exports.IMPORT_RE = /(\bimport\s+?(?:.+\s+?from\s+?)?)(['"])([^'"]+)(\2)/g;
+exports.IMPORT_RE = /(\bimport\s+(?:[^'"]+\s+from\s+)??)(['"])([^'"]+)(\2)/g;
 exports.REQUIRE_RE = /(\brequire\s*?\(\s*?)(['"])([^'"]+)(\2\s*?\))/g;
