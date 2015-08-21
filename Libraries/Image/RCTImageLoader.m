@@ -85,8 +85,8 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
   }
 
   CGSize sourceSize = representation.dimensions;
-  CGRect targetRect = RCTClipRect(sourceSize, representation.scale, size, scale, resizeMode);
-  CGSize targetSize = targetRect.size;
+  CGSize targetSize = RCTTargetSize(sourceSize, representation.scale,
+                                    size, scale, resizeMode, NO);
 
   NSDictionary *options = @{
     (id)kCGImageSourceShouldAllowFloat: @YES,
@@ -103,7 +103,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 
   if (imageRef) {
     UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale
-                                   orientation:(UIImageOrientation)representation.orientation];
+                                   orientation:UIImageOrientationUp];
     CGImageRelease(imageRef);
     return image;
   }
@@ -114,7 +114,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 - (ALAssetsLibrary *)assetsLibrary
 {
   if (!_assetsLibrary) {
-    _assetsLibrary = [[ALAssetsLibrary alloc] init];
+    _assetsLibrary = [ALAssetsLibrary new];
   }
   return _assetsLibrary;
 }
@@ -181,7 +181,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 
     PHAsset *asset = [results firstObject];
 
-    PHImageRequestOptions *imageOptions = [[PHImageRequestOptions alloc] init];
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
 
     BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
     CGSize targetSize;

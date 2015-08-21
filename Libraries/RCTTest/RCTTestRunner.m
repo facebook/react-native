@@ -87,8 +87,7 @@ RCT_NOT_IMPLEMENTED(-init)
                                             moduleProvider:_moduleProvider
                                              launchOptions:nil];
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName];
-  rootView.initialProperties = initialProps;
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProps];
   rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
   NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);
@@ -99,7 +98,7 @@ RCT_NOT_IMPLEMENTED(-init)
   testModule.view = rootView;
 
   UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
-  vc.view = [[UIView alloc] init];
+  vc.view = [UIView new];
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];

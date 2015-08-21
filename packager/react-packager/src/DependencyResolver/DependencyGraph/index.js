@@ -13,7 +13,6 @@ const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
 const Fastfs = require('../fastfs');
 const ModuleCache = require('../ModuleCache');
 const Promise = require('promise');
-const _ = require('underscore');
 const crawl = require('../crawlers');
 const debug = require('debug')('DependencyGraph');
 const declareOpts = require('../../lib/declareOpts');
@@ -70,7 +69,7 @@ class DependencyGraph {
   constructor(options) {
     this._opts = validateOpts(options);
     this._hasteMap = Object.create(null);
-    this._immediateResolutionCache = Object.create(null);
+    this._resetResolutionCache();
     this._cache = this._opts.cache;
     this.load();
   }
@@ -110,11 +109,21 @@ class DependencyGraph {
     return this._loading;
   }
 
-  resolveDependency(fromModule, toModuleName) {
-    if (fromModule._ref) {
-      fromModule = fromModule._ref;
+  setup({ platform }) {
+    if (platform && this._opts.platforms.indexOf(platform) === -1) {
+      throw new Error('Unrecognized platform: ' + platform);
     }
 
+    // TODO(amasad): This is a potential race condition. Mutliple requests could
+    // interfere with each other. This needs a refactor to fix -- which will
+    // follow this diff.
+    if (this._platformExt !== platform) {
+      this._resetResolutionCache();
+    }
+    this._platformExt = platform;
+  }
+
+  resolveDependency(fromModule, toModuleName) {
     const resHash = resolutionHash(fromModule.path, toModuleName);
 
     if (this._immediateResolutionCache[resHash]) {
@@ -163,33 +172,7 @@ class DependencyGraph {
 
   getOrderedDependencies(entryPath) {
     return this.load().then(() => {
-      const absPath = this._getAbsolutePath(entryPath);
-
-      if (absPath == null) {
-        throw new NotFoundError(
-          'Could not find source file at %s',
-          entryPath
-        );
-      }
-
-      const absolutePath = path.resolve(absPath);
-
-      if (absolutePath == null) {
-        throw new NotFoundError(
-          'Cannot find entry file %s in any of the roots: %j',
-          entryPath,
-          this._opts.roots
-        );
-      }
-
-      const platformExt = getPlatformExt(entryPath);
-      if (platformExt && this._opts.platforms.indexOf(platformExt) > -1) {
-        this._platformExt = platformExt;
-      } else {
-        this._platformExt = null;
-      }
-
-      const entry = this._moduleCache.getModule(absolutePath);
+      const entry = this._getModuleForEntryPath(entryPath);
       const deps = [];
       const visited = Object.create(null);
       visited[entry.hash()] = true;
@@ -226,7 +209,22 @@ class DependencyGraph {
       };
 
       return collect(entry)
-        .then(() => Promise.all(deps.map(dep => dep.getPlainObject())));
+        .then(() => deps);
+    });
+  }
+
+  getAsyncDependencies(entryPath) {
+    return this.load().then(() => {
+      const mod = this._getModuleForEntryPath(entryPath);
+      return mod.getAsyncDependencies().then(bundles =>
+        Promise
+          .all(bundles.map(bundle =>
+            Promise.all(bundle.map(
+              dep => this.resolveDependency(mod, dep)
+            ))
+          ))
+          .then(bs => bs.map(bundle => bundle.map(dep => dep.path)))
+      );
     });
   }
 
@@ -244,6 +242,39 @@ class DependencyGraph {
     }
 
     return null;
+  }
+
+  _getModuleForEntryPath(entryPath) {
+    const absPath = this._getAbsolutePath(entryPath);
+
+    if (absPath == null) {
+      throw new NotFoundError(
+        'Could not find source file at %s',
+        entryPath
+      );
+    }
+
+    const absolutePath = path.resolve(absPath);
+
+    if (absolutePath == null) {
+      throw new NotFoundError(
+        'Cannot find entry file %s in any of the roots: %j',
+        entryPath,
+        this._opts.roots
+      );
+    }
+
+    // `platformExt` could be set in the `setup` method.
+    if (!this._platformExt) {
+      const platformExt = getPlatformExt(entryPath);
+      if (platformExt && this._opts.platforms.indexOf(platformExt) > -1) {
+        this._platformExt = platformExt;
+      } else {
+        this._platformExt = null;
+      }
+    }
+
+    return this._moduleCache.getModule(absolutePath);
   }
 
   _resolveHasteDependency(fromModule, toModuleName) {
@@ -549,7 +580,7 @@ class DependencyGraph {
   _processFileChange(type, filePath, root, fstat) {
     // It's really hard to invalidate the right module resolution cache
     // so we just blow it up with every file change.
-    this._immediateResolutionCache = Object.create(null);
+    this._resetResolutionCache();
 
     const absPath = path.join(root, filePath);
     if ((fstat && fstat.isDirectory()) ||
@@ -584,6 +615,10 @@ class DependencyGraph {
         }
       });
     }
+  }
+
+  _resetResolutionCache() {
+    this._immediateResolutionCache = Object.create(null);
   }
 }
 
