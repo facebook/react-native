@@ -203,6 +203,13 @@ function getDevToolsLauncher(options) {
         console.warn(stderr);
       });
       res.end('OK');
+    } else if (req.url.indexOf('/debugger-ui/static/') > -1) {
+      var fileName = req.url.replace('/debugger-ui/static/', '');
+      // NOTE: this works for a small number or external dependencies,
+      //       but will need a better solution as the project expands
+      var chartPath = path.join(__dirname + '/static/' + fileName);
+      res.writeHead(200, {'Content-Type': 'application/javascript'});
+      fs.createReadStream(chartPath).pipe(res);
     } else {
       next();
     }

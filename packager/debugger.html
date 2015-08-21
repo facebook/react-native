@@ -14,8 +14,197 @@
 <!-- Fake favicon, to avoid extra request to server -->
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>React Native Debugger</title>
-<script>
+<script src="/debugger-ui/static/Chart.min.js"></script>
+<script src="/debugger-ui/static/react-0.13.3.min.js"></script>
+<script src="/debugger-ui/static/JSXTransformer-0.13.3.js"></script>
+<script type="text/jsx">
 (function() {
+var ws;
+var metricsIntervalId, metricsCollectionEnabled;
+var cpuChart, memoryChart, jsCallsChart, latestLabel;
+var batchedJSCalls = [];
+var numJsCalls = 0;
+
+var canvas = document.getElementById('cpu-utilization');
+var ctx = canvas.getContext('2d');
+
+var memoryCanvas = document.getElementById('memory-utilization');
+var memoryCtx = memoryCanvas.getContext('2d');
+
+var jsCallsCanvas = document.getElementById("js-calls-graph");
+var jsCallsCtx = jsCallsCanvas.getContext('2d');
+
+var numPoints = 20;
+var labels = [];
+var data = [];
+for (var i = 1; i < numPoints + 1; i++) {
+  labels.push('');
+  data.push(0);
+}
+
+var cpuStartingData = {
+  labels: labels,
+  datasets: [
+    {
+      fillColor: "rgba(113,188,120,0.2)",
+      strokeColor: "rgba(113,188,120,1)",
+      pointColor: "rgba(113, 188,120,1)",
+      pointStrokeColor: "#fff",
+      data: data
+    }
+  ]
+};
+
+var memoryStartingData = {
+  labels: labels,
+  datasets: [
+    {
+      label: "Resident Memory (MB)",
+      fillColor: "rgba(220,220,220,0.2)",
+      strokeColor: "rgba(220,220,220,1)",
+      pointColor: "rgba(220,220,220,1)",
+      pointStrokeColor: "#fff",
+      pointHighlightFill: "#fff",
+      pointHighlightStroke: "rgba(220,220,220,1)",
+      data: data
+    },
+    {
+      label: "Virtual Memory (MB)",
+      fillColor: "rgba(151,187,205,0.2)",
+      strokeColor: "rgba(151,187,205,1)",
+      pointColor: "rgba(151,187,205,1)",
+      pointStrokeColor: "#fff",
+      pointHighlightFill: "#fff",
+      pointHighlightStroke: "rgba(151,187,205,1)",
+      data: data
+    }
+  ]
+};
+
+
+var jsCallsStartingData = {
+  labels: labels,
+  datasets: [
+    {
+      fillColor: "rgba(238,210,2,0.2)",
+      strokeColor: "rgba(238,210,2,1)",
+      pointColor: "rgba(238,210,2,1)",
+      pointStrokeColor: "#fff",
+      data: data
+    }
+  ]
+};
+
+latestLabel = cpuStartingData.labels[numPoints - 1];
+// Reduce the animation steps for demo clarity.
+cpuChart = new Chart(ctx).Line(cpuStartingData, {
+  scaleOverride: true,
+  scaleSteps: 10,
+  scaleStepWidth: 10,
+  scaleStartValue: 0,
+  animation: false
+});
+
+memoryChart = new Chart(memoryCtx).Line(memoryStartingData, {
+  animation: false
+});
+
+document.getElementById("memory-legend").innerHTML = memoryChart.generateLegend();
+
+jsCallsChart = new Chart(jsCallsCtx).Bar(jsCallsStartingData, {
+  animation: false
+});
+
+function toggleMetrics(enable) {
+  if (metricsIntervalId) {
+    debuggerClearInterval(metricsIntervalId);
+  }
+  if (enable) {
+    // request metrics once every second
+    metricsIntervalId = debuggerSetInterval(function () {
+      ws.send(JSON.stringify({method: "requestMetrics"}));
+    }, 1000);
+  }
+  metricsCollectionEnabled = enable;
+}
+
+var MetricsToggle = React.createClass({
+  handleClick: function () {
+    var enabled = !this.props.metricsEnabled;
+    this.setProps({
+      metricsEnabled:enabled
+    });
+    toggleMetrics(enabled);
+  },
+
+  buttonText: function () {
+    if (this.props.metricsEnabled) {
+      return "Disable Metrics Collection"
+    } else {
+      return "Enable Metrics Collection"
+    }
+  },
+  render: function() {
+    return (
+      <input type="button" onClick={this.handleClick} value={this.buttonText()} />
+    );
+  }
+});
+
+React.render(
+  <MetricsToggle metricsEnabled={true}/>,
+  document.getElementById('metrics-toggle')
+);
+
+var JSCall = React.createClass({
+  render: function() {
+    return (
+      <ul>
+        {this.props.data.map(function (subCall) {
+          return (
+            <li>{subCall.method}<em>"{subCall.args[0]}"</em></li>
+          )
+        })}
+      </ul>
+    );
+  }
+});
+
+var JSCallsList = React.createClass({
+  render: function() {
+    return (
+      <ul>
+        {this.props.data.map(function (batch) {
+          if (!batch.arguments.length) {
+            return (
+              <li>
+                {batch.moduleMethod}
+              </li>
+            )
+          } else {
+            return (
+              <li>
+                {batch.moduleMethod}
+                <JSCall data={batch.arguments[0]}></JSCall>
+              </li>
+            )
+          }
+        })}
+      </ul>
+    );
+  }
+});
+
+var jsCallsComponent = React.render(
+  <JSCallsList data={[]}/>,
+  document.getElementById('js-calls')
+);
+
+function countJSCalls(batch) {
+  return batch.arguments.reduce(function (p, c) {
+    return p + c.length;
+  }, 0);
+}
 
 var sessionID = window.localStorage.getItem('sessionID');
 window.localStorage.removeItem('sessionID');
@@ -36,6 +225,8 @@ window.addEventListener('load', function () {
 // Alias native implementations needed by the debugger before platform-specific
 // implementations are loaded into the global namespace
 var debuggerSetTimeout = window.setTimeout;
+var debuggerSetInterval = window.setInterval;
+var debuggerClearInterval = window.clearInterval;
 var DebuggerWebSocket = window.WebSocket;
 
 function setStatus(status) {
@@ -59,6 +250,19 @@ var messageHandlers = {
     loadScript(message.url, sendReply.bind(null, null));
   },
   'executeJSCall': function(message, sendReply) {
+    if(metricsCollectionEnabled) {
+      numJsCalls += countJSCalls(message);
+
+      batchedJSCalls.unshift(message);
+      // show the last 5 batches
+      if (batchedJSCalls.length > 5) {
+        batchedJSCalls.pop();
+      }
+
+      jsCallsComponent.setProps({
+        data: batchedJSCalls
+      });
+    }
     var returnValue = null;
     try {
       if (window && window.require) {
@@ -68,11 +272,32 @@ var messageHandlers = {
     } finally {
       sendReply(JSON.stringify(returnValue));
     }
+  },
+  'usageMetrics': function (message) {
+    cpuChart.addData([message.deviceCPUUsage], '');
+    // Remove the first point so we dont just add values forever
+    cpuChart.removeData();
+
+    memoryChart.addData([
+      convertToMB(message.memoryUsage.resident_size),
+      convertToMB(message.memoryUsage.virtual_size)
+    ], '');
+    // Remove the first point so we dont just add values forever
+    memoryChart.removeData();
+
+    jsCallsChart.addData([numJsCalls], '');
+    // Remove the first point so we dont just add values forever
+    jsCallsChart.removeData();
+    numJsCalls = 0;
   }
 };
 
+function convertToMB(val) {
+  return ((val / 1024) / 1024);
+}
+
 function connectToDebuggerProxy() {
-  var ws = new DebuggerWebSocket('ws://' + window.location.host + '/debugger-proxy');
+  ws = new DebuggerWebSocket('ws://' + window.location.host + '/debugger-proxy');
 
   ws.onopen = function() {
     if (sessionID) {
@@ -81,6 +306,9 @@ function connectToDebuggerProxy() {
     } else {
       setStatus('Waiting, press <span class="shortcut">⌘R</span> in simulator to reload and connect.');
     }
+
+    // start collecting metrics
+    toggleMetrics(true);
   };
 
   ws.onmessage = function(message) {
@@ -102,6 +330,9 @@ function connectToDebuggerProxy() {
     sessionID = null;
     window.localStorage.removeItem('sessionID');
     debuggerSetTimeout(connectToDebuggerProxy, 100);
+
+    // stop collecting metrics
+    toggleMetrics(false);
   };
 }
 
@@ -120,9 +351,9 @@ function loadScript(src, callback) {
 <style type="text/css">
   body {
     font-size: large;
-    margin: 0;
+    margin: 20px;
     padding: 0;
-    font-family: Helvetica, Verdana, sans-serif;
+    font-family: Helvetica Neue, Helvetica, Verdana, sans-serif;
     font-weight: 200;
   }
   .shortcut {
@@ -161,6 +392,43 @@ function loadScript(src, callback) {
   .content {
     padding: 10px;
   }
+  .legend ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    margin-top : 20px;
+  }
+  .legend li {
+    display: inline-block;
+    padding-left: 10px;
+  }
+  .legend span {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    float: left;
+    margin-top: 1px;
+    margin-right: 7px;
+  }
+  .legend {
+    margin-bottom: 40px;
+  }
+  .js-calls {
+    font-size: small;
+  }
+  .toggle-button {
+    margin-top: 15px;
+  }
+  .graph-column {
+    width: "49%";
+    display: inline-block;
+  }
+  .js-calls-column {
+    vertical-align:top;
+    margin-left: 20px;
+  }
 </style>
 </head>
 <body>
@@ -179,7 +447,31 @@ function loadScript(src, callback) {
       React Native JS code runs inside this Chrome tab.
     </p>
     <p>Press <span class="shortcut">⌘⌥J</span> to open Developer Tools. Enable <a href="http://stackoverflow.com/a/17324511/232122" target="_blank">Pause On Caught Exceptions</a> for a better debugging experience.</p>
-    <p>Status: <span id="status">Loading...</span></p>
+  <div>Status: <span id="status">Loading</span></div>
+  <div id="metrics-toggle" class="toggle-button"></div>
+  <div class="graph-column">
+    <div>
+      <h2>UI CPU Utilization</h2>
+      <div>
+        <canvas id="cpu-utilization" width="400" height="250"></canvas>
+      </div>
+    </div>
+
+    <div>
+      <h2>Memory Utilization</h2>
+      <div>
+        <canvas id="memory-utilization" width="400" height="250"></canvas>
+      </div>
+      <div id="memory-legend" class="legend"></div>
+    </div>
+  </div>
+  <div class="graph-column js-calls-column">
+    <h2>JS Calls</h2>
+    <div>
+      <canvas id="js-calls-graph" width="400" height="250"></canvas>
+    </div>
+    <div id="js-calls" class="js-calls">
+    </div>
   </div>
 </body>
 </html>
