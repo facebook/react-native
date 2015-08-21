@@ -61,7 +61,7 @@ describe('BundlesLayout', () => {
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
         expect(bundles).toEqual({
           id: 'bundle.0',
-          modules: [dep('/root/index.js'), dep('/root/a.js')],
+          modules: ['/root/index.js', '/root/a.js'],
           children: [],
         })
       );
@@ -88,10 +88,10 @@ describe('BundlesLayout', () => {
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
         expect(bundles).toEqual({
           id: 'bundle.0',
-          modules: [dep('/root/index.js')],
+          modules: ['/root/index.js'],
           children: [{
             id:'bundle.0.1',
-            modules: [dep('/root/a.js')],
+            modules: ['/root/a.js'],
             children: [],
           }],
         })
@@ -124,13 +124,13 @@ describe('BundlesLayout', () => {
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
         expect(bundles).toEqual({
           id: 'bundle.0',
-          modules: [dep('/root/index.js')],
+          modules: ['/root/index.js'],
           children: [{
             id: 'bundle.0.1',
-            modules: [dep('/root/a.js')],
+            modules: ['/root/a.js'],
               children: [{
                 id: 'bundle.0.1.2',
-                modules: [dep('/root/b.js')],
+                modules: ['/root/b.js'],
                 children: [],
               }],
           }],
@@ -164,10 +164,10 @@ describe('BundlesLayout', () => {
       return newBundlesLayout().generateLayout(['/root/index.js']).then(bundles =>
         expect(bundles).toEqual({
           id: 'bundle.0',
-          modules: [dep('/root/index.js')],
+          modules: ['/root/index.js'],
           children: [{
             id: 'bundle.0.1',
-            modules: [dep('/root/a.js'), dep('/root/b.js')],
+            modules: ['/root/a.js', '/root/b.js'],
             children: [],
           }],
         })
@@ -200,10 +200,10 @@ describe('BundlesLayout', () => {
       return newBundlesLayout().generateLayout(['/root/index.js']).then(
         bundles => expect(bundles).toEqual({
           id: 'bundle.0',
-          modules: [dep('/root/index.js'), dep('/root/a.js')],
+          modules: ['/root/index.js', '/root/a.js'],
           children: [{
             id: 'bundle.0.1',
-            modules: [dep('/root/b.js')],
+            modules: ['/root/b.js'],
             children: [],
           }],
         })

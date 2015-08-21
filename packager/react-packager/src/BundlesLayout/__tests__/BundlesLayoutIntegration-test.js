@@ -80,28 +80,17 @@ describe('BundlesLayout', () => {
 
     function stripPolyfills(bundle) {
       return Promise
-        .all([
-          Promise.all(
-            bundle.modules.map(module => module
-              .getName()
-              .then(name => [module, name])
-            ),
-          ),
-          Promise.all(
-            bundle.children.map(childModule => stripPolyfills(childModule)),
-          ),
-        ])
-        .then(([modules, children]) => {
-          modules = modules
-            .filter(([module, name]) => { // filter polyfills
+        .all(bundle.children.map(childModule => stripPolyfills(childModule)))
+        .then(children => {
+          const modules = bundle.modules
+            .filter(moduleName => { // filter polyfills
               for (let p of polyfills) {
-                if (name.indexOf(p) !== -1) {
+                if (moduleName.indexOf(p) !== -1) {
                   return false;
                 }
               }
               return true;
-            })
-            .map(([module, name]) => module.path);
+            });
 
           return {
             id: bundle.id,

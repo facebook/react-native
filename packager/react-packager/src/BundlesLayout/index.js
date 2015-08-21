@@ -58,7 +58,7 @@ class BundlesLayout {
         return promiseWhile(
           () => pendingSyncDeps.length > 0,
           () => {
-            const dependencies = _.values(syncDependencies);
+            const dependencies = Object.keys(syncDependencies);
             if (dependencies.length > 0) {
               bundle.modules = dependencies;
             }
@@ -72,7 +72,7 @@ class BundlesLayout {
                   if (dep.path !== pendingSyncDep && !dep.isPolyfill()) {
                     pendingSyncDeps.push(dep.path);
                   }
-                  syncDependencies[dep.path] = dep;
+                  syncDependencies[dep.path] = true;
                   this._moduleToBundle[dep.path] = bundle.id;
                 });
                 deps.asyncDependencies.forEach(asyncDeps => {
