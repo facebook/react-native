@@ -376,6 +376,12 @@
         var str = Array.prototype.map.call(arguments, function(arg) {
           return inspect(arg, {depth: 10});
         }).join(', ');
+        if (str.slice(0, 10) === "'Warning: " && level >= LOG_LEVELS.error) {
+          // React warnings use console.error so that a stack trace is shown,
+          // but we don't (currently) want these to show a redbox
+          // (Note: Logic duplicated in ExceptionsManager.js.)
+          level = LOG_LEVELS.warn;
+        }
         global.nativeLoggingHook(str, level);
       };
     }

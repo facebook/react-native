@@ -27,7 +27,7 @@ RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 
 - (NSDictionary *)constantsToExport
 {
-  UIPickerView *view = [[UIPickerView alloc] init];
+  UIPickerView *view = [UIPickerView new];
   return @{
     @"ComponentHeight": @(view.intrinsicContentSize.height),
     @"ComponentWidth": @(view.intrinsicContentSize.width)

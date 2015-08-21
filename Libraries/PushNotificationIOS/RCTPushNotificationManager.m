@@ -32,7 +32,7 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
 + (UILocalNotification *)UILocalNotification:(id)json
 {
   NSDictionary *details = [self NSDictionary:json];
-  UILocalNotification *notification = [[UILocalNotification alloc] init];
+  UILocalNotification *notification = [UILocalNotification new];
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
   return notification;
@@ -186,7 +186,7 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 
   }
 
-  NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *permissions = [NSMutableDictionary new];
   permissions[@"alert"] = @((types & UIUserNotificationTypeAlert) > 0);
   permissions[@"badge"] = @((types & UIUserNotificationTypeBadge) > 0);
   permissions[@"sound"] = @((types & UIUserNotificationTypeSound) > 0);

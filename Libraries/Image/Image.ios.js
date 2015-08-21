@@ -60,9 +60,13 @@ var Image = React.createClass({
      * could be an http address, a local file path, or the name of a static image
      * resource (which should be wrapped in the `require('image!name')` function).
      */
-    source: PropTypes.shape({
-      uri: PropTypes.string,
-    }),
+    source: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]),
     /**
      * A static image to display while downloading the final image off the
      * network.

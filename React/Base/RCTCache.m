@@ -57,9 +57,9 @@
   if ((self = [super init]))
   {
     //create storage
-    _cache = [[NSMutableDictionary alloc] init];
-    _entryPool = [[NSMutableArray alloc] init];
-    _lock = [[NSLock alloc] init];
+    _cache = [NSMutableDictionary new];
+    _entryPool = [NSMutableArray new];
+    _lock = [NSLock new];
     _totalCost = 0;
 
 #if TARGET_OS_IPHONE
@@ -256,7 +256,7 @@
   _totalCost += g;
   RCTCacheEntry *entry = _cache[key];
   if (!entry) {
-    entry = [[RCTCacheEntry alloc] init];
+    entry = [RCTCacheEntry new];
     _cache[key] = entry;
   }
   entry.object = obj;

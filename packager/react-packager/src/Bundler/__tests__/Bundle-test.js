@@ -12,35 +12,35 @@ jest.autoMockOff();
 
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 
-describe('Package', function() {
+describe('Bundle', function() {
   var ModuleTransport;
-  var Package;
-  var ppackage;
+  var Bundle;
+  var bundle;
 
   beforeEach(function() {
-    Package = require('../Package');
+    Bundle = require('../Bundle');
     ModuleTransport = require('../../lib/ModuleTransport');
-    ppackage = new Package('test_url');
-    ppackage.getSourceMap = jest.genMockFn().mockImpl(function() {
+    bundle = new Bundle('test_url');
+    bundle.getSourceMap = jest.genMockFn().mockImpl(function() {
       return 'test-source-map';
     });
   });
 
-  describe('source package', function() {
-    it('should create a package and get the source', function() {
-      ppackage.addModule(new ModuleTransport({
+  describe('source bundle', function() {
+    it('should create a bundle and get the source', function() {
+      bundle.addModule(new ModuleTransport({
         code: 'transformed foo;',
         sourceCode: 'source foo',
         sourcePath: 'foo path',
       }));
-      ppackage.addModule(new ModuleTransport({
+      bundle.addModule(new ModuleTransport({
         code: 'transformed bar;',
         sourceCode: 'source bar',
         sourcePath: 'bar path',
       }));
 
-      ppackage.finalize({});
-      expect(ppackage.getSource()).toBe([
+      bundle.finalize({});
+      expect(bundle.getSource()).toBe([
         'transformed foo;',
         'transformed bar;',
         '\/\/@ sourceMappingURL=test_url'
@@ -48,7 +48,7 @@ describe('Package', function() {
     });
 
     it('should be ok to leave out the source map url', function() {
-      var p = new Package();
+      var p = new Bundle();
       p.addModule(new ModuleTransport({
         code: 'transformed foo;',
         sourceCode: 'source foo',
@@ -67,22 +67,22 @@ describe('Package', function() {
       ].join('\n'));
     });
 
-    it('should create a package and add run module code', function() {
-      ppackage.addModule(new ModuleTransport({
+    it('should create a bundle and add run module code', function() {
+      bundle.addModule(new ModuleTransport({
         code: 'transformed foo;',
         sourceCode: 'source foo',
         sourcePath: 'foo path'
       }));
 
-      ppackage.addModule(new ModuleTransport({
+      bundle.addModule(new ModuleTransport({
         code: 'transformed bar;',
         sourceCode: 'source bar',
         sourcePath: 'bar path'
       }));
 
-      ppackage.setMainModuleId('foo');
-      ppackage.finalize({runMainModule: true});
-      expect(ppackage.getSource()).toBe([
+      bundle.setMainModuleId('foo');
+      bundle.finalize({runMainModule: true});
+      expect(bundle.getSource()).toBe([
         'transformed foo;',
         'transformed bar;',
         ';require("foo");',
@@ -100,19 +100,19 @@ describe('Package', function() {
         return minified;
       };
 
-      ppackage.addModule(new ModuleTransport({
+      bundle.addModule(new ModuleTransport({
         code: 'transformed foo;',
         sourceCode: 'source foo',
         sourcePath: 'foo path'
       }));
-      ppackage.finalize();
-      expect(ppackage.getMinifiedSourceAndMap()).toBe(minified);
+      bundle.finalize();
+      expect(bundle.getMinifiedSourceAndMap()).toBe(minified);
     });
   });
 
-  describe('sourcemap package', function() {
+  describe('sourcemap bundle', function() {
     it('should create sourcemap', function() {
-      var p = new Package('test_url');
+      var p = new Bundle('test_url');
       p.addModule(new ModuleTransport({
         code: [
           'transformed foo',
@@ -143,11 +143,11 @@ describe('Package', function() {
       p.setMainModuleId('foo');
       p.finalize({runMainModule: true});
       var s = p.getSourceMap();
-      expect(s).toEqual(genSourceMap(p._modules));
+      expect(s).toEqual(genSourceMap(p.getModules()));
     });
 
     it('should combine sourcemaps', function() {
-      var p = new Package('test_url');
+      var p = new Bundle('test_url');
 
       p.addModule(new ModuleTransport({
         code: 'transformed foo;\n',
@@ -215,7 +215,7 @@ describe('Package', function() {
 
   describe('getAssets()', function() {
     it('should save and return asset objects', function() {
-      var p = new Package('test_url');
+      var p = new Bundle('test_url');
       var asset1 = {};
       var asset2 = {};
       p.addAsset(asset1);
@@ -227,7 +227,7 @@ describe('Package', function() {
 
   describe('getJSModulePaths()', function() {
     it('should return module paths', function() {
-      var p = new Package('test_url');
+      var p = new Bundle('test_url');
       p.addModule(new ModuleTransport({
         code: 'transformed foo;\n',
         sourceCode: 'source foo',
@@ -248,7 +248,7 @@ describe('Package', function() {
 
  function genSourceMap(modules) {
    var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});
-   var packageLineNo = 0;
+   var bundleLineNo = 0;
    for (var i = 0; i < modules.length; i++) {
      var module = modules[i];
      var transformedCode = module.code;
@@ -259,7 +259,7 @@ describe('Package', function() {
      for (var t = 0; t < transformedCode.length; t++) {
        if (t === 0 || lastCharNewLine) {
          sourceMapGen.addMapping({
-           generated: {line: packageLineNo + 1, column: 0},
+           generated: {line: bundleLineNo + 1, column: 0},
            original: {line: transformedLineCount + 1, column: 0},
            source: sourcePath
          });
@@ -267,10 +267,10 @@ describe('Package', function() {
        lastCharNewLine = transformedCode[t] === '\n';
        if (lastCharNewLine) {
          transformedLineCount++;
-         packageLineNo++;
+         bundleLineNo++;
        }
      }
-     packageLineNo++;
+     bundleLineNo++;
      sourceMapGen.setSourceContent(
        sourcePath,
        sourceCode

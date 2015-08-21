@@ -33,13 +33,13 @@ type EndCallback = (result: EndResult) => void;
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
 class Animated {
-  attach(): void {}
-  detach(): void {}
+  __attach(): void {}
+  __detach(): void {}
   __getValue(): any {}
-  getAnimatedValue(): any { return this.__getValue(); }
-  addChild(child: Animated) {}
-  removeChild(child: Animated) {}
-  getChildren(): Array<Animated> { return []; }
+  __getAnimatedValue(): any { return this.__getValue(); }
+  __addChild(child: Animated) {}
+  __removeChild(child: Animated) {}
+  __getChildren(): Array<Animated> { return []; }
 }
 
 // Important note: start() and stop() will only be called at most once.
@@ -71,14 +71,14 @@ class AnimatedWithChildren extends Animated {
     this._children = [];
   }
 
-  addChild(child: Animated): void {
+  __addChild(child: Animated): void {
     if (this._children.length === 0) {
-      this.attach();
+      this.__attach();
     }
     this._children.push(child);
   }
 
-  removeChild(child: Animated): void {
+  __removeChild(child: Animated): void {
     var index = this._children.indexOf(child);
     if (index === -1) {
       console.warn('Trying to remove a child that doesn\'t exist');
@@ -86,11 +86,11 @@ class AnimatedWithChildren extends Animated {
     }
     this._children.splice(index, 1);
     if (this._children.length === 0) {
-      this.detach();
+      this.__detach();
     }
   }
 
-  getChildren(): Array<Animated> {
+  __getChildren(): Array<Animated> {
     return this._children;
   }
 }
@@ -123,7 +123,7 @@ function _flush(rootNode: AnimatedValue): void {
     if (typeof node.update === 'function') {
       animatedStyles.add(node);
     } else {
-      node.getChildren().forEach(findAnimatedStyles);
+      node.__getChildren().forEach(findAnimatedStyles);
     }
   }
   findAnimatedStyles(rootNode);
@@ -518,7 +518,7 @@ class AnimatedValue extends AnimatedWithChildren {
     this._listeners = {};
   }
 
-  detach() {
+  __detach() {
     this.stopAnimation();
   }
 
@@ -584,7 +584,7 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   stopTracking(): void {
-    this._tracking && this._tracking.detach();
+    this._tracking && this._tracking.__detach();
     this._tracking = null;
   }
 
@@ -715,12 +715,12 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     return new AnimatedInterpolation(this, Interpolation.create(config));
   }
 
-  attach(): void {
-    this._parent.addChild(this);
+  __attach(): void {
+    this._parent.__addChild(this);
   }
 
-  detach(): void {
-    this._parent.removeChild(this);
+  __detach(): void {
+    this._parent.__removeChild(this);
   }
 }
 
@@ -747,13 +747,13 @@ class AnimatedTransform extends AnimatedWithChildren {
     });
   }
 
-  getAnimatedValue(): Array<Object> {
+  __getAnimatedValue(): Array<Object> {
     return this._transforms.map(transform => {
       var result = {};
       for (var key in transform) {
         var value = transform[key];
         if (value instanceof Animated) {
-          result[key] = value.getAnimatedValue();
+          result[key] = value.__getAnimatedValue();
         } else {
           // All transform components needed to recompose matrix
           result[key] = value;
@@ -763,23 +763,23 @@ class AnimatedTransform extends AnimatedWithChildren {
     });
   }
 
-  attach(): void {
+  __attach(): void {
     this._transforms.forEach(transform => {
       for (var key in transform) {
         var value = transform[key];
         if (value instanceof Animated) {
-          value.addChild(this);
+          value.__addChild(this);
         }
       }
     });
   }
 
-  detach(): void {
+  __detach(): void {
     this._transforms.forEach(transform => {
       for (var key in transform) {
         var value = transform[key];
         if (value instanceof Animated) {
-          value.removeChild(this);
+          value.__removeChild(this);
         }
       }
     });
@@ -814,31 +814,31 @@ class AnimatedStyle extends AnimatedWithChildren {
     return style;
   }
 
-  getAnimatedValue(): Object {
+  __getAnimatedValue(): Object {
     var style = {};
     for (var key in this._style) {
       var value = this._style[key];
       if (value instanceof Animated) {
-        style[key] = value.getAnimatedValue();
+        style[key] = value.__getAnimatedValue();
       }
     }
     return style;
   }
 
-  attach(): void {
+  __attach(): void {
     for (var key in this._style) {
       var value = this._style[key];
       if (value instanceof Animated) {
-        value.addChild(this);
+        value.__addChild(this);
       }
     }
   }
 
-  detach(): void {
+  __detach(): void {
     for (var key in this._style) {
       var value = this._style[key];
       if (value instanceof Animated) {
-        value.removeChild(this);
+        value.__removeChild(this);
       }
     }
   }
@@ -861,7 +861,7 @@ class AnimatedProps extends Animated {
     }
     this._props = props;
     this._callback = callback;
-    this.attach();
+    this.__attach();
   }
 
   __getValue(): Object {
@@ -877,31 +877,31 @@ class AnimatedProps extends Animated {
     return props;
   }
 
-  getAnimatedValue(): Object {
+  __getAnimatedValue(): Object {
     var props = {};
     for (var key in this._props) {
       var value = this._props[key];
       if (value instanceof Animated) {
-        props[key] = value.getAnimatedValue();
+        props[key] = value.__getAnimatedValue();
       }
     }
     return props;
   }
 
-  attach(): void {
+  __attach(): void {
     for (var key in this._props) {
       var value = this._props[key];
       if (value instanceof Animated) {
-        value.addChild(this);
+        value.__addChild(this);
       }
     }
   }
 
-  detach(): void {
+  __detach(): void {
     for (var key in this._props) {
       var value = this._props[key];
       if (value instanceof Animated) {
-        value.removeChild(this);
+        value.__removeChild(this);
       }
     }
   }
@@ -918,7 +918,7 @@ function createAnimatedComponent(Component: any): any {
     _propsAnimated: AnimatedProps;
 
     componentWillUnmount() {
-      this._propsAnimated && this._propsAnimated.detach();
+      this._propsAnimated && this._propsAnimated.__detach();
     }
 
     setNativeProps(props) {
@@ -940,7 +940,7 @@ function createAnimatedComponent(Component: any): any {
       // forceUpdate.
       var callback = () => {
         if (this.refs[refName].setNativeProps) {
-          var value = this._propsAnimated.getAnimatedValue();
+          var value = this._propsAnimated.__getAnimatedValue();
           this.refs[refName].setNativeProps(value);
         } else {
           this.forceUpdate();
@@ -960,7 +960,7 @@ function createAnimatedComponent(Component: any): any {
       // This way the intermediate state isn't to go to 0 and trigger
       // this expensive recursive detaching to then re-attach everything on
       // the very next operation.
-      oldPropsAnimated && oldPropsAnimated.detach();
+      oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -1000,19 +1000,19 @@ class AnimatedTracking extends Animated {
     this._animationClass = animationClass;
     this._animationConfig = animationConfig;
     this._callback = callback;
-    this.attach();
+    this.__attach();
   }
 
   __getValue(): Object {
     return this._parent.__getValue();
   }
 
-  attach(): void {
-    this._parent.addChild(this);
+  __attach(): void {
+    this._parent.__addChild(this);
   }
 
-  detach(): void {
-    this._parent.removeChild(this);
+  __detach(): void {
+    this._parent.__removeChild(this);
   }
 
   update(): void {

@@ -49,7 +49,7 @@ RCT_NOT_IMPLEMENTED(-init);
 - (NSArray *)methods
 {
   if (!_methods) {
-    NSMutableArray *moduleMethods = [[NSMutableArray alloc] init];
+    NSMutableArray *moduleMethods = [NSMutableArray new];
     unsigned int methodCount;
     Method *methods = class_copyMethodList(object_getClass(_moduleClass), &methodCount);
 
@@ -77,18 +77,18 @@ RCT_NOT_IMPLEMENTED(-init);
 
 - (NSDictionary *)config
 {
-  NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *config = [NSMutableDictionary new];
   config[@"moduleID"] = _moduleID;
 
   if (_constants) {
     config[@"constants"] = _constants;
   }
 
-  NSMutableDictionary *methodconfig = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *methodconfig = [NSMutableDictionary new];
   [self.methods enumerateObjectsUsingBlock:^(RCTModuleMethod *method, NSUInteger idx, __unused BOOL *stop) {
     methodconfig[method.JSMethodName] = @{
       @"methodID": @(idx),
-      @"type": method.functionKind == RCTJavaScriptFunctionKindAsync ? @"remoteAsync" : @"remote",
+      @"type": method.functionType == RCTFunctionTypePromise ? @"remoteAsync" : @"remote",
     };
   }];
   config[@"methods"] = [methodconfig copy];

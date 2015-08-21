@@ -48,8 +48,8 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 {
   if ((self = [super init])) {
     _manager = manager;
-    _viewPropBlocks = [[NSMutableDictionary alloc] init];
-    _shadowPropBlocks = [[NSMutableDictionary alloc] init];
+    _viewPropBlocks = [NSMutableDictionary new];
+    _shadowPropBlocks = [NSMutableDictionary new];
 
     _name = RCTBridgeModuleNameForClass([manager class]);
     RCTAssert(_name.length, @"Invalid moduleName '%@'", _name);
@@ -292,7 +292,7 @@ RCT_NOT_IMPLEMENTED(-init)
 - (NSDictionary *)viewConfig
 {
   Class managerClass = [_manager class];
-  NSMutableDictionary *propTypes = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *propTypes = [NSMutableDictionary new];
 
   unsigned int count = 0;
   Method *methods = class_copyMethodList(object_getClass(managerClass), &count);
