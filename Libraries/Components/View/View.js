@@ -98,6 +98,8 @@ var View = React.createClass({
     accessibilityComponentType: PropTypes.oneOf([
       'none',
       'button',
+      'radiobutton_checked',
+      'radiobutton_unchecked',
     ]),
 
     /**
