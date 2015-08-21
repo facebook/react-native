@@ -9,11 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTInvalidating.h"
+
 @class RCTBridge;
 
-@interface RCTModalHostView : UIView
+@interface RCTModalHostView : UIView <RCTInvalidating>
 
 @property (nonatomic, assign, getter=isAnimated) BOOL animated;
+@property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

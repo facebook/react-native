@@ -41,7 +41,7 @@
     self.backgroundColor = _redColor;
     self.hidden = YES;
 
-    UIViewController *rootController = [[UIViewController alloc] init];
+    UIViewController *rootController = [UIViewController new];
     self.rootViewController = rootController;
     _rootView = rootController.view;
     _rootView.backgroundColor = [UIColor clearColor];
@@ -102,7 +102,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, nil) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[stackFrameJSON length]];
-  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+  NSMutableURLRequest *request = [NSMutableURLRequest new];
   request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
   request.HTTPMethod = @"POST";
   request.HTTPBody = stackFrameJSON;
@@ -200,7 +200,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
     cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
     cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     cell.backgroundColor = [UIColor clearColor];
-    cell.selectedBackgroundView = [[UIView alloc] init];
+    cell.selectedBackgroundView = [UIView new];
     cell.selectedBackgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
   }
 
@@ -279,7 +279,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   static RCTRedBox *_sharedInstance;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    _sharedInstance = [[RCTRedBox alloc] init];
+    _sharedInstance = [RCTRedBox new];
   });
   return _sharedInstance;
 }

@@ -35,7 +35,7 @@
   json = [self NSDictionary:json];
 
   // TODO: more shape types
-  MKShape *shape = [[MKPointAnnotation alloc] init];
+  MKShape *shape = [MKPointAnnotation new];
   shape.coordinate = [self CLLocationCoordinate2D:json];
   shape.title = [RCTConvert NSString:json[@"title"]];
   shape.subtitle = [RCTConvert NSString:json[@"subtitle"]];
@@ -53,7 +53,7 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
 + (RCTPointAnnotation *)RCTPointAnnotation:(id)json
 {
   json = [self NSDictionary:json];
-  RCTPointAnnotation *shape = [[RCTPointAnnotation alloc] init];
+  RCTPointAnnotation *shape = [RCTPointAnnotation new];
   shape.coordinate = [self CLLocationCoordinate2D:json];
   shape.title = [RCTConvert NSString:json[@"title"]];
   shape.subtitle = [RCTConvert NSString:json[@"subtitle"]];

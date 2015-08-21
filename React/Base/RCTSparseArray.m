@@ -37,7 +37,7 @@
 
 + (instancetype)sparseArray
 {
-  return [[self alloc] init];
+  return [self new];
 }
 
 + (instancetype)sparseArrayWithCapacity:(NSUInteger)capacity

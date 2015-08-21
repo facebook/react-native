@@ -214,12 +214,12 @@ var TouchableHighlight = React.createClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
+        onResponderTerminate={this.touchableHandleResponderTerminate}
+        testID={this.props.testID}>
         {cloneWithProps(
           onlyChild(this.props.children),
           {
             ref: CHILD_REF,
-            testID: this.props.testID,
           }
         )}
       </View>

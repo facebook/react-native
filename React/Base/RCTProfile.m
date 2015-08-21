@@ -216,14 +216,14 @@ void RCTProfileInit(RCTBridge *bridge)
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    _RCTProfileLock = [[NSRecursiveLock alloc] init];
+    _RCTProfileLock = [NSRecursiveLock new];
   });
   RCTProfileLock(
     RCTProfileStartTime = CACurrentMediaTime();
-    RCTProfileOngoingEvents = [[NSMutableDictionary alloc] init];
+    RCTProfileOngoingEvents = [NSMutableDictionary new];
     RCTProfileInfo = @{
-      RCTProfileTraceEvents: [[NSMutableArray alloc] init],
-      RCTProfileSamples: [[NSMutableArray alloc] init],
+      RCTProfileTraceEvents: [NSMutableArray new],
+      RCTProfileSamples: [NSMutableArray new],
     };
   );
 

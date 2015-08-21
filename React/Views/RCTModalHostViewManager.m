@@ -14,14 +14,37 @@
 #import "RCTTouchHandler.h"
 
 @implementation RCTModalHostViewManager
+{
+  NSHashTable *_hostViews;
+}
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    _hostViews = [NSHashTable weakObjectsHashTable];
+  }
+
+  return self;
+}
+
 - (UIView *)view
 {
-  return [[RCTModalHostView alloc] initWithBridge:self.bridge];
+  UIView *view = [[RCTModalHostView alloc] initWithBridge:self.bridge];
+  [_hostViews addObject:view];
+  return view;
+}
+
+- (void)invalidate
+{
+  for (RCTModalHostView *hostView in _hostViews) {
+    [hostView invalidate];
+  }
+  [_hostViews removeAllObjects];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(animated, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
 
 @end

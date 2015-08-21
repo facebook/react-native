@@ -9,23 +9,24 @@
 'use strict';
 
 jest.dontMock('../')
-  .dontMock('q')
-  .dontMock('../replacePatterns')
-  .setMock('chalk', { dim: function(s) { return s; } });
+  .dontMock('underscore')
+  .dontMock('../replacePatterns');
 
 jest.mock('path');
 
 var Promise = require('promise');
+var _ = require('underscore');
 
 describe('HasteDependencyResolver', function() {
   var HasteDependencyResolver;
-
-  function createModule(o) {
-    o.getPlainObject = () => Promise.resolve(o);
-    return o;
-  }
+  var Module;
+  var Polyfill;
 
   beforeEach(function() {
+    Module = require('../Module');
+    Polyfill = require('../Polyfill');
+    Polyfill.mockClear();
+
     // For the polyfillDeps
     require('path').join.mockImpl(function(a, b) {
       return b;
@@ -33,12 +34,16 @@ describe('HasteDependencyResolver', function() {
     HasteDependencyResolver = require('../');
   });
 
+  function createModule(id, dependencies) {
+    var module = new Module();
+    module.getName.mockImpl(() => Promise.resolve(id));
+    module.getDependencies.mockImpl(() => Promise.resolve(dependencies));
+    return module;
+  }
+
   describe('getDependencies', function() {
     pit('should get dependencies with polyfills', function() {
-      var module = createModule({
-        id: 'index',
-        path: '/root/index.js', dependencies: ['a']
-      });
+      var module = createModule('index');
       var deps = [module];
 
       var depResolver = new HasteDependencyResolver({
@@ -57,7 +62,8 @@ describe('HasteDependencyResolver', function() {
       return depResolver.getDependencies('/root/index.js', { dev: false })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
-          expect(result.dependencies).toEqual([
+          expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
+          expect(_.pluck(Polyfill.mock.calls, 0)).toEqual([
             { path: 'polyfills/prelude.js',
               id: 'polyfills/prelude.js',
               isPolyfill: true,
@@ -115,18 +121,12 @@ describe('HasteDependencyResolver', function() {
                 'polyfills/String.prototype.es6.js',
               ],
             },
-            module
           ]);
         });
     });
 
     pit('should get dependencies with polyfills', function() {
-      var module = createModule({
-        id: 'index',
-        path: '/root/index.js',
-        dependencies: ['a'],
-      });
-
+      var module = createModule('index');
       var deps = [module];
 
       var depResolver = new HasteDependencyResolver({
@@ -145,75 +145,15 @@ describe('HasteDependencyResolver', function() {
       return depResolver.getDependencies('/root/index.js', { dev: true })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
-          expect(result.dependencies).toEqual([
-            { path: 'polyfills/prelude_dev.js',
-              id: 'polyfills/prelude_dev.js',
-              isPolyfill: true,
-              dependencies: []
-            },
-            { path: 'polyfills/require.js',
-              id: 'polyfills/require.js',
-              isPolyfill: true,
-              dependencies: ['polyfills/prelude_dev.js']
-            },
-            { path: 'polyfills/polyfills.js',
-              id: 'polyfills/polyfills.js',
-              isPolyfill: true,
-              dependencies: ['polyfills/prelude_dev.js', 'polyfills/require.js']
-            },
-            { id: 'polyfills/console.js',
-              isPolyfill: true,
-              path: 'polyfills/console.js',
-              dependencies: [
-                'polyfills/prelude_dev.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js'
-              ],
-            },
-            { id: 'polyfills/error-guard.js',
-              isPolyfill: true,
-              path: 'polyfills/error-guard.js',
-              dependencies: [
-                'polyfills/prelude_dev.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js',
-                'polyfills/console.js'
-              ],
-            },
-            { id: 'polyfills/String.prototype.es6.js',
-              isPolyfill: true,
-              path: 'polyfills/String.prototype.es6.js',
-              dependencies: [
-                'polyfills/prelude_dev.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js',
-                'polyfills/console.js',
-                'polyfills/error-guard.js'
-              ],
-            },
-            { id: 'polyfills/Array.prototype.es6.js',
-              isPolyfill: true,
-              path: 'polyfills/Array.prototype.es6.js',
-              dependencies: [
-                'polyfills/prelude_dev.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js',
-                'polyfills/console.js',
-                'polyfills/error-guard.js',
-                'polyfills/String.prototype.es6.js'
-              ],
-            },
-            module
-          ]);
+          expect(depGraph.getOrderedDependencies).toBeCalledWith('/root/index.js');
+          expect(result.dependencies[0]).toBe(Polyfill.mock.instances[0]);
+          expect(result.dependencies[result.dependencies.length - 1])
+              .toBe(module);
         });
     });
 
     pit('should pass in more polyfills', function() {
-      var module = createModule({
-        id: 'index',
-        path: '/root/index.js',
-        dependencies: ['a']
-      });
+      var module = createModule('index');
       var deps = [module];
 
       var depResolver = new HasteDependencyResolver({
@@ -231,66 +171,9 @@ describe('HasteDependencyResolver', function() {
       });
 
       return depResolver.getDependencies('/root/index.js', { dev: false })
-        .then(function(result) {
+        .then((result) => {
           expect(result.mainModuleId).toEqual('index');
-          expect(result.dependencies).toEqual([
-            { path: 'polyfills/prelude.js',
-              id: 'polyfills/prelude.js',
-              isPolyfill: true,
-              dependencies: []
-            },
-            { path: 'polyfills/require.js',
-              id: 'polyfills/require.js',
-              isPolyfill: true,
-              dependencies: ['polyfills/prelude.js']
-            },
-            { path: 'polyfills/polyfills.js',
-              id: 'polyfills/polyfills.js',
-              isPolyfill: true,
-              dependencies: ['polyfills/prelude.js', 'polyfills/require.js']
-            },
-            { id: 'polyfills/console.js',
-              isPolyfill: true,
-              path: 'polyfills/console.js',
-              dependencies: [
-                'polyfills/prelude.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js'
-              ],
-            },
-            { id: 'polyfills/error-guard.js',
-              isPolyfill: true,
-              path: 'polyfills/error-guard.js',
-              dependencies: [
-                'polyfills/prelude.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js',
-                'polyfills/console.js'
-              ],
-            },
-            { id: 'polyfills/String.prototype.es6.js',
-              isPolyfill: true,
-              path: 'polyfills/String.prototype.es6.js',
-              dependencies: [
-                'polyfills/prelude.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js',
-                'polyfills/console.js',
-                'polyfills/error-guard.js'
-              ],
-            },
-            { id: 'polyfills/Array.prototype.es6.js',
-              isPolyfill: true,
-              path: 'polyfills/Array.prototype.es6.js',
-              dependencies: [
-                'polyfills/prelude.js',
-                'polyfills/require.js',
-                'polyfills/polyfills.js',
-                'polyfills/console.js',
-                'polyfills/error-guard.js',
-                'polyfills/String.prototype.es6.js',
-              ],
-            },
+          expect(Polyfill.mock.calls[result.dependencies.length - 2]).toEqual([
             { path: 'some module',
               id: 'some module',
               isPolyfill: true,
@@ -304,7 +187,6 @@ describe('HasteDependencyResolver', function() {
                 'polyfills/Array.prototype.es6.js'
               ]
             },
-            module
           ]);
         });
     });
@@ -463,25 +345,21 @@ describe('HasteDependencyResolver', function() {
 
       depGraph.resolveDependency.mockImpl(function(fromModule, toModuleName) {
         if (toModuleName === 'x') {
-          return Promise.resolve(createModule({
-            id: 'changed'
-          }));
+          return Promise.resolve(createModule('changed'));
         } else if (toModuleName === 'y') {
-          return Promise.resolve(createModule({ id: 'Y' }));
+          return Promise.resolve(createModule('Y'));
         }
 
         return Promise.resolve(null);
       });
 
-      return depResolver.wrapModule({
-        id: 'test module',
-        path: '/root/test.js',
-        dependencies: dependencies
-      }, code).then(processedCode => {
-
+      return depResolver.wrapModule(
+        createModule('test module', ['x', 'y']),
+        code
+      ).then(processedCode => {
         expect(processedCode).toEqual([
-          '__d(\'test module\',["changed","Y"],function(global,' +
-            ' require, requireDynamic, requireLazy, module, exports) {  ' +
+          '__d(\'test module\',["changed","Y"],function(global, require,' +
+            ' module, exports) {  ' +
             "import'x';",
           "import 'changed';",
           "import 'changed' ;",

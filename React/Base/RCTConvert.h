@@ -17,7 +17,6 @@
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
 
-
 /**
  * This class provides a collection of conversion functions for mapping
  * JSON objects to native types and classes. These are useful when writing
@@ -39,10 +38,11 @@
 + (NSUInteger)NSUInteger:(id)json;
 
 + (NSArray *)NSArray:(id)json;
-+ (NSSet *)NSSet:(id)json;
 + (NSDictionary *)NSDictionary:(id)json;
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;
+
++ (NSSet *)NSSet:(id)json;
 + (NSData *)NSData:(id)json;
 + (NSIndexSet *)NSIndexSet:(id)json;
 
@@ -93,6 +93,9 @@ typedef NSURL RCTFileURL;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style
    scaleMultiplier:(CGFloat)scaleMultiplier;
+
+typedef NSArray NSArrayArray;
++ (NSArrayArray *)NSArrayArray:(id)json;
 
 typedef NSArray NSStringArray;
 + (NSStringArray *)NSStringArray:(id)json;
@@ -164,7 +167,6 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
 #define RCT_CUSTOM_CONVERTER(type, name, code) \
 + (type)name:(id)json                          \
 {                                              \
-  json = (json == (id)kCFNull) ? nil : json;   \
   if (!RCT_DEBUG) {                            \
     return code;                               \
   } else {                                     \
@@ -185,7 +187,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
  * detailed error reporting if an invalid value is passed in.
  */
 #define RCT_NUMBER_CONVERTER(type, getter) \
-RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
+RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter])
 
 /**
  * This macro is used for creating converters for enum types.
