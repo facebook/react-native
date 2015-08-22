@@ -225,7 +225,6 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
   var parts = pathname.split('/').filter(Boolean);
   if (parts.length === 1) {
     ret += '<div><a href="/debug/packages">Cached Packages</a></div>';
-    ret += '<div><a href="/debug/graph">Dependency Graph</a></div>';
     res.end(ret);
   } else if (parts[1] === 'packages') {
     ret += '<h1> Cached Packages </h1>';
@@ -242,10 +241,6 @@ Server.prototype._processDebugRequest = function(reqUrl, res) {
         console.log(e.stack);
       }
     );
-  } else if (parts[1] === 'graph'){
-    ret += '<h1> Dependency Graph </h2>';
-    ret += this._packager.getGraphDebugInfo();
-    res.end(ret);
   } else {
     res.writeHead('404');
     res.end('Invalid debug request');

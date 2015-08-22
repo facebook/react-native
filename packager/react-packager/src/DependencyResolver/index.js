@@ -167,10 +167,6 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
   });
 };
 
-HasteDependencyResolver.prototype.getDebugInfo = function() {
-  return this._depGraph.getDebugInfo();
-};
-
 function defineModuleCode({moduleName, code, deps}) {
   return [
     `__d(`,
