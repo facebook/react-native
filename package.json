@@ -40,7 +40,7 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/ Libraries/",
-    "start": "./packager/packager.sh"
+    "start": "./packager/packager.sh || true"
   },
   "bin": {
     "react-native-start": "packager/packager.sh"
