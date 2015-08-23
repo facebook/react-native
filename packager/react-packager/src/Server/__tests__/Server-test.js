@@ -56,6 +56,7 @@ describe('processRequest', function() {
   var watcherFunc = jest.genMockFunction();
   var requestHandler;
   var triggerFileChange;
+  var rnVersion = "var RN_VERSION = '" + require('../../../../../package.json').version + "';";
 
   beforeEach(function() {
     Packager = require('../../Packager');
@@ -94,7 +95,7 @@ describe('processRequest', function() {
       requestHandler,
       'mybundle.bundle?runModule=true'
     ).then(function(response) {
-      expect(response).toEqual('this is the source');
+      expect(response).toEqual(rnVersion + 'this is the source');
     });
   });
 
@@ -103,7 +104,7 @@ describe('processRequest', function() {
       requestHandler,
       'mybundle.runModule.bundle'
     ).then(function(response) {
-      expect(response).toEqual('this is the source');
+      expect(response).toEqual(rnVersion + 'this is the source');
     });
   });
 
@@ -121,7 +122,7 @@ describe('processRequest', function() {
       requestHandler,
       'index.ios.includeRequire.bundle'
     ).then(function(response) {
-      expect(response).toEqual('this is the source');
+      expect(response).toEqual(rnVersion + 'this is the source');
       expect(Packager.prototype.package).toBeCalledWith(
         'index.ios.js',
         true,
@@ -184,7 +185,7 @@ describe('processRequest', function() {
 
       return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .then(function(response) {
-          expect(response).toEqual('this is the first source');
+          expect(response).toEqual(rnVersion + 'this is the first source');
           expect(packageFunc.mock.calls.length).toBe(1);
           triggerFileChange('all','path/file.js', options.projectRoots[0]);
           jest.runAllTimers();
@@ -194,7 +195,7 @@ describe('processRequest', function() {
           expect(packageFunc.mock.calls.length).toBe(2);
           return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
             .then(function(response) {
-              expect(response).toEqual('this is the rebuilt source');
+              expect(response).toEqual(rnVersion + 'this is the rebuilt source');
             });
         });
     });

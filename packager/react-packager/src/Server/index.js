@@ -358,7 +358,8 @@ Server.prototype.processRequest = function(req, res, next) {
   building.then(
     function(p) {
       if (requestType === 'bundle') {
-        var bundleSource = p.getSource({
+        var rnGlobalVersion =  "var RN_VERSION = '" + require('../../../../package.json').version + "';";
+        var bundleSource = rnGlobalVersion + p.getSource({
           inlineSourceMap: options.inlineSourceMap,
           minify: options.minify,
         });

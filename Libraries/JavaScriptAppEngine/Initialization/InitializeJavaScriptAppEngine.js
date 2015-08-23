@@ -119,6 +119,11 @@ function setUpGeolocation() {
   GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
+function setUpProduct() {
+  GLOBAL.navigator.product = 'ReactNative';
+  GLOBAL.navigator.productSub = GLOBAL.navigator.rnVersion = RN_VERSION;
+}
+
 function setUpWebSockets() {
   GLOBAL.WebSocket = require('WebSocket');
 }
@@ -140,6 +145,7 @@ setUpPromise();
 setUpXHR();
 setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
+setUpProduct();
 setUpWebSockets();
 setupProfile();
 setUpProcessEnv();
