@@ -181,7 +181,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   if (!isnan(_letterSpacing)) {
     letterSpacing = @(_letterSpacing);
   }
-  
+
   _effectiveLetterSpacing = letterSpacing.doubleValue;
 
   NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] init];
@@ -204,7 +204,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   }
   
   if (!isnan(_textShadowOpacity)) {
-      NSShadow *shadow = [[NSShadow alloc] init];
+      NSShadow *shadow = [NSShadow new];
       
       if (_textShadowColor) {
         shadow.shadowColor = [_textShadowColor colorWithAlphaComponent:_textShadowOpacity];
