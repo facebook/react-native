@@ -28,6 +28,8 @@ var keyOf = require('keyOf');
 var merge = require('merge');
 var onlyChild = require('onlyChild');
 
+type Event = Object;
+
 var DEFAULT_PROPS = {
   activeOpacity: 0.8,
   underlayColor: 'black',
@@ -138,30 +140,30 @@ var TouchableHighlight = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function() {
+  touchableHandleActivePressIn: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     this._showUnderlay();
-    this.props.onPressIn && this.props.onPressIn();
+    this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function() {
+  touchableHandleActivePressOut: function(e: Event) {
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
-    this.props.onPressOut && this.props.onPressOut();
+    this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function() {
+  touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._showUnderlay();
     this._hideTimeout = this.setTimeout(this._hideUnderlay,
       this.props.delayPressOut || 100);
-    this.props.onPress && this.props.onPress();
+    this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function() {
@@ -214,12 +216,12 @@ var TouchableHighlight = React.createClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
+        onResponderTerminate={this.touchableHandleResponderTerminate}
+        testID={this.props.testID}>
         {cloneWithProps(
           onlyChild(this.props.children),
           {
             ref: CHILD_REF,
-            testID: this.props.testID,
           }
         )}
       </View>

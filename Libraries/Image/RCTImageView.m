@@ -14,6 +14,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTGIFImage.h"
 #import "RCTImageLoader.h"
+#import "RCTImageUtils.h"
 #import "RCTUtils.h"
 
 #import "UIView+React.h"
@@ -43,7 +44,7 @@
 
 RCT_NOT_IMPLEMENTED(-init)
 
-- (void)_updateImage
+- (void)updateImage
 {
   UIImage *image = self.image;
   if (!image) {
@@ -72,7 +73,7 @@ RCT_NOT_IMPLEMENTED(-init)
   image = image ?: _defaultImage;
   if (image != super.image) {
     super.image = image;
-    [self _updateImage];
+    [self updateImage];
   }
 }
 
@@ -80,7 +81,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (!UIEdgeInsetsEqualToEdgeInsets(_capInsets, capInsets)) {
     _capInsets = capInsets;
-    [self _updateImage];
+    [self updateImage];
   }
 }
 
@@ -88,7 +89,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (_renderingMode != renderingMode) {
     _renderingMode = renderingMode;
-    [self _updateImage];
+    [self updateImage];
   }
 }
 
@@ -97,6 +98,16 @@ RCT_NOT_IMPLEMENTED(-init)
   if (![src isEqual:_src]) {
     _src = [src copy];
     [self reloadImage];
+  }
+}
+
+- (void)setContentMode:(UIViewContentMode)contentMode
+{
+  if (self.contentMode != contentMode) {
+    super.contentMode = contentMode;
+    if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
+      [self reloadImage];
+    }
   }
 }
 
@@ -165,12 +176,15 @@ RCT_NOT_IMPLEMENTED(-init)
   if (self.image == nil) {
     [self reloadImage];
   } else if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
-    CGSize imageSize = {
-      self.image.size.width / RCTScreenScale(),
-      self.image.size.height / RCTScreenScale()
-    };
-    CGFloat widthChangeFraction = imageSize.width ? ABS(imageSize.width - frame.size.width) / imageSize.width : 1;
-    CGFloat heightChangeFraction = imageSize.height ? ABS(imageSize.height - frame.size.height) / imageSize.height : 1;
+
+    // Get optimal image size
+    CGSize currentSize = self.image.size;
+    CGSize idealSize = RCTTargetSize(self.image.size, self.image.scale, frame.size,
+                                     RCTScreenScale(), self.contentMode, YES);
+
+    CGFloat widthChangeFraction = ABS(currentSize.width - idealSize.width) / currentSize.width;
+    CGFloat heightChangeFraction = ABS(currentSize.height - idealSize.height) / currentSize.height;
+
     // If the combined change is more than 20%, reload the asset in case there is a better size.
     if (widthChangeFraction + heightChangeFraction > 0.2) {
       [self reloadImage];

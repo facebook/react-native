@@ -111,12 +111,12 @@ static css_dim_t RCTMeasure(void *context, float width)
     return _cachedTextStorage;
   }
 
-  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+  NSLayoutManager *layoutManager = [NSLayoutManager new];
 
   NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:self.attributedString];
   [textStorage addLayoutManager:layoutManager];
 
-  NSTextContainer *textContainer = [[NSTextContainer alloc] init];
+  NSTextContainer *textContainer = [NSTextContainer new];
   textContainer.lineFragmentPadding = 0.0;
   textContainer.lineBreakMode = _numberOfLines > 0 ? NSLineBreakByTruncatingTail : NSLineBreakByClipping;
   textContainer.maximumNumberOfLines = _numberOfLines;
@@ -183,7 +183,7 @@ static css_dim_t RCTMeasure(void *context, float width)
 
   _effectiveLetterSpacing = letterSpacing.doubleValue;
 
-  NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
   for (RCTShadowView *child in [self reactSubviews]) {
     if ([child isKindOfClass:[RCTShadowText class]]) {
       RCTShadowText *shadowText = (RCTShadowText *)child;
@@ -265,7 +265,7 @@ static css_dim_t RCTMeasure(void *context, float width)
 
   // if we found anything, set it :D
   if (hasParagraphStyle) {
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
     paragraphStyle.alignment = _textAlign;
     paragraphStyle.baseWritingDirection = _writingDirection;
     CGFloat lineHeight = round(_lineHeight * self.fontSizeMultiplier);

@@ -304,6 +304,18 @@
   };
 
   /**
+   * Asynchronously loads any missing dependency and executes the provided
+   * callback once all of them are satisfied.
+   *
+   * Note that the dependencies on the provided array must be string literals
+   * as the packager uses this information to figure out how the modules are
+   * packaged into different bundles.
+   */
+  require.ensure = function(dependencies, callback) {
+    throw '`require.ensure` is still not supported';
+  };
+
+  /**
   * The define function conforming to CommonJS proposal:
   * http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition
   *
@@ -464,56 +476,6 @@
     }
   }
 
-  /**
-   * Special version of define that executes the factory as soon as all
-   * dependencies are met.
-   *
-   * define() does just that, defines a module. Module's factory will not be
-   * called until required by other module. This makes sense for most of our
-   * library modules: we do not want to execute the factory unless it's being
-   * used by someone.
-   *
-   * On the other hand there are modules, that you can call "entrance points".
-   * You want to run the "factory" method for them as soon as all dependencies
-   * are met.
-   *
-   * @example
-   *
-   *   define('BaseClass', [], function() { return ... });
-   *   // ^^ factory for BaseClass was just stored in modulesMap
-   *
-   *   define('SubClass', ['BaseClass'], function() { ... });
-   *   // SubClass module is marked as ready (waiting == 0), factory is just
-   *   // stored
-   *
-   *   define('OtherClass, ['BaseClass'], function() { ... });
-   *   // OtherClass module is marked as ready (waiting == 0), factory is just
-   *   // stored
-   *
-   *   requireLazy(['SubClass', 'ChatConfig'],
-   *     function() { ... });
-   *   // ChatRunner is waiting for ChatConfig to come
-   *
-   *   define('ChatConfig', [], { foo: 'bar' });
-   *   // at this point ChatRunner is marked as ready, and its factory
-   *   // executed + all dependent factories are executed too: BaseClass,
-   *   // SubClass, ChatConfig notice that OtherClass's factory won't be
-   *   // executed unless explicitly required by someone
-   *
-   * @param {Array} dependencies
-   * @param {Object|Function} factory
-   */
-  function requireLazy(dependencies, factory, context) {
-    return define(
-      dependencies,
-      factory,
-      undefined,
-      REQUIRE_WHEN_READY,
-      context,
-      1
-    );
-  }
-
   function _uid() {
     return '__mod__' + _counter++;
   }
@@ -595,12 +557,8 @@
 
   _register('global', global);
   _register('require', require);
-  _register('requireDynamic', require);
-  _register('requireLazy', requireLazy);
 
   global.require = require;
-  global.requireDynamic = require;
-  global.requireLazy = requireLazy;
 
   require.__debug = {
     modules: modulesMap,
@@ -621,8 +579,7 @@
    * out for every module which would be a lot of extra bytes.
    */
   global.__d = function(id, deps, factory, _special, _inlineRequires) {
-    var defaultDeps = ['global', 'require', 'requireDynamic', 'requireLazy',
-                       'module', 'exports'];
+    var defaultDeps = ['global', 'require', 'module', 'exports'];
     define(id, defaultDeps.concat(deps), factory, _special || USED_AS_TRANSPORT,
            null, null, _inlineRequires);
   };

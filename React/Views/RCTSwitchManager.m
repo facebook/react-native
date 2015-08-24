@@ -20,7 +20,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTSwitch *switcher = [[RCTSwitch alloc] init];
+  RCTSwitch *switcher = [RCTSwitch new];
   [switcher addTarget:self
                action:@selector(onChange:)
      forControlEvents:UIControlEventValueChanged];

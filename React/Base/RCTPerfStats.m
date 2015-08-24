@@ -32,7 +32,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    _container = [[UIView alloc] init];
+    _container = [UIView new];
     _container.backgroundColor = [UIColor colorWithRed:0 green:0 blue:34/255.0 alpha:1];
     _container.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
   }

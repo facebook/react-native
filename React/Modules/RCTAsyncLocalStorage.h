@@ -25,6 +25,8 @@
 
 @property (nonatomic, assign) BOOL clearOnInvalidate;
 
+@property (nonatomic, readonly, getter=isValid) BOOL valid;
+
 - (void)multiGet:(NSArray *)keys callback:(RCTResponseSenderBlock)callback;
 - (void)multiSet:(NSArray *)kvPairs callback:(RCTResponseSenderBlock)callback;
 - (void)multiRemove:(NSArray *)keys callback:(RCTResponseSenderBlock)callback;

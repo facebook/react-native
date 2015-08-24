@@ -146,6 +146,11 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, readonly, getter=isLoading) BOOL loading;
 
 /**
+ * Use this to check if the bridge has been invalidated.
+ */
+@property (nonatomic, readonly, getter=isValid) BOOL valid;
+
+/**
  * The block passed in the constructor with pre-initialized modules
  */
 @property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;

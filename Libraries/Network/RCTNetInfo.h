@@ -11,7 +11,7 @@
 
 #import "RCTBridgeModule.h"
 
-@interface RCTReachability : NSObject<RCTBridgeModule>
+@interface RCTNetInfo : NSObject<RCTBridgeModule>
 
 - (instancetype)initWithHost:(NSString *)host NS_DESIGNATED_INITIALIZER;
 

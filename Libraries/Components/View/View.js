@@ -44,13 +44,6 @@ var AccessibilityTraits = [
   'pageTurn',
 ];
 
-
-// <<<<< WARNING >>>>>
-// If adding any properties to View that could change the way layout-only status
-// works on iOS, make sure to update ReactNativeViewAttributes.js and
-// RCTShadowView.m (in the -[RCTShadowView isLayoutOnly] method).
-// <<<<< WARNING >>>>>
-
 /**
  * The most fundamental component for building UI, `View` is a
  * container that supports layout with flexbox, style, some touch handling, and
@@ -100,10 +93,13 @@ var View = React.createClass({
     /**
      * Indicates to accessibility services to treat UI component like a
      * native one. Works for Android only.
+     * @platform android
      */
     accessibilityComponentType: PropTypes.oneOf([
       'none',
       'button',
+      'radiobutton_checked',
+      'radiobutton_unchecked',
     ]),
 
     /**
@@ -111,6 +107,7 @@ var View = React.createClass({
      * when this view changes. Works for Android API >= 19 only.
      * See http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion
      * for references.
+     * @platform android
      */
     accessibilityLiveRegion: PropTypes.oneOf([
       'none',
@@ -119,8 +116,32 @@ var View = React.createClass({
     ]),
 
     /**
+     * Controls how view is important for accessibility which is if it
+     * fires accessibility events and if it is reported to accessibility services
+     * that query the screen. Works for Android only.
+     * See http://developer.android.com/reference/android/R.attr.html#importantForAccessibility
+     * for references.
+     * Possible values:
+     * 'auto' - The system determines whether the view is important for accessibility -
+     *    default (recommended).
+     * 'yes' - The view is important for accessibility.
+     * 'no' - The view is not important for accessibility.
+     * 'no-hide-descendants' - The view is not important for accessibility,
+     *    nor are any of its descendant views.
+     *
+     * @platform android
+     */
+    importantForAccessibility: PropTypes.oneOf([
+      'auto',
+      'yes',
+      'no',
+      'no-hide-descendants',
+    ]),
+
+    /**
      * Provides additional traits to screen reader. By default no traits are
      * provided unless specified otherwise in element
+     * @platform ios
      */
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),

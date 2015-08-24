@@ -45,7 +45,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _sockets = [[RCTSparseArray alloc] init];
+    _sockets = [RCTSparseArray new];
   }
   return self;
 }
