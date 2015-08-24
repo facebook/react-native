@@ -26,6 +26,7 @@ describe('Bundler', function() {
   var bundler;
   var assetServer;
   var modules;
+  var ProgressBar;
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
@@ -48,6 +49,8 @@ describe('Bundler', function() {
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, '{"json":true}');
     });
+
+    ProgressBar = require('progress');
 
     assetServer = {
       getAssetData: jest.genMockFn(),
@@ -221,6 +224,8 @@ describe('Bundler', function() {
         expect(p.addAsset.mock.calls[1]).toEqual([
           imgModule
         ]);
+
+        expect(ProgressBar.prototype.tick.mock.calls.length).toEqual(modules.length);
       });
   });
 

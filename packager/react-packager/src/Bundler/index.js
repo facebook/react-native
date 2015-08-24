@@ -12,6 +12,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const Promise = require('promise');
+const ProgressBar = require('progress');
 const Cache = require('../Cache');
 const Transformer = require('../JSTransformer');
 const DependencyResolver = require('../DependencyResolver');
@@ -124,8 +125,6 @@ class Bundler {
 
   bundle(main, runModule, sourceMapUrl, isDev, platform) {
     const bundle = new Bundle(sourceMapUrl);
-
-    const transformModule = this._transformModule.bind(this, bundle);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
@@ -133,9 +132,26 @@ class Bundler {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
 
+      let bar;
+      if (process.stdout.isTTY) {
+        bar = new ProgressBar('transforming [:bar] :percent :current/:total', {
+          complete: '=',
+          incomplete: ' ',
+          width: 40,
+          total: result.dependencies.length,
+        });
+      }
+
       bundle.setMainModuleId(result.mainModuleId);
       return Promise.all(
-        result.dependencies.map(transformModule)
+        result.dependencies.map(
+          module => this._transformModule(bundle, module).then(transformed => {
+            if (bar) {
+              bar.tick();
+            }
+            return transformed;
+          })
+        )
       );
     }).then((transformedModules) => {
       Activity.endEvent(transformEventId);
