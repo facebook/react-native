@@ -86,7 +86,7 @@ CAKeyframeAnimation *RCTGIFImageWithFileURL(NSURL *URL)
   }
 
   if (![URL isFileURL]) {
-    RCTLogError(@"Loading remote image URLs synchronously is a really bad idea.");
+    RCTLogError(@"Loading a URL synchronously on the main thread will cause poor performance, try loading the URL asynchronously. Go to https://facebook.github.io/react-native/docs/image.html#network-resources");
     return nil;
   }
 
