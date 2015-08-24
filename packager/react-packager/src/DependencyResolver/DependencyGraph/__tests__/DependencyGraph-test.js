@@ -984,6 +984,46 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should ignore false requires except window.require', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            'var bar = {',
+            'require(a){return a},',
+            'import(a){return a}',
+            '}',
+            'bar.require(\'./justAFunction\')',
+            'bar.import(\'./anotherFunction\')',
+            'window.require(\'./realDependency\')',
+            'global.require(\'./realDependency2\')',
+          ].join('\n'),
+          'realDependency': '',
+          'realDependency2': ''
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+      });
+      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+          {
+            id: '/root/index.js',
+            isAsset: false,
+            isAsset_DEPRECATED: false,
+            isJSON: false,
+            isPolyfill: false,
+            path: '/root/index.js',
+            resolution: undefined,
+            dependencies: ['./realDependency', './realDependency2'],
+          }]);
+      });
+    });
+
     pit('can have multiple modules with the same name', function() {
       var root = '/root';
       fs.__setMockFilesystem({
