@@ -51,7 +51,7 @@
   _uploadProgressBlock = nil;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)cancel
 {

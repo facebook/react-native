@@ -152,7 +152,7 @@ RCT_EXPORT_MODULE()
 {
   NSDictionary *message = @{
     @"method": @"executeApplicationScript",
-    @"url": RCTNullIfNil([URL absoluteString]),
+    @"url": RCTNullIfNil(URL.absoluteString),
     @"inject": _injectedObjects,
   };
   [self sendMessage:message waitForReply:^(NSError *error, NSDictionary *reply) {

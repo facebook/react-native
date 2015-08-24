@@ -88,7 +88,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary *headers = [parts[0][@"headers"] mutableCopy];
   NSString *partContentType = result[@"contentType"];
   if (partContentType != nil) {
-    [headers setObject:partContentType forKey:@"content-type"];
+    headers[@"content-type"] = partContentType;
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
     [multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
@@ -142,7 +142,7 @@ RCT_EXPORT_MODULE()
 {
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-  request.HTTPMethod = [[RCTConvert NSString:RCTNilIfNull(query[@"method"])] uppercaseString] ?: @"GET";
+  request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
   request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
 
   NSDictionary *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
@@ -161,7 +161,7 @@ RCT_EXPORT_MODULE()
     // Gzip the request body
     if ([request.allHTTPHeaderFields[@"Content-Encoding"] isEqualToString:@"gzip"]) {
       request.HTTPBody = RCTGzipData(request.HTTPBody, -1 /* default */);
-      [request setValue:[@(request.HTTPBody.length) description] forHTTPHeaderField:@"Content-Length"];
+      [request setValue:(@(request.HTTPBody.length)).description forHTTPHeaderField:@"Content-Length"];
     }
 
     block(request);
@@ -195,7 +195,7 @@ RCT_EXPORT_MODULE()
       return NSOrderedSame;
     }
   }];
-  id<RCTURLRequestHandler> handler = [handlers lastObject];
+  id<RCTURLRequestHandler> handler = handlers.lastObject;
   if (!handler) {
     RCTLogError(@"No suitable request handler found for %@", request.URL);
   }

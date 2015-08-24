@@ -55,7 +55,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)setRecordMode:(BOOL)recordMode
 {
@@ -109,7 +109,7 @@ RCT_NOT_IMPLEMENTED(-init)
   [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
-  while ([date timeIntervalSinceNow] > 0 && testModule.status == RCTTestStatusPending && error == nil) {
+  while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && error == nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }

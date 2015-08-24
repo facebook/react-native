@@ -731,7 +731,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
     }
   }
 
-  NSArray *sortedIndices = [[destinationsToChildrenToAdd allKeys] sortedArrayUsingSelector:@selector(compare:)];
+  NSArray *sortedIndices = [destinationsToChildrenToAdd.allKeys sortedArrayUsingSelector:@selector(compare:)];
   for (NSNumber *reactIndex in sortedIndices) {
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex] atIndex:reactIndex.integerValue];
   }
@@ -760,7 +760,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     id<RCTComponent> view = [componentData createViewWithTag:reactTag];
     if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
-      [(UIView *)view setBackgroundColor:backgroundColor];
+      ((UIView *)view).backgroundColor = backgroundColor;
     }
     [componentData setProps:props forView:view];
     if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
@@ -810,7 +810,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
     CGRect frame = [target convertRect:target.bounds toView:view];
 
     while (target.reactTag == nil && target.superview != nil) {
-      target = [target superview];
+      target = target.superview;
     }
 
     callback(@[
@@ -858,7 +858,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   }
 
   RCTProfileEndEvent(0, @"uimanager", @{
-    @"view_count": @([_viewRegistry count]),
+    @"view_count": @(_viewRegistry.count),
   });
   [self flushUIBlocks];
 }
@@ -1005,7 +1005,7 @@ RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
     return;
   }
   NSArray *childShadowViews = [shadowView reactSubviews];
-  NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:[childShadowViews count]];
+  NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:childShadowViews.count];
 
   [childShadowViews enumerateObjectsUsingBlock:
    ^(RCTShadowView *childShadowView, NSUInteger idx, __unused BOOL *stop) {

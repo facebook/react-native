@@ -41,7 +41,7 @@
 
 @property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
 
-- (instancetype)initWithJSContext:(JSGlobalContextRef)context;
+- (instancetype)initWithJSContext:(JSGlobalContextRef)context NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -58,6 +58,8 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (BOOL)isValid
 {
@@ -195,7 +197,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
   @autoreleasepool {
     // copy thread name to pthread name
-    pthread_setname_np([[[NSThread currentThread] name] UTF8String]);
+    pthread_setname_np([NSThread currentThread].name.UTF8String);
 
     // Set up a dummy runloop source to avoid spinning
     CFRunLoopSourceContext noSpinCtx = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
@@ -204,7 +206,7 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     CFRelease(noSpinSource);
 
     // run the run loop
-    while (kCFRunLoopRunStopped != CFRunLoopRunInMode(kCFRunLoopDefaultMode, [[NSDate distantFuture] timeIntervalSinceReferenceDate], NO)) {
+    while (kCFRunLoopRunStopped != CFRunLoopRunInMode(kCFRunLoopDefaultMode, ((NSDate *)[NSDate distantFuture]).timeIntervalSinceReferenceDate, NO)) {
       RCTAssert(NO, @"not reached assertion"); // runloop spun. that's bad.
     }
   }
@@ -215,8 +217,8 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
                                                        selector:@selector(runRunLoopThread)
                                                          object:nil];
-  [javaScriptThread setName:@"com.facebook.React.JavaScript"];
-  [javaScriptThread setThreadPriority:[[NSThread mainThread] threadPriority]];
+  javaScriptThread.name = @"com.facebook.React.JavaScript";
+  javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
   [javaScriptThread start];
 
   return [self initWithJavaScriptThread:javaScriptThread globalContextRef:NULL];

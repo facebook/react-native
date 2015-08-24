@@ -25,7 +25,7 @@ static NSString *RCTCurrentAppBackgroundState()
     };
   });
 
-  return states[@([[UIApplication sharedApplication] applicationState])] ?: @"unknown";
+  return states[@([UIApplication sharedApplication].applicationState)] ?: @"unknown";
 }
 
 @implementation RCTAppState

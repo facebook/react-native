@@ -52,7 +52,7 @@
   NSLock *_lock;
 }
 
-- (id)init
+- (instancetype)init
 {
   if ((self = [super init]))
   {
@@ -103,7 +103,7 @@
 
 - (NSUInteger)count
 {
-  return [_cache count];
+  return _cache.count;
 }
 
 - (void)cleanUp:(BOOL)keepEntries
@@ -162,7 +162,7 @@
   [_lock lock];
   if (_delegateRespondsToShouldEvictObject || _delegateRespondsToWillEvictObject)
   {
-    NSArray *keys = [_cache allKeys];
+    NSArray *keys = _cache.allKeys;
     if (_delegateRespondsToShouldEvictObject)
     {
       //sort, oldest first (in case we want to use that information in our eviction test)
@@ -202,7 +202,7 @@
 - (void)resequence
 {
   //sort, oldest first
-  NSArray *entries = [[_cache allValues] sortedArrayUsingComparator:^NSComparisonResult(RCTCacheEntry *entry1, RCTCacheEntry *entry2) {
+  NSArray *entries = [_cache.allValues sortedArrayUsingComparator:^NSComparisonResult(RCTCacheEntry *entry1, RCTCacheEntry *entry2) {
     return (NSComparisonResult)MIN(1, MAX(-1, entry1.sequenceNumber - entry2.sequenceNumber));
   }];
 

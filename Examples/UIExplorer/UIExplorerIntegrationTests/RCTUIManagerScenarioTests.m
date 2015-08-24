@@ -50,7 +50,7 @@
   // Register 20 views to use in the tests
   for (NSInteger i = 1; i <= 20; i++) {
     UIView *registeredView = [UIView new];
-    [registeredView setReactTag:@(i)];
+    registeredView.reactTag = @(i);
     _uiManager.viewRegistry[i] = registeredView;
   }
 }
@@ -92,7 +92,7 @@
 
   NSArray *removeAtIndices = @[@0, @4, @8, @12, @16];
   for (NSNumber *index in removeAtIndices) {
-    NSNumber *reactTag = @([index integerValue] + 2);
+    NSNumber *reactTag = @(index.integerValue + 2);
     [removedViews addObject:_uiManager.viewRegistry[reactTag]];
   }
   for (NSInteger i = 2; i < 20; i++) {

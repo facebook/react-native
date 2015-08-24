@@ -118,7 +118,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   dispatch_group_t initModulesAndLoadSource = dispatch_group_create();
   dispatch_group_enter(initModulesAndLoadSource);
   __block NSString *sourceCode;
-  [self loadSource:^(NSError *error, NSString *source) {
+  [self loadSource:^(__unused NSError *error, NSString *source) {
     sourceCode = source;
     dispatch_group_leave(initModulesAndLoadSource);
   }];
@@ -174,7 +174,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
 
     if (error) {
-      NSArray *stack = [error userInfo][@"stack"];
+      NSArray *stack = error.userInfo[@"stack"];
       if (stack) {
         [self.redBox showErrorMessage:error.localizedDescription
                             withStack:stack];
@@ -353,7 +353,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 }
 
 
-RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
                     moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
                     launchOptions:(__unused NSDictionary *)launchOptions)
 
@@ -634,7 +634,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   }
 
   for (NSUInteger fieldIndex = RCTBridgeFieldRequestModuleIDs; fieldIndex <= RCTBridgeFieldParamss; fieldIndex++) {
-    id field = [requestsArray objectAtIndex:fieldIndex];
+    id field = requestsArray[fieldIndex];
     if (![field isKindOfClass:[NSArray class]]) {
       RCTLogError(@"Field at index %zd in buffer must be an instance of NSArray, got %@", fieldIndex, NSStringFromClass([field class]));
       return;
@@ -647,7 +647,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   NSArray *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
   NSArray *paramsArrays = requestsArray[RCTBridgeFieldParamss];
 
-  NSUInteger numRequests = [moduleIDs count];
+  NSUInteger numRequests = moduleIDs.count;
 
   if (RCT_DEBUG && (numRequests != methodIDs.count || numRequests != paramsArrays.count)) {
     RCTLogError(@"Invalid data message - all must be length: %zd", numRequests);
@@ -761,7 +761,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
     id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-    if (![observer respondsToSelector:@selector(isPaused)] || ![observer isPaused]) {
+    if (![observer respondsToSelector:@selector(isPaused)] || !observer.paused) {
       RCT_IF_DEV(NSString *name = [NSString stringWithFormat:@"[%@ didUpdateFrame:%f]", observer, displayLink.timestamp];)
       RCTProfileBeginFlowEvent();
 

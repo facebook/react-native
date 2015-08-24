@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
 
     _showDate = [NSDate date];
     if (!_window && !RCTRunningInTestEnvironment()) {
-      CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+      CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
       _window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 22)];
       _window.backgroundColor = [UIColor blackColor];
       _window.windowLevel = UIWindowLevelStatusBar + 1;
@@ -76,10 +76,10 @@ RCT_EXPORT_MODULE()
     }
 
     NSString *source;
-    if ([URL isFileURL]) {
+    if (URL.fileURL) {
       source = @"pre-bundled file";
     } else {
-      source = [NSString stringWithFormat:@"%@:%@", [URL host], [URL port]];
+      source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
     }
 
     _label.text = [NSString stringWithFormat:@"Loading from %@...", source];

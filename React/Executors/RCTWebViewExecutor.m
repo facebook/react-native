@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (id)init
+- (instancetype)init
 {
   return [self initWithWebView:nil];
 }

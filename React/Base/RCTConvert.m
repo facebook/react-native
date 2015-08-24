@@ -95,13 +95,13 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     }
 
     // Assume that it's a local path
-    path = [path stringByRemovingPercentEncoding];
+    path = path.stringByRemovingPercentEncoding;
     if ([path hasPrefix:@"~"]) {
       // Path is inside user directory
-      path = [path stringByExpandingTildeInPath];
-    } else if (![path isAbsolutePath]) {
+      path = path.stringByExpandingTildeInPath;
+    } else if (!path.absolutePath) {
       // Assume it's a resource path
-      path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:path];
+      path = [[NSBundle mainBundle].resourcePath stringByAppendingPathComponent:path];
     }
     return [NSURL fileURLWithPath:path];
   }
@@ -120,7 +120,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 + (RCTFileURL *)RCTFileURL:(id)json
 {
   NSURL *fileURL = [self NSURL:json];
-  if (![fileURL isFileURL]) {
+  if (!fileURL.fileURL) {
     RCTLogError(@"URI must be a local file, '%@' isn't.", fileURL);
     return nil;
   }
@@ -168,8 +168,8 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
     return defaultValue;
   }
   if ([json isKindOfClass:[NSNumber class]]) {
-    NSArray *allValues = [mapping allValues];
-    if ([[mapping allValues] containsObject:json] || [json isEqual:defaultValue]) {
+    NSArray *allValues = mapping.allValues;
+    if ([mapping.allValues containsObject:json] || [json isEqual:defaultValue]) {
       return json;
     }
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
@@ -195,7 +195,7 @@ NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, 
     long long result = 0;
     for (id arrayElement in json) {
       NSNumber *value = RCTConvertEnumValue(typeName, mapping, defaultValue, arrayElement);
-      result |= [value longLongValue];
+      result |= value.longLongValue;
     }
     return @(result);
   }
@@ -582,7 +582,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     if ([colorString hasPrefix:@"#"]) {
       uint32_t redInt = 0, greenInt = 0, blueInt = 0;
       if (colorString.length == 4) { // 3 digit hex
-        sscanf([colorString UTF8String], "#%01x%01x%01x", &redInt, &greenInt, &blueInt);
+        sscanf(colorString.UTF8String, "#%01x%01x%01x", &redInt, &greenInt, &blueInt);
         // expand to 6 digit hex
         components.rgb.r = redInt / 15.0;
         components.rgb.g = greenInt / 15.0;
@@ -694,10 +694,10 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   }
 
   NSURL *URL = [self NSURL:path];
-  NSString *scheme = [URL.scheme lowercaseString];
+  NSString *scheme = URL.scheme.lowercaseString;
   if (path && [scheme isEqualToString:@"file"]) {
     if (RCT_DEBUG || [NSThread currentThread] == [NSThread mainThread]) {
-      if ([URL.path hasPrefix:[[NSBundle mainBundle] resourcePath]]) {
+      if ([URL.path hasPrefix:[NSBundle mainBundle].resourcePath]) {
         // Image may reside inside a .car file, in which case we have no choice
         // but to use +[UIImage imageNamed] - but this method isn't thread safe
         static NSMutableDictionary *XCAssetMap = nil;
@@ -722,7 +722,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
     if (!image) {
       // Attempt to load from the file system
-      if ([path pathExtension].length == 0) {
+      if (path.pathExtension.length == 0) {
         path = [path stringByAppendingPathExtension:@"png"];
       }
       image = [UIImage imageWithContentsOfFile:path];

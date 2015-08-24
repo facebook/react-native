@@ -60,7 +60,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
 
   _callbacks[RCTKeyForInstance(actionSheet)] = successCallback;
 
-  UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];
+  UIWindow *appWindow = [UIApplication sharedApplication].delegate.window;
   if (appWindow == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
@@ -81,12 +81,12 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   if (URL) {
     [items addObject:URL];
   }
-  if ([items count] == 0) {
+  if (items.count == 0) {
     failureCallback(@[@"No `url` or `message` to share"]);
     return;
   }
   UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-  UIViewController *ctrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+  UIViewController *ctrl = [UIApplication sharedApplication].delegate.window.rootViewController;
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
@@ -126,7 +126,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);
   }
 
-  [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
+  [[UIApplication sharedApplication].delegate.window makeKeyWindow];
 }
 
 #pragma mark Private

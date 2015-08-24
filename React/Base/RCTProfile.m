@@ -289,7 +289,7 @@ void RCTProfileEndEvent(
   CHECK();
 
   NSMutableArray *events = RCTProfileGetThreadEvents();
-  NSArray *event = [events lastObject];
+  NSArray *event = events.lastObject;
   [events removeLastObject];
 
   if (!event) {

@@ -170,7 +170,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
     // The 'ph://' prefix is used by FBMediaKit to differentiate between
     // assets-library. It is prepended to the local ID so that it is in the
     // form of an, NSURL which is what assets-library uses.
-    NSString *phAssetID = [imageTag substringFromIndex:[@"ph://" length]];
+    NSString *phAssetID = [imageTag substringFromIndex:@"ph://".length];
     PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[phAssetID] options:nil];
     if (results.count == 0) {
       NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", phAssetID];
@@ -179,7 +179,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
       return ^{};
     }
 
-    PHAsset *asset = [results firstObject];
+    PHAsset *asset = results.firstObject;
 
     PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
 

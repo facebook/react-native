@@ -60,7 +60,7 @@ static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
               method->_JSMethodName, issue);
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 void RCTParseObjCMethodName(NSString **, NSArray **);
 void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
@@ -154,7 +154,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
   NSMethodSignature *methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
   RCTAssert(methodSignature, @"%@ is not a recognized Objective-C method.", objCMethodName);
   NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-  [invocation setSelector:_selector];
+  invocation.selector = _selector;
   [invocation retainArguments];
   _invocation = invocation;
 
@@ -234,8 +234,8 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
           NSMethodSignature *typeSignature = [RCTConvert methodSignatureForSelector:selector];
           NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
-          [typeInvocation setSelector:selector];
-          [typeInvocation setTarget:[RCTConvert class]];
+          typeInvocation.selector = selector;
+          typeInvocation.target = [RCTConvert class];
 
           [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
             void *returnValue = malloc(typeSignature.methodReturnLength);

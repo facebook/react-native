@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"http", @"https", @"file"] containsObject:[request.URL.scheme lowercaseString]];
+  return [@[@"http", @"https", @"file"] containsObject:request.URL.scheme.lowercaseString];
 }
 
 - (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request

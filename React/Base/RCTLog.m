@@ -116,7 +116,7 @@ static RCTLogFunction RCTGetLocalLogFunction()
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
   NSArray *functionStack = threadDictionary[RCTLogFunctionStack];
-  RCTLogFunction logFunction = [functionStack lastObject];
+  RCTLogFunction logFunction = functionStack.lastObject;
   if (logFunction) {
     return logFunction;
   }
@@ -171,7 +171,7 @@ NSString *RCTFormatLog(
   [log appendFormat:@"[tid:%@]", RCTCurrentThreadName()];
 
   if (fileName) {
-    fileName = [fileName lastPathComponent];
+    fileName = fileName.lastPathComponent;
     if (lineNumber) {
       [log appendFormat:@"[%@:%@]", fileName, lineNumber];
     } else {
@@ -219,7 +219,7 @@ void _RCTLogFormat(
           NSRange addressRange = [frameSymbols rangeOfString:address];
           NSString *methodName = [frameSymbols substringFromIndex:(addressRange.location + addressRange.length + 1)];
           if (idx == 1) {
-            NSString *file = [[@(fileName) componentsSeparatedByString:@"/"] lastObject];
+            NSString *file = [@(fileName) componentsSeparatedByString:@"/"].lastObject;
             [stack addObject:@{@"methodName": methodName, @"file": file, @"lineNumber": @(lineNumber)}];
           } else {
             [stack addObject:@{@"methodName": methodName}];

@@ -22,13 +22,13 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"assets-library", @"ph"] containsObject:[request.URL.scheme lowercaseString]];
+  return [@[@"assets-library", @"ph"] containsObject:request.URL.scheme.lowercaseString];
 }
 
 - (id)sendRequest:(NSURLRequest *)request
      withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  NSString *URLString = [request.URL absoluteString];
+  NSString *URLString = request.URL.absoluteString;
 
   __block RCTImageLoaderCancellationBlock requestToken = nil;
   requestToken = [_bridge.imageLoader loadImageWithTag:URLString callback:^(NSError *error, UIImage *image) {

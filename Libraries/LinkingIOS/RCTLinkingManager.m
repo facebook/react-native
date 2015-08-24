@@ -42,7 +42,7 @@ RCT_EXPORT_MODULE()
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary *payload = @{@"url": [URL absoluteString]};
+  NSDictionary *payload = @{@"url": URL.absoluteString};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
                                                       object:self
                                                     userInfo:payload];
@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE()
 - (void)handleOpenURLNotification:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"openURL"
-                                              body:[notification userInfo]];
+                                              body:notification.userInfo];
 }
 
 RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
@@ -72,7 +72,7 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
 - (NSDictionary *)constantsToExport
 {
   NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  return @{@"initialURL": RCTNullIfNil([initialURL absoluteString])};
+  return @{@"initialURL": RCTNullIfNil(initialURL.absoluteString)};
 }
 
 @end

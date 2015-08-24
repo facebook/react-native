@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE()
 
 - (void)show
 {
-  UIView *targetView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+  UIView *targetView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
 
   targetView.frame = (CGRect){
     targetView.frame.origin,

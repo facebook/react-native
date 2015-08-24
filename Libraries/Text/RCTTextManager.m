@@ -66,12 +66,12 @@ RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
     }
 
     NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
-    for (NSInteger i = 0; i < [queue count]; i++) {
+    for (NSInteger i = 0; i < queue.count; i++) {
       RCTShadowView *shadowView = queue[i];
       RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
 
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
-        [(RCTShadowText *)shadowView setFontSizeMultiplier:self.bridge.accessibilityManager.multiplier];
+        ((RCTShadowText *)shadowView).fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
         [(RCTShadowText *)shadowView recomputeText];
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
         RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'",

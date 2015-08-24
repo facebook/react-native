@@ -60,7 +60,7 @@ static RCTAssertFunction RCTGetLocalAssertFunction()
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
   NSArray *functionStack = threadDictionary[RCTAssertFunctionStack];
-  RCTAssertFunction assertFunction = [functionStack lastObject];
+  RCTAssertFunction assertFunction = functionStack.lastObject;
   if (assertFunction) {
     return assertFunction;
   }
@@ -83,7 +83,7 @@ void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction as
 NSString *RCTCurrentThreadName(void)
 {
   NSThread *thread = [NSThread currentThread];
-  NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
+  NSString *threadName = thread.isMainThread ? @"main" : thread.name;
   if (threadName.length == 0) {
     const char *label = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
     if (label && strlen(label) > 0) {

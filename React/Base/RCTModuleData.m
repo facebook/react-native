@@ -38,13 +38,12 @@
     }
 
     // Must be done at init time due to race conditions
-    // Also, the queue setup isn't thread safe due ti static name cache
-    [self queue];
+    (void)self.queue;
   }
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init);
+RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (NSArray *)methods
 {
@@ -101,7 +100,7 @@ RCT_NOT_IMPLEMENTED(-init);
   if (!_queue) {
     BOOL implementsMethodQueue = [_instance respondsToSelector:@selector(methodQueue)];
     if (implementsMethodQueue) {
-      _queue = [_instance methodQueue];
+      _queue = _instance.methodQueue;
     }
     if (!_queue) {
 

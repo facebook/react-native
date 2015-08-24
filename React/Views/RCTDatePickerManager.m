@@ -51,7 +51,7 @@ RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 {
   NSDictionary *event = @{
     @"target": sender.reactTag,
-    @"timestamp": @([sender.date timeIntervalSince1970] * 1000.0)
+    @"timestamp": @(sender.date.timeIntervalSince1970 * 1000.0)
   };
   [self.bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
 }

@@ -29,7 +29,7 @@ NSString *RCTNormalizeInputEventName(NSString *eventName)
 static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
-    [event.viewTag intValue] |
+    event.viewTag.intValue |
     (((uint64_t)event.eventName.hash & 0xFFFF) << 32)  |
     (((uint64_t)event.coalescingKey) << 48)
   );
@@ -57,7 +57,7 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (uint16_t)coalescingKey
 {

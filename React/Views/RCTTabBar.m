@@ -44,8 +44,8 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (UIViewController *)reactViewController
 {

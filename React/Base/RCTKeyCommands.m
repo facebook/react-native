@@ -40,7 +40,7 @@ static BOOL RCTIsIOS8OrEarlier()
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (id)copyWithZone:(__unused NSZone *)zone
 {

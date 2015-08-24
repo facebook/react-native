@@ -36,15 +36,15 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setText:(NSString *)text
 {
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
   if (eventLag == 0 && ![text isEqualToString:self.text]) {
     UITextRange *selection = self.selectedTextRange;
-    [super setText:text];
+    super.text = text;
     self.selectedTextRange = selection; // maintain cursor position/selection - this is robust to out of bounds
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);

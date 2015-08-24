@@ -32,7 +32,7 @@
   UITableViewCell *_cachedMessageCell;
 }
 
-- (id)initWithFrame:(CGRect)frame
+- (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
     self.windowLevel = UIWindowLevelAlert + 1000;
@@ -89,7 +89,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dealloc
 {
@@ -99,7 +99,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (void)openStackFrameInEditor:(NSDictionary *)stackFrame
 {
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, nil) dataUsingEncoding:NSUTF8StringEncoding];
-  NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[stackFrameJSON length]];
+  NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)stackFrameJSON.length];
   NSMutableURLRequest *request = [NSMutableURLRequest new];
   request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
   request.HTTPMethod = @"POST";
@@ -135,7 +135,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   self.hidden = YES;
   [self resignFirstResponder];
-  [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
+  [[UIApplication sharedApplication].delegate.window makeKeyWindow];
 }
 
 - (void)reload
@@ -152,17 +152,17 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (NSInteger)tableView:(__unused UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return section == 0 ? 1 : [_lastStackTrace count];
+  return section == 0 ? 1 : _lastStackTrace.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if ([indexPath section] == 0) {
+  if (indexPath.section == 0) {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"msg-cell"];
     return [self reuseCell:cell forErrorMessage:_lastErrorMessage];
   }
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-  NSUInteger index = [indexPath row];
+  NSUInteger index = indexPath.row;
   NSDictionary *stackFrame = _lastStackTrace[index];
   return [self reuseCell:cell forStackFrame:stackFrame];
 }
@@ -213,7 +213,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if ([indexPath section] == 0) {
+  if (indexPath.section == 0) {
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
 
@@ -228,8 +228,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if ([indexPath section] == 1) {
-    NSUInteger row = [indexPath row];
+  if (indexPath.section == 1) {
+    NSUInteger row = indexPath.row;
     NSDictionary *stackFrame = _lastStackTrace[row];
     [self openStackFrameInEditor:stackFrame];
   }

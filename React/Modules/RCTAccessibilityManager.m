@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(didReceiveNewContentSizeCategory:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:[UIApplication sharedApplication]];
-    self.contentSizeCategory = [[UIApplication sharedApplication] preferredContentSizeCategory];
+    self.contentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
   }
   return self;
 }

@@ -66,7 +66,7 @@ static NSString *RCTGetStorageDirectory()
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    storageDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
   return storageDirectory;
@@ -390,7 +390,7 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
   if (errorOut) {
     callback(@[errorOut, (id)kCFNull]);
   } else {
-    callback(@[(id)kCFNull, [_manifest allKeys]]);
+    callback(@[(id)kCFNull, _manifest.allKeys]);
   }
 }
 

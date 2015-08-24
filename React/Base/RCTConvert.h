@@ -80,10 +80,10 @@ typedef NSURL RCTFileURL;
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
 + (UIColor *)UIColor:(id)json;
-+ (CGColorRef)CGColor:(id)json;
++ (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
 + (UIImage *)UIImage:(id)json;
-+ (CGImageRef)CGImage:(id)json;
++ (CGImageRef)CGImage:(id)json CF_RETURNS_NOT_RETAINED;
 
 + (UIFont *)UIFont:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;

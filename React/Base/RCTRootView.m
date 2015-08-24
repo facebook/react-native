@@ -44,7 +44,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 @property (nonatomic, readonly) BOOL contentHasAppeared;
 
-- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
+- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -104,8 +104,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
@@ -237,7 +237,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
+  if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
     [self setUp];
     self.frame = frame;
@@ -245,6 +245,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 
 - (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
 {

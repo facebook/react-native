@@ -56,7 +56,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (uint16_t)coalescingKey
 {
@@ -266,7 +266,7 @@ RCT_NOT_IMPLEMENTED(-init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
-  [super setContentOffset:contentOffset];
+  super.contentOffset = contentOffset;
 }
 
 - (void)dockClosestSectionHeader
@@ -354,10 +354,6 @@ RCT_NOT_IMPLEMENTED(-init)
 
 @end
 
-@interface RCTScrollView (Private)
-- (NSArray *)calculateChildFramesData;
-@end
-
 @implementation RCTScrollView
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -394,8 +390,8 @@ RCT_NOT_IMPLEMENTED(-init)
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setRemoveClippedSubviews:(__unused BOOL)removeClippedSubviews
 {
@@ -445,8 +441,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setClipsToBounds:(BOOL)clipsToBounds
 {
-  [super setClipsToBounds:clipsToBounds];
-  [_scrollView setClipsToBounds:clipsToBounds];
+  super.clipsToBounds = clipsToBounds;
+  _scrollView.clipsToBounds = clipsToBounds;
 }
 
 - (void)dealloc

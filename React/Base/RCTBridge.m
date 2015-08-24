@@ -75,7 +75,7 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   if ([cls respondsToSelector:NSSelectorFromString(@"moduleName")]) {
     name = [cls valueForKey:@"moduleName"];
   }
-  if ([name length] == 0) {
+  if (name.length == 0) {
     name = NSStringFromClass(cls);
   }
   if ([name hasPrefix:@"RK"]) {
@@ -192,7 +192,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)dealloc
 {

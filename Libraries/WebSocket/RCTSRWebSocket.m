@@ -53,14 +53,14 @@ static inline void RCTSRFastLog(NSString *format, ...);
 
 @interface NSData (RCTSRWebSocket)
 
-- (NSString *)stringBySHA1ThenBase64Encoding;
+@property (nonatomic, readonly, copy) NSString *stringBySHA1ThenBase64Encoding;
 
 @end
 
 
 @interface NSString (RCTSRWebSocket)
 
-- (NSString *)stringBySHA1ThenBase64Encoding;
+@property (nonatomic, readonly, copy) NSString *stringBySHA1ThenBase64Encoding;
 
 @end
 
@@ -69,7 +69,7 @@ static inline void RCTSRFastLog(NSString *format, ...);
 
 // The origin isn't really applicable for a native application.
 // So instead, just map ws -> http and wss -> https.
-- (NSString *)RCTSR_origin;
+@property (nonatomic, readonly, copy) NSString *RCTSR_origin;
 
 @end
 
@@ -259,7 +259,7 @@ static __strong NSData *CRLFCRLF;
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 {
@@ -511,7 +511,7 @@ RCT_NOT_IMPLEMENTED(-init)
     [_outputStream setProperty:(__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL forKey:(__bridge id)kCFStreamPropertySocketSecurityLevel];
 
     // If we're using pinned certs, don't validate the certificate chain
-    if ([_urlRequest RCTSR_SSLPinnedCertificates].count) {
+    if (_urlRequest.RCTSR_SSLPinnedCertificates.count) {
       [SSLOptions setValue:@NO forKey:(__bridge id)kCFStreamSSLValidatesCertificateChain];
     }
 
@@ -998,7 +998,7 @@ static const uint8_t RCTSRPayloadLenMask   = 0x7F;
 - (void)_readFrameNew;
 {
   dispatch_async(_workQueue, ^{
-    [_currentFrameData setLength:0];
+    _currentFrameData.length = 0;
 
     _currentFrameOpcode = 0;
     _currentFrameCount = 0;
@@ -1253,7 +1253,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     [self closeWithCode:RCTSRStatusCodeMessageTooBig reason:@"Message too big"];
     return;
   }
-  uint8_t *frame_buffer = (uint8_t *)[frame mutableBytes];
+  uint8_t *frame_buffer = (uint8_t *)frame.mutableBytes;
 
   // set fin
   frame_buffer[0] = RCTSRFinMask | opcode;
@@ -1318,7 +1318,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 {
   if (_secure && !_pinnedCertFound && (eventCode == NSStreamEventHasBytesAvailable || eventCode == NSStreamEventHasSpaceAvailable)) {
 
-    NSArray *sslCerts = [_urlRequest RCTSR_SSLPinnedCertificates];
+    NSArray *sslCerts = _urlRequest.RCTSR_SSLPinnedCertificates;
     if (sslCerts) {
       SecTrustRef secTrust = (__bridge SecTrustRef)[aStream propertyForKey:(__bridge id)kCFStreamPropertySSLPeerTrust];
       if (secTrust) {
@@ -1366,11 +1366,11 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
       }
 
       case NSStreamEventErrorOccurred: {
-        RCTSRFastLog(@"NSStreamEventErrorOccurred %@ %@", aStream, [[aStream streamError] copy]);
+        RCTSRFastLog(@"NSStreamEventErrorOccurred %@ %@", aStream, [aStream.streamError copy]);
         // TODO: specify error better!
         [self _failWithError:aStream.streamError];
         _readBufferOffset = 0;
-        [_readBuffer setLength:0];
+        _readBuffer.length = 0;
         break;
 
       }
@@ -1475,7 +1475,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 {
   RCTSRIOConsumer *consumer = nil;
   if (_bufferedConsumers.count) {
-    consumer = [_bufferedConsumers lastObject];
+    consumer = _bufferedConsumers.lastObject;
     [_bufferedConsumers removeLastObject];
   } else {
     consumer = [RCTSRIOConsumer new];
@@ -1522,7 +1522,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 
 - (NSString *)RCTSR_origin;
 {
-  NSString *scheme = [self.scheme lowercaseString];
+  NSString *scheme = self.scheme.lowercaseString;
 
   if ([scheme isEqualToString:@"wss"]) {
     scheme = @"https";

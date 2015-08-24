@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     if (button.count != 1) {
       RCTLogError(@"Button definitions should have exactly one key.");
     }
-    NSString *buttonKey = [button.allKeys firstObject];
+    NSString *buttonKey = button.allKeys.firstObject;
     NSString *buttonTitle = [button[buttonKey] description];
     [alertView addButtonWithTitle:buttonTitle];
     if ([buttonKey isEqualToString: @"cancel"]) {

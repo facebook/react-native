@@ -51,7 +51,7 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
-  return [_bridge.uiManager methodQueue];
+  return _bridge.uiManager.methodQueue;
 }
 
 - (UIView *)view

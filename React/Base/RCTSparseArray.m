@@ -117,7 +117,7 @@
 
 - (NSString *)description
 {
-  return [[super description] stringByAppendingString:[_storage description]];
+  return [super.description stringByAppendingString:_storage.description];
 }
 
 @end

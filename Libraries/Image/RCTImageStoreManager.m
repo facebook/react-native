@@ -21,7 +21,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (id)init
+- (instancetype)init
 {
   if ((self = [super init])) {
 
@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
 - (NSString *)storeImage:(UIImage *)image
 {
   RCTAssertMainThread();
-  NSString *tag = [NSString stringWithFormat:@"rct-image-store://%tu", [_store count]];
+  NSString *tag = [NSString stringWithFormat:@"rct-image-store://%tu", _store.count];
   _store[tag] = image;
   return tag;
 }
@@ -101,13 +101,13 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"rct-image-store"] containsObject:[request.URL.scheme lowercaseString]];
+  return [@[@"rct-image-store"] containsObject:request.URL.scheme.lowercaseString];
 }
 
 - (id)sendRequest:(NSURLRequest *)request
      withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  NSString *imageTag = [request.URL absoluteString];
+  NSString *imageTag = request.URL.absoluteString;
   [self getImageForTag:imageTag withBlock:^(UIImage *image) {
     if (!image) {
       NSError *error = RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag]);

@@ -252,7 +252,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
   // Create event
-  CLLocation *location = [locations lastObject];
+  CLLocation *location = locations.lastObject;
   _lastLocationEvent = @{
     @"coords": @{
       @"latitude": @(location.coordinate.latitude),

@@ -145,7 +145,7 @@ RCT_EXPORT_MODULE()
   }
 
   // call timers that need to be called
-  if ([timersToCall count] > 0) {
+  if (timersToCall.count > 0) {
     [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
   }
 

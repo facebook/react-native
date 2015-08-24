@@ -60,7 +60,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithTarget:(id)target action:(SEL)action)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action)
 
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   RCTTouchEventTypeStart,
@@ -224,7 +224,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
 {
   // If gesture just recognized, send all touches to JS as if they just began.
   if (self.state == UIGestureRecognizerStateBegan) {
-    [self _updateAndDispatchTouches:[_nativeTouches set] eventName:@"topTouchStart" originatingTime:0];
+    [self _updateAndDispatchTouches:_nativeTouches.set eventName:@"topTouchStart" originatingTime:0];
 
     // We store this flag separately from `state` because after a gesture is
     // recognized, its `state` changes immediately but its action (this
