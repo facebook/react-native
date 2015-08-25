@@ -136,38 +136,6 @@ static JSValueRef RCTNoop(JSContextRef context, __unused JSObjectRef object, __u
   return JSValueMakeUndefined(context);
 }
 
-#if RCT_DEV
-
-static JSValueRef RCTConsoleProfile(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], __unused JSValueRef *exception)
-{
-  static int profileCounter = 1;
-  NSString *profileName;
-
-  if (argumentCount > 0) {
-    profileName = RCTJSValueToNSString(context, arguments[0]);
-  } else {
-    profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
-  }
-
-  id profileInfo = (id)kCFNull;
-  if (argumentCount > 1 && !JSValueIsUndefined(context, arguments[1])) {
-    profileInfo = @[RCTJSValueToNSString(context, arguments[1])];
-  }
-
-  RCTProfileBeginEvent(0, profileName, profileInfo);
-
-  return JSValueMakeUndefined(context);
-}
-
-static JSValueRef RCTConsoleProfileEnd(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, __unused size_t argumentCount, __unused const JSValueRef arguments[], __unused JSValueRef *exception)
-{
-  RCTProfileEndEvent(0, @"console", nil);
-
-  return JSValueMakeUndefined(context);
-}
-
-#endif
-
 static NSString *RCTJSValueToNSString(JSContextRef context, JSValueRef value)
 {
   JSStringRef JSString = JSValueToStringCopy(context, value, NULL);
@@ -192,6 +160,51 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, 2) : @"no details";
   return [NSError errorWithDomain:@"JS" code:1 userInfo:@{NSLocalizedDescriptionKey: errorMessage, NSLocalizedFailureReasonErrorKey: details}];
 }
+
+#if RCT_DEV
+
+static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], __unused JSValueRef *exception)
+{
+  static int profileCounter = 1;
+  NSString *profileName;
+  double tag = 0;
+
+  if (argumentCount > 0) {
+    if (JSValueIsNumber(context, arguments[0])) {
+      tag = JSValueToNumber(context, arguments[0], NULL);
+    } else {
+      profileName = RCTJSValueToNSString(context, arguments[0]);
+    }
+  } else {
+    profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
+  }
+
+  if (argumentCount > 1 && JSValueIsString(context, arguments[1])) {
+    profileName = RCTJSValueToNSString(context, arguments[1]);
+  }
+
+  if (profileName) {
+    RCTProfileBeginEvent(tag, profileName, nil);
+  }
+
+  return JSValueMakeUndefined(context);
+}
+
+static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, __unused size_t argumentCount, __unused const JSValueRef arguments[], __unused JSValueRef *exception)
+{
+  if (argumentCount > 0) {
+    JSValueRef *error = NULL;
+    double tag = JSValueToNumber(context, arguments[0], error);
+
+    if (error == NULL) {
+      RCTProfileEndEvent((uint64_t)tag, @"console", nil);
+    }
+  }
+
+  return JSValueMakeUndefined(context);
+}
+
+#endif
 
 + (void)runRunLoopThread
 {
@@ -266,8 +279,8 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
     [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
     [strongSelf _addNativeHook:RCTNoop withName:"noop"];
 #if RCT_DEV
-    [strongSelf _addNativeHook:RCTConsoleProfile withName:"consoleProfile"];
-    [strongSelf _addNativeHook:RCTConsoleProfileEnd withName:"consoleProfileEnd"];
+    [strongSelf _addNativeHook:RCTNativeTraceBeginSection withName:"nativeTraceBeginSection"];
+    [strongSelf _addNativeHook:RCTNativeTraceEndSection withName:"nativeTraceEndSection"];
 
 #if RCT_JSC_PROFILER
     void *JSCProfiler = dlopen(RCT_JSC_PROFILER_DYLIB, RTLD_NOW);

@@ -131,8 +131,8 @@ function setUpWebSockets() {
 }
 
 function setupProfile() {
-  console.profile = console.profile || GLOBAL.consoleProfile || function () {};
-  console.profileEnd = console.profileEnd || GLOBAL.consoleProfileEnd || function () {};
+  console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
+  console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
   require('BridgeProfiling').swizzleReactPerf();
 }
 
