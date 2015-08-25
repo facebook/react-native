@@ -284,6 +284,36 @@ class Bundle {
       }).join('\n'),
     ].join('\n');
   }
+
+  toJSON() {
+    if (!this._finalized) {
+      throw new Error('Cannot serialize bundle unless finalized');
+    }
+
+    return {
+      modules: this._modules,
+      assets: this._assets,
+      sourceMapUrl: this._sourceMapUrl,
+      shouldCombineSourceMaps: this._shouldCombineSourceMaps,
+      mainModuleId: this._mainModuleId,
+    };
+  }
+
+  static fromJSON(json) {
+    const bundle = new Bundle(json.sourceMapUrl);
+    bundle._mainModuleId = json.mainModuleId;
+    bundle._assets = json.assets;
+    bundle._modules = json.modules;
+    bundle._sourceMapUrl = json.sourceMapUrl;
+
+    Object.freeze(bundle._modules);
+    Object.seal(bundle._modules);
+    Object.freeze(bundle._assets);
+    Object.seal(bundle._assets);
+    bundle._finalized = true;
+
+    return bundle;
+  }
 }
 
 function generateSourceMapForVirtualModule(module) {

@@ -16,6 +16,7 @@ useGracefulFs();
 
 var Activity = require('./src/Activity');
 var Server = require('./src/Server');
+var SocketInterface = require('./src/SocketInterface');
 
 exports.middleware = function(options) {
   var server = new Server(options);
@@ -54,6 +55,40 @@ exports.getDependencies = function(options, main) {
       return r.dependencies;
     });
 };
+
+exports.createClientFor = function(options) {
+  return SocketInterface.getOrCreateSocketFor(options);
+};
+
+process.on('message', function(m) {
+  if (m && m.type && m.type === 'createSocketServer') {
+    console.log('server got ipc message', m);
+    var options = m.data.options;
+
+    // regexp doesn't naturally serialize to json.
+    options.blacklistRE = new RegExp(options.blacklistRE.source);
+
+    SocketInterface.createSocketServer(
+      m.data.sockPath,
+      m.data.options
+    ).then(
+      function() {
+        console.log('succesfully created server', m);
+        process.send({ type: 'createdServer' });
+      },
+      function(error) {
+        console.log('error creating server', error.code);
+        if (error.code === 'EADDRINUSE') {
+          // Server already listening, this may happen if multiple
+          // clients where started in quick succussion (buck).
+          process.send({ type: 'createdServer' });
+        } else {
+          throw error;
+        }
+      }
+    ).done();
+  }
+});
 
 function useGracefulFs() {
   var fs = require('fs');

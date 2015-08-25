@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
 const docblock = require('./DependencyGraph/docblock');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
@@ -127,6 +126,17 @@ class Module {
 
   isAsset_DEPRECATED() {
     return false;
+  }
+
+  toJSON() {
+    return {
+      hash: this.hash(),
+      isJSON: this.isJSON(),
+      isAsset: this.isAsset(),
+      isAsset_DEPRECATED: this.isAsset_DEPRECATED(),
+      type: this.type,
+      path: this.path,
+    };
   }
 }
 

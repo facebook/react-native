@@ -27,10 +27,6 @@ var validateOpts = declareOpts({
     type: 'array',
     default: [],
   },
-  nonPersistent: {
-    type: 'boolean',
-    default: false,
-  },
   moduleFormat: {
     type: 'string',
     default: 'haste',

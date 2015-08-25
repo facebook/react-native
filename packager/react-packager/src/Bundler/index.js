@@ -86,20 +86,17 @@ class Bundler {
 
     opts.projectRoots.forEach(verifyRootExists);
 
-    this._cache = opts.nonPersistent
-                ? new DummyCache()
-      : new Cache({
-        resetCache: opts.resetCache,
-        cacheVersion: opts.cacheVersion,
-        projectRoots: opts.projectRoots,
-        transformModulePath: opts.transformModulePath,
-      });
+    this._cache = new Cache({
+      resetCache: opts.resetCache,
+      cacheVersion: opts.cacheVersion,
+      projectRoots: opts.projectRoots,
+      transformModulePath: opts.transformModulePath,
+    });
 
     this._resolver = new DependencyResolver({
       projectRoots: opts.projectRoots,
       blacklistRE: opts.blacklistRE,
       polyfillModuleNames: opts.polyfillModuleNames,
-      nonPersistent: opts.nonPersistent,
       moduleFormat: opts.moduleFormat,
       assetRoots: opts.assetRoots,
       fileWatcher: opts.fileWatcher,
