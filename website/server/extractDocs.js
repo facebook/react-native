@@ -190,7 +190,7 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.ios.js',
   '../Libraries/CameraRoll/CameraRoll.js',
   '../Libraries/Interaction/InteractionManager.js',
-  '../Libraries/Animation/LayoutAnimation.js',
+  '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
