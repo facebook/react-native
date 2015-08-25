@@ -31,7 +31,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTMap *map = [[RCTMap alloc] init];
+  RCTMap *map = [RCTMap new];
   map.delegate = self;
   return map;
 }

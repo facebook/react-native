@@ -15,7 +15,9 @@
 #import "RCTUIManager.h"
 
 @interface RCTScrollView (Private)
+
 - (NSArray *)calculateChildFramesData;
+
 @end
 
 @implementation RCTConvert (UIScrollView)

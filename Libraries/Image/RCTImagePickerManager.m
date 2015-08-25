@@ -31,9 +31,9 @@ RCT_EXPORT_MODULE(ImagePickerIOS);
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _pickers = [[NSMutableArray alloc] init];
-    _pickerCallbacks = [[NSMutableArray alloc] init];
-    _pickerCancelCallbacks = [[NSMutableArray alloc] init];
+    _pickers = [NSMutableArray new];
+    _pickerCallbacks = [NSMutableArray new];
+    _pickerCancelCallbacks = [NSMutableArray new];
   }
   return self;
 }
@@ -53,10 +53,10 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
                   successCallback:(RCTResponseSenderBlock)callback
                   cancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
-  UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
 
-  UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+  UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
 
@@ -75,14 +75,14 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
                   successCallback:(RCTResponseSenderBlock)callback
                   cancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
-  UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
 
-  UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+  UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
-  NSMutableArray *allowedTypes = [[NSMutableArray alloc] init];
+  NSMutableArray *allowedTypes = [NSMutableArray new];
   if ([config[@"showImages"] boolValue]) {
     [allowedTypes addObject:(NSString *)kUTTypeImage];
   }
@@ -109,7 +109,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
@@ -125,7 +125,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 

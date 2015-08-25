@@ -48,8 +48,8 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 {
   if ((self = [super init])) {
     _manager = manager;
-    _viewPropBlocks = [[NSMutableDictionary alloc] init];
-    _shadowPropBlocks = [[NSMutableDictionary alloc] init];
+    _viewPropBlocks = [NSMutableDictionary new];
+    _shadowPropBlocks = [NSMutableDictionary new];
 
     _name = RCTBridgeModuleNameForClass([manager class]);
     RCTAssert(_name.length, @"Invalid moduleName '%@'", _name);
@@ -60,13 +60,13 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag
+- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag props:(NSDictionary *)props
 {
   RCTAssertMainThread();
 
-  id<RCTComponent> view = (id<RCTComponent>)[_manager view];
+  id<RCTComponent> view = (id<RCTComponent>)(props ? [_manager viewWithProps:props] : [_manager view]);
   view.reactTag = tag;
   if ([view isKindOfClass:[UIView class]]) {
     ((UIView *)view).multipleTouchEnabled = YES;
@@ -126,7 +126,7 @@ RCT_NOT_IMPLEMENTED(-init)
       NSString *key = name;
       NSArray *parts = [keyPath componentsSeparatedByString:@"."];
       if (parts) {
-        key = [parts lastObject];
+        key = parts.lastObject;
         parts = [parts subarrayWithRange:(NSRange){0, parts.count - 1}];
       }
 
@@ -135,7 +135,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
       // Get property setter
       SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                         [[key substringToIndex:1] uppercaseString],
+                                         [key substringToIndex:1].uppercaseString,
                                          [key substringFromIndex:1]]);
 
       // Build setter block
@@ -176,8 +176,8 @@ RCT_NOT_IMPLEMENTED(-init)
         default: {
 
           NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
-          [typeInvocation setSelector:type];
-          [typeInvocation setTarget:[RCTConvert class]];
+          typeInvocation.selector = type;
+          typeInvocation.target = [RCTConvert class];
 
           __block NSInvocation *sourceInvocation = nil;
           __block NSInvocation *targetInvocation = nil;
@@ -194,7 +194,7 @@ RCT_NOT_IMPLEMENTED(-init)
               if (!sourceInvocation && source) {
                 NSMethodSignature *signature = [source methodSignatureForSelector:getter];
                 sourceInvocation = [NSInvocation invocationWithMethodSignature:signature];
-                [sourceInvocation setSelector:getter];
+                sourceInvocation.selector = getter;
               }
               [sourceInvocation invokeWithTarget:source];
               [sourceInvocation getReturnValue:value];
@@ -204,7 +204,7 @@ RCT_NOT_IMPLEMENTED(-init)
             if (!targetInvocation && target) {
               NSMethodSignature *signature = [target methodSignatureForSelector:setter];
               targetInvocation = [NSInvocation invocationWithMethodSignature:signature];
-              [targetInvocation setSelector:setter];
+              targetInvocation.selector = setter;
             }
             [targetInvocation setArgument:value atIndex:2];
             [targetInvocation invokeWithTarget:target];
@@ -264,7 +264,7 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 
   if (!_defaultView) {
-    _defaultView = [self createViewWithTag:nil];
+    _defaultView = [self createViewWithTag:nil props:nil];
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
@@ -292,7 +292,7 @@ RCT_NOT_IMPLEMENTED(-init)
 - (NSDictionary *)viewConfig
 {
   Class managerClass = [_manager class];
-  NSMutableDictionary *propTypes = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *propTypes = [NSMutableDictionary new];
 
   unsigned int count = 0;
   Method *methods = class_copyMethodList(object_getClass(managerClass), &count);

@@ -29,7 +29,7 @@ NSString *RCTNormalizeInputEventName(NSString *eventName)
 static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
-    [event.viewTag intValue] |
+    event.viewTag.intValue |
     (((uint64_t)event.eventName.hash & 0xFFFF) << 32)  |
     (((uint64_t)event.coalescingKey) << 48)
   );
@@ -57,7 +57,7 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (uint16_t)coalescingKey
 {
@@ -81,7 +81,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
 @end
 
-@interface RCTEventDispatcher() <RCTBridgeModule, RCTFrameUpdateObserver>
+@interface RCTEventDispatcher() <RCTFrameUpdateObserver>
 
 @end
 
@@ -99,8 +99,8 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _eventQueue = [[NSMutableDictionary alloc] init];
-    _eventQueueLock = [[NSLock alloc] init];
+    _eventQueue = [NSMutableDictionary new];
+    _eventQueueLock = [NSLock new];
   }
   return self;
 }
@@ -176,7 +176,7 @@ RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSMutableArray *arguments = [[NSMutableArray alloc] init];
+  NSMutableArray *arguments = [NSMutableArray new];
 
   if (event.viewTag) {
     [arguments addObject:event.viewTag];
@@ -201,7 +201,7 @@ RCT_EXPORT_MODULE()
 {
   [_eventQueueLock lock];
    NSDictionary *eventQueue = _eventQueue;
-  _eventQueue = [[NSMutableDictionary alloc] init];
+  _eventQueue = [NSMutableDictionary new];
   _paused = YES;
   [_eventQueueLock unlock];
 

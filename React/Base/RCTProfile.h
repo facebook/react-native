@@ -59,36 +59,42 @@ RCT_EXTERN NSString *RCTProfileEnd(RCTBridge *);
 /**
  * Collects the initial event information for the event and returns a reference ID
  */
-RCT_EXTERN NSNumber *_RCTProfileBeginEvent(void);
+RCT_EXTERN void RCTProfileBeginEvent(uint64_t tag,
+                                     NSString *name,
+                                     NSDictionary *args);
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
  * rest of the event information. Just at this point the event will actually be
  * registered
  */
-RCT_EXTERN void _RCTProfileEndEvent(NSNumber *, NSString *, NSString *, id);
+RCT_EXTERN void RCTProfileEndEvent(uint64_t tag,
+                                   NSString *category,
+                                   NSDictionary *args);
 
 /**
- * This pair of macros implicitly handle the event ID when beginning and ending
- * an event, for both simplicity and performance reasons, this method is preferred
- *
- * NOTE: The EndEvent call has to be either, in the same scope of BeginEvent,
- * or in a sub-scope, otherwise the ID stored by BeginEvent won't be accessible
- * for EndEvent, in this case you may want to use the actual C functions.
+ * Collects the initial event information for the event and returns a reference ID
  */
-#define RCTProfileBeginEvent() \
-_Pragma("clang diagnostic push") \
-_Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSNumber *__rct_profile_id = _RCTProfileBeginEvent(); \
-_Pragma("clang diagnostic pop")
+RCT_EXTERN int RCTProfileBeginAsyncEvent(uint64_t tag,
+                                         NSString *name,
+                                         NSDictionary *args);
 
-#define RCTProfileEndEvent(name, category, args...) \
-_RCTProfileEndEvent(__rct_profile_id, name, category, args)
-
+/**
+ * The ID returned by BeginEvent should then be passed into EndEvent, with the
+ * rest of the event information. Just at this point the event will actually be
+ * registered
+ */
+RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
+                                        NSString *category,
+                                        int cookie,
+                                        NSString *name,
+                                        NSDictionary *args);
 /**
  * An event that doesn't have a duration (i.e. Notification, VSync, etc)
  */
-RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *);
+RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
+                                         NSString *name,
+                                         char scope);
 
 /**
  * Helper to profile the duration of the execution of a block. This method uses
@@ -96,11 +102,11 @@ RCT_EXTERN void RCTProfileImmediateEvent(NSString *, NSTimeInterval , NSString *
  *
  * NOTE: The block can't expect any argument
  */
-#define RCTProfileBlock(block, category, arguments) \
+#define RCTProfileBlock(block, tag, category, arguments) \
 ^{ \
-  RCTProfileBeginEvent(); \
+  RCTProfileBeginEvent(tag, @(__PRETTY_FUNCTION__), nil); \
   block(); \
-  RCTProfileEndEvent([NSString stringWithFormat:@"[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd)], category, arguments); \
+  RCTProfileEndEvent(tag, category, arguments); \
 }
 
 /**
@@ -125,11 +131,11 @@ RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
 #define RCTProfileInit(...)
 #define RCTProfileEnd(...) @""
 
-#define _RCTProfileBeginEvent(...) @0
 #define RCTProfileBeginEvent(...)
-
-#define _RCTProfileEndEvent(...)
 #define RCTProfileEndEvent(...)
+
+#define RCTProfileBeginAsyncEvent(...) 0
+#define RCTProfileEndAsyncEvent(...)
 
 #define RCTProfileImmediateEvent(...)
 

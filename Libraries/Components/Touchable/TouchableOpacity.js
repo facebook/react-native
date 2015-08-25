@@ -23,6 +23,8 @@ var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
 var keyOf = require('keyOf');
 
+type Event = Object;
+
 /**
  * A wrapper for making views respond properly to touches.
  * On press down, the opacity of the wrapped view is decreased, dimming it.
@@ -77,9 +79,6 @@ var TouchableOpacity = React.createClass({
     ensurePositiveDelayProps(this.props);
   },
 
-  componentDidUpdate: function() {
-  },
-
   componentWillReceiveProps: function(nextProps) {
     ensurePositiveDelayProps(nextProps);
   },
@@ -95,32 +94,32 @@ var TouchableOpacity = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function() {
+  touchableHandleActivePressIn: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     this._opacityActive();
-    this.props.onPressIn && this.props.onPressIn();
+    this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function() {
+  touchableHandleActivePressOut: function(e: Event) {
     if (!this._hideTimeout) {
       this._opacityInactive();
     }
-    this.props.onPressOut && this.props.onPressOut();
+    this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function() {
+  touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._opacityActive();
     this._hideTimeout = this.setTimeout(
       this._opacityInactive,
       this.props.delayPressOut || 100
     );
-    this.props.onPress && this.props.onPress();
+    this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function() {

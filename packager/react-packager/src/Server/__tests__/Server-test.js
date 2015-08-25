@@ -8,70 +8,55 @@
  */
 'use strict';
 
-jest.setMock('worker-farm', function() { return function() {}; })
+jest.setMock('worker-farm', function() { return () => {}; })
     .dontMock('os')
     .dontMock('path')
     .dontMock('url')
-    .setMock('timers', {
-      setImmediate: function(fn) {
-        return setTimeout(fn, 0);
-      }
-    })
+    .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
     .dontMock('../')
     .setMock('chalk', { dim: function(s) { return s; } });
 
-var Promise = require('promise');
+const Promise = require('promise');
 
-describe('processRequest', function() {
+describe('processRequest', () => {
   var server;
-  var Packager;
+  var Bundler;
   var FileWatcher;
 
-  var options = {
+  const options = {
      projectRoots: ['root'],
      blacklistRE: null,
      cacheVersion: null,
      polyfillModuleNames: null
   };
 
-  var makeRequest = function(requestHandler, requrl) {
-    return new Promise(function(resolve) {
-      requestHandler(
-        { url: requrl },
-        {
-          setHeader: jest.genMockFunction(),
-          end: function(res) {
-            resolve(res);
-          }
-        },
-        {
-          next: function() {}
-        }
-      );
-    });
-  };
+  const makeRequest = (reqHandler, requrl) => new Promise(resolve =>
+    reqHandler(
+      { url: requrl },
+      {
+        setHeader: jest.genMockFunction(),
+        end: res => resolve(res),
+      },
+      { next: () => {} },
+    )
+  );
 
-  var invalidatorFunc = jest.genMockFunction();
-  var watcherFunc = jest.genMockFunction();
+  const invalidatorFunc = jest.genMockFunction();
+  const watcherFunc = jest.genMockFunction();
   var requestHandler;
   var triggerFileChange;
 
-  beforeEach(function() {
-    Packager = require('../../Packager');
+  beforeEach(() => {
+    Bundler = require('../../Bundler');
     FileWatcher = require('../../FileWatcher');
 
-    Packager.prototype.package = jest.genMockFunction().mockImpl(function() {
-      return Promise.resolve({
-        getSource: function() {
-          return 'this is the source';
-        },
-        getSourceMap: function() {
-          return 'this is the source map';
-        },
-      });
-    });
-
+    Bundler.prototype.bundle = jest.genMockFunction().mockImpl(() =>
+      Promise.resolve({
+        getSource: () => 'this is the source',
+        getSourceMap: () => 'this is the source map',
+      })
+    );
 
     FileWatcher.prototype.on = function(eventType, callback) {
       if (eventType !== 'all') {
@@ -82,130 +67,141 @@ describe('processRequest', function() {
       return this;
     };
 
-    Packager.prototype.invalidateFile = invalidatorFunc;
+    Bundler.prototype.invalidateFile = invalidatorFunc;
 
-    var Server = require('../');
+    const Server = require('../');
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
   });
 
-  pit('returns JS bundle source on request of *.bundle',function() {
+  pit('returns JS bundle source on request of *.bundle', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true'
-    ).then(function(response) {
-      expect(response).toEqual('this is the source');
-    });
+    ).then(response =>
+      expect(response).toEqual('this is the source')
+    );
   });
 
-  pit('returns JS bundle source on request of *.bundle (compat)',function() {
+  pit('returns JS bundle source on request of *.bundle (compat)', () => {
     return makeRequest(
       requestHandler,
       'mybundle.runModule.bundle'
-    ).then(function(response) {
-      expect(response).toEqual('this is the source');
-    });
+    ).then(response =>
+      expect(response).toEqual('this is the source')
+    );
   });
 
-  pit('returns sourcemap on request of *.map', function() {
+  pit('returns sourcemap on request of *.map', () => {
     return makeRequest(
       requestHandler,
       'mybundle.map?runModule=true'
-    ).then(function(response) {
-      expect(response).toEqual('"this is the source map"');
-    });
+    ).then(response =>
+      expect(response).toEqual('"this is the source map"')
+    );
   });
 
-  pit('works with .ios.js extension', function() {
+  pit('works with .ios.js extension', () => {
     return makeRequest(
       requestHandler,
       'index.ios.includeRequire.bundle'
-    ).then(function(response) {
+    ).then(response => {
       expect(response).toEqual('this is the source');
-      expect(Packager.prototype.package).toBeCalledWith(
+      expect(Bundler.prototype.bundle).toBeCalledWith(
         'index.ios.js',
         true,
         'index.ios.includeRequire.map',
-        true
+        true,
+        undefined
       );
     });
   });
 
-  pit('watches all files in projectRoot', function() {
+  pit('passes in the platform param', function() {
+    return makeRequest(
+      requestHandler,
+      'index.bundle?platform=ios'
+    ).then(function(response) {
+      expect(response).toEqual('this is the source');
+      expect(Bundler.prototype.bundle).toBeCalledWith(
+        'index.js',
+        true,
+        'index.map',
+        true,
+        'ios',
+      );
+    });
+  });
+
+  pit('watches all files in projectRoot', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true'
-    ).then(function() {
+    ).then(() => {
       expect(watcherFunc.mock.calls[0][0]).toEqual('all');
       expect(watcherFunc.mock.calls[0][1]).not.toBe(null);
     });
   });
 
-
-  describe('file changes', function() {
-    pit('invalides files in package when file is updated', function() {
+  describe('file changes', () => {
+    pit('invalides files in bundle when file is updated', () => {
       return makeRequest(
         requestHandler,
         'mybundle.bundle?runModule=true'
-      ).then(function() {
-        var onFileChange = watcherFunc.mock.calls[0][1];
+      ).then(() => {
+        const onFileChange = watcherFunc.mock.calls[0][1];
         onFileChange('all','path/file.js', options.projectRoots[0]);
         expect(invalidatorFunc.mock.calls[0][0]).toEqual('root/path/file.js');
       });
     });
 
-    pit('rebuilds the packages that contain a file when that file is changed', function() {
-      var packageFunc = jest.genMockFunction();
-      packageFunc
+    pit('rebuilds the bundles that contain a file when that file is changed', () => {
+      const bundleFunc = jest.genMockFunction();
+      bundleFunc
         .mockReturnValueOnce(
           Promise.resolve({
-            getSource: function() {
-              return 'this is the first source';
-            },
-            getSourceMap: function() {},
+            getSource: () => 'this is the first source',
+            getSourceMap: () => {},
           })
         )
         .mockReturnValue(
           Promise.resolve({
-            getSource: function() {
-              return 'this is the rebuilt source';
-            },
-            getSourceMap: function() {},
+            getSource: () => 'this is the rebuilt source',
+            getSourceMap: () => {},
           })
         );
 
-      Packager.prototype.package = packageFunc;
+      Bundler.prototype.bundle = bundleFunc;
 
-      var Server = require('../../Server');
+      const Server = require('../../Server');
       server = new Server(options);
 
       requestHandler = server.processRequest.bind(server);
 
-
       return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .then(function(response) {
+        .then(response => {
           expect(response).toEqual('this is the first source');
-          expect(packageFunc.mock.calls.length).toBe(1);
+          expect(bundleFunc.mock.calls.length).toBe(1);
           triggerFileChange('all','path/file.js', options.projectRoots[0]);
           jest.runAllTimers();
           jest.runAllTimers();
         })
-        .then(function() {
-          expect(packageFunc.mock.calls.length).toBe(2);
+        .then(() => {
+          expect(bundleFunc.mock.calls.length).toBe(2);
           return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-            .then(function(response) {
-              expect(response).toEqual('this is the rebuilt source');
-            });
+            .then(response =>
+              expect(response).toEqual('this is the rebuilt source')
+            );
         });
     });
   });
 
-  describe('/onchange endpoint', function() {
+  describe('/onchange endpoint', () => {
     var EventEmitter;
     var req;
     var res;
 
-    beforeEach(function() {
+    beforeEach(() => {
       EventEmitter = require.requireActual('events').EventEmitter;
       req = new EventEmitter();
       req.url = '/onchange';
@@ -215,14 +211,14 @@ describe('processRequest', function() {
       };
     });
 
-    it('should hold on to request and inform on change', function() {
+    it('should hold on to request and inform on change', () => {
       server.processRequest(req, res);
       triggerFileChange('all', 'path/file.js', options.projectRoots[0]);
       jest.runAllTimers();
       expect(res.end).toBeCalledWith(JSON.stringify({changed: true}));
     });
 
-    it('should not inform changes on disconnected clients', function() {
+    it('should not inform changes on disconnected clients', () => {
       server.processRequest(req, res);
       req.emit('close');
       jest.runAllTimers();
@@ -232,56 +228,52 @@ describe('processRequest', function() {
     });
   });
 
-  describe('/assets endpoint', function() {
+  describe('/assets endpoint', () => {
     var AssetServer;
-    beforeEach(function() {
+    beforeEach(() => {
       AssetServer = require('../../AssetServer');
     });
 
-    it('should serve simple case', function() {
-      var req = {
-        url: '/assets/imgs/a.png',
-      };
-      var res = {
-        end: jest.genMockFn(),
-      };
+    it('should serve simple case', () => {
+      const req = {url: '/assets/imgs/a.png'};
+      const res = {end: jest.genMockFn()};
 
-      AssetServer.prototype.get.mockImpl(function() {
-        return Promise.resolve('i am image');
-      });
+      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(res.end).toBeCalledWith('i am image');
     });
 
-    it('should return 404', function() {
+    it('should return 404', () => {
 
     });
   });
 
-  describe('buildPackage(options)', function() {
-    it('Calls the packager with the correct args', function() {
-      server.buildPackage({
+  describe('buildbundle(options)', () => {
+    it('Calls the bundler with the correct args', () => {
+      server.buildBundle({
         entryFile: 'foo file'
       });
-      expect(Packager.prototype.package).toBeCalledWith(
+      expect(Bundler.prototype.bundle).toBeCalledWith(
         'foo file',
         true,
         undefined,
-        true
+        true,
+        undefined
       );
     });
   });
 
-  describe('buildPackageFromUrl(options)', function() {
-    it('Calls the packager with the correct args', function() {
-      server.buildPackageFromUrl('/path/to/foo.bundle?dev=false&runModule=false');
-      expect(Packager.prototype.package).toBeCalledWith(
+  describe('buildBundleFromUrl(options)', () => {
+    it('Calls the bundler with the correct args', () => {
+      server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false');
+      expect(Bundler.prototype.bundle).toBeCalledWith(
         'path/to/foo.js',
         false,
         '/path/to/foo.map',
-        false
+        false,
+        undefined
       );
     });
   });

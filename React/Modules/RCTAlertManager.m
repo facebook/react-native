@@ -28,9 +28,9 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _alerts = [[NSMutableArray alloc] init];
-    _alertCallbacks = [[NSMutableArray alloc] init];
-    _alertButtonKeys = [[NSMutableArray alloc] init];
+    _alerts = [NSMutableArray new];
+    _alertCallbacks = [NSMutableArray new];
+    _alertButtonKeys = [NSMutableArray new];
   }
   return self;
 }
@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     if (button.count != 1) {
       RCTLogError(@"Button definitions should have exactly one key.");
     }
-    NSString *buttonKey = [button.allKeys firstObject];
+    NSString *buttonKey = button.allKeys.firstObject;
     NSString *buttonTitle = [button[buttonKey] description];
     [alertView addButtonWithTitle:buttonTitle];
     if ([buttonKey isEqualToString: @"cancel"]) {

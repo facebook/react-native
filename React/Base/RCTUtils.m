@@ -171,7 +171,7 @@ id RCTJSONClean(id object)
 
 NSString *RCTMD5Hash(NSString *string)
 {
-  const char *str = [string UTF8String];
+  const char *str = string.UTF8String;
   unsigned char result[CC_MD5_DIGEST_LENGTH];
   CC_MD5(str, (CC_LONG)strlen(str), result);
 

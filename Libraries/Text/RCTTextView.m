@@ -41,20 +41,31 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)updateFrames
 {
   // Adjust the insets so that they are as close as possible to single-line
-  // RCTTextField defaults
-  UIEdgeInsets adjustedInset = (UIEdgeInsets){
-    _contentInset.top - 5, _contentInset.left - 4,
-    _contentInset.bottom, _contentInset.right
-  };
-
-  [_textView setFrame:UIEdgeInsetsInsetRect(self.bounds, adjustedInset)];
-  [_placeholderView setFrame:UIEdgeInsetsInsetRect(self.bounds, adjustedInset)];
+  // RCTTextField defaults, using the system defaults of font size 17 and a
+  // height of 31 points.
+  //
+  // We apply the left inset to the frame since a negative left text-container
+  // inset mysteriously causes the text to be hidden until the text view is
+  // first focused.
+  UIEdgeInsets adjustedFrameInset = UIEdgeInsetsZero;
+  adjustedFrameInset.left = _contentInset.left - 5;
+  
+  UIEdgeInsets adjustedTextContainerInset = _contentInset;
+  adjustedTextContainerInset.top += 5;
+  adjustedTextContainerInset.left = 0;
+  
+  CGRect frame = UIEdgeInsetsInsetRect(self.bounds, adjustedFrameInset);
+  _textView.frame = frame;
+  _placeholderView.frame = frame;
+  
+  _textView.textContainerInset = adjustedTextContainerInset;
+  _placeholderView.textContainerInset = adjustedTextContainerInset;
 }
 
 - (void)updatePlaceholder
@@ -155,7 +166,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
   if (eventLag == 0 && ![text isEqualToString:_textView.text]) {
     UITextRange *selection = _textView.selectedTextRange;
-    [_textView setText:text];
+    _textView.text = text;
     [self _setPlaceholderVisibility];
     _textView.selectedTextRange = selection; // maintain cursor position/selection - this is robust to out of bounds
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {

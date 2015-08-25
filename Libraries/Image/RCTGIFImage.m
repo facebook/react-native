@@ -85,7 +85,7 @@ CAKeyframeAnimation *RCTGIFImageWithFileURL(NSURL *URL)
     return nil;
   }
 
-  if (![URL isFileURL]) {
+  if (!URL.fileURL) {
     RCTLogError(@"Loading remote image URLs synchronously is a really bad idea.");
     return nil;
   }

@@ -14,8 +14,9 @@ const stat = Promise.denodeify(fs.stat);
 const hasOwn = Object.prototype.hasOwnProperty;
 
 class Fastfs extends EventEmitter {
-  constructor(roots, fileWatcher, {ignore, crawling}) {
+  constructor(name, roots, fileWatcher, {ignore, crawling}) {
     super();
+    this._name = name;
     this._fileWatcher = fileWatcher;
     this._ignore = ignore;
     this._roots = roots.map(root => new File(root, { isDir: true }));
@@ -29,7 +30,7 @@ class Fastfs extends EventEmitter {
     );
 
     return this._crawling.then(files => {
-      const fastfsActivity = Activity.startEvent('Building in-memory fs');
+      const fastfsActivity = Activity.startEvent('Building in-memory fs for ' + this._name);
       files.forEach(filePath => {
         if (filePath.match(rootsPattern)) {
           const newFile = new File(filePath, { isDir: false });
@@ -154,7 +155,6 @@ class Fastfs extends EventEmitter {
   _add(file) {
     this._getAndAssertRoot(file.path).addChild(file);
   }
-
 
   _processFileChange(type, filePath, root, fstat) {
     const absPath = path.join(root, filePath);

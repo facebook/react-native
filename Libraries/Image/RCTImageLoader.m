@@ -85,8 +85,8 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
   }
 
   CGSize sourceSize = representation.dimensions;
-  CGRect targetRect = RCTClipRect(sourceSize, representation.scale, size, scale, resizeMode);
-  CGSize targetSize = targetRect.size;
+  CGSize targetSize = RCTTargetSize(sourceSize, representation.scale,
+                                    size, scale, resizeMode, NO);
 
   NSDictionary *options = @{
     (id)kCGImageSourceShouldAllowFloat: @YES,
@@ -103,7 +103,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 
   if (imageRef) {
     UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale
-                                   orientation:(UIImageOrientation)representation.orientation];
+                                   orientation:UIImageOrientationUp];
     CGImageRelease(imageRef);
     return image;
   }
@@ -114,7 +114,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
 - (ALAssetsLibrary *)assetsLibrary
 {
   if (!_assetsLibrary) {
-    _assetsLibrary = [[ALAssetsLibrary alloc] init];
+    _assetsLibrary = [ALAssetsLibrary new];
   }
   return _assetsLibrary;
 }
@@ -170,7 +170,7 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
     // The 'ph://' prefix is used by FBMediaKit to differentiate between
     // assets-library. It is prepended to the local ID so that it is in the
     // form of an, NSURL which is what assets-library uses.
-    NSString *phAssetID = [imageTag substringFromIndex:[@"ph://" length]];
+    NSString *phAssetID = [imageTag substringFromIndex:@"ph://".length];
     PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[phAssetID] options:nil];
     if (results.count == 0) {
       NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", phAssetID];
@@ -179,9 +179,9 @@ static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
       return ^{};
     }
 
-    PHAsset *asset = [results firstObject];
+    PHAsset *asset = results.firstObject;
 
-    PHImageRequestOptions *imageOptions = [[PHImageRequestOptions alloc] init];
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
 
     BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
     CGSize targetSize;

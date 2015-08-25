@@ -64,7 +64,7 @@ static NSString *const RCTDevMenuSettingsKey = @"RCTDevMenu";
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
@@ -125,7 +125,7 @@ RCT_EXPORT_MODULE()
                              object:nil];
 
     _defaults = [NSUserDefaults standardUserDefaults];
-    _settings = [[NSMutableDictionary alloc] init];
+    _settings = [NSMutableDictionary new];
     _extraMenuItems = [NSMutableArray array];
 
     // Delay setup until after Bridge init
@@ -210,7 +210,7 @@ RCT_EXPORT_MODULE()
     } else {
       RCTLogWarn(@"RCTSourceCode module scriptURL has not been set");
     }
-  } else if (![sourceCodeModule.scriptURL isFileURL]) {
+  } else if (!(sourceCodeModule.scriptURL).fileURL) {
     // Live reloading is disabled when running from bundled JS file
     _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:sourceCodeModule.scriptURL];
   }
@@ -221,11 +221,6 @@ RCT_EXPORT_MODULE()
     self.liveReloadEnabled = _liveReloadEnabled;
     self.executorClass = _executorClass;
   });
-}
-
-- (BOOL)isValid
-{
-  return NO;
 }
 
 - (void)dealloc
@@ -336,7 +331,7 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
-  UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  UIActionSheet *actionSheet = [UIActionSheet new];
   actionSheet.title = @"React Native: Development";
   actionSheet.delegate = self;
 
@@ -346,7 +341,7 @@ RCT_EXPORT_METHOD(show)
   }
 
   [actionSheet addButtonWithTitle:@"Cancel"];
-  actionSheet.cancelButtonIndex = [actionSheet numberOfButtons] - 1;
+  actionSheet.cancelButtonIndex = actionSheet.numberOfButtons - 1;
 
   actionSheet.actionSheetStyle = UIBarStyleBlack;
   [actionSheet showInView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
