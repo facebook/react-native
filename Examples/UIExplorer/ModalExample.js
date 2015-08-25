@@ -19,6 +19,7 @@ var React = require('react-native');
 var {
   Modal,
   StyleSheet,
+  SwitchIOS,
   Text,
   TouchableHighlight,
   View,
@@ -29,53 +30,98 @@ exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
 
-var ModalExample = React.createClass({
-  getInitialState: function() {
+var Button = React.createClass({
+  getInitialState() {
     return {
-      openModal: null,
+      active: false,
     };
   },
 
-  _closeModal: function() {
-    this.setState({openModal: null});
+  _onHighlight() {
+    this.setState({active: true});
   },
 
-  _openAnimatedModal: function() {
-    this.setState({openModal: 'animated'});
+  _onUnhighlight() {
+    this.setState({active: false});
   },
 
-  _openNotAnimatedModal: function() {
-    this.setState({openModal: 'not-animated'});
+  render() {
+    var colorStyle = {
+      color: this.state.active ? '#fff' : '#000',
+    };
+    return (
+      <TouchableHighlight
+        onHideUnderlay={this._onUnhighlight}
+        onPress={this.props.onPress}
+        onShowUnderlay={this._onHighlight}
+        style={[styles.button, this.props.style]}
+        underlayColor="#a9d9d4">
+          <Text style={[styles.buttonText, colorStyle]}>{this.props.children}</Text>
+      </TouchableHighlight>
+    );
+  }
+});
+
+var ModalExample = React.createClass({
+  getInitialState() {
+    return {
+      animated: true,
+      modalVisible: false,
+      transparent: false,
+    };
   },
 
-  render: function() {
+  _setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  },
+
+  _toggleAnimated() {
+    this.setState({animated: !this.state.animated});
+  },
+
+  _toggleTransparent() {
+    this.setState({transparent: !this.state.transparent});
+  },
+
+  render() {
+    var modalBackgroundStyle = {
+      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
+    };
+    var innerContainerTransparentStyle = this.state.transparent
+      ? {backgroundColor: '#fff', padding: 20}
+      : null;
+
     return (
       <View>
-        <Modal animated={true} visible={this.state.openModal === 'animated'}>
-          <View style={styles.container}>
-            <Text>This modal was presented with animation.</Text>
-            <TouchableHighlight underlayColor="#a9d9d4" onPress={this._closeModal}>
-              <Text>Close</Text>
-            </TouchableHighlight>
+        <Modal
+          animated={this.state.animated}
+          transparent={this.state.transparent}
+          visible={this.state.modalVisible}>
+          <View style={[styles.container, modalBackgroundStyle]}>
+            <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
+              <Text>This modal was presented {this.state.animated ? 'with' : 'without'} animation.</Text>
+              <Button
+                onPress={this._setModalVisible.bind(this, false)}
+                style={styles.modalButton}>
+                Close
+              </Button>
+            </View>
           </View>
         </Modal>
 
-        <Modal visible={this.state.openModal === 'not-animated'}>
-          <View style={styles.container}>
-            <Text>This modal was presented immediately, without animation.</Text>
-            <TouchableHighlight underlayColor="#a9d9d4" onPress={this._closeModal}>
-              <Text>Close</Text>
-            </TouchableHighlight>
-          </View>
-        </Modal>
+        <View style={styles.row}>
+          <Text style={styles.rowTitle}>Animated</Text>
+          <SwitchIOS value={this.state.animated} onValueChange={this._toggleAnimated} />
+        </View>
 
-        <TouchableHighlight underlayColor="#a9d9d4" onPress={this._openAnimatedModal}>
-          <Text>Present Animated</Text>
-        </TouchableHighlight>
+        <View style={styles.row}>
+          <Text style={styles.rowTitle}>Transparent</Text>
+          <SwitchIOS value={this.state.transparent} onValueChange={this._toggleTransparent} />
+        </View>
 
-        <TouchableHighlight underlayColor="#a9d9d4" onPress={this._openNotAnimatedModal}>
-          <Text>Present Without Animation</Text>
-        </TouchableHighlight>
+        <Button onPress={this._setModalVisible.bind(this, true)}>
+          Present
+        </Button>
       </View>
     );
   },
@@ -91,9 +137,36 @@ exports.examples = [
 
 var styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    backgroundColor: '#f5fcff',
     flex: 1,
     justifyContent: 'center',
+    padding: 20,
+  },
+  innerContainer: {
+    borderRadius: 10,
+  },
+  row: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  rowTitle: {
+    flex: 1,
+    fontWeight: 'bold',
+  },
+  button: {
+    borderRadius: 5,
+    flex: 1,
+    height: 44,
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  buttonText: {
+    fontSize: 18,
+    margin: 5,
+    textAlign: 'center',
+  },
+  modalButton: {
+    marginTop: 10,
   },
 });

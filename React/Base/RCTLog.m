@@ -16,9 +16,10 @@
 #import "RCTDefines.h"
 #import "RCTRedBox.h"
 
-@interface RCTBridge (Logging)
+@interface RCTBridge ()
 
-+ (void)logMessage:(NSString *)message level:(NSString *)level;
++ (RCTBridge *)currentBridge;
+- (void)logMessage:(NSString *)message level:(NSString *)level;
 
 @end
 
@@ -127,7 +128,7 @@ void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFunction logFunct
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
   NSMutableArray *functionStack = threadDictionary[RCTLogFunctionStack];
   if (!functionStack) {
-    functionStack = [[NSMutableArray alloc] init];
+    functionStack = [NSMutableArray new];
     threadDictionary[RCTLogFunctionStack] = functionStack;
   }
   [functionStack addObject:logFunction];
@@ -153,12 +154,12 @@ NSString *RCTFormatLog(
   NSString *message
 )
 {
-  NSMutableString *log = [[NSMutableString alloc] init];
+  NSMutableString *log = [NSMutableString new];
   if (timestamp) {
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      formatter = [[NSDateFormatter alloc] init];
+      formatter = [NSDateFormatter new];
       formatter.dateFormat = formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS ";
     });
     [log appendString:[formatter stringFromDate:timestamp]];
@@ -188,7 +189,8 @@ void _RCTLogFormat(
   RCTLogLevel level,
   const char *fileName,
   int lineNumber,
-  NSString *format, ...)
+  NSString *format, ...
+)
 {
   RCTLogFunction logFunction = RCTGetLocalLogFunction();
   BOOL log = RCT_DEBUG || (logFunction != nil);
@@ -224,11 +226,11 @@ void _RCTLogFormat(
           }
         }
       }];
-      [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
+      [[RCTBridge currentBridge].redBox showErrorMessage:message withStack:stack];
     }
 
     // Log to JS executor
-    [RCTBridge logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
+    [[RCTBridge currentBridge] logMessage:message level:level ? @(RCTLogLevels[level - 1]) : @"info"];
 
 #endif
 

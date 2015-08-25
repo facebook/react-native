@@ -13,6 +13,12 @@
 var babel = require('babel-core');
 
 function transform(srcTxt, filename, options) {
+  var plugins = [];
+
+  if (process.env.NODE_ENV === 'production') {
+    plugins = plugins.concat(['node-env-inline', 'dunderscore-dev-inline']);
+  }
+
   var result = babel.transform(srcTxt, {
     retainLines: true,
     compact: true,
@@ -35,6 +41,7 @@ function transform(srcTxt, filename, options) {
       'react',
       'regenerator',
     ],
+    plugins: plugins,
     sourceFileName: filename,
     sourceMaps: false,
     extra: options || {},

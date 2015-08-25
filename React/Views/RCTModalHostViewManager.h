@@ -9,6 +9,8 @@
 
 #import "RCTViewManager.h"
 
-@interface RCTModalHostViewManager : RCTViewManager
+#import "RCTInvalidating.h"
+
+@interface RCTModalHostViewManager : RCTViewManager <RCTInvalidating>
 
 @end

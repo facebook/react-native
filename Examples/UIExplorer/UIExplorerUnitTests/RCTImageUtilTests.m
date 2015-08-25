@@ -33,11 +33,11 @@ RCTAssertEqualPoints(a.origin, b.origin); \
 RCTAssertEqualSizes(a.size, b.size); \
 }
 
-@interface RCTClipRectTests : XCTestCase
+@interface RCTImageUtilTests : XCTestCase
 
 @end
 
-@implementation RCTClipRectTests
+@implementation RCTImageUtilTests
 
 - (void)testLandscapeSourceLandscapeTarget
 {
@@ -46,19 +46,19 @@ RCTAssertEqualSizes(a.size, b.size); \
 
   {
     CGRect expected = {CGPointZero, {100, 20}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleToFill);
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
     RCTAssertEqualRects(expected, result);
   }
 
   {
     CGRect expected = {CGPointZero, {100, 10}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleAspectFit);
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFit);
     RCTAssertEqualRects(expected, result);
   }
 
   {
     CGRect expected = {{-50, 0}, {200, 20}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleAspectFill);
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFill);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -69,20 +69,20 @@ RCTAssertEqualSizes(a.size, b.size); \
   CGSize target = {100, 20};
 
   {
-    CGRect expected = {CGPointZero, {10, 20}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleToFill);
+    CGRect expected = {CGPointZero, {100, 20}};
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
     RCTAssertEqualRects(expected, result);
   }
 
   {
     CGRect expected = {CGPointZero, {2, 20}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleAspectFit);
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFit);
     RCTAssertEqualRects(expected, result);
   }
 
   {
-    CGRect expected = {{0, -49}, {10, 100}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleAspectFill);
+    CGRect expected = {{0, -490}, {100, 1000}};
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFill);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -93,20 +93,20 @@ RCTAssertEqualSizes(a.size, b.size); \
   CGSize target = {20, 50};
 
   {
-    CGRect expected = {CGPointZero, {10, 50}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleToFill);
+    CGRect expected = {CGPointZero, {20, 50}};
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
     RCTAssertEqualRects(expected, result);
   }
 
   {
     CGRect expected = {CGPointZero, {5, 50}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleAspectFit);
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFit);
     RCTAssertEqualRects(expected, result);
   }
 
   {
-    CGRect expected = {{0, -37.5}, {10, 100}};
-    CGRect result = RCTClipRect(content, 2, target, 2, UIViewContentModeScaleAspectFill);
+    CGRect expected = {{0, -75}, {20, 200}};
+    CGRect result = RCTTargetRect(content, target, 2, UIViewContentModeScaleAspectFill);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -117,8 +117,8 @@ RCTAssertEqualSizes(a.size, b.size); \
   CGSize target = {20, 50};
 
   {
-    CGRect expected = {{0, -38}, {10, 100}};
-    CGRect result = RCTClipRect(content, 1, target, 1, UIViewContentModeScaleAspectFill);
+    CGRect expected = {{0, -75}, {20, 200}};
+    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFill);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -129,7 +129,7 @@ RCTAssertEqualSizes(a.size, b.size); \
   CGSize target = {3, 3};
 
   CGRect expected = {CGPointZero, {3, 3}};
-  CGRect result = RCTClipRect(content, 2, target, 1, UIViewContentModeScaleToFill);
+  CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
   RCTAssertEqualRects(expected, result);
 }
 
