@@ -8,7 +8,26 @@
  */
 'use strict';
 
+const mockColor = () => {
+  return {
+    bold: () => { return { }; },
+  };
+};
+
+mockColor.bold = function() {
+  return {};
+};
+
 module.exports = {
   dim: s =>  s,
-  blue: {bold: {}},
+  magenta: mockColor,
+  white: mockColor,
+  blue: mockColor,
+  yellow: mockColor,
+  green: mockColor,
+  bold: mockColor,
+  red: mockColor,
+  cyan: mockColor,
+  gray: mockColor,
+  black: mockColor,
 };

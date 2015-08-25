@@ -217,11 +217,11 @@ describe('Bundler', function() {
           {runMainModule: true}
         ]);
 
-        expect(p.addAsset.mock.calls[0]).toEqual([
+        expect(p.addAsset.mock.calls).toContain([
           imgModule_DEPRECATED
         ]);
 
-        expect(p.addAsset.mock.calls[1]).toEqual([
+        expect(p.addAsset.mock.calls).toContain([
           imgModule
         ]);
 
