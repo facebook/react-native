@@ -96,4 +96,13 @@ RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
   callback(@[@{@"app_state": _lastKnownState}]);
 }
 
+#pragma mark - RCTBridgeModule
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+     @"initialAppState" : RCTCurrentAppBackgroundState()
+   };
+}
+
 @end
