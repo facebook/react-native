@@ -51,17 +51,22 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
-  return [_bridge.uiManager methodQueue];
+  return _bridge.uiManager.methodQueue;
+}
+
+- (UIView *)viewWithProps:(NSDictionary *)props
+{
+  return [self view];
 }
 
 - (UIView *)view
 {
-  return [[RCTView alloc] init];
+  return [RCTView new];
 }
 
 - (RCTShadowView *)shadowView
 {
-  return [[RCTShadowView alloc] init];
+  return [RCTShadowView new];
 }
 
 - (NSArray *)customBubblingEventTypes
@@ -126,7 +131,7 @@ RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
 RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
-  view.layer.rasterizationScale = view.layer.shouldRasterize ? view.window.screen.scale : defaultView.layer.rasterizationScale;
+  view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
 RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
 {

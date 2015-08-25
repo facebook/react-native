@@ -40,7 +40,7 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/ Libraries/",
-    "start": "./packager/packager.sh"
+    "start": "./packager/packager.sh || true"
   },
   "bin": {
     "react-native-start": "packager/packager.sh"
@@ -49,16 +49,18 @@
     "absolute-path": "0.0.0",
     "babel": "5.8.21",
     "babel-core": "5.8.21",
+    "bser": "1.0.0",
     "chalk": "1.0.0",
     "connect": "2.8.3",
     "debug": "2.1.0",
-    "graceful-fs": "3.0.6",
+    "graceful-fs": "4.1.2",
     "image-size": "0.3.5",
     "immutable": "^3.7.4",
     "joi": "5.1.0",
     "jstransform": "11.0.1",
     "module-deps": "3.5.6",
     "optimist": "0.6.1",
+    "progress": "^1.1.8",
     "promise": "^7.0.3",
     "react-timer-mixin": "^0.13.1",
     "react-tools": "git://github.com/facebook/react#b4e74e38e43ac53af8acd62c78c9213be0194245",

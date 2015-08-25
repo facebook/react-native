@@ -24,14 +24,14 @@
   RCTTouchHandler *_touchHandler;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:coder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
-    _modalViewController = [[RCTModalHostViewController alloc] init];
+    _modalViewController = [RCTModalHostViewController new];
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
 
     __weak RCTModalHostView *weakSelf = self;
@@ -74,10 +74,28 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:coder)
   [super didMoveToSuperview];
 
   if (self.superview) {
+    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
     [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:nil];
   } else {
     [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
   }
+}
+
+- (void)invalidate
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+  });
+}
+
+- (BOOL)isTransparent
+{
+  return _modalViewController.modalPresentationStyle == UIModalPresentationCustom;
+}
+
+- (void)setTransparent:(BOOL)transparent
+{
+  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationCustom : UIModalPresentationFullScreen;
 }
 
 @end

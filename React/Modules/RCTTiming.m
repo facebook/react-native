@@ -78,7 +78,7 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _paused = YES;
-    _timers = [[RCTSparseArray alloc] init];
+    _timers = [RCTSparseArray new];
 
     for (NSString *name in @[UIApplicationWillResignActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -112,11 +112,6 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
-- (BOOL)isValid
-{
-  return _bridge != nil;
-}
-
 - (void)invalidate
 {
   [self stopTimers];
@@ -130,7 +125,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startTimers
 {
-  if (![self isValid] || _timers.count == 0) {
+  if (!_bridge || _timers.count == 0) {
     return;
   }
 
@@ -139,7 +134,7 @@ RCT_EXPORT_MODULE()
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
+  NSMutableArray *timersToCall = [NSMutableArray new];
   for (RCTTimer *timer in _timers.allObjects) {
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];
@@ -150,7 +145,7 @@ RCT_EXPORT_MODULE()
   }
 
   // call timers that need to be called
-  if ([timersToCall count] > 0) {
+  if (timersToCall.count > 0) {
     [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
   }
 

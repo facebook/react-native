@@ -11,9 +11,9 @@
 
 @class RCTBridge;
 
-typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
-  RCTJavaScriptFunctionKindNormal,
-  RCTJavaScriptFunctionKindAsync,
+typedef NS_ENUM(NSUInteger, RCTFunctionType) {
+  RCTFunctionTypeNormal,
+  RCTFunctionTypePromise,
 };
 
 typedef NS_ENUM(NSUInteger, RCTNullability) {
@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, RCTNullability) {
 @property (nonatomic, copy, readonly) NSString *JSMethodName;
 @property (nonatomic, readonly) Class moduleClass;
 @property (nonatomic, readonly) SEL selector;
-@property (nonatomic, readonly) RCTJavaScriptFunctionKind functionKind;
+@property (nonatomic, readonly) RCTFunctionType functionType;
 
 - (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName

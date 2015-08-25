@@ -21,6 +21,7 @@ var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactNativeDefaultInjection = require('ReactNativeDefaultInjection');
 var ReactNativeMount = require('ReactNativeMount');
 var ReactPropTypes = require('ReactPropTypes');
+var ReactUpdates = require('ReactUpdates');
 
 var deprecated = require('deprecated');
 var findNodeHandle = require('findNodeHandle');
@@ -94,7 +95,11 @@ var ReactNative = {
   render: render,
   unmountComponentAtNode: ReactNativeMount.unmountComponentAtNode,
 
- // Hook for JSX spread, don't use this for anything else.
+  /* eslint-disable camelcase */
+  unstable_batchedUpdates: ReactUpdates.batchedUpdates,
+  /* eslint-enable camelcase */
+
+  // Hook for JSX spread, don't use this for anything else.
   __spread: Object.assign,
 
   unmountComponentAtNodeAndRemoveContainer: ReactNativeMount.unmountComponentAtNodeAndRemoveContainer,

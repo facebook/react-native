@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(didReceiveNewContentSizeCategory:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:[UIApplication sharedApplication]];
-    self.contentSizeCategory = [[UIApplication sharedApplication] preferredContentSizeCategory];
+    self.contentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
   }
   return self;
 }
@@ -129,7 +129,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(NSDictionary *)JSMultipliers)
 {
-  NSMutableDictionary *multipliers = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *multipliers = [NSMutableDictionary new];
   for (NSString *__nonnull JSCategory in JSMultipliers) {
     NSNumber *m = JSMultipliers[JSCategory];
     NSString *UIKitCategory = [self.class UIKitCategoryFromJSCategory:JSCategory];

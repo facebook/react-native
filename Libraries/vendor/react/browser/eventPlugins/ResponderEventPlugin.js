@@ -430,9 +430,13 @@ function setResponderAndExtractTransfer(
  * @param {string} topLevelType Record from `EventConstants`.
  * @return {boolean} True if a transfer of responder could possibly occur.
  */
-function canTriggerTransfer(topLevelType, topLevelTargetID) {
+function canTriggerTransfer(topLevelType, topLevelTargetID, nativeEvent) {
   return topLevelTargetID && (
-    topLevelType === EventConstants.topLevelTypes.topScroll ||
+    // responderIgnoreScroll: We are trying to migrate away from specifically tracking native scroll
+    // events here and responderIgnoreScroll indicates we will send topTouchCancel to handle
+    // canceling touch events instead
+    (topLevelType === EventConstants.topLevelTypes.topScroll &&
+      !nativeEvent.responderIgnoreScroll) ||
     (trackedTouchCount > 0 &&
       topLevelType === EventConstants.topLevelTypes.topSelectionChange) ||
     isStartish(topLevelType) ||
@@ -509,7 +513,7 @@ var ResponderEventPlugin = {
 
     ResponderTouchHistoryStore.recordTouchTrack(topLevelType, nativeEvent, nativeEventTarget);
 
-    var extracted = canTriggerTransfer(topLevelType, topLevelTargetID) ?
+    var extracted = canTriggerTransfer(topLevelType, topLevelTargetID, nativeEvent) ?
       setResponderAndExtractTransfer(
         topLevelType,
         topLevelTargetID,

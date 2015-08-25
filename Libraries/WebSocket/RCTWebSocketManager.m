@@ -45,7 +45,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _sockets = [[RCTSparseArray alloc] init];
+    _sockets = [RCTSparseArray new];
   }
   return self;
 }
@@ -98,7 +98,7 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketFailed" body:@{
-    @"message":[error localizedDescription],
+    @"message":error.localizedDescription,
     @"id": webSocket.reactTag
   }];
 }

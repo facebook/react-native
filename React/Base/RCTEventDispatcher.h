@@ -69,7 +69,7 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
  * provides some convenience methods for generating event calls.
  */
-@interface RCTEventDispatcher : NSObject
+@interface RCTEventDispatcher : NSObject <RCTBridgeModule>
 
 /**
  * Send an application-specific event that does not relate to a specific

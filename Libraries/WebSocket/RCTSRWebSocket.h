@@ -17,14 +17,14 @@
 #import <Foundation/Foundation.h>
 #import <Security/SecCertificate.h>
 
-typedef enum {
+typedef NS_ENUM(unsigned int, RCTSRReadyState) {
     RCTSR_CONNECTING   = 0,
     RCTSR_OPEN         = 1,
     RCTSR_CLOSING      = 2,
     RCTSR_CLOSED       = 3,
-} RCTSRReadyState;
+};
 
-typedef enum RCTSRStatusCode : NSInteger {
+typedef NS_ENUM(NSInteger, RCTSRStatusCode) {
     RCTSRStatusCodeNormal = 1000,
     RCTSRStatusCodeGoingAway = 1001,
     RCTSRStatusCodeProtocolError = 1002,
@@ -35,7 +35,7 @@ typedef enum RCTSRStatusCode : NSInteger {
     RCTSRStatusCodeInvalidUTF8 = 1007,
     RCTSRStatusCodePolicyViolated = 1008,
     RCTSRStatusCodeMessageTooBig = 1009,
-} RCTSRStatusCode;
+};
 
 @class RCTSRWebSocket;
 
