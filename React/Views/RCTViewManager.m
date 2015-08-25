@@ -54,6 +54,11 @@ RCT_EXPORT_MODULE()
   return _bridge.uiManager.methodQueue;
 }
 
+- (UIView *)viewWithProps:(NSDictionary *)props
+{
+  return [self view];
+}
+
 - (UIView *)view
 {
   return [RCTView new];

@@ -758,7 +758,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   UIColor *backgroundColor = shadowView.backgroundColor;
 
   [self addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
-    id<RCTComponent> view = [componentData createViewWithTag:reactTag];
+    id<RCTComponent> view = [componentData createViewWithTag:reactTag props:props];
     if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
       ((UIView *)view).backgroundColor = backgroundColor;
     }

@@ -62,11 +62,11 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag
+- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag props:(NSDictionary *)props
 {
   RCTAssertMainThread();
 
-  id<RCTComponent> view = (id<RCTComponent>)[_manager view];
+  id<RCTComponent> view = (id<RCTComponent>)(props ? [_manager viewWithProps:props] : [_manager view]);
   view.reactTag = tag;
   if ([view isKindOfClass:[UIView class]]) {
     ((UIView *)view).multipleTouchEnabled = YES;
@@ -264,7 +264,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   if (!_defaultView) {
-    _defaultView = [self createViewWithTag:nil];
+    _defaultView = [self createViewWithTag:nil props:nil];
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
