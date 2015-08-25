@@ -84,7 +84,7 @@ class DependencyGraph {
     const allRoots = this._opts.roots.concat(this._opts.assetRoots_DEPRECATED);
     this._crawling = crawl(allRoots, {
       ignore: this._opts.ignoreFilePath,
-      exts: ['js', 'json'].concat(this._opts.assetExts),
+      exts: ['js', 'json', 'jsx'].concat(this._opts.assetExts),
       fileWatcher: this._opts.fileWatcher,
     });
     this._crawling.then((files) => Activity.endEvent(crawlActivity));

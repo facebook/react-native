@@ -81,6 +81,7 @@ function Server(options) {
       globs: [
         '**/*.js',
         '**/*.json',
+        '**/*.jsx',
       ].concat(assetGlobs),
     };
   });
