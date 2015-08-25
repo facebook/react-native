@@ -334,6 +334,8 @@ class Server {
       requestType = 'bundle';
     } else if (pathname.match(/\.map$/)) {
       requestType = 'map';
+    } else if (pathname.match(/\.assets$/)) {
+      requestType = 'assets';
     } else if (pathname.match(/^\/debug/)) {
       this._processDebugRequest(req.url, res);
       return;
@@ -371,6 +373,11 @@ class Server {
           var sourceMap = JSON.stringify(p.getSourceMap());
           res.setHeader('Content-Type', 'application/json');
           res.end(sourceMap);
+          Activity.endEvent(startReqEventId);
+        } else if (requestType === 'assets') {
+          var assetsList = JSON.stringify(p.getAssets());
+          res.setHeader('Content-Type', 'application/json');
+          res.end(assetsList);
           Activity.endEvent(startReqEventId);
         }
       },
@@ -416,7 +423,7 @@ class Server {
     // entry module name. We can safely remove these options.
     const entryFile = pathname.replace(/^\//, '').split('.').filter(part => {
       if (part === 'includeRequire' || part === 'runModule' ||
-          part === 'bundle' || part === 'map') {
+          part === 'bundle' || part === 'map' || part === 'assets') {
         return false;
       }
       return true;
