@@ -65,7 +65,7 @@ static NSString *RCTGenerateFormBoundary()
 
   parts = [formData mutableCopy];
   _callback = callback;
-  multipartBody = [[NSMutableData alloc] init];
+  multipartBody = [NSMutableData new];
   boundary = RCTGenerateFormBoundary();
 
   return [_networker processDataForHTTPQuery:parts[0] callback:^(NSError *error, NSDictionary *result) {
@@ -88,7 +88,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary *headers = [parts[0][@"headers"] mutableCopy];
   NSString *partContentType = result[@"contentType"];
   if (partContentType != nil) {
-    [headers setObject:partContentType forKey:@"content-type"];
+    headers[@"content-type"] = partContentType;
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
     [multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
@@ -132,7 +132,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _tasksByRequestID = [[NSMutableDictionary alloc] init];
+    _tasksByRequestID = [NSMutableDictionary new];
   }
   return self;
 }
@@ -140,12 +140,12 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary *)query
                                  completionBlock:(void (^)(NSURLRequest *request))block
 {
-  NSURL *URL = [RCTConvert NSURL:query[@"url"]];
+  NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-  request.HTTPMethod = [[RCTConvert NSString:query[@"method"]] uppercaseString] ?: @"GET";
+  request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
   request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
 
-  NSDictionary *data = [RCTConvert NSDictionary:query[@"data"]];
+  NSDictionary *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary *result) {
     if (error) {
       RCTLogError(@"Error processing request body: %@", error);
@@ -161,7 +161,7 @@ RCT_EXPORT_MODULE()
     // Gzip the request body
     if ([request.allHTTPHeaderFields[@"Content-Encoding"] isEqualToString:@"gzip"]) {
       request.HTTPBody = RCTGzipData(request.HTTPBody, -1 /* default */);
-      [request setValue:[@(request.HTTPBody.length) description] forHTTPHeaderField:@"Content-Length"];
+      [request setValue:(@(request.HTTPBody.length)).description forHTTPHeaderField:@"Content-Length"];
     }
 
     block(request);
@@ -195,7 +195,7 @@ RCT_EXPORT_MODULE()
       return NSOrderedSame;
     }
   }];
-  id<RCTURLRequestHandler> handler = [handlers lastObject];
+  id<RCTURLRequestHandler> handler = handlers.lastObject;
   if (!handler) {
     RCTLogError(@"No suitable request handler found for %@", request.URL);
   }
@@ -220,7 +220,7 @@ RCT_EXPORT_MODULE()
  * - @"contentType" (NSString): the content type header of the request
  *
  */
-- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary *)query callback:
+- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(nullable NSDictionary *)query callback:
 (RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary *result))callback
 {
   if (!query) {
@@ -248,7 +248,7 @@ RCT_EXPORT_MODULE()
   }
   NSDictionaryArray *formData = [RCTConvert NSDictionaryArray:query[@"formData"]];
   if (formData) {
-    RCTHTTPFormDataHelper *formDataHelper = [[RCTHTTPFormDataHelper alloc] init];
+    RCTHTTPFormDataHelper *formDataHelper = [RCTHTTPFormDataHelper new];
     formDataHelper.networker = self;
     return [formDataHelper process:formData callback:callback];
   }

@@ -115,11 +115,11 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
 
-    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager = [CLLocationManager new];
     _locationManager.distanceFilter = RCT_DEFAULT_LOCATION_ACCURACY;
     _locationManager.delegate = self;
 
-    _pendingRequests = [[NSMutableArray alloc] init];
+    _pendingRequests = [NSMutableArray new];
   }
   return self;
 }
@@ -231,7 +231,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
 
   // Create request
-  RCTLocationRequest *request = [[RCTLocationRequest alloc] init];
+  RCTLocationRequest *request = [RCTLocationRequest new];
   request.successBlock = successBlock;
   request.errorBlock = errorBlock ?: ^(NSArray *args){};
   request.options = options;
@@ -252,7 +252,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
   // Create event
-  CLLocation *location = [locations lastObject];
+  CLLocation *location = locations.lastObject;
   _lastLocationEvent = @{
     @"coords": @{
       @"latitude": @(location.coordinate.latitude),

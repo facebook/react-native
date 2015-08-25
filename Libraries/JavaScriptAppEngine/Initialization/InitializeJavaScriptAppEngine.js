@@ -59,6 +59,13 @@ function setUpRedBoxConsoleErrorHandler() {
   }
 }
 
+function setupFlowChecker() {
+  if (__DEV__) {
+    var checkFlowAtRuntime = require('checkFlowAtRuntime');
+    checkFlowAtRuntime();
+  }
+}
+
 /**
  * Sets up a set of window environment wrappers that ensure that the
  * BatchedBridge is flushed after each tick. In both the case of the
@@ -124,13 +131,14 @@ function setUpWebSockets() {
 }
 
 function setupProfile() {
-  console.profile = console.profile || GLOBAL.consoleProfile || function () {};
-  console.profileEnd = console.profileEnd || GLOBAL.consoleProfileEnd || function () {};
+  console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
+  console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
   require('BridgeProfiling').swizzleReactPerf();
 }
 
 function setUpProcessEnv() {
-  GLOBAL.process = {env: {NODE_ENV: __DEV__ ? 'development' : 'production'}};
+  GLOBAL.process = GLOBAL.process || {};
+  GLOBAL.process.env = {NODE_ENV: __DEV__ ? 'development' : 'production'};
 }
 
 setUpRedBoxErrorHandler();
@@ -143,3 +151,4 @@ setUpGeolocation();
 setUpWebSockets();
 setupProfile();
 setUpProcessEnv();
+setupFlowChecker();

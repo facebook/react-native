@@ -25,7 +25,7 @@
 		13DF61B61B67A45000EDB188 /* RCTMethodArgumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */; };
 		141FC1211B222EBB004D5FFB /* IntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 141FC1201B222EBB004D5FFB /* IntegrationTests.m */; };
 		143BC5A11B21E45C00462512 /* UIExplorerSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */; };
-		144D21241B2204C5006DB32B /* RCTClipRectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTClipRectTests.m */; };
+		144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTImageUtilTests.m */; };
 		147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
 		1497CFAC1B21F5E400C1F8F2 /* RCTAllocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */; };
 		1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */; };
@@ -54,6 +54,7 @@
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
+		83A936C81B7E0F08005B9C36 /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A936C71B7E0F08005B9C36 /* RCTConvert_UIColorTests.m */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
 /* End PBXBuildFile section */
 
@@ -191,7 +192,7 @@
 		143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		143BC5981B21E3E100462512 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerSnapshotTests.m; sourceTree = "<group>"; };
-		144D21231B2204C5006DB32B /* RCTClipRectTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTClipRectTests.m; sourceTree = "<group>"; };
+		144D21231B2204C5006DB32B /* RCTImageUtilTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageUtilTests.m; sourceTree = "<group>"; };
 		1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAllocationTests.m; sourceTree = "<group>"; };
 		1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBridgeTests.m; sourceTree = "<group>"; };
 		1497CFA61B21F5E400C1F8F2 /* RCTContextExecutorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTContextExecutorTests.m; sourceTree = "<group>"; };
@@ -216,6 +217,7 @@
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
+		83A936C71B7E0F08005B9C36 /* RCTConvert_UIColorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_UIColorTests.m; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -357,12 +359,13 @@
 				1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */,
 				1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */,
 				138D6A151B53CD440074A87E /* RCTCacheTests.m */,
-				144D21231B2204C5006DB32B /* RCTClipRectTests.m */,
 				1497CFA61B21F5E400C1F8F2 /* RCTContextExecutorTests.m */,
 				1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */,
+				83A936C71B7E0F08005B9C36 /* RCTConvert_UIColorTests.m */,
 				1497CFA81B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m */,
 				1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */,
 				1300627E1B59179B0043FE5A /* RCTGzipTests.m */,
+				144D21231B2204C5006DB32B /* RCTImageUtilTests.m */,
 				13DB03471B5D2ED500C27245 /* RCTJSONTests.m */,
 				13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */,
 				1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */,
@@ -793,7 +796,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1497CFB01B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m in Sources */,
-				144D21241B2204C5006DB32B /* RCTClipRectTests.m in Sources */,
+				144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */,
 				1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.m in Sources */,
 				1497CFB21B21F5E400C1F8F2 /* RCTSparseArrayTests.m in Sources */,
 				1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */,
@@ -805,6 +808,7 @@
 				138D6A171B53CD440074A87E /* RCTCacheTests.m in Sources */,
 				13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */,
 				1497CFAC1B21F5E400C1F8F2 /* RCTAllocationTests.m in Sources */,
+				83A936C81B7E0F08005B9C36 /* RCTConvert_UIColorTests.m in Sources */,
 				13DF61B61B67A45000EDB188 /* RCTMethodArgumentTests.m in Sources */,
 				138D6A181B53CD440074A87E /* RCTShadowViewTests.m in Sources */,
 			);

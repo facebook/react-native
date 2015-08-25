@@ -340,7 +340,7 @@ exports.examples = [
 ];
 
 var fullImage = {uri: 'http://facebook.github.io/react/img/logo_og.png'};
-var smallImage = {uri: 'http://facebook.github.io/react/img/logo_small.png'};
+var smallImage = {uri: 'http://facebook.github.io/react/img/logo_small_2x.png'};
 
 var styles = StyleSheet.create({
   base: {

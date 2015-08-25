@@ -20,7 +20,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTSlider *slider = [[RCTSlider alloc] init];
+  RCTSlider *slider = [RCTSlider new];
   [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
   [slider addTarget:self action:@selector(sliderTouchEnd:) forControlEvents:UIControlEventTouchUpInside];
   [slider addTarget:self action:@selector(sliderTouchEnd:) forControlEvents:UIControlEventTouchUpOutside];

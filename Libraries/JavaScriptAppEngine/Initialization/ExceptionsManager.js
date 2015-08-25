@@ -80,6 +80,9 @@ function installConsoleErrorReporter() {
   console.reportException = reportException;
   console.errorOriginal = console.error.bind(console);
   console.error = function reactConsoleError() {
+    // Note that when using the built-in context executor on iOS (i.e., not
+    // Chrome debugging), console.error is already stubbed out to cause a
+    // redbox via RCTNativeLoggingHook.
     console.errorOriginal.apply(null, arguments);
     if (!console.reportErrorsAsExceptions) {
       return;
@@ -88,6 +91,7 @@ function installConsoleErrorReporter() {
     if (str.slice(0, 10) === '"Warning: ') {
       // React warnings use console.error so that a stack trace is shown, but
       // we don't (currently) want these to show a redbox
+      // (Note: Logic duplicated in polyfills/console.js.)
       return;
     }
     var error: any = new Error('console.error: ' + str);

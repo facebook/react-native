@@ -19,11 +19,11 @@
   NSDictionary *_modulesByName;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
-RCT_NOT_IMPLEMENTED(-initWithCoder:aDecoder)
-RCT_NOT_IMPLEMENTED(-initWithObjects:(const id [])objects
-                    forKeys:(const id<NSCopying> [])keys
-                    count:(NSUInteger)cnt)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithObjects:(const id [])objects
+                                            forKeys:(const id<NSCopying> [])keys
+                                              count:(NSUInteger)cnt)
 
 - (instancetype)initWithDictionary:(NSDictionary *)modulesByName
 {

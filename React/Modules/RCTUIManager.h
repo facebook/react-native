@@ -20,6 +20,23 @@
  */
 RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
 
+/**
+ * Posted whenever a new root view is registered with RCTUIManager. The userInfo property
+ * will contain a RCTUIManagerRootViewKey with the registered root view.
+ */
+RCT_EXTERN NSString *const RCTUIManagerDidRegisterRootViewNotification;
+
+/**
+ * Posted whenever a root view is removed from the RCTUIManager. The userInfo property
+ * will contain a RCTUIManagerRootViewKey with the removed root view.
+ */
+RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
+
+/**
+ * Key for the root view property in the above notifications
+ */
+RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
+
 @protocol RCTScrollableProtocol;
 
 /**
@@ -27,6 +44,11 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  */
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
+/**
+ * The UIIManager has the concept of a designated "main scroll view", which is
+ * useful for apps built around a central scrolling content area (e.g. a
+ * timeline).
+ */
 @property (nonatomic, weak) id<RCTScrollableProtocol> mainScrollView;
 
 /**

@@ -51,7 +51,7 @@
   _uploadProgressBlock = nil;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)cancel
 {
@@ -101,7 +101,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if ([self validateRequestToken:requestToken]) {
     if (!_data) {
-      _data = [[NSMutableData alloc] init];
+      _data = [NSMutableData new];
     }
     [_data appendData:data];
     if (_incrementalDataBlock) {

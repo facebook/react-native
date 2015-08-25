@@ -36,16 +36,16 @@
 
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
-    _tabViews = [[NSMutableArray alloc] init];
-    _tabController = [[UITabBarController alloc] init];
+    _tabViews = [NSMutableArray new];
+    _tabController = [UITabBarController new];
     _tabController.delegate = self;
     [self addSubview:_tabController.view];
   }
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (UIViewController *)reactViewController
 {

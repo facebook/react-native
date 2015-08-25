@@ -49,7 +49,7 @@ static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
   // we do support clipsToBounds, so if that's enabled
   // we'll update the clipping
 
-  if (self.clipsToBounds && [self.subviews count] > 0) {
+  if (self.clipsToBounds && self.subviews.count > 0) {
     clipRect = [clipView convertRect:clipRect toView:self];
     clipRect = CGRectIntersection(clipRect, self.bounds);
     clipView = self;
@@ -93,7 +93,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
-    NSString *label = [subview accessibilityLabel];
+    NSString *label = subview.accessibilityLabel;
     if (label) {
       [str appendString:@" "];
       [str appendString:label];
@@ -123,13 +123,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomLeftRadius = -1;
     _borderBottomRightRadius = -1;
 
-    _backgroundColor = [super backgroundColor];
+    _backgroundColor = super.backgroundColor;
   }
 
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityLabel
 {
@@ -210,8 +210,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     baseInset.left += autoInset.left;
     baseInset.right += autoInset.right;
   }
-  [scrollView setContentInset:baseInset];
-  [scrollView setScrollIndicatorInsets:baseInset];
+  scrollView.contentInset = baseInset;
+  scrollView.scrollIndicatorInsets = baseInset;
 
   if (updateOffset) {
     // If we're adjusting the top inset, then let's also adjust the contentOffset so that the view
@@ -333,7 +333,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     return [super react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
   }
 
-  if ([_reactSubviews count] == 0) {
+  if (_reactSubviews.count == 0) {
     // Do nothing if we have no subviews
     return;
   }
@@ -405,7 +405,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
   // offscreen views. If _reactSubviews is nil, we can assume
   // that [self reactSubviews] and [self subviews] are the same
 
-  return _reactSubviews ?: [self subviews];
+  return _reactSubviews ?: self.subviews;
 }
 
 - (void)updateClippedSubviews

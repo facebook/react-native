@@ -11,6 +11,7 @@
 var path = require('path');
 var DependencyGraph = require('./DependencyGraph');
 var replacePatterns = require('./replacePatterns');
+var Polyfill = require('./Polyfill');
 var declareOpts = require('../lib/declareOpts');
 var Promise = require('promise');
 
@@ -25,10 +26,6 @@ var validateOpts = declareOpts({
   polyfillModuleNames: {
     type: 'array',
     default: [],
-  },
-  nonPersistent: {
-    type: 'boolean',
-    default: false,
   },
   moduleFormat: {
     type: 'string',
@@ -76,6 +73,10 @@ var getDependenciesValidateOpts = declareOpts({
     type: 'boolean',
     default: true,
   },
+  platform: {
+    type: 'string',
+    required: false,
+  },
 });
 
 HasteDependencyResolver.prototype.getDependencies = function(main, options) {
@@ -83,18 +84,24 @@ HasteDependencyResolver.prototype.getDependencies = function(main, options) {
 
   var depGraph = this._depGraph;
   var self = this;
-  return depGraph.load().then(
-    () => depGraph.getOrderedDependencies(main).then(
-      dependencies => {
-        const mainModuleId = dependencies[0].id;
+
+  depGraph.setup({ platform: opts.platform });
+
+  return Promise.all([
+    depGraph.getOrderedDependencies(main),
+    depGraph.getAsyncDependencies(main),
+  ]).then(
+    ([dependencies, asyncDependencies]) => dependencies[0].getName().then(
+      mainModuleId => {
         self._prependPolyfillDependencies(
           dependencies,
-          opts.dev
+          opts.dev,
         );
 
         return {
-          mainModuleId: mainModuleId,
-          dependencies: dependencies
+          mainModuleId,
+          dependencies,
+          asyncDependencies,
         };
       }
     )
@@ -118,7 +125,7 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
   ].concat(this._polyfillModuleNames);
 
   var polyfillModules = polyfillModuleNames.map(
-    (polyfillModuleName, idx) => ({
+    (polyfillModuleName, idx) => new Polyfill({
       path: polyfillModuleName,
       id: polyfillModuleName,
       dependencies: polyfillModuleNames.slice(0, idx),
@@ -130,23 +137,26 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
 };
 
 HasteDependencyResolver.prototype.wrapModule = function(module, code) {
-  if (module.isPolyfill) {
+  if (module.isPolyfill()) {
     return Promise.resolve(code);
   }
 
   const resolvedDeps = Object.create(null);
   const resolvedDepsArr = [];
 
-  return Promise.all(
-    module.dependencies.map(depName => {
-      return this._depGraph.resolveDependency(module, depName)
-        .then((dep) => dep && dep.getPlainObject().then(mod => {
-          if (mod) {
-            resolvedDeps[depName] = mod.id;
-            resolvedDepsArr.push(mod.id);
-          }
-        }));
-    })
+  return module.getDependencies().then(
+      dependencies => Promise.all(dependencies.map(
+        depName => this._depGraph.resolveDependency(module, depName)
+          .then(depModule => {
+            if (depModule) {
+              return depModule.getName().then(name => {
+                resolvedDeps[depName] = name;
+                resolvedDepsArr.push(name);
+              });
+            }
+          })
+      )
+    )
   ).then(() => {
     const relativizeCode = (codeMatch, pre, quot, depName, post) => {
       const depId = resolvedDeps[depName];
@@ -157,13 +167,15 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
       }
     };
 
-    return defineModuleCode({
-      code: code
+    return module.getName().then(
+      name => defineModuleCode({
+        code: code
         .replace(replacePatterns.IMPORT_RE, relativizeCode)
         .replace(replacePatterns.REQUIRE_RE, relativizeCode),
-      deps: JSON.stringify(resolvedDepsArr),
-      moduleName: module.id,
-    });
+        deps: JSON.stringify(resolvedDepsArr),
+        moduleName: name,
+      })
+    );
   });
 };
 
@@ -176,8 +188,7 @@ function defineModuleCode({moduleName, code, deps}) {
     `__d(`,
     `'${moduleName}',`,
     `${deps},`,
-    'function(global, require, ',
-    'requireDynamic, requireLazy, module, exports) {',
+    'function(global, require, module, exports) {',
     `  ${code}`,
     '\n});',
   ].join('');

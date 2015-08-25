@@ -47,8 +47,8 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)goForward
 {
@@ -127,11 +127,11 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   NSString *title = [_webView stringByEvaluatingJavaScriptFromString:@"document.title"];
   NSMutableDictionary *event = [[NSMutableDictionary alloc] initWithDictionary: @{
     @"target": self.reactTag,
-    @"url": url ? [url absoluteString] : @"",
+    @"url": url ? url.absoluteString : @"",
     @"loading" : @(_webView.loading),
     @"title": title,
-    @"canGoBack": @([_webView canGoBack]),
-    @"canGoForward" : @([_webView canGoForward]),
+    @"canGoBack": @(_webView.canGoBack),
+    @"canGoForward" : @(_webView.canGoForward),
   }];
 
   return event;
@@ -148,7 +148,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   if (isTopFrame) {
     NSMutableDictionary *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
-      @"url": [request.URL absoluteString],
+      @"url": (request.URL).absoluteString,
       @"navigationType": @(navigationType)
     }];
     [_eventDispatcher sendInputEventWithName:@"loadingStart" body:event];
@@ -172,7 +172,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   [event addEntriesFromDictionary: @{
     @"domain": error.domain,
     @"code": @(error.code),
-    @"description": [error localizedDescription],
+    @"description": error.localizedDescription,
   }];
   [_eventDispatcher sendInputEventWithName:@"loadingError" body:event];
 }
