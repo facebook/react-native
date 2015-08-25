@@ -116,6 +116,8 @@ RCT_EXPORT_MODULE()
 
 @implementation RCTDevLoadingView
 
++ (NSString *)moduleName { return nil; }
+
 @end
 
 #endif

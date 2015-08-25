@@ -112,6 +112,15 @@ RCT_EXPORT_MODULE()
 
 @end
 
+@implementation RCTBridge (RCTPerfStats)
+
+- (RCTPerfStats *)perfStats
+{
+  return self.modules[RCTBridgeModuleNameForClass([RCTPerfStats class])];
+}
+
+@end
+
 #else
 
 @implementation RCTPerfStats
@@ -121,13 +130,13 @@ RCT_EXPORT_MODULE()
 
 @end
 
-#endif
-
 @implementation RCTBridge (RCTPerfStats)
 
 - (RCTPerfStats *)perfStats
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTPerfStats class])];
+  return nil;
 }
 
 @end
+
+#endif

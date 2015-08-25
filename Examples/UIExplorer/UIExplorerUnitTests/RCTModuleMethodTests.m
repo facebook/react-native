@@ -15,6 +15,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "RCTBridgeModule.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
 
@@ -30,7 +31,7 @@ static BOOL RCTLogsError(void (^block)(void))
   return loggedError;
 }
 
-@interface RCTModuleMethodTests : XCTestCase
+@interface RCTModuleMethodTests : XCTestCase <RCTBridgeModule>
 
 @end
 
@@ -38,6 +39,8 @@ static BOOL RCTLogsError(void (^block)(void))
 {
   CGRect _s;
 }
+
++ (NSString *)moduleName { return nil; }
 
 - (void)doFooWithBar:(__unused NSString *)bar { }
 

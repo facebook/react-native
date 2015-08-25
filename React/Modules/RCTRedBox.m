@@ -327,6 +327,7 @@ RCT_EXPORT_MODULE()
 
 @implementation RCTRedBox
 
++ (NSString *)moduleName { return nil; }
 - (void)showError:(NSError *)message {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}

@@ -81,7 +81,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
-@interface RCTEventDispatcher() <RCTBridgeModule, RCTFrameUpdateObserver>
+@interface RCTEventDispatcher() <RCTFrameUpdateObserver>
 
 @end
 

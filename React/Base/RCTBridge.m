@@ -71,10 +71,11 @@ void RCTRegisterModule(Class moduleClass)
  */
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
-  NSString *name = nil;
-  if ([cls respondsToSelector:NSSelectorFromString(@"moduleName")]) {
-    name = [cls valueForKey:@"moduleName"];
-  }
+#if RCT_DEV
+  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)], @"Bridge module classes must conform to RCTBridgeModule");
+#endif
+
+  NSString *name = [cls moduleName];
   if (name.length == 0) {
     name = NSStringFromClass(cls);
   }

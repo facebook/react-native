@@ -794,9 +794,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   RCTProfileEndEvent(0, @"objc_call", nil);
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self.perfStats.jsGraph onTick:displayLink.timestamp];
-  });
+  RCT_IF_DEV(
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.perfStats.jsGraph onTick:displayLink.timestamp];
+    });
+  )
 }
 
 - (void)_mainThreadUpdate:(CADisplayLink *)displayLink
