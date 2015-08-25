@@ -99,6 +99,13 @@ function doFlowTypecheck(res, flowroot, next) {
             hasWarned.noConfig = true;
             console.warn(chalk.yellow('flow: ' + stderr));
           }
+          _endFlowBad(res);
+        } else if (flowError.code === 3) {
+          if (!hasWarned.timeout) {
+            hasWarned.timeout = true;
+            console.warn(chalk.yellow('flow: ' + stdout));
+          }
+          _endSkipFlow(res);
         } else {
           if (!hasWarned.brokenFlow) {
             hasWarned.brokenFlow = true;
@@ -107,8 +114,8 @@ function doFlowTypecheck(res, flowroot, next) {
               '`.\n' + 'stderr: `' + stderr + '`'
             ));
           }
+          _endFlowBad(res);
         }
-        _endFlowBad(res);
         return;
       }
     }
