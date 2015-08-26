@@ -54,13 +54,13 @@ class SocketServer {
 
     const bunser = new bser.BunserBuf();
     sock.on('data', (buf) => bunser.append(buf));
-
     bunser.on('value', (m) => this._handleMessage(sock, m));
   }
 
   _handleMessage(sock, m) {
     if (!m || !m.id || !m.data) {
       console.error('SocketServer recieved a malformed message: %j', m);
+      return;
     }
 
     debug('got request', m);
@@ -119,9 +119,38 @@ class SocketServer {
       this._dieEventually();
     }, MAX_IDLE_TIME);
   }
-}
 
-module.exports = SocketServer;
+  static listenOnServerIPCMessages() {
+    process.on('message', (message) => {
+      if (!(message && message.type && message.type === 'createSocketServer')) {
+        return;
+      }
+
+      debug('server got ipc message', message);
+
+      const {options, sockPath} = message.data;
+      // regexp doesn't naturally serialize to json.
+      options.blacklistRE = new RegExp(options.blacklistRE.source);
+
+      new SocketServer(sockPath, options).onReady().then(
+        () => {
+          debug('succesfully created server');
+          process.send({ type: 'createdServer' });
+        },
+        error => {
+          debug('error creating server', error.code);
+          if (error.code === 'EADDRINUSE') {
+            // Server already listening, this may happen if multiple
+            // clients where started in quick succussion (buck).
+            process.send({ type: 'createdServer' });
+          } else {
+            throw error;
+          }
+        }
+      ).done();
+    });
+  }
+}
 
 // TODO move this to bser code.
 function toJSON(object) {
@@ -139,3 +168,5 @@ function toJSON(object) {
 
   return object;
 }
+
+module.exports = SocketServer;
