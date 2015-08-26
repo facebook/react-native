@@ -18,7 +18,7 @@ const path = require('path');
 const tmpdir = require('os').tmpdir();
 const {spawn} = require('child_process');
 
-const CREATE_SERVER_TIMEOUT = 10000;
+const CREATE_SERVER_TIMEOUT = 30000;
 
 const SocketInterface = {
   getOrCreateSocketFor(options) {
@@ -72,7 +72,7 @@ const SocketInterface = {
         }
       );
 
-     child.unref();
+      child.unref();
 
       child.on('message', m => {
         if (m && m.type && m.type === 'createdServer') {
@@ -94,9 +94,10 @@ const SocketInterface = {
     });
   },
 
-  createSocketServer(sockPath, options) {
-    return new SocketServer(sockPath, options).onReady();
+  listenOnServerMessages() {
+    return SocketServer.listenOnServerIPCMessages();
   }
+
 };
 
 module.exports = SocketInterface;

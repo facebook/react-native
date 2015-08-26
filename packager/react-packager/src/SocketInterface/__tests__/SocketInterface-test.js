@@ -72,16 +72,4 @@ describe('SocketInterface', () => {
         });
     });
   });
-
-  describe('createSocketServer', () => {
-    pit('creates a server', () => {
-      require('../SocketServer').mockImpl((sockPath, options) => {
-        expect(sockPath).toBe('/socket');
-        expect(options).toEqual({ projectRoots: ['/root'] });
-        return { onReady: () => Promise.resolve() };
-      });
-
-      return SocketInterface.createSocketServer('/socket', { projectRoots: ['/root'] });
-    });
-  });
 });

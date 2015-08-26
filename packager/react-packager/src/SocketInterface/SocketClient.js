@@ -73,15 +73,15 @@ class SocketClient {
     const resolver = this._resolvers[message.id];
     if (!resolver) {
       throw new Error(
-        'Unrecognized message id (message already resolved or never existed'
+        'Unrecognized message id (' + message.id + ') ' +
+        'message already resolved or never existed.'
       );
     }
 
     delete this._resolvers[message.id];
 
     if (message.type === 'error') {
-      // TODO convert to an error
-      resolver.reject(message.data);
+      resolver.reject(new Error(message.data));
     } else {
       resolver.resolve(message.data);
     }
