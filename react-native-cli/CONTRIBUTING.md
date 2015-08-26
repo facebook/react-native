@@ -45,6 +45,8 @@ Now you can run sinopia by simply doing:
 Now we need to publish the two React Native packages to our local registry. To do this, we configure npm to use the new registry, unpublish any existing packages and then publish the new ones:
 
     react-native$ npm set registry http://localhost:4873/
+    # Check that it worked:
+    react-native$ npm config list
     react-native$ npm unpublish --force
     react-native$ npm publish
     react-native$ cd react-native-cli/
@@ -75,3 +77,11 @@ Both of these types of tests also run on Travis both continuously and on pull re
 
 [sinopia]: https://www.npmjs.com/package/sinopia
 [xctool]: https://github.com/facebook/xctool
+
+## Clean up
+
+To unset the npm registry, do:
+
+    $ npm config delete registry
+    # Check that it worked:
+    $ npm config list
