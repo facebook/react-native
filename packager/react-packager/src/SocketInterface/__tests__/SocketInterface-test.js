@@ -26,6 +26,17 @@ describe('SocketInterface', () => {
     pit('creates socket path by hashing options', () => {
       const fs = require('fs');
       fs.existsSync = jest.genMockFn().mockImpl(() => true);
+      fs.unlinkSync = jest.genMockFn();
+      let callback;
+
+      require('child_process').spawn.mockImpl(() => ({
+        on: (event, cb) => callback = cb,
+        send: (message) => {
+          setImmediate(() => callback({ type: 'createdServer' }));
+        },
+        unref: () => undefined,
+        disconnect: () => undefined,
+      }));
 
       // Check that given two equivelant server options, we end up with the same
       // socket path.
@@ -49,6 +60,7 @@ describe('SocketInterface', () => {
     pit('should fork a server', () => {
       const fs = require('fs');
       fs.existsSync = jest.genMockFn().mockImpl(() => false);
+      fs.unlinkSync = jest.genMockFn();
       let sockPath;
       let callback;
 
