@@ -274,6 +274,29 @@ var View = React.createClass({
      * @platform android
      */
     collapsable: PropTypes.bool,
+
+    /**
+     * Whether this view needs to rendered offscreen and composited with an alpha
+     * in order to preserve 100% correct colors and blending behavior. The default
+     * (false) falls back to drawing the component and its children with an alpha
+     * applied to the paint used to draw each element instead of rendering the full
+     * component offscreen and compositing it back with an alpha value. This default
+     * may be noticeable and undesired in the case where the View you are setting
+     * an opacity on has multiple overlapping elements (e.g. multiple overlapping
+     * Views, or text and a background).
+     *
+     * Rendering offscreen to preserve correct alpha behavior is extremely
+     * expensive and hard to debug for non-native developers, which is why it is
+     * not turned on by default. If you do need to enable this property for an
+     * animation, consider combining it with renderToHardwareTextureAndroid if the
+     * view **contents** are static (i.e. it doesn't need to be redrawn each frame).
+     * If that property is enabled, this View will be rendered off-screen once,
+     * saved in a hardware texture, and then composited onto the screen with an alpha
+     * each frame without having to switch rendering targets on the GPU.
+     *
+     * @platform android
+     */
+    needsOffscreenAlphaCompositing: PropTypes.bool,
   },
 
   render: function() {
