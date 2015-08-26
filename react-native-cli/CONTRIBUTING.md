@@ -82,6 +82,6 @@ Both of these types of tests also run on Travis both continuously and on pull re
 
 To unset the npm registry, do:
 
-    $ npm config delete registry
+    $ npm config set registry https://registry.npmjs.org/
     # Check that it worked:
     $ npm config list
