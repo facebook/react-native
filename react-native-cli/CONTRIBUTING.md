@@ -10,7 +10,7 @@ Because `react-native init` calls `npm install react-native`, simply linking you
 
     $ npm install -g sinopia
 
-Then, open `~/.config/sinopia/config.yaml` and configure it like this:
+Then, open `~/.config/sinopia/config.yaml` and configure it like this (note the `max_body_size`):
 
     storage: ./storage
     
@@ -82,6 +82,15 @@ Both of these types of tests also run on Travis both continuously and on pull re
 
 To unset the npm registry, do:
 
-    $ npm config set registry https://registry.npmjs.org/
+    $ npm set registry https://registry.npmjs.org/
     # Check that it worked:
     $ npm config list
+
+## Troubleshooting
+
+##### Message "Module version mismatch" from Sinopia
+
+This usually happens when you install a package using one version of Node and then change to a different version. This can happen when you update Node, or switch to a different version with nvm. Do:
+
+    $ npm uninstall -g sinopia
+    $ npm install -g sinopia
