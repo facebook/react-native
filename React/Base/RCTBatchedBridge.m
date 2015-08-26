@@ -407,9 +407,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (NSDictionary *)modules
 {
-  RCTAssert(!self.isValid || _modulesByName != nil, @"Bridge modules have not yet been initialized. "
-            "You may be trying to access a module too early in the startup procedure.");
-
+  if (RCT_DEBUG && self.isValid && _modulesByName == nil) {
+    RCTLogError(@"Bridge modules have not yet been initialized. You may be "
+                "trying to access a module too early in the startup procedure.");
+  }
   return _modulesByName;
 }
 
