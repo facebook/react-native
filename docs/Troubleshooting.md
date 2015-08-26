@@ -61,3 +61,27 @@ sudo chown -R $USER /usr/local/lib/node_modules
 
 ## Debugging in Chrome hangs and/or does not work well
 It is possible that one of your Chrome extensions is interacting in unexpected ways with the debugger. If you are having this issue, try disabling all of your extensions and re-enabling them one-by-one until you find the problematic extension.
+
+## Xcode Build Failures
+
+To see the exact error that is causing your build to fail, go into the Issues Navigator in the left sidebar.
+
+##### React libraries missing
+If you are using CocoaPods, verify that you have added React along with the subspecs to the `Podfile`. For example, if you were using the `<Text />`, `<Image />` and `fetch()` APIs, you would need to add these in your `Podfile`:
+```
+pod 'React', :subspecs => [
+  'RCTText',
+  'RCTImage',
+  'RCTNetwork',
+  'RCTWebSocket',
+]
+```
+Next, make sure you have run `pod install` and that a `Pods/` directory has been created in your project with React installed. CocoaPods will instruct you to use the generated `.xcworkspace` file henceforth to be able to use these installed dependencies.
+
+If you are adding React manually, make sure you have included all the relevant dependencies, like `RCTText.xcodeproj`, `RCTImage.xcodeproj` depending on the ones you are using. Next, the binaries built by these dependencies have to be linked to your app binary. Use the `Linked Frameworks and Binaries` section in the Xcode project settings. More detailed steps are here: [Linking Libraries](https://facebook.github.io/react-native/docs/linking-libraries.html#content).
+
+##### Argument list too long: recursive header expansion failed
+
+In the project's build settings, `User Search Header Paths` and `Header Search Paths` are two configs that specify where Xcode should look for `#import` header files specified in the code. For Pods, CocoaPods uses a default array of specific folders to look in. Verify that this particular config is not overwritten, and that none of the folders configured are too large. If one of the folders is a large folder, Xcode will attempt to recursively search the entire directory and throw above error at some point.
+
+To revert the `User Search Header Paths` and `Header Search Paths` build settings to their defaults set by CocoaPods - select the entry in the Build Settings panel, and hit delete. It will remove the custom override and return to the CocoaPod defaults.

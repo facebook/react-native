@@ -27,6 +27,7 @@ var warning = require('warning');
 
 var registrationNames = ReactNativeEventEmitter.registrationNames;
 var putListener = ReactNativeEventEmitter.putListener;
+var deleteListener = ReactNativeEventEmitter.deleteListener;
 var deleteAllListeners = ReactNativeEventEmitter.deleteAllListeners;
 
 type ReactNativeBaseComponentViewConfig = {
@@ -230,7 +231,11 @@ ReactNativeBaseComponent.Mixin = {
   _reconcileListenersUponUpdate: function(prevProps, nextProps) {
     for (var key in nextProps) {
       if (registrationNames[key] && (nextProps[key] !== prevProps[key])) {
-        putListener(this._rootNodeID, key, nextProps[key]);
+        if (nextProps[key]) {
+          putListener(this._rootNodeID, key, nextProps[key]);
+        } else {
+          deleteListener(this._rootNodeID, key);
+        }
       }
     }
   },
@@ -251,7 +256,14 @@ ReactNativeBaseComponent.Mixin = {
       this._currentElement.props, // next props
       this.viewConfig.validAttributes
     );
-    RCTUIManager.createView(tag, this.viewConfig.uiViewClassName, updatePayload);
+
+    var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
+    RCTUIManager.createView(
+      tag,
+      this.viewConfig.uiViewClassName,
+      nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,
+      updatePayload
+    );
 
     this._registerListenersUponCreation(this._currentElement.props);
     this.initializeChildren(

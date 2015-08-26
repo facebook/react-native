@@ -23,9 +23,11 @@
     "lint": "node linter.js Examples/",
     "start": "./packager/packager.sh"
   },
-  "dependencies": {},
+  "dependencies": {
+    "wordwrap": "^1.0.0"
+  },
   "devDependencies": {
-    "jest-cli": "0.4.5",
+    "jest-cli": "git://github.com/facebook/jest#0.5.x",
     "eslint": "0.9.2"
   }
 }

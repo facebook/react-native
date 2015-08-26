@@ -10,6 +10,8 @@
  */
 'use strict';
 
+require('regenerator/runtime');
+
 var React = require('react-native');
 
 var {
@@ -53,18 +55,18 @@ var IntegrationTestsApp = React.createClass({
       <View style={styles.container}>
         <Text style={styles.row}>
           Click on a test to run it in this shell for easier debugging and
-          development.  Run all tests in the testing envirnment with cmd+U in
+          development.  Run all tests in the testing environment with cmd+U in
           Xcode.
         </Text>
         <View style={styles.separator} />
         <ScrollView>
           {TESTS.map((test) => [
-            <TouchableOpacity onPress={() => this.setState({test})}>
-              <View style={styles.row}>
-                <Text style={styles.testName}>
-                  {test.displayName}
-                </Text>
-              </View>
+            <TouchableOpacity
+              onPress={() => this.setState({test})}
+              style={styles.row}>
+              <Text style={styles.testName}>
+                {test.displayName}
+              </Text>
             </TouchableOpacity>,
             <View style={styles.separator} />
           ])}

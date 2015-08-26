@@ -16,7 +16,6 @@
 'use strict';
 
 var React = require('react-native');
-var StyleSheet = require('StyleSheet');
 var {
   StyleSheet,
   Text,
@@ -59,19 +58,19 @@ var WebViewExample = React.createClass({
     return (
       <View style={[styles.container]}>
         <View style={[styles.addressBarRow]}>
-          <TouchableOpacity onPress={this.goBack}>
-            <View style={this.state.backButtonEnabled ? styles.navButton : styles.disabledButton}>
-              <Text>
-                 {'<'}
-              </Text>
-            </View>
+          <TouchableOpacity
+            onPress={this.goBack}
+            style={this.state.backButtonEnabled ? styles.navButton : styles.disabledButton}>
+            <Text>
+               {'<'}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={this.goForward}>
-            <View style={this.state.forwardButtonEnabled ? styles.navButton : styles.disabledButton}>
-              <Text>
-                {'>'}
-              </Text>
-            </View>
+          <TouchableOpacity
+            onPress={this.goForward}
+            style={this.state.forwardButtonEnabled ? styles.navButton : styles.disabledButton}>
+            <Text>
+              {'>'}
+            </Text>
           </TouchableOpacity>
           <TextInput
             ref={TEXT_INPUT_REF}
@@ -220,6 +219,7 @@ var styles = StyleSheet.create({
   },
 });
 
+exports.displayName = (undefined: ?string);
 exports.title = '<WebView>';
 exports.description = 'Base component to display web content';
 exports.examples = [

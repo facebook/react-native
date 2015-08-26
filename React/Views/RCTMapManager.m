@@ -15,6 +15,9 @@
 #import "RCTEventDispatcher.h"
 #import "RCTMap.h"
 #import "UIView+React.h"
+#import "RCTPointAnnotation.h"
+
+#import <MapKit/MapKit.h>
 
 static NSString *const RCTMapViewKey = @"MapView";
 
@@ -28,7 +31,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTMap *map = [[RCTMap alloc] init];
+  RCTMap *map = [RCTMap new];
   map.delegate = self;
   return map;
 }
@@ -42,13 +45,80 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
-RCT_EXPORT_VIEW_PROPERTY(annotations, MKShapeArray)
+RCT_EXPORT_VIEW_PROPERTY(annotations, RCTPointAnnotationArray)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
 
 #pragma mark MKMapViewDelegate
+
+
+
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+  if (![view.annotation isKindOfClass:[MKUserLocation class]]) {
+
+    RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
+    NSString *title = view.annotation.title ?: @"";
+    NSString *subtitle = view.annotation.subtitle ?: @"";
+
+    NSDictionary *event = @{
+                            @"target": mapView.reactTag,
+                            @"action": @"annotation-click",
+                            @"annotation": @{
+                                @"id": annotation.identifier,
+                                @"title": title,
+                                @"subtitle": subtitle,
+                                @"latitude": @(annotation.coordinate.latitude),
+                                @"longitude": @(annotation.coordinate.longitude)
+                                }
+                            };
+
+    [self.bridge.eventDispatcher sendInputEventWithName:@"press" body:event];
+  }
+}
+
+- (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
+{
+  if ([annotation isKindOfClass:[MKUserLocation class]]) {
+    return nil;
+  }
+
+  MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"RCTAnnotation"];
+
+  annotationView.canShowCallout = true;
+  annotationView.animatesDrop = annotation.animateDrop;
+
+  annotationView.leftCalloutAccessoryView = nil;
+  if (annotation.hasLeftCallout) {
+    annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  }
+
+  annotationView.rightCalloutAccessoryView = nil;
+  if (annotation.hasRightCallout) {
+    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  }
+
+  return annotationView;
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+  // Pass to js
+  RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
+  NSString *side = (control == view.leftCalloutAccessoryView) ? @"left" : @"right";
+
+  NSDictionary *event = @{
+      @"target": mapView.reactTag,
+      @"side": side,
+      @"action": @"callout-click",
+      @"annotationId": annotation.identifier
+    };
+
+  [self.bridge.eventDispatcher sendInputEventWithName:@"press" body:event];
+}
+
 
 - (void)mapView:(RCTMap *)mapView didUpdateUserLocation:(MKUserLocation *)location
 {
@@ -64,7 +134,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
-- (void)mapView:(RCTMap *)mapView regionWillChangeAnimated:(BOOL)animated
+- (void)mapView:(RCTMap *)mapView regionWillChangeAnimated:(__unused BOOL)animated
 {
   [self _regionChanged:mapView];
 
@@ -77,7 +147,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
 }
 
-- (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(BOOL)animated
+- (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(__unused BOOL)animated
 {
   [mapView.regionChangeObserveTimer invalidate];
   mapView.regionChangeObserveTimer = nil;
@@ -143,7 +213,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 #define FLUSH_NAN(value) (isnan(value) ? 0 : value)
 
   NSDictionary *event = @{
-    @"target": [mapView reactTag],
+    @"target": mapView.reactTag,
     @"continuous": @(continuous),
     @"region": @{
       @"latitude": @(FLUSH_NAN(region.center.latitude)),
@@ -152,7 +222,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
       @"longitudeDelta": @(FLUSH_NAN(region.span.longitudeDelta)),
     }
   };
-  [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [self.bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end

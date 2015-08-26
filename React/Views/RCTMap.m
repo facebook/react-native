@@ -80,7 +80,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   if (self.showsUserLocation != showsUserLocation) {
     if (showsUserLocation && !_locationManager) {
-      _locationManager = [[CLLocationManager alloc] init];
+      _locationManager = [CLLocationManager new];
       if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [_locationManager requestWhenInUseAuthorization];
       }
@@ -112,12 +112,52 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [super setRegion:region animated:animated];
 }
 
-- (void)setAnnotations:(MKShapeArray *)annotations
+- (void)setAnnotations:(RCTPointAnnotationArray *)annotations
 {
-  [self removeAnnotations:self.annotations];
-  if (annotations.count) {
-    [self addAnnotations:annotations];
+  NSMutableArray *newAnnotationIds = [NSMutableArray new];
+  NSMutableArray *annotationsToDelete = [NSMutableArray new];
+  NSMutableArray *annotationsToAdd = [NSMutableArray new];
+
+  for (RCTPointAnnotation *annotation in annotations) {
+    if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
+      continue;
+    }
+
+    [newAnnotationIds addObject:annotation.identifier];
+
+    // If the current set does not contain the new annotation, mark it as add
+    if (![self.annotationIds containsObject:annotation.identifier]) {
+      [annotationsToAdd addObject:annotation];
+    }
   }
+
+  for (RCTPointAnnotation *annotation in self.annotations) {
+    if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
+      continue;
+    }
+
+    // If the new set does not contain an existing annotation, mark it as delete
+    if (![newAnnotationIds containsObject:annotation.identifier]) {
+      [annotationsToDelete addObject:annotation];
+    }
+  }
+
+  if (annotationsToDelete.count) {
+    [self removeAnnotations:annotationsToDelete];
+  }
+
+  if (annotationsToAdd.count) {
+    [self addAnnotations:annotationsToAdd];
+  }
+
+  NSMutableArray *newIds = [NSMutableArray new];
+  for (RCTPointAnnotation *anno in self.annotations) {
+    if ([anno isKindOfClass:[MKUserLocation class]]) {
+      continue;
+    }
+    [newIds addObject:anno.identifier];
+  }
+  self.annotationIds = newIds;
 }
 
 @end

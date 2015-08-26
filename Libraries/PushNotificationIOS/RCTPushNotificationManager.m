@@ -10,6 +10,7 @@
 #import "RCTPushNotificationManager.h"
 
 #import "RCTBridge.h"
+#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 
@@ -25,6 +26,19 @@
 
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+
+@implementation RCTConvert (UILocalNotification)
+
++ (UILocalNotification *)UILocalNotification:(id)json
+{
+  NSDictionary *details = [self NSDictionary:json];
+  UILocalNotification *notification = [UILocalNotification new];
+  notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
+  notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
+  return notification;
+}
+
+@end
 
 @implementation RCTPushNotificationManager
 {
@@ -61,18 +75,19 @@ RCT_EXPORT_MODULE()
   _initialNotification = [bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
 }
 
-+ (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
++ (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
 {
   if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
     [application registerForRemoteNotifications];
   }
 }
 
-+ (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
++ (void)application:(__unused UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   NSMutableString *hexString = [NSMutableString string];
-  const unsigned char *bytes = [deviceToken bytes];
-  for (int i = 0; i < [deviceToken length]; i++) {
+  NSUInteger deviceTokenLength = deviceToken.length;
+  const unsigned char *bytes = deviceToken.bytes;
+  for (NSUInteger i = 0; i < deviceTokenLength; i++) {
     [hexString appendFormat:@"%02x", bytes[i]];
   }
   NSDictionary *userInfo = @{
@@ -83,7 +98,7 @@ RCT_EXPORT_MODULE()
                                                     userInfo:userInfo];
 }
 
-+ (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
++ (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
@@ -93,13 +108,13 @@ RCT_EXPORT_MODULE()
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
-                                              body:[notification userInfo]];
+                                              body:notification.userInfo];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
-                                              body:[notification userInfo]];
+                                              body:notification.userInfo];
 }
 
 /**
@@ -138,20 +153,29 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
   }
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_8_0
+
   id notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
   [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
   [[UIApplication sharedApplication] registerForRemoteNotifications];
+
 #else
+
   [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
+
 #endif
 
+}
+
+RCT_EXPORT_METHOD(abandonPermissions)
+{
+  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
 }
 
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
   NSUInteger types = 0;
   if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
-    types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
+    types = [[UIApplication sharedApplication] currentUserNotificationSettings].types;
   } else {
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -162,7 +186,7 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 
   }
 
-  NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *permissions = [NSMutableDictionary new];
   permissions[@"alert"] = @((types & UIUserNotificationTypeAlert) > 0);
   permissions[@"badge"] = @((types & UIUserNotificationTypeBadge) > 0);
   permissions[@"sound"] = @((types & UIUserNotificationTypeSound) > 0);
@@ -175,6 +199,17 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
   return @{
     @"initialNotification": RCTNullIfNil(_initialNotification),
   };
+}
+
+RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
+{
+  [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+}
+
+
+RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification)
+{
+  [[UIApplication sharedApplication] scheduleLocalNotification:notification];
 }
 
 @end

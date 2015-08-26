@@ -18,18 +18,13 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
+#import "RCTModuleData.h"
 #import "RCTUtils.h"
 
 NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
 NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 #if RCT_DEV
-
-#pragma mark - Prototypes
-
-NSNumber *RCTProfileTimestamp(NSTimeInterval);
-NSString *RCTProfileMemory(vm_size_t);
-NSDictionary *RCTProfileGetMemoryUsage(void);
 
 #pragma mark - Constants
 
@@ -43,7 +38,7 @@ NSDictionary *RCTProfileInfo;
 NSUInteger RCTProfileEventID = 0;
 NSMutableDictionary *RCTProfileOngoingEvents;
 NSTimeInterval RCTProfileStartTime;
-NSLock *_RCTProfileLock;
+NSRecursiveLock *_RCTProfileLock;
 
 #pragma mark - Macros
 
@@ -66,18 +61,18 @@ __VA_ARGS__ \
 
 #pragma mark - Private Helpers
 
-NSNumber *RCTProfileTimestamp(NSTimeInterval timestamp)
+static NSNumber *RCTProfileTimestamp(NSTimeInterval timestamp)
 {
   return @((timestamp - RCTProfileStartTime) * 1e6);
 }
 
-NSString *RCTProfileMemory(vm_size_t memory)
+static NSString *RCTProfileMemory(vm_size_t memory)
 {
   double mem = ((double)memory) / 1024 / 1024;
   return [NSString stringWithFormat:@"%.2lfmb", mem];
 }
 
-NSDictionary *RCTProfileGetMemoryUsage(void)
+static NSDictionary *RCTProfileGetMemoryUsage(void)
 {
   struct task_basic_info info;
   mach_msg_type_number_t size = sizeof(info);
@@ -96,13 +91,23 @@ NSDictionary *RCTProfileGetMemoryUsage(void)
   }
 }
 
+static NSDictionary *RCTProfileMergeArgs(NSDictionary *args0, NSDictionary *args1)
+{
+  args0 = RCTNilIfNull(args0);
+  args1 = RCTNilIfNull(args1);
+
+  if (!args0 && args1) {
+    args0 = args1;
+  } else if (args0 && args1) {
+    NSMutableDictionary *d = [args0 mutableCopy];
+    [d addEntriesFromDictionary:args1];
+    args0 = [d copy];
+  }
+
+  return RCTNullIfNil(args0);
+}
+
 #pragma mark - Module hooks
-
-@interface RCTBridge (Private)
-
-- (void)dispatchBlock:(dispatch_block_t)block forModule:(id<RCTBridgeModule>)module;
-
-@end
 
 static const char *RCTProfileProxyClassName(Class);
 static const char *RCTProfileProxyClassName(Class class)
@@ -118,16 +123,18 @@ static SEL RCTProfileProxySelector(SEL selector)
 }
 
 static void RCTProfileForwardInvocation(NSObject *, SEL, NSInvocation *);
-static void RCTProfileForwardInvocation(NSObject *self, SEL cmd, NSInvocation *invocation)
+static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvocation *invocation)
 {
   NSString *name = [NSString stringWithFormat:@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(invocation.selector)];
   SEL newSel = RCTProfileProxySelector(invocation.selector);
 
   if ([object_getClass(self) instancesRespondToSelector:newSel]) {
     invocation.selector = newSel;
-    RCTProfileBeginEvent();
+    RCTProfileBeginEvent(0, name, nil);
     [invocation invoke];
-    RCTProfileEndEvent(name, @"objc_call,modules,auto", nil);
+    RCTProfileEndEvent(0, @"objc_call,modules,auto", nil);
+  } else if ([self respondsToSelector:invocation.selector]) {
+    [invocation invoke];
   } else {
     // Use original selector to don't change error message
     [self doesNotRecognizeSelector:invocation.selector];
@@ -137,23 +144,26 @@ static void RCTProfileForwardInvocation(NSObject *self, SEL cmd, NSInvocation *i
 static IMP RCTProfileMsgForward(NSObject *, SEL);
 static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
 {
-  IMP imp = _objc_msgForward;
+  IMP imp = (IMP)_objc_msgForward;
 #if !defined(__arm64__)
   NSMethodSignature *signature = [self methodSignatureForSelector:selector];
   if (signature.methodReturnType[0] == _C_STRUCT_B && signature.methodReturnLength > 8) {
-    imp = _objc_msgForward_stret;
+    imp = (IMP)_objc_msgForward_stret;
   }
 #endif
   return imp;
 }
 
-static void RCTProfileHookModules(RCTBridge *);
-static void RCTProfileHookModules(RCTBridge *bridge)
+void RCTProfileHookModules(RCTBridge *bridge)
 {
-  [bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *className, id<RCTBridgeModule> module, BOOL *stop) {
-    [bridge dispatchBlock:^{
-      Class moduleClass = object_getClass(module);
+  for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
+    [moduleData dispatchBlock:^{
+      Class moduleClass = moduleData.moduleClass;
       Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
+
+      if (!proxyClass) {
+        return;
+      }
 
       unsigned int methodCount;
       Method *methods = class_copyMethodList(moduleClass, &methodCount);
@@ -165,10 +175,12 @@ static void RCTProfileHookModules(RCTBridge *bridge)
         }
         IMP originalIMP = method_getImplementation(method);
         const char *returnType = method_getTypeEncoding(method);
-        class_addMethod(proxyClass, selector, RCTProfileMsgForward(module, selector), returnType);
+        class_addMethod(proxyClass, selector, RCTProfileMsgForward(moduleData.instance, selector), returnType);
         class_addMethod(proxyClass, RCTProfileProxySelector(selector), originalIMP, returnType);
       }
       free(methods);
+
+      class_replaceMethod(object_getClass(proxyClass), @selector(initialize), imp_implementationWithBlock(^{}), "v@:");
 
       for (Class cls in @[proxyClass, object_getClass(proxyClass)]) {
         Method oldImp = class_getInstanceMethod(cls, @selector(class));
@@ -181,23 +193,20 @@ static void RCTProfileHookModules(RCTBridge *bridge)
       }
 
       objc_registerClassPair(proxyClass);
-      object_setClass(module, proxyClass);
-    } forModule:module];
-  }];
+      object_setClass(moduleData.instance, proxyClass);
+    }];
+  }
 }
 
-void RCTProfileUnhookModules(RCTBridge *);
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
-  [bridge.modules enumerateKeysAndObjectsUsingBlock:^(NSString *className, id<RCTBridgeModule> module, BOOL *stop) {
-    [bridge dispatchBlock:^{
-      Class proxyClass = object_getClass(module);
-      if (module.class != proxyClass) {
-        object_setClass(module, module.class);
-        objc_disposeClassPair(proxyClass);
-      }
-    } forModule:module];
-  }];
+  for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
+    Class proxyClass = object_getClass(moduleData.instance);
+    if (moduleData.moduleClass != proxyClass) {
+      object_setClass(moduleData.instance, moduleData.moduleClass);
+      objc_disposeClassPair(proxyClass);
+    }
+  };
 }
 
 
@@ -217,14 +226,14 @@ void RCTProfileInit(RCTBridge *bridge)
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    _RCTProfileLock = [[NSLock alloc] init];
+    _RCTProfileLock = [NSRecursiveLock new];
   });
   RCTProfileLock(
     RCTProfileStartTime = CACurrentMediaTime();
-    RCTProfileOngoingEvents = [[NSMutableDictionary alloc] init];
+    RCTProfileOngoingEvents = [NSMutableDictionary new];
     RCTProfileInfo = @{
-      RCTProfileTraceEvents: [[NSMutableArray alloc] init],
-      RCTProfileSamples: [[NSMutableArray alloc] init],
+      RCTProfileTraceEvents: [NSMutableArray new],
+      RCTProfileSamples: [NSMutableArray new],
     };
   );
 
@@ -249,45 +258,116 @@ NSString *RCTProfileEnd(RCTBridge *bridge)
   return log;
 }
 
-NSNumber *_RCTProfileBeginEvent(void)
+static NSMutableArray *RCTProfileGetThreadEvents(void)
 {
-  CHECK(@0);
-  RCTProfileLock(
-    NSNumber *eventID = @(++RCTProfileEventID);
-    RCTProfileOngoingEvents[eventID] = RCTProfileTimestamp(CACurrentMediaTime());
-  );
-  return eventID;
+  static NSString *const RCTProfileThreadEventsKey = @"RCTProfileThreadEventsKey";
+  NSMutableArray *threadEvents = [NSThread currentThread].threadDictionary[RCTProfileThreadEventsKey];
+  if (!threadEvents) {
+    threadEvents = [[NSMutableArray alloc] init];
+    [NSThread currentThread].threadDictionary[RCTProfileThreadEventsKey] = threadEvents;
+  }
+  return threadEvents;
 }
 
-void _RCTProfileEndEvent(NSNumber *eventID, NSString *name, NSString *categories, id args)
+void RCTProfileBeginEvent(uint64_t tag, NSString *name, NSDictionary *args)
 {
   CHECK();
+  NSMutableArray *events = RCTProfileGetThreadEvents();
+  [events addObject:@[
+    RCTProfileTimestamp(CACurrentMediaTime()),
+    @(tag),
+    name,
+    RCTNullIfNil(args),
+  ]];
+}
+
+void RCTProfileEndEvent(
+  __unused uint64_t tag,
+  NSString *category,
+  NSDictionary *args
+) {
+  CHECK();
+
+  NSMutableArray *events = RCTProfileGetThreadEvents();
+  NSArray *event = events.lastObject;
+  [events removeLastObject];
+
+  if (!event) {
+    return;
+  }
+
+  NSNumber *start = event[0];
+
   RCTProfileLock(
-    NSNumber *startTimestamp = RCTProfileOngoingEvents[eventID];
-    if (startTimestamp) {
+    RCTProfileAddEvent(RCTProfileTraceEvents,
+      @"name": event[2],
+      @"cat": category,
+      @"ph": @"X",
+      @"ts": start,
+      @"dur": @(RCTProfileTimestamp(CACurrentMediaTime()).doubleValue - start.doubleValue),
+      @"args": RCTProfileMergeArgs(event[3], args),
+    );
+  );
+}
+
+int RCTProfileBeginAsyncEvent(
+  __unused uint64_t tag,
+  NSString *name,
+  NSDictionary *args
+) {
+  CHECK(0);
+
+  static int eventID = 0;
+
+  RCTProfileLock(
+    RCTProfileOngoingEvents[@(eventID)] = @[
+      RCTProfileTimestamp(CACurrentMediaTime()),
+      name,
+      RCTNullIfNil(args),
+    ];
+  );
+
+  return eventID++;
+}
+
+void RCTProfileEndAsyncEvent(
+  __unused uint64_t tag,
+  NSString *category,
+  int cookie,
+  __unused NSString *name,
+  NSDictionary *args
+) {
+  CHECK();
+  RCTProfileLock(
+    NSArray *event = RCTProfileOngoingEvents[@(cookie)];
+    if (event) {
       NSNumber *endTimestamp = RCTProfileTimestamp(CACurrentMediaTime());
 
       RCTProfileAddEvent(RCTProfileTraceEvents,
-        @"name": name,
-        @"cat": categories,
+        @"name": event[1],
+        @"cat": category,
         @"ph": @"X",
-        @"ts": startTimestamp,
-        @"dur": @(endTimestamp.doubleValue - startTimestamp.doubleValue),
-        @"args": args ?: @[],
+        @"ts": event[0],
+        @"dur": @(endTimestamp.doubleValue - [event[0] doubleValue]),
+        @"args": RCTProfileMergeArgs(event[2], args),
       );
-      [RCTProfileOngoingEvents removeObjectForKey:eventID];
+      [RCTProfileOngoingEvents removeObjectForKey:@(cookie)];
     }
   );
 }
 
-void RCTProfileImmediateEvent(NSString *name, NSTimeInterval timestamp, NSString *scope)
-{
+void RCTProfileImmediateEvent(
+  __unused uint64_t tag,
+  NSString *name,
+  char scope
+) {
   CHECK();
+
   RCTProfileLock(
     RCTProfileAddEvent(RCTProfileTraceEvents,
       @"name": name,
-      @"ts": RCTProfileTimestamp(timestamp),
-      @"scope": scope,
+      @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+      @"scope": @(scope),
       @"ph": @"i",
       @"args": RCTProfileGetMemoryUsage(),
     );

@@ -15,7 +15,7 @@ var H2 = require('H2');
 var support = React.createClass({
   render: function() {
     return (
-      <Site section="support">
+      <Site section="support" title="Support">
 
         <section className="content wrap documentationContent nosidebar">
           <div className="inner-content">

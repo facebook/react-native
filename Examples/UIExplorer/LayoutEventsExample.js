@@ -49,8 +49,7 @@ var LayoutEventExample = React.createClass({
       () => {
         console.log('layout animation done.');
         this.addWrapText();
-      },
-      (error) => { throw new Error(JSON.stringify(error)); }
+      }
     );
     this.setState({
       viewStyle: {
@@ -139,11 +138,11 @@ var styles = StyleSheet.create({
   },
 });
 
-exports.title = 'onLayout';
+exports.title = 'Layout Events';
 exports.description = 'Layout events can be used to measure view size and position.';
 exports.examples = [
 {
-  title: 'onLayout',
+  title: 'LayoutEventExample',
   render: function(): ReactElement {
     return <LayoutEventExample />;
   },

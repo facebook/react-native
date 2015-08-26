@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (id)init
+- (instancetype)init
 {
   return [self initWithWebView:nil];
 }
@@ -66,10 +66,10 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_webView) {
-    _webView = [[UIWebView alloc] init];
+    _webView = [UIWebView new];
   }
 
-  _objectsToInject = [[NSMutableDictionary alloc] init];
+  _objectsToInject = [NSMutableDictionary new];
   _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL],
   _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL],
   _webView.delegate = self;
@@ -92,12 +92,11 @@ RCT_EXPORT_MODULE()
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
-              context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"");
   [self executeBlockOnJavaScriptQueue:^{
-    if (!self.isValid || ![RCTGetExecutorID(self) isEqualToNumber:executorID]) {
+    if (!self.isValid) {
       return;
     }
 
@@ -153,7 +152,8 @@ RCT_EXPORT_MODULE()
 
   if (_objectsToInject.count > 0) {
     NSMutableString *scriptWithInjections = [[NSMutableString alloc] initWithString:@"/* BEGIN NATIVELY INJECTED OBJECTS */\n"];
-    [_objectsToInject enumerateKeysAndObjectsUsingBlock:^(NSString *objectName, NSString *blockScript, BOOL *stop) {
+    [_objectsToInject enumerateKeysAndObjectsUsingBlock:
+     ^(NSString *objectName, NSString *blockScript, __unused BOOL *stop) {
       [scriptWithInjections appendString:objectName];
       [scriptWithInjections appendString:@" = ("];
       [scriptWithInjections appendString:blockScript];
@@ -200,7 +200,7 @@ RCT_EXPORT_MODULE()
 /**
  * `UIWebViewDelegate` methods. Handle application script load.
  */
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(__unused UIWebView *)webView
 {
   RCTAssertMainThread();
   if (_onApplicationScriptLoaded) {

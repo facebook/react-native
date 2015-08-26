@@ -9,12 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-// TODO (#5906496): This protocol is only used to add method definitions to
-// classes. We should decide if it's actually necessary.
-
 @protocol RCTInvalidating <NSObject>
-
-@property (nonatomic, assign, readonly, getter = isValid) BOOL valid;
 
 - (void)invalidate;
 

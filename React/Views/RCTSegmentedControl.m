@@ -1,10 +1,11 @@
-//
-//  RCTSegmentedControl.m
-//  React
-//
-//  Created by Clay Allsopp on 3/31/15.
-//  Copyright (c) 2015 Facebook. All rights reserved.
-//
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTSegmentedControl.h"
 
@@ -17,7 +18,7 @@
   RCTEventDispatcher *_eventDispatcher;
 }
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
@@ -51,7 +52,7 @@
     @"value": [self titleForSegmentAtIndex:sender.selectedSegmentIndex],
     @"selectedSegmentIndex": @(sender.selectedSegmentIndex)
   };
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end

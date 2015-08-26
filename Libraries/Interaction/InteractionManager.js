@@ -21,11 +21,6 @@ var setImmediate = require('setImmediate');
 
 type Handle = number;
 
-/**
- * Maximum time a handle can be open before warning in DEV.
- */
-var DEV_TIMEOUT = 2000;
-
 var _emitter = new EventEmitter();
 var _interactionSet = new Set();
 var _addInteractionSet = new Set();
@@ -94,14 +89,6 @@ var InteractionManager = {
     scheduleUpdate();
     var handle = ++_inc;
     _addInteractionSet.add(handle);
-    if (__DEV__) {
-      // Capture the stack trace of what created the handle.
-      var error = new Error(
-        'InteractionManager: interaction handle not cleared within ' +
-        DEV_TIMEOUT + ' ms.'
-      );
-      setDevTimeoutHandle(handle, error, DEV_TIMEOUT);
-    }
     return handle;
   },
 
@@ -164,21 +151,6 @@ function processUpdate() {
 
   _addInteractionSet.clear();
   _deleteInteractionSet.clear();
-}
-
-/**
- * Wait until `timeout` has passed and warn if the handle has not been cleared.
- */
-function setDevTimeoutHandle(
-  handle: Handle,
-  error: Error,
-  timeout: number
-): void {
-  setTimeout(() => {
-    if (_interactionSet.has(handle)) {
-      console.warn(error.message + '\n' + error.stack);
-    }
-  }, timeout);
 }
 
 module.exports = InteractionManager;

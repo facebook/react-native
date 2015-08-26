@@ -44,6 +44,16 @@ function getExample(componentName) {
   };
 }
 
+// Determines whether a component should have a link to a runnable example
+
+function isRunnable(componentName) {
+  if (componentName === 'AlertIOS') {
+    return true;
+  }
+
+  return false;
+}
+
 // Hide a component from the sidebar by making it return false from
 // this function
 function shouldDisplayInSidebar(componentName) {
@@ -99,6 +109,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'permalink: docs/' + slugify(componentName) + '.html',
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
+    'runnable:' + isRunnable(componentName),
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
@@ -158,7 +169,7 @@ var components = [
   '../Libraries/Picker/PickerIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
-  '../Libraries/Components/SliderIOS/SliderIOS.js',
+  '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
@@ -179,7 +190,7 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.ios.js',
   '../Libraries/CameraRoll/CameraRoll.js',
   '../Libraries/Interaction/InteractionManager.js',
-  '../Libraries/Animation/LayoutAnimation.js',
+  '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',

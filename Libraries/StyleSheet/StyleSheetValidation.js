@@ -26,7 +26,7 @@ class StyleSheetValidation {
     if (allStylePropTypes[prop] === undefined) {
       var message1 = '"' + prop + '" is not a valid style property.';
       var message2 = '\nValid style props: ' +
-        JSON.stringify(Object.keys(allStylePropTypes), null, '  ');
+        JSON.stringify(Object.keys(allStylePropTypes).sort(), null, '  ');
       styleError(message1, style, caller, message2);
     }
     var error = allStylePropTypes[prop](
@@ -51,11 +51,6 @@ class StyleSheetValidation {
 
   static addValidStylePropTypes(stylePropTypes) {
     for (var key in stylePropTypes) {
-      invariant(
-        allStylePropTypes[key] === undefined ||
-          allStylePropTypes[key] === stylePropTypes[key],
-        'Attemped to redefine existing style prop type "' + key + '".'
-      );
       allStylePropTypes[key] = stylePropTypes[key];
     }
   }

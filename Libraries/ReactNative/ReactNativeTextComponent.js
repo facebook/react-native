@@ -32,7 +32,13 @@ assign(ReactNativeTextComponent.prototype, {
   mountComponent: function(rootID, transaction, context) {
     this._rootNodeID = rootID;
     var tag = ReactNativeTagHandles.allocateTag();
-    RCTUIManager.createView(tag, 'RCTRawText', {text: this._stringText});
+    var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
+    RCTUIManager.createView(
+      tag,
+      'RCTRawText',
+      nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,
+      {text: this._stringText}
+    );
     return {
       rootNodeID: rootID,
       tag: tag,

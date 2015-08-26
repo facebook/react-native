@@ -16,9 +16,9 @@
 'use strict';
 
 var React = require('react-native');
-var StyleSheet = require('StyleSheet');
 var {
   MapView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -236,6 +236,7 @@ var styles = StyleSheet.create({
   },
 });
 
+exports.displayName = (undefined: ?string);
 exports.title = '<MapView>';
 exports.description = 'Base component to display maps';
 exports.examples = [

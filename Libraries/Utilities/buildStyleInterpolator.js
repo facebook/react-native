@@ -116,7 +116,7 @@ var inline = function(func, replaceWithArgs) {
     return '\\b' + paramName + '\\b';
   }).join('|');
   var replaceRegex = new RegExp(replaceRegexStr, 'g');
-  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}') - 1);
+  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}'));
   var newFnBody = fnBody.replace(replaceRegex, function(parameterName) {
     var indexInParameterNames = parameterNames.indexOf(parameterName);
     var replacementName = replaceWithArgs[indexInParameterNames];

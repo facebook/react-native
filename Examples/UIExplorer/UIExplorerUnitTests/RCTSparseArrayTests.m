@@ -1,4 +1,16 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * The examples provided by Facebook are for non-commercial testing and
+ * evaluation purposes only.
+ *
+ * Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 #import <XCTest/XCTest.h>
 
@@ -13,13 +25,13 @@
 
 - (void)testDictionary
 {
-  NSObject<RCTViewNodeProtocol> *myView = [[UIView alloc] init];
+  id<RCTComponent> myView = [UIView new];
   myView.reactTag = @4;
 
-  NSObject<RCTViewNodeProtocol> *myOtherView = [[UIView alloc] init];
+  id<RCTComponent> myOtherView = [UIView new];
   myOtherView.reactTag = @5;
 
-  RCTSparseArray *registry = [[RCTSparseArray alloc] init];
+  RCTSparseArray *registry = [RCTSparseArray new];
   XCTAssertNil(registry[@4], @"how did you have a view when none are registered?");
   XCTAssertNil(registry[@5], @"how did you have a view when none are registered?");
 

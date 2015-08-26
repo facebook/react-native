@@ -25,13 +25,16 @@ type Exception = {
   message: string;
 }
 
+var exceptionID = 0;
+
 function reportException(e: Exception, isFatal: bool, stack?: any) {
+  var currentExceptionID = ++exceptionID;
   if (RCTExceptionsManager) {
     if (!stack) {
       stack = parseErrorStack(e);
     }
     if (isFatal) {
-      RCTExceptionsManager.reportFatalException(e.message, stack);
+      RCTExceptionsManager.reportFatalException(e.message, stack, currentExceptionID);
     } else {
       RCTExceptionsManager.reportSoftException(e.message, stack);
     }
@@ -39,7 +42,7 @@ function reportException(e: Exception, isFatal: bool, stack?: any) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
         })
         .catch(error => {
           // This can happen in a variety of normal situations, such as
@@ -77,11 +80,20 @@ function installConsoleErrorReporter() {
   console.reportException = reportException;
   console.errorOriginal = console.error.bind(console);
   console.error = function reactConsoleError() {
+    // Note that when using the built-in context executor on iOS (i.e., not
+    // Chrome debugging), console.error is already stubbed out to cause a
+    // redbox via RCTNativeLoggingHook.
     console.errorOriginal.apply(null, arguments);
     if (!console.reportErrorsAsExceptions) {
       return;
     }
     var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+    if (str.slice(0, 10) === '"Warning: ') {
+      // React warnings use console.error so that a stack trace is shown, but
+      // we don't (currently) want these to show a redbox
+      // (Note: Logic duplicated in polyfills/console.js.)
+      return;
+    }
     var error: any = new Error('console.error: ' + str);
     error.framesToPop = 1;
     reportException(error, /* isFatal */ false);

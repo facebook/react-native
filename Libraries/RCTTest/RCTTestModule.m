@@ -44,27 +44,18 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
 
     NSString *testName = NSStringFromSelector(_testSelector);
-    _snapshotCounter[testName] = [@([_snapshotCounter[testName] integerValue] + 1) stringValue];
+    _snapshotCounter[testName] = (@([_snapshotCounter[testName] integerValue] + 1)).stringValue;
 
     NSError *error = nil;
     BOOL success = [_controller compareSnapshotOfView:_view
                                              selector:_testSelector
                                            identifier:_snapshotCounter[testName]
                                                 error:&error];
-
-    RCTAssert(success, @"Snapshot comparison failed: %@", error);
-    callback(@[]);
+    callback(@[@(success)]);
   }];
 }
 
-RCT_EXPORT_METHOD(markTestCompleted)
-{
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    _done = YES;
-  }];
-}
-
-RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(id)body)
+RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
 {
   [_bridge.eventDispatcher sendAppEventWithName:name body:body];
 }
@@ -79,11 +70,16 @@ RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)reso
   reject(nil);
 }
 
-RCT_EXPORT_METHOD(finish:(BOOL)success)
+RCT_EXPORT_METHOD(markTestCompleted)
 {
-  RCTAssert(success, @"RCTTestModule finished without success");
-  [self markTestCompleted];
+  [self markTestPassed:YES];
 }
 
+RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
+{
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    _status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
+  }];
+}
 
 @end

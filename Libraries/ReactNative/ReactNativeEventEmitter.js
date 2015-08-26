@@ -121,7 +121,8 @@ var ReactNativeEventEmitter = merge(ReactEventEmitterMixin, {
       topLevelType,
       rootNodeID,
       rootNodeID,
-      nativeEvent
+      nativeEvent,
+      nativeEvent.target
     );
   },
 

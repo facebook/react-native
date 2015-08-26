@@ -18,12 +18,14 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTNavItem alloc] init];
+  return [RCTNavItem new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(navigationBarHidden, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(shadowHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
 
 RCT_EXPORT_VIEW_PROPERTY(title, NSString)
 RCT_EXPORT_VIEW_PROPERTY(titleTextColor, UIColor)

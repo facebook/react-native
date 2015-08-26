@@ -1,4 +1,16 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * The examples provided by Facebook are for non-commercial testing and
+ * evaluation purposes only.
+ *
+ * Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 #import <XCTest/XCTest.h>
 
@@ -32,12 +44,12 @@
 {
   [super setUp];
 
-  _uiManager = [[RCTUIManager alloc] init];
+  _uiManager = [RCTUIManager new];
 
   // Register 20 views to use in the tests
   for (NSInteger i = 1; i <= 20; i++) {
-    UIView *registeredView = [[UIView alloc] init];
-    [registeredView setReactTag:@(i)];
+    UIView *registeredView = [UIView new];
+    registeredView.reactTag = @(i);
     _uiManager.viewRegistry[i] = registeredView;
   }
 }
@@ -79,7 +91,7 @@
 
   NSArray *removeAtIndices = @[@0, @4, @8, @12, @16];
   for (NSNumber *index in removeAtIndices) {
-    NSNumber *reactTag = @([index integerValue] + 2);
+    NSNumber *reactTag = @(index.integerValue + 2);
     [removedViews addObject:_uiManager.viewRegistry[reactTag]];
   }
   for (NSInteger i = 2; i < 20; i++) {
@@ -136,7 +148,7 @@
 
   // We need to keep these in array to keep them around
   NSMutableArray *viewsToRemove = [NSMutableArray array];
-  for (NSInteger i = 0; i < removeAtIndices.count; i++) {
+  for (NSUInteger i = 0; i < removeAtIndices.count; i++) {
     NSNumber *reactTagToRemove = @([removeAtIndices[i] integerValue] + 1);
     UIView *viewToRemove = _uiManager.viewRegistry[reactTagToRemove];
     [viewsToRemove addObject:viewToRemove];
@@ -160,7 +172,7 @@
                instead have the following subviews %@", [containerView reactSubviews]);
 
   NSArray *expectedReactTags = @[@11, @5, @1, @2, @7, @8, @12, @10];
-  for (NSInteger i = 0; i < [[containerView subviews] count]; i++) {
+  for (NSUInteger i = 0; i < containerView.subviews.count; i++) {
     XCTAssertEqualObjects([[containerView reactSubviews][i] reactTag], expectedReactTags[i],
                  @"Expected subview at index %ld to have react tag #%@ but has tag #%@",
                          (long)i, expectedReactTags[i], [[containerView reactSubviews][i] reactTag]);

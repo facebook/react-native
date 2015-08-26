@@ -267,8 +267,10 @@ NSInteger kNeverProgressed = -10000;
 
 @synthesize paused = _paused;
 
-- (id)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
+  RCTAssertParam(bridge);
+
   if ((self = [super initWithFrame:CGRectZero])) {
     _paused = YES;
 
@@ -291,7 +293,10 @@ NSInteger kNeverProgressed = -10000;
   return self;
 }
 
-- (void)didUpdateFrame:(RCTFrameUpdate *)update
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
   if (_currentlyTransitioningFrom != _currentlyTransitioningTo) {
     UIView *topView = _dummyView;
@@ -303,7 +308,7 @@ NSInteger kNeverProgressed = -10000;
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_bridge.eventDispatcher sendInputEventWithName:@"topNavigationProgress" body:@{
+    [_bridge.eventDispatcher sendInputEventWithName:@"navigationProgress" body:@{
       @"fromIndex": @(_currentlyTransitioningFrom),
       @"toIndex": @(_currentlyTransitioningTo),
       @"progress": @(nextProgress),
@@ -317,7 +322,7 @@ NSInteger kNeverProgressed = -10000;
   _navigationController.delegate = nil;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
   return _navigationController;
 }
@@ -328,8 +333,8 @@ NSInteger kNeverProgressed = -10000;
  * locks aside from the animation complete hook.
  */
 - (void)navigationController:(UINavigationController *)navigationController
-      willShowViewController:(UIViewController *)viewController
-                    animated:(BOOL)animated
+      willShowViewController:(__unused UIViewController *)viewController
+                    animated:(__unused BOOL)animated
 {
   id<UIViewControllerTransitionCoordinator> tc =
     navigationController.topViewController.transitionCoordinator;
@@ -343,12 +348,12 @@ NSInteger kNeverProgressed = -10000;
     NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
-    _dummyView.frame = (CGRect){{destination}};
+    _dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
     _paused = NO;
   }
-  completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+  completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
@@ -411,7 +416,7 @@ NSInteger kNeverProgressed = -10000;
 
 - (void)handleTopOfStackChanged
 {
-  [_bridge.eventDispatcher sendInputEventWithName:@"topNavigateBack" body:@{
+  [_bridge.eventDispatcher sendInputEventWithName:@"navigationComplete" body:@{
     @"target":self.reactTag,
     @"stackLength":@(_navigationController.viewControllers.count)
   }];
@@ -431,7 +436,7 @@ NSInteger kNeverProgressed = -10000;
  */
 - (UIView *)reactSuperview
 {
-  RCTAssert(self.superview != nil, @"put reactNavSuperviewLink back");
+  RCTAssert(!_bridge.isValid || self.superview != nil, @"put reactNavSuperviewLink back");
   return self.superview ? self.superview : self.reactNavSuperviewLink;
 }
 
@@ -439,15 +444,15 @@ NSInteger kNeverProgressed = -10000;
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here
-  [self addControllerToClosestParent:_navigationController];
+  [self reactAddControllerToClosestParent:_navigationController];
 
-  NSInteger viewControllerCount = _navigationController.viewControllers.count;
+  NSUInteger viewControllerCount = _navigationController.viewControllers.count;
   // The "react count" is the count of views that are visible on the navigation
   // stack.  There may be more beyond this - that aren't visible, and may be
   // deleted/purged soon.
-  NSInteger previousReactCount =
+  NSUInteger previousReactCount =
     _previousRequestedTopOfStack == kNeverRequested ? 0 : _previousRequestedTopOfStack + 1;
-  NSInteger currentReactCount = _requestedTopOfStack + 1;
+  NSUInteger currentReactCount = _requestedTopOfStack + 1;
 
   BOOL jsGettingAhead =
     //    ----- previously caught up ------          ------ no longer caught up -------
@@ -465,7 +470,7 @@ NSInteger kNeverProgressed = -10000;
 BOOL jsGettingtooSlow =
   //    --- previously not caught up --------          ------- no longer caught up ----------
   viewControllerCount < previousReactCount && currentReactCount < previousReactCount;
-  
+
   BOOL reactPushOne = jsGettingAhead && currentReactCount == previousReactCount + 1;
   BOOL reactPopN = jsGettingAhead && currentReactCount < previousReactCount;
 
@@ -486,7 +491,7 @@ BOOL jsGettingtooSlow =
 
   // Views before the previous React count must not have changed. Views greater than previousReactCount
   // up to currentReactCount may have changed.
-  for (NSInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
+  for (NSUInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
     if (_currentViews[i] != _previousViews[i]) {
       RCTLogError(@"current view should equal previous view");
     }
@@ -496,13 +501,13 @@ BOOL jsGettingtooSlow =
   }
   if (jsGettingAhead) {
     if (reactPushOne) {
-      UIView *lastView = [_currentViews lastObject];
+      UIView *lastView = _currentViews.lastObject;
       RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView eventDispatcher:_bridge.eventDispatcher];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
       [_navigationController pushViewController:vc animated:(currentReactCount > 1)];
     } else if (reactPopN) {
-      UIViewController *viewControllerToPopTo = [[_navigationController viewControllers] objectAtIndex:(currentReactCount - 1)];
+      UIViewController *viewControllerToPopTo = _navigationController.viewControllers[(currentReactCount - 1)];
       _numberOfViewControllerMovesToIgnore = viewControllerCount - currentReactCount;
       [_navigationController popToViewController:viewControllerToPopTo animated:YES];
     } else {

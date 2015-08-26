@@ -7,20 +7,58 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+#import "RCTBridge.h"
 
 @class ALAssetsLibrary;
-@class UIImage;
 
-@interface RCTImageLoader : NSObject
+typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* UIImage or CAAnimation */);
+typedef void (^RCTImageLoaderCancellationBlock)(void);
 
-+ (ALAssetsLibrary *)assetsLibrary;
+@interface RCTImageLoader : NSObject <RCTBridgeModule>
 
 /**
- * Can be called from any thread.
- * Will always call callback on main thread.
+ * Loads the specified image at the highest available resolution.
+ * Can be called from any thread, will always call callback on main thread.
  */
-+ (void)loadImageWithTag:(NSString *)tag
-                callback:(void (^)(NSError *error, id /* UIImage or CAAnimation */ image))callback;
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                           callback:(RCTImageLoaderCompletionBlock)callback;
+
+/**
+ * As above, but includes target size, scale and resizeMode, which are used to
+ * select the optimal dimensions for the loaded image.
+ */
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                               size:(CGSize)size
+                                              scale:(CGFloat)scale
+                                         resizeMode:(UIViewContentMode)resizeMode
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+
+/**
+ * Is the specified image tag an asset library image?
+ */
++ (BOOL)isAssetLibraryImage:(NSString *)imageTag;
+
+/**
+ * Is the specified image tag a remote image?
+ */
++ (BOOL)isRemoteImage:(NSString *)imageTag;
+
+@end
+
+@interface RCTBridge (RCTImageLoader)
+
+/**
+ * The shared image loader instance
+ */
+@property (nonatomic, readonly) RCTImageLoader *imageLoader;
+
+/**
+ * The shared asset library instance.
+ */
+@property (nonatomic, readonly) ALAssetsLibrary *assetsLibrary;
 
 @end

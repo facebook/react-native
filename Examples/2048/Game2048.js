@@ -24,7 +24,7 @@ var {
   View,
 } = React;
 
-var AnimationExperimental = require('AnimationExperimental');
+var Animated = require('Animated');
 var GameBoard = require('GameBoard');
 var TouchableBounce = require('TouchableBounce');
 
@@ -53,49 +53,49 @@ class Board extends React.Component {
 }
 
 class Tile extends React.Component {
+  static _getPosition(index): number {
+    return BOARD_PADDING + (index * (CELL_SIZE + CELL_MARGIN * 2) + CELL_MARGIN);
+  }
+
+  constructor(props: {}) {
+    super(props);
+
+    var tile = this.props.tile;
+
+    this.state = {
+      opacity: new Animated.Value(0),
+      top: new Animated.Value(Tile._getPosition(tile.toRow())),
+      left: new Animated.Value(Tile._getPosition(tile.toColumn())),
+    };
+  }
+
   calculateOffset(): {top: number; left: number; opacity: number} {
     var tile = this.props.tile;
 
-    var pos = (i) => {
-      return BOARD_PADDING + (i * (CELL_SIZE + CELL_MARGIN * 2) + CELL_MARGIN);
-    };
-
-    var animationPosition = (i) => {
-      return pos(i) + (CELL_SIZE / 2);
-    };
-
     var offset = {
-      top: pos(tile.toRow()),
-      left: pos(tile.toColumn()),
-      opacity: 1,
+      top: this.state.top,
+      left: this.state.left,
+      opacity: this.state.opacity,
     };
 
     if (tile.isNew()) {
-      offset.opacity = 0;
-    } else {
-      var point = {
-        x: animationPosition(tile.toColumn()),
-        y: animationPosition(tile.toRow()),
-      };
-      AnimationExperimental.startAnimation({
-        node: this.refs['this'],
+      Animated.timing(this.state.opacity, {
         duration: 100,
-        easing: 'easeInOutQuad',
-        property: 'position',
-        toValue: point,
-      });
+        toValue: 1,
+      }).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(offset.top, {
+          duration: 100,
+          toValue: Tile._getPosition(tile.toRow()),
+        }),
+        Animated.timing(offset.left, {
+          duration: 100,
+          toValue: Tile._getPosition(tile.toColumn()),
+        }),
+      ]).start();
     }
     return offset;
-  }
-
-  componentDidMount() {
-    AnimationExperimental.startAnimation({
-      node: this.refs['this'],
-      duration: 100,
-      easing: 'easeInOutQuad',
-      property: 'opacity',
-      toValue: 1,
-    });
   }
 
   render() {
@@ -104,7 +104,7 @@ class Tile extends React.Component {
     var tileStyles = [
       styles.tile,
       styles['tile' + tile.value],
-      this.calculateOffset()
+      this.calculateOffset(),
     ];
 
     var textStyles = [
@@ -115,9 +115,9 @@ class Tile extends React.Component {
     ];
 
     return (
-      <View ref="this" style={tileStyles}>
+      <Animated.View style={tileStyles}>
         <Text style={textStyles}>{tile.value}</Text>
-      </View>
+      </Animated.View>
     );
   }
 }
@@ -136,10 +136,8 @@ class GameEndOverlay extends React.Component {
     return (
       <View style={styles.overlay}>
         <Text style={styles.overlayMessage}>{message}</Text>
-        <TouchableBounce onPress={this.props.onRestart}>
-          <View style={styles.tryAgain}>
-            <Text style={styles.tryAgainText}>Try Again?</Text>
-          </View>
+        <TouchableBounce onPress={this.props.onRestart} style={styles.tryAgain}>
+          <Text style={styles.tryAgainText}>Try Again?</Text>
         </TouchableBounce>
       </View>
     );

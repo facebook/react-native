@@ -118,7 +118,7 @@ var EventSegmentedControlExample = React.createClass({
 
   _onChange(event) {
     this.setState({
-      selectedIndex: event.nativeEvent.selectedIndex,
+      selectedIndex: event.nativeEvent.selectedSegmentIndex,
     });
   },
 

@@ -32,7 +32,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    _container = [[UIView alloc] init];
+    _container = [UIView new];
     _container.backgroundColor = [UIColor colorWithRed:0 green:0 blue:34/255.0 alpha:1];
     _container.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
   }
@@ -41,7 +41,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTFPSGraph *)jsGraph
 {
-  if (!_jsGraph) {
+  if (!_jsGraph && _container) {
     UIColor *jsColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
     _jsGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(2, 2, 124, 34)
                                     graphPosition:RCTFPSGraphPositionRight
@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTFPSGraph *)uiGraph
 {
-  if (!_uiGraph) {
+  if (!_uiGraph && _container) {
     UIColor *uiColor = [UIColor colorWithRed:0 green:1 blue:1 alpha:1];
     _uiGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(2, 2, 124, 34)
                                     graphPosition:RCTFPSGraphPositionLeft
@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE()
 
 - (void)show
 {
-  UIView *targetView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+  UIView *targetView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
 
   targetView.frame = (CGRect){
     targetView.frame.origin,
@@ -112,6 +112,15 @@ RCT_EXPORT_MODULE()
 
 @end
 
+@implementation RCTBridge (RCTPerfStats)
+
+- (RCTPerfStats *)perfStats
+{
+  return self.modules[RCTBridgeModuleNameForClass([RCTPerfStats class])];
+}
+
+@end
+
 #else
 
 @implementation RCTPerfStats
@@ -121,13 +130,13 @@ RCT_EXPORT_MODULE()
 
 @end
 
-#endif
-
 @implementation RCTBridge (RCTPerfStats)
 
 - (RCTPerfStats *)perfStats
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTPerfStats class])];
+  return nil;
 }
 
 @end
+
+#endif

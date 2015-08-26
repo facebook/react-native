@@ -20,12 +20,12 @@
 - (UITabBarItem *)barItem
 {
   if (!_barItem) {
-    _barItem = [[UITabBarItem alloc] init];
+    _barItem = [UITabBarItem new];
   }
   return _barItem;
 }
 
-- (void)setIcon:(NSString *)icon
+- (void)setIcon:(id)icon
 {
   static NSDictionary *systemIcons;
   static dispatch_once_t onceToken;
@@ -54,7 +54,7 @@
   UIImage *image = [RCTConvert UIImage:_icon];
   UITabBarItem *oldItem = _barItem;
   if (image) {
-
+    
     // Recreate barItem if previous item was a system icon
     if (wasSystemIcon) {
       _barItem = nil;
@@ -72,7 +72,7 @@
       RCTLogError(@"The tab bar icon '%@' did not match any known image or system icon", icon);
       return;
     }
-    _barItem = [[UITabBarItem alloc] initWithTabBarSystemItem:[systemIcon integerValue] tag:oldItem.tag];
+    _barItem = [[UITabBarItem alloc] initWithTabBarSystemItem:systemIcon.integerValue tag:oldItem.tag];
   }
 
   // Reapply previous properties
@@ -82,9 +82,9 @@
   _barItem.badgeValue = oldItem.badgeValue;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
-  return self.superview.backingViewController;
+  return self.superview.reactViewController;
 }
 
 @end

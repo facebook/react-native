@@ -369,7 +369,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 .nav-docs ul {
   list-style: none;
   margin: 0;
-  margin-left: 10px;
+  margin-left: 1px;
 }
 
 .nav-docs ul ul {
@@ -400,9 +400,13 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .nav-docs h3 {
-  margin: 0;
   line-height: 25px;
-  margin-top: 5px;
+  margin-top: 12px;
+  margin-bottom: 5px;
+}
+
+.nav-docs .nav-docs-section:first-child h3 {
+  margin-top: 0;
 }
 
 .nav-docs .nav-docs-section:first-child {
@@ -963,10 +967,25 @@ div[data-twttr-id] iframe {
   font-size: 13px;
 }
 
+.platform {
+  background-color: hsl(198, 100%, 87%);
+  border-radius: 5px;
+  margin-right: 5px;
+  padding: 0 5px;
+  font-size: 13px;
+  font-weight: normal;
+}
+
 .edit-github {
   font-size: 15px;
   font-weight: normal;
   float: right;
+}
+
+.run-example {
+  font-size: 15px;
+  float: right;
+  margin-right: 20px;
 }
 
 #content {
@@ -1039,4 +1058,3 @@ div[data-twttr-id] iframe {
     margin: 0;
   }
 }
-
