@@ -25,7 +25,7 @@ static NSString *RCTCurrentAppBackgroundState()
     };
   });
 
-  return states[@([[UIApplication sharedApplication] applicationState])] ?: @"unknown";
+  return states[@([UIApplication sharedApplication].applicationState)] ?: @"unknown";
 }
 
 @implementation RCTAppState
@@ -94,6 +94,15 @@ RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
                   error:(__unused RCTResponseSenderBlock)error)
 {
   callback(@[@{@"app_state": _lastKnownState}]);
+}
+
+#pragma mark - RCTBridgeModule
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+     @"initialAppState" : RCTCurrentAppBackgroundState()
+   };
 }
 
 @end

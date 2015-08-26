@@ -16,6 +16,7 @@
 #import "RCTLog.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
+#import "UIView+Private.h"
 #import "UIView+React.h"
 
 CGFloat const ZINDEX_DEFAULT = 0;
@@ -55,7 +56,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (uint16_t)coalescingKey
 {
@@ -265,7 +266,7 @@ RCT_NOT_IMPLEMENTED(-init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
-  [super setContentOffset:contentOffset];
+  super.contentOffset = contentOffset;
 }
 
 - (void)dockClosestSectionHeader
@@ -353,10 +354,6 @@ RCT_NOT_IMPLEMENTED(-init)
 
 @end
 
-@interface RCTScrollView (Private)
-- (NSArray *)calculateChildFramesData;
-@end
-
 @implementation RCTScrollView
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -365,6 +362,7 @@ RCT_NOT_IMPLEMENTED(-init)
   NSTimeInterval _lastScrollDispatchTime;
   NSMutableArray *_cachedChildFrames;
   BOOL _allowNextScrollNoMatterWhat;
+  CGRect _lastClippedToRect;
 }
 
 @synthesize nativeMainScrollDelegate = _nativeMainScrollDelegate;
@@ -374,7 +372,6 @@ RCT_NOT_IMPLEMENTED(-init)
   RCTAssertParam(eventDispatcher);
 
   if ((self = [super initWithFrame:CGRectZero])) {
-
     _eventDispatcher = eventDispatcher;
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
     _scrollView.delegate = self;
@@ -382,18 +379,19 @@ RCT_NOT_IMPLEMENTED(-init)
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
+    _lastClippedToRect = CGRectNull;
 
     _scrollEventThrottle = 0.0;
     _lastScrollDispatchTime = CACurrentMediaTime();
-    _cachedChildFrames = [[NSMutableArray alloc] init];
+    _cachedChildFrames = [NSMutableArray new];
 
     [self addSubview:_scrollView];
   }
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setRemoveClippedSubviews:(__unused BOOL)removeClippedSubviews
 {
@@ -443,8 +441,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setClipsToBounds:(BOOL)clipsToBounds
 {
-  [super setClipsToBounds:clipsToBounds];
-  [_scrollView setClipsToBounds:clipsToBounds];
+  super.clipsToBounds = clipsToBounds;
+  _scrollView.clipsToBounds = clipsToBounds;
 }
 
 - (void)dealloc
@@ -467,6 +465,33 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
                       updateOffset:YES];
 
   [self updateClippedSubviews];
+}
+
+- (void)updateClippedSubviews
+{
+  // Find a suitable view to use for clipping
+  UIView *clipView = [self react_findClipView];
+  if (!clipView) {
+    return;
+  }
+
+  static const CGFloat leeway = 50.0;
+
+  const CGSize contentSize = _scrollView.contentSize;
+  const CGRect bounds = _scrollView.bounds;
+  const BOOL scrollsHorizontally = contentSize.width > bounds.size.width;
+  const BOOL scrollsVertically = contentSize.height > bounds.size.height;
+
+  const BOOL shouldClipAgain =
+    CGRectIsNull(_lastClippedToRect) ||
+    (scrollsHorizontally && (bounds.size.width < leeway || fabs(_lastClippedToRect.origin.x - bounds.origin.x) >= leeway)) ||
+    (scrollsVertically && (bounds.size.height < leeway || fabs(_lastClippedToRect.origin.y - bounds.origin.y) >= leeway));
+
+  if (shouldClipAgain) {
+    const CGRect clipRect = CGRectInset(clipView.bounds, -leeway, -leeway);
+    [self react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
+    _lastClippedToRect = bounds;
+  }
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
@@ -553,7 +578,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (NSArray *)calculateChildFramesData
 {
-    NSMutableArray *updatedChildFrames = [[NSMutableArray alloc] init];
+    NSMutableArray *updatedChildFrames = [NSMutableArray new];
     [[_contentView reactSubviews] enumerateObjectsUsingBlock:
      ^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
 

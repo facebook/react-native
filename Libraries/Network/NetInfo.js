@@ -15,14 +15,9 @@ var Map = require('Map');
 var NativeModules = require('NativeModules');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var RCTNetInfo = NativeModules.NetInfo;
 
-if (Platform.OS === 'ios') {
-  var RCTNetInfo = NativeModules.Reachability;
-} else if (Platform.OS === 'android') {
-  var RCTNetInfo = NativeModules.NetInfo;
-}
-
-var DEVICE_REACHABILITY_EVENT = 'reachabilityDidChange';
+var DEVICE_REACHABILITY_EVENT = 'networkDidChange';
 
 type ChangeEventName = $Enum<{
   change: string;
@@ -151,7 +146,7 @@ var NetInfo = {
     var listener = RCTDeviceEventEmitter.addListener(
       DEVICE_REACHABILITY_EVENT,
       (appStateData) => {
-        handler(appStateData.network_reachability);
+        handler(appStateData.network_info);
       }
     );
     _subscriptions.set(handler, listener);

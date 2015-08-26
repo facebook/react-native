@@ -15,37 +15,37 @@
  */
 'use strict';
 
+/* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
+ * into a proptype shape */
 declare module 'image!story-background' {
-  /* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
-   * into a proptype shape */
   declare var uri: string;
   declare var isStatic: boolean;
 }
 
+/* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
+ * into a proptype shape */
 declare module 'image!uie_comment_highlighted' {
-  /* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
-   * into a proptype shape */
   declare var uri: string;
   declare var isStatic: boolean;
 }
 
+/* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
+ * into a proptype shape */
 declare module 'image!uie_comment_normal' {
-  /* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
-   * into a proptype shape */
   declare var uri: string;
   declare var isStatic: boolean;
 }
 
+/* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
+ * into a proptype shape */
 declare module 'image!uie_thumb_normal' {
-  /* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
-   * into a proptype shape */
   declare var uri: string;
   declare var isStatic: boolean;
 }
 
+/* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
+ * into a proptype shape */
 declare module 'image!uie_thumb_selected' {
-  /* $FlowIssue #7387208 - There's a flow bug preventing this type from flowing
-   * into a proptype shape */
   declare var uri: string;
   declare var isStatic: boolean;
 }

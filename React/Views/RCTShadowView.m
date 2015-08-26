@@ -20,7 +20,7 @@ typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
 
 const NSString *const RCTBackgroundColorProp = @"backgroundColor";
 
-typedef enum {
+typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_LEFT,
   META_PROP_TOP,
   META_PROP_RIGHT,
@@ -29,7 +29,7 @@ typedef enum {
   META_PROP_VERTICAL,
   META_PROP_ALL,
   META_PROP_COUNT,
-} meta_prop_t;
+};
 
 @implementation RCTShadowView
 {
@@ -133,13 +133,13 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   _layoutLifecycle = RCTUpdateLifecycleComputed;
 
   CGPoint absoluteTopLeft = {
-    RCTRoundPixelValue(absolutePosition.x + node->layout.position[CSS_LEFT]),
-    RCTRoundPixelValue(absolutePosition.y + node->layout.position[CSS_TOP])
+    absolutePosition.x + node->layout.position[CSS_LEFT],
+    absolutePosition.y + node->layout.position[CSS_TOP]
   };
 
   CGPoint absoluteBottomRight = {
-    RCTRoundPixelValue(absolutePosition.x + node->layout.position[CSS_LEFT] + node->layout.dimensions[CSS_WIDTH]),
-    RCTRoundPixelValue(absolutePosition.y + node->layout.position[CSS_TOP] + node->layout.dimensions[CSS_HEIGHT])
+    absolutePosition.x + node->layout.position[CSS_LEFT] + node->layout.dimensions[CSS_WIDTH],
+    absolutePosition.y + node->layout.position[CSS_TOP] + node->layout.dimensions[CSS_HEIGHT]
   };
 
   CGRect frame = {{
@@ -246,7 +246,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
     _frame = CGRectMake(0, 0, CSS_UNDEFINED, CSS_UNDEFINED);
 
-    for (int ii = 0; ii < META_PROP_COUNT; ii++) {
+    for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
       _paddingMetaProps[ii] = CSS_UNDEFINED;
       _marginMetaProps[ii] = CSS_UNDEFINED;
       _borderMetaProps[ii] = CSS_UNDEFINED;
@@ -326,7 +326,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
-  _cssNode->children_count = (int)[_reactSubviews count];
+  _cssNode->children_count = (int)_reactSubviews.count;
   subview->_superview = self;
   [self dirtyText];
   [self dirtyLayout];
@@ -340,7 +340,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   [subview dirtyPropagation];
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
-  _cssNode->children_count = (int)[_reactSubviews count];
+  _cssNode->children_count = (int)_reactSubviews.count;
 }
 
 - (NSArray *)reactSubviews

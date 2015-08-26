@@ -1,0 +1,46 @@
+[ignore]
+
+# We fork some components by platform.
+.*/*.web.js
+.*/*.android.js
+
+# Some modules have their own node_modules with overlap
+.*/node_modules/node-haste/.*
+
+# Ignore react-tools where there are overlaps, but don't ignore anything that
+# react-native relies on
+.*/node_modules/react-tools/src/React.js
+.*/node_modules/react-tools/src/renderers/shared/event/EventPropagators.js
+.*/node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js
+.*/node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js
+
+
+# Ignore commoner tests
+.*/node_modules/commoner/test/.*
+
+# See https://github.com/facebook/flow/issues/442
+.*/react-tools/node_modules/commoner/lib/reader.js
+
+# Ignore jest
+.*/react-native/node_modules/jest-cli/.*
+
+[include]
+
+[libs]
+node_modules/react-native/Libraries/react-native/react-native-interface.js
+
+[options]
+module.system=haste
+
+munge_underscores=true
+
+suppress_type=$FlowIssue
+suppress_type=$FlowFixMe
+suppress_type=$FixMe
+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(1[0-4]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(1[0-4]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
+
+[version]
+0.14.0

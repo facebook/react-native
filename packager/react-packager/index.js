@@ -16,24 +16,31 @@ useGracefulFs();
 
 var Activity = require('./src/Activity');
 var Server = require('./src/Server');
+var SocketInterface = require('./src/SocketInterface');
 
 exports.middleware = function(options) {
   var server = new Server(options);
   return server.processRequest.bind(server);
 };
 
-exports.buildPackage = function(options, packageOptions) {
+exports.Activity = Activity;
+
+// Renamed "package" to "bundle". But maintain backwards
+// compat.
+exports.buildPackage =
+exports.buildBundle = function(options, bundleOptions) {
   var server = createServer(options);
-  return server.buildPackage(packageOptions)
+  return server.buildBundle(bundleOptions)
     .then(function(p) {
       server.end();
       return p;
     });
 };
 
-exports.buildPackageFromUrl = function(options, reqUrl) {
+exports.buildPackageFromUrl =
+exports.buildBundleFromUrl = function(options, reqUrl) {
   var server = createServer(options);
-  return server.buildPackageFromUrl(reqUrl)
+  return server.buildBundleFromUrl(reqUrl)
     .then(function(p) {
       server.end();
       return p;
@@ -49,17 +56,16 @@ exports.getDependencies = function(options, main) {
     });
 };
 
+exports.createClientFor = function(options) {
+  return SocketInterface.getOrCreateSocketFor(options);
+};
+
+SocketInterface.listenOnServerMessages();
+
 function useGracefulFs() {
   var fs = require('fs');
   var gracefulFs = require('graceful-fs');
-
-  // A bit sneaky but it's not straightforward to update all the
-  // modules we depend on.
-  Object.keys(fs).forEach(function(method) {
-    if (typeof fs[method] === 'function' && gracefulFs[method]) {
-      fs[method] = gracefulFs[method];
-    }
-  });
+  gracefulFs.gracefulify(fs);
 }
 
 function createServer(options) {

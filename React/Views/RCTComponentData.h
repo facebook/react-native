@@ -22,7 +22,7 @@
 
 - (instancetype)initWithManager:(RCTViewManager *)manager NS_DESIGNATED_INITIALIZER;
 
-- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag;
+- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag props:(NSDictionary *)props;
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary *)props forShadowView:(RCTShadowView *)shadowView;

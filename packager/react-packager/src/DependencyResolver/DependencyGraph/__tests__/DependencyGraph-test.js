@@ -22,7 +22,8 @@ jest
   .dontMock('../../AssetModule')
   .dontMock('../../Module')
   .dontMock('../../Package')
-  .dontMock('../../ModuleCache');
+  .dontMock('../../ModuleCache')
+  .setMock('chalk', { dim: function(s) { return s; } });
 
 const Promise = require('promise');
 
@@ -34,6 +35,24 @@ describe('DependencyGraph', function() {
   var DependencyGraph;
   var fileWatcher;
   var fs;
+
+  function getOrderedDependenciesAsJSON(dgraph, entry) {
+    return dgraph.getOrderedDependencies(entry).then(
+      deps => Promise.all(deps.map(dep => Promise.all([
+        dep.getName(),
+        dep.getDependencies(),
+      ]).then(([name, dependencies]) => ({
+        path: dep.path,
+        isJSON: dep.isJSON(),
+        isAsset: dep.isAsset(),
+        isAsset_DEPRECATED: dep.isAsset_DEPRECATED(),
+        isPolyfill: dep.isPolyfill(),
+        resolution: dep.resolution,
+        id: name,
+        dependencies
+      })))
+    ));
+  }
 
   beforeEach(function() {
     fs = require('fs');
@@ -75,7 +94,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -133,7 +152,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -185,7 +204,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -245,7 +264,7 @@ describe('DependencyGraph', function() {
         assetRoots_DEPRECATED: ['/root/imgs'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -297,7 +316,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -354,7 +373,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -432,7 +451,7 @@ describe('DependencyGraph', function() {
         assetRoots_DEPRECATED: ['/root/imgs'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -494,7 +513,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -547,7 +566,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -600,7 +619,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -661,7 +680,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -718,7 +737,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -769,7 +788,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -819,7 +838,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -866,7 +885,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -917,7 +936,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -966,7 +985,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1020,7 +1039,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/somedir/somefile.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/somedir/somefile.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1078,7 +1097,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1126,7 +1145,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1173,7 +1192,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1232,7 +1251,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1291,7 +1310,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1370,7 +1389,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1427,7 +1446,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1484,7 +1503,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1541,7 +1560,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1613,7 +1632,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             { id: 'index',
@@ -1716,7 +1735,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             { id: 'index',
@@ -1797,7 +1816,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1879,7 +1898,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.ios.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -1962,7 +1981,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2059,7 +2078,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2145,7 +2164,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2250,7 +2269,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2319,7 +2338,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/react-tools/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/react-tools/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2376,7 +2395,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2421,7 +2440,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2482,7 +2501,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.ios.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2538,7 +2557,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.ios.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2587,7 +2606,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.ios.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2671,11 +2690,11 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
         triggerFileChange('change', 'index.js', root, mockStat);
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -2736,11 +2755,11 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
         triggerFileChange('change', 'index.js', root, mockStat);
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -2801,10 +2820,10 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         delete filesystem.root.foo;
         triggerFileChange('delete', 'foo.js', root);
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -2865,7 +2884,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['bar.js'] = [
           '/**',
           ' * @providesModule bar',
@@ -2877,7 +2896,7 @@ describe('DependencyGraph', function() {
         filesystem.root.aPackage['main.js'] = 'require("bar")';
         triggerFileChange('change', 'aPackage/main.js', root, mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -2948,7 +2967,7 @@ describe('DependencyGraph', function() {
         cache: cache,
       });
 
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -2967,7 +2986,7 @@ describe('DependencyGraph', function() {
         filesystem.root['foo.png'] = '';
         triggerFileChange('add', 'foo.png', root, mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps2) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
             .toEqual([
               {
@@ -3020,7 +3039,7 @@ describe('DependencyGraph', function() {
         cache: cache,
       });
 
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             { id: 'index',
@@ -3038,7 +3057,7 @@ describe('DependencyGraph', function() {
         filesystem.root['foo.png'] = '';
         triggerFileChange('add', 'foo.png', root, mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps2) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
             .toEqual([
               {
@@ -3107,7 +3126,7 @@ describe('DependencyGraph', function() {
         },
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['bar.js'] = [
           '/**',
           ' * @providesModule bar',
@@ -3119,7 +3138,7 @@ describe('DependencyGraph', function() {
         filesystem.root.aPackage['main.js'] = 'require("bar")';
         triggerFileChange('change', 'aPackage/main.js', root, mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -3192,11 +3211,11 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         triggerFileChange('change', 'aPackage', '/root', {
           isDirectory: function(){ return true; }
         });
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -3263,7 +3282,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['index.js'] = filesystem.root['index.js'].replace(/aPackage/, 'bPackage');
         triggerFileChange('change', 'index.js', root, mockStat);
 
@@ -3273,7 +3292,7 @@ describe('DependencyGraph', function() {
         });
         triggerFileChange('change', 'package.json', '/root/aPackage', mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -3330,7 +3349,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root.aPackage['package.json'] = JSON.stringify({
           name: 'aPackage',
           main: 'main.js',
@@ -3338,7 +3357,7 @@ describe('DependencyGraph', function() {
         });
         triggerFileChange('change', 'package.json', '/root/aPackage', mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -3395,14 +3414,14 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function() {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root.aPackage['package.json'] = JSON.stringify({
           name: 'bPackage',
           main: 'main.js',
         });
         triggerFileChange('change', 'package.json', '/root/aPackage', mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
@@ -3458,7 +3477,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -3499,7 +3518,7 @@ describe('DependencyGraph', function() {
         filesystem.root.node_modules.foo['main.js'] = 'lol';
         triggerFileChange('change', 'main.js', '/root/node_modules/foo', mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps2) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
             .toEqual([
               {
@@ -3558,7 +3577,7 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         filesystem.root.node_modules.foo['package.json'] = JSON.stringify({
           name: 'foo',
           main: 'main.js',
@@ -3566,7 +3585,7 @@ describe('DependencyGraph', function() {
         });
         triggerFileChange('change', 'package.json', '/root/node_modules/foo', mockStat);
 
-        return dgraph.getOrderedDependencies('/root/index.js').then(function(deps2) {
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
             .toEqual([
               {

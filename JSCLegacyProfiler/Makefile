@@ -1,5 +1,11 @@
 HEADER_PATHS := `find ./tmp/JavaScriptCore -name '*.h' | xargs -I{} dirname {} | uniq | xargs -I{} echo "-I {}"`
+SDK_VERSION=$(shell plutil -convert json -o - /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/SDKSettings.plist | awk -f parseSDKVersion.awk)
 CERT ?= "iPhone Developer"
+
+ifneq ($(SDK_VERSION), 8)
+all:
+	$(error "Expected to be compiled with iOS SDK version 8, found $(SDK_VERSION)")
+endif
 
 ios8: prepare build generate
 
@@ -45,8 +51,8 @@ yajl:
 	echo `find . -name '*.c'`
 	cd ./tmp/yajl-2.1.0/src && \
 		clang -arch arm64 -arch armv7 -std=c99 \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/include/ \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/include/machine \
+		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/ \
+		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/machine \
 		-I ../build/yajl-2.1.0/include \
 		-c `find . -name '*.c'`
 	libtool -static -o ./tmp/yajl.a `find ./tmp/yajl-2.1.0/src/ -name '*.o'`
@@ -77,12 +83,12 @@ arm64:
 		-I ./tmp/WebCore-7600.1.25/icu \
 		-I ./tmp/WTF-7600.1.24 \
 		-I ./tmp/yajl-2.1.0/build/yajl-2.1.0/include \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/include \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/include/machine \
+		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include \
+		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/machine \
 		-DNDEBUG=1\
 		-miphoneos-version-min=8.0 \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/lib \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/lib/system \
+		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib \
+		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/system \
 		${HEADER_PATHS} \
 		-undefined dynamic_lookup \
 		./JSCLegacyProfiler.mm ./tmp/yajl.a
@@ -96,11 +102,11 @@ armv7:
 		-I ./tmp/WebCore-7600.1.25/icu \
 		-I ./tmp/WTF-7600.1.24 \
 		-I ./tmp/yajl-2.1.0/build/yajl-2.1.0/include \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/include \
+		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include \
 		-DNDEBUG=1\
 		-miphoneos-version-min=8.0 \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/lib \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/usr/lib/system \
+		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib \
+		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/system \
 		${HEADER_PATHS} \
 		-undefined dynamic_lookup \
 		./JSCLegacyProfiler.mm ./tmp/yajl.a

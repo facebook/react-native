@@ -162,8 +162,8 @@
 - (void)testFamilyStyleAndWeight
 {
   {
-    UIFont *expected = [UIFont fontWithName:@"HelveticaNeue-UltraLightItalic" size:14];
-    UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"Helvetica Neue", @"fontStyle": @"italic", @"fontWeight": @"100"}];
+    UIFont *expected = [UIFont fontWithName:@"HelveticaNeue-LightItalic" size:14];
+    UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"Helvetica Neue", @"fontStyle": @"italic", @"fontWeight": @"300"}];
     RCTAssertEqualFonts(expected, result);
   }
   {

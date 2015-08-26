@@ -18,7 +18,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTTabBarItem alloc] init];
+  return [RCTTabBarItem new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(selected, BOOL);
@@ -28,7 +28,7 @@ RCT_REMAP_VIEW_PROPERTY(badge, barItem.badgeValue, NSString);
 RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
 {
   view.barItem.title = json ? [RCTConvert NSString:json] : defaultView.barItem.title;
-  view.barItem.imageInsets = [view.barItem.title length] ? UIEdgeInsetsZero : (UIEdgeInsets){6, 0, -6, 0};
+  view.barItem.imageInsets = view.barItem.title.length ? UIEdgeInsetsZero : (UIEdgeInsets){6, 0, -6, 0};
 }
 
 @end

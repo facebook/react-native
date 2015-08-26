@@ -215,6 +215,7 @@ class Cache {
     hash.update(options.transformModulePath);
 
     var name = 'react-packager-cache-' + hash.digest('hex');
+
     return path.join(tmpdir, name);
   }
 }

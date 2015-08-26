@@ -50,12 +50,6 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/AdSupport/*.js"
   end
 
-  s.subspec 'RCTAnimationExperimental' do |ss|
-    ss.dependency         'React/Core'
-    ss.source_files     = "Libraries/Animation/RCTAnimationExperimental*.{h,m}"
-    ss.preserve_paths   = "Libraries/Animation/*.js"
-  end
-
   s.subspec 'RCTGeolocation' do |ss|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Geolocation/*.{h,m}"
@@ -64,6 +58,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTImage' do |ss|
     ss.dependency         'React/Core'
+    ss.dependency         'React/RCTNetwork'
     ss.source_files     = "Libraries/Image/*.{h,m}"
     ss.preserve_paths   = "Libraries/Image/*.js"
   end
