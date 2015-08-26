@@ -31,6 +31,8 @@ var viewConfig = {
     isHighlighted: true,
     numberOfLines: true,
     allowFontScaling: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -104,6 +106,15 @@ var Text = React.createClass({
      * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
      */
     allowFontScaling: React.PropTypes.bool,
+    /**
+     * Specifies that font should shrink to fit container size.
+     */
+    adjustsFontSizeToFit: React.PropTypes.bool,
+    /**
+     * Minimum amount that a font should scale down to fit container.
+     * Used in conjuction with adjustsFontSizeToFit
+     */
+    minimumFontScale: React.PropTypes.number,
   },
 
   viewConfig: viewConfig,
@@ -113,7 +124,7 @@ var Text = React.createClass({
       isHighlighted: false,
     });
   },
-  
+
   getDefaultProps: function(): Object {
     return {
       allowFontScaling: true,
