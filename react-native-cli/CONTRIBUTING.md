@@ -88,7 +88,7 @@ To unset the npm registry, do:
 
 ## Troubleshooting
 
-##### Message "Module version mismatch" from Sinopia
+##### Sinopia crashes with "Module version mismatch"
 
 This usually happens when you install a package using one version of Node and then change to a different version. This can happen when you update Node, or switch to a different version with nvm. Do:
 
