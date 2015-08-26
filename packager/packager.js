@@ -49,11 +49,6 @@ var options = parseCommandLine([{
   type: 'string',
   description: 'specify the root directories of app assets'
 }, {
-  command: 'platform',
-  type: 'string',
-  default: 'ios',
-  description: 'Specify the platform-specific blacklist (ios, android, web).'
-}, {
   command: 'skipflow',
   description: 'Disable flow checks'
 }, {
@@ -229,7 +224,7 @@ function getAppMiddleware(options) {
   return ReactPackager.middleware({
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
-    blacklistRE: blacklist(options.platform),
+    blacklistRE: blacklist(),
     cacheVersion: '2',
     transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
