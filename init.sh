@@ -37,7 +37,7 @@ else
 
   puts "Next steps:"
   puts ""
-  puts "   Open #{File.join(dest, app_name)}.xcodeproj in Xcode"
+  puts "   Open #{File.join(dest, 'iOS', app_name)}.xcodeproj in Xcode"
   puts "   Hit Run button"
   puts ""
 end
