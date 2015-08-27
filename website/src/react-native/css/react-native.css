@@ -992,6 +992,17 @@ div[data-twttr-id] iframe {
   display: none;
 }
 
+.showcase {
+  margin: 40px 40px 40px 0px;
+  width: 25%;
+  display: inline-block;
+}
+
+.showcase img {
+  width: 175px;
+  border-radius: 20px;
+}
+
 @media only screen and (max-device-width : 1024px) {
   #content {
     display: inline;
