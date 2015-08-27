@@ -14,13 +14,44 @@
 #import "RCTSparseArray.h"
 #import "RCTTextField.h"
 
+@interface RCTTextFieldManager() <UITextFieldDelegate>
+
+@end
+
 @implementation RCTTextFieldManager
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  RCTTextField *textField = [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  textField.delegate = self;
+  return textField;
+}
+
+- (BOOL)textField:(RCTTextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+    return YES;
+  }
+  NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
+  if (string.length > allowedLength) {
+    if (string.length > 1) {
+      // Truncate the input string so the result is exactly maxLength
+      NSString *limitedString = [string substringToIndex:allowedLength];
+      NSMutableString *newString = textField.text.mutableCopy;
+      [newString replaceCharactersInRange:range withString:limitedString];
+      textField.text = newString;
+      // Collapse selection at end of insert to match normal paste behavior
+      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
+                                                          offset:(range.location + allowedLength)];
+      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
+      [textField textFieldDidChange];
+    }
+    return NO;
+  } else {
+    return YES;
+  }
 }
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden, BOOL)

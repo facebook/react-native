@@ -26,17 +26,24 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)
 
-- (NSDictionary *)customDirectEventTypes
+- (NSArray *)customBubblingEventTypes
 {
-  return @{
-    @"topNavigationProgress": @{
-      @"registrationName": @"onNavigationProgress"
-    },
-  };
+  return @[
+    @"navigationComplete",
+    @"navLeftButtonTap",
+    @"navRightButtonTap",
+  ];
+}
+
+- (NSArray *)customDirectEventTypes
+{
+  return @[
+    @"navigationProgress",
+  ];
 }
 
 // TODO: remove error callbacks
-RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reactTag
                   errorCallback:(__unused RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {

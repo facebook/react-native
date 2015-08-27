@@ -17,6 +17,8 @@ var Touchable = require('Touchable');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
 
+type Event = Object;
+
 /**
  * When the scroll view is disabled, this defines how far your touch may move
  * off of the button, before deactivating the button. Once deactivated, try
@@ -24,8 +26,6 @@ var onlyChild = require('onlyChild');
  * Move it back and forth several times while the scroll view is disabled.
  */
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
-
-type Event = Object;
 
 /**
  * Do not use unless you have a very good reason. All the elements that
@@ -79,16 +79,16 @@ var TouchableWithoutFeedback = React.createClass({
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleActivePressIn: function() {
-    this.props.onPressIn && this.props.onPressIn();
+  touchableHandleActivePressIn: function(e: Event) {
+    this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function() {
-    this.props.onPressOut && this.props.onPressOut();
+  touchableHandleActivePressOut: function(e: Event) {
+    this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {

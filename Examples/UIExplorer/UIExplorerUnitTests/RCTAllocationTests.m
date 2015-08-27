@@ -17,6 +17,7 @@
 
 #import "RCTBridge.h"
 #import "RCTContextExecutor.h"
+#import "RCTModuleMethod.h"
 #import "RCTRootView.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
@@ -41,15 +42,16 @@ _Pragma("clang diagnostic pop")
 @end
 
 @interface AllocationTestModule : NSObject<RCTBridgeModule, RCTInvalidating>
+
+@property (nonatomic, assign, getter=isValid) BOOL valid;
+
 @end
 
 @implementation AllocationTestModule
 
 RCT_EXPORT_MODULE();
 
-@synthesize valid = _valid;
-
-- (id)init
+- (instancetype)init
 {
   if ((self = [super init])) {
     _valid = YES;
@@ -61,6 +63,11 @@ RCT_EXPORT_MODULE();
 {
   _valid = NO;
 }
+
+RCT_EXPORT_METHOD(test:(__unused NSString *)a
+                      :(__unused NSNumber *)b
+                      :(__unused RCTResponseSenderBlock)c
+                      :(__unused RCTResponseErrorBlock)d) {}
 
 @end
 
@@ -75,6 +82,7 @@ RCT_EXPORT_MODULE();
   @autoreleasepool {
     RCTRootView *view = [[RCTRootView alloc] initWithBundleURL:nil
                                                     moduleName:@""
+                                             initialProperties:nil
                                                  launchOptions:nil];
     weakBridge = view.bridge;
     XCTAssertNotNil(weakBridge, @"RCTBridge should have been created");
@@ -86,7 +94,7 @@ RCT_EXPORT_MODULE();
 
 - (void)testModulesAreInvalidated
 {
-  AllocationTestModule *module = [[AllocationTestModule alloc] init];
+  AllocationTestModule *module = [AllocationTestModule new];
   @autoreleasepool {
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                               moduleProvider:^{
@@ -97,10 +105,6 @@ RCT_EXPORT_MODULE();
     (void)bridge;
   }
 
-  /**
-   * Sleep on the main thread to allow js thread deallocations then run the runloop
-   * to allow the module to be deallocated on the main thread
-   */
   RUN_RUNLOOP_WHILE(module.isValid)
   XCTAssertFalse(module.isValid, @"AllocationTestModule should have been invalidated by the bridge");
 }
@@ -109,7 +113,7 @@ RCT_EXPORT_MODULE();
 {
   __weak AllocationTestModule *weakModule;
   @autoreleasepool {
-    AllocationTestModule *module = [[AllocationTestModule alloc] init];
+    AllocationTestModule *module = [AllocationTestModule new];
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                 moduleProvider:^{
                                   return @[module];
@@ -122,6 +126,19 @@ RCT_EXPORT_MODULE();
 
   RUN_RUNLOOP_WHILE(weakModule)
   XCTAssertNil(weakModule, @"AllocationTestModule should have been deallocated");
+}
+
+- (void)testModuleMethodsAreDeallocated
+{
+  __weak RCTModuleMethod *weakMethod;
+  @autoreleasepool {
+    __autoreleasing RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithObjCMethodName:@"test:(NSString *)a :(nonnull NSNumber *)b :(RCTResponseSenderBlock)c :(RCTResponseErrorBlock)d" JSMethodName:@"" moduleClass:[AllocationTestModule class]];
+    weakMethod = method;
+    XCTAssertNotNil(method, @"RCTModuleMethod should have been created");
+  }
+
+  RUN_RUNLOOP_WHILE(weakMethod)
+  XCTAssertNil(weakMethod, @"RCTModuleMethod should have been deallocated");
 }
 
 - (void)testJavaScriptExecutorIsDeallocated
@@ -140,7 +157,7 @@ RCT_EXPORT_MODULE();
   XCTAssertNil(weakExecutor, @"JavaScriptExecutor should have been released");
 }
 
-- (void)testJavaScriptContextIsDeallocated
+- (void)disabled_testJavaScriptContextIsDeallocated
 {
   __weak id weakContext;
   @autoreleasepool {
@@ -162,15 +179,15 @@ RCT_EXPORT_MODULE();
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil
                                             moduleProvider:nil
                                              launchOptions:nil];
-  __weak id rootContentView;
+  __weak UIView *rootContentView;
   @autoreleasepool {
-    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@""];
+    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"" initialProperties:nil];
     RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))
-    XCTAssertTrue([rootContentView isValid], @"RCTContentView should be valid");
+    XCTAssertTrue(rootContentView.userInteractionEnabled, @"RCTContentView should be valid");
     (void)rootView;
   }
 
-  XCTAssertFalse([rootContentView isValid], @"RCTContentView should have been invalidated");
+  XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
 }
 
 - (void)testUnderlyingBridgeIsDeallocated

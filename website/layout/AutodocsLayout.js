@@ -71,6 +71,9 @@ var ComponentDoc = React.createClass({
     return (
       <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
+          {prop.platforms && prop.platforms.map(platform =>
+            <span className="platform">{platform}</span>
+          )}
           {name}
           {' '}
           {prop.type && <span className="propType">
@@ -119,7 +122,7 @@ var ComponentDoc = React.createClass({
             </div>
           );
         })}
-        {Object.keys(style.props).sort().map((name) =>
+        {Object.keys(style.props).map((name) =>
           <div className="prop" key={name}>
             <h6 className="propTitle">
               {name}
@@ -140,15 +143,48 @@ var ComponentDoc = React.createClass({
         {(composes || []).map((name) =>
           this.renderCompose(name)
         )}
-        {Object.keys(props).sort().map((name) =>
+        {Object.keys(props)
+          .sort((nameA, nameB) => {
+            var a = props[nameA];
+            var b = props[nameB];
+
+            if (a.platforms && !b.platforms) {
+              return 1;
+            }
+            if (b.platforms && !a.platforms) {
+              return -1;
+            }
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+            return 0;
+          })
+          .map((name) =>
           this.renderProp(name, props[name])
         )}
       </div>
     );
   },
 
+  extractPlatformFromProps: function(props) {
+    for (var key in props) {
+      var prop = props[key];
+      var description = prop.description || '';
+      var platforms = description.match(/\@platform (.+)/);
+      platforms = platforms && platforms[1].replace(/ /g, '').split(',');
+      description = description.replace(/\@platform (.+)/, '');
+
+      prop.description = description;
+      prop.platforms = platforms;
+    }
+  },
+
   render: function() {
     var content = this.props.content;
+    this.extractPlatformFromProps(content.props);
     return (
       <div>
         <Marked>
@@ -338,7 +374,7 @@ var Autodocs = React.createClass({
       <APIDoc content={docs} />;
 
     return (
-      <Site section="docs">
+      <Site section="docs" title={metadata.title}>
         <section className="content wrap documentationContent">
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">

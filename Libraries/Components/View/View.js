@@ -44,12 +44,6 @@ var AccessibilityTraits = [
   'pageTurn',
 ];
 
-// <<<<< WARNING >>>>>
-// If adding any properties to View that could change the way layout-only status
-// works on iOS, make sure to update ReactNativeViewAttributes.js and
-// RCTShadowView.m (in the -[RCTShadowView isLayoutOnly] method).
-// <<<<< WARNING >>>>>
-
 /**
  * The most fundamental component for building UI, `View` is a
  * container that supports layout with flexbox, style, some touch handling, and
@@ -97,8 +91,57 @@ var View = React.createClass({
     accessibilityLabel: PropTypes.string,
 
     /**
+     * Indicates to accessibility services to treat UI component like a
+     * native one. Works for Android only.
+     * @platform android
+     */
+    accessibilityComponentType: PropTypes.oneOf([
+      'none',
+      'button',
+      'radiobutton_checked',
+      'radiobutton_unchecked',
+    ]),
+
+    /**
+     * Indicates to accessibility services whether the user should be notified
+     * when this view changes. Works for Android API >= 19 only.
+     * See http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion
+     * for references.
+     * @platform android
+     */
+    accessibilityLiveRegion: PropTypes.oneOf([
+      'none',
+      'polite',
+      'assertive',
+    ]),
+
+    /**
+     * Controls how view is important for accessibility which is if it
+     * fires accessibility events and if it is reported to accessibility services
+     * that query the screen. Works for Android only.
+     * See http://developer.android.com/reference/android/R.attr.html#importantForAccessibility
+     * for references.
+     * Possible values:
+     * 'auto' - The system determines whether the view is important for accessibility -
+     *    default (recommended).
+     * 'yes' - The view is important for accessibility.
+     * 'no' - The view is not important for accessibility.
+     * 'no-hide-descendants' - The view is not important for accessibility,
+     *    nor are any of its descendant views.
+     *
+     * @platform android
+     */
+    importantForAccessibility: PropTypes.oneOf([
+      'auto',
+      'yes',
+      'no',
+      'no-hide-descendants',
+    ]),
+
+    /**
      * Provides additional traits to screen reader. By default no traits are
      * provided unless specified otherwise in element
+     * @platform ios
      */
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),
@@ -118,7 +161,8 @@ var View = React.createClass({
     onMagicTap: PropTypes.func,
 
     /**
-     * Used to locate this view in end-to-end tests.
+     * Used to locate this view in end-to-end tests. NB: disables the 'layout-only
+     * view removal' optimization for this view!
      */
     testID: PropTypes.string,
 
@@ -203,8 +247,33 @@ var View = React.createClass({
      * different parameters. The downside is that this can use up limited video
      * memory, so this prop should be set back to false at the end of the
      * interaction/animation.
+     * @platform android
      */
     renderToHardwareTextureAndroid: PropTypes.bool,
+
+    /**
+     * Whether this view should be rendered as a bitmap before compositing.
+     *
+     * On iOS, this is useful for animations and interactions that do not
+     * modify this component's dimensions nor its children; for example, when
+     * translating the position of a static view, rasterization allows the
+     * renderer to reuse a cached bitmap of a static view and quickly composite
+     * it during each frame.
+     *
+     * Rasterization incurs an off-screen drawing pass and the bitmap consumes
+     * memory. Test and measure when using this property.
+     * @platform ios
+     */
+    shouldRasterizeIOS: PropTypes.bool,
+
+    /**
+     * Views that are only used to layout their children or otherwise don't draw
+     * anything may be automatically removed from the native hierarchy as an
+     * optimization. Set this property to `false` to disable this optimization and
+     * ensure that this View exists in the native view hierarchy.
+     * @platform android
+     */
+    collapsable: PropTypes.bool,
   },
 
   render: function() {

@@ -14,6 +14,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTGIFImage.h"
 #import "RCTImageLoader.h"
+#import "RCTImageUtils.h"
 #import "RCTUtils.h"
 
 #import "UIView+React.h"
@@ -41,9 +42,9 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (void)_updateImage
+- (void)updateImage
 {
   UIImage *image = self.image;
   if (!image) {
@@ -69,9 +70,10 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setImage:(UIImage *)image
 {
+  image = image ?: _defaultImage;
   if (image != super.image) {
-    super.image = image ?: _defaultImage;
-    [self _updateImage];
+    super.image = image;
+    [self updateImage];
   }
 }
 
@@ -79,7 +81,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (!UIEdgeInsetsEqualToEdgeInsets(_capInsets, capInsets)) {
     _capInsets = capInsets;
-    [self _updateImage];
+    [self updateImage];
   }
 }
 
@@ -87,7 +89,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (_renderingMode != renderingMode) {
     _renderingMode = renderingMode;
-    [self _updateImage];
+    [self updateImage];
   }
 }
 
@@ -96,6 +98,16 @@ RCT_NOT_IMPLEMENTED(-init)
   if (![src isEqual:_src]) {
     _src = [src copy];
     [self reloadImage];
+  }
+}
+
+- (void)setContentMode:(UIViewContentMode)contentMode
+{
+  if (self.contentMode != contentMode) {
+    super.contentMode = contentMode;
+    if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
+      [self reloadImage];
+    }
   }
 }
 
@@ -110,11 +122,11 @@ RCT_NOT_IMPLEMENTED(-init)
 
     RCTImageLoaderProgressBlock progressHandler = nil;
     if (_onProgress) {
-      progressHandler =  ^(int64_t loaded, int64_t total) {
+      progressHandler = ^(int64_t loaded, int64_t total) {
         NSDictionary *event = @{
           @"target": self.reactTag,
-          @"loaded": @(loaded),
-          @"total": @(total),
+          @"loaded": @((double)loaded),
+          @"total": @((double)total),
         };
         [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
       };
@@ -164,12 +176,15 @@ RCT_NOT_IMPLEMENTED(-init)
   if (self.image == nil) {
     [self reloadImage];
   } else if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
-    CGSize imageSize = {
-      self.image.size.width / RCTScreenScale(),
-      self.image.size.height / RCTScreenScale()
-    };
-    CGFloat widthChangeFraction = imageSize.width ? ABS(imageSize.width - frame.size.width) / imageSize.width : 1;
-    CGFloat heightChangeFraction = imageSize.height ? ABS(imageSize.height - frame.size.height) / imageSize.height : 1;
+
+    // Get optimal image size
+    CGSize currentSize = self.image.size;
+    CGSize idealSize = RCTTargetSize(self.image.size, self.image.scale, frame.size,
+                                     RCTScreenScale(), self.contentMode, YES);
+
+    CGFloat widthChangeFraction = ABS(currentSize.width - idealSize.width) / currentSize.width;
+    CGFloat heightChangeFraction = ABS(currentSize.height - idealSize.height) / currentSize.height;
+
     // If the combined change is more than 20%, reload the asset in case there is a better size.
     if (widthChangeFraction + heightChangeFraction > 0.2) {
       [self reloadImage];
@@ -177,21 +192,14 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 }
 
-- (void)willMoveToSuperview:(UIView *)newSuperview
+- (void)didMoveToWindow
 {
-  [super willMoveToSuperview:newSuperview];
+  [super didMoveToWindow];
 
-  if (!newSuperview) {
+  if (!self.window) {
     [self.layer removeAnimationForKey:@"contents"];
     self.image = nil;
-  }
-}
-
-- (void)didMoveToSuperview
-{
-  [super didMoveToSuperview];
-
-  if (self.superview && self.src) {
+  } else if (self.src) {
     [self reloadImage];
   }
 }

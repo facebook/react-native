@@ -32,7 +32,7 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
 + (UILocalNotification *)UILocalNotification:(id)json
 {
   NSDictionary *details = [self NSDictionary:json];
-  UILocalNotification *notification = [[UILocalNotification alloc] init];
+  UILocalNotification *notification = [UILocalNotification new];
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
   return notification;
@@ -108,13 +108,13 @@ RCT_EXPORT_MODULE()
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
-                                              body:[notification userInfo]];
+                                              body:notification.userInfo];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
-                                              body:[notification userInfo]];
+                                              body:notification.userInfo];
 }
 
 /**
@@ -175,7 +175,7 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
   NSUInteger types = 0;
   if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
-    types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
+    types = [[UIApplication sharedApplication] currentUserNotificationSettings].types;
   } else {
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -186,7 +186,7 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 
   }
 
-  NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *permissions = [NSMutableDictionary new];
   permissions[@"alert"] = @((types & UIUserNotificationTypeAlert) > 0);
   permissions[@"badge"] = @((types & UIUserNotificationTypeBadge) > 0);
   permissions[@"sound"] = @((types & UIUserNotificationTypeSound) > 0);

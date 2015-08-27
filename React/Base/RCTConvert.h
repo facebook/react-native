@@ -17,7 +17,6 @@
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
 
-
 /**
  * This class provides a collection of conversion functions for mapping
  * JSON objects to native types and classes. These are useful when writing
@@ -39,10 +38,11 @@
 + (NSUInteger)NSUInteger:(id)json;
 
 + (NSArray *)NSArray:(id)json;
-+ (NSSet *)NSSet:(id)json;
 + (NSDictionary *)NSDictionary:(id)json;
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;
+
++ (NSSet *)NSSet:(id)json;
 + (NSData *)NSData:(id)json;
 + (NSIndexSet *)NSIndexSet:(id)json;
 
@@ -80,10 +80,10 @@ typedef NSURL RCTFileURL;
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
 + (UIColor *)UIColor:(id)json;
-+ (CGColorRef)CGColor:(id)json;
++ (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
 + (UIImage *)UIImage:(id)json;
-+ (CGImageRef)CGImage:(id)json;
++ (CGImageRef)CGImage:(id)json CF_RETURNS_NOT_RETAINED;
 
 + (UIFont *)UIFont:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
@@ -91,7 +91,11 @@ typedef NSURL RCTFileURL;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style;
+              size:(id)size weight:(id)weight style:(id)style
+   scaleMultiplier:(CGFloat)scaleMultiplier;
+
+typedef NSArray NSArrayArray;
++ (NSArrayArray *)NSArrayArray:(id)json;
 
 typedef NSArray NSStringArray;
 + (NSStringArray *)NSStringArray:(id)json;
@@ -136,27 +140,19 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 @end
 
 /**
- * This function will attempt to set a property using a json value by first
- * inferring the correct type from all available information, and then
- * applying an appropriate conversion method. If the property does not
- * exist, or the type cannot be inferred, the function will return NO.
- */
-RCT_EXTERN BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
-
-/**
- * This function attempts to copy a property from the source object to the
- * destination object using KVC. If the property does not exist, or cannot
- * be set, it will do nothing and return NO.
- */
-RCT_EXTERN BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
-
-/**
  * Underlying implementations of RCT_XXX_CONVERTER macros. Ignore these.
  */
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
-RCT_EXTERN void RCTLogConvertError(id, const char *);
+
+/**
+ * This macro is used for logging conversion errors. This is just used to
+ * avoid repeating the same boilerplate for every error message.
+ */
+#define RCTLogConvertError(json, typeName) \
+RCTLogError(@"JSON value '%@' of type %@ cannot be converted to %@", \
+json, [json classForCoder], typeName)
 
 /**
  * This macro is used for creating simple converter functions that just call
@@ -171,7 +167,6 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
 #define RCT_CUSTOM_CONVERTER(type, name, code) \
 + (type)name:(id)json                          \
 {                                              \
-  json = (json == (id)kCFNull) ? nil : json;   \
   if (!RCT_DEBUG) {                            \
     return code;                               \
   } else {                                     \
@@ -179,7 +174,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
       return code;                             \
     }                                          \
     @catch (__unused NSException *e) {         \
-      RCTLogConvertError(json, #type);         \
+      RCTLogConvertError(json, @#type);        \
       json = nil;                              \
       return code;                             \
     }                                          \
@@ -192,7 +187,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
  * detailed error reporting if an invalid value is passed in.
  */
 #define RCT_NUMBER_CONVERTER(type, getter) \
-RCT_CUSTOM_CONVERTER(type, type, [[self NSNumber:json] getter])
+RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter])
 
 /**
  * This macro is used for creating converters for enum types.

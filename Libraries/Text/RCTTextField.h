@@ -11,7 +11,7 @@
 
 @class RCTEventDispatcher;
 
-@interface RCTTextField : UITextField<UITextFieldDelegate>
+@interface RCTTextField : UITextField
 
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL autoCorrect;
@@ -22,5 +22,6 @@
 @property (nonatomic, strong) NSNumber *maxLength;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+- (void)textFieldDidChange;
 
 @end

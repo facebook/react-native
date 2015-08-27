@@ -9,6 +9,7 @@
 
 #import "RCTActionSheetManager.h"
 
+#import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -26,7 +27,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _callbacks = [[NSMutableDictionary alloc] init];
+    _callbacks = [NSMutableDictionary new];
   }
   return self;
 }
@@ -40,7 +41,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
                   failureCallback:(__unused RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
-  UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  UIActionSheet *actionSheet = [UIActionSheet new];
 
   actionSheet.title = options[@"title"];
 
@@ -59,7 +60,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
 
   _callbacks[RCTKeyForInstance(actionSheet)] = successCallback;
 
-  UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];
+  UIWindow *appWindow = [UIApplication sharedApplication].delegate.window;
   if (appWindow == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
@@ -72,20 +73,20 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
   NSMutableArray *items = [NSMutableArray array];
-  id message = options[@"message"];
-  id url = options[@"url"];
-  if ([message isKindOfClass:[NSString class]]) {
+  NSString *message = [RCTConvert NSString:options[@"message"]];
+  if (message) {
     [items addObject:message];
   }
-  if ([url isKindOfClass:[NSString class]]) {
-    [items addObject:[NSURL URLWithString:url]];
+  NSURL *URL = [RCTConvert NSURL:options[@"url"]];
+  if (URL) {
+    [items addObject:URL];
   }
-  if ([items count] == 0) {
+  if (items.count == 0) {
     failureCallback(@[@"No `url` or `message` to share"]);
     return;
   }
   UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-  UIViewController *ctrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+  UIViewController *ctrl = [UIApplication sharedApplication].delegate.window.rootViewController;
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
@@ -125,7 +126,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);
   }
 
-  [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
+  [[UIApplication sharedApplication].delegate.window makeKeyWindow];
 }
 
 #pragma mark Private

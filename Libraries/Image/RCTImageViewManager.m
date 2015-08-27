@@ -43,15 +43,15 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
   }
 }
 
-- (NSDictionary *)customDirectEventTypes
+- (NSArray *)customDirectEventTypes
 {
-  return @{
-    @"loadStart": @{ @"registrationName": @"onLoadStart" },
-    @"progress":  @{ @"registrationName": @"onProgress" },
-    @"error":     @{ @"registrationName": @"onError" },
-    @"load":      @{ @"registrationName": @"onLoad" },
-    @"loadEnd":   @{ @"registrationName": @"onLoadEnd" },
-  };
+  return @[
+    @"loadStart",
+    @"progress",
+    @"error",
+    @"load",
+    @"loadEnd",
+  ];
 }
 
 @end

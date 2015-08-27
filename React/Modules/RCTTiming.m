@@ -78,7 +78,7 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _paused = YES;
-    _timers = [[RCTSparseArray alloc] init];
+    _timers = [RCTSparseArray new];
 
     for (NSString *name in @[UIApplicationWillResignActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -112,11 +112,6 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
-- (BOOL)isValid
-{
-  return _bridge != nil;
-}
-
 - (void)invalidate
 {
   [self stopTimers];
@@ -130,7 +125,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startTimers
 {
-  if (![self isValid] || _timers.count == 0) {
+  if (!_bridge || _timers.count == 0) {
     return;
   }
 
@@ -139,7 +134,7 @@ RCT_EXPORT_MODULE()
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
+  NSMutableArray *timersToCall = [NSMutableArray new];
   for (RCTTimer *timer in _timers.allObjects) {
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];
@@ -150,7 +145,7 @@ RCT_EXPORT_MODULE()
   }
 
   // call timers that need to be called
-  if ([timersToCall count] > 0) {
+  if (timersToCall.count > 0) {
     [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
   }
 
@@ -166,7 +161,7 @@ RCT_EXPORT_MODULE()
  * calculating the timer's target time. We calculate this by passing in
  * Date.now() from JS and then subtracting that from the current time here.
  */
-RCT_EXPORT_METHOD(createTimer:(NSNumber *)callbackID
+RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
                   duration:(NSTimeInterval)jsDuration
                   jsSchedulingTime:(NSDate *)jsSchedulingTime
                   repeats:(BOOL)repeats)
@@ -200,15 +195,11 @@ RCT_EXPORT_METHOD(createTimer:(NSNumber *)callbackID
   [self startTimers];
 }
 
-RCT_EXPORT_METHOD(deleteTimer:(NSNumber *)timerID)
+RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
 {
-  if (timerID) {
-    _timers[timerID] = nil;
-    if (_timers.count == 0) {
-      [self stopTimers];
-    }
-  } else {
-    RCTLogWarn(@"Called deleteTimer: with a nil timerID");
+  _timers[timerID] = nil;
+  if (_timers.count == 0) {
+    [self stopTimers];
   }
 }
 

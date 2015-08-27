@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "Layout.h"
-#import "RCTViewNodeProtocol.h"
+#import "RCTComponent.h"
 
 @class RCTSparseArray;
 
@@ -32,14 +32,14 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
  * 3. If a node is "computed" and the constraint passed from above is identical to the constraint used to
  *    perform the last computation, we skip laying out the subtree entirely.
  */
-@interface RCTShadowView : NSObject <RCTViewNodeProtocol>
+@interface RCTShadowView : NSObject <RCTComponent>
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
-@property (nonatomic, assign) BOOL hasOnLayout;
+@property (nonatomic, assign) BOOL onLayout;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
@@ -67,36 +67,33 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat borderWidth;
 @property (nonatomic, assign) CGFloat borderTopWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderRightWidth;
 
-- (void)setBorderWidth:(CGFloat)value;
-
 /**
  * Margin. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat margin;
+@property (nonatomic, assign) CGFloat marginVertical;
+@property (nonatomic, assign) CGFloat marginHorizontal;
 @property (nonatomic, assign) CGFloat marginTop;
 @property (nonatomic, assign) CGFloat marginLeft;
 @property (nonatomic, assign) CGFloat marginBottom;
 @property (nonatomic, assign) CGFloat marginRight;
 
-- (void)setMargin:(CGFloat)margin;
-- (void)setMarginVertical:(CGFloat)margin;
-- (void)setMarginHorizontal:(CGFloat)margin;
-
 /**
  * Padding. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat padding;
+@property (nonatomic, assign) CGFloat paddingVertical;
+@property (nonatomic, assign) CGFloat paddingHorizontal;
 @property (nonatomic, assign) CGFloat paddingTop;
 @property (nonatomic, assign) CGFloat paddingLeft;
 @property (nonatomic, assign) CGFloat paddingBottom;
 @property (nonatomic, assign) CGFloat paddingRight;
-
-- (void)setPadding:(CGFloat)padding;
-- (void)setPaddingVertical:(CGFloat)padding;
-- (void)setPaddingHorizontal:(CGFloat)padding;
 
 - (UIEdgeInsets)paddingAsInsets;
 
@@ -107,7 +104,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 @property (nonatomic, assign) css_justify_t justifyContent;
 @property (nonatomic, assign) css_align_t alignSelf;
 @property (nonatomic, assign) css_align_t alignItems;
-@property (nonatomic, assign) css_position_type_t positionType;
+@property (nonatomic, assign) css_position_type_t position;
 @property (nonatomic, assign) css_wrap_type_t flexWrap;
 @property (nonatomic, assign) CGFloat flex;
 

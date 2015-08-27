@@ -13,6 +13,7 @@
 
 #import "RCTWebSocketExecutor.h"
 
+#import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
@@ -38,7 +39,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  return [self initWithURL:[NSURL URLWithString:@"http://localhost:8081/debugger-proxy"]];
+  return [self initWithURL:[RCTConvert NSURL:@"http://localhost:8081/debugger-proxy"]];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL
@@ -56,8 +57,8 @@ RCT_EXPORT_MODULE()
   _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
-  _callbacks = [[RCTSparseArray alloc] init];
-  _injectedObjects = [[NSMutableDictionary alloc] init];
+  _callbacks = [RCTSparseArray new];
+  _injectedObjects = [NSMutableDictionary new];
   [_socket setDelegateDispatchQueue:_jsQueue];
 
   NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:_url];
@@ -149,7 +150,11 @@ RCT_EXPORT_MODULE()
 
 - (void)executeApplicationScript:(NSString *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  NSDictionary *message = @{@"method": @"executeApplicationScript", @"url": [URL absoluteString], @"inject": _injectedObjects};
+  NSDictionary *message = @{
+    @"method": @"executeApplicationScript",
+    @"url": RCTNullIfNil(URL.absoluteString),
+    @"inject": _injectedObjects,
+  };
   [self sendMessage:message waitForReply:^(NSError *error, NSDictionary *reply) {
     onComplete(error);
   }];

@@ -84,7 +84,9 @@ var PerformanceLogger = {
 
   logTimespans() {
     for (var key in timespans) {
-      console.log(key + ': ' + timespans[key].totalTime + 'ms');
+      if (timespans[key].totalTime) {
+        console.log(key + ': ' + timespans[key].totalTime + 'ms');
+      }
     }
   },
 

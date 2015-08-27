@@ -61,10 +61,10 @@
   [super setUp];
 
   _bridge = [OCMockObject mockForClass:[RCTBridge class]];
-  _eventDispatcher = [[RCTEventDispatcher alloc] init];
+  _eventDispatcher = [RCTEventDispatcher new];
   ((id<RCTBridgeModule>)_eventDispatcher).bridge = _bridge;
 
-  _eventName = @"sampleEvent";
+  _eventName = RCTNormalizeInputEventName(@"sampleEvent");
   _body = @{ @"foo": @"bar" };
   _testEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                            eventName:_eventName
@@ -125,7 +125,7 @@
 
 - (void)testDifferentEventTypesDontCoalesce
 {
-  NSString *firstEventName = @"firstEvent";
+  NSString *firstEventName = RCTNormalizeInputEventName(@"firstEvent");
   RCTTestEvent *firstEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                                            eventName:firstEventName
                                                                 body:_body];

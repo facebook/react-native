@@ -39,8 +39,8 @@ const NSInteger UNINITIALIZED_INDEX = -1;
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setItems:(NSArray *)items
 {
@@ -100,7 +100,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
     @"newValue": [self valueForRow:row]
   };
 
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end

@@ -26,6 +26,7 @@
 require('RCTDebugComponentOwnership');
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
+require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;
@@ -55,6 +56,13 @@ function setUpRedBoxConsoleErrorHandler() {
   // TODO (#6925182): Enable console.error redbox on Android
   if (__DEV__ && Platform.OS === 'ios') {
     ExceptionsManager.installConsoleErrorReporter();
+  }
+}
+
+function setupFlowChecker() {
+  if (__DEV__) {
+    var checkFlowAtRuntime = require('checkFlowAtRuntime');
+    checkFlowAtRuntime();
   }
 }
 
@@ -89,7 +97,7 @@ function setUpAlert() {
         message: '' + text,
         buttons: [{'cancel': 'OK'}],
       };
-      RCTAlertManager.alertWithArgs(alertOpts, null);
+      RCTAlertManager.alertWithArgs(alertOpts, function () {});
     };
   }
 }
@@ -123,9 +131,14 @@ function setUpWebSockets() {
 }
 
 function setupProfile() {
-  console.profile = console.profile || GLOBAL.consoleProfile || function () {};
-  console.profileEnd = console.profileEnd || GLOBAL.consoleProfileEnd || function () {};
+  console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
+  console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
   require('BridgeProfiling').swizzleReactPerf();
+}
+
+function setUpProcessEnv() {
+  GLOBAL.process = GLOBAL.process || {};
+  GLOBAL.process.env = {NODE_ENV: __DEV__ ? 'development' : 'production'};
 }
 
 setUpRedBoxErrorHandler();
@@ -137,3 +150,5 @@ setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
 setupProfile();
+setUpProcessEnv();
+setupFlowChecker();

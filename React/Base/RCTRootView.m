@@ -44,7 +44,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 @property (nonatomic, readonly) BOOL contentHasAppeared;
 
-- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
+- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -58,6 +58,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
 {
   RCTAssertMainThread();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
@@ -69,6 +70,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
     _bridge = bridge;
     _moduleName = moduleName;
+    _initialProperties = [initialProperties copy];
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
 
@@ -81,7 +83,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                              selector:@selector(hideLoadingView)
                                                  name:RCTContentDidAppearNotification
                                                object:self];
-    if (!_bridge.batchedBridge.isLoading) {
+    if (!_bridge.loading) {
       [self bundleFinishedLoading:_bridge.batchedBridge];
     }
 
@@ -92,17 +94,18 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
+                initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL
                                             moduleProvider:nil
                                              launchOptions:launchOptions];
 
-  return [self initWithBridge:bridge moduleName:moduleName];
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
@@ -110,9 +113,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   _contentView.backgroundColor = backgroundColor;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
-  return _backingViewController ?: [super backingViewController];
+  return _reactViewController ?: [super reactViewController];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -157,31 +160,30 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
+  RCTAssertMainThread();
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   [self bundleFinishedLoading:bridge];
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!bridge.isValid) {
-      return;
-    }
+  if (!bridge.valid) {
+    return;
+  }
 
-    [_contentView removeFromSuperview];
-    _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
-    _contentView.backgroundColor = self.backgroundColor;
-    [self insertSubview:_contentView atIndex:0];
+  [_contentView removeFromSuperview];
+  _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
+  _contentView.backgroundColor = self.backgroundColor;
+  [self insertSubview:_contentView atIndex:0];
 
-    NSString *moduleName = _moduleName ?: @"";
-    NSDictionary *appParameters = @{
-      @"rootTag": _contentView.reactTag,
-      @"initialProps": _initialProperties ?: @{},
-    };
+  NSString *moduleName = _moduleName ?: @"";
+  NSDictionary *appParameters = @{
+    @"rootTag": _contentView.reactTag,
+    @"initialProps": _initialProperties ?: @{},
+  };
 
-    [bridge enqueueJSCall:@"AppRegistry.runApplication"
-                     args:@[moduleName, appParameters]];
-  });
+  [bridge enqueueJSCall:@"AppRegistry.runApplication"
+                   args:@[moduleName, appParameters]];
 }
 
 - (void)layoutSubviews
@@ -235,7 +237,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
+  if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
     [self setUp];
     self.frame = frame;
@@ -244,7 +246,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   return self;
 }
 
-- (void)insertReactSubview:(id<RCTViewNodeProtocol>)subview atIndex:(NSInteger)atIndex
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
+
+- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
   RCTPerformanceLoggerEnd(RCTPLTTI);
@@ -261,7 +265,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   super.frame = frame;
   if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setFrame:frame forRootView:self];
+    [_bridge.uiManager setFrame:frame forView:self];
   }
 }
 
@@ -292,14 +296,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   [_bridge.uiManager registerRootView:self];
 }
 
-- (BOOL)isValid
-{
-  return self.userInteractionEnabled;
-}
-
 - (void)invalidate
 {
-  if (self.isValid) {
+  if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
     [_bridge enqueueJSCall:@"ReactNative.unmountComponentAtNodeAndRemoveContainer"

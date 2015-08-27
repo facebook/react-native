@@ -67,7 +67,7 @@ extern BOOL RCTIsGzippedData(NSData *data);
                           @"headers": @{@"Content-Encoding": @"gzip"},
                           };
 
-  RCTNetworking *networker = [[RCTNetworking alloc] init];
+  RCTNetworking *networker = [RCTNetworking new];
   __block NSURLRequest *request = nil;
   [networker buildRequest:query completionBlock:^(NSURLRequest *_request) {
     request = _request;

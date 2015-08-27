@@ -218,9 +218,10 @@ class MessageQueue {
       return null;
     }
 
+    let fn = null;
     let self = this;
     if (type === MethodTypes.remoteAsync) {
-      return function(...args) {
+      fn = function(...args) {
         return new Promise((resolve, reject) => {
           self.__nativeCall(module, method, args, resolve, (errorData) => {
             var error = createErrorFromErrorData(errorData);
@@ -229,7 +230,7 @@ class MessageQueue {
         });
       };
     } else {
-      return function(...args) {
+      fn = function(...args) {
         let lastArg = args.length > 0 ? args[args.length - 1] : null;
         let secondLastArg = args.length > 1 ? args[args.length - 2] : null;
         let hasSuccCB = typeof lastArg === 'function';
@@ -245,6 +246,8 @@ class MessageQueue {
         return self.__nativeCall(module, method, args, onFail, onSucc);
       };
     }
+    fn.type = type;
+    return fn;
   }
 
 }

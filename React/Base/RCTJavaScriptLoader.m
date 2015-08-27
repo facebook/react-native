@@ -15,29 +15,16 @@
 #import "RCTUtils.h"
 
 @implementation RCTJavaScriptLoader
-{
-  __weak RCTBridge *_bridge;
-}
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-{
-  RCTAssert(bridge, @"bridge parameter is required");
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-  if ((self = [super init])) {
-    _bridge = bridge;
-  }
-  return self;
-}
-
-RCT_NOT_IMPLEMENTED(-init)
-
-- (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(void (^)(NSError *, NSString *))onComplete
++ (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete
 {
   // Sanitize the script URL
   scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];
 
   if (!scriptURL ||
-      ([scriptURL isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:scriptURL.path])) {
+      (scriptURL.fileURL && ![[NSFileManager defaultManager] fileExistsAtPath:scriptURL.path])) {
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
       NSLocalizedDescriptionKey: scriptURL ? [NSString stringWithFormat:@"Script at '%@' could not be found.", scriptURL] : @"No script URL provided"
     }];
@@ -50,11 +37,11 @@ RCT_NOT_IMPLEMENTED(-init)
 
     // Handle general request errors
     if (error) {
-      if ([[error domain] isEqualToString:NSURLErrorDomain]) {
-        NSString *desc = [@"Could not connect to development server. Ensure node server is running and available on the same network - run 'npm start' from react-native root\n\nURL: " stringByAppendingString:[scriptURL absoluteString]];
+      if ([error.domain isEqualToString:NSURLErrorDomain]) {
+        NSString *desc = [@"Could not connect to development server. Ensure node server is running and available on the same network - run 'npm start' from react-native root\n\nURL: " stringByAppendingString:scriptURL.absoluteString];
         NSDictionary *userInfo = @{
           NSLocalizedDescriptionKey: desc,
-          NSLocalizedFailureReasonErrorKey: [error localizedDescription],
+          NSLocalizedFailureReasonErrorKey: error.localizedDescription,
           NSUnderlyingErrorKey: error,
         };
         error = [NSError errorWithDomain:@"JSServer"
@@ -76,12 +63,12 @@ RCT_NOT_IMPLEMENTED(-init)
     NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
 
     // Handle HTTP errors
-    if ([response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)response statusCode] != 200) {
+    if ([response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode != 200) {
       NSDictionary *userInfo;
       NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
       if ([errorDetails isKindOfClass:[NSDictionary class]] &&
           [errorDetails[@"errors"] isKindOfClass:[NSArray class]]) {
-        NSMutableArray *fakeStack = [[NSMutableArray alloc] init];
+        NSMutableArray *fakeStack = [NSMutableArray new];
         for (NSDictionary *err in errorDetails[@"errors"]) {
           [fakeStack addObject: @{
             @"methodName": err[@"description"] ?: @"",
@@ -97,7 +84,7 @@ RCT_NOT_IMPLEMENTED(-init)
         userInfo = @{NSLocalizedDescriptionKey: rawText};
       }
       error = [NSError errorWithDomain:@"JSServer"
-                                  code:[(NSHTTPURLResponse *)response statusCode]
+                                  code:((NSHTTPURLResponse *)response).statusCode
                               userInfo:userInfo];
 
       onComplete(error, nil);

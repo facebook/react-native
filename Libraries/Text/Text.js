@@ -30,6 +30,7 @@ var viewConfig = {
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
+    allowFontScaling: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -99,14 +100,24 @@ var Text = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: React.PropTypes.string,
+    /**
+     * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
+     */
+    allowFontScaling: React.PropTypes.bool,
   },
 
   viewConfig: viewConfig,
 
-  getInitialState: function() {
+  getInitialState: function(): Object {
     return merge(this.touchableGetInitialState(), {
       isHighlighted: false,
     });
+  },
+  
+  getDefaultProps: function(): Object {
+    return {
+      allowFontScaling: true,
+    };
   },
 
   onStartShouldSetResponder: function(): bool {

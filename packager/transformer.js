@@ -13,6 +13,12 @@
 var babel = require('babel-core');
 
 function transform(srcTxt, filename, options) {
+  var plugins = [];
+
+  if (process.env.NODE_ENV === 'production') {
+    plugins = plugins.concat(['node-env-inline', 'dunderscore-dev-inline']);
+  }
+
   var result = babel.transform(srcTxt, {
     retainLines: true,
     compact: true,
@@ -23,17 +29,19 @@ function transform(srcTxt, filename, options) {
       'es6.blockScoping',
       'es6.classes',
       'es6.destructuring',
-      'es6.parameters.rest',
+      'es6.parameters',
       'es6.properties.computed',
       'es6.properties.shorthand',
       'es6.spread',
       'es6.templateLiterals',
+      'es7.asyncFunctions',
       'es7.trailingFunctionCommas',
       'es7.objectRestSpread',
       'flow',
       'react',
-      'react.displayName',
+      'regenerator',
     ],
+    plugins: plugins,
     sourceFileName: filename,
     sourceMaps: false,
     extra: options || {},

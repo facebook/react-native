@@ -18,7 +18,7 @@
   RCTEventDispatcher *_eventDispatcher;
 }
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
@@ -52,7 +52,7 @@
     @"value": [self titleForSegmentAtIndex:sender.selectedSegmentIndex],
     @"selectedSegmentIndex": @(sender.selectedSegmentIndex)
   };
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end

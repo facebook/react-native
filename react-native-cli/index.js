@@ -6,7 +6,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var spawn = require('child_process').spawn;
+var exec = require('child_process').exec;
 var prompt = require("prompt");
 
 var CLI_MODULE_PATH = function() {
@@ -131,27 +131,16 @@ function createProject(name) {
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
   process.chdir(root);
 
-  run('npm install --save react-native', function(e) {
+  console.log('Installing react-native package from npm...');
+  exec('npm install --save react-native', function(e, stdout, stderr) {
     if (e) {
+      console.log(stdout);
+      console.error(stderr);
       console.error('`npm install --save react-native` failed');
       process.exit(1);
     }
 
     var cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
-  });
-}
-
-function run(command, cb) {
-  var parts = command.split(/\s+/);
-  var cmd = parts[0];
-  var args = parts.slice(1);
-  var proc = spawn(cmd, args, {stdio: 'inherit'});
-  proc.on('close', function(code) {
-    if (code !== 0) {
-      cb(new Error('Command exited with a non-zero status'));
-    } else {
-      cb(null);
-    }
   });
 }

@@ -65,7 +65,7 @@ static NSString *RCTGenerateFormBoundary()
 
   parts = [formData mutableCopy];
   _callback = callback;
-  multipartBody = [[NSMutableData alloc] init];
+  multipartBody = [NSMutableData new];
   boundary = RCTGenerateFormBoundary();
 
   return [_networker processDataForHTTPQuery:parts[0] callback:^(NSError *error, NSDictionary *result) {
@@ -88,7 +88,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary *headers = [parts[0][@"headers"] mutableCopy];
   NSString *partContentType = result[@"contentType"];
   if (partContentType != nil) {
-    [headers setObject:partContentType forKey:@"content-type"];
+    headers[@"content-type"] = partContentType;
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
     [multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
@@ -132,7 +132,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _tasksByRequestID = [[NSMutableDictionary alloc] init];
+    _tasksByRequestID = [NSMutableDictionary new];
   }
   return self;
 }
@@ -140,12 +140,12 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary *)query
                                  completionBlock:(void (^)(NSURLRequest *request))block
 {
-  NSURL *URL = [RCTConvert NSURL:query[@"url"]];
+  NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-  request.HTTPMethod = [[RCTConvert NSString:query[@"method"]] uppercaseString] ?: @"GET";
+  request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
   request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
 
-  NSDictionary *data = [RCTConvert NSDictionary:query[@"data"]];
+  NSDictionary *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary *result) {
     if (error) {
       RCTLogError(@"Error processing request body: %@", error);
@@ -161,7 +161,7 @@ RCT_EXPORT_MODULE()
     // Gzip the request body
     if ([request.allHTTPHeaderFields[@"Content-Encoding"] isEqualToString:@"gzip"]) {
       request.HTTPBody = RCTGzipData(request.HTTPBody, -1 /* default */);
-      [request setValue:[@(request.HTTPBody.length) description] forHTTPHeaderField:@"Content-Length"];
+      [request setValue:(@(request.HTTPBody.length)).description forHTTPHeaderField:@"Content-Length"];
     }
 
     block(request);
@@ -195,7 +195,7 @@ RCT_EXPORT_MODULE()
       return NSOrderedSame;
     }
   }];
-  id<RCTURLRequestHandler> handler = [handlers lastObject];
+  id<RCTURLRequestHandler> handler = handlers.lastObject;
   if (!handler) {
     RCTLogError(@"No suitable request handler found for %@", request.URL);
   }
@@ -220,7 +220,7 @@ RCT_EXPORT_MODULE()
  * - @"contentType" (NSString): the content type header of the request
  *
  */
-- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary *)query callback:
+- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(nullable NSDictionary *)query callback:
 (RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary *result))callback
 {
   if (!query) {
@@ -233,13 +233,8 @@ RCT_EXPORT_MODULE()
   NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
   if (request) {
 
-    id<RCTURLRequestHandler> handler = [self handlerForRequest:request];
-    if (!handler) {
-      return callback(nil, nil);
-    }
-
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
-    RCTDownloadTask *task = [[RCTDownloadTask alloc] initWithRequest:request handler:handler completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+    RCTDownloadTask *task = [self downloadTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
     }];
 
@@ -253,7 +248,7 @@ RCT_EXPORT_MODULE()
   }
   NSDictionaryArray *formData = [RCTConvert NSDictionaryArray:query[@"formData"]];
   if (formData) {
-    RCTHTTPFormDataHelper *formDataHelper = [[RCTHTTPFormDataHelper alloc] init];
+    RCTHTTPFormDataHelper *formDataHelper = [RCTHTTPFormDataHelper new];
     formDataHelper.networker = self;
     return [formDataHelper process:formData callback:callback];
   }
@@ -291,16 +286,11 @@ RCT_EXPORT_MODULE()
  incrementalUpdates:(BOOL)incrementalUpdates
      responseSender:(RCTResponseSenderBlock)responseSender
 {
-  id<RCTURLRequestHandler> handler = [self handlerForRequest:request];
-  if (!handler) {
-    return;
-  }
-
   __block RCTDownloadTask *task;
 
-  RCTURLRequestProgressBlock uploadProgressBlock = ^(double progress, double total) {
+  RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
     dispatch_async(_methodQueue, ^{
-      NSArray *responseJSON = @[task.requestID, @(progress), @(total)];
+      NSArray *responseJSON = @[task.requestID, @((double)progress), @((double)total)];
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didSendNetworkData" body:responseJSON];
     });
   };
@@ -345,10 +335,7 @@ RCT_EXPORT_MODULE()
     });
   };
 
-  task = [[RCTDownloadTask alloc] initWithRequest:request
-                                          handler:handler
-                                  completionBlock:completionBlock];
-
+  task = [self downloadTaskWithRequest:request completionBlock:completionBlock];
   task.incrementalDataBlock = incrementalDataBlock;
   task.responseBlock = responseBlock;
   task.uploadProgressBlock = uploadProgressBlock;
@@ -357,6 +344,21 @@ RCT_EXPORT_MODULE()
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[task.requestID]);
   }
+}
+
+#pragma mark - Public API
+
+- (RCTDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request
+                             completionBlock:(RCTURLRequestCompletionBlock)completionBlock
+{
+  id<RCTURLRequestHandler> handler = [self handlerForRequest:request];
+  if (!handler) {
+    return nil;
+  }
+
+  return [[RCTDownloadTask alloc] initWithRequest:request
+                                          handler:handler
+                                  completionBlock:completionBlock];
 }
 
 #pragma mark - JS API
@@ -376,10 +378,19 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
   }];
 }
 
-RCT_EXPORT_METHOD(cancelRequest:(NSNumber *)requestID)
+RCT_EXPORT_METHOD(cancelRequest:(nonnull NSNumber *)requestID)
 {
   [_tasksByRequestID[requestID] cancel];
   [_tasksByRequestID removeObjectForKey:requestID];
+}
+
+@end
+
+@implementation RCTBridge (RCTNetworking)
+
+- (RCTNetworking *)networking
+{
+  return self.modules[RCTBridgeModuleNameForClass([RCTNetworking class])];
 }
 
 @end
