@@ -13,6 +13,7 @@ const SocketClient = require('./SocketClient');
 const SocketServer = require('./SocketServer');
 const _ = require('underscore');
 const crypto = require('crypto');
+const debug = require('debug')('ReactPackager:SocketInterface');
 const fs = require('fs');
 const net = require('net');
 const path = require('path');
@@ -45,7 +46,12 @@ const SocketInterface = {
           resolve(SocketClient.create(sockPath));
         });
         sock.on('error', (e) => {
-          fs.unlinkSync(sockPath);
+          try {
+            debug('deleting socket for not responding', sockPath);
+            fs.unlinkSync(sockPath);
+          } catch (err) {
+            // Another client might have deleted it first.
+          }
           createServer(resolve, reject, options, sockPath);
         });
       } else {
