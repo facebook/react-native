@@ -993,13 +993,13 @@ div[data-twttr-id] iframe {
 }
 
 .showcase {
-  margin: 40px 40px 40px 0px;
-  width: 25%;
+  margin: 40px auto;
+  width: 30%;
   display: inline-block;
 }
 
 .showcase img {
-  width: 175px;
+  width: 100px;
   border-radius: 20px;
 }
 
