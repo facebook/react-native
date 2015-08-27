@@ -210,7 +210,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
-    console.error('Encountered an error loading page', event.nativeEvent);
+    console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,

@@ -75,7 +75,7 @@ var WebViewExample = React.createClass({
           <TextInput
             ref={TEXT_INPUT_REF}
             autoCapitalize="none"
-            value={this.state.url}
+            defaultValue={this.state.url}
             onSubmitEditing={this.onSubmitEditing}
             onChange={this.handleTextInputChange}
             clearButtonMode="while-editing"
