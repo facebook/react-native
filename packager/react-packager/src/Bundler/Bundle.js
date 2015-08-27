@@ -12,6 +12,7 @@ const _ = require('underscore');
 const base64VLQ = require('./base64-vlq');
 const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
+const crypto = require('crypto');
 
 const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
 
@@ -205,6 +206,11 @@ class Bundle {
 
   getAssets() {
     return this._assets;
+  }
+  
+  getEtag() {
+    var eTag = crypto.createHash('md5').update(this._getSource()).digest('hex');
+    return eTag;
   }
 
   _getMappings() {

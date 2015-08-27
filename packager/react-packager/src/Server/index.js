@@ -367,7 +367,7 @@ class Server {
             minify: options.minify,
           });
           res.setHeader('Content-Type', 'application/javascript');
-          res.setHeader('ETag', p.calculateETag());
+          res.setHeader('ETag', p.getEtag());
           if (req.headers['if-none-match'] === res.getHeader('ETag')) {
             res.statusCode = 304;
             res.end();
