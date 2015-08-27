@@ -180,20 +180,24 @@ exports.examples = [
         },
 
         render: function() {
+          var timer, toggleText, clearInterval;
           if (this.state.showTimer) {
-            var timer =
+            timer =
               <TimerTester ref="interval" dt={25} type="setInterval" />;
-            var toggleText = 'Unmount timer';
+            toggleText = 'Unmount timer';
+            clearInterval =
+              <Button onPress={() => this.refs.interval.clear() }>
+                Clear interval
+              </Button>;
           } else {
-            var timer = null;
-            var toggleText = 'Mount new timer';
+            timer = null;
+            toggleText = 'Mount new timer';
+            clearInterval = null;
           }
           return (
             <View>
               {timer}
-              <Button onPress={() => this.refs.interval.clear() }>
-                Clear interval
-              </Button>
+              {clearInterval}
               <Button onPress={this._toggleTimer}>
                 {toggleText}
               </Button>
