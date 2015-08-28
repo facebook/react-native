@@ -273,7 +273,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       {
         if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
         {
-          if (![moduleClasses containsObject:cls]) {
+          if (![moduleClasses containsObject:cls] && !RCTBridgeModuleClassIsDeclared(cls)) {
             RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
                        "RCT_EXPORT_MODULE()?", cls);
           }
@@ -332,7 +332,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
                     moduleClass, moduleName, moduleData.moduleClass);
       }
     }
-    
+
     // Instantiate moduleData (TODO: can we defer this until config generation?)
     moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                      bridge:self];

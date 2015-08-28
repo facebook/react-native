@@ -65,7 +65,16 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 + (NSString *)moduleName { return @#js_name; } \
 + (void)load { RCTRegisterModule(self); }
 
-// Implemented by RCT_EXPORT_MODULE
+/**
+ * Use this macro to declare a module without automatically exporting it. This
+ * lets you manually export modules.
+ */
+#define RCT_DECLARE_MODULE(js_name) \
+RCT_EXTERN void RCTDeclareModule(Class); \
++ (NSString *)moduleName { return @#js_name; } \
++ (void)load { RCTDeclareModule(self); }
+
+// Implemented by RCT_EXPORT_MODULE and RCT_DECLARE_MODULE
 + (NSString *)moduleName;
 
 @optional
