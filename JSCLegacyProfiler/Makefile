@@ -110,5 +110,3 @@ armv7:
 		${HEADER_PATHS} \
 		-undefined dynamic_lookup \
 		./JSCLegacyProfiler.mm ./tmp/yajl.a
-
-.PHONY: ios8

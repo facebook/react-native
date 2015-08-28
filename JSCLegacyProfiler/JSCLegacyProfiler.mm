@@ -7,6 +7,7 @@
 #include "OpaqueJSString.h"
 #include "JSProfilerPrivate.h"
 #include "JSStringRef.h"
+#include "String.h"
 
 #include <YAJL/yajl_gen.h>
 
@@ -114,48 +115,18 @@ static char *convert_to_json(const JSC::Profile *profile) {
   return json_copy;
 }
 
-static char *JSEndProfilingAndRender(JSContextRef ctx, JSStringRef title)
+static const char *JSEndProfilingAndRender(JSContextRef ctx, const char *title)
 {
     JSC::ExecState *exec = toJS(ctx);
     JSC::LegacyProfiler *profiler = JSC::LegacyProfiler::profiler();
-    RefPtr<JSC::Profile> rawProfile = profiler->stopProfiling(exec, title->string());
+    RefPtr<JSC::Profile> rawProfile = profiler->stopProfiling(exec, WTF::String(title));
     return convert_to_json(rawProfile.get());
 }
 
-JSValueRef nativeProfilerStart(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
-  if (argumentCount < 1) {
-    // Could raise an exception here.
-    return JSValueMakeUndefined(ctx);
-  }
-
-  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], NULL);
-  JSStartProfiling(ctx, title);
-  JSStringRelease(title);
-  return JSValueMakeUndefined(ctx);
+void nativeProfilerStart(JSContextRef ctx, const char *title) {
+  JSStartProfiling(ctx, JSStringCreateWithUTF8CString(title));
 }
 
-JSValueRef nativeProfilerEnd(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
-  if (argumentCount < 1) {
-    // Could raise an exception here.
-    return JSValueMakeUndefined(ctx);
-  }
-
-  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], NULL);
-  char *rendered = JSEndProfilingAndRender(ctx, title);
-  JSStringRelease(title);
-  JSStringRef profile = JSStringCreateWithUTF8CString(rendered);
-  free(rendered);
-  return JSValueMakeString(ctx, profile);
+const char *nativeProfilerEnd( JSContextRef ctx, const char *title) {
+  return JSEndProfilingAndRender(ctx, title);
 }
