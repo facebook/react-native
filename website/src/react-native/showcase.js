@@ -102,6 +102,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/reactto36/id989009293?mt=8',
     author: 'Jonathan Solichin',
   },
+  {
+    name: 'DropBot',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/fb/df/73/fbdf73e0-22d2-c936-3115-1defa195acba/icon175x175.png',
+    link:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
+    author: 'Peach Labs',
+  },
 ];
 
 var showcase = React.createClass({
