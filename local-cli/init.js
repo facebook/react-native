@@ -29,7 +29,7 @@ function init(projectDir, appName) {
   });
 
   console.log('Next Steps:');
-  console.log('   Open ' + path.resolve(projectDir, appName) + '.xcodeproj in Xcode');
+  console.log('   Open iOS/' + path.resolve(projectDir, appName) + '.xcodeproj in Xcode');
   console.log('   Hit Run button');
   console.log('');
 }
