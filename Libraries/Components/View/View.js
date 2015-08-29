@@ -72,6 +72,9 @@ var AccessibilityTraits = [
  * performance, although inline styles are also supported.
  */
 var View = React.createClass({
+
+  displayName: 'View',
+
   mixins: [NativeMethodsMixin],
 
   /**

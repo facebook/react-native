@@ -70,6 +70,8 @@ var viewConfig = {
 
 var Text = React.createClass({
 
+  displayName: 'Text',
+
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
@@ -113,7 +115,7 @@ var Text = React.createClass({
       isHighlighted: false,
     });
   },
-  
+
   getDefaultProps: function(): Object {
     return {
       allowFontScaling: true,

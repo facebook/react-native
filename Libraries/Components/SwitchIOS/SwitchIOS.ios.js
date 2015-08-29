@@ -37,6 +37,9 @@ type Event = Object;
  * source of truth.
  */
 var SwitchIOS = React.createClass({
+
+  displayName: 'SwitchIOS',
+
   mixins: [NativeMethodsMixin],
 
   propTypes: {
