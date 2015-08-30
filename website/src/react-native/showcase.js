@@ -31,6 +31,12 @@ var apps = [
     author: 'Peach Labs',
   },
   {
+    name: 'Exponent',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
+    link:  'https://itunes.apple.com/ca/app/exponent/id982107779?mt=8',
+    author: 'Charlie Cheever & James Ide',
+  },
+  {
     name: 'F8',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple5/v4/bf/d9/50/bfd9504e-a1bd-67c5-b50b-24e97016dae9/pr_source.jpg',
     link: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
