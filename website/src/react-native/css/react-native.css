@@ -992,10 +992,40 @@ div[data-twttr-id] iframe {
   display: none;
 }
 
+.showcaseHeader {
+  text-align: center;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
 .showcase {
-  margin: 40px auto;
-  width: 30%;
+  margin: 30px auto;
+  width: 25%;
   display: inline-block;
+  text-align: center;
+  vertical-align: top;
+  transition: 0.2s opacity ease-in;
+}
+
+.showcase:hover {
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.showcase h3 {
+  margin-bottom: 0px;
+  line-height: 20px;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 16px;
+}
+
+.showcase p {
+  margin-top: 5px;
+}
+
+.showcase h3, .showcase p {
+  color: rgb(72, 72, 72);
 }
 
 .showcase img {
