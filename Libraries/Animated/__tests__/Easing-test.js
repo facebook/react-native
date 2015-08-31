@@ -71,6 +71,14 @@ describe('Easing', () => {
     }
   });
 
+  it('should satisfy boundary conditions with elastic', () => {
+    for (var b = 0; b < 4; b += 0.3) {
+      var easing = Easing.elastic(b);
+      expect(easing(0)).toBe(0);
+      expect(easing(1)).toBe(1);
+    }
+  });
+
   function sampleEasingFunction(easing) {
     var DURATION = 300;
     var tickCount = Math.round(DURATION * 60 / 1000);
