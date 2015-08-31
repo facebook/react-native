@@ -30,6 +30,7 @@ ReactNativeViewAttributes.UIView = {
   onAccessibilityTap: true,
   onMagicTap: true,
   collapsable: true,
+  needsOffscreenAlphaCompositing: true,
 };
 
 ReactNativeViewAttributes.RCTView = merge(

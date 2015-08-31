@@ -13,12 +13,14 @@ const SocketClient = require('./SocketClient');
 const SocketServer = require('./SocketServer');
 const _ = require('underscore');
 const crypto = require('crypto');
+const debug = require('debug')('ReactPackager:SocketInterface');
 const fs = require('fs');
+const net = require('net');
 const path = require('path');
 const tmpdir = require('os').tmpdir();
 const {spawn} = require('child_process');
 
-const CREATE_SERVER_TIMEOUT = 30000;
+const CREATE_SERVER_TIMEOUT = 60000;
 
 const SocketInterface = {
   getOrCreateSocketFor(options) {
@@ -38,66 +40,81 @@ const SocketInterface = {
       );
 
       if (fs.existsSync(sockPath)) {
-        resolve(SocketClient.create(sockPath));
-        return;
-      }
-
-      const logPath = path.join(tmpdir, 'react-packager.log');
-
-      const timeout = setTimeout(
-        () => reject(
-          new Error(
-            'Took too long to start server. Server logs: \n' +
-            fs.readFileSync(logPath, 'utf8')
-          )
-        ),
-        CREATE_SERVER_TIMEOUT,
-      );
-
-      const log = fs.openSync(logPath, 'a');
-
-      // Enable server debugging by default since it's going to a log file.
-      const env = _.clone(process.env);
-      env.DEBUG = 'ReactPackager:SocketServer';
-
-      // We have to go through the main entry point to make sure
-      // we go through the babel require hook.
-      const child = spawn(
-        process.execPath,
-        [path.join(__dirname, '..', '..', 'index.js')],
-        {
-          detached: true,
-          env: env,
-          stdio: ['ipc', log, log]
-        }
-      );
-
-      child.unref();
-
-      child.on('message', m => {
-        if (m && m.type && m.type === 'createdServer') {
-          clearTimeout(timeout);
-          child.disconnect();
+        var sock = net.connect(sockPath);
+        sock.on('connect', () => {
+          sock.end();
           resolve(SocketClient.create(sockPath));
-        }
-      });
-
-
-      if (options.blacklistRE) {
-        options.blacklistRE = { source: options.blacklistRE.source };
+        });
+        sock.on('error', (e) => {
+          try {
+            debug('deleting socket for not responding', sockPath);
+            fs.unlinkSync(sockPath);
+          } catch (err) {
+            // Another client might have deleted it first.
+          }
+          createServer(resolve, reject, options, sockPath);
+        });
+      } else {
+        createServer(resolve, reject, options, sockPath);
       }
-
-      child.send({
-        type: 'createSocketServer',
-        data: { sockPath, options }
-      });
     });
   },
 
   listenOnServerMessages() {
     return SocketServer.listenOnServerIPCMessages();
   }
-
 };
+
+function createServer(resolve, reject, options, sockPath) {
+  const logPath = path.join(tmpdir, 'react-packager.log');
+
+  const timeout = setTimeout(
+    () => reject(
+      new Error(
+        'Took too long to start server. Server logs: \n' +
+        fs.readFileSync(logPath, 'utf8')
+      )
+    ),
+    CREATE_SERVER_TIMEOUT,
+  );
+
+  const log = fs.openSync(logPath, 'a');
+
+  // Enable server debugging by default since it's going to a log file.
+  const env = _.clone(process.env);
+  env.DEBUG = 'ReactPackager:SocketServer';
+
+  // We have to go through the main entry point to make sure
+  // we go through the babel require hook.
+  const child = spawn(
+    process.execPath,
+    [path.join(__dirname, '..', '..', 'index.js')],
+    {
+      detached: true,
+      env: env,
+      stdio: ['ipc', log, log]
+    }
+  );
+
+  child.unref();
+
+  child.on('message', m => {
+    if (m && m.type && m.type === 'createdServer') {
+      clearTimeout(timeout);
+      child.disconnect();
+
+      resolve(SocketClient.create(sockPath));
+    }
+  });
+
+  if (options.blacklistRE) {
+    options.blacklistRE = { source: options.blacklistRE.source };
+  }
+
+  child.send({
+    type: 'createSocketServer',
+    data: { sockPath, options }
+  });
+}
 
 module.exports = SocketInterface;

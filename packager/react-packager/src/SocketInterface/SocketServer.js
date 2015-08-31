@@ -32,6 +32,7 @@ class SocketServer {
           options
         );
         resolve(this);
+        process.on('exit', () => fs.unlinkSync(sockPath));
       });
     });
     this._server.on('connection', (sock) => this._handleConnection(sock));
@@ -41,8 +42,6 @@ class SocketServer {
     this._packagerServer = new Server(options);
     this._jobs = 0;
     this._dieEventually();
-
-    process.on('exit', () => fs.unlinkSync(sockPath));
   }
 
   onReady() {
@@ -72,6 +71,11 @@ class SocketServer {
       debug('request error', error);
       this._jobs--;
       this._reply(sock, m.id, 'error', error.stack);
+
+      // Fatal error from JSTransformer transform workers.
+      if (error.type === 'ProcessTerminatedError') {
+        setImmediate(() => process.exit(1));
+      }
     };
 
     switch (m.type) {
@@ -138,12 +142,17 @@ class SocketServer {
           process.send({ type: 'createdServer' });
         },
         error => {
-          debug('error creating server', error.code);
           if (error.code === 'EADDRINUSE') {
             // Server already listening, this may happen if multiple
             // clients where started in quick succussion (buck).
             process.send({ type: 'createdServer' });
+
+            // Kill this server because some other server with the same
+            // config and socket already started.
+            debug('server already started');
+            setImmediate(() => process.exit());
           } else {
+            debug('error creating server', error.code);
             throw error;
           }
         }
