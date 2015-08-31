@@ -71,6 +71,11 @@ class SocketServer {
       debug('request error', error);
       this._jobs--;
       this._reply(sock, m.id, 'error', error.stack);
+
+      // Fatal error from JSTransformer transform workers.
+      if (error.type === 'ProcessTerminatedError') {
+        setImmediate(() => process.exit(1));
+      }
     };
 
     switch (m.type) {
