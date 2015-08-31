@@ -8,17 +8,17 @@
  */
 'use strict';
 
-var _ = require('underscore');
-var crypto = require('crypto');
-var declareOpts = require('../lib/declareOpts');
-var fs = require('fs');
-var isAbsolutePath = require('absolute-path');
-var path = require('path');
-var Promise = require('promise');
-var tmpdir = require('os').tmpDir();
-var version = require('../../../../package.json').version;
+const Promise = require('promise');
+const _ = require('underscore');
+const declareOpts = require('../lib/declareOpts');
+const fs = require('fs');
+const getCacheFilePath = require('../lib/getCacheFilePath');
+const isAbsolutePath = require('absolute-path');
+const loadCacheSync = require('../lib/loadCacheSync');
+const path = require('path');
+const version = require('../../../../package.json').version;
 
-var validateOpts = declareOpts({
+const validateOpts = declareOpts({
   resetCache: {
     type: 'boolean',
     default: false,
@@ -164,21 +164,7 @@ class Cache {
 
   _loadCacheSync(cachePath) {
     var ret = Object.create(null);
-    if (!fs.existsSync(cachePath)) {
-      return ret;
-    }
-
-    var cacheOnDisk;
-    try {
-      cacheOnDisk = JSON.parse(fs.readFileSync(cachePath));
-    } catch (e) {
-      if (e instanceof SyntaxError) {
-        console.warn('Unable to parse cache file. Will clear and continue.');
-        fs.unlinkSync(cachePath);
-        return ret;
-      }
-      throw e;
-    }
+    var cacheOnDisk = loadCacheSync(cachePath);
 
     // Filter outdated cache and convert to promises.
     Object.keys(cacheOnDisk).forEach(key => {
@@ -203,20 +189,13 @@ class Cache {
   }
 
   _getCacheFilePath(options) {
-    var hash = crypto.createHash('md5');
-    hash.update(version);
-
-    var roots = options.projectRoots.join(',').split(path.sep).join('-');
-    hash.update(roots);
-
-    var cacheVersion = options.cacheVersion || '0';
-    hash.update(cacheVersion);
-
-    hash.update(options.transformModulePath);
-
-    var name = 'react-packager-cache-' + hash.digest('hex');
-
-    return path.join(tmpdir, name);
+    return getCacheFilePath(
+      'react-packager-cache-',
+      version,
+      options.projectRoots.join(',').split(path.sep).join('-'),
+      options.cacheVersion || '0',
+      options.transformModulePath,
+    );
   }
 }
 
