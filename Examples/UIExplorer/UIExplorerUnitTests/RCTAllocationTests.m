@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   XCTAssertNil(weakMethod, @"RCTModuleMethod should have been deallocated");
 }
 
-- (void)testJavaScriptExecutorIsDeallocated
+- (void)DISABLED_testJavaScriptExecutorIsDeallocated // flaky: #8195866
 {
   __weak id<RCTJavaScriptExecutor> weakExecutor;
   @autoreleasepool {
