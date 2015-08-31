@@ -25,6 +25,9 @@ const MAX_CALLS_PER_WORKER = 600;
 // Worker will timeout if one of the callers timeout.
 const DEFAULT_MAX_CALL_TIME = 120000;
 
+// How may times can we tolerate failures from the worker.
+const MAX_RETRIES = 3;
+
 const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
@@ -63,6 +66,7 @@ class Transformer {
         maxConcurrentCallsPerWorker: 1,
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
         maxCallTime: opts.transformTimeoutInterval,
+        maxRetries: MAX_RETRIES,
       }, opts.transformModulePath);
 
       this._transform = Promise.denodeify(this._workers);
@@ -118,6 +122,13 @@ class Transformer {
               );
               timeoutErr.type = 'TimeoutError';
               throw timeoutErr;
+            } else if (err.type === 'ProcessTerminatedError') {
+              const uncaughtError = new Error(
+                'Uncaught error in the transformer worker: ' +
+                this._opts.transformModulePath
+              );
+              uncaughtError.type = 'ProcessTerminatedError';
+              throw uncaughtError;
             }
 
             throw formatError(err, filePath);
