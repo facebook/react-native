@@ -214,6 +214,11 @@ var MapView = React.createClass({
      * Callback that is called once, when the user is clicked on a annotation.
      */
     onAnnotationPress: React.PropTypes.func,
+
+    /**
+     * Url template for custom tiles, e.g. http://tile.openstreetmap.org/{z}/{x}/{y}.png
+     */
+    tilesSource: React.PropTypes.string,
   },
 
   _onChange: function(event: Event) {
