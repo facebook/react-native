@@ -57,18 +57,28 @@ class Package {
         return name;
       }
 
+      let redirect;
+
       if (name[0] !== '/') {
-        return browser[name] || name;
+        if (browser[name]) {
+          if (browser[name][0] !== '.') {
+            return browser[name];
+          } else {
+            redirect = browser[name];
+          }
+        }
+      } else {
+        if (!isAbsolutePath(name)) {
+          throw new Error(`Expected ${name} to be absolute path`);
+        }
+
+        const relPath = './' + path.relative(this.root, name);
+
+        redirect = browser[relPath] ||
+          browser[relPath + '.js'] ||
+          browser[relPath + '.json'];
       }
 
-      if (!isAbsolutePath(name)) {
-        throw new Error(`Expected ${name} to be absolute path`);
-      }
-
-      const relPath = './' + path.relative(this.root, name);
-      const redirect = browser[relPath] ||
-              browser[relPath + '.js'] ||
-              browser[relPath + '.json'];
       if (redirect) {
         return path.join(
           this.root,
