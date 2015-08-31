@@ -50,7 +50,7 @@ var apps = [
   },
   {
     name: 'Facebook Adverts Manager - Android',
-    icon: 'https://lh3.googleusercontent.com/ODKlFYm7BaNiLMEEDO2b4DOCU-hmS1-Fg3_x_lLUaJZ0ssFsxciSoX1dYERaWDJuEs8=w300-rw',
+    icon: 'https://lh3.googleusercontent.com/ODKlFYm7BaNiLMEEDO2b4DOCU-hmS1-Fg3_x_lLUaJZ0ssFsxciSoX1dYERaWDJuEs8=w300',
     link: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
     author: 'Facebook',
   },
