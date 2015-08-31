@@ -59,21 +59,22 @@ class Easing {
     return Math.pow(2, 10 * (t - 1));
   }
 
-  static elastic(a: number, p: number): (t: number) => number {
-    var tau = Math.PI * 2;
-    // flow isn't smart enough to figure out that s is always assigned to a
-    // number before being used in the returned function
-    var s: any;
-    if (arguments.length < 2) {
-      p = 0.45;
+  /**
+   * A simple elastic interaction, similar to a spring.  Default bounciness
+   * is 1, which overshoots a little bit once.  0 bounciness doesn't overshoot
+   * at all, and bounciness of N > 1 will overshoot about N times.
+   *
+   * Wolfram Plots:
+   *
+   *   http://tiny.cc/elastic_b_1 (default bounciness = 1)
+   *   http://tiny.cc/elastic_b_3 (bounciness = 3)
+   */
+  static elastic(bounciness: number): (t: number) => number {
+    if (arguments.length === 0) {
+      bounciness = 1;
     }
-    if (arguments.length) {
-      s = p / tau * Math.asin(1 / a);
-    } else {
-      a = 1;
-      s = p / 4;
-    }
-    return (t) => 1 + a * Math.pow(2, -10 * t) * Math.sin((t - s) * tau / p);
+    var p = bounciness * Math.PI;
+    return (t) => 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * p);
   };
 
   static back(s: number): (t: number) => number {
