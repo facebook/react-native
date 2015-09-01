@@ -15,7 +15,7 @@ const debug = require('debug')('ReactPackager:SocketServer');
 const fs = require('fs');
 const net = require('net');
 
-const MAX_IDLE_TIME = 10 * 60 * 1000;
+const MAX_IDLE_TIME = 30 * 1000;
 
 class SocketServer {
   constructor(sockPath, options) {
@@ -118,7 +118,7 @@ class SocketServer {
     this._deathTimer = setTimeout(() => {
       if (this._jobs <= 0) {
         debug('server dying', process.pid);
-        process.exit(1);
+        process.exit();
       }
       this._dieEventually();
     }, MAX_IDLE_TIME);
