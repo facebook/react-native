@@ -44,7 +44,15 @@ var TouchableWithoutFeedback = React.createClass({
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   `{nativeEvent: {layout: {x, y, width, height}}}`
+     */
+    onLayout: React.PropTypes.func,
+
     onLongPress: React.PropTypes.func,
+
     /**
      * Delay in ms, from the start of the touch, before onPressIn is called.
      */
@@ -113,6 +121,7 @@ var TouchableWithoutFeedback = React.createClass({
     return (React: any).cloneElement(onlyChild(this.props.children), {
       accessible: this.props.accessible !== false,
       testID: this.props.testID,
+      onLayout: this.props.onLayout,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

@@ -155,6 +155,7 @@ var TouchableOpacity = React.createClass({
         accessible={true}
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
+        onLayout={this.props.onLayout}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
