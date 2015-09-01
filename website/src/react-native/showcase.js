@@ -132,6 +132,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/youmeyou/id949540333?mt=8',
     author: 'youmeyou, LLC',
   },
+  {
+    name: 'Leanpub',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/9f/4a/6f/9f4a6f8c-8951-ed89-4083-74ace23df9ef/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/leanpub/id913517110?ls=1&mt=8',
+    author: 'Leanpub'
+  },
 ];
 
 var showcase = React.createClass({
