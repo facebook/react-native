@@ -16,6 +16,7 @@
 
 #import "RCTAssert.h"
 #import "RCTDefines.h"
+#import "RCTDevMenu.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTPerformanceLogger.h"
@@ -89,6 +90,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 @synthesize valid = _valid;
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -110,7 +112,7 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, __unused JSObjectRe
     NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, messageRef);
     JSStringRelease(messageRef);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:
-                                  @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/([a-z0-9_]+).includeRequire.runModule.bundle(:[0-9]+:[0-9]+)"
+                                  @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/([a-z0-9_]+).bundle(:[0-9]+:[0-9]+)"
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:NULL];
     message = [regex stringByReplacingMatchesInString:message
@@ -285,11 +287,18 @@ static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObje
 #if RCT_JSC_PROFILER
     void *JSCProfiler = dlopen(RCT_JSC_PROFILER_DYLIB, RTLD_NOW);
     if (JSCProfiler != NULL) {
-      JSObjectCallAsFunctionCallback nativeProfilerStart = dlsym(JSCProfiler, "nativeProfilerStart");
-      JSObjectCallAsFunctionCallback nativeProfilerEnd = dlsym(JSCProfiler, "nativeProfilerEnd");
+      void (*nativeProfilerStart)(JSContextRef, const char *) = (void (*)(JSContextRef, const char *))dlsym(JSCProfiler, "nativeProfilerStart");
+      const char *(*nativeProfilerEnd)(JSContextRef, const char *) = (const char *(*)(JSContextRef, const char *))dlsym(JSCProfiler, "nativeProfilerEnd");
       if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
-        [strongSelf _addNativeHook:nativeProfilerStart withName:"nativeProfilerStart"];
-        [strongSelf _addNativeHook:nativeProfilerEnd withName:"nativeProfilerStop"];
+        __block BOOL isProfiling = NO;
+        [_bridge.devMenu addItem:@"Profile" handler:^{
+          if (isProfiling) {
+            RCTLogInfo(@"%s", nativeProfilerEnd(strongSelf->_context.ctx, "profile"));
+          } else {
+            nativeProfilerStart(strongSelf->_context.ctx, "profile");
+          }
+          isProfiling = !isProfiling;
+        }];
       }
     }
 #endif

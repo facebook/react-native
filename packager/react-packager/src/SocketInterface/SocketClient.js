@@ -13,6 +13,10 @@ const Promise = require('promise');
 const bser = require('bser');
 const debug = require('debug')('ReactPackager:SocketClient');
 const net = require('net');
+const path  = require('path');
+const tmpdir = require('os').tmpdir();
+
+const LOG_PATH = path.join(tmpdir, 'react-packager.log');
 
 class SocketClient {
   static create(sockPath) {
@@ -81,7 +85,9 @@ class SocketClient {
     delete this._resolvers[message.id];
 
     if (message.type === 'error') {
-      resolver.reject(new Error(message.data));
+      resolver.reject(new Error(
+        message.data + '\n' + 'See logs ' + LOG_PATH
+      ));
     } else {
       resolver.resolve(message.data);
     }
