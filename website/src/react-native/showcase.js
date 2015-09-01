@@ -67,6 +67,12 @@ var apps = [
     author: 'HS Schaaf',
   },
   {
+    name: 'Leanpub',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/9f/4a/6f/9f4a6f8c-8951-ed89-4083-74ace23df9ef/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/leanpub/id913517110?ls=1&mt=8',
+    author: 'Leanpub',
+  },
+  {
     name: 'Lrn',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
     link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
