@@ -23,7 +23,7 @@
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:0.1]; \
+NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:5]; \
 while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
   [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
 } \
@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   XCTAssertNil(weakMethod, @"RCTModuleMethod should have been deallocated");
 }
 
-- (void)DISABLED_testJavaScriptExecutorIsDeallocated // flaky: #8195866
+- (void)testJavaScriptExecutorIsDeallocated
 {
   __weak id<RCTJavaScriptExecutor> weakExecutor;
   @autoreleasepool {
@@ -157,7 +157,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   XCTAssertNil(weakExecutor, @"JavaScriptExecutor should have been released");
 }
 
-- (void)disabled_testJavaScriptContextIsDeallocated
+- (void)testJavaScriptContextIsDeallocated
 {
   __weak id weakContext;
   @autoreleasepool {
