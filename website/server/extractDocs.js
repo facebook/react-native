@@ -134,7 +134,7 @@ function renderAPI(type) {
     try {
       json = jsDocs(fs.readFileSync(filepath).toString());
     } catch(e) {
-      console.error('Cannot parse file', filepath);
+      console.error('Cannot parse file', filepath, e);
       json = {};
     }
     return componentsToMarkdown(type, json, filepath, n++);
@@ -187,6 +187,7 @@ var components = [
 var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/Utilities/AlertIOS.js',
+  '../Libraries/Animated/Animated.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',
