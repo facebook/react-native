@@ -66,13 +66,15 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_webView) {
-    _webView = [UIWebView new];
+    [self executeBlockOnJavaScriptQueue:^{
+      _webView = [UIWebView new];
+      _webView.delegate = self;
+    }];
   }
 
   _objectsToInject = [NSMutableDictionary new];
-  _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL],
-  _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL],
-  _webView.delegate = self;
+  _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL];
+  _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL];
 }
 
 - (void)invalidate
