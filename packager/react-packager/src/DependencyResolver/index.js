@@ -158,10 +158,10 @@ HasteDependencyResolver.prototype.wrapModule = function(module, code) {
       )
     )
   ).then(() => {
-    const relativizeCode = (codeMatch, pre, quot, depName, post) => {
+    const relativizeCode = (codeMatch, pre, startQuot, depName, endQuot, post) => {
       const depId = resolvedDeps[depName];
       if (depId) {
-        return pre + quot + depId + post;
+        return pre + JSON.stringify(depId) + post;
       } else {
         return codeMatch;
       }
@@ -184,9 +184,11 @@ HasteDependencyResolver.prototype.getDebugInfo = function() {
 };
 
 function defineModuleCode({moduleName, code, deps}) {
+  moduleName = JSON.stringify(moduleName);
+
   return [
     `__d(`,
-    `'${moduleName}',`,
+    `${moduleName},`,
     `${deps},`,
     'function(global, require, module, exports) {',
     `  ${code}`,

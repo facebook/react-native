@@ -155,7 +155,7 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
     .replace(blockCommentRe, '')
     .replace(lineCommentRe, '')
     // Parse sync dependencies. See comment below for further detils.
-    .replace(replacePatterns.IMPORT_RE, (match, pre, quot, dep, post) => {
+    .replace(replacePatterns.IMPORT_RE, (match, pre, startQuot, dep, endQuot, post) => {
       deps.sync.push(dep);
       return match;
     })
@@ -164,7 +164,7 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
     // Sync dependencies can be defined either using `require` or the ES6
     // `import` syntax:
     //   var dep1 = require('dep1');
-    .replace(replacePatterns.REQUIRE_RE, (match, pre, quot, dep, post) => {
+    .replace(replacePatterns.REQUIRE_RE, (match, pre, startQuot, dep, endQuot, post) => {
       deps.sync.push(dep);
     })
     // Parse async dependencies this module has. As opposed to what happens
@@ -172,7 +172,7 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
     // dependencies won't be loaded into memory. This is deferred till the
     // code path gets to the import statement:
     //   System.import('dep1')
-    .replace(replacePatterns.SYSTEM_IMPORT_RE, (match, pre, quot, dep, post) => {
+    .replace(replacePatterns.SYSTEM_IMPORT_RE, (match, pre, startQuot, dep, endQuot, post) => {
       deps.async.push([dep]);
       return match;
     });

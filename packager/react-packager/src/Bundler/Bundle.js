@@ -53,7 +53,7 @@ class Bundle {
   finalize(options) {
     options = options || {};
     if (options.runMainModule) {
-      const runCode = ';require("' + this._mainModuleId + '");';
+      const runCode = ';require(' + JSON.stringify(this._mainModuleId) + ');';
       this.addModule(new ModuleTransport({
         code: runCode,
         virtual: true,
