@@ -59,7 +59,7 @@ received.
 
 For that we need to know the library's headers. To achieve that you have to go
 to your project's file, select `Build Settings` and search for `Header Search
-Paths`. There you should include the path to you library (if it has relevant
+Paths`. There you should include the path to your library (if it has relevant
 files on subdirectories remember to make it `recursive`, like `React` on the
 example).
 
