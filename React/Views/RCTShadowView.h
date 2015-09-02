@@ -39,7 +39,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
-@property (nonatomic, assign) BOOL onLayout;
+@property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is

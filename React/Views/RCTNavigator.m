@@ -193,6 +193,9 @@ NSInteger kNeverProgressed = -10000;
 
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
 
+@property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
+@property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
+
 @property (nonatomic, assign) NSInteger previousRequestedTopOfStack;
 
 // Previous views are only mainted in order to detect incorrect
@@ -308,12 +311,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_bridge.eventDispatcher sendInputEventWithName:@"navigationProgress" body:@{
-      @"fromIndex": @(_currentlyTransitioningFrom),
-      @"toIndex": @(_currentlyTransitioningTo),
-      @"progress": @(nextProgress),
-      @"target": self.reactTag
-    }];
+    if (_onNavigationProgress) {
+      _onNavigationProgress(@{
+        @"fromIndex": @(_currentlyTransitioningFrom),
+        @"toIndex": @(_currentlyTransitioningTo),
+        @"progress": @(nextProgress),
+      });
+    }
   }
 }
 
@@ -416,10 +420,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)handleTopOfStackChanged
 {
-  [_bridge.eventDispatcher sendInputEventWithName:@"navigationComplete" body:@{
-    @"target":self.reactTag,
-    @"stackLength":@(_navigationController.viewControllers.count)
-  }];
+  if (_onNavigationComplete) {
+    _onNavigationComplete(@{
+      @"stackLength":@(_navigationController.viewControllers.count)
+    });
+  }
 }
 
 - (void)dispatchFakeScrollEvent
@@ -502,7 +507,7 @@ BOOL jsGettingtooSlow =
   if (jsGettingAhead) {
     if (reactPushOne) {
       UIView *lastView = _currentViews.lastObject;
-      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView eventDispatcher:_bridge.eventDispatcher];
+      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
       [_navigationController pushViewController:vc animated:(currentReactCount > 1)];
