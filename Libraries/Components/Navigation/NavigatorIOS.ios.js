@@ -52,6 +52,7 @@ var NavigatorTransitionerIOS = React.createClass({
 type Route = {
   component: Function;
   title: string;
+  titleIcon?: Object;
   passProps?: Object;
   backButtonTitle?: string;
   backButtonIcon?: Object;
@@ -61,6 +62,8 @@ type Route = {
   rightButtonTitle?: string;
   rightButtonIcon?: Object;
   onRightButtonPress?: Function;
+  navigationBarHidden?: Boolean;
+  navigationBarTransparent?: Boolean;
   wrapperStyle?: any;
 };
 
@@ -73,6 +76,7 @@ type State = {
   fromIndex: number;
   toIndex: number;
   makingNavigatorRequest: boolean;
+  navBarReload: boolean;
   updatingAllIndicesAtOrBeyond: number;
 }
 
@@ -185,6 +189,10 @@ var NavigatorIOS = React.createClass({
        * The title displayed in the nav bar and back button for this route
        */
       title: PropTypes.string.isRequired,
+      /**
+       * The title icon displayed in the nav bar for this route
+       */
+      titleIcon: Image.propTypes.source,
 
       /**
        * Specify additional props passed to the component. NavigatorIOS will
@@ -279,6 +287,11 @@ var NavigatorIOS = React.createClass({
      */
     translucent: PropTypes.bool,
 
+    /**
+     * A Boolean value that indicates whether the navigation bar is totaly transparent
+     */
+    navigationBarTransparent: PropTypes.bool,
+
   },
 
   navigator: (undefined: ?Object),
@@ -298,6 +311,7 @@ var NavigatorIOS = React.createClass({
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
       navigationContext: this.navigationContext,
+      updateNavBar:this.updateNavBar,
     };
     this._emitWillFocus(this.state.routeStack[this.state.observedTopOfStack]);
   },
@@ -330,11 +344,36 @@ var NavigatorIOS = React.createClass({
       // Whether or not we are making a navigator request to push/pop. (Used
       // for performance optimization).
       makingNavigatorRequest: false,
+      navBarReload: false,
       // Whether or not we are updating children of navigator and if so (not
       // `null`) which index marks the beginning of all updates. Used for
       // performance optimization.
       updatingAllIndicesAtOrBeyond: 0,
     };
+  },
+  updateNavBar: function (route: Route){
+    var merge = function (a, b){
+      // return a;
+      var current = {};
+      for (var i = 0; i < Object.keys(a).length; i++) {
+        var attr = Object.keys(a)[i];
+        current[attr] = a[attr];
+      }
+      for (var i = 0; i < Object.keys(b).length; i++) {
+        var attr = Object.keys(b)[i];
+        current[attr] = b[attr];
+      }
+      return current;
+    };
+    if (route !== undefined){
+      var current: Route = this.state.routeStack[this.state.routeStack.length - 1] ;
+      this.state.routeStack[this.state.routeStack.length - 1] = merge(current, route);
+    }
+    
+    this.setState({
+      navBarReload:true,
+      makingNavigatorRequest: true,
+    });
   },
 
   _toFocusOnNavigationComplete: (undefined: any),
@@ -592,12 +631,15 @@ var NavigatorIOS = React.createClass({
   _routeToStackItem: function(route: Route, i: number) {
     var Component = route.component;
     var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
-      this.state.updatingAllIndicesAtOrBeyond >= i;
+      (i >= this.state.updatingAllIndicesAtOrBeyond || this.state.navBarReload);
+    var navigationBarHidden = route.navigationBarHidden !== undefined ? route.navigationBarHidden : this.props.navigationBarHidden;
+    var navigationBarTransparent = route.navigationBarTransparent !== undefined ? route.navigationBarTransparent : this.props.navigationBarTransparent;
 
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
           title={route.title}
+          titleIcon={this._imageNameFromSource(route.titleIcon)}
           style={[
             styles.stackItem,
             this.props.itemWrapperStyle,
@@ -611,12 +653,13 @@ var NavigatorIOS = React.createClass({
           rightButtonIcon={this._imageNameFromSource(route.rightButtonIcon)}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
-          navigationBarHidden={this.props.navigationBarHidden}
           shadowHidden={this.props.shadowHidden}
           tintColor={this.props.tintColor}
           barTintColor={this.props.barTintColor}
           translucent={this.props.translucent !== false}
-          titleTextColor={this.props.titleTextColor}>
+          titleTextColor={this.props.titleTextColor}
+          navigationBarHidden={navigationBarHidden}
+          navigationBarTransparent={navigationBarTransparent} >
           <Component
             navigator={this.navigator}
             route={route}
@@ -639,6 +682,8 @@ var NavigatorIOS = React.createClass({
     // computation of navigator children.
     var items = shouldRecurseToNavigator ?
       this.state.routeStack.map(this._routeToStackItem) : null;
+    // TODO Change it
+    this.state.navBarReload = false;
     return (
       <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
         <NavigatorTransitionerIOS
