@@ -14,6 +14,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "RCTAssetsLibraryImageLoader.h"
 #import "RCTBridge.h"
 #import "RCTImageLoader.h"
 #import "RCTLog.h"

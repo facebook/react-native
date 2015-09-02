@@ -3,9 +3,10 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridge.h"
+#import "RCTImageLoader.h"
 #import "RCTURLRequestHandler.h"
 
-@interface RCTImageStoreManager : NSObject<RCTURLRequestHandler>
+@interface RCTImageStoreManager : NSObject <RCTImageURLLoader, RCTURLRequestHandler>
 
 /**
  * Set and get cached images. These must be called from the main thread.
