@@ -25,17 +25,13 @@
 @implementation RCTTabBar
 {
   BOOL _tabsChanged;
-  RCTEventDispatcher *_eventDispatcher;
   UITabBarController *_tabController;
   NSMutableArray *_tabViews;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  RCTAssertParam(eventDispatcher);
-
-  if ((self = [super initWithFrame:CGRectZero])) {
-    _eventDispatcher = eventDispatcher;
+  if ((self = [super initWithFrame:frame])) {
     _tabViews = [NSMutableArray new];
     _tabController = [UITabBarController new];
     _tabController.delegate = self;
@@ -44,7 +40,6 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (UIViewController *)reactViewController
@@ -100,8 +95,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     for (RCTTabBarItem *tab in [self reactSubviews]) {
       UIViewController *controller = tab.reactViewController;
       if (!controller) {
-        controller = [[RCTWrapperViewController alloc] initWithContentView:tab
-                                                           eventDispatcher:_eventDispatcher];
+        controller = [[RCTWrapperViewController alloc] initWithContentView:tab];
       }
       [viewControllers addObject:controller];
     }
@@ -154,7 +148,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
   RCTTabBarItem *tab = [self reactSubviews][index];
-  [_eventDispatcher sendInputEventWithName:@"press" body:@{@"target": tab.reactTag}];
+  if (tab.onPress) tab.onPress(nil);
   return NO;
 }
 

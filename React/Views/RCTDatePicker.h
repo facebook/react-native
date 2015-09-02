@@ -9,12 +9,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTComponent.h"
-
-@interface RCTSegmentedControl : UISegmentedControl
-
-@property (nonatomic, copy) NSArray *values;
-@property (nonatomic, assign) NSInteger selectedIndex;
-@property (nonatomic, copy) RCTBubblingEventBlock onChange;
+@interface RCTDatePicker : UIDatePicker
 
 @end

@@ -20,7 +20,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTWebView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [RCTWebView new];
 }
 
 RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL);
@@ -31,15 +31,9 @@ RCT_REMAP_VIEW_PROPERTY(scalesPageToFit, _webView.scalesPageToFit, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString);
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
-
-- (NSArray *)customDirectEventTypes
-{
-  return @[
-    @"loadingStart",
-    @"loadingFinish",
-    @"loadingError",
-  ];
-}
+RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
 
 - (NSDictionary *)constantsToExport
 {
@@ -79,7 +73,6 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
     }
   }];
 }
-
 
 RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 {

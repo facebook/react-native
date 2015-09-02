@@ -21,7 +21,6 @@
 {
   UIView *_wrapperView;
   UIView *_contentView;
-  RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayout;
   CGFloat _previousBottomLayout;
 }
@@ -30,23 +29,19 @@
 @synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
 
 - (instancetype)initWithContentView:(UIView *)contentView
-                    eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   RCTAssertParam(contentView);
-  RCTAssertParam(eventDispatcher);
 
   if ((self = [super initWithNibName:nil bundle:nil])) {
     _contentView = contentView;
-    _eventDispatcher = eventDispatcher;
     self.automaticallyAdjustsScrollViewInsets = NO;
   }
   return self;
 }
 
 - (instancetype)initWithNavItem:(RCTNavItem *)navItem
-                eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if ((self = [self initWithContentView:navItem eventDispatcher:eventDispatcher])) {
+  if ((self = [self initWithContentView:navItem])) {
     _navItem = navItem;
   }
   return self;
@@ -101,14 +96,8 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
     UINavigationItem *item = self.navigationItem;
     item.title = _navItem.title;
     item.backBarButtonItem = _navItem.backButtonItem;
-    if ((item.leftBarButtonItem = _navItem.leftButtonItem)) {
-      item.leftBarButtonItem.target = self;
-      item.leftBarButtonItem.action = @selector(handleNavLeftButtonTapped);
-    }
-    if ((item.rightBarButtonItem = _navItem.rightButtonItem)) {
-      item.rightBarButtonItem.target = self;
-      item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
-    }
+    item.leftBarButtonItem = _navItem.leftButtonItem;
+    item.rightBarButtonItem = _navItem.rightButtonItem;
   }
 }
 
@@ -120,18 +109,6 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
   _wrapperView = [[UIView alloc] initWithFrame:_contentView.bounds];
   [_wrapperView addSubview:_contentView];
   self.view = _wrapperView;
-}
-
-- (void)handleNavLeftButtonTapped
-{
-  [_eventDispatcher sendInputEventWithName:@"navLeftButtonTap"
-                                      body:@{@"target":_navItem.reactTag}];
-}
-
-- (void)handleNavRightButtonTapped
-{
-  [_eventDispatcher sendInputEventWithName:@"navRightButtonTap"
-                                      body:@{@"target":_navItem.reactTag}];
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent

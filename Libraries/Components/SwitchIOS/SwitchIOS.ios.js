@@ -108,6 +108,8 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTSwitch = requireNativeComponent('RCTSwitch', SwitchIOS);
+var RCTSwitch = requireNativeComponent('RCTSwitch', SwitchIOS, {
+  nativeOnly: { onChange: true }
+});
 
 module.exports = SwitchIOS;

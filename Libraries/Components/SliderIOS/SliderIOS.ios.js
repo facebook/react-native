@@ -107,6 +107,8 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS);
+var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS, {
+  nativeOnly: { onChange: true },
+});
 
 module.exports = SliderIOS;

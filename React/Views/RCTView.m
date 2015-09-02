@@ -167,8 +167,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (BOOL)accessibilityActivate
 {
-  if (self.accessibilityTapHandler) {
-    self.accessibilityTapHandler(self);
+  if (_onAccessibilityTap) {
+    _onAccessibilityTap(nil);
     return YES;
   } else {
     return NO;
@@ -177,8 +177,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (BOOL)accessibilityPerformMagicTap
 {
-  if (self.magicTapHandler) {
-    self.magicTapHandler(self);
+  if (_onMagicTap) {
+    _onMagicTap(nil);
     return YES;
   } else {
     return NO;

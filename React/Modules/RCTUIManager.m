@@ -455,6 +455,9 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
     [areNew addObject:@(shadowView.isNewView)];
     [parentsAreNew addObject:@(shadowView.superview.isNewView)];
+
+    // TODO (#8214142): this can be greatly simplified by sending the layout
+    // event directly from the shadow thread, which may be better anyway.
     id event = (id)kCFNull;
     if (shadowView.onLayout) {
       event = @{
@@ -1128,67 +1131,68 @@ RCT_EXPORT_METHOD(clearJSResponder)
   }];
 }
 
-- (NSDictionary *)bubblingEventsConfig
-{
-  NSMutableDictionary *customBubblingEventTypesConfigs = [NSMutableDictionary new];
-  for (RCTComponentData *componentData in _componentDataByName.allValues) {
-    RCTViewManager *manager = componentData.manager;
-    if (RCTClassOverridesInstanceMethod([manager class], @selector(customBubblingEventTypes))) {
-      NSArray *events = [manager customBubblingEventTypes];
-      if (RCT_DEBUG) {
-        RCTAssert(!events || [events isKindOfClass:[NSArray class]],
-                  @"customBubblingEventTypes must return an array, but %@ returned %@",
-                  [manager class], [events class]);
-      }
-      for (NSString *eventName in events) {
-        NSString *topName = RCTNormalizeInputEventName(eventName);
-        if (!customBubblingEventTypesConfigs[topName]) {
-          NSString *bubbleName = [topName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
-          customBubblingEventTypesConfigs[topName] = @{
-            @"phasedRegistrationNames": @{
-              @"bubbled": bubbleName,
-              @"captured": [bubbleName stringByAppendingString:@"Capture"],
-            }
-          };
-        }
-      }
-    }
-  };
-
-  return customBubblingEventTypesConfigs;
-}
-
-- (NSDictionary *)directEventsConfig
-{
-  NSMutableDictionary *customDirectEventTypes = [NSMutableDictionary new];
-  for (RCTComponentData *componentData in _componentDataByName.allValues) {
-    RCTViewManager *manager = componentData.manager;
-    if (RCTClassOverridesInstanceMethod([manager class], @selector(customDirectEventTypes))) {
-      NSArray *events = [manager customDirectEventTypes];
-      if (RCT_DEBUG) {
-        RCTAssert(!events || [events isKindOfClass:[NSArray class]],
-                  @"customDirectEventTypes must return an array, but %@ returned %@",
-                  [manager class], [events class]);
-      }
-      for (NSString *eventName in events) {
-        NSString *topName = RCTNormalizeInputEventName(eventName);
-        if (!customDirectEventTypes[topName]) {
-          customDirectEventTypes[topName] = @{
-            @"registrationName": [topName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
-          };
-        }
-      }
-    }
-  };
-
-  return customDirectEventTypes;
-}
-
 - (NSDictionary *)constantsToExport
 {
-  NSMutableDictionary *allJSConstants = [@{
-    @"customBubblingEventTypes": [self bubblingEventsConfig],
-    @"customDirectEventTypes": [self directEventsConfig],
+  NSMutableDictionary *allJSConstants = [NSMutableDictionary new];
+  NSMutableDictionary *directEvents = [NSMutableDictionary new];
+  NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];
+
+  [_componentDataByName enumerateKeysAndObjectsUsingBlock:
+   ^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
+
+     RCTViewManager *manager = componentData.manager;
+     NSMutableDictionary *constantsNamespace =
+     [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
+
+     // Add custom constants
+     // TODO: should these be inherited?
+     NSDictionary *constants = RCTClassOverridesInstanceMethod([manager class], @selector(constantsToExport)) ? [manager constantsToExport] : nil;
+     if (constants.count) {
+       RCTAssert(constantsNamespace[@"Constants"] == nil , @"Cannot redefine Constants in namespace: %@", name);
+       // add an additional 'Constants' namespace for each class
+       constantsNamespace[@"Constants"] = constants;
+     }
+
+     // Add native props
+     NSDictionary *viewConfig = [componentData viewConfig];
+     constantsNamespace[@"NativeProps"] = viewConfig[@"propTypes"];
+
+     // Add direct events
+     for (NSString *eventName in viewConfig[@"directEvents"]) {
+       if (!directEvents[eventName]) {
+         directEvents[eventName] = @{
+           @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
+         };
+       }
+       if (RCT_DEBUG && bubblingEvents[eventName]) {
+         RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
+                     "direct event", componentData.name, eventName);
+       }
+     }
+
+     // Add bubbling events
+     for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
+       if (!bubblingEvents[eventName]) {
+         NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+         bubblingEvents[eventName] = @{
+           @"phasedRegistrationNames": @{
+             @"bubbled": bubbleName,
+             @"captured": [bubbleName stringByAppendingString:@"Capture"],
+           }
+         };
+       }
+       if (RCT_DEBUG && directEvents[eventName]) {
+         RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
+                     "bubbling event", componentData.name, eventName);
+       }
+     }
+
+     allJSConstants[name] = [constantsNamespace copy];
+  }];
+
+  [allJSConstants addEntriesFromDictionary:@{
+    @"customBubblingEventTypes": bubblingEvents,
+    @"customDirectEventTypes": directEvents,
     @"Dimensions": @{
       @"window": @{
         @"width": @(RCTScreenSize().width),
@@ -1200,28 +1204,8 @@ RCT_EXPORT_METHOD(clearJSResponder)
         @"height": @(RCTScreenSize().height),
       },
     },
-  } mutableCopy];
-
-  [_componentDataByName enumerateKeysAndObjectsUsingBlock:
-   ^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
-    RCTViewManager *manager = componentData.manager;
-    NSMutableDictionary *constantsNamespace =
-     [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
-
-    // Add custom constants
-    // TODO: should these be inherited?
-    NSDictionary *constants = RCTClassOverridesInstanceMethod([manager class], @selector(constantsToExport)) ? [manager constantsToExport] : nil;
-    if (constants.count) {
-      RCTAssert(constantsNamespace[@"Constants"] == nil , @"Cannot redefine Constants in namespace: %@", name);
-      // add an additional 'Constants' namespace for each class
-      constantsNamespace[@"Constants"] = constants;
-    }
-
-    // Add native props
-    constantsNamespace[@"NativeProps"] = [componentData viewConfig];
-
-    allJSConstants[name] = [constantsNamespace copy];
   }];
+
   return allJSConstants;
 }
 

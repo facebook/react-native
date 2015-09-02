@@ -10,6 +10,7 @@
 #import "RCTDatePickerManager.h"
 
 #import "RCTBridge.h"
+#import "RCTDatePicker.h"
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
@@ -30,14 +31,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  // TODO: we crash here if the RCTDatePickerManager is released
-  // while the UIDatePicker is still sending onChange events. To
-  // fix this we should maybe subclass UIDatePicker and make it
-  // be its own event target.
-  UIDatePicker *picker = [UIDatePicker new];
-  [picker addTarget:self action:@selector(onChange:)
-   forControlEvents:UIControlEventValueChanged];
-  return picker;
+  return [RCTDatePicker new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
@@ -46,15 +40,6 @@ RCT_EXPORT_VIEW_PROPERTY(maximumDate, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(minuteInterval, NSInteger)
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
-
-- (void)onChange:(UIDatePicker *)sender
-{
-  NSDictionary *event = @{
-    @"target": sender.reactTag,
-    @"timestamp": @(sender.date.timeIntervalSince1970 * 1000.0)
-  };
-  [self.bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
-}
 
 - (NSDictionary *)constantsToExport
 {

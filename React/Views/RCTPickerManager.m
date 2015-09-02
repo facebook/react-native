@@ -19,7 +19,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTPicker alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [RCTPicker new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(items, NSDictionaryArray)
