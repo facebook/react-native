@@ -62,7 +62,7 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
 
 @end
 
-static NSDictionary *RCTRectDictionaryValue(CGRect rect)
+NS_INLINE NSDictionary *RCTRectDictionaryValue(CGRect rect)
 {
   return @{
     @"screenX": @(rect.origin.x),
@@ -72,16 +72,34 @@ static NSDictionary *RCTRectDictionaryValue(CGRect rect)
   };
 }
 
+static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
+{
+  switch (curve) {
+    case UIViewAnimationCurveEaseIn:
+      return @"easeIn";
+    case UIViewAnimationCurveEaseInOut:
+      return @"easeInEaseOut";
+    case UIViewAnimationCurveEaseOut:
+      return @"easeOut";
+    case UIViewAnimationCurveLinear:
+      return @"linear";
+    default:
+      return @"keyboard";
+  }
+}
+
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
 {
   NSDictionary *userInfo = notification.userInfo;
   CGRect beginFrame = [userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
   CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
 
   return @{
     @"startCoordinates": RCTRectDictionaryValue(beginFrame),
     @"endCoordinates": RCTRectDictionaryValue(endFrame),
     @"duration": @(duration * 1000.0), // ms
+    @"easing": RCTAnimationNameForCurve(curve),
   };
 }
