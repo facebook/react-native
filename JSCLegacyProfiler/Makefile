@@ -1,112 +1,101 @@
-HEADER_PATHS := `find ./tmp/JavaScriptCore -name '*.h' | xargs -I{} dirname {} | uniq | xargs -I{} echo "-I {}"`
-SDK_VERSION=$(shell plutil -convert json -o - /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/SDKSettings.plist | awk -f parseSDKVersion.awk)
+HEADER_PATHS := `find download/JavaScriptCore -name '*.h' | xargs -I{} dirname {} | uniq | xargs -I{} echo "-I {}"`
+
+SDK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/$1.platform/Developer/SDKs/$1.sdk
+
+SDK_VERSION = $(shell plutil -convert json -o - $(call SDK_PATH,iPhoneOS)/SDKSettings.plist | awk -f parseSDKVersion.awk)
+
 CERT ?= "iPhone Developer"
 
+ARCHS = x86_64 arm64 armv7 i386
+
+PLATFORM = \
+	if [[ "$*" = "x86_64" || "$*" = "i386" ]]; then \
+		PLATFORM=iPhoneSimulator; \
+	else \
+		PLATFORM=iPhoneOS; \
+	fi;
+
+SYSROOT = -isysroot $(call SDK_PATH,$${PLATFORM})
+
+IOS8_LIBS = download/WebCore/WebCore-7600.1.25 download/WTF/WTF-7600.1.24 download/JavaScriptCore/JavaScriptCore-7600.1.17 download/JavaScriptCore/JavaScriptCore-7600.1.17/Bytecodes.h libyajl.a
+
+ios8: RCTJSCProfiler.ios8.dylib /tmp/RCTJSCProfiler
 ifneq ($(SDK_VERSION), 8)
-all:
 	$(error "Expected to be compiled with iOS SDK version 8, found $(SDK_VERSION)")
+else
+	cp $^
 endif
 
-ios8: prepare build generate
+/tmp/JSCProfiler:
+	mkdir -p $@
 
-prepare: clean create download
+.PRECIOUS: RCTJSCProfiler.ios8.dylib
+RCTJSCProfiler.ios8.dylib: RCTJSCProfiler_unsigned.ios8.dylib
+	cp $< $@
+	codesign -f -s ${CERT} $@ || rm $@
 
-build: x86_64 arm64 armv7
+.PRECIOUS: RCTJSCProfiler_unsigned.ios8.dylib
+RCTJSCProfiler_unsigned.ios8.dylib: $(patsubst %,RCTJSCProfiler_%.ios8.dylib,$(ARCHS))
+	lipo -create -output $@ $^
 
-generate:	lipo codesign
+.PRECIOUS: RCTJSCProfiler_%.ios8.dylib
+RCTJSCProfiler_%.ios8.dylib: $(IOS8_LIBS)
+	$(PLATFORM) \
+	clang -w -dynamiclib -o RCTJSCProfiler_$*.ios8.dylib -std=c++11 \
+		-arch $* \
+		-install_name RCTJSCProfiler.ios8.dylib \
+		-include ./download/JavaScriptCore/JavaScriptCore-7600.1.17/config.h \
+		-I download \
+		-I download/WebCore/WebCore-7600.1.25/icu \
+		-I download/WTF/WTF-7600.1.24 \
+		-I download/yajl-2.1.0/build/yajl-2.1.0/include \
+		-DNDEBUG=1\
+		-miphoneos-version-min=8.0 \
+		$(SYSROOT) \
+		$(HEADER_PATHS) \
+		-undefined dynamic_lookup \
+		JSCLegacyProfiler.mm libyajl.a
 
-clean:
-	@rm -rf tmp/ /tmp/RCTJSCProfiler
+.PRECIOUS: %/Bytecodes.h
+%/Bytecodes.h:
+	python $*/generate-bytecode-files --bytecodes_h $@ $*/bytecode/BytecodeList.json
 
-lipo:
-	lipo -create -output /tmp/RCTJSCProfiler/RCTJSCProfiler.ios8.dylib ./tmp/RCTJSCProfiler_x86_64 ./tmp/RCTJSCProfiler_arm64 ./tmp/RCTJSCProfiler_armv7
+.PRECIOUS: libyajl.a
+libyajl.a: $(patsubst %,libyajl_%.a,$(ARCHS))
+	lipo -create $^ -output $@
 
-codesign:
-	codesign -f -s ${CERT} /tmp/RCTJSCProfiler/RCTJSCProfiler.ios8.dylib
-
-create:
-	mkdir -p ./tmp /tmp/RCTJSCProfiler/ ./tmp/CoreFoundation ./tmp/Foundation
-	for file in ./tmp/CoreFoundation/CFUserNotification.h ./tmp/CoreFoundation/CFXMLNode.h ./tmp/CoreFoundation/CFXMLParser.h ./tmp/Foundation/Foundation.h; do echo '' > "$$file"; done
-
-download: wtf jsc webcore yajl
-
-wtf:
-	curl -o tmp/WTF.tar.gz http://www.opensource.apple.com/tarballs/WTF/WTF-7600.1.24.tar.gz
-	tar -zxvf tmp/WTF.tar.gz -C tmp
-
-jsc:
-	curl -o tmp/JSC.tar.gz http://www.opensource.apple.com/tarballs/JavaScriptCore/JavaScriptCore-7600.1.17.tar.gz
-	tar -zxvf tmp/JSC.tar.gz -C tmp
-	mv ./tmp/JavaScriptCore-7600.1.17 ./tmp/JavaScriptCore
-	python ./tmp/JavaScriptCore/generate-bytecode-files --bytecodes_h ./tmp/JavaScriptCore/Bytecodes.h ./tmp/JavaScriptCore/bytecode/BytecodeList.json
-
-webcore:
-	curl -o tmp/WebCore.tar.gz http://www.opensource.apple.com/tarballs/WebCore/WebCore-7600.1.25.tar.gz
-	tar -zxvf tmp/WebCore.tar.gz -C tmp
-
-yajl:
-	curl -o tmp/yajl.tar.gz https://codeload.github.com/lloyd/yajl/tar.gz/2.1.0
-	tar -zxvf tmp/yajl.tar.gz -C tmp
-	mkdir -p ./tmp/yajl-2.1.0/build && cd ./tmp/yajl-2.1.0/build && cmake .. && make
-	echo `find . -name '*.c'`
-	cd ./tmp/yajl-2.1.0/src && \
-		clang -arch arm64 -arch armv7 -std=c99 \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/ \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/machine \
+.PRECIOUS: libyajl_%.a
+libyajl_%.a: download/yajl-2.1.0
+	$(PLATFORM) \
+	cd download/yajl-2.1.0/src; \
+	clang -arch $(*F) -std=c99 \
+		-miphoneos-version-min=8.0 \
+		$(SYSROOT) \
 		-I ../build/yajl-2.1.0/include \
 		-c `find . -name '*.c'`
-	libtool -static -o ./tmp/yajl.a `find ./tmp/yajl-2.1.0/src/ -name '*.o'`
+	find download/yajl-2.1.0/src/ -name '*.o' -exec libtool -static -o $@ {} +
 
-x86_64:
-	clang -w -dynamiclib -o ./tmp/RCTJSCProfiler_x86_64 -std=c++11 \
-		-install_name RCTJSCProfiler.ios8.dylib \
-		-include ./tmp/JavaScriptCore/config.h \
-		-I ./tmp \
-		-I ./tmp/WebCore-7600.1.25/icu \
-		-I ./tmp/WTF-7600.1.24 \
-		-I ./tmp/yajl-2.1.0/build/yajl-2.1.0/include \
-		-DNDEBUG=1\
-		-miphoneos-version-min=8.0 \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/usr/lib \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/usr/lib/system \
-		${HEADER_PATHS} \
-		-undefined dynamic_lookup \
-		./JSCLegacyProfiler.mm ./tmp/yajl-2.1.0/build/yajl-2.1.0/lib/libyajl_s.a
+.PRECIOUS: download/yajl-2.1.0
+download/yajl-2.1.0: download/yajl-2.1.0.tar.gz
+	tar -zxvf $< -C download
+	mkdir -p download/yajl-2.1.0/build && cd download/yajl-2.1.0/build && cmake ..
 
-arm64:
-	echo $(HEADER_PATHS)
-	clang -w -dynamiclib -o ./tmp/RCTJSCProfiler_arm64 -std=c++11 \
-		-install_name RCTJSCProfiler.ios8.dylib \
-		-arch arm64 \
-		-include ./tmp/JavaScriptCore/config.h \
-		-I ./tmp \
-		-I ./tmp/WebCore-7600.1.25/icu \
-		-I ./tmp/WTF-7600.1.24 \
-		-I ./tmp/yajl-2.1.0/build/yajl-2.1.0/include \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/machine \
-		-DNDEBUG=1\
-		-miphoneos-version-min=8.0 \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/system \
-		${HEADER_PATHS} \
-		-undefined dynamic_lookup \
-		./JSCLegacyProfiler.mm ./tmp/yajl.a
+.PRECIOUS: download/yajl-2.1.0.tar.gz
+download/yajl-2.1.0.tar.gz:
+	mkdir -p `dirname $@`
+	curl -o $@ https://codeload.github.com/lloyd/yajl/tar.gz/2.1.0
 
-armv7:
-	clang -w -dynamiclib -o ./tmp/RCTJSCProfiler_armv7 -std=c++11 \
-		-install_name RCTJSCProfiler.ios8.dylib \
-		-arch armv7 \
-		-include ./tmp/JavaScriptCore/config.h \
-		-I ./tmp \
-		-I ./tmp/WebCore-7600.1.25/icu \
-		-I ./tmp/WTF-7600.1.24 \
-		-I ./tmp/yajl-2.1.0/build/yajl-2.1.0/include \
-		-I /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include \
-		-DNDEBUG=1\
-		-miphoneos-version-min=8.0 \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib \
-		-L /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/system \
-		${HEADER_PATHS} \
-		-undefined dynamic_lookup \
-		./JSCLegacyProfiler.mm ./tmp/yajl.a
+.PRECIOUS: download/%
+download/%: download/%.tar.gz
+	tar -zxvf $< -C `dirname $@`
+
+.PRECIOUS: %.tar.gz
+%.tar.gz:
+	mkdir -p `dirname $@`
+	curl -o $@ http://www.opensource.apple.com/tarballs/$(patsubst download/%,%,$@)
+
+.PHONY: clean
+clean:
+	@rm -rf $(wildcard *.dylib)
+	@rm -rf $(wildcard *.a)
+	@rm -rf download
