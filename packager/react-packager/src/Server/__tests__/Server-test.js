@@ -126,7 +126,7 @@ describe('processRequest', () => {
       expect(Bundler.prototype.bundle).toBeCalledWith(
         'index.js',
         true,
-        'index.map',
+        'index.map?platform=ios',
         true,
         'ios',
       );
@@ -271,7 +271,7 @@ describe('processRequest', () => {
       expect(Bundler.prototype.bundle).toBeCalledWith(
         'path/to/foo.js',
         false,
-        '/path/to/foo.map',
+        '/path/to/foo.map?dev=false&runModule=false',
         false,
         undefined
       );

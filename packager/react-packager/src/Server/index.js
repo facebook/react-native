@@ -429,8 +429,11 @@ class Server {
       return true;
     }).join('.') + '.js';
 
+    const sourceMapUrlObj = _.clone(urlObj);
+    sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
+
     return {
-      sourceMapUrl: pathname.replace(/\.bundle$/, '.map'),
+      sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
       dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
       minify: this._getBoolOptionFromQuery(urlObj.query, 'minify'),
