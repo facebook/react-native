@@ -30,7 +30,7 @@ var viewConfig = {
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
-    allowFontScaling: true,
+    allowFontScaling: false,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -113,10 +113,10 @@ var Text = React.createClass({
       isHighlighted: false,
     });
   },
-  
+
   getDefaultProps: function(): Object {
     return {
-      allowFontScaling: true,
+      allowFontScaling: false,
     };
   },
 
