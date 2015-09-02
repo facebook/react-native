@@ -59,11 +59,10 @@ var BASE_STYLES = {
   RightButton: {
     position: 'absolute',
     top: STATUS_BAR_HEIGHT,
-    left: 2 * SCREEN_WIDTH / 3,
+    right: 0,
     overflow: 'hidden',
     opacity: 1,
     alignItems: 'flex-end',
-    width: SCREEN_WIDTH / 3,
     height: NAV_BAR_HEIGHT,
     backgroundColor: 'transparent',
   },
