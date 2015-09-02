@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTGIFImage.h"
 #import "RCTImageLoader.h"
 #import "RCTImageUtils.h"
 #import "RCTUtils.h"
@@ -101,11 +100,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
++ (BOOL)srcNeedsReload:(NSString *)src
+{
+  return
+    [src hasPrefix:@"http://"] ||
+    [src hasPrefix:@"https://"] ||
+    [src hasPrefix:@"assets-library://"] ||
+    [src hasPrefix:@"ph://"];
+}
+
 - (void)setContentMode:(UIViewContentMode)contentMode
 {
   if (self.contentMode != contentMode) {
     super.contentMode = contentMode;
-    if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
+    if ([RCTImageView srcNeedsReload:_src]) {
       [self reloadImage];
     }
   }
@@ -166,7 +174,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [super reactSetFrame:frame];
   if (self.image == nil) {
     [self reloadImage];
-  } else if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
+  } else if ([RCTImageView srcNeedsReload:_src]) {
 
     // Get optimal image size
     CGSize currentSize = self.image.size;

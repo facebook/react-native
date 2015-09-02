@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"rct-image-store"] containsObject:request.URL.scheme.lowercaseString];
+  return [request.URL.scheme.lowercaseString isEqualToString:@"rct-image-store"];
 }
 
 - (id)sendRequest:(NSURLRequest *)request
@@ -135,6 +135,29 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
     [delegate URLRequest:request didCompleteWithError:nil];
   }];
   return request;
+}
+
+#pragma mark - RCTImageLoader
+
+- (BOOL)canLoadImageURL:(NSURL *)requestURL
+{
+  return [requestURL.scheme.lowercaseString isEqualToString:@"rct-image-store"];
+}
+
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+{
+  NSString *imageTag = imageURL.absoluteString;
+  [self getImageForTag:imageTag withBlock:^(UIImage *image) {
+    if (image) {
+      completionHandler(nil, image);
+    } else {
+      NSString *errorMessage = [NSString stringWithFormat:@"Unable to load image from image store: %@", imageTag];
+      NSError *error = RCTErrorWithMessage(errorMessage);
+      completionHandler(error, nil);
+    }
+  }];
+
+  return nil;
 }
 
 @end

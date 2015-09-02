@@ -9,7 +9,7 @@
 
 #import "RCTImageDownloader.h"
 
-#import "RCTGIFImage.h"
+#import "RCTImageLoader.h"
 #import "RCTImageUtils.h"
 #import "RCTLog.h"
 #import "RCTNetworking.h"
@@ -25,16 +25,6 @@
 
 RCT_EXPORT_MODULE()
 
-+ (RCTImageDownloader *)sharedInstance
-{
-  static RCTImageDownloader *sharedInstance;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [RCTImageDownloader new];
-  });
-  return sharedInstance;
-}
-
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -44,14 +34,19 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (BOOL)canLoadImageURL:(NSURL *)requestURL
+{
+  return [requestURL.scheme.lowercaseString hasPrefix:@"http"];
+}
+
 /**
  * Downloads a block of raw data and returns it. Note that the callback block
  * will not be executed on the same thread you called the method from, nor on
  * the main thread. Returns a token that can be used to cancel the download.
  */
 - (RCTImageLoaderCancellationBlock)downloadDataForURL:(NSURL *)url
-                                        progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                      completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+                                      progressHandler:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionHandler:(RCTImageLoaderCompletionBlock)completionBlock
 {
   if (![_bridge respondsToSelector:NSSelectorFromString(@"networking")]) {
     RCTLogError(@"You need to import the RCTNetworking library in order to download remote images.");
@@ -99,49 +94,31 @@ RCT_EXPORT_MODULE()
   return ^{ [task cancel]; };
 }
 
-- (RCTImageLoaderCancellationBlock)downloadImageForURL:(NSURL *)url
-                                                  size:(CGSize)size
-                                                 scale:(CGFloat)scale
-                                            resizeMode:(UIViewContentMode)resizeMode
-                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                       completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(UIViewContentMode)resizeMode
+                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  scale = scale ?: RCTScreenScale();
+  __block RCTImageLoaderCancellationBlock decodeCancel = nil;
 
-  return [self downloadDataForURL:url progressBlock:progressBlock completionBlock:^(NSError *error, id data) {
-
-    if (!data || error) {
-      completionBlock(error, nil);
-      return;
+  __weak RCTImageDownloader *weakSelf = self;
+  RCTImageLoaderCancellationBlock downloadCancel = [self downloadDataForURL:imageURL progressHandler:progressHandler completionHandler:^(NSError *error, NSData *imageData) {
+    if (error) {
+      completionHandler(error, nil);
+    } else {
+      decodeCancel = [weakSelf.bridge.imageLoader decodeImageData:imageData size:size scale:scale resizeMode:resizeMode completionBlock:completionHandler];
     }
-
-    if ([url.path.lowercaseString hasSuffix:@".gif"]) {
-      id image = RCTGIFImageWithData(data);
-      if (!image && !error) {
-        NSString *errorMessage = [NSString stringWithFormat:@"Unable to load GIF image: %@", url];
-        error = RCTErrorWithMessage(errorMessage);
-      }
-      completionBlock(error, image);
-      return;
-    }
-
-    UIImage *image = [UIImage imageWithData:data scale:scale];
-    if (image && !CGSizeEqualToSize(size, CGSizeZero)) {
-
-      // Get destination size
-      CGSize targetSize = RCTTargetSize(image.size, image.scale,
-                                      size, scale, resizeMode, NO);
-
-      // Decompress image at required size
-      BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-      UIGraphicsBeginImageContextWithOptions(targetSize, opaque, scale);
-      [image drawInRect:(CGRect){CGPointZero, targetSize}];
-      image = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
-    }
-
-    completionBlock(nil, image);
   }];
+
+  return ^{
+    downloadCancel();
+
+    if (decodeCancel) {
+      decodeCancel();
+    }
+  };
 }
 
 @end
