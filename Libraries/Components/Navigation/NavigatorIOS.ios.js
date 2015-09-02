@@ -311,7 +311,7 @@ var NavigatorIOS = React.createClass({
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
       navigationContext: this.navigationContext,
-      updateNavBar:this.updateNavBar,
+      updateNavBar: this.updateNavBar,
     };
     this._emitWillFocus(this.state.routeStack[this.state.observedTopOfStack]);
   },
@@ -682,7 +682,6 @@ var NavigatorIOS = React.createClass({
     // computation of navigator children.
     var items = shouldRecurseToNavigator ?
       this.state.routeStack.map(this._routeToStackItem) : null;
-    // TODO Change it
     this.state.navBarReload = false;
     return (
       <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
