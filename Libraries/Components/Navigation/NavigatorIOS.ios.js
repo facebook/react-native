@@ -76,7 +76,6 @@ type State = {
   fromIndex: number;
   toIndex: number;
   makingNavigatorRequest: boolean;
-  navBarReload: boolean;
   updatingAllIndicesAtOrBeyond: number;
 }
 
@@ -344,7 +343,6 @@ var NavigatorIOS = React.createClass({
       // Whether or not we are making a navigator request to push/pop. (Used
       // for performance optimization).
       makingNavigatorRequest: false,
-      navBarReload: false,
       // Whether or not we are updating children of navigator and if so (not
       // `null`) which index marks the beginning of all updates. Used for
       // performance optimization.
@@ -371,7 +369,7 @@ var NavigatorIOS = React.createClass({
     }
     
     this.setState({
-      navBarReload:true,
+      updatingAllIndicesAtOrBeyond:this.state.routeStack.length - 1,
       makingNavigatorRequest: true,
     });
   },
@@ -631,7 +629,7 @@ var NavigatorIOS = React.createClass({
   _routeToStackItem: function(route: Route, i: number) {
     var Component = route.component;
     var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
-      (i >= this.state.updatingAllIndicesAtOrBeyond || this.state.navBarReload);
+      (i >= this.state.updatingAllIndicesAtOrBeyond);
     var navigationBarHidden = route.navigationBarHidden !== undefined ? route.navigationBarHidden : this.props.navigationBarHidden;
     var navigationBarTransparent = route.navigationBarTransparent !== undefined ? route.navigationBarTransparent : this.props.navigationBarTransparent;
 
@@ -682,7 +680,6 @@ var NavigatorIOS = React.createClass({
     // computation of navigator children.
     var items = shouldRecurseToNavigator ?
       this.state.routeStack.map(this._routeToStackItem) : null;
-    this.state.navBarReload = false;
     return (
       <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
         <NavigatorTransitionerIOS
