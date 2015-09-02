@@ -36,7 +36,9 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return [requestURL.scheme.lowercaseString hasPrefix:@"http"];
+  // Have to exclude 'file://' from the main bundle, otherwise this would conflict with RCTAssetBundleImageLoader
+  return [requestURL.scheme.lowercaseString hasPrefix:@"http"] ||
+  ([requestURL.scheme.lowercaseString hasPrefix:@"file"] && ![requestURL.path hasPrefix:[NSBundle mainBundle].resourcePath]);
 }
 
 /**
@@ -101,24 +103,54 @@ RCT_EXPORT_MODULE()
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  __block RCTImageLoaderCancellationBlock decodeCancel = nil;
+  if ([imageURL.scheme isEqualToString:@"http"]) {
+    __block RCTImageLoaderCancellationBlock decodeCancel = nil;
 
-  __weak RCTImageDownloader *weakSelf = self;
-  RCTImageLoaderCancellationBlock downloadCancel = [self downloadDataForURL:imageURL progressHandler:progressHandler completionHandler:^(NSError *error, NSData *imageData) {
-    if (error) {
-      completionHandler(error, nil);
-    } else {
-      decodeCancel = [weakSelf.bridge.imageLoader decodeImageData:imageData size:size scale:scale resizeMode:resizeMode completionBlock:completionHandler];
-    }
-  }];
+    __weak RCTImageDownloader *weakSelf = self;
+    RCTImageLoaderCancellationBlock downloadCancel = [self downloadDataForURL:imageURL progressHandler:progressHandler completionHandler:^(NSError *error, NSData *imageData) {
+      if (error) {
+        completionHandler(error, nil);
+      } else {
+        decodeCancel = [weakSelf.bridge.imageLoader decodeImageData:imageData size:size scale:scale resizeMode:resizeMode completionBlock:completionHandler];
+      }
+    }];
 
-  return ^{
-    downloadCancel();
+    return ^{
+      downloadCancel();
 
-    if (decodeCancel) {
-      decodeCancel();
-    }
-  };
+      if (decodeCancel) {
+        decodeCancel();
+      }
+    };
+  } else if ([imageURL.scheme isEqualToString:@"file"]) {
+    __block BOOL cancelled = NO;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (cancelled) {
+        return;
+      }
+
+      UIImage *image = [UIImage imageWithContentsOfFile:imageURL.resourceSpecifier];
+      if (image) {
+        if (progressHandler) {
+          progressHandler(1, 1);
+        }
+        if (completionHandler) {
+          completionHandler(nil, image);
+        }
+      } else {
+        if (completionHandler) {
+          NSString *message = [NSString stringWithFormat:@"Could not find image at path: %@", imageURL.absoluteString];
+          completionHandler(RCTErrorWithMessage(message), nil);
+        }
+      }
+    });
+    return ^{
+      cancelled = YES;
+    };
+  } else {
+    RCTLogError(@"Unexpected image schema %@", imageURL.scheme);
+    return ^{};
+  }
 }
 
 @end
