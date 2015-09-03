@@ -370,7 +370,9 @@ class Server {
           res.end(bundleSource);
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
-          var sourceMap = JSON.stringify(p.getSourceMap());
+          var sourceMap = JSON.stringify(p.getSourceMap({
+            minify: options.minify,
+          }));
           res.setHeader('Content-Type', 'application/json');
           res.end(sourceMap);
           Activity.endEvent(startReqEventId);
