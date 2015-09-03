@@ -328,6 +328,9 @@ var APIDoc = React.createClass({
                   class {cls.name}
                 </Header>
                 <ul>
+                  {cls.docblock && <Marked>
+                    {this.removeCommentsFromDocblock(cls.docblock)}
+                  </Marked>}
                   {this.renderMethods(cls.methods)}
                   {this.renderProperties(cls.properties)}
                 </ul>
