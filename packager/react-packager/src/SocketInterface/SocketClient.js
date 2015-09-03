@@ -29,7 +29,11 @@ class SocketClient {
     this._sock = net.connect(sockPath);
     this._ready = new Promise((resolve, reject) => {
       this._sock.on('connect', () => resolve(this));
-      this._sock.on('error', (e) => reject(e));
+      this._sock.on('error', (e) => {
+        e.message = `Error connecting to server on ${sockPath}` +
+                    `with error: ${e.message}`;
+        reject(e);
+      });
     });
 
     this._resolvers = Object.create(null);
