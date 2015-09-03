@@ -423,7 +423,8 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
   });
   var data = {
     name: node.id.name,
-    methods: methods
+    docblock: getDocBlock(node, commentsForFile, linesForFile),
+    methods: methods,
   };
   if (node.superClass && node.superClass.type === Syntax.Identifier) {
     data.superClass = node.superClass.name;
