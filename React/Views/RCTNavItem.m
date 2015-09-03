@@ -63,20 +63,30 @@
 {
   if (!_leftButtonItem) {
     if (_leftButtonIcon) {
-      _leftButtonItem = [[UIBarButtonItem alloc] initWithImage:_leftButtonIcon
-                                                         style:UIBarButtonItemStylePlain
-                                                        target:nil
-                                                        action:nil];
+      _leftButtonItem =
+      [[UIBarButtonItem alloc] initWithImage:_leftButtonIcon
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(handleNavLeftButtonTapped)];
+
     } else if (_leftButtonTitle.length) {
-      _leftButtonItem = [[UIBarButtonItem alloc] initWithTitle:_leftButtonTitle
-                                                         style:UIBarButtonItemStylePlain
-                                                        target:nil
-                                                        action:nil];
+      _leftButtonItem =
+      [[UIBarButtonItem alloc] initWithTitle:_leftButtonTitle
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(handleNavLeftButtonTapped)];
     } else {
       _leftButtonItem = nil;
     }
   }
   return _leftButtonItem;
+}
+
+- (void)handleNavLeftButtonTapped
+{
+  if (_onNavLeftButtonTap) {
+    _onNavLeftButtonTap(nil);
+  }
 }
 
 - (void)setRightButtonTitle:(NSString *)rightButtonTitle
@@ -95,20 +105,30 @@
 {
   if (!_rightButtonItem) {
     if (_rightButtonIcon) {
-      _rightButtonItem = [[UIBarButtonItem alloc] initWithImage:_rightButtonIcon
-                                                          style:UIBarButtonItemStylePlain
-                                                         target:nil
-                                                         action:nil];
+      _rightButtonItem =
+      [[UIBarButtonItem alloc] initWithImage:_rightButtonIcon
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(handleNavRightButtonTapped)];
+
     } else if (_rightButtonTitle.length) {
-      _rightButtonItem = [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
-                                                          style:UIBarButtonItemStylePlain
-                                                         target:nil
-                                                         action:nil];
+      _rightButtonItem =
+      [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(handleNavRightButtonTapped)];
     } else {
       _rightButtonItem = nil;
     }
   }
   return _rightButtonItem;
+}
+
+- (void)handleNavRightButtonTapped
+{
+  if (_onNavRightButtonTap) {
+    _onNavRightButtonTap(nil);
+  }
 }
 
 @end

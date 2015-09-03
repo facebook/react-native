@@ -7,15 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridge.h"
-#import "RCTImageLoader.h"
+#import <UIKit/UIKit.h>
 
-@interface RCTImageDownloader : NSObject <RCTImageURLLoader>
-
-@end
-
-@interface RCTBridge (RCTImageDownloader)
-
-@property (nonatomic, readonly) RCTImageDownloader *imageDownloader;
+@interface RCTDatePicker : UIDatePicker
 
 @end

@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTGIFImage.h"
 #import "RCTImageLoader.h"
 #import "RCTImageUtils.h"
 #import "RCTUtils.h"
@@ -21,11 +20,11 @@
 
 @interface RCTImageView ()
 
-@property (nonatomic, assign) BOOL onLoadStart;
-@property (nonatomic, assign) BOOL onProgress;
-@property (nonatomic, assign) BOOL onError;
-@property (nonatomic, assign) BOOL onLoad;
-@property (nonatomic, assign) BOOL onLoadEnd;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadStart;
+@property (nonatomic, copy) RCTDirectEventBlock onProgress;
+@property (nonatomic, copy) RCTDirectEventBlock onError;
+@property (nonatomic, copy) RCTDirectEventBlock onLoad;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
 
 @end
 
@@ -101,11 +100,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
++ (BOOL)srcNeedsReload:(NSString *)src
+{
+  return
+    [src hasPrefix:@"http://"] ||
+    [src hasPrefix:@"https://"] ||
+    [src hasPrefix:@"assets-library://"] ||
+    [src hasPrefix:@"ph://"];
+}
+
 - (void)setContentMode:(UIViewContentMode)contentMode
 {
   if (self.contentMode != contentMode) {
     super.contentMode = contentMode;
-    if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
+    if ([RCTImageView srcNeedsReload:_src]) {
       [self reloadImage];
     }
   }
@@ -116,19 +124,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (_src && !CGSizeEqualToSize(self.frame.size, CGSizeZero)) {
 
     if (_onLoadStart) {
-      NSDictionary *event = @{ @"target": self.reactTag };
-      [_bridge.eventDispatcher sendInputEventWithName:@"loadStart" body:event];
+      _onLoadStart(nil);
     }
 
     RCTImageLoaderProgressBlock progressHandler = nil;
     if (_onProgress) {
       progressHandler = ^(int64_t loaded, int64_t total) {
-        NSDictionary *event = @{
-          @"target": self.reactTag,
+        _onProgress(@{
           @"loaded": @((double)loaded),
           @"total": @((double)total),
-        };
-        [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
+        });
       };
     }
 
@@ -147,21 +152,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
       if (error) {
         if (_onError) {
-          NSDictionary *event = @{
-            @"target": self.reactTag,
-            @"error": error.localizedDescription,
-          };
-          [_bridge.eventDispatcher sendInputEventWithName:@"error" body:event];
+          _onError(@{ @"error": error.localizedDescription });
         }
       } else {
         if (_onLoad) {
-          NSDictionary *event = @{ @"target": self.reactTag };
-          [_bridge.eventDispatcher sendInputEventWithName:@"load" body:event];
+          _onLoad(nil);
         }
       }
       if (_onLoadEnd) {
-        NSDictionary *event = @{ @"target": self.reactTag };
-        [_bridge.eventDispatcher sendInputEventWithName:@"loadEnd" body:event];
+         _onLoadEnd(nil);
       }
     }];
   } else {
@@ -175,7 +174,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [super reactSetFrame:frame];
   if (self.image == nil) {
     [self reloadImage];
-  } else if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
+  } else if ([RCTImageView srcNeedsReload:_src]) {
 
     // Get optimal image size
     CGSize currentSize = self.image.size;

@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTComponent.h"
+
 @interface RCTNavItem : UIView
 
 @property (nonatomic, copy) NSString *title;
@@ -28,5 +30,8 @@
 @property (nonatomic, readonly) UIBarButtonItem *backButtonItem;
 @property (nonatomic, readonly) UIBarButtonItem *leftButtonItem;
 @property (nonatomic, readonly) UIBarButtonItem *rightButtonItem;
+
+@property (nonatomic, copy) RCTBubblingEventBlock onNavLeftButtonTap;
+@property (nonatomic, copy) RCTBubblingEventBlock onNavRightButtonTap;
 
 @end

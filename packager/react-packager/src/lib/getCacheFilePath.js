@@ -12,7 +12,7 @@ const crypto = require('crypto');
 const path = require('path');
 const tmpdir = require('os').tmpDir();
 
-function getCacheFilePath(args) {
+function getCacheFilePath(...args) {
   args = Array.prototype.slice.call(args);
   const prefix = args.shift();
 

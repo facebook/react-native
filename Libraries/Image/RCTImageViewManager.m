@@ -27,11 +27,11 @@ RCT_EXPORT_VIEW_PROPERTY(capInsets, UIEdgeInsets)
 RCT_REMAP_VIEW_PROPERTY(defaultImageSrc, defaultImage, UIImage)
 RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
 RCT_EXPORT_VIEW_PROPERTY(src, NSString)
-RCT_EXPORT_VIEW_PROPERTY(onLoadStart, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(onProgress, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(onError, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(onLoad, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(onLoadEnd, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onLoadStart, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoadEnd, RCTDirectEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
 {
   if (json) {
@@ -41,17 +41,6 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
     view.renderingMode = defaultView.renderingMode;
     view.tintColor = defaultView.tintColor;
   }
-}
-
-- (NSArray *)customDirectEventTypes
-{
-  return @[
-    @"loadStart",
-    @"progress",
-    @"error",
-    @"load",
-    @"loadEnd",
-  ];
 }
 
 @end

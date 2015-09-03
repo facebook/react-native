@@ -664,22 +664,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       // verify that class has been registered
       (void)_modulesByName[moduleData.name];
     }
-    NSMutableOrderedSet *set = [buckets objectForKey:moduleData];
+    id queue = [moduleData queue];
+    NSMutableOrderedSet *set = [buckets objectForKey:queue];
     if (!set) {
       set = [NSMutableOrderedSet new];
-      [buckets setObject:set forKey:moduleData];
+      [buckets setObject:set forKey:queue];
     }
     [set addObject:@(i)];
   }
 
-  for (RCTModuleData *moduleData in buckets) {
+  for (id queue in buckets) {
     RCTProfileBeginFlowEvent();
 
-    [moduleData dispatchBlock:^{
+    dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
       RCTProfileBeginEvent(0, RCTCurrentThreadName(), nil);
 
-      NSOrderedSet *calls = [buckets objectForKey:moduleData];
+      NSOrderedSet *calls = [buckets objectForKey:queue];
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
@@ -693,7 +694,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       RCTProfileEndEvent(0, @"objc_call,dispatch_async", @{
         @"calls": @(calls.count),
       });
-    }];
+    };
+
+    if (queue == RCTJSThread) {
+      [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
+    } else if (queue) {
+      dispatch_async(queue, block);
+    }
   }
 
   // TODO: batchDidComplete is only used by RCTUIManager - can we eliminate this special case?

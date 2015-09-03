@@ -7,16 +7,29 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTGIFImage.h"
+#import "RCTGIFImageDecoder.h"
 
-#import "RCTLog.h"
+#import <ImageIO/ImageIO.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <QuartzCore/QuartzCore.h>
 
-static CAKeyframeAnimation *RCTGIFImageWithImageSource(CGImageSourceRef imageSource)
+#import "RCTUtils.h"
+
+@implementation RCTGIFImageDecoder
+
+RCT_EXPORT_MODULE()
+
+- (BOOL)canDecodeImageData:(NSData *)imageData
 {
-  if (!UTTypeConformsTo(CGImageSourceGetType(imageSource), kUTTypeGIF)) {
-    return nil;
-  }
+  char header[7] = {};
+  [imageData getBytes:header length:6];
 
+  return !strcmp(header, "GIF87a") || !strcmp(header, "GIF89a");
+}
+
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+{
+  CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
   NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
   NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
 
@@ -48,6 +61,7 @@ static CAKeyframeAnimation *RCTGIFImageWithImageSource(CGImageSourceRef imageSou
     delays[i] = delayTime;
     images[i] = (__bridge_transfer id)image;
   }
+  CFRelease(imageSource);
 
   NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
   NSTimeInterval runningDuration = 0;
@@ -64,34 +78,9 @@ static CAKeyframeAnimation *RCTGIFImageWithImageSource(CGImageSourceRef imageSou
   animation.keyTimes = keyTimes;
   animation.values = images;
   animation.duration = duration;
-  return animation;
+  completionHandler(nil, animation);
+
+  return nil;
 }
 
-CAKeyframeAnimation *RCTGIFImageWithData(NSData *data)
-{
-  if (data.length == 0) {
-    return nil;
-  }
-
-  CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)data, NULL);
-  CAKeyframeAnimation *animation = RCTGIFImageWithImageSource(imageSource);
-  CFRelease(imageSource);
-  return animation;
-}
-
-CAKeyframeAnimation *RCTGIFImageWithFileURL(NSURL *URL)
-{
-  if (!URL) {
-    return nil;
-  }
-
-  if (!URL.fileURL) {
-    RCTLogError(@"Loading remote image URLs synchronously is a really bad idea.");
-    return nil;
-  }
-
-  CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)URL, NULL);
-  CAKeyframeAnimation *animation = RCTGIFImageWithImageSource(imageSource);
-  CFRelease(imageSource);
-  return animation;
-}
+@end
