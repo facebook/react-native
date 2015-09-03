@@ -186,6 +186,10 @@ class Bundle {
 
     options = options || {};
 
+    if (options.minify) {
+      return this.getMinifiedSourceAndMap().map;
+    }
+
     if (this._shouldCombineSourceMaps) {
       return this._getCombinedSourceMaps(options);
     }
