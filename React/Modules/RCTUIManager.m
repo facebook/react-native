@@ -448,29 +448,12 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   NSMutableArray *frames = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableArray *areNew = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableArray *parentsAreNew = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableArray *onLayoutEvents = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     [frameReactTags addObject:shadowView.reactTag];
     [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
     [areNew addObject:@(shadowView.isNewView)];
     [parentsAreNew addObject:@(shadowView.superview.isNewView)];
-
-    // TODO (#8214142): this can be greatly simplified by sending the layout
-    // event directly from the shadow thread, which may be better anyway.
-    id event = (id)kCFNull;
-    if (shadowView.onLayout) {
-      event = @{
-        @"target": shadowView.reactTag,
-        @"layout": @{
-          @"x": @(shadowView.frame.origin.x),
-          @"y": @(shadowView.frame.origin.y),
-          @"width": @(shadowView.frame.size.width),
-          @"height": @(shadowView.frame.size.height),
-        },
-      };
-    }
-    [onLayoutEvents addObject:event];
   }
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
@@ -486,7 +469,20 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
     RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
-    if (block) [updateBlocks addObject:block];
+    if (shadowView.onLayout) {
+      CGRect frame = shadowView.frame;
+      shadowView.onLayout(@{
+        @"layout": @{
+          @"x": @(frame.origin.x),
+          @"y": @(frame.origin.y),
+          @"width": @(frame.size.width),
+          @"height": @(frame.size.height),
+        },
+      });
+    }
+    if (block) {
+      [updateBlocks addObject:block];
+    }
   }
 
   // Perform layout (possibly animated)
@@ -497,7 +493,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
       NSNumber *reactTag = frameReactTags[ii];
       UIView *view = viewRegistry[reactTag];
       CGRect frame = [frames[ii] CGRectValue];
-      id event = onLayoutEvents[ii];
 
       BOOL isNew = [areNew[ii] boolValue];
       RCTAnimation *updateAnimation = isNew ? nil : _layoutAnimation.updateAnimation;
@@ -506,9 +501,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
-        if (event != (id)kCFNull) {
-          [self.bridge.eventDispatcher sendInputEventWithName:@"layout" body:event];
-        }
         if (callback && completionsCalled == frames.count - 1) {
           callback(@[@(finished)]);
         }
