@@ -8,6 +8,7 @@
  */
 
 #import "RCTSlider.h"
+#import "RCTConvert.h"
 
 @implementation RCTSlider
 {
@@ -30,6 +31,13 @@
 {
   super.maximumValue = maximumValue;
   super.value = _unclippedValue;
+}
+
+- (void) setThumb: (id) thumbImage
+{
+  UIImage* newThumb = [RCTConvert UIImage: thumbImage];
+  [super setThumbImage: newThumb forState: UIControlStateNormal];
+  [super setThumbImage: newThumb forState: UIControlStateSelected];
 }
 
 @end

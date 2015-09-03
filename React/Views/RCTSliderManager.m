@@ -53,5 +53,6 @@ RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumTrackTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(maximumTrackTintColor, UIColor);
+RCT_EXPORT_VIEW_PROPERTY(thumb, id);
 
 @end

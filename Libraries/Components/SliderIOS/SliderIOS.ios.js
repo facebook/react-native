@@ -16,13 +16,22 @@ var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
+var Image = require('Image');
 
 var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
+var Constants =
+{
+  SLIDER_HEIGHT_DEFAULT: 40
+};
+Object.freeze(Constants);
+
 var SliderIOS = React.createClass({
   mixins: [NativeMethodsMixin],
+  
+  sliderHeight: Constants.SLIDER_HEIGHT_DEFAULT,
 
   propTypes: {
     /**
@@ -67,6 +76,11 @@ var SliderIOS = React.createClass({
      * Callback continuously called while the user is dragging the slider.
      */
     onValueChange: PropTypes.func,
+    
+    /**
+     * A custom thumb icon for the slider. If no icon is supplied the default thumb is used. Please note that the used approach does not allow you to set the thumb's height and width
+     */
+    thumb: Image.propTypes.source,
 
     /**
      * Callback called when the user finishes changing the value (e.g. when
@@ -87,23 +101,34 @@ var SliderIOS = React.createClass({
   },
 
   render: function() {
+    // Check if a thumb has been overgiven via the properties and if the thumb's height exceeds the slider's height.
+    if ((this.props.thumb !== undefined) && (this.props.thumb !== null))
+    {
+      if (this.props.thumb.height > this.sliderHeight)
+      {
+        this.sliderHeight = this.props.thumb.height;
+      }
+    }
+
     return (
       <RCTSlider
-        style={[styles.slider, this.props.style]}
+        style={[{ height: this.sliderHeight }, this.props.style]}
         value={this.props.value}
         maximumValue={this.props.maximumValue}
         minimumValue={this.props.minimumValue}
         minimumTrackTintColor={this.props.minimumTrackTintColor}
         maximumTrackTintColor={this.props.maximumTrackTintColor}
+        thumb={this.props.thumb}
         onChange={this._onValueChange}
       />
     );
   }
 });
 
+// TODO: remove if not needed anymore
 var styles = StyleSheet.create({
   slider: {
-    height: 40,
+    height: this.sliderHeight,
   },
 });
 
