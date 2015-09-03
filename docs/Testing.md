@@ -52,7 +52,7 @@ Note: In order to run your own tests, you will have to first follow the Getting 
 ...
 ```
 
-Note: you may have to install/upgrade/link io.js and other parts of your environment in order for the tests to run correctly.  Check out the latest setup in [.travis.yml](https://github.com/facebook/react-native/blob/master/.travis.yml#L11-24)
+Note: you may have to install/upgrade/link Node.js and other parts of your environment in order for the tests to run correctly.  Check out the latest setup in [.travis.yml](https://github.com/facebook/react-native/blob/master/.travis.yml#L11-24)
 
 ## Integration Tests (iOS only)
 
