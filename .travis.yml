@@ -15,7 +15,7 @@ install:
   - mkdir -p .nvm
   - export NVM_DIR="$PWD/.nvm"
   - source $(brew --prefix nvm)/nvm.sh
-  - nvm install iojs-v3
+  - nvm install 4
   - rm -Rf `node -p "require('os').tmpDir()"`/jest_preprocess_cache
   - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm config set spin=false
