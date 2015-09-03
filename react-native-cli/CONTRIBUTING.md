@@ -10,7 +10,7 @@ Because `react-native init` calls `npm install react-native`, simply linking you
 
     $ npm install -g sinopia
 
-Then, open `~/.config/sinopia/config.yaml` and configure it like this:
+Then, open `~/.config/sinopia/config.yaml` and configure it like this (note the `max_body_size`):
 
     storage: ./storage
     
@@ -45,6 +45,8 @@ Now you can run sinopia by simply doing:
 Now we need to publish the two React Native packages to our local registry. To do this, we configure npm to use the new registry, unpublish any existing packages and then publish the new ones:
 
     react-native$ npm set registry http://localhost:4873/
+    # Check that it worked:
+    react-native$ npm config list
     react-native$ npm unpublish --force
     react-native$ npm publish
     react-native$ cd react-native-cli/
@@ -75,3 +77,20 @@ Both of these types of tests also run on Travis both continuously and on pull re
 
 [sinopia]: https://www.npmjs.com/package/sinopia
 [xctool]: https://github.com/facebook/xctool
+
+## Clean up
+
+To unset the npm registry, do:
+
+    $ npm set registry https://registry.npmjs.org/
+    # Check that it worked:
+    $ npm config list
+
+## Troubleshooting
+
+##### Sinopia crashes with "Module version mismatch"
+
+This usually happens when you install a package using one version of Node and then change to a different version. This can happen when you update Node, or switch to a different version with nvm. Do:
+
+    $ npm uninstall -g sinopia
+    $ npm install -g sinopia

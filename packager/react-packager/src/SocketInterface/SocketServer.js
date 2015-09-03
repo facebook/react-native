@@ -32,6 +32,7 @@ class SocketServer {
           options
         );
         resolve(this);
+        process.on('exit', () => fs.unlinkSync(sockPath));
       });
     });
     this._server.on('connection', (sock) => this._handleConnection(sock));
@@ -41,8 +42,6 @@ class SocketServer {
     this._packagerServer = new Server(options);
     this._jobs = 0;
     this._dieEventually();
-
-    process.on('exit', () => fs.unlinkSync(sockPath));
   }
 
   onReady() {
@@ -54,13 +53,13 @@ class SocketServer {
 
     const bunser = new bser.BunserBuf();
     sock.on('data', (buf) => bunser.append(buf));
-
     bunser.on('value', (m) => this._handleMessage(sock, m));
   }
 
   _handleMessage(sock, m) {
     if (!m || !m.id || !m.data) {
       console.error('SocketServer recieved a malformed message: %j', m);
+      return;
     }
 
     debug('got request', m);
@@ -72,6 +71,11 @@ class SocketServer {
       debug('request error', error);
       this._jobs--;
       this._reply(sock, m.id, 'error', error.stack);
+
+      // Fatal error from JSTransformer transform workers.
+      if (error.type === 'ProcessTerminatedError') {
+        setImmediate(() => process.exit(1));
+      }
     };
 
     switch (m.type) {
@@ -119,9 +123,43 @@ class SocketServer {
       this._dieEventually();
     }, MAX_IDLE_TIME);
   }
-}
 
-module.exports = SocketServer;
+  static listenOnServerIPCMessages() {
+    process.on('message', (message) => {
+      if (!(message && message.type && message.type === 'createSocketServer')) {
+        return;
+      }
+
+      debug('server got ipc message', message);
+
+      const {options, sockPath} = message.data;
+      // regexp doesn't naturally serialize to json.
+      options.blacklistRE = new RegExp(options.blacklistRE.source);
+
+      new SocketServer(sockPath, options).onReady().then(
+        () => {
+          debug('succesfully created server');
+          process.send({ type: 'createdServer' });
+        },
+        error => {
+          if (error.code === 'EADDRINUSE') {
+            // Server already listening, this may happen if multiple
+            // clients where started in quick succussion (buck).
+            process.send({ type: 'createdServer' });
+
+            // Kill this server because some other server with the same
+            // config and socket already started.
+            debug('server already started');
+            setImmediate(() => process.exit());
+          } else {
+            debug('error creating server', error.code);
+            throw error;
+          }
+        }
+      ).done();
+    });
+  }
+}
 
 // TODO move this to bser code.
 function toJSON(object) {
@@ -139,3 +177,5 @@ function toJSON(object) {
 
   return object;
 }
+
+module.exports = SocketServer;

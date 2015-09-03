@@ -19,9 +19,11 @@ var React = require('react-native');
 var {
   Image,
   PixelRatio,
+  Platform,
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableNativeFeedback,
   View
 } = React;
 
@@ -32,9 +34,13 @@ var getTextFromScore = require('./getTextFromScore');
 var MovieCell = React.createClass({
   render: function() {
     var criticsScore = this.props.movie.ratings.critics_score;
+    var TouchableElement = TouchableHighlight;
+    if (Platform.OS === 'android') {
+      TouchableElement = TouchableNativeFeedback;
+    }
     return (
       <View>
-        <TouchableHighlight
+        <TouchableElement
           onPress={this.props.onSelect}
           onShowUnderlay={this.props.onHighlight}
           onHideUnderlay={this.props.onUnhighlight}>
@@ -59,7 +65,7 @@ var MovieCell = React.createClass({
               </Text>
             </View>
           </View>
-        </TouchableHighlight>
+        </TouchableElement>
       </View>
     );
   }

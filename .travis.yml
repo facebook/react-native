@@ -8,16 +8,16 @@ cache:
         - .nvm
 
 before_install:
-  - brew update
+  # Update brew twice because the first run can fail: https://github.com/Homebrew/homebrew/issues/42553
+  - brew update; brew update
 install:
   - brew reinstall xctool nvm
-  - rm -Rf `node -p "require('os').tmpDir()"`/jest_preprocess_cache
-  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - mkdir -p .nvm
   - export NVM_DIR="$PWD/.nvm"
   - source $(brew --prefix nvm)/nvm.sh
-  - nvm install iojs-v2
-  - nvm use iojs-v2
+  - nvm install iojs-v3
+  - rm -Rf `node -p "require('os').tmpDir()"`/jest_preprocess_cache
+  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm config set spin=false
   - npm install
 

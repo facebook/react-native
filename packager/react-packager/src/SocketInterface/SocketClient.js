@@ -13,6 +13,10 @@ const Promise = require('promise');
 const bser = require('bser');
 const debug = require('debug')('ReactPackager:SocketClient');
 const net = require('net');
+const path  = require('path');
+const tmpdir = require('os').tmpdir();
+
+const LOG_PATH = path.join(tmpdir, 'react-packager.log');
 
 class SocketClient {
   static create(sockPath) {
@@ -73,15 +77,17 @@ class SocketClient {
     const resolver = this._resolvers[message.id];
     if (!resolver) {
       throw new Error(
-        'Unrecognized message id (message already resolved or never existed'
+        'Unrecognized message id (' + message.id + ') ' +
+        'message already resolved or never existed.'
       );
     }
 
     delete this._resolvers[message.id];
 
     if (message.type === 'error') {
-      // TODO convert to an error
-      resolver.reject(message.data);
+      resolver.reject(new Error(
+        message.data + '\n' + 'See logs ' + LOG_PATH
+      ));
     } else {
       resolver.resolve(message.data);
     }

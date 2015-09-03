@@ -20,53 +20,52 @@ var slugify = require('slugify');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
-var ComponentDoc = React.createClass({
-  renderType: function(type) {
-    if (type.name === 'enum') {
-      if (typeof type.value === 'string') {
-        return type.value;
-      }
-      return 'enum(' + type.value.map((v => v.value)).join(', ') + ')';
-    }
-
-    if (type.name === 'shape') {
-      return '{' + Object.keys(type.value).map((key => key + ': ' + this.renderType(type.value[key]))).join(', ') + '}';
-    }
-
-    if (type.name == 'union') {
-      return type.value.map(this.renderType).join(', ');
-    }
-
-    if (type.name === 'arrayOf') {
-      return '[' + this.renderType(type.value) + ']';
-    }
-
-    if (type.name === 'instanceOf') {
+function renderType(type) {
+  if (type.name === 'enum') {
+    if (typeof type.value === 'string') {
       return type.value;
     }
+    return 'enum(' + type.value.map((v) => v.value).join(', ') + ')';
+  }
 
-    if (type.name === 'custom') {
-      if (styleReferencePattern.test(type.raw)) {
-        var name = type.raw.substring(0, type.raw.indexOf('.'));
-        return <a href={slugify(name) + '.html#style'}>{name}#style</a>
-      }
-      if (type.raw === 'EdgeInsetsPropType') {
-        return '{top: number, left: number, bottom: number, right: number}';
-      }
-      return type.raw;
+  if (type.name === 'shape') {
+    return '{' + Object.keys(type.value).map((key => key + ': ' + renderType(type.value[key]))).join(', ') + '}';
+  }
+
+  if (type.name == 'union') {
+    return type.value.map(renderType).join(', ');
+  }
+
+  if (type.name === 'arrayOf') {
+    return '[' + renderType(type.value) + ']';
+  }
+
+  if (type.name === 'instanceOf') {
+    return type.value;
+  }
+
+  if (type.name === 'custom') {
+    if (styleReferencePattern.test(type.raw)) {
+      var name = type.raw.substring(0, type.raw.indexOf('.'));
+      return <a href={slugify(name) + '.html#style'}>{name}#style</a>
     }
-
-    if (type.name === 'stylesheet') {
-      return 'style';
+    if (type.raw === 'EdgeInsetsPropType') {
+      return '{top: number, left: number, bottom: number, right: number}';
     }
+    return type.raw;
+  }
 
-    if (type.name === 'func') {
-      return 'function';
-    }
+  if (type.name === 'stylesheet') {
+    return 'style';
+  }
 
-    return type.name;
-  },
+  if (type.name === 'func') {
+    return 'function';
+  }
+  return type.name;
+}
 
+var ComponentDoc = React.createClass({
   renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
@@ -77,7 +76,7 @@ var ComponentDoc = React.createClass({
           {name}
           {' '}
           {prop.type && <span className="propType">
-            {this.renderType(prop.type)}
+            {renderType(prop.type)}
           </span>}
         </Header>
         {prop.type && prop.type.name === 'stylesheet' &&
@@ -128,7 +127,7 @@ var ComponentDoc = React.createClass({
               {name}
               {' '}
               {style.props[name].type && <span className="propType">
-                {this.renderType(style.props[name].type)}
+                {renderType(style.props[name].type)}
               </span>}
             </h6>
           </div>
@@ -190,7 +189,6 @@ var ComponentDoc = React.createClass({
         <Marked>
           {content.description}
         </Marked>
-
         <HeaderWithGithub
           title="Props"
           path={content.filepath}
@@ -264,7 +262,6 @@ var APIDoc = React.createClass({
     );
   },
 
-
   renderMethods: function(methods) {
     if (!methods.length) {
       return null;
@@ -276,6 +273,67 @@ var APIDoc = React.createClass({
           {methods.filter((method) => {
             return method.name[0] !== '_';
           }).map(this.renderMethod)}
+        </div>
+      </span>
+    );
+  },
+
+  renderProperty: function(property) {
+    return (
+      <div className="prop" key={property.name}>
+        <Header level={4} className="propTitle" toSlug={property.name}>
+          {property.name}
+          {property.type &&
+            <span className="propType">
+              {': ' + renderType(property.type)}
+            </span>
+          }
+        </Header>
+        {property.docblock && <Marked>
+          {this.removeCommentsFromDocblock(property.docblock)}
+        </Marked>}
+      </div>
+    );
+  },
+
+  renderProperties: function(properties) {
+    if (!properties || !properties.length) {
+      return null;
+    }
+    return (
+      <span>
+        <H level={3}>Properties</H>
+        <div className="props">
+          {properties.filter((property) => {
+            return property.name[0] !== '_';
+          }).map(this.renderProperty)}
+        </div>
+      </span>
+    );
+  },
+
+  renderClasses: function(classes) {
+    if (!classes || !classes.length) {
+      return null;
+    }
+    return (
+      <span>
+        <div>
+          {classes.filter((cls) => {
+            return cls.name[0] !== '_' && cls.ownerProperty[0] !== '_';
+          }).map((cls) => {
+            return (
+              <span key={cls.name}>
+                <Header level={2} toSlug={cls.name}>
+                  class {cls.name}
+                </Header>
+                <ul>
+                  {this.renderMethods(cls.methods)}
+                  {this.renderProperties(cls.properties)}
+                </ul>
+              </span>
+            );
+          })}
         </div>
       </span>
     );
@@ -294,6 +352,8 @@ var APIDoc = React.createClass({
           {this.removeCommentsFromDocblock(content.docblock)}
         </Marked>
         {this.renderMethods(content.methods)}
+        {this.renderProperties(content.properties)}
+        {this.renderClasses(content.classes)}
       </div>
     );
   }
@@ -371,7 +431,7 @@ var Autodocs = React.createClass({
     var docs = JSON.parse(this.props.children);
     var content  = docs.type === 'component' || docs.type === 'style' ?
       <ComponentDoc content={docs} /> :
-      <APIDoc content={docs} />;
+      <APIDoc content={docs} apiName={metadata.title} />;
 
     return (
       <Site section="docs" title={metadata.title}>

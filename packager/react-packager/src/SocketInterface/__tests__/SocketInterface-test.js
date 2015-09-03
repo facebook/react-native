@@ -26,6 +26,17 @@ describe('SocketInterface', () => {
     pit('creates socket path by hashing options', () => {
       const fs = require('fs');
       fs.existsSync = jest.genMockFn().mockImpl(() => true);
+      fs.unlinkSync = jest.genMockFn();
+      let callback;
+
+      require('child_process').spawn.mockImpl(() => ({
+        on: (event, cb) => callback = cb,
+        send: (message) => {
+          setImmediate(() => callback({ type: 'createdServer' }));
+        },
+        unref: () => undefined,
+        disconnect: () => undefined,
+      }));
 
       // Check that given two equivelant server options, we end up with the same
       // socket path.
@@ -49,6 +60,7 @@ describe('SocketInterface', () => {
     pit('should fork a server', () => {
       const fs = require('fs');
       fs.existsSync = jest.genMockFn().mockImpl(() => false);
+      fs.unlinkSync = jest.genMockFn();
       let sockPath;
       let callback;
 
@@ -70,18 +82,6 @@ describe('SocketInterface', () => {
         .then(() => {
           expect(SocketClient.create).toBeCalledWith(sockPath);
         });
-    });
-  });
-
-  describe('createSocketServer', () => {
-    pit('creates a server', () => {
-      require('../SocketServer').mockImpl((sockPath, options) => {
-        expect(sockPath).toBe('/socket');
-        expect(options).toEqual({ projectRoots: ['/root'] });
-        return { onReady: () => Promise.resolve() };
-      });
-
-      return SocketInterface.createSocketServer('/socket', { projectRoots: ['/root'] });
     });
   });
 });
