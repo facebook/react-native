@@ -97,46 +97,6 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   }
 }
 
-#pragma mark - RCTURLRequestHandler
-
-- (BOOL)canHandleRequest:(NSURLRequest *)request
-{
-  return [request.URL.scheme.lowercaseString isEqualToString:@"rct-image-store"];
-}
-
-- (id)sendRequest:(NSURLRequest *)request
-     withDelegate:(id<RCTURLRequestDelegate>)delegate
-{
-  NSString *imageTag = request.URL.absoluteString;
-  [self getImageForTag:imageTag withBlock:^(UIImage *image) {
-    if (!image) {
-      NSError *error = RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag]);
-      [delegate URLRequest:request didCompleteWithError:error];
-      return;
-    }
-
-    NSString *mimeType = nil;
-    NSData *imageData = nil;
-    if (RCTImageHasAlpha(image.CGImage)) {
-      mimeType = @"image/png";
-      imageData = UIImagePNGRepresentation(image);
-    } else {
-      mimeType = @"image/jpeg";
-      imageData = UIImageJPEGRepresentation(image, 1.0);
-    }
-
-    NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
-                                                        MIMEType:mimeType
-                                           expectedContentLength:imageData.length
-                                                textEncodingName:nil];
-
-    [delegate URLRequest:request didReceiveResponse:response];
-    [delegate URLRequest:request didReceiveData:imageData];
-    [delegate URLRequest:request didCompleteWithError:nil];
-  }];
-  return request;
-}
-
 #pragma mark - RCTImageLoader
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL

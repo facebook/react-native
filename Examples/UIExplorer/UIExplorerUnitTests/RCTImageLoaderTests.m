@@ -50,14 +50,13 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[loader, imageLoader]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
+  [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
   } completionBlock:^(NSError *loadError, id loadedImage) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];
-  XCTAssertNil(cancelBlock);
 }
 
 - (void)testImageLoaderUsesImageURLLoaderWithHighestPriority
@@ -82,14 +81,13 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[loader1, loader2, imageLoader]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
+  [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
   } completionBlock:^(NSError *loadError, id loadedImage) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];
-  XCTAssertNil(cancelBlock);
 }
 
 - (void)testImageDecoding

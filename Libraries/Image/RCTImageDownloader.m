@@ -37,8 +37,10 @@ RCT_EXPORT_MODULE()
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
   // Have to exclude 'file://' from the main bundle, otherwise this would conflict with RCTAssetBundleImageLoader
-  return [requestURL.scheme.lowercaseString hasPrefix:@"http"] ||
-  ([requestURL.scheme.lowercaseString hasPrefix:@"file"] && ![requestURL.path hasPrefix:[NSBundle mainBundle].resourcePath]);
+  return
+    [requestURL.scheme compare:@"http" options:NSCaseInsensitiveSearch range:NSMakeRange(0, 4)] == NSOrderedSame ||
+    ([requestURL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame && ![requestURL.path hasPrefix:[NSBundle mainBundle].resourcePath]) ||
+    [requestURL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame;
 }
 
 /**
@@ -103,7 +105,7 @@ RCT_EXPORT_MODULE()
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  if ([imageURL.scheme isEqualToString:@"http"]) {
+  if ([imageURL.scheme.lowercaseString hasPrefix:@"http"]) {
     __block RCTImageLoaderCancellationBlock decodeCancel = nil;
 
     __weak RCTImageDownloader *weakSelf = self;
@@ -122,9 +124,37 @@ RCT_EXPORT_MODULE()
         decodeCancel();
       }
     };
+  } else if ([imageURL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame) {
+    __block BOOL cancelled = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      if (cancelled) {
+        return;
+      }
+
+      // Normally -dataWithContentsOfURL: would be bad but this is a data URL.
+      NSData *data = [NSData dataWithContentsOfURL:imageURL];
+
+      UIImage *image = [UIImage imageWithData:data];
+      if (image) {
+        if (progressHandler) {
+          progressHandler(1, 1);
+        }
+        if (completionHandler) {
+          completionHandler(nil, image);
+        }
+      } else {
+        if (completionHandler) {
+          NSString *message = [NSString stringWithFormat:@"Invalid image data for URL: %@", imageURL];
+          completionHandler(RCTErrorWithMessage(message), nil);
+        }
+      }
+    });
+    return ^{
+      cancelled = YES;
+    };
   } else if ([imageURL.scheme isEqualToString:@"file"]) {
     __block BOOL cancelled = NO;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       if (cancelled) {
         return;
       }
