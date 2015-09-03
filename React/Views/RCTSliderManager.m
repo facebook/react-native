@@ -27,25 +27,24 @@ RCT_EXPORT_MODULE()
   return slider;
 }
 
-static void RCTSendSliderEvent(RCTSliderManager *self, UISlider *sender, BOOL continuous)
+static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 {
-  NSDictionary *event = @{
-    @"target": sender.reactTag,
-    @"value": @(sender.value),
-    @"continuous": @(continuous),
-  };
-
-  [self.bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
+  if (sender.onChange) {
+    sender.onChange(@{
+      @"value": @(sender.value),
+      @"continuous": @(continuous),
+    });
+  }
 }
 
-- (void)sliderValueChanged:(UISlider *)sender
+- (void)sliderValueChanged:(RCTSlider *)sender
 {
-  RCTSendSliderEvent(self, sender, YES);
+  RCTSendSliderEvent(sender, YES);
 }
 
-- (void)sliderTouchEnd:(UISlider *)sender
+- (void)sliderTouchEnd:(RCTSlider *)sender
 {
-  RCTSendSliderEvent(self, sender, NO);
+  RCTSendSliderEvent(sender, NO);
 }
 
 RCT_EXPORT_VIEW_PROPERTY(value, float);
@@ -53,5 +52,6 @@ RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumTrackTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(maximumTrackTintColor, UIColor);
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
 
 @end

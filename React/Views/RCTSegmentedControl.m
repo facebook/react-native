@@ -14,17 +14,13 @@
 #import "UIView+React.h"
 
 @implementation RCTSegmentedControl
-{
-  RCTEventDispatcher *_eventDispatcher;
-}
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:CGRectZero])) {
-    _eventDispatcher = eventDispatcher;
+  if ((self = [super initWithFrame:frame])) {
     _selectedIndex = self.selectedSegmentIndex;
-    [self addTarget:self action:@selector(onChange:)
-   forControlEvents:UIControlEventValueChanged];
+    [self addTarget:self action:@selector(didChange)
+               forControlEvents:UIControlEventValueChanged];
   }
   return self;
 }
@@ -45,14 +41,14 @@
   super.selectedSegmentIndex = selectedIndex;
 }
 
-- (void)onChange:(UISegmentedControl *)sender
+- (void)didChange
 {
-  NSDictionary *event = @{
-    @"target": self.reactTag,
-    @"value": [self titleForSegmentAtIndex:sender.selectedSegmentIndex],
-    @"selectedSegmentIndex": @(sender.selectedSegmentIndex)
-  };
-  [_eventDispatcher sendInputEventWithName:@"change" body:event];
+  if (_onChange) {
+    _onChange(@{
+      @"value": [self titleForSegmentAtIndex:_selectedIndex],
+      @"selectedSegmentIndex": @(_selectedIndex)
+    });
+  }
 }
 
 @end

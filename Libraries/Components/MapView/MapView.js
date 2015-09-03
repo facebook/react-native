@@ -277,7 +277,9 @@ if (Platform.OS === 'android') {
     uiViewClassName: 'RCTMap',
   });
 } else {
-  var RCTMap = requireNativeComponent('RCTMap', MapView);
+  var RCTMap = requireNativeComponent('RCTMap', MapView, {
+    nativeOnly: {onChange: true, onPress: true}
+  });
 }
 
 module.exports = MapView;

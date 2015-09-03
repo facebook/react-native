@@ -26,12 +26,12 @@ var styles = StyleSheet.create({
   },
   border1: {
     borderWidth: 10,
-    borderColor: 'brown',
+    borderColor: '#a52a2a',
   },
   borderRadius: {
     borderWidth: 10,
     borderRadius: 10,
-    borderColor: 'cyan',
+    borderColor: '#00ffff',
   },
   border2: {
     borderWidth: 10,
@@ -134,6 +134,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'border*Width & border*Color',
+    platform: 'ios',
     render() {
       return <View style={[styles.box, styles.border5]} />;
     }
@@ -141,6 +142,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'border*Width & border*Color',
+    platform: 'ios',
     render() {
       return <View style={[styles.box, styles.border6]} />;
     }
@@ -148,6 +150,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'borderRadius & clipping',
+    platform: 'ios',
     render() {
       return (
         <View style={[styles.box, styles.border7]}>

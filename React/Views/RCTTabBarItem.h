@@ -9,10 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTComponent.h"
+
 @interface RCTTabBarItem : UIView
 
 @property (nonatomic, copy) id icon;
 @property (nonatomic, assign, getter=isSelected) BOOL selected;
 @property (nonatomic, readonly) UITabBarItem *barItem;
+@property (nonatomic, copy) RCTBubblingEventBlock onPress;
 
 @end
