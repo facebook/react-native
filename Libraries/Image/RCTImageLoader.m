@@ -87,9 +87,21 @@ RCT_EXPORT_MODULE()
     RCTLogError(@"No suitable image URL loader found for %@", imageTag);
   }
 
-  return [loadHandler loadImageForURL:requestURL size:size scale:scale resizeMode:resizeMode progressHandler:progressBlock completionHandler:^(NSError *error, id image) {
+  return [loadHandler loadImageForURL:requestURL size:size scale:scale resizeMode:resizeMode progressHandler:^(int64_t progress, int64_t total) {
+    if (!progressBlock) {
+      return;
+    }
+
+    if ([NSThread isMainThread]) {
+      progressBlock(progress, total);
+    } else {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        progressBlock(progress, total);
+      });
+    }
+  } completionHandler:^(NSError *error, id image) {
     RCTDispatchCallbackOnMainQueue(completionBlock, error, image);
-  }];
+  }] ?: ^{};
 }
 
 - (id<RCTImageDecoder>)imageDecoderForRequest:(NSData *)imageData

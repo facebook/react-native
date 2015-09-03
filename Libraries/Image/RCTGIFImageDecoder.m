@@ -24,7 +24,7 @@ RCT_EXPORT_MODULE()
   char header[7] = {};
   [imageData getBytes:header length:6];
 
-  return !strcmp(header, "GIF87a") == 0 || !strcmp(header, "GIF89a");
+  return !strcmp(header, "GIF87a") || !strcmp(header, "GIF89a");
 }
 
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler

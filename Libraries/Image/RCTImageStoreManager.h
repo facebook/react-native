@@ -6,7 +6,7 @@
 #import "RCTImageLoader.h"
 #import "RCTURLRequestHandler.h"
 
-@interface RCTImageStoreManager : NSObject <RCTImageURLLoader, RCTURLRequestHandler>
+@interface RCTImageStoreManager : NSObject <RCTImageURLLoader>
 
 /**
  * Set and get cached images. These must be called from the main thread.
