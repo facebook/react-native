@@ -42,8 +42,16 @@ const SocketInterface = {
       if (fs.existsSync(sockPath)) {
         var sock = net.connect(sockPath);
         sock.on('connect', () => {
-          sock.end();
-          resolve(SocketClient.create(sockPath));
+          SocketClient.create(sockPath).then(
+            client => {
+              sock.end();
+              resolve(client);
+            },
+            error => {
+              sock.end();
+              reject(error);
+            }
+          );
         });
         sock.on('error', (e) => {
           try {
