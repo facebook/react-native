@@ -298,7 +298,7 @@ var App = React.createClass({
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 
 This example uses a preset value, you can customize the animations as
-you need, see [LayoutAnimation.js](https://github.com/facebook/react-native/blob/master/Libraries/Animation/LayoutAnimation.js)
+you need, see [LayoutAnimation.js](https://github.com/facebook/react-native/blob/master/Libraries/LayoutAnimation/LayoutAnimation.js)
 for more information.
 
 ### requestAnimationFrame
