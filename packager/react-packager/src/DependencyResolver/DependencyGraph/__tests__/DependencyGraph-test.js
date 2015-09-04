@@ -16,6 +16,7 @@ jest
   .dontMock('../../crawlers')
   .dontMock('../../crawlers/node')
   .dontMock('../../replacePatterns')
+  .dontMock('../../../lib/getPlatformExtension')
   .dontMock('../../../lib/getAssetDataFromName')
   .dontMock('../../fastfs')
   .dontMock('../../AssetModule_DEPRECATED')
@@ -412,6 +413,90 @@ describe('DependencyGraph', function() {
             {
               id: 'rootPackage/imgs/c.png',
               path: '/root/imgs/c.png',
+              resolution: 1,
+              dependencies: [],
+              isAsset: true,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+            },
+          ]);
+      });
+    });
+
+    pit('should respect platform extension in assets', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./imgs/a.png");',
+            'require("./imgs/b.png");',
+            'require("./imgs/c.png");',
+          ].join('\n'),
+          'imgs': {
+            'a@1.5x.ios.png': '',
+            'b@.7x.ios.png': '',
+            'c.ios.png': '',
+            'c@2x.ios.png': '',
+          },
+          'package.json': JSON.stringify({
+            name: 'rootPackage'
+          }),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+
+      dgraph.setup({ platform: 'ios' });
+
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: [
+                './imgs/a.png',
+                './imgs/b.png',
+                './imgs/c.png',
+              ],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'rootPackage/imgs/a.png',
+              path: '/root/imgs/a@1.5x.ios.png',
+              resolution: 1.5,
+              dependencies: [],
+              isAsset: true,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+            },
+            {
+              id: 'rootPackage/imgs/b.png',
+              path: '/root/imgs/b@.7x.ios.png',
+              resolution: 0.7,
+              dependencies: [],
+              isAsset: true,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+            },
+            {
+              id: 'rootPackage/imgs/c.png',
+              path: '/root/imgs/c.ios.png',
               resolution: 1,
               dependencies: [],
               isAsset: true,
