@@ -19,6 +19,7 @@ var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
+var merge = require('merge');
 
 var requireNativeComponent = require('requireNativeComponent');
 var invariant = require('invariant');
@@ -350,19 +351,6 @@ var NavigatorIOS = React.createClass({
     };
   },
   updateNavBar: function (route: Route){
-    var merge = function (a, b){
-      // return a;
-      var current = {};
-      for (var i = 0; i < Object.keys(a).length; i++) {
-        var attr = Object.keys(a)[i];
-        current[attr] = a[attr];
-      }
-      for (var i = 0; i < Object.keys(b).length; i++) {
-        var attr = Object.keys(b)[i];
-        current[attr] = b[attr];
-      }
-      return current;
-    };
     if (route !== undefined){
       var current: Route = this.state.routeStack[this.state.routeStack.length - 1] ;
       this.state.routeStack[this.state.routeStack.length - 1] = merge(current, route);
