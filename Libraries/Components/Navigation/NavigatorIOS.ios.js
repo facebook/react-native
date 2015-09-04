@@ -76,7 +76,6 @@ type State = {
   fromIndex: number;
   toIndex: number;
   makingNavigatorRequest: boolean;
-  navBarReload: boolean;
   updatingAllIndicesAtOrBeyond: number;
 }
 
@@ -311,7 +310,7 @@ var NavigatorIOS = React.createClass({
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
       navigationContext: this.navigationContext,
-      updateNavBar:this.updateNavBar,
+      updateNavBar: this.updateNavBar,
     };
     this._emitWillFocus(this.state.routeStack[this.state.observedTopOfStack]);
   },
@@ -344,7 +343,6 @@ var NavigatorIOS = React.createClass({
       // Whether or not we are making a navigator request to push/pop. (Used
       // for performance optimization).
       makingNavigatorRequest: false,
-      navBarReload: false,
       // Whether or not we are updating children of navigator and if so (not
       // `null`) which index marks the beginning of all updates. Used for
       // performance optimization.
@@ -682,8 +680,6 @@ var NavigatorIOS = React.createClass({
     // computation of navigator children.
     var items = shouldRecurseToNavigator ?
       this.state.routeStack.map(this._routeToStackItem) : null;
-    // TODO Change it
-    this.state.navBarReload = false;
     return (
       <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
         <NavigatorTransitionerIOS
