@@ -197,6 +197,7 @@ class Game2048 extends React.Component {
 
     return (
       <View
+        testID="main"
         style={styles.container}
         onTouchStart={(event) => this.handleTouchStart(event)}
         onTouchEnd={(event) => this.handleTouchEnd(event)}>
