@@ -115,13 +115,18 @@ class Bundle {
   getMinifiedSourceAndMap() {
     this._assertFinalized();
 
+    if (this._minifiedSourceAndMap) {
+      return this._minifiedSourceAndMap;
+    }
+
     const source = this._getSource();
     try {
-      return UglifyJS.minify(source, {
+      this._minifiedSourceAndMap = UglifyJS.minify(source, {
         fromString: true,
         outSourceMap: 'bundle.js',
         inSourceMap: this.getSourceMap(),
       });
+      return this._minifiedSourceAndMap;
     } catch(e) {
       // Sometimes, when somebody is using a new syntax feature that we
       // don't yet have transform for, the untransformed line is sent to
