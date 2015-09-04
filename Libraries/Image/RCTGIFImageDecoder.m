@@ -27,60 +27,85 @@ RCT_EXPORT_MODULE()
   return !strcmp(header, "GIF87a") || !strcmp(header, "GIF89a");
 }
 
-- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(UIViewContentMode)resizeMode
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
   NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
   NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
 
+  UIImage *image = nil;
   size_t imageCount = CGImageSourceGetCount(imageSource);
-  NSTimeInterval duration = 0;
-  NSMutableArray *delays = [NSMutableArray arrayWithCapacity:imageCount];
-  NSMutableArray *images = [NSMutableArray arrayWithCapacity:imageCount];
-  for (size_t i = 0; i < imageCount; i++) {
-    CGImageRef image = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
-    NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-    NSDictionary *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
+  if (imageCount > 1) {
 
-    const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
-    NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];
-    if (delayTime == nil) {
-      if (i == 0) {
-        delayTime = @(kDelayTimeIntervalDefault);
-      } else {
-        delayTime = delays[i - 1];
+    NSTimeInterval duration = 0;
+    NSMutableArray *delays = [NSMutableArray arrayWithCapacity:imageCount];
+    NSMutableArray *images = [NSMutableArray arrayWithCapacity:imageCount];
+    for (size_t i = 0; i < imageCount; i++) {
+
+      CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
+      if (!image) {
+        image = [UIImage imageWithCGImage:imageRef];
       }
+
+      NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
+      NSDictionary *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
+
+      const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
+      NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];
+      if (delayTime == nil) {
+        if (i == 0) {
+          delayTime = @(kDelayTimeIntervalDefault);
+        } else {
+          delayTime = delays[i - 1];
+        }
+      }
+
+      const NSTimeInterval kDelayTimeIntervalMinimum = 0.02;
+      if (delayTime.floatValue < (float)kDelayTimeIntervalMinimum - FLT_EPSILON) {
+        delayTime = @(kDelayTimeIntervalDefault);
+      }
+
+      duration += delayTime.doubleValue;
+      delays[i] = delayTime;
+      images[i] = (__bridge_transfer id)imageRef;
+    }
+    CFRelease(imageSource);
+
+    NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
+    NSTimeInterval runningDuration = 0;
+    for (NSNumber *delayNumber in delays) {
+      [keyTimes addObject:@(runningDuration / duration)];
+      runningDuration += delayNumber.doubleValue;
     }
 
-    const NSTimeInterval kDelayTimeIntervalMinimum = 0.02;
-    if (delayTime.floatValue < (float)kDelayTimeIntervalMinimum - FLT_EPSILON) {
-      delayTime = @(kDelayTimeIntervalDefault);
+    [keyTimes addObject:@1.0];
+
+    // Create animation
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
+    animation.calculationMode = kCAAnimationDiscrete;
+    animation.repeatCount = loopCount == 0 ? HUGE_VALF : loopCount;
+    animation.keyTimes = keyTimes;
+    animation.values = images;
+    animation.duration = duration;
+    image.reactKeyframeAnimation = animation;
+
+  } else {
+
+    // Don't bother creating an animation
+    CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
+    if (imageRef) {
+      image = [UIImage imageWithCGImage:imageRef];
+      CFRelease(imageRef);
     }
-
-    duration += delayTime.doubleValue;
-    delays[i] = delayTime;
-    images[i] = (__bridge_transfer id)image;
-  }
-  CFRelease(imageSource);
-
-  NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
-  NSTimeInterval runningDuration = 0;
-  for (NSNumber *delayNumber in delays) {
-    [keyTimes addObject:@(runningDuration / duration)];
-    runningDuration += delayNumber.doubleValue;
+    CFRelease(imageSource);
   }
 
-  [keyTimes addObject:@1.0];
-
-  CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
-  animation.calculationMode = kCAAnimationDiscrete;
-  animation.repeatCount = loopCount == 0 ? HUGE_VALF : loopCount;
-  animation.keyTimes = keyTimes;
-  animation.values = images;
-  animation.duration = duration;
-  completionHandler(nil, animation);
-
-  return nil;
+  completionHandler(nil, image);
+  return ^{};
 }
 
 @end

@@ -50,7 +50,7 @@ RCT_EXPORT_MODULE()
  */
 - (RCTImageLoaderCancellationBlock)downloadDataForURL:(NSURL *)url
                                       progressHandler:(RCTImageLoaderProgressBlock)progressBlock
-                                    completionHandler:(RCTImageLoaderCompletionBlock)completionBlock
+                                    completionHandler:(void (^)(NSError *error, NSData *data))completionBlock
 {
   if (![_bridge respondsToSelector:NSSelectorFromString(@"networking")]) {
     RCTLogError(@"You need to import the RCTNetworking library in order to download remote images.");
