@@ -16,6 +16,8 @@
 
 #if RCT_DEV
 
+static BOOL isEnabled = YES;
+
 @implementation RCTDevLoadingView
 {
   UIWindow *_window;
@@ -26,6 +28,11 @@
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
++ (void)setEnabled:(BOOL)enabled
+{
+  isEnabled = enabled;
+}
 
 - (instancetype)init
 {
@@ -57,6 +64,10 @@ RCT_EXPORT_MODULE()
 
 - (void)showWithURL:(NSURL *)URL
 {
+  if (!isEnabled) {
+    return;
+  }
+
   dispatch_async(dispatch_get_main_queue(), ^{
 
     _showDate = [NSDate date];
@@ -90,6 +101,10 @@ RCT_EXPORT_MODULE()
 
 - (void)hide
 {
+  if (!isEnabled) {
+    return;
+  }
+
   dispatch_async(dispatch_get_main_queue(), ^{
 
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
@@ -117,6 +132,7 @@ RCT_EXPORT_MODULE()
 @implementation RCTDevLoadingView
 
 + (NSString *)moduleName { return nil; }
++ (void)setEnabled:(BOOL)enabled { }
 
 @end
 
