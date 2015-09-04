@@ -242,6 +242,14 @@ var TextInput = React.createClass({
      */
     placeholderTextColor: PropTypes.string,
     /**
+     * Color of the cursor and selection overlay
+     */
+    tintColor: PropTypes.string,
+    /**
+     * Color of the clear button
+     */
+    clearButtonTintColor: PropTypes.string,
+    /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is false.
      */

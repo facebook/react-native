@@ -20,6 +20,7 @@
   NSMutableArray *_reactSubviews;
   BOOL _jsRequestingFirstResponder;
   NSInteger _nativeEventCount;
+  UIColor *_clearButtonTintColor;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -73,6 +74,85 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 {
   super.placeholder = placeholder;
   RCTUpdatePlaceholder(self);
+}
+
+- (UIColor *)tintColor
+{
+  return super.tintColor;
+}
+
+- (void)setTintColor:(UIColor *)tintColor
+{
+  super.tintColor = tintColor;
+}
+
+- (UIColor *)clearButtonTintColor
+{
+  return _clearButtonTintColor;
+}
+
+- (void)setClearButtonTintColor:(UIColor *)clearButtonTintColor
+{
+    _clearButtonTintColor = clearButtonTintColor;
+}
+
+static UIButton* findClearButton(RCTTextField *self)
+{
+    for(UIView *v in self.subviews)
+    {
+        if([v isKindOfClass:[UIButton class]])
+        {
+            UIButton *buttonClear = (UIButton *) v;
+            return buttonClear;
+        }
+    }
+    return nil;
+}
+
+-(void) layoutSubviews
+{
+    [super layoutSubviews];
+    tintClearButton(self);
+}
+
+static void tintClearButton(RCTTextField *self)
+{
+    UIButton *clearButton = findClearButton(self);
+
+    if(self.clearButtonTintColor && clearButton)
+    {
+        UIImage *imageNormal = [clearButton imageForState:UIControlStateNormal];
+        UIImage *imageHighlighted = [clearButton imageForState:UIControlStateHighlighted];
+
+        UIImage *tintedImageNormal = tinedImage(imageNormal, self.clearButtonTintColor);
+        UIImage *tintedImageHighlighted = tinedImage(imageHighlighted, self.clearButtonTintColor);
+
+        if (tintedImageNormal && tintedImageHighlighted)
+        {
+            // Default image has transparency therefore we will be use higlighted image
+            [clearButton setImage:tintedImageHighlighted forState:UIControlStateNormal];
+            [clearButton setImage:tintedImageHighlighted forState:UIControlStateHighlighted];
+        }
+    }
+}
+
+
+static UIImage* tinedImage(UIImage *image, UIColor* tintColor)
+{
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    CGRect rect = (CGRect){ CGPointZero, image.size };
+    CGContextSetBlendMode(context, kCGBlendModeNormal);
+    [image drawInRect:rect];
+
+    CGContextSetBlendMode(context, kCGBlendModeSourceIn);
+    [tintColor setFill];
+    CGContextFillRect(context, rect);
+
+    UIImage *imageTinted  = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return imageTinted;
 }
 
 - (NSArray *)reactSubviews
