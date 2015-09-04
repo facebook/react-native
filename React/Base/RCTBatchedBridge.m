@@ -117,8 +117,15 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
   dispatch_group_t initModulesAndLoadSource = dispatch_group_create();
   dispatch_group_enter(initModulesAndLoadSource);
+  __weak RCTBatchedBridge *weakSelf = self;
   __block NSString *sourceCode;
-  [self loadSource:^(__unused NSError *error, NSString *source) {
+  [self loadSource:^(NSError *error, NSString *source) {
+    if (error) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf stopLoadingWithError:error];
+      });
+    }
+    
     sourceCode = source;
     dispatch_group_leave(initModulesAndLoadSource);
   }];
@@ -131,7 +138,6 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
     RCTProfileHookModules(self);
   }
 
-  __weak RCTBatchedBridge *weakSelf = self;
   __block NSString *config;
   dispatch_group_enter(initModulesAndLoadSource);
   dispatch_async(bridgeQueue, ^{
@@ -150,16 +156,24 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
       // We're not waiting for this complete to leave the dispatch group, since
       // injectJSONConfiguration and executeSourceCode will schedule operations on the
       // same queue anyway.
-      [weakSelf injectJSONConfiguration:config onComplete:^(__unused NSError *error) {
+      [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
         RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
+        if (error) {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf stopLoadingWithError:error];
+          });
+        }
       }];
       dispatch_group_leave(initModulesAndLoadSource);
     });
   });
 
-  dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
-    if (sourceCode) {
-      [weakSelf executeSourceCode:sourceCode];
+  dispatch_group_notify(initModulesAndLoadSource, dispatch_get_main_queue(), ^{
+    RCTBatchedBridge *strongSelf = weakSelf;
+    if (sourceCode && strongSelf.loading) {
+      dispatch_async(bridgeQueue, ^{
+        [weakSelf executeSourceCode:sourceCode];
+      });
     }
   });
 }
@@ -172,23 +186,6 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSString *source) {
     RCTProfileEndAsyncEvent(0, @"init,download", cookie, @"JavaScript download", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
-
-    if (error) {
-      NSArray *stack = error.userInfo[@"stack"];
-      if (stack) {
-        [self.redBox showErrorMessage:error.localizedDescription
-                            withStack:stack];
-      } else {
-        [self.redBox showErrorMessage:error.localizedDescription
-                          withDetails:error.localizedFailureReason];
-      }
-
-      NSDictionary *userInfo = @{@"bridge": self, @"error": error};
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
-                                                          object:_parentBridge
-                                                        userInfo:userInfo];
-    }
-
     _onSourceLoad(error, source);
   };
 
@@ -283,7 +280,6 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
                                                       object:self];
 }
 
-
 - (void)setupExecutor
 {
   [_javaScriptExecutor setUp];
@@ -313,12 +309,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
   [_javaScriptExecutor injectJSONText:configJSON
                   asGlobalObjectNamed:@"__fbBatchedBridgeConfig"
-                             callback:^(NSError *error) {
-    if (error) {
-      [self.redBox showError:error];
-    }
-    onComplete(error);
-  }];
+                             callback:onComplete];
 }
 
 - (void)executeSourceCode:(NSString *)sourceCode
@@ -333,7 +324,9 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
     if (loadError) {
-      [self.redBox showError:loadError];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self stopLoadingWithError:loadError];
+      });
       return;
     }
 
@@ -352,6 +345,28 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   }];
 }
 
+- (void)stopLoadingWithError:(NSError *)error
+{
+  RCTAssertMainThread();
+  
+  if (!self.isValid || !self.loading) {
+    return;
+  }
+  
+  _loading = NO;
+  
+  NSArray *stack = error.userInfo[@"stack"];
+  if (stack) {
+    [self.redBox showErrorMessage:error.localizedDescription withStack:stack];
+  } else {
+    [self.redBox showError:error];
+  }
+  
+  NSDictionary *userInfo = @{@"bridge": self, @"error": error};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                      object:_parentBridge
+                                                    userInfo:userInfo];
+}
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
                     moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
