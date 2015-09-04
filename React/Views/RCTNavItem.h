@@ -18,8 +18,6 @@
 
 @end
 
-
-
 @interface RCTNavItem : UIView
 
 @property (nonatomic, copy) NSString *title;
