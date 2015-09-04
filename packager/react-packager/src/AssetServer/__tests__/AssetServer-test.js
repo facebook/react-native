@@ -1,6 +1,7 @@
 'use strict';
 
 jest
+  .dontMock('../../lib/getPlatformExtension')
   .dontMock('../../lib/getAssetDataFromName')
   .dontMock('../');
 
@@ -46,6 +47,43 @@ describe('AssetServer', () => {
         )
       );
     });
+
+    pit('should work for the simple case with platform ext', () => {
+      const server = new AssetServer({
+        projectRoots: ['/root'],
+        assetExts: ['png'],
+      });
+
+      fs.__setMockFilesystem({
+        'root': {
+          imgs: {
+            'b.ios.png': 'b ios image',
+            'b.android.png': 'b android image',
+            'c.png': 'c general image',
+            'c.android.png': 'c android image',
+          }
+        }
+      });
+
+      return Promise.all([
+        server.get('imgs/b.png', 'ios').then(
+          data => expect(data).toBe('b ios image')
+        ),
+        server.get('imgs/b.png', 'android').then(
+          data => expect(data).toBe('b android image')
+        ),
+        server.get('imgs/c.png', 'android').then(
+          data => expect(data).toBe('c android image')
+        ),
+        server.get('imgs/c.png', 'ios').then(
+          data => expect(data).toBe('c general image')
+        ),
+        server.get('imgs/c.png').then(
+          data => expect(data).toBe('c general image')
+        ),
+      ]);
+    });
+
 
     pit('should work for the simple case with jpg', () => {
       const server = new AssetServer({
@@ -93,6 +131,37 @@ describe('AssetServer', () => {
       return server.get('imgs/b@3x.png').then(data =>
         expect(data).toBe('b4 image')
       );
+    });
+
+    pit('should pick the bigger one with platform ext', () => {
+      const server = new AssetServer({
+        projectRoots: ['/root'],
+        assetExts: ['png'],
+      });
+
+      fs.__setMockFilesystem({
+        'root': {
+          imgs: {
+            'b@1x.png': 'b1 image',
+            'b@2x.png': 'b2 image',
+            'b@4x.png': 'b4 image',
+            'b@4.5x.png': 'b4.5 image',
+            'b@1x.ios.png': 'b1 ios image',
+            'b@2x.ios.png': 'b2 ios image',
+            'b@4x.ios.png': 'b4 ios image',
+            'b@4.5x.ios.png': 'b4.5 ios image',
+          }
+        }
+      });
+
+      return Promise.all([
+        server.get('imgs/b@3x.png').then(data =>
+          expect(data).toBe('b4 image')
+        ),
+        server.get('imgs/b@3x.png', 'ios').then(data =>
+          expect(data).toBe('b4 ios image')
+        ),
+      ]);
     });
 
     pit('should support multiple project roots', () => {
