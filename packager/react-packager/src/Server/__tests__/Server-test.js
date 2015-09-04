@@ -245,8 +245,16 @@ describe('processRequest', () => {
       expect(res.end).toBeCalledWith('i am image');
     });
 
-    it('should return 404', () => {
+    it('should parse the platform option', () => {
+      const req = {url: '/assets/imgs/a.png?platform=ios'};
+      const res = {end: jest.genMockFn()};
 
+      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.end).toBeCalledWith('i am image');
     });
   });
 
