@@ -23,7 +23,7 @@
 #import "RCTUtils.h"
 
 #ifndef RCT_JSC_PROFILER
-#if RCT_DEV && RCT_DEBUG
+#if RCT_DEV
 #define RCT_JSC_PROFILER 1
 #else
 #define RCT_JSC_PROFILER 0
@@ -34,7 +34,7 @@
 #include <dlfcn.h>
 
 #ifndef RCT_JSC_PROFILER_DYLIB
-#define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[[UIDevice currentDevice] systemVersion] integerValue]] ofType:@"dylib" inDirectory:@"Frameworks"] UTF8String]
+#define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[[UIDevice currentDevice] systemVersion] integerValue]] ofType:@"dylib" inDirectory:@"RCTJSCProfiler"] UTF8String]
 #endif
 #endif
 
