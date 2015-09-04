@@ -28,6 +28,20 @@ static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSEr
   }
 }
 
+@implementation UIImage (React)
+
+- (CAKeyframeAnimation *)reactKeyframeAnimation
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setReactKeyframeAnimation:(CAKeyframeAnimation *)reactKeyframeAnimation
+{
+  objc_setAssociatedObject(self, @selector(reactKeyframeAnimation), reactKeyframeAnimation, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+@end
+
 @implementation RCTImageLoader
 
 @synthesize bridge = _bridge;
@@ -99,7 +113,7 @@ RCT_EXPORT_MODULE()
         progressBlock(progress, total);
       });
     }
-  } completionHandler:^(NSError *error, id image) {
+  } completionHandler:^(NSError *error, UIImage *image) {
     RCTDispatchCallbackOnMainQueue(completionBlock, error, image);
   }] ?: ^{};
 }
@@ -142,7 +156,7 @@ RCT_EXPORT_MODULE()
 {
   id<RCTImageDecoder> imageDecoder = [self imageDecoderForRequest:data];
   if (imageDecoder) {
-    return [imageDecoder decodeImageData:data size:size scale:scale resizeMode:resizeMode completionHandler:^(NSError *error, id image) {
+    return [imageDecoder decodeImageData:data size:size scale:scale resizeMode:resizeMode completionHandler:^(NSError *error, UIImage *image) {
       RCTDispatchCallbackOnMainQueue(completionBlock, error, image);
     }];
   } else {
