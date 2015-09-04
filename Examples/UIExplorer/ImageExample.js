@@ -97,6 +97,7 @@ exports.examples = [
         <NetworkImageExample source={{uri: 'http://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
       );
     },
+    platform: 'ios',
   },
   {
     title: 'Image Download Progress',
@@ -105,6 +106,7 @@ exports.examples = [
         <NetworkImageExample source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}}/>
       );
     },
+    platform: 'ios',
   },
   {
     title: 'Border Color',
@@ -122,6 +124,7 @@ exports.examples = [
         </View>
       );
     },
+    platform: 'ios',
   },
   {
     title: 'Border Width',
@@ -139,6 +142,7 @@ exports.examples = [
         </View>
       );
     },
+    platform: 'ios',
   },
   {
     title: 'Border Radius',
@@ -146,17 +150,12 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image
-            style={[styles.base, styles.background, {borderRadius: 5}]}
-            source={smallImage}
+            style={[styles.base, {borderRadius: 5}]}
+            source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              styles.background,
-              styles.leftMargin,
-              {borderRadius: 19}
-            ]}
-            source={smallImage}
+            style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
+            source={fullImage}
           />
         </View>
       );
@@ -245,19 +244,19 @@ exports.examples = [
           <View style={styles.horizontal}>
             <Image
               source={require('image!uie_thumb_normal')}
-              style={[styles.icon, {tintColor: '#5ac8fa' }]}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa' }]}
             />
             <Image
               source={require('image!uie_thumb_normal')}
-              style={[styles.icon, styles.leftMargin, {tintColor: '#4cd964' }]}
+              style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#4cd964' }]}
             />
             <Image
               source={require('image!uie_thumb_normal')}
-              style={[styles.icon, styles.leftMargin, {tintColor: '#ff2d55' }]}
+              style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#ff2d55' }]}
             />
             <Image
               source={require('image!uie_thumb_normal')}
-              style={[styles.icon, styles.leftMargin, {tintColor: '#8e8e93' }]}
+              style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#8e8e93' }]}
             />
           </View>
           <Text style={styles.sectionText}>
@@ -266,19 +265,19 @@ exports.examples = [
           <View style={styles.horizontal}>
             <Image
               source={smallImage}
-              style={[styles.base, {tintColor: '#5ac8fa' }]}
+              style={[styles.base, {borderRadius: 5, tintColor: '#5ac8fa' }]}
             />
             <Image
               source={smallImage}
-              style={[styles.base, styles.leftMargin, {tintColor: '#4cd964' }]}
+              style={[styles.base, styles.leftMargin, {borderRadius: 5, tintColor: '#4cd964' }]}
             />
             <Image
               source={smallImage}
-              style={[styles.base, styles.leftMargin, {tintColor: '#ff2d55' }]}
+              style={[styles.base, styles.leftMargin, {borderRadius: 5, tintColor: '#ff2d55' }]}
             />
             <Image
               source={smallImage}
-              style={[styles.base, styles.leftMargin, {tintColor: '#8e8e93' }]}
+              style={[styles.base, styles.leftMargin, {borderRadius: 5, tintColor: '#8e8e93' }]}
             />
           </View>
         </View>
@@ -336,6 +335,7 @@ exports.examples = [
     render: function() {
       return <ImageCapInsetsExample />;
     },
+    platform: 'ios',
   },
 ];
 

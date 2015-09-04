@@ -7,9 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <ImageIO/ImageIO.h>
-#import <MobileCoreServices/MobileCoreServices.h>
-#import <QuartzCore/QuartzCore.h>
+#import "RCTImageLoader.h"
 
-extern CAKeyframeAnimation *RCTGIFImageWithData(NSData *data);
-extern CAKeyframeAnimation *RCTGIFImageWithFileURL(NSURL *URL);
+@interface RCTGIFImageDecoder : NSObject <RCTImageDecoder>
+
+@end

@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTURLRequestHandler.h"
+#import "RCTImageLoader.h"
 
-@interface RCTImageRequestHandler : NSObject <RCTURLRequestHandler>
+@interface RCTPhotoLibraryImageLoader : NSObject <RCTImageURLLoader>
 
 @end

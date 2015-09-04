@@ -13,6 +13,7 @@
 
 #import "RCTBridge.h"
 #import "RCTShadowView.h"
+#import "RCTUtils.h"
 #import "RCTViewManager.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
@@ -140,77 +141,95 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
       // Build setter block
       void (^setterBlock)(id target, id source, id json) = nil;
-      NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
-      switch (typeSignature.methodReturnType[0]) {
+      if (type == NSSelectorFromString(@"RCTBubblingEventBlock:") ||
+          type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
 
-#define RCT_CASE(_value, _type) \
-        case _value: { \
-          _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
-          _type (*get)(id, SEL) = (typeof(get))objc_msgSend; \
-          void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
-          setterBlock = ^(id target, id source, id json) { \
-            set(target, setter, json ? convert([RCTConvert class], type, json) : get(source, getter)); \
-          }; \
-          break; \
-        }
+        // Special case for event handlers
+        __weak RCTViewManager *weakManager = _manager;
+        setterBlock = ^(id target, __unused id source, id json) {
+          __weak id<RCTComponent> weakTarget = target;
+          ((void (*)(id, SEL, id))objc_msgSend)(target, setter, [RCTConvert BOOL:json] ? ^(NSDictionary *body) {
+            body = [NSMutableDictionary dictionaryWithDictionary:body];
+            ((NSMutableDictionary *)body)[@"target"] = weakTarget.reactTag;
+            [weakManager.bridge.eventDispatcher sendInputEventWithName:RCTNormalizeInputEventName(name) body:body];
+          } : nil);
+        };
 
-          RCT_CASE(_C_SEL, SEL)
-          RCT_CASE(_C_CHARPTR, const char *)
-          RCT_CASE(_C_CHR, char)
-          RCT_CASE(_C_UCHR, unsigned char)
-          RCT_CASE(_C_SHT, short)
-          RCT_CASE(_C_USHT, unsigned short)
-          RCT_CASE(_C_INT, int)
-          RCT_CASE(_C_UINT, unsigned int)
-          RCT_CASE(_C_LNG, long)
-          RCT_CASE(_C_ULNG, unsigned long)
-          RCT_CASE(_C_LNG_LNG, long long)
-          RCT_CASE(_C_ULNG_LNG, unsigned long long)
-          RCT_CASE(_C_FLT, float)
-          RCT_CASE(_C_DBL, double)
-          RCT_CASE(_C_BOOL, BOOL)
-          RCT_CASE(_C_PTR, void *)
-          RCT_CASE(_C_ID, id)
+      } else {
 
-        case _C_STRUCT_B:
-        default: {
+        // Ordinary property handlers
+        NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
+        switch (typeSignature.methodReturnType[0]) {
 
-          NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
-          typeInvocation.selector = type;
-          typeInvocation.target = [RCTConvert class];
+  #define RCT_CASE(_value, _type) \
+          case _value: { \
+            _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
+            _type (*get)(id, SEL) = (typeof(get))objc_msgSend; \
+            void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
+            setterBlock = ^(id target, id source, id json) { \
+              set(target, setter, json ? convert([RCTConvert class], type, json) : get(source, getter)); \
+            }; \
+            break; \
+          }
 
-          __block NSInvocation *sourceInvocation = nil;
-          __block NSInvocation *targetInvocation = nil;
+            RCT_CASE(_C_SEL, SEL)
+            RCT_CASE(_C_CHARPTR, const char *)
+            RCT_CASE(_C_CHR, char)
+            RCT_CASE(_C_UCHR, unsigned char)
+            RCT_CASE(_C_SHT, short)
+            RCT_CASE(_C_USHT, unsigned short)
+            RCT_CASE(_C_INT, int)
+            RCT_CASE(_C_UINT, unsigned int)
+            RCT_CASE(_C_LNG, long)
+            RCT_CASE(_C_ULNG, unsigned long)
+            RCT_CASE(_C_LNG_LNG, long long)
+            RCT_CASE(_C_ULNG_LNG, unsigned long long)
+            RCT_CASE(_C_FLT, float)
+            RCT_CASE(_C_DBL, double)
+            RCT_CASE(_C_BOOL, BOOL)
+            RCT_CASE(_C_PTR, void *)
+            RCT_CASE(_C_ID, id)
 
-          setterBlock = ^(id target, id source, id json) { \
+          case _C_STRUCT_B:
+          default: {
 
-            // Get value
-            void *value = malloc(typeSignature.methodReturnLength);
-            if (json) {
-              [typeInvocation setArgument:&json atIndex:2];
-              [typeInvocation invoke];
-              [typeInvocation getReturnValue:value];
-            } else {
-              if (!sourceInvocation && source) {
-                NSMethodSignature *signature = [source methodSignatureForSelector:getter];
-                sourceInvocation = [NSInvocation invocationWithMethodSignature:signature];
-                sourceInvocation.selector = getter;
+            NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
+            typeInvocation.selector = type;
+            typeInvocation.target = [RCTConvert class];
+
+            __block NSInvocation *sourceInvocation = nil;
+            __block NSInvocation *targetInvocation = nil;
+
+            setterBlock = ^(id target, id source, id json) { \
+
+              // Get value
+              void *value = malloc(typeSignature.methodReturnLength);
+              if (json) {
+                [typeInvocation setArgument:&json atIndex:2];
+                [typeInvocation invoke];
+                [typeInvocation getReturnValue:value];
+              } else {
+                if (!sourceInvocation && source) {
+                  NSMethodSignature *signature = [source methodSignatureForSelector:getter];
+                  sourceInvocation = [NSInvocation invocationWithMethodSignature:signature];
+                  sourceInvocation.selector = getter;
+                }
+                [sourceInvocation invokeWithTarget:source];
+                [sourceInvocation getReturnValue:value];
               }
-              [sourceInvocation invokeWithTarget:source];
-              [sourceInvocation getReturnValue:value];
-            }
 
-            // Set value
-            if (!targetInvocation && target) {
-              NSMethodSignature *signature = [target methodSignatureForSelector:setter];
-              targetInvocation = [NSInvocation invocationWithMethodSignature:signature];
-              targetInvocation.selector = setter;
-            }
-            [targetInvocation setArgument:value atIndex:2];
-            [targetInvocation invokeWithTarget:target];
-            free(value);
-          };
-          break;
+              // Set value
+              if (!targetInvocation && target) {
+                NSMethodSignature *signature = [target methodSignatureForSelector:setter];
+                targetInvocation = [NSInvocation invocationWithMethodSignature:signature];
+                targetInvocation.selector = setter;
+              }
+              [targetInvocation setArgument:value atIndex:2];
+              [targetInvocation invokeWithTarget:target];
+              free(value);
+            };
+            break;
+          }
         }
       }
 
@@ -292,9 +311,35 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSDictionary *)viewConfig
 {
   Class managerClass = [_manager class];
-  NSMutableDictionary *propTypes = [NSMutableDictionary new];
+
+  NSMutableArray *directEvents = [NSMutableArray new];
+  if (RCTClassOverridesInstanceMethod(managerClass, @selector(customDirectEventTypes))) {
+    NSArray *events = [_manager customDirectEventTypes];
+    if (RCT_DEBUG) {
+      RCTAssert(!events || [events isKindOfClass:[NSArray class]],
+        @"customDirectEventTypes must return an array, but %@ returned %@",
+        managerClass, [events class]);
+    }
+    for (NSString *event in events) {
+      [directEvents addObject:RCTNormalizeInputEventName(event)];
+    }
+  }
+
+  NSMutableArray *bubblingEvents = [NSMutableArray new];
+  if (RCTClassOverridesInstanceMethod(managerClass, @selector(customBubblingEventTypes))) {
+        NSArray *events = [_manager customBubblingEventTypes];
+    if (RCT_DEBUG) {
+      RCTAssert(!events || [events isKindOfClass:[NSArray class]],
+        @"customBubblingEventTypes must return an array, but %@ returned %@",
+        managerClass, [events class]);
+    }
+    for (NSString *event in events) {
+      [bubblingEvents addObject:RCTNormalizeInputEventName(event)];
+    }
+  }
 
   unsigned int count = 0;
+  NSMutableDictionary *propTypes = [NSMutableDictionary new];
   Method *methods = class_copyMethodList(object_getClass(managerClass), &count);
   for (unsigned int i = 0; i < count; i++) {
     Method method = methods[i];
@@ -309,13 +354,41 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
                       "to '%@'", name, _name, propTypes[name], type);
         }
-        propTypes[name] = type;
+
+        if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
+          [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
+          propTypes[name] = @"BOOL";
+        } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
+          [directEvents addObject:RCTNormalizeInputEventName(name)];
+          propTypes[name] = @"BOOL";
+        } else {
+          propTypes[name] = type;
+        }
       }
     }
   }
   free(methods);
 
-  return propTypes;
+  if (RCT_DEBUG) {
+    for (NSString *event in directEvents) {
+      if ([bubblingEvents containsObject:event]) {
+        RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
+                    "and a direct event", _name, event);
+      }
+    }
+    for (NSString *event in bubblingEvents) {
+      if ([directEvents containsObject:event]) {
+        RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
+                    "and a direct event", _name, event);
+      }
+    }
+  }
+
+  return @{
+    @"propTypes" : propTypes,
+    @"directEvents" : directEvents,
+    @"bubblingEvents" : bubblingEvents,
+  };
 }
 
 @end
