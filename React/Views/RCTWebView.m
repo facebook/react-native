@@ -95,9 +95,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [super layoutSubviews];
   _webView.frame = self.bounds;
-  [RCTView autoAdjustInsetsForView:self
-                    withScrollView:_webView.scrollView
-                      updateOffset:YES];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
@@ -131,6 +128,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }];
 
   return event;
+}
+
+- (void)refreshContentInset
+{
+  [RCTView autoAdjustInsetsForView:self
+                    withScrollView:_webView.scrollView
+                      updateOffset:YES];
 }
 
 #pragma mark - UIWebViewDelegate methods
