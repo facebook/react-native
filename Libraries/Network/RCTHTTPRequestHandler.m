@@ -17,6 +17,7 @@
 {
   NSMapTable *_delegates;
   NSURLSession *_session;
+  NSOperationQueue *_queue;
 }
 
 RCT_EXPORT_MODULE()
@@ -27,6 +28,7 @@ RCT_EXPORT_MODULE()
     _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
+    _queue = [NSOperationQueue new];
   }
   return self;
 }
@@ -34,8 +36,10 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   [_session invalidateAndCancel];
+  [_queue cancelAllOperations];
   _session = nil;
   _delegates = nil;
+  _queue = nil;
 }
 
 - (BOOL)isValid
@@ -55,7 +59,7 @@ RCT_EXPORT_MODULE()
 {
   // Lazy setup
   if (!_session && [self isValid]) {
-    NSOperationQueue *callbackQueue = [NSOperationQueue new];
+    NSOperationQueue *callbackQueue = _queue;
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
