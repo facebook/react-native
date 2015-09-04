@@ -14,11 +14,17 @@
 
 #import "RCTAssert.h"
 
-@interface IntegrationTests : XCTestCase
+#define RCT_TEST(name)                  \
+- (void)test##name                      \
+{                                       \
+  [_runner runTest:_cmd module:@#name]; \
+}
+
+@interface UIExplorerIntegrationTests : XCTestCase
 
 @end
 
-@implementation IntegrationTests
+@implementation UIExplorerIntegrationTests
 {
   RCTTestRunner *_runner;
 }
@@ -36,11 +42,6 @@
 
 #pragma mark Logic Tests
 
-- (void)testTheTester
-{
-  [_runner runTest:_cmd module:@"IntegrationTestHarnessTest"];
-}
-
 - (void)testTheTester_waitOneFrame
 {
   [_runner runTest:_cmd
@@ -57,38 +58,12 @@
   expectErrorRegex:@"because shouldThrow"];
 }
 
-- (void)testTimers
-{
-  [_runner runTest:_cmd module:@"TimersTest"];
-}
-
-- (void)testAsyncStorage
-{
-  [_runner runTest:_cmd module:@"AsyncStorageTest"];
-}
-
-- (void)DISABLED_testLayoutEvents // #7149037
-{
-  [_runner runTest:_cmd module:@"LayoutEventsTest"];
-}
-
-- (void)testAppEvents
-{
-  [_runner runTest:_cmd module:@"AppEventsTest"];
-}
-
-- (void)testPromises
-{
-  [_runner runTest:_cmd module:@"PromiseTest"];
-}
-
-#pragma mark Snapshot Tests
-
-- (void)testSimpleSnapshot
-{
-  // If tests have changes, set recordMode = YES below and re-run
-  _runner.recordMode = NO;
-  [_runner runTest:_cmd module:@"SimpleSnapshotTest"];
-}
+RCT_TEST(TimersTest)
+RCT_TEST(IntegrationTestHarnessTest)
+RCT_TEST(AsyncStorageTest)
+// RCT_TEST(LayoutEventsTest) -- Disabled: #8153468
+RCT_TEST(AppEventsTest)
+RCT_TEST(PromiseTest)
+// RCT_TEST(SimpleSnapshotTest) -- Disabled: #8153475
 
 @end
