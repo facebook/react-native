@@ -72,7 +72,9 @@ function setupDevtools() {
   }
 
   function handleMessage(evt) {
-    var data;
+    // It's hard to handle JSON in a safe manner without inspecting it at
+    // runtime, hence the any
+    var data: any;
     try {
       data = JSON.parse(evt.data);
     } catch (e) {
