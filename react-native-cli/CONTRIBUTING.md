@@ -13,7 +13,11 @@ Because `react-native init` calls `npm install react-native`, simply linking you
 Then, open `~/.config/sinopia/config.yaml` and configure it like this (note the `max_body_size`):
 
     storage: ./storage
-    
+
+    auth:
+      htpasswd:
+        file: ./htpasswd
+
     uplinks:
       npmjs:
         url: https://registry.npmjs.org/
@@ -22,18 +26,18 @@ Then, open `~/.config/sinopia/config.yaml` and configure it like this (note the 
       'react-native':
         allow_access: $all
         allow_publish: $all
-    
+
       'react-native-cli':
         allow_access: $all
         allow_publish: $all
-    
+
       '*':
         allow_access: $all
         proxy: npmjs
 
     logs:
       - {type: stdout, format: pretty, level: http}
-    
+
     max_body_size: '50mb'
 
 Now you can run sinopia by simply doing:
@@ -45,6 +49,7 @@ Now you can run sinopia by simply doing:
 Now we need to publish the two React Native packages to our local registry. To do this, we configure npm to use the new registry, unpublish any existing packages and then publish the new ones:
 
     react-native$ npm set registry http://localhost:4873/
+    react-native$ npm adduser --registry http://localhost:4873/
     # Check that it worked:
     react-native$ npm config list
     react-native$ npm unpublish --force
