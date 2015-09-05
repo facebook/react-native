@@ -35,6 +35,8 @@ class SocketServer {
         process.on('exit', () => fs.unlinkSync(sockPath));
       });
     });
+
+    this._numConnections = 0;
     this._server.on('connection', (sock) => this._handleConnection(sock));
 
     // Disable the file watcher.
@@ -50,10 +52,13 @@ class SocketServer {
 
   _handleConnection(sock) {
     debug('connection to server', process.pid);
+    this._numConnections++;
+    sock.on('close', () => this._numConnections--);
 
     const bunser = new bser.BunserBuf();
     sock.on('data', (buf) => bunser.append(buf));
     bunser.on('value', (m) => this._handleMessage(sock, m));
+    bunser.on('error', (e) => console.error(e));
   }
 
   _handleMessage(sock, m) {
@@ -116,7 +121,7 @@ class SocketServer {
   _dieEventually() {
     clearTimeout(this._deathTimer);
     this._deathTimer = setTimeout(() => {
-      if (this._jobs <= 0) {
+      if (this._jobs <= 0 && this._numConnections <= 0) {
         debug('server dying', process.pid);
         process.exit();
       }

@@ -16,13 +16,15 @@
 #import "RCTUtils.h"
 #import "RCTViewControllerProtocol.h"
 #import "UIView+React.h"
+#import "RCTAutoInsetsProtocol.h"
 
 @implementation RCTWrapperViewController
 {
   UIView *_wrapperView;
   UIView *_contentView;
-  CGFloat _previousTopLayout;
-  CGFloat _previousBottomLayout;
+  RCTEventDispatcher *_eventDispatcher;
+  CGFloat _previousTopLayoutLength;
+  CGFloat _previousBottomLayoutLength;
 }
 
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
@@ -56,6 +58,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   _currentTopLayoutGuide = self.topLayoutGuide;
   _currentBottomLayoutGuide = self.bottomLayoutGuide;
+}
+
+static BOOL RCTFindScrollViewAndRefreshContentInsetInView(UIView *view)
+{
+  if ([view conformsToProtocol:@protocol(RCTAutoInsetsProtocol)]) {
+    [(id <RCTAutoInsetsProtocol>) view refreshContentInset];
+    return YES;
+  }
+  for (UIView *subview in view.subviews) {
+    if (RCTFindScrollViewAndRefreshContentInsetInView(subview)) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+
+  if (_previousTopLayoutLength != _currentTopLayoutGuide.length ||
+      _previousBottomLayoutLength != _currentBottomLayoutGuide.length) {
+    RCTFindScrollViewAndRefreshContentInsetInView(_contentView);
+    _previousTopLayoutLength = _currentTopLayoutGuide.length;
+    _previousBottomLayoutLength = _currentBottomLayoutGuide.length;
+  }
 }
 
 static UIView *RCTFindNavBarShadowViewInView(UIView *view)

@@ -142,10 +142,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                     scale:RCTScreenScale()
                                resizeMode:self.contentMode
                             progressBlock:progressHandler
-                          completionBlock:^(NSError *error, id image) {
+                          completionBlock:^(NSError *error, UIImage *image) {
 
-      if ([image isKindOfClass:[CAAnimation class]]) {
-        [self.layer addAnimation:image forKey:@"contents"];
+      if (image.reactKeyframeAnimation) {
+        [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
       } else {
         [self.layer removeAnimationForKey:@"contents"];
         self.image = image;
