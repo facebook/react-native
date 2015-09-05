@@ -139,6 +139,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'Yoloci',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/fa/e5/26/fae52635-b97c-bd53-2ade-89e2a4326745/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/de/app/yoloci/id991323225?mt=8',
+    author: 'Yonduva GmbH (@PhilippKrone)',
+  },
+  {
     name: 'youmeyou',
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple7/v4/7c/42/30/7c423042-8945-7733-8af3-1523468706a8/mzl.qlecxphf.png',
     link: 'https://itunes.apple.com/us/app/youmeyou/id949540333?mt=8',
