@@ -97,21 +97,19 @@ var ReactPackager = require('./react-packager');
 Returns a function that can be used in a connect-like
 middleware. Takes the following options:
 
-* `projectRoots` array (required): Is the roots where your JavaScript
-  file will exist
-* `blacklistRE` regexp: Is a patter to ignore certain paths from the
-  packager
-* `polyfillModuleName` array: Paths to polyfills you want to be
-  included at the start of the bundle
-* `cacheVersion` string: used in creating the cache file
-* `resetCache` boolean, defaults to false: whether to use the cache on
+* `projectRoots` array (required): Root paths packager will look for
+  JavaScript files
+* `blacklistRE` regexp: Pattern to ignore certain paths from packager
+* `polyfillModuleName` array: Paths to polyfills will be included at
+  start of bundle
+* `cacheVersion` string: Used in creating cache file
+* `resetCache` boolean, defaults to false: Whether to use cache on
   disk
-* `transformModulePath` string: Path to the module used as a
-  JavaScript transformer
-* `nonPersistent` boolean, defaults to false: Whether the server
-  should be used as a persistent deamon to watch files and update
-  itself
-* `assetRoots` array: Where should the packager look for assets
+* `transformModulePath` string: Path to module used as a JavaScript
+  transformer
+* `nonPersistent` boolean, defaults to false: Whether server will be
+  used as a persistent deamon to watch for files and update itself
+* `assetRoots` array: Root paths packager will look for assets
 
 ### ReactPackager.buildPackageFromUrl(options, url)
 

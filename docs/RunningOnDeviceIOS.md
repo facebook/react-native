@@ -34,6 +34,7 @@ The bundle script supports a couple of flags:
 
 * `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
 * `--minify` - pipe the JS code through UglifyJS.
+* `--help` - list additional flags for advanced scenarios.
 
 ## Disabling in-app developer menu
 
