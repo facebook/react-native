@@ -111,7 +111,10 @@ class PushNotificationIOS {
       listener = RCTDeviceEventEmitter.addListener(
         NOTIF_REGISTER_ERROR_EVENT,
         (registrationError) => {
-          var key = Object.keys(registrationError)[0]; 
+          var key = Object.keys(registrationError)[0] || null;
+          if(!key){
+              return;
+          }
           handler(registrationError[key], key);
         }
       );
