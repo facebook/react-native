@@ -19,6 +19,12 @@ var apps = [
     author: 'Alex Duckmanton',
   },
   {
+    name: 'Discord',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
+    author: 'Hammer & Chisel',
+  },
+  {
     name: 'Discovery VR',
     icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
     link:  'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
