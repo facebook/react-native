@@ -133,6 +133,12 @@ var apps = [
     author: 'Iodine Inc.',
   },
   {
+    name: 'SG Toto 4d',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
+    author: 'Steve Ng'
+  },
+  {
     name: 'Tabtor Parent',
     icon: 'http://a1.mzstatic.com/us/r30/Purple4/v4/80/50/9d/80509d05-18f4-a0b8-0cbb-9ba927d04477/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/tabtor-math/id1018651199?utm_source=ParentAppLP',
