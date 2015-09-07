@@ -127,16 +127,22 @@ var apps = [
     author: 'Joshua Sierles',
   },
   {
-    name: 'Start - medication manager for depression',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
-    author: 'Iodine Inc.',
-  },
-  {
     name: 'SG Toto 4d',
     icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
     author: 'Steve Ng'
+  },
+  {
+    name: 'Spero for Cancer',
+    icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
+    link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
+    author: 'Spero.io',
+  },
+  {
+    name: 'Start - medication manager for depression',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
+    author: 'Iodine Inc.',
   },
   {
     name: 'Tabtor Parent',
@@ -161,12 +167,6 @@ var apps = [
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple7/v4/7c/42/30/7c423042-8945-7733-8af3-1523468706a8/mzl.qlecxphf.png',
     link: 'https://itunes.apple.com/us/app/youmeyou/id949540333?mt=8',
     author: 'youmeyou, LLC',
-  },
-  {
-    name: 'Spero for Cancer',
-    icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
-    link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
-    author: 'Spero.io',
   },
 ];
 
