@@ -11,6 +11,10 @@ React Native enables you to build world-class application experiences on native 
 - [Contributing](#contributing)
 - [License](#license)
 
+## Introduction
+
+See the official [React Native website](https://facebook.github.io/react-native/) for an introduction to React Native.
+
 ## Getting Started
 
 - Follow the [Getting Started guide](http://facebook.github.io/react-native/docs/getting-started.html) to install React Native and its dependencies.
