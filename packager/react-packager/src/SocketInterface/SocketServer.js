@@ -16,6 +16,7 @@ const fs = require('fs');
 const net = require('net');
 
 const MAX_IDLE_TIME = 30 * 1000;
+const MAX_STARTUP_TIME = 5 * 60 * 1000;
 
 class SocketServer {
   constructor(sockPath, options) {
@@ -43,7 +44,7 @@ class SocketServer {
     options.nonPersistent = true;
     this._packagerServer = new Server(options);
     this._jobs = 0;
-    this._dieEventually();
+    this._dieEventually(MAX_STARTUP_TIME);
   }
 
   onReady() {
@@ -118,7 +119,7 @@ class SocketServer {
     }));
   }
 
-  _dieEventually() {
+  _dieEventually(delay = MAX_IDLE_TIME) {
     clearTimeout(this._deathTimer);
     this._deathTimer = setTimeout(() => {
       if (this._jobs <= 0 && this._numConnections <= 0) {
@@ -126,7 +127,7 @@ class SocketServer {
         process.exit();
       }
       this._dieEventually();
-    }, MAX_IDLE_TIME);
+    }, delay);
   }
 
   static listenOnServerIPCMessages() {
