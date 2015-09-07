@@ -124,8 +124,8 @@ static void tintClearButton(RCTTextField *self)
         UIImage *imageNormal = [clearButton imageForState:UIControlStateNormal];
         UIImage *imageHighlighted = [clearButton imageForState:UIControlStateHighlighted];
 
-        UIImage *tintedImageNormal = tinedImage(imageNormal, self.clearButtonTintColor);
-        UIImage *tintedImageHighlighted = tinedImage(imageHighlighted, self.clearButtonTintColor);
+        UIImage *tintedImageNormal = tintedImage(imageNormal, self.clearButtonTintColor);
+        UIImage *tintedImageHighlighted = tintedImage(imageHighlighted, self.clearButtonTintColor);
 
         if (tintedImageNormal && tintedImageHighlighted)
         {
@@ -137,7 +137,7 @@ static void tintClearButton(RCTTextField *self)
 }
 
 
-static UIImage* tinedImage(UIImage *image, UIColor* tintColor)
+static UIImage* tintedImage(UIImage *image, UIColor* tintColor)
 {
     UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0);
     CGContextRef context = UIGraphicsGetCurrentContext();
