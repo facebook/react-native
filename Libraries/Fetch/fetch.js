@@ -151,7 +151,7 @@ var self = {};
   }
 
   var support = {
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
+    blob: typeof FileReader === 'function' && typeof Blob === 'function' && (function() {
       try {
         new Blob();
         return true
@@ -159,7 +159,7 @@ var self = {};
         return false
       }
     })(),
-    formData: 'FormData' in self
+    formData: typeof FormData === 'function'
   }
 
   function Body() {
