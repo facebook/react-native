@@ -56,6 +56,7 @@ RCT_EXPORT_MODULE()
   // Lazy setup
   if (!_session && [self isValid]) {
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
+    callbackQueue.maxConcurrentOperationCount = 1;
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
