@@ -24,6 +24,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(items, NSDictionaryArray)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
 - (NSDictionary *)constantsToExport
 {
