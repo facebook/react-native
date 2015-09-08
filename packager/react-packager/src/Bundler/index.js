@@ -154,7 +154,7 @@ class Bundler {
       bundle.setMainModuleId(result.mainModuleId);
       return Promise.all(
         result.dependencies.map(
-          module => this._transformModule(bundle, module).then(transformed => {
+          module => this._transformModule(bundle, module, platform).then(transformed => {
             if (bar) {
               bar.tick();
             }
@@ -182,13 +182,13 @@ class Bundler {
     return this._resolver.getDependencies(main, { dev: isDev, platform });
   }
 
-  _transformModule(bundle, module) {
+  _transformModule(bundle, module, platform = null) {
     let transform;
 
     if (module.isAsset_DEPRECATED()) {
       transform = this.generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
-      transform = this.generateAssetModule(bundle, module);
+      transform = this.generateAssetModule(bundle, module, platform);
     } else if (module.isJSON()) {
       transform = generateJSONModule(module);
     } else {
@@ -243,12 +243,12 @@ class Bundler {
     });
   }
 
-  generateAssetModule(bundle, module) {
+  generateAssetModule(bundle, module, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
 
     return Promise.all([
       sizeOf(module.path),
-      this._assetServer.getAssetData(relPath),
+      this._assetServer.getAssetData(relPath, platform),
     ]).then(function(res) {
       const dimensions = res[0];
       const assetData = res[1];

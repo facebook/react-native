@@ -51,14 +51,14 @@ class AssetServer {
     });
   }
 
-  getAssetData(assetPath) {
+  getAssetData(assetPath, platform = null) {
     const nameData = getAssetDataFromName(assetPath);
     const data = {
       name: nameData.name,
       type: nameData.type,
     };
 
-    return this._getAssetRecord(assetPath).then(record => {
+    return this._getAssetRecord(assetPath, platform).then(record => {
       data.scales = record.scales;
 
       return Promise.all(
