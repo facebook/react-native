@@ -12,6 +12,7 @@ const Bundle = require('../Bundler/Bundle');
 const Promise = require('promise');
 const bser = require('bser');
 const debug = require('debug')('ReactPackager:SocketClient');
+const fs = require('fs');
 const net = require('net');
 const path  = require('path');
 const tmpdir = require('os').tmpdir();
@@ -29,7 +30,16 @@ class SocketClient {
     this._sock = net.connect(sockPath);
     this._ready = new Promise((resolve, reject) => {
       this._sock.on('connect', () => resolve(this));
-      this._sock.on('error', (e) => reject(e));
+      this._sock.on('error', (e) => {
+        e.message = `Error connecting to server on ${sockPath} ` +
+                    `with error: ${e.message}`;
+
+        if (fs.existsSync(LOG_PATH)) {
+          e.message += '\nServer logs:\n' + fs.readFileSync(LOG_PATH, 'utf8');
+        }
+
+        reject(e);
+      });
     });
 
     this._resolvers = Object.create(null);

@@ -460,10 +460,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _scrollView.frame = self.bounds;
   _scrollView.contentOffset = originalOffset;
 
-  [RCTView autoAdjustInsetsForView:self
-                    withScrollView:_scrollView
-                      updateOffset:YES];
-
   [self updateClippedSubviews];
 }
 
@@ -521,6 +517,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
 {
   [_scrollView zoomToRect:rect animated:animated];
+}
+
+- (void)refreshContentInset
+{
+  [RCTView autoAdjustInsetsForView:self
+                    withScrollView:_scrollView
+                      updateOffset:YES];
 }
 
 #pragma mark - ScrollView delegate

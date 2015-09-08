@@ -15,9 +15,14 @@
 @class ALAssetsLibrary;
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* UIImage or CAAnimation */);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* NSData, UIImage, CAAnimation */);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 typedef void (^RCTImageLoaderCancellationBlock)(void);
+
+@interface UIImage (React)
+
+@property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
+
+@end
 
 @interface RCTImageLoader : NSObject <RCTBridgeModule, RCTURLRequestHandler>
 

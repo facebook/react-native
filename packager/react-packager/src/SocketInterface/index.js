@@ -20,7 +20,7 @@ const path = require('path');
 const tmpdir = require('os').tmpdir();
 const {spawn} = require('child_process');
 
-const CREATE_SERVER_TIMEOUT = 60000;
+const CREATE_SERVER_TIMEOUT = 5 * 60 * 1000;
 
 const SocketInterface = {
   getOrCreateSocketFor(options) {
@@ -42,8 +42,16 @@ const SocketInterface = {
       if (fs.existsSync(sockPath)) {
         var sock = net.connect(sockPath);
         sock.on('connect', () => {
-          sock.end();
-          resolve(SocketClient.create(sockPath));
+          SocketClient.create(sockPath).then(
+            client => {
+              sock.end();
+              resolve(client);
+            },
+            error => {
+              sock.end();
+              reject(error);
+            }
+          );
         });
         sock.on('error', (e) => {
           try {

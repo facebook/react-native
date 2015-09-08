@@ -138,6 +138,23 @@ type ConnectivityStateAndroid = $Enum<{
 
 var _subscriptions = new Map();
 
+if (Platform.OS === 'ios') {
+  var _isConnected = function(
+    reachability: ReachabilityStateIOS
+  ): bool {
+    return reachability !== 'none' &&
+      reachability !== 'unknown';
+  };
+} else if (Platform.OS === 'android') {
+  var _isConnected = function(
+      connectionType: ConnectivityStateAndroid
+    ): bool {
+    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
+  };
+}
+
+var _isConnectedSubscriptions = new Map();
+
 var NetInfo = {
   addEventListener: function (
     eventName: ChangeEventName,
@@ -175,60 +192,41 @@ var NetInfo = {
     });
   },
 
-  isConnected: {},
+  isConnected: {
+    addEventListener: function (
+      eventName: ChangeEventName,
+      handler: Function
+    ): void {
+      var listener = (connection) => {
+        handler(_isConnected(connection));
+      };
+      _isConnectedSubscriptions.set(handler, listener);
+      NetInfo.addEventListener(
+        eventName,
+        listener
+      );
+    },
 
-  isConnectionMetered: {},
-};
+    removeEventListener: function(
+      eventName: ChangeEventName,
+      handler: Function
+    ): void {
+      var listener = _isConnectedSubscriptions.get(handler);
+      NetInfo.removeEventListener(
+        eventName,
+        listener
+      );
+      _isConnectedSubscriptions.delete(handler);
+    },
 
-if (Platform.OS === 'ios') {
-  var _isConnected = function(
-    reachability: ReachabilityStateIOS
-  ): bool {
-    return reachability !== 'none' &&
-      reachability !== 'unknown';
-  };
-} else if (Platform.OS === 'android') {
-  var _isConnected = function(
-      connectionType: ConnectivityStateAndroid
-    ): bool {
-    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
-  };
-}
-
-var _isConnectedSubscriptions = new Map();
-
-NetInfo.isConnected = {
-  addEventListener: function (
-    eventName: ChangeEventName,
-    handler: Function
-  ): void {
-    var listener = (connection) => {
-      handler(_isConnected(connection));
-    };
-    _isConnectedSubscriptions.set(handler, listener);
-    NetInfo.addEventListener(
-      eventName,
-      listener
-    );
+    fetch: function(): Promise {
+      return NetInfo.fetch().then(
+        (connection) => _isConnected(connection)
+      );
+    },
   },
 
-  removeEventListener: function(
-    eventName: ChangeEventName,
-    handler: Function
-  ): void {
-    var listener = _isConnectedSubscriptions.get(handler);
-    NetInfo.removeEventListener(
-      eventName,
-      listener
-    );
-    _isConnectedSubscriptions.delete(handler);
-  },
-
-  fetch: function(): Promise {
-    return NetInfo.fetch().then(
-      (connection) => _isConnected(connection)
-    );
-  },
+  isConnectionMetered: ({}: {} | (callback:Function) => void),
 };
 
 if (Platform.OS === 'android') {

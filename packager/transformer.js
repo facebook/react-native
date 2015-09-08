@@ -39,6 +39,7 @@ function transform(srcTxt, filename, options) {
       'es7.objectRestSpread',
       'flow',
       'react',
+      'react.displayName',
       'regenerator',
     ],
     plugins: plugins,

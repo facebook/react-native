@@ -5,12 +5,11 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule StyleSheetTypes
+ * @flow
  */
+'use strict';
 
-#import "RCTBridgeModule.h"
-
-@interface RCTDevLoadingView : NSObject <RCTBridgeModule>
-
-+ (void)setEnabled:(BOOL)enabled;
-
-@end
+type Atom = number | bool | Object | Array<?Atom>;
+export type StyleObj = Atom | Array<?StyleObj>;
