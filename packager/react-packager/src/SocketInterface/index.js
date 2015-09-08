@@ -20,7 +20,7 @@ const path = require('path');
 const tmpdir = require('os').tmpdir();
 const {spawn} = require('child_process');
 
-const CREATE_SERVER_TIMEOUT = 60000;
+const CREATE_SERVER_TIMEOUT = 5 * 60 * 1000;
 
 const SocketInterface = {
   getOrCreateSocketFor(options) {
