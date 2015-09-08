@@ -4,7 +4,7 @@ SDK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/$1.platform/Deve
 
 SDK_VERSION = $(shell plutil -convert json -o - $(call SDK_PATH,iPhoneOS)/SDKSettings.plist | awk -f parseSDKVersion.awk)
 
-CERT ?= "iPhone Developer"
+CERT ?= iPhone Developer
 
 ARCHS = x86_64 arm64 armv7 i386
 
@@ -29,10 +29,9 @@ endif
 /tmp/RCTJSCProfiler:
 	mkdir -p $@
 
-.PRECIOUS: RCTJSCProfiler.ios8.dylib
 RCTJSCProfiler.ios8.dylib: RCTJSCProfiler_unsigned.ios8.dylib
 	cp $< $@
-	codesign -f -s "${CERT}" $@ || rm $@
+	codesign -f -s "${CERT}" $@
 
 .PRECIOUS: RCTJSCProfiler_unsigned.ios8.dylib
 RCTJSCProfiler_unsigned.ios8.dylib: $(patsubst %,RCTJSCProfiler_%.ios8.dylib,$(ARCHS))
@@ -77,7 +76,7 @@ libyajl_%.a: download/yajl-2.1.0
 
 .PRECIOUS: download/yajl-2.1.0
 download/yajl-2.1.0: download/yajl-2.1.0.tar.gz
-	tar -zxvf $< -C download
+	tar -zxvf $< -C download > /dev/null
 	mkdir -p download/yajl-2.1.0/build && cd download/yajl-2.1.0/build && cmake ..
 
 .PRECIOUS: download/yajl-2.1.0.tar.gz
@@ -87,7 +86,7 @@ download/yajl-2.1.0.tar.gz:
 
 .PRECIOUS: download/%
 download/%: download/%.tar.gz
-	tar -zxvf $< -C `dirname $@`
+	tar -zxvf $< -C `dirname $@` > /dev/null
 
 .PRECIOUS: %.tar.gz
 %.tar.gz:
