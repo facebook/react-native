@@ -23,6 +23,8 @@
   UIView *_contentView;
   CGFloat _previousTopLayout;
   CGFloat _previousBottomLayout;
+  BOOL    translusante;
+  UIImageView *titleView;
 }
 
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
@@ -47,8 +49,8 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithNibName:(NSString *)nn bundle:(NSBundle *)nb)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(-initWithNibName:(NSString *)nn bundle:(NSBundle *)nb)
+RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)viewWillLayoutSubviews
 {
@@ -71,6 +73,10 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
   }
   return nil;
 }
+-(void)viewDidLoad{
+  [super viewDidLoad];
+  translusante = self.navigationController.navigationBar.translucent;
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -79,25 +85,57 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
   // TODO: find a way to make this less-tightly coupled to navigation controller
   if ([self.parentViewController isKindOfClass:[UINavigationController class]])
   {
-    [self.navigationController
-     setNavigationBarHidden:_navItem.navigationBarHidden
-     animated:animated];
+    if (!_navItem) {
+      return;
+    }
+    [self update:_navItem animated:animated];
+  }
+}
 
-    UINavigationBar *bar = self.navigationController.navigationBar;
-    bar.barTintColor = _navItem.barTintColor;
-    bar.tintColor = _navItem.tintColor;
-    bar.translucent = _navItem.translucent;
-    bar.titleTextAttributes = _navItem.titleTextColor ? @{
-      NSForegroundColorAttributeName: _navItem.titleTextColor
-    } : nil;
+-(void)update:(RCTNavItem *)navItem {
+  [self update:navItem animated:NO];
+}
+-(void)update:(RCTNavItem *)navItem animated:(BOOL)animated{
+  if (!_navItem) {
+    return;
+  }
+  
+  if (_navItem.navigationBarTransparent) {
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTranslucent:YES];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+  }else{
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTranslucent:translusante];
+    [self.navigationController.navigationBar setShadowImage:nil];
+  }
+  
+  [self.navigationController setNavigationBarHidden:_navItem.navigationBarHidden animated:animated];
+  
+  RCTFindNavBarShadowViewInView(self.navigationController.navigationBar).hidden = _navItem.shadowHidden;
+  
+  _navItem = navItem;
+  _navItem.delegate = self;
+  
+  UINavigationBar *bar = self.navigationController.navigationBar;
+  bar.barTintColor = _navItem.barTintColor;
+  bar.tintColor = _navItem.tintColor;
+  bar.titleTextAttributes = _navItem.titleTextColor ? @{
+    NSForegroundColorAttributeName: _navItem.titleTextColor
+  } : nil;
+  
+  UINavigationItem *item = self.navigationItem;
+  item.title = _navItem.title;
+  item.backBarButtonItem = _navItem.backButtonItem;
+  item.leftBarButtonItem = _navItem.leftButtonItem;
+  item.rightBarButtonItem = _navItem.rightButtonItem;
+  
+  if (_navItem.titleIcon){
+    if (titleView.image != _navItem.titleIcon){
+      titleView = [[UIImageView alloc] initWithImage:_navItem.titleIcon];
+      [self.navigationItem setTitleView:titleView];
+    }
 
-    RCTFindNavBarShadowViewInView(bar).hidden = _navItem.shadowHidden;
-
-    UINavigationItem *item = self.navigationItem;
-    item.title = _navItem.title;
-    item.backBarButtonItem = _navItem.backButtonItem;
-    item.leftBarButtonItem = _navItem.leftButtonItem;
-    item.rightBarButtonItem = _navItem.rightButtonItem;
   }
 }
 

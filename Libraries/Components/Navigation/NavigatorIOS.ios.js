@@ -19,6 +19,7 @@ var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
+var merge = require('merge');
 
 var requireNativeComponent = require('requireNativeComponent');
 var invariant = require('invariant');
@@ -52,6 +53,7 @@ var NavigatorTransitionerIOS = React.createClass({
 type Route = {
   component: Function;
   title: string;
+  titleIcon?: Object;
   passProps?: Object;
   backButtonTitle?: string;
   backButtonIcon?: Object;
@@ -61,6 +63,8 @@ type Route = {
   rightButtonTitle?: string;
   rightButtonIcon?: Object;
   onRightButtonPress?: Function;
+  navigationBarHidden?: Boolean;
+  navigationBarTransparent?: Boolean;
   wrapperStyle?: any;
 };
 
@@ -185,6 +189,10 @@ var NavigatorIOS = React.createClass({
        * The title displayed in the nav bar and back button for this route
        */
       title: PropTypes.string.isRequired,
+      /**
+       * The title icon displayed in the nav bar for this route
+       */
+      titleIcon: Image.propTypes.source,
 
       /**
        * Specify additional props passed to the component. NavigatorIOS will
@@ -279,6 +287,11 @@ var NavigatorIOS = React.createClass({
      */
     translucent: PropTypes.bool,
 
+    /**
+     * A Boolean value that indicates whether the navigation bar is totaly transparent
+     */
+    navigationBarTransparent: PropTypes.bool,
+
   },
 
   navigator: (undefined: ?Object),
@@ -298,6 +311,7 @@ var NavigatorIOS = React.createClass({
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
       navigationContext: this.navigationContext,
+      updateNavBar: this.updateNavBar,
     };
     this._emitWillFocus(this.state.routeStack[this.state.observedTopOfStack]);
   },
@@ -335,6 +349,17 @@ var NavigatorIOS = React.createClass({
       // performance optimization.
       updatingAllIndicesAtOrBeyond: 0,
     };
+  },
+  updateNavBar: function (route: Route){
+    if (route !== undefined){
+      var current: Route = this.state.routeStack[this.state.routeStack.length - 1] ;
+      this.state.routeStack[this.state.routeStack.length - 1] = merge(current, route);
+    }
+    
+    this.setState({
+      updatingAllIndicesAtOrBeyond:this.state.routeStack.length - 1,
+      makingNavigatorRequest: true,
+    });
   },
 
   _toFocusOnNavigationComplete: (undefined: any),
@@ -592,12 +617,15 @@ var NavigatorIOS = React.createClass({
   _routeToStackItem: function(route: Route, i: number) {
     var Component = route.component;
     var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
-      this.state.updatingAllIndicesAtOrBeyond >= i;
+      (i >= this.state.updatingAllIndicesAtOrBeyond);
+    var navigationBarHidden = route.navigationBarHidden !== undefined ? route.navigationBarHidden : this.props.navigationBarHidden;
+    var navigationBarTransparent = route.navigationBarTransparent !== undefined ? route.navigationBarTransparent : this.props.navigationBarTransparent;
 
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
           title={route.title}
+          titleIcon={this._imageNameFromSource(route.titleIcon)}
           style={[
             styles.stackItem,
             this.props.itemWrapperStyle,
@@ -611,12 +639,13 @@ var NavigatorIOS = React.createClass({
           rightButtonIcon={this._imageNameFromSource(route.rightButtonIcon)}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
-          navigationBarHidden={this.props.navigationBarHidden}
           shadowHidden={this.props.shadowHidden}
           tintColor={this.props.tintColor}
           barTintColor={this.props.barTintColor}
           translucent={this.props.translucent !== false}
-          titleTextColor={this.props.titleTextColor}>
+          titleTextColor={this.props.titleTextColor}
+          navigationBarHidden={navigationBarHidden}
+          navigationBarTransparent={navigationBarTransparent} >
           <Component
             navigator={this.navigator}
             route={route}

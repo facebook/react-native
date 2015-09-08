@@ -32,7 +32,7 @@ var EmptyPage = React.createClass({
 
   render: function() {
     return (
-      <View style={styles.emptyPage}>
+      <View style={[styles.emptyPage, this.props.customStyle]}>
         <Text style={styles.emptyPageText}>
           {this.props.text}
         </Text>
@@ -48,7 +48,7 @@ var NavigatorIOSExample = React.createClass({
     title: '<NavigatorIOS>',
     description: 'iOS navigation capabilities',
   },
-
+  counter: 10,
   render: function() {
     var recurseTitle = 'Recurse Navigation';
     if (!this.props.topExampleRoute) {
@@ -82,6 +82,12 @@ var NavigatorIOSExample = React.createClass({
               component: createExamplePage(null, ViewExample),
             });
           })}
+          {this._renderRow('Change rightButtonTitle', () => {
+            this.props.navigator.updateNavBar({rightButtonTitle:(this.counter++) + "",onRightButtonPress:()=>{
+              this.counter = 10;
+              this.props.navigator.updateNavBar({rightButtonTitle:null});
+            }});
+          })}
           {this._renderRow('Custom Right Button', () => {
             this.props.navigator.push({
               title: NavigatorIOSExample.title,
@@ -90,6 +96,30 @@ var NavigatorIOSExample = React.createClass({
               onRightButtonPress: () => this.props.navigator.pop(),
               passProps: {
                 text: 'This page has a right button in the nav bar',
+              }
+            });
+          })}
+          {this._renderRow('Custom Title Icon', () => {
+            this.props.navigator.push({
+              titleIcon: require('image!uie_thumb_normal'),
+              component: EmptyPage,
+              rightButtonTitle: 'Cancel',
+              onRightButtonPress: () => this.props.navigator.pop(),
+              passProps: {
+                text: 'This page has a custom title icon in the nav bar',
+              }
+            });
+          })}
+          {this._renderRow('Transparent navigation bar', () => {
+            this.props.navigator.push({
+              titleIcon: require('image!uie_thumb_normal'),
+              component: EmptyPage,
+              navigationBarTransparent: true,
+              rightButtonTitle: 'Cancel',
+              onRightButtonPress: () => this.props.navigator.pop(),
+              passProps: {
+                text: 'This page has a custom title icon and a transparent navigation bar in the nav bar',
+                customStyle: {backgroundColor:"#527FE4"}
               }
             });
           })}
