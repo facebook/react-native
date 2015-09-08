@@ -26,13 +26,13 @@ else
 	cp $^
 endif
 
-/tmp/JSCProfiler:
+/tmp/RCTJSCProfiler:
 	mkdir -p $@
 
 .PRECIOUS: RCTJSCProfiler.ios8.dylib
 RCTJSCProfiler.ios8.dylib: RCTJSCProfiler_unsigned.ios8.dylib
 	cp $< $@
-	codesign -f -s ${CERT} $@ || rm $@
+	codesign -f -s "${CERT}" $@ || rm $@
 
 .PRECIOUS: RCTJSCProfiler_unsigned.ios8.dylib
 RCTJSCProfiler_unsigned.ios8.dylib: $(patsubst %,RCTJSCProfiler_%.ios8.dylib,$(ARCHS))
