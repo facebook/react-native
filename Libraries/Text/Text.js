@@ -116,7 +116,7 @@ var Text = React.createClass({
   
   getDefaultProps: function(): Object {
     return {
-      allowFontScaling: true,
+      allowFontScaling: false,
     };
   },
 
