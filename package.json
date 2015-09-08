@@ -39,7 +39,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "lint": "node linter.js Examples/ Libraries/",
+    "lint": "eslint Examples/ Libraries/",
     "start": "./packager/packager.sh || true"
   },
   "bin": {
@@ -81,8 +81,8 @@
   },
   "devDependencies": {
     "jest-cli": "0.5.0",
-    "babel-eslint": "3.1.5",
-    "eslint": "0.21.2",
-    "eslint-plugin-react": "2.3.0"
+    "babel-eslint": "4.0.10",
+    "eslint": "1.1.0",
+    "eslint-plugin-react": "3.2.3"
   }
 }
