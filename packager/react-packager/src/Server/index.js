@@ -16,8 +16,6 @@ const Promise = require('promise');
 
 const _ = require('underscore');
 const declareOpts = require('../lib/declareOpts');
-const exec = require('child_process').exec;
-const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
@@ -290,42 +288,6 @@ class Server {
       ).done(() => Activity.endEvent(assetEvent));
   }
 
-  _processProfile(req, res) {
-    console.log('Dumping profile information...');
-    const dumpName = '/tmp/dump_' + Date.now() + '.json';
-    const prefix = process.env.TRACE_VIEWER_PATH || '';
-    const cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
-    fs.writeFileSync(dumpName, req.rawBody);
-    exec(cmd, error => {
-      if (error) {
-        if (error.code === 127) {
-          console.error(
-            '\n** Failed executing `' + cmd + '` **\n\n' +
-            'Google trace-viewer is required to visualize the data, do you have it installled?\n\n' +
-            'You can get it at:\n\n' +
-            '  https://github.com/google/trace-viewer\n\n' +
-            'If it\'s not in your path,  you can set a custom path with:\n\n' +
-            '  TRACE_VIEWER_PATH=/path/to/trace-viewer\n\n' +
-            'NOTE: Your profile data was kept at:\n\n' +
-            '  ' + dumpName
-          );
-        } else {
-          console.error('Unknown error', error);
-        }
-        res.end();
-        return;
-      } else {
-        exec('rm ' + dumpName);
-        exec('open ' + dumpName.replace(/json$/, 'html'), err => {
-          if (err) {
-            console.error(err);
-          }
-          res.end();
-        });
-      }
-    });
-  }
-
   processRequest(req, res, next) {
     const urlObj = url.parse(req.url, true);
     var pathname = urlObj.pathname;
@@ -345,9 +307,6 @@ class Server {
       return;
     } else if (pathname.match(/^\/assets\//)) {
       this._processAssetsRequest(req, res);
-      return;
-    } else if (pathname.match(/^\/profile\/?$/)) {
-      this._processProfile(req, res);
       return;
     } else {
       next();

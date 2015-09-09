@@ -10,7 +10,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var execFile = require('child_process').execFile;
+var childProcess = require('child_process');
 var http = require('http');
 var isAbsolutePath = require('absolute-path');
 
@@ -198,7 +198,7 @@ function getDevToolsLauncher(options) {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
-      execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
+      childProcess.execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
         if (err) {
           console.log('Failed to run ' + script, err);
         }
@@ -221,6 +221,47 @@ function statusPageMiddleware(req, res, next) {
   } else {
     next();
   }
+}
+
+function systraceProfileMiddleware(req, res, next) {
+  if (req.url !== '/profile') {
+    next();
+    return;
+  }
+
+  console.log('Dumping profile information...');
+  const dumpName = '/tmp/dump_' + Date.now() + '.json';
+  const prefix = process.env.TRACE_VIEWER_PATH || '';
+  const cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
+  fs.writeFileSync(dumpName, req.rawBody);
+  childProcess.exec(cmd, function(error) {
+    if (error) {
+      if (error.code === 127) {
+        console.error(
+          '\n** Failed executing `' + cmd + '` **\n\n' +
+          'Google trace-viewer is required to visualize the data, do you have it installled?\n\n' +
+          'You can get it at:\n\n' +
+          '  https://github.com/google/trace-viewer\n\n' +
+          'If it\'s not in your path,  you can set a custom path with:\n\n' +
+          '  TRACE_VIEWER_PATH=/path/to/trace-viewer\n\n' +
+          'NOTE: Your profile data was kept at:\n\n' +
+          '  ' + dumpName
+        );
+      } else {
+        console.error('Unknown error', error);
+      }
+      res.end();
+      return;
+    } else {
+      childProcess.exec('rm ' + dumpName);
+      childProcess.exec('open ' + dumpName.replace(/json$/, 'html'), function(err) {
+        if (err) {
+          console.error(err);
+        }
+        res.end();
+      });
+    }
+  });
 }
 
 function getAppMiddleware(options) {
@@ -255,6 +296,7 @@ function runServer(
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
     .use(statusPageMiddleware)
+    .use(systraceProfileMiddleware)
     // Temporarily disable flow check until it's more stable
     //.use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));
