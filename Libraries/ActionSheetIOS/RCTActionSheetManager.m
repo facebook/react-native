@@ -12,6 +12,8 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTBridge.h"
+#import "RCTUIManager.h"
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
 
@@ -108,6 +110,24 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
         successCallback(@[@(completed), RCTNullIfNil(activityType)]);
       }
     };
+  }
+
+  /*
+   * The `anchor` option takes a view to set as the anchor for the share
+   * popup to point to, on iPads running iOS 8. If it is not passed, it
+   * defaults to centering the share popup on screen without any arrows.
+   */
+  if ([share respondsToSelector:@selector(popoverPresentationController)]) {
+    share.popoverPresentationController.sourceView = ctrl.view;
+    NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
+    if (anchorViewTag) {
+      UIView *anchorView = [self.bridge.uiManager viewForReactTag:anchorViewTag];
+      share.popoverPresentationController.sourceRect = [anchorView convertRect:anchorView.bounds toView:ctrl.view];
+    } else {
+      CGRect sourceRect = CGRectMake(ctrl.view.center.x, ctrl.view.center.y, 1, 1);
+      share.popoverPresentationController.sourceRect = sourceRect;
+      share.popoverPresentationController.permittedArrowDirections = 0;
+    }
   }
 
   [ctrl presentViewController:share animated:YES completion:nil];
