@@ -31,6 +31,7 @@
 @implementation RCTImageView
 {
   RCTBridge *_bridge;
+  CGSize _targetSize;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -142,10 +143,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                     scale:RCTScreenScale()
                                resizeMode:self.contentMode
                             progressBlock:progressHandler
-                          completionBlock:^(NSError *error, id image) {
+                          completionBlock:^(NSError *error, UIImage *image) {
 
-      if ([image isKindOfClass:[CAAnimation class]]) {
-        [self.layer addAnimation:image forKey:@"contents"];
+      if (image.reactKeyframeAnimation) {
+        [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
       } else {
         [self.layer removeAnimationForKey:@"contents"];
         self.image = image;
@@ -173,19 +174,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [super reactSetFrame:frame];
   if (self.image == nil) {
+    _targetSize = frame.size;
     [self reloadImage];
   } else if ([RCTImageView srcNeedsReload:_src]) {
-
-    // Get optimal image size
-    CGSize currentSize = self.image.size;
     CGSize idealSize = RCTTargetSize(self.image.size, self.image.scale, frame.size,
                                      RCTScreenScale(), self.contentMode, YES);
-
-    CGFloat widthChangeFraction = ABS(currentSize.width - idealSize.width) / currentSize.width;
-    CGFloat heightChangeFraction = ABS(currentSize.height - idealSize.height) / currentSize.height;
+    CGFloat widthChangeFraction = ABS(_targetSize.width - idealSize.width) / _targetSize.width;
+    CGFloat heightChangeFraction = ABS(_targetSize.height - idealSize.height) / _targetSize.height;
 
     // If the combined change is more than 20%, reload the asset in case there is a better size.
     if (widthChangeFraction + heightChangeFraction > 0.2) {
+      _targetSize = idealSize;
       [self reloadImage];
     }
   }

@@ -278,7 +278,8 @@ class Server {
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(req.url, true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
-    this._assetServer.get(assetPath[1])
+    const assetEvent = Activity.startEvent(`processing asset request ${assetPath[1]}`);
+    this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => res.end(data),
         error => {
@@ -286,7 +287,7 @@ class Server {
           res.writeHead('404');
           res.end('Asset not found');
         }
-      ).done();
+      ).done(() => Activity.endEvent(assetEvent));
   }
 
   _processProfile(req, res) {
@@ -370,7 +371,9 @@ class Server {
           res.end(bundleSource);
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
-          var sourceMap = JSON.stringify(p.getSourceMap());
+          var sourceMap = JSON.stringify(p.getSourceMap({
+            minify: options.minify,
+          }));
           res.setHeader('Content-Type', 'application/json');
           res.end(sourceMap);
           Activity.endEvent(startReqEventId);

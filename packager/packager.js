@@ -59,6 +59,14 @@ var options = parseCommandLine([{
   type: 'string',
   default: require.resolve('./transformer.js'),
   description: 'Specify a custom transformer to be used (absolute path)'
+}, {
+  command: 'resetCache',
+  description: 'Removes cached files',
+  default: false,
+}, {
+  command: 'reset-cache',
+  description: 'Removes cached files',
+  default: false,
 }]);
 
 if (options.projectRoots) {
@@ -229,6 +237,7 @@ function getAppMiddleware(options) {
     transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
+    resetCache: options.resetCache || options['reset-cache'],
     polyfillModuleNames: [
       require.resolve(
         '../Libraries/JavaScriptAppEngine/polyfills/document.js'

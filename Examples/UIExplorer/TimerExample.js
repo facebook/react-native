@@ -18,27 +18,12 @@
 var React = require('react-native');
 var {
   AlertIOS,
-  StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } = React;
 var TimerMixin = require('react-timer-mixin');
-
-var Button = React.createClass({
-  render: function() {
-    return (
-      <TouchableHighlight
-        onPress={this.props.onPress}
-        style={styles.button}
-        underlayColor="#eeeeee">
-        <Text>
-          {this.props.children}
-        </Text>
-      </TouchableHighlight>
-    );
-  },
-});
+var UIExplorerButton = require('./UIExplorerButton');
 
 var TimerTester = React.createClass({
   mixins: [TimerMixin],
@@ -52,9 +37,9 @@ var TimerTester = React.createClass({
   render: function() {
     var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
     return (
-      <Button onPress={this._run}>
+      <UIExplorerButton onPress={this._run}>
         Measure: {this.props.type}({args}) - {this._ii || 0}
-      </Button>
+      </UIExplorerButton>
     );
   },
 
@@ -109,18 +94,6 @@ var TimerTester = React.createClass({
       this._iters = this._ii;
       this._run();
     }
-  },
-});
-
-var styles = StyleSheet.create({
-  button: {
-    borderColor: 'gray',
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 10,
-    margin: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 
@@ -183,9 +156,9 @@ exports.examples = [
           if (this.state.showTimer) {
             var timer = [
               <TimerTester ref="interval" dt={25} type="setInterval" />,
-              <Button onPress={() => this.refs.interval.clear() }>
+              <UIExplorerButton onPress={() => this.refs.interval.clear() }>
                 Clear interval
-              </Button>
+              </UIExplorerButton>
             ];
             var toggleText = 'Unmount timer';
           } else {
@@ -195,9 +168,9 @@ exports.examples = [
           return (
             <View>
               {timer}
-              <Button onPress={this._toggleTimer}>
+              <UIExplorerButton onPress={this._toggleTimer}>
                 {toggleText}
-              </Button>
+              </UIExplorerButton>
             </View>
           );
         },

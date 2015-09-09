@@ -326,6 +326,18 @@ exports.examples = [
     },
   },
   {
+    title: 'Animated GIF',
+    render: function() {
+      return (
+        <Image
+          style={styles.gif}
+          source={{uri: 'http://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif'}}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
     title: 'Cap Insets',
     description:
       'When the image is resized, the corners of the size specified ' +
@@ -384,5 +396,9 @@ var styles = StyleSheet.create({
   },
   horizontal: {
     flexDirection: 'row',
-  }
+  },
+  gif: {
+    flex: 1,
+    height: 200,
+  },
 });

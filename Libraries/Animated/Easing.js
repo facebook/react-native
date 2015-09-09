@@ -123,12 +123,18 @@ class Easing {
     return easing;
   }
 
+  /**
+   * Runs an easing function backwards.
+   */
   static out(
     easing: (t: number) => number,
   ): (t: number) => number {
     return (t) => 1 - easing(1 - t);
   }
 
+  /**
+   * Makes any easing function symmetrical.
+   */
   static inOut(
     easing: (t: number) => number,
   ): (t: number) => number {

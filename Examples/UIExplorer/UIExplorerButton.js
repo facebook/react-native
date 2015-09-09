@@ -18,31 +18,39 @@
 var React = require('react-native');
 var {
   StyleSheet,
+  Text,
+  TouchableHighlight,
 } = React;
 
-var MAX_VALUE = 200;
-
-import type { StyleObj } from 'StyleSheetTypes';
-
-function getStyleFromScore(score: number): StyleObj {
-  if (score < 0) {
-    return styles.noScore;
-  }
-
-  var normalizedScore = Math.round((score / 100) * MAX_VALUE);
-  return {
-    color: 'rgb(' +
-      (MAX_VALUE - normalizedScore) + ', ' +
-      normalizedScore + ', ' +
-      0 +
-    ')'
-  };
-}
-
-var styles = StyleSheet.create({
-  noScore: {
-    color: '#999999',
+var UIExplorerButton = React.createClass({
+  propTypes: {
+    onPress: React.PropTypes.func,
+  },
+  render: function() {
+    return (
+      <TouchableHighlight
+        onPress={this.props.onPress}
+        style={styles.button}
+        underlayColor="grey">
+        <Text>
+          {this.props.children}
+        </Text>
+      </TouchableHighlight>
+    );
   },
 });
 
-module.exports = getStyleFromScore;
+var styles = StyleSheet.create({
+  button: {
+    borderColor: 'dimgray',
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 10,
+    margin: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'lightgrey',
+  },
+});
+
+module.exports = UIExplorerButton;

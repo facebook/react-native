@@ -49,6 +49,7 @@ var AndroidTextInputAttributes = {
   keyboardType: true,
   mostRecentEventCount: true,
   multiline: true,
+  numberOfLines: true,
   password: true,
   placeholder: true,
   placeholderTextColor: true,
@@ -193,6 +194,12 @@ var TextInput = React.createClass({
      * @platform ios
      */
     maxLength: PropTypes.number,
+    /**
+     * Sets the number of lines for a TextInput. Use it with multiline set to
+     * true to be able to fill the lines.
+     * @platform android
+     */
+    numberOfLines: PropTypes.number,
     /**
      * If true, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. The default value is false.
@@ -484,6 +491,7 @@ var TextInput = React.createClass({
         keyboardType={this.props.keyboardType}
         mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
+        numberOfLines={this.props.numberOfLines}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}

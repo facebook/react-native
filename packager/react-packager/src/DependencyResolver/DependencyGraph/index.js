@@ -1,4 +1,4 @@
-/**
+ /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -17,6 +17,7 @@ const crawl = require('../crawlers');
 const debug = require('debug')('DependencyGraph');
 const declareOpts = require('../../lib/declareOpts');
 const getAssetDataFromName = require('../../lib/getAssetDataFromName');
+const getPontentialPlatformExt = require('../../lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 const util = require('util');
@@ -274,7 +275,7 @@ class DependencyGraph {
 
     // `platformExt` could be set in the `setup` method.
     if (!this._platformExt) {
-      const platformExt = getPlatformExt(entryPath);
+      const platformExt = getPontentialPlatformExt(entryPath);
       if (platformExt && this._opts.platforms.indexOf(platformExt) > -1) {
         this._platformExt = platformExt;
       } else {
@@ -390,12 +391,18 @@ class DependencyGraph {
     return Promise.resolve().then(() => {
       if (this._isAssetFile(potentialModulePath)) {
         const {name, type} = getAssetDataFromName(potentialModulePath);
-        const pattern = new RegExp('^' + name + '(@[\\d\\.]+x)?\\.' + type);
+
+        let pattern = '^' + name + '(@[\\d\\.]+x)?';
+        if (this._platformExt != null) {
+          pattern += '(\\.' + this._platformExt + ')?';
+        }
+        pattern += '\\.' + type;
+
         // We arbitrarly grab the first one, because scale selection
         // will happen somewhere
         const [assetFile] = this._fastfs.matches(
           path.dirname(potentialModulePath),
-          pattern
+          new RegExp(pattern)
         );
 
         if (assetFile) {
@@ -496,7 +503,7 @@ class DependencyGraph {
       const modules = this._hasteMap[name];
       if (this._platformExt != null) {
         for (let i = 0; i < modules.length; i++) {
-          if (getPlatformExt(modules[i].path) === this._platformExt) {
+          if (getPontentialPlatformExt(modules[i].path) === this._platformExt) {
             return modules[i];
           }
         }
@@ -660,15 +667,6 @@ function normalizePath(modulePath) {
   }
 
   return modulePath.replace(/\/$/, '');
-}
-
-// Extract platform extension: index.ios.js -> ios
-function getPlatformExt(file) {
-  const parts = path.basename(file).split('.');
-  if (parts.length < 3) {
-    return null;
-  }
-  return parts[parts.length - 2];
 }
 
 util.inherits(NotFoundError, Error);

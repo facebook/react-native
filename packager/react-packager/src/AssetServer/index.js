@@ -20,7 +20,6 @@ const stat = Promise.denodeify(fs.stat);
 const readDir = Promise.denodeify(fs.readdir);
 const readFile = Promise.denodeify(fs.readFile);
 
-
 const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
@@ -39,9 +38,9 @@ class AssetServer {
     this._assetExts = opts.assetExts;
   }
 
-  get(assetPath) {
+  get(assetPath, platform = null) {
     const assetData = getAssetDataFromName(assetPath);
-    return this._getAssetRecord(assetPath).then(record => {
+    return this._getAssetRecord(assetPath, platform).then(record => {
       for (let i = 0; i < record.scales.length; i++) {
         if (record.scales[i] >= assetData.resolution) {
           return readFile(record.files[i]);
@@ -52,14 +51,14 @@ class AssetServer {
     });
   }
 
-  getAssetData(assetPath) {
+  getAssetData(assetPath, platform = null) {
     const nameData = getAssetDataFromName(assetPath);
     const data = {
       name: nameData.name,
       type: nameData.type,
     };
 
-    return this._getAssetRecord(assetPath).then(record => {
+    return this._getAssetRecord(assetPath, platform).then(record => {
       data.scales = record.scales;
 
       return Promise.all(
@@ -85,9 +84,10 @@ class AssetServer {
    * 1. We first parse the directory of the asset
    * 2. We check to find a matching directory in one of the project roots
    * 3. We then build a map of all assets and their scales in this directory
-   * 4. Then pick the closest resolution (rounding up) to the requested one
+   * 4. Then try to pick platform-specific asset records
+   * 5. Then pick the closest resolution (rounding up) to the requested one
    */
-  _getAssetRecord(assetPath) {
+  _getAssetRecord(assetPath, platform = null) {
     const filename = path.basename(assetPath);
 
     return (
@@ -104,11 +104,20 @@ class AssetServer {
         const files = res[1];
         const assetData = getAssetDataFromName(filename);
 
-        const map = this._buildAssetMap(dir, files);
-        const record = map[assetData.assetName];
+        const map = this._buildAssetMap(dir, files, platform);
+
+        let record;
+        if (platform != null){
+          record = map[getAssetKey(assetData.assetName, platform)] ||
+                   map[assetData.assetName];
+        } else {
+          record = map[assetData.assetName];
+        }
 
         if (!record) {
-          throw new Error('Asset not found');
+          throw new Error(
+            `Asset not found: ${assetPath} for platform: ${platform}`
+          );
         }
 
         return record;
@@ -141,9 +150,10 @@ class AssetServer {
     const map = Object.create(null);
     assets.forEach(function(asset, i) {
       const file = files[i];
-      let record = map[asset.assetName];
+      const assetKey = getAssetKey(asset.assetName, asset.platform);
+      let record = map[assetKey];
       if (!record) {
-        record = map[asset.assetName] = {
+        record = map[assetKey] = {
           scales: [],
           files: [],
         };
@@ -151,6 +161,7 @@ class AssetServer {
 
       let insertIndex;
       const length = record.scales.length;
+
       for (insertIndex = 0; insertIndex < length; insertIndex++) {
         if (asset.resolution <  record.scales[insertIndex]) {
           break;
@@ -161,6 +172,14 @@ class AssetServer {
     });
 
     return map;
+  }
+}
+
+function getAssetKey(assetName, platform) {
+  if (platform != null) {
+    return `${assetName} : ${platform}`;
+  } else {
+    return assetName;
   }
 }
 

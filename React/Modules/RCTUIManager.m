@@ -488,6 +488,11 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   // Perform layout (possibly animated)
   return ^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTResponseSenderBlock callback = self->_layoutAnimation.callback;
+
+    // It's unsafe to call this callback more than once, so we nil it out here
+    // to make sure that doesn't happen.
+    _layoutAnimation.callback = nil;
+
     __block NSUInteger completionsCalled = 0;
     for (NSUInteger ii = 0; ii < frames.count; ii++) {
       NSNumber *reactTag = frameReactTags[ii];

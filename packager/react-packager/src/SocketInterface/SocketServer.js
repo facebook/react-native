@@ -16,6 +16,7 @@ const fs = require('fs');
 const net = require('net');
 
 const MAX_IDLE_TIME = 30 * 1000;
+const MAX_STARTUP_TIME = 5 * 60 * 1000;
 
 class SocketServer {
   constructor(sockPath, options) {
@@ -35,13 +36,15 @@ class SocketServer {
         process.on('exit', () => fs.unlinkSync(sockPath));
       });
     });
+
+    this._numConnections = 0;
     this._server.on('connection', (sock) => this._handleConnection(sock));
 
     // Disable the file watcher.
     options.nonPersistent = true;
     this._packagerServer = new Server(options);
     this._jobs = 0;
-    this._dieEventually();
+    this._dieEventually(MAX_STARTUP_TIME);
   }
 
   onReady() {
@@ -50,10 +53,13 @@ class SocketServer {
 
   _handleConnection(sock) {
     debug('connection to server', process.pid);
+    this._numConnections++;
+    sock.on('close', () => this._numConnections--);
 
     const bunser = new bser.BunserBuf();
     sock.on('data', (buf) => bunser.append(buf));
     bunser.on('value', (m) => this._handleMessage(sock, m));
+    bunser.on('error', (e) => console.error(e));
   }
 
   _handleMessage(sock, m) {
@@ -113,15 +119,15 @@ class SocketServer {
     }));
   }
 
-  _dieEventually() {
+  _dieEventually(delay = MAX_IDLE_TIME) {
     clearTimeout(this._deathTimer);
     this._deathTimer = setTimeout(() => {
-      if (this._jobs <= 0) {
+      if (this._jobs <= 0 && this._numConnections <= 0) {
         debug('server dying', process.pid);
         process.exit();
       }
       this._dieEventually();
-    }, MAX_IDLE_TIME);
+    }, delay);
   }
 
   static listenOnServerIPCMessages() {

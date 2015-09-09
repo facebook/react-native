@@ -111,6 +111,12 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTPickerIOS = requireNativeComponent('RCTPicker', null);
+var RCTPickerIOS = requireNativeComponent('RCTPicker', PickerIOS, {
+  nativeOnly: {
+    items: true,
+    onChange: true,
+    selectedIndex: true,
+  },
+});
 
 module.exports = PickerIOS;

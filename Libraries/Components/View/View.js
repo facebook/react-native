@@ -44,6 +44,13 @@ var AccessibilityTraits = [
   'pageTurn',
 ];
 
+var AccessibilityComponentType = [
+  'none',
+  'button',
+  'radiobutton_checked',
+  'radiobutton_unchecked',
+];
+
 /**
  * The most fundamental component for building UI, `View` is a
  * container that supports layout with flexbox, style, some touch handling, and
@@ -76,6 +83,11 @@ var View = React.createClass({
     validAttributes: ReactNativeViewAttributes.RCTView
   },
 
+  statics: {
+    AccessibilityTraits,
+    AccessibilityComponentType,
+  },
+
   propTypes: {
     /**
      * When true, indicates that the view is an accessibility element. By default,
@@ -95,12 +107,7 @@ var View = React.createClass({
      * native one. Works for Android only.
      * @platform android
      */
-    accessibilityComponentType: PropTypes.oneOf([
-      'none',
-      'button',
-      'radiobutton_checked',
-      'radiobutton_unchecked',
-    ]),
+    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentType),
 
     /**
      * Indicates to accessibility services whether the user should be notified
@@ -152,7 +159,7 @@ var View = React.createClass({
      * When `accessible` is true, the system will try to invoke this function
      * when the user performs accessibility tap gesture.
      */
-    onAcccessibilityTap: PropTypes.func,
+    onAccessibilityTap: PropTypes.func,
 
     /**
      * When `accessible` is true, the system will invoke this function when the
