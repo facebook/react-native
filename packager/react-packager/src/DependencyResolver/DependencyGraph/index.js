@@ -333,19 +333,26 @@ class DependencyGraph {
     });
   }
 
+  _isFilePath(moduleName) {
+    return moduleName[0] === '.' || moduleName[0] === '/';
+  }
+
   _resolveNodeDependency(fromModule, toModuleName) {
-    if (toModuleName[0] === '.' || toModuleName[1] === '/') {
-      const potentialModulePath = isAbsolutePath(toModuleName) ?
-              toModuleName :
-              path.join(path.dirname(fromModule.path), toModuleName);
-      return this._redirectRequire(fromModule, potentialModulePath).then(
-        realModuleName => this._loadAsFile(realModuleName)
-          .catch(() => this._loadAsDir(realModuleName))
-      );
-    } else {
-      return this._redirectRequire(fromModule, toModuleName).then(
-        realModuleName => {
-          const searchQueue = [];
+    if (this._isFilePath(toModuleName)) {
+      if (!isAbsolutePath(toModuleName)) {
+        toModuleName = path.join(path.dirname(fromModule.path), toModuleName);
+      }
+    }
+    return this._redirectRequire(fromModule, toModuleName).then(
+      realModuleName => {
+        const searchQueue = [];
+        if (this._isFilePath(realModuleName)) {
+          if (!isAbsolutePath(realModuleName)) {
+            realModuleName = path.join(path.dirname(fromModule.path), realModuleName);
+          }
+          searchQueue.push(realModuleName);
+        }
+        else {
           for (let currDir = path.dirname(fromModule.path);
                currDir !== '/';
                currDir = path.dirname(currDir)) {
@@ -353,19 +360,20 @@ class DependencyGraph {
               path.join(currDir, 'node_modules', realModuleName)
             );
           }
+        }
 
-          let p = Promise.reject(new Error('Node module not found'));
-          searchQueue.forEach(potentialModulePath => {
-            p = p.catch(
-              () => this._loadAsFile(potentialModulePath)
-            ).catch(
-              () => this._loadAsDir(potentialModulePath)
-            );
-          });
-
-          return p;
+        let p = Promise.reject(new Error('Node module not found'));
+        searchQueue.forEach(potentialModulePath => {
+          p = p.catch(
+            () => this._loadAsFile(potentialModulePath)
+          ).catch(
+            () => this._loadAsDir(potentialModulePath)
+          );
         });
-    }
+
+        return p;
+      }
+    );
   }
 
   _resolveAsset_DEPRECATED(fromModule, toModuleName) {

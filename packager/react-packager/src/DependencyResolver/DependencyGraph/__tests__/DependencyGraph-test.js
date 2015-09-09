@@ -2210,6 +2210,104 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('node_modules with browser mapping for packages', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'node_modules': {
+            'aPackage': {
+              'package.json': JSON.stringify({
+                name: 'aPackage',
+                browser: {
+                  'node-package': 'browser-package',
+                  'node-package-b': './browser.js',
+                }
+              }),
+              'index.js': [
+                'require("node-package")',
+                'require("node-package-b")',
+              ].join('\n'),
+              'node_modules': {
+                'node-package': {
+                  'package.json': JSON.stringify({
+                    'name': 'node-package',
+                  }),
+                  'index.js': 'some node code',
+                },
+                'browser-package': {
+                  'package.json': JSON.stringify({
+                    'name': 'browser-package',
+                  }),
+                  'index.js': 'some browser code',
+                },
+                'node-package-b': {
+                  'package.json': JSON.stringify({
+                    'name': 'node-package-b',
+                  }),
+                  'index.js': 'some node code',
+                },
+              },
+              'browser.js': 'some browser code',
+            }
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+        expect(deps)
+            .toEqual([
+              { id: 'index',
+                path: '/root/index.js',
+                dependencies: ['aPackage'],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              { id: 'aPackage/index.js',
+                path: '/root/node_modules/aPackage/index.js',
+                dependencies: ['node-package', 'node-package-b'],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              { id: 'browser-package/index.js',
+                path: '/root/node_modules/aPackage/node_modules/browser-package/index.js',
+                dependencies: [],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              { id: 'aPackage/browser.js',
+                path: '/root/node_modules/aPackage/browser.js',
+                dependencies: [],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+            ]);
+      });
+    });
+
     pit('node_modules should support multi level', function() {
       var root = '/root';
       fs.__setMockFilesystem({
