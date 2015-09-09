@@ -63,7 +63,8 @@ function getPathInArchive(asset) {
  * from the devserver
  */
 function getPathOnDevserver(devServerUrl, asset) {
-  return devServerUrl + getScaledAssetPath(asset) + '?hash=' + asset.hash;
+  return devServerUrl + getScaledAssetPath(asset) + '?platform=' + Platform.OS +
+    '&hash=' + asset.hash;
 }
 
 /**
