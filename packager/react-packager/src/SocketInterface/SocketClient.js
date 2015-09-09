@@ -33,10 +33,7 @@ class SocketClient {
       this._sock.on('error', (e) => {
         e.message = `Error connecting to server on ${sockPath} ` +
                     `with error: ${e.message}`;
-
-        if (fs.existsSync(LOG_PATH)) {
-          e.message += '\nServer logs:\n' + fs.readFileSync(LOG_PATH, 'utf8');
-        }
+        e.message += getServerLogs();
 
         reject(e);
       });
@@ -45,8 +42,13 @@ class SocketClient {
     this._resolvers = Object.create(null);
     const bunser = new bser.BunserBuf();
     this._sock.on('data', (buf) => bunser.append(buf));
-
     bunser.on('value', (message) => this._handleMessage(message));
+
+    this._sock.on('close', () => {
+      if (!this._closing) {
+        throw new Error('Server closed unexpectedly' + getServerLogs());
+      }
+    });
   }
 
   onReady() {
@@ -105,6 +107,7 @@ class SocketClient {
 
   close() {
     debug('closing connection');
+    this._closing = true;
     this._sock.end();
   }
 }
@@ -114,4 +117,12 @@ module.exports = SocketClient;
 function uid(len) {
   len = len || 7;
   return Math.random().toString(35).substr(2, len);
+}
+
+function getServerLogs() {
+  if (fs.existsSync(LOG_PATH)) {
+    return '\nServer logs:\n' + fs.readFileSync(LOG_PATH, 'utf8');
+  }
+
+  return '';
 }

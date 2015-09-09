@@ -59,7 +59,12 @@ class SocketServer {
     const bunser = new bser.BunserBuf();
     sock.on('data', (buf) => bunser.append(buf));
     bunser.on('value', (m) => this._handleMessage(sock, m));
-    bunser.on('error', (e) => console.error(e));
+    bunser.on('error', (e) => {
+      e.message = 'Unhandled error from the bser buffer. ' +
+                  'Either error on encoding or message handling: \n' +
+                  e.message;
+      throw e;
+    });
   }
 
   _handleMessage(sock, m) {
