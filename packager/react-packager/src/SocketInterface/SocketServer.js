@@ -148,7 +148,7 @@ class SocketServer {
           process.send({ type: 'createdServer' });
         },
         error => {
-          if (error.code === 'EADDRINUSE') {
+          if (error.code === 'EADDRINUSE' || error.code === 'EEXIST') {
             // Server already listening, this may happen if multiple
             // clients where started in quick succussion (buck).
             process.send({ type: 'createdServer' });
