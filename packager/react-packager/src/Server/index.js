@@ -157,14 +157,16 @@ class Server {
   }
 
   buildBundle(options) {
-    const opts = bundleOpts(options);
-    return this._bundler.bundle(
-      opts.entryFile,
-      opts.runModule,
-      opts.sourceMapUrl,
-      opts.dev,
-      opts.platform
-    );
+    return Promise.resolve().then(() => {
+      const opts = bundleOpts(options);
+      return this._bundler.bundle(
+        opts.entryFile,
+        opts.runModule,
+        opts.sourceMapUrl,
+        opts.dev,
+        opts.platform
+      );
+    });
   }
 
   buildBundleFromUrl(reqUrl) {
