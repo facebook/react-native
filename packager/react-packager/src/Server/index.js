@@ -92,7 +92,7 @@ const bundleOpts = declareOpts({
   },
   platform: {
     type: 'string',
-    required: false,
+    required: true,
   }
 });
 
