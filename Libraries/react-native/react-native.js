@@ -39,6 +39,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   TabBarIOS: require('TabBarIOS'),
   Text: require('Text'),
   TextInput: require('TextInput'),
+  ToastAndroid: require('ToastAndroid'),
   ToolbarAndroid: require('ToolbarAndroid'),
   TouchableHighlight: require('TouchableHighlight'),
   TouchableNativeFeedback: require('TouchableNativeFeedback'),
