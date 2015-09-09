@@ -13,7 +13,7 @@ next: tutorial
 2. [Xcode](https://developer.apple.com/xcode/downloads/) 6.3 or higher is recommended.
 3. [Homebrew](http://brew.sh/) is the recommended way to install io.js, watchman, and flow.
 4. Install [io.js](https://iojs.org/) 1.0 or newer. io.js is the modern version of Node.
-  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install iojs-v2 && nvm alias default iojs-v2`, which installs the latest compatible version of io.js and sets up your terminal so that typing `node` runs io.js. With nvm you can install multiple versions of Node and io.js and easily switch between them.
+  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). To benefit from the changes to your .bashrc, close and reopen your terminal window. Then run `nvm install iojs-v2 && nvm alias default iojs-v2`, which installs the latest compatible version of io.js and sets up your terminal so that typing `node` runs io.js. With nvm you can install multiple versions of Node and io.js and easily switch between them.
   - New to [npm](https://docs.npmjs.com/)?
 5. `brew install watchman`. We recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
 6. `brew install flow`. If you want to use [flow](http://www.flowtype.org).
