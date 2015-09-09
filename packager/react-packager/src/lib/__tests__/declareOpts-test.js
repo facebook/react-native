@@ -61,7 +61,7 @@ describe('declareOpts', function() {
 
     expect(function() {
       validate({});
-    }).toThrow();
+    }).toThrow('Error validating module options: foo is required');
   });
 
   it('should throw on invalid type', function() {
@@ -74,7 +74,7 @@ describe('declareOpts', function() {
 
     expect(function() {
       validate({foo: 'lol'});
-    }).toThrow();
+    }).toThrow('Error validating module options: foo must be a number');
   });
 
   it('should throw on extra options', function() {
@@ -87,6 +87,6 @@ describe('declareOpts', function() {
 
     expect(function() {
       validate({foo: 1, lol: 1});
-    }).toThrow();
+    }).toThrow('Error validating module options: lol is not allowed');
   });
 });
