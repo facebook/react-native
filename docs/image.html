@@ -357,6 +357,18 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Animated GIF&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;Image
+          style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>gif<span class="token punctuation">}</span>
+          source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>uri<span class="token punctuation">:</span> <span class="token string">&#x27;http://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+        <span class="token operator">/</span><span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Cap Insets&#x27;</span><span class="token punctuation">,</span>
     description<span class="token punctuation">:</span>
       <span class="token string">&#x27;When the image is resized, the corners of the size specified &#x27;</span> <span class="token operator">+</span>
@@ -415,7 +427,11 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   horizontal<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flexDirection<span class="token punctuation">:</span> <span class="token string">&#x27;row&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  gif<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> <span class="token number">200</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div></div><div class="docs-prevnext"><a class="docs-next" href="listview.html#content">Next →</a></div></div></section><footer class="wrap"><div class="right">© 2015 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
