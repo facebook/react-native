@@ -208,7 +208,7 @@ function createInterpolationFromStringOutputRange(
     // ->
     // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
     return outputRange[0].replace(stringShapeRegex, () => {
-      return String(interpolations[i++](input));
+      return String(Math.round(interpolations[i++](input)));
     });
   };
 }
