@@ -131,7 +131,14 @@ function _flush(rootNode: AnimatedValue): void {
 }
 
 type TimingAnimationConfig = {
-  toValue: number;
+  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY;
+  easing?: (value: number) => number;
+  duration?: number;
+  delay?: number;
+};
+
+type TimingAnimationConfigSingle = {
+  toValue: number | AnimatedValue;
   easing?: (value: number) => number;
   duration?: number;
   delay?: number;
@@ -142,7 +149,7 @@ var easeInOut = Easing.inOut(Easing.ease);
 class TimingAnimation extends Animation {
   _startTime: number;
   _fromValue: number;
-  _toValue: number;
+  _toValue: any;
   _duration: number;
   _delay: number;
   _easing: (value: number) => number;
@@ -151,7 +158,7 @@ class TimingAnimation extends Animation {
   _timeout: any;
 
   constructor(
-    config: TimingAnimationConfig,
+    config: TimingAnimationConfigSingle,
   ) {
     super();
     this._toValue = config.toValue;
