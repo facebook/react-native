@@ -6,10 +6,21 @@ var path = require('path');
 var fs = require('fs');
 
 describe('react:react', function() {
-  var assert = require('yeoman-generator').assert;
+  var assert;
 
   beforeEach(function() {
+    // A deep dependency of yeoman spams console.log with giant json objects.
+    // yeoman-generator/node_modules/
+    //   download/node_modules/
+    //     caw/node_modules/
+    //       get-proxy/node_modules/
+    //         rc/index.js
+    var log = console.log;
+    console.log = function() {};
+    assert = require('yeoman-generator').assert;
     var helpers = require('yeoman-generator').test;
+    console.log = log;
+
     var generated = false;
 
     runs(function() {
