@@ -6,7 +6,8 @@
 
 extern "C" {
 
+void nativeProfilerEnableBytecode(void);
 void nativeProfilerStart(JSContextRef ctx, const char *title);
-const char *nativeProfilerEnd(JSContextRef ctx, const char *title);
+void nativeProfilerEnd(JSContextRef ctx, const char *title, const char *filename);
 
 }

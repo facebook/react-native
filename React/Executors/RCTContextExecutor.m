@@ -206,6 +206,40 @@ static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObje
   return JSValueMakeUndefined(context);
 }
 
+static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
+{
+#if RCT_JSC_PROFILER
+  void *JSCProfiler = dlopen(RCT_JSC_PROFILER_DYLIB, RTLD_NOW);
+  if (JSCProfiler != NULL) {
+    void (*nativeProfilerStart)(JSContextRef, const char *) =
+      (__typeof__(nativeProfilerStart))dlsym(JSCProfiler, "nativeProfilerStart");
+    void (*nativeProfilerEnd)(JSContextRef, const char *, const char *) =
+      (__typeof__(nativeProfilerEnd))dlsym(JSCProfiler, "nativeProfilerEnd");
+
+    if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
+      void (*nativeProfilerEnableByteCode)(void) =
+        (__typeof__(nativeProfilerEnableByteCode))dlsym(JSCProfiler, "nativeProfilerEnableByteCode");
+
+      if (nativeProfilerEnableByteCode != NULL) {
+        nativeProfilerEnableByteCode();
+      }
+
+      __block BOOL isProfiling = NO;
+      [bridge.devMenu addItem:@"Profile" handler:^{
+        if (isProfiling) {
+          NSString *outputFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"cpu_profile.json"];
+          nativeProfilerEnd(context, "profile", outputFile.UTF8String);
+          RCTLogInfo(@"CPU profile outputed to '%@'", outputFile);
+        } else {
+          nativeProfilerStart(context, "profile");
+        }
+        isProfiling = !isProfiling;
+      }];
+    }
+  }
+#endif
+}
+
 #endif
 
 + (void)runRunLoopThread
@@ -284,24 +318,7 @@ static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObje
     [strongSelf _addNativeHook:RCTNativeTraceBeginSection withName:"nativeTraceBeginSection"];
     [strongSelf _addNativeHook:RCTNativeTraceEndSection withName:"nativeTraceEndSection"];
 
-#if RCT_JSC_PROFILER
-    void *JSCProfiler = dlopen(RCT_JSC_PROFILER_DYLIB, RTLD_NOW);
-    if (JSCProfiler != NULL) {
-      void (*nativeProfilerStart)(JSContextRef, const char *) = (void (*)(JSContextRef, const char *))dlsym(JSCProfiler, "nativeProfilerStart");
-      const char *(*nativeProfilerEnd)(JSContextRef, const char *) = (const char *(*)(JSContextRef, const char *))dlsym(JSCProfiler, "nativeProfilerEnd");
-      if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
-        __block BOOL isProfiling = NO;
-        [_bridge.devMenu addItem:@"Profile" handler:^{
-          if (isProfiling) {
-            RCTLogInfo(@"%s", nativeProfilerEnd(strongSelf->_context.ctx, "profile"));
-          } else {
-            nativeProfilerStart(strongSelf->_context.ctx, "profile");
-          }
-          isProfiling = !isProfiling;
-        }];
-      }
-    }
-#endif
+    RCTInstallJSCProfiler(_bridge, strongSelf->_context.ctx);
 
     for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
       [[NSNotificationCenter defaultCenter] addObserver:strongSelf
