@@ -186,6 +186,23 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSString *source) {
     RCTProfileEndAsyncEvent(0, @"init,download", cookie, @"JavaScript download", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
+
+    // Only override the value of __DEV__ if running in debug mode, and if we
+    // haven't explicitly overridden the packager dev setting in the bundleURL
+    BOOL shouldOverrideDev = RCT_DEBUG && ([self.bundleURL isFileURL] ||
+    [self.bundleURL.absoluteString rangeOfString:@"dev="].location == NSNotFound);
+
+    // Force JS __DEV__ value to match RCT_DEBUG
+    if (shouldOverrideDev) {
+      NSRange range = [source rangeOfString:@"__DEV__="];
+      RCTAssert(range.location != NSNotFound, @"It looks like the implementation"
+                "of __DEV__ has changed. Update -[RCTBatchedBridge loadSource:].");
+      NSRange valueRange = {range.location + range.length, 2};
+      if ([[source substringWithRange:valueRange] isEqualToString:@"!1"]) {
+        source = [source stringByReplacingCharactersInRange:valueRange withString:@" 1"];
+      }
+    }
+
     _onSourceLoad(error, source);
   };
 
