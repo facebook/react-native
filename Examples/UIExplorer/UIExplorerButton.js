@@ -42,14 +42,14 @@ var UIExplorerButton = React.createClass({
 
 var styles = StyleSheet.create({
   button: {
-    borderColor: 'dimgray',
+    borderColor: '#696969',
     borderRadius: 8,
     borderWidth: 1,
     padding: 10,
     margin: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'lightgrey',
+    backgroundColor: '#d3d3d3',
   },
 });
 
