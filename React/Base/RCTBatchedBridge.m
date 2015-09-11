@@ -125,7 +125,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
         [weakSelf stopLoadingWithError:error];
       });
     }
-    
+
     sourceCode = source;
     dispatch_group_leave(initModulesAndLoadSource);
   }];
@@ -348,20 +348,20 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 - (void)stopLoadingWithError:(NSError *)error
 {
   RCTAssertMainThread();
-  
+
   if (!self.isValid || !self.loading) {
     return;
   }
-  
+
   _loading = NO;
-  
+
   NSArray *stack = error.userInfo[@"stack"];
   if (stack) {
     [self.redBox showErrorMessage:error.localizedDescription withStack:stack];
   } else {
     [self.redBox showError:error];
   }
-  
+
   NSDictionary *userInfo = @{@"bridge": self, @"error": error};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                       object:_parentBridge
@@ -853,30 +853,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     NSString *log = RCTProfileEnd(self);
-    NSString *URLString = [NSString stringWithFormat:@"%@://%@:%@/profile", self.bundleURL.scheme, self.bundleURL.host, self.bundleURL.port];
-    NSURL *URL = [NSURL URLWithString:URLString];
-    NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
-    URLRequest.HTTPMethod = @"POST";
-    [URLRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    NSURLSessionTask *task =
-    [[NSURLSession sharedSession] uploadTaskWithRequest:URLRequest
-                                               fromData:[log dataUsingEncoding:NSUTF8StringEncoding]
-                                      completionHandler:
-     ^(__unused NSData *data, __unused NSURLResponse *response, NSError *error) {
-       if (error) {
-         RCTLogError(@"%@", error.localizedDescription);
-       } else {
-         dispatch_async(dispatch_get_main_queue(), ^{
-           [[[UIAlertView alloc] initWithTitle:@"Profile"
-                                       message:@"The profile has been generated, check the dev server log for instructions."
-                                      delegate:nil
-                             cancelButtonTitle:@"OK"
-                             otherButtonTitles:nil] show];
-         });
-       }
-     }];
-
-    [task resume];
+    NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
+    RCTProfileSendResult(self, @"systrace", logData);
   }];
 }
 
