@@ -101,6 +101,19 @@ var Image = React.createClass({
      */
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
     /**
+     * Makes the image resize in a fixed `aspectRatio` as the prop. It can be
+     * a number or a rectangle. As the width changes due to flex layout,
+     * the height will change in proportion with same aspect ratio. Use this
+     * to wrap images where you would like the aspect ratio to be maintained.
+     */
+    aspectRatio: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.shape({
+        width: PropTypes.number,
+        height: PropTypes.number,
+      }),
+    ]),
+    /**
      * A unique identifier for this element to be used in UI Automation
      * testing scripts.
      */

@@ -269,4 +269,16 @@ RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
+RCT_CUSTOM_SHADOW_PROPERTY(aspectRatio, CGSize, RCTShadowView) {
+  if ([view respondsToSelector:@selector(setAspectRatio:)]) {
+    if ([json isKindOfClass:NSDictionary.class]) {
+      [view setAspectRatio:[RCTConvert CGSize:json]];
+    } else if (json) {
+      [view setAspectRatio:CGSizeMake([RCTConvert CGFloat:json], 1.0f)];
+    } else {
+      [view setAspectRatio:defaultView.aspectRatio];
+    }
+  }
+}
+
 @end
