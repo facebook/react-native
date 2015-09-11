@@ -14,8 +14,7 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
-    .dontMock('../')
-    .setMock('chalk', { dim: function(s) { return s; } });
+    .dontMock('../');
 
 const Promise = require('promise');
 
