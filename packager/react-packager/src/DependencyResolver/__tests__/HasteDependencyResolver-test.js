@@ -34,6 +34,22 @@ describe('HasteDependencyResolver', function() {
     HasteDependencyResolver = require('../');
   });
 
+  class ResolutionResponseMock {
+    constructor({dependencies, mainModuleId, asyncDependencies}) {
+      this.dependencies = dependencies;
+      this.mainModuleId = mainModuleId;
+      this.asyncDependencies = asyncDependencies;
+    }
+
+    prependDependency(dependency) {
+      this.dependencies.unshift(dependency);
+    }
+
+    finalize() {
+      return Promise.resolve(this);
+    }
+  }
+
   function createModule(id, dependencies) {
     var module = new Module();
     module.getName.mockImpl(() => Promise.resolve(id));
@@ -52,11 +68,12 @@ describe('HasteDependencyResolver', function() {
 
       // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
-      depGraph.getOrderedDependencies.mockImpl(function() {
-        return Promise.resolve(deps);
-      });
-      depGraph.load.mockImpl(function() {
-        return Promise.resolve();
+      depGraph.getDependencies.mockImpl(function() {
+        return Promise.resolve(new ResolutionResponseMock({
+          dependencies: deps,
+          mainModuleId: 'index',
+          asyncDependencies: [],
+        }));
       });
 
       return depResolver.getDependencies('/root/index.js', { dev: false })
@@ -133,19 +150,19 @@ describe('HasteDependencyResolver', function() {
         projectRoot: '/root',
       });
 
-      // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
-      depGraph.getOrderedDependencies.mockImpl(function() {
-        return Promise.resolve(deps);
-      });
-      depGraph.load.mockImpl(function() {
-        return Promise.resolve();
+      depGraph.getDependencies.mockImpl(function() {
+        return Promise.resolve(new ResolutionResponseMock({
+          dependencies: deps,
+          mainModuleId: 'index',
+          asyncDependencies: [],
+        }));
       });
 
       return depResolver.getDependencies('/root/index.js', { dev: true })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
-          expect(depGraph.getOrderedDependencies).toBeCalledWith('/root/index.js');
+          expect(depGraph.getDependencies).toBeCalledWith('/root/index.js', undefined);
           expect(result.dependencies[0]).toBe(Polyfill.mock.instances[0]);
           expect(result.dependencies[result.dependencies.length - 1])
               .toBe(module);
@@ -161,13 +178,13 @@ describe('HasteDependencyResolver', function() {
         polyfillModuleNames: ['some module'],
       });
 
-      // Is there a better way? How can I mock the prototype instead?
       var depGraph = depResolver._depGraph;
-      depGraph.getOrderedDependencies.mockImpl(function() {
-        return Promise.resolve(deps);
-      });
-      depGraph.load.mockImpl(function() {
-        return Promise.resolve();
+      depGraph.getDependencies.mockImpl(function() {
+        return Promise.resolve(new ResolutionResponseMock({
+          dependencies: deps,
+          mainModuleId: 'index',
+          asyncDependencies: [],
+        }));
       });
 
       return depResolver.getDependencies('/root/index.js', { dev: false })
@@ -343,17 +360,23 @@ describe('HasteDependencyResolver', function() {
       ].join('\n');
       /*eslint-disable */
 
-      depGraph.resolveDependency.mockImpl(function(fromModule, toModuleName) {
-        if (toModuleName === 'x') {
-          return Promise.resolve(createModule('changed'));
-        } else if (toModuleName === 'y') {
-          return Promise.resolve(createModule('Y'));
-        }
+      const module = createModule('test module', ['x', 'y']);
 
-        return Promise.resolve(null);
+      const resolutionResponse = new ResolutionResponseMock({
+        dependencies: [module],
+        mainModuleId: 'test module',
+        asyncDependencies: [],
       });
 
+      resolutionResponse.getResolvedDependencyPairs = (module) => {
+        return [
+          ['x', createModule('changed')],
+          ['y', createModule('Y')],
+        ];
+      }
+
       return depResolver.wrapModule(
+        resolutionResponse,
         createModule('test module', ['x', 'y']),
         code
       ).then(processedCode => {
