@@ -9,9 +9,6 @@
 'use strict';
 
 jest.autoMockOff();
-jest.setMock('chalk', {
-  dim: function(s) { return s; },
-});
 
 describe('Activity', () => {
   const origConsoleLog = console.log;

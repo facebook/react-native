@@ -23,8 +23,7 @@ jest
   .dontMock('../../AssetModule')
   .dontMock('../../Module')
   .dontMock('../../Package')
-  .dontMock('../../ModuleCache')
-  .setMock('chalk', { dim: function(s) { return s; } });
+  .dontMock('../../ModuleCache');
 
 const Promise = require('promise');
 
