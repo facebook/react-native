@@ -8,26 +8,13 @@
  */
 'use strict';
 
-jest
-  .dontMock('../index')
-  .dontMock('crypto')
-  .dontMock('absolute-path')
-  .dontMock('../docblock')
-  .dontMock('../../crawlers')
-  .dontMock('../../crawlers/node')
-  .dontMock('../../replacePatterns')
-  .dontMock('../../../lib/getPlatformExtension')
-  .dontMock('../../../lib/getAssetDataFromName')
-  .dontMock('../../fastfs')
-  .dontMock('../../AssetModule_DEPRECATED')
-  .dontMock('../../AssetModule')
-  .dontMock('../../Module')
-  .dontMock('../../Package')
-  .dontMock('../../ModuleCache');
+jest.autoMockOff();
 
 const Promise = require('promise');
 
-jest.mock('fs');
+jest
+  .mock('fs')
+  .mock('../../../Cache');
 
 describe('DependencyGraph', function() {
   var cache;
@@ -36,12 +23,13 @@ describe('DependencyGraph', function() {
   var fileWatcher;
   var fs;
 
-  function getOrderedDependenciesAsJSON(dgraph, entry) {
-    return dgraph.getOrderedDependencies(entry).then(
-      deps => Promise.all(deps.map(dep => Promise.all([
+  function getOrderedDependenciesAsJSON(dgraph, entry, platform) {
+    return dgraph.getDependencies(entry, platform)
+      .then(response => response.finalize())
+      .then(({ dependencies }) => Promise.all(dependencies.map(dep => Promise.all([
         dep.getName(),
         dep.getDependencies(),
-      ]).then(([name, dependencies]) => ({
+      ]).then(([name, moduleDependencies]) => ({
         path: dep.path,
         isJSON: dep.isJSON(),
         isAsset: dep.isAsset(),
@@ -49,7 +37,7 @@ describe('DependencyGraph', function() {
         isPolyfill: dep.isPolyfill(),
         resolution: dep.resolution,
         id: name,
-        dependencies
+        dependencies: moduleDependencies,
       })))
     ));
   }
@@ -66,10 +54,10 @@ describe('DependencyGraph', function() {
       isWatchman: () => Promise.resolve(false)
     };
 
-    cache = new Cache({});
+    cache = new Cache();
   });
 
-  describe('getOrderedDependencies', function() {
+  describe('get sync dependencies', function() {
     pit('should get dependencies', function() {
       var root = '/root';
       fs.__setMockFilesystem({
@@ -455,9 +443,7 @@ describe('DependencyGraph', function() {
         cache: cache,
       });
 
-      dgraph.setup({ platform: 'ios' });
-
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', 'ios').then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -3696,6 +3682,42 @@ describe('DependencyGraph', function() {
               },
             ]);
         });
+      });
+    });
+  });
+
+  describe('getAsyncDependencies', () => {
+    pit('should get dependencies', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'System.import("a")'
+          ].join('\n'),
+          'a.js': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+          ].join('\n'),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+
+    return dgraph.getDependencies('/root/index.js')
+      .then(response => response.finalize())
+      .then(({ asyncDependencies }) => {
+        expect(asyncDependencies).toEqual([
+          ['/root/a.js']
+        ]);
       });
     });
   });

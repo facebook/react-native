@@ -82,36 +82,18 @@ var getDependenciesValidateOpts = declareOpts({
 HasteDependencyResolver.prototype.getDependencies = function(main, options) {
   var opts = getDependenciesValidateOpts(options);
 
-  var depGraph = this._depGraph;
-  var self = this;
+  return this._depGraph.getDependencies(main, opts.platform).then(
+    resolutionResponse => {
+      this._getPolyfillDependencies(opts.dev).reverse().forEach(
+        polyfill => resolutionResponse.prependDependency(polyfill)
+      );
 
-  depGraph.setup({ platform: opts.platform });
-
-  return Promise.all([
-    depGraph.getOrderedDependencies(main),
-    depGraph.getAsyncDependencies(main),
-  ]).then(
-    ([dependencies, asyncDependencies]) => dependencies[0].getName().then(
-      mainModuleId => {
-        self._prependPolyfillDependencies(
-          dependencies,
-          opts.dev,
-        );
-
-        return {
-          mainModuleId,
-          dependencies,
-          asyncDependencies,
-        };
-      }
-    )
+      return resolutionResponse.finalize();
+    }
   );
 };
 
-HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
-  dependencies,
-  isDev
-) {
+HasteDependencyResolver.prototype._getPolyfillDependencies = function(isDev) {
   var polyfillModuleNames = [
    isDev
       ? path.join(__dirname, 'polyfills/prelude_dev.js')
@@ -124,7 +106,7 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
     path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
   ].concat(this._polyfillModuleNames);
 
-  var polyfillModules = polyfillModuleNames.map(
+  return polyfillModuleNames.map(
     (polyfillModuleName, idx) => new Polyfill({
       path: polyfillModuleName,
       id: polyfillModuleName,
@@ -132,50 +114,47 @@ HasteDependencyResolver.prototype._prependPolyfillDependencies = function(
       isPolyfill: true,
     })
   );
-
-  dependencies.unshift.apply(dependencies, polyfillModules);
 };
 
-HasteDependencyResolver.prototype.wrapModule = function(module, code) {
-  if (module.isPolyfill()) {
-    return Promise.resolve(code);
-  }
+HasteDependencyResolver.prototype.wrapModule = function(resolutionResponse, module, code) {
+  return Promise.resolve().then(() => {
+    if (module.isPolyfill()) {
+      return Promise.resolve(code);
+    }
 
-  const resolvedDeps = Object.create(null);
-  const resolvedDepsArr = [];
+    const resolvedDeps = Object.create(null);
+    const resolvedDepsArr = [];
 
-  return module.getDependencies().then(
-      dependencies => Promise.all(dependencies.map(
-        depName => this._depGraph.resolveDependency(module, depName)
-          .then(depModule => {
-            if (depModule) {
-              return depModule.getName().then(name => {
-                resolvedDeps[depName] = name;
-                resolvedDepsArr.push(name);
-              });
-            }
-          })
+    return Promise.all(
+      resolutionResponse.getResolvedDependencyPairs(module).map(
+        ([depName, depModule]) => {
+          if (depModule) {
+            return depModule.getName().then(name => {
+              resolvedDeps[depName] = name;
+              resolvedDepsArr.push(name);
+            });
+          }
+        }
       )
-    )
-  ).then(() => {
-    const relativizeCode = (codeMatch, pre, quot, depName, post) => {
-      const depId = resolvedDeps[depName];
-      if (depId) {
-        return pre + quot + depId + post;
-      } else {
-        return codeMatch;
-      }
-    };
+    ).then(() => {
+      const relativizeCode = (codeMatch, pre, quot, depName, post) => {
+        const depId = resolvedDeps[depName];
+        if (depId) {
+          return pre + quot + depId + post;
+        } else {
+          return codeMatch;
+        }
+      };
 
-    return module.getName().then(
-      name => defineModuleCode({
-        code: code
-        .replace(replacePatterns.IMPORT_RE, relativizeCode)
-        .replace(replacePatterns.REQUIRE_RE, relativizeCode),
-        deps: JSON.stringify(resolvedDepsArr),
-        moduleName: name,
-      })
-    );
+      return module.getName().then(
+        name => defineModuleCode({
+          code: code.replace(replacePatterns.IMPORT_RE, relativizeCode)
+                    .replace(replacePatterns.REQUIRE_RE, relativizeCode),
+          deps: JSON.stringify(resolvedDepsArr),
+          moduleName: name,
+        })
+      );
+    });
   });
 };
 
