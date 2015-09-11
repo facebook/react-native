@@ -10,4 +10,17 @@
  */
 'use strict';
 
-module.exports = require('UnimplementedView');
+var warning = require('warning');
+
+var ToastAndroid = {
+
+  show: function (
+    message: string,
+    duration: number
+  ): void {
+    warning(false, 'Cannot use ToastAndroid on iOS.');
+  },
+
+};
+
+module.exports = ToastAndroid;
