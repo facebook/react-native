@@ -125,7 +125,7 @@ class Bundler {
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
-    return this.getDependencies(main, isDev, platform).then((result) => {
+    return this.getDependencies(main, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
 
@@ -135,14 +135,19 @@ class Bundler {
           complete: '=',
           incomplete: ' ',
           width: 40,
-          total: result.dependencies.length,
+          total: response.dependencies.length,
         });
       }
 
-      bundle.setMainModuleId(result.mainModuleId);
+      bundle.setMainModuleId(response.mainModuleId);
       return Promise.all(
-        result.dependencies.map(
-          module => this._transformModule(bundle, module).then(transformed => {
+        response.dependencies.map(
+          module => this._transformModule(
+            bundle,
+            response,
+            module,
+            platform
+          ).then(transformed => {
             if (bar) {
               bar.tick();
             }
@@ -170,7 +175,7 @@ class Bundler {
     return this._resolver.getDependencies(main, { dev: isDev, platform });
   }
 
-  _transformModule(bundle, module) {
+  _transformModule(bundle, response, module, platform = null) {
     let transform;
 
     if (module.isAsset_DEPRECATED()) {
@@ -187,7 +192,11 @@ class Bundler {
 
     const resolver = this._resolver;
     return transform.then(
-      transformed => resolver.wrapModule(module, transformed.code).then(
+      transformed => resolver.wrapModule(
+        response,
+        module,
+        transformed.code
+      ).then(
         code => new ModuleTransport({
           code: code,
           map: transformed.map,

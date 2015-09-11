@@ -13,6 +13,8 @@ const stat = Promise.denodeify(fs.stat);
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
+const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
+
 class Fastfs extends EventEmitter {
   constructor(name, roots, fileWatcher, {ignore, crawling}) {
     super();
@@ -90,7 +92,11 @@ class Fastfs extends EventEmitter {
   }
 
   readFile(filePath) {
-    return this._getFile(filePath).read();
+    const file = this._getFile(filePath);
+    if (!file) {
+      throw new Error(`Unable to find file with path: ${file}`);
+    }
+    return file.read();
   }
 
   closest(filePath, name) {
@@ -105,12 +111,30 @@ class Fastfs extends EventEmitter {
   }
 
   fileExists(filePath) {
-    const file = this._getFile(filePath);
+    let file;
+    try {
+      file = this._getFile(filePath);
+    } catch (e) {
+      if (e.type === NOT_FOUND_IN_ROOTS) {
+        return false;
+      }
+      throw e;
+    }
+
     return file && !file.isDir;
   }
 
   dirExists(filePath) {
-    const file = this._getFile(filePath);
+    let file;
+    try {
+      file = this._getFile(filePath);
+    } catch (e) {
+      if (e.type === NOT_FOUND_IN_ROOTS) {
+        return false;
+      }
+      throw e;
+    }
+
     return file && file.isDir;
   }
 
@@ -138,7 +162,9 @@ class Fastfs extends EventEmitter {
   _getAndAssertRoot(filePath) {
     const root = this._getRoot(filePath);
     if (!root) {
-      throw new Error(`File ${filePath} not found in any of the roots`);
+      const error = new Error(`File ${filePath} not found in any of the roots`);
+      error.type = NOT_FOUND_IN_ROOTS;
+      throw error;
     }
     return root;
   }
