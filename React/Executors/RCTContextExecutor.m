@@ -229,7 +229,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
         if (isProfiling) {
           NSString *outputFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"cpu_profile.json"];
           nativeProfilerEnd(context, "profile", outputFile.UTF8String);
-          RCTLogInfo(@"CPU profile outputed to '%@'", outputFile);
+          NSData *profileData = [NSData dataWithContentsOfFile:outputFile
+                                                       options:NSDataReadingMappedIfSafe
+                                                         error:NULL];
+
+          RCTProfileSendResult(bridge, @"cpu-profile", profileData);
         } else {
           nativeProfilerStart(context, "profile");
         }

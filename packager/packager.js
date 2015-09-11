@@ -224,7 +224,7 @@ function statusPageMiddleware(req, res, next) {
 }
 
 function systraceProfileMiddleware(req, res, next) {
-  if (req.url !== '/profile') {
+  if (req.url !== '/systrace') {
     next();
     return;
   }
@@ -237,29 +237,50 @@ function systraceProfileMiddleware(req, res, next) {
   childProcess.exec(cmd, function(error) {
     if (error) {
       if (error.code === 127) {
-        console.error(
+        res.end(
           '\n** Failed executing `' + cmd + '` **\n\n' +
-          'Google trace-viewer is required to visualize the data, do you have it installled?\n\n' +
-          'You can get it at:\n\n' +
-          '  https://github.com/google/trace-viewer\n\n' +
-          'If it\'s not in your path,  you can set a custom path with:\n\n' +
-          '  TRACE_VIEWER_PATH=/path/to/trace-viewer\n\n' +
-          'NOTE: Your profile data was kept at:\n\n' +
-          '  ' + dumpName
+          'Google trace-viewer is required to visualize the data, You can install it with `brew install trace2html`\n\n' +
+          'NOTE: Your profile data was kept at:\n' + dumpName
         );
       } else {
-        console.error('Unknown error', error);
+        console.error(error);
+        res.end('Unknown error %s', error.message);
       }
-      res.end();
       return;
     } else {
       childProcess.exec('rm ' + dumpName);
       childProcess.exec('open ' + dumpName.replace(/json$/, 'html'), function(err) {
         if (err) {
           console.error(err);
+          res.end(err.message);
+        } else {
+          res.end();
         }
-        res.end();
       });
+    }
+  });
+}
+
+function cpuProfileMiddleware(req, res, next) {
+  if (req.url !== '/cpu-profile') {
+    next();
+    return;
+  }
+
+  console.log('Dumping CPU profile information...');
+  const dumpName = '/tmp/cpu-profile_' + Date.now();
+  fs.writeFileSync(dumpName + '.json', req.rawBody);
+
+  const cmd = path.join(__dirname, '..', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
+  childProcess.exec(cmd, function(error) {
+    if (error) {
+      console.error(error);
+      res.end('Unknown error: %s', error.message);
+    } else {
+      res.end(
+        'Your profile was generated at\n\n' + dumpName + '.cpuprofile\n\n' +
+        'Open `Chrome Dev Tools > Profiles > Load` and select the profile to visualize it.'
+      );
     }
   });
 }
@@ -297,6 +318,7 @@ function runServer(
     .use(getDevToolsLauncher(options))
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
+    .use(cpuProfileMiddleware)
     // Temporarily disable flow check until it's more stable
     //.use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));

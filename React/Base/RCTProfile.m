@@ -18,6 +18,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
+#import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTUtils.h"
 
@@ -400,6 +401,46 @@ void _RCTProfileEndFlowEvent(NSNumber *flowID)
     @"ph": @"f",
     @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
   );
+}
+
+void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
+{
+  if (![bridge.bundleURL.scheme hasPrefix:@"http"]) {
+    RCTLogError(@"Cannot update profile information");
+    return;
+  }
+
+  NSURL *URL = [NSURL URLWithString:[@"/" stringByAppendingString:route] relativeToURL:bridge.bundleURL];
+
+  NSMutableURLRequest *URLRequest = [NSMutableURLRequest requestWithURL:URL];
+  URLRequest.HTTPMethod = @"POST";
+  [URLRequest setValue:@"application/json"
+    forHTTPHeaderField:@"Content-Type"];
+
+  NSURLSessionTask *task =
+    [[NSURLSession sharedSession] uploadTaskWithRequest:URLRequest
+                                               fromData:data
+                                    completionHandler:
+   ^(NSData *responseData, __unused NSURLResponse *response, NSError *error) {
+     if (error) {
+       RCTLogError(@"%@", error.localizedDescription);
+     } else {
+       NSString *message = [[NSString alloc] initWithData:responseData
+                                                 encoding:NSUTF8StringEncoding];
+
+       if (message.length) {
+         dispatch_async(dispatch_get_main_queue(), ^{
+           [[[UIAlertView alloc] initWithTitle:@"Profile"
+                                       message:message
+                                      delegate:nil
+                             cancelButtonTitle:@"OK"
+                             otherButtonTitles:nil] show];
+         });
+       }
+     }
+   }];
+
+  [task resume];
 }
 
 #endif
