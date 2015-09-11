@@ -67,6 +67,12 @@ var apps = [
     author: 'Facebook',
   },
   {
+    name: 'FastPaper',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/72/b4/d8/72b4d866-90d2-3aad-d1dc-0315f2d9d045/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/fast-paper/id1001174614',
+    author: 'Liubomyr Mykhalchenko (@liubko)',
+  },
+  {
     name: 'HSK Level 1 Chinese Flashcards',
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple1/v4/b2/4f/3a/b24f3ae3-2597-cc70-1040-731b425a5904/mzl.amxdcktl.jpg',
     link: 'https://itunes.apple.com/us/app/hsk-level-1-chinese-flashcards/id936639994',
