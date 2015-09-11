@@ -286,7 +286,7 @@ RCT_EXPORT_MODULE()
     }]];
   } else {
     BOOL isDebuggingInChrome = _executorClass && _executorClass == chromeExecutorClass;
-    NSString *debugTitleChrome = isDebuggingInChrome ? @"Disable Chrome Debugging" : @"Debug in Chrome";
+    NSString *debugTitleChrome = isDebuggingInChrome ? @"Stop Chrome Debugging" : @"Debug in Chrome";
     [items addObject:[[RCTDevMenuItem alloc] initWithTitle:debugTitleChrome handler:^{
       self.executorClass = isDebuggingInChrome ? Nil : chromeExecutorClass;
     }]];
@@ -294,7 +294,7 @@ RCT_EXPORT_MODULE()
 
   Class safariExecutorClass = NSClassFromString(@"RCTWebViewExecutor");
   BOOL isDebuggingInSafari = _executorClass && _executorClass == safariExecutorClass;
-  NSString *debugTitleSafari = isDebuggingInSafari ? @"Disable Safari Debugging" : @"Debug in Safari";
+  NSString *debugTitleSafari = isDebuggingInSafari ? @"Stop Safari Debugging" : @"Debug in Safari";
   [items addObject:[[RCTDevMenuItem alloc] initWithTitle:debugTitleSafari handler:^{
     self.executorClass = isDebuggingInSafari ? Nil : safariExecutorClass;
   }]];
