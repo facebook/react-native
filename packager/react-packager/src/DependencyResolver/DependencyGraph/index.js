@@ -320,7 +320,27 @@ class DependencyGraph {
           .catch(() => this._loadAsDir(potentialModulePath));
       }
 
-      throw new Error('Unable to resolve dependency');
+      // If we haven't found the file yet, attempt to find the file using an absolute
+      // import from the root of the project.
+      const searchQueue = [];
+      for (let currDir = path.dirname(fromModule.path);
+           currDir !== '/';
+           currDir = path.dirname(currDir)) {
+        searchQueue.push(
+          path.join(currDir, realModuleName)
+        );
+      }
+
+      let p = Promise.reject(new Error('Unable to resolve dependency'));
+      searchQueue.forEach(potentialModulePath => {
+        p = p.catch(
+          () => this._loadAsFile(potentialModulePath)
+        ).catch(
+          () => this._loadAsDir(potentialModulePath)
+        );
+      });
+
+      return p;
     });
   }
 
