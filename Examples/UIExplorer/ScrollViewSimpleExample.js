@@ -30,7 +30,7 @@ var ScrollViewSimpleExample = React.createClass({
     title: '<ScrollView>',
     description: 'Component that enables scrolling through child components.'
   },
-  makeItems: function(nItems, styles) {
+  makeItems: function(nItems: number, styles): Array<any> {
     var items = [];
     for (var i = 0; i < nItems; i++) {
        items[i] = (
