@@ -25,6 +25,33 @@ npm test
 
 from the react-native root, and we encourage you to add your own tests for any components you want to contribute to.  See [`getImageSource-test.js`](https://github.com/facebook/react-native/blob/master/Examples/Movies/__tests__/getImageSource-test.js) for a basic example.
 
+Note: In order to run your own tests, you will have to first follow the Getting Started instructions on the Jest page and then include the `jest` objects below in `package.json` so that the scripts are pre-processed before execution.
+
+```
+...
+"scripts": {
+  ...
+  "test": "jest"
+},
+...
+"jest": {
+  "scriptPreprocessor": "node_modules/react-native/jestSupport/scriptPreprocess.js",
+  "setupEnvScriptFile": "node_modules/react-native/jestSupport/env.js",
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "packager/react-packager/src/Activity/"
+  ],
+  "testFileExtensions": [
+    "js"
+  ],
+  "unmockedModulePathPatterns": [
+    "promise",
+    "source-map"
+  ]
+},
+...
+```
+
 Note: you may have to install/upgrade/link io.js and other parts of your environment in order for the tests to run correctly.  Check out the latest setup in [.travis.yml](https://github.com/facebook/react-native/blob/master/.travis.yml#L11-24)
 
 ## Integration Tests
