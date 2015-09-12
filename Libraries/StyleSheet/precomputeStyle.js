@@ -89,6 +89,12 @@ function _precomputeTransforms(style: Object): Object {
       case 'translateY':
         _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [0, value]);
         break;
+      case 'skewX': 
+        _multiplyTransform(result, MatrixMath.reuseSkewXCommand, [_convertToRadians(value)]);
+        break;
+      case 'skewY': 
+        _multiplyTransform(result, MatrixMath.reuseSkewYCommand, [_convertToRadians(value)]);
+        break;
       default:
         throw new Error('Invalid transform name: ' + key);
     }
@@ -170,6 +176,8 @@ function _validateTransform(key, value, transformation) {
     case 'rotateY':
     case 'rotateZ':
     case 'rotate':
+    case 'skewX':
+    case 'skewY':
       invariant(
         typeof value === 'string',
         'Transform with key of "%s" must be a string: %s',
