@@ -24,6 +24,7 @@ function transform(srcTxt, filename, options) {
     compact: true,
     comments: false,
     filename: filename,
+    highlightCode: false,
     whitelist: [
       'es6.arrowFunctions',
       'es6.blockScoping',
