@@ -69,6 +69,11 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
+- (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField
+{
+  return [textField textFieldShouldEndEditing:textField];
+}
+
 RCT_EXPORT_VIEW_PROPERTY(caretHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
 RCT_REMAP_VIEW_PROPERTY(editable, enabled, BOOL)

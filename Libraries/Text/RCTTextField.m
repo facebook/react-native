@@ -188,7 +188,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                eventCount:_nativeEventCount];
 }
 
-- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+- (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField
 {
   if (_submitted) {
     _submitted = NO;
