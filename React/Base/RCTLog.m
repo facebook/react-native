@@ -35,17 +35,16 @@ const char *RCTLogLevels[] = {
 static RCTLogFunction RCTCurrentLogFunction;
 static RCTLogLevel RCTCurrentLogThreshold;
 
-__attribute__((constructor))
-static void RCTLogSetup()
+RCTLogLevel RCTGetLogThreshold()
 {
-  RCTCurrentLogFunction = RCTDefaultLogFunction;
-
+  if (!RCTCurrentLogThreshold) {
 #if RCT_DEBUG
-  RCTCurrentLogThreshold = RCTLogLevelInfo - 1;
+    RCTCurrentLogThreshold = RCTLogLevelInfo - 1;
 #else
-  RCTCurrentLogThreshold = RCTLogLevelError;
+    RCTCurrentLogThreshold = RCTLogLevelError;
 #endif
-
+  }
+  return RCTCurrentLogThreshold;
 }
 
 RCTLogFunction RCTDefaultLogFunction = ^(
@@ -88,23 +87,26 @@ void RCTSetLogFunction(RCTLogFunction logFunction)
 
 RCTLogFunction RCTGetLogFunction()
 {
+  if (!RCTCurrentLogFunction) {
+    RCTCurrentLogFunction = RCTDefaultLogFunction;
+  }
   return RCTCurrentLogFunction;
 }
 
 void RCTAddLogFunction(RCTLogFunction logFunction)
 {
-  RCTLogFunction existing = RCTCurrentLogFunction;
+  RCTLogFunction existing = RCTGetLogFunction();
   if (existing) {
-    RCTCurrentLogFunction = ^(RCTLogLevel level,
-                              NSString *fileName,
-                              NSNumber *lineNumber,
-                              NSString *message) {
+    RCTSetLogFunction(^(RCTLogLevel level,
+                        NSString *fileName,
+                        NSNumber *lineNumber,
+                        NSString *message) {
 
       existing(level, fileName, lineNumber, message);
       logFunction(level, fileName, lineNumber, message);
-    };
+    });
   } else {
-    RCTCurrentLogFunction = logFunction;
+    RCTSetLogFunction(logFunction);
   }
 }
 
@@ -120,7 +122,7 @@ static RCTLogFunction RCTGetLocalLogFunction()
   if (logFunction) {
     return logFunction;
   }
-  return RCTCurrentLogFunction;
+  return RCTGetLogFunction();
 }
 
 void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFunction logFunction)
@@ -194,7 +196,7 @@ void _RCTLogFormat(
 {
   RCTLogFunction logFunction = RCTGetLocalLogFunction();
   BOOL log = RCT_DEBUG || (logFunction != nil);
-  if (log && level >= RCTCurrentLogThreshold) {
+  if (log && level >= RCTGetLogThreshold()) {
 
     // Get message
     va_list args;
