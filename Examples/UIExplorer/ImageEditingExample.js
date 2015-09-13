@@ -245,7 +245,7 @@ class ImageCropper extends React.Component {
   render() {
     var decelerationRate =
       RCTScrollViewConsts && RCTScrollViewConsts.DecelerationRate ?
-        RCTScrollViewConsts.DecelerationRate.Fast :
+        RCTScrollViewConsts.DecelerationRate.fast :
         0;
 
     return (
