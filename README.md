@@ -214,6 +214,30 @@ module.exports = MyCustomView;
 - `cd react-native && npm install`
 - `cd Examples`
 
-Now open any example and hit run in Xcode.
+Now open any example (the `.xcodeproj` file in each of the `Examples` subdirectories) and hit Run in Xcode.
+
+## Extending React Native
+
+- Looking for a component? [react.parts](http://react.parts/)
+- Fellow developers write and publish React Native modules to npm and open source them on GitHub.
+- Making modules helps grow the React Native ecosystem and community. We recommend writing modules for your use cases and sharing them on npm.
+- Read the guides on Native Modules ([iOS](http://facebook.github.io/react-native/docs/native-modules-ios.html), [Android](http://facebook.github.io/react-native/docs/native-modules-android.html)) and Native UI Components ([iOS](http://facebook.github.io/react-native/docs/native-components-ios.html), [Android](http://facebook.github.io/react-native/docs/native-components-android.html)) if you are interested in extending native functionality.
+
+## Opening Issues
+
+If you encounter a bug with React Native we would like to hear about it. Search the [existing issues](https://github.com/facebook/react-native/issues) and try to make sure your problem doesn’t already exist before opening a new issue. It’s helpful if you include the version of React Native and OS you’re using. Please include a stack trace and reduced repro case when appropriate, too.
+
+The GitHub issues are intended for bug reports and feature requests. For help and questions with using React Native please make use of the resources listed in the [Getting Help](#getting-help) section. There are limited resources available for handling issues and by keeping the list of open issues lean we can respond in a timely manner.
+
+## Contributing
+
+For more information about contributing, see our [Contribution Guidelines](https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md).
+
+
+## License
+
+React is [BSD licensed](./LICENSE). We also provide an additional [patent grant](./PATENTS).
+
+React documentation is [Creative Commons licensed](./LICENSE-docs).
 
 Further documentation, tutorials, and more on the [React Native website](http://facebook.github.io/react-native/docs/getting-started.html).

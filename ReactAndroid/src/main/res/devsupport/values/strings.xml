@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="catalyst_reloadjs" project="catalyst">Reload JS</string>
+  <string name="catalyst_debugjs" project="catalyst">Debug in Chrome</string>
+  <string name="catalyst_debugjs_off" project="catalyst">Stop Chrome Debugging</string>
+  <string name="catalyst_settings" project="catalyst">Dev Settings</string>
+  <string name="catalyst_settings_title" project="catalyst">Catalyst Dev Settings</string>
+  <string name="catalyst_jsload_title" project="catalyst">Please wait...</string>
+  <string name="catalyst_jsload_message" project="catalyst">Fetching JS bundle</string>
+  <string name="catalyst_jsload_error" project="catalyst">Unable to download JS bundle. Did you forget to start the development server or connect your device?</string>
+  <string name="catalyst_remotedbg_message" project="catalyst">Connecting to remote debugger</string>
+  <string name="catalyst_remotedbg_error" project="catalyst">Unable to connect with remote debugger</string>
+  <string name="catalyst_inspect_element" project="catalyst">Inspect Element</string>
+  <string name="catalyst_start_profile" project="catalyst" translatable="false">Start Profile</string>
+  <string name="catalyst_stop_profile" project="catalyst" translatable="false">Stop Profile</string>
+</resources>
