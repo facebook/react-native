@@ -1,0 +1,61 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+#include "MethodCall.h"
+
+#include <jni/fbjni.h>
+
+#include <folly/json.h>
+
+namespace facebook {
+namespace react {
+
+#define REQUEST_MODULE_IDS 0
+#define REQUEST_METHOD_IDS 1
+#define REQUEST_PARAMSS 2
+
+std::vector<MethodCall> parseMethodCalls(const std::string& json) {
+  folly::dynamic jsonData = folly::parseJson(json);
+
+  if (jsonData.isNull()) {
+    return {};
+  }
+
+  if (!jsonData.isArray()) {
+    jni::throwNewJavaException(jni::gJavaLangIllegalArgumentException,
+                               "Did not get valid calls back from JS: %s", jsonData.typeName());
+  }
+
+  if (jsonData.size() < REQUEST_PARAMSS + 1) {
+    jni::throwNewJavaException(jni::gJavaLangIllegalArgumentException,
+                               "Did not get valid calls back from JS: size == %d", jsonData.size());
+  }
+
+  auto moduleIds = jsonData[REQUEST_MODULE_IDS];
+  auto methodIds = jsonData[REQUEST_METHOD_IDS];
+  auto params = jsonData[REQUEST_PARAMSS];
+
+  if (!moduleIds.isArray() || !methodIds.isArray() || !params.isArray()) {
+    jni::throwNewJavaException(jni::gJavaLangIllegalArgumentException,
+                               "Did not get valid calls back from JS: %s",
+                               json.c_str());
+  }
+
+  std::vector<MethodCall> methodCalls;
+  for (size_t i = 0; i < moduleIds.size(); i++) {
+    auto paramsValue = params[i];
+    if (!paramsValue.isArray()) {
+      jni::throwNewJavaException(jni::gJavaLangIllegalArgumentException,
+                                 "Call argument isn't an array");
+    }
+
+    methodCalls.emplace_back(
+      moduleIds[i].getInt(),
+      methodIds[i].getInt(),
+      std::move(params[i]));
+  }
+
+  return methodCalls;
+}
+
+}}
+

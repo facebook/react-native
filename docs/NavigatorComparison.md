@@ -4,7 +4,7 @@ title: Navigator Comparison
 layout: docs
 category: Guides
 permalink: docs/navigator-comparison.html
-next: activityindicatorios
+next: known-issues
 ---
 
 The differences between [Navigator](/react-native/docs/navigator.html)

@@ -46,7 +46,7 @@ module.exports = yeoman.generators.NamedBase.extend({
 
   end: function() {
     var projectPath = path.resolve(this.destinationRoot(), 'ios', this.name);
-    this.log(chalk.white.bold('Next steps:'));
+    this.log(chalk.white.bold('To run your app on iOS:'));
     this.log(chalk.white('   Open ' + projectPath + '.xcodeproj in Xcode'));
     this.log(chalk.white('   Hit Run button'));
   }

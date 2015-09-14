@@ -4,13 +4,16 @@
 
 'use strict';
 
+var fs = require('fs');
 var spawn = require('child_process').spawn;
 var path = require('path');
-
+var generateAndroid = require('./generate-android.js');
 var init = require('./init.js');
 var install = require('./install.js');
 var bundle = require('./bundle.js');
 var newLibrary = require('./new-library.js');
+var runAndroid = require('./run-android.js');
+var runPackager = require('./run-packager.js');
 
 function printUsage() {
   console.log([
@@ -20,7 +23,8 @@ function printUsage() {
     '  start: starts the webserver',
     '  install: installs npm react components',
     '  bundle: builds the javascript bundle for offline use',
-    '  new-library: generates a native library bridge'
+    '  new-library: generates a native library bridge',
+    '  android: generates an Android project for your app'
   ].join('\n'));
   process.exit(1);
 }
@@ -41,11 +45,7 @@ function run() {
 
   switch (args[0]) {
   case 'start':
-    spawn('sh', [
-      path.resolve(__dirname, '../packager', 'packager.sh'),
-      '--projectRoots',
-      process.cwd(),
-    ], {stdio: 'inherit'});
+    runPackager();
     break;
   case 'install':
     install.init();
@@ -58,6 +58,15 @@ function run() {
     break;
   case 'init':
     printInitWarning();
+    break;
+  case 'android':
+    generateAndroid(
+      process.cwd(),
+      JSON.parse(fs.readFileSync('package.json', 'utf8')).name
+    );
+    break;
+  case 'run-android':
+    runAndroid();
     break;
   default:
     console.error('Command `%s` unrecognized', args[0]);

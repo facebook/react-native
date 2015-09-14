@@ -9,41 +9,41 @@ next: videos
 
 ## Preface
 
-This tutorial aims to get you up to speed with writing iOS apps using React Native. If you're wondering what React Native is and why Facebook built it, this [blog post](https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/) explains that.
+This tutorial aims to get you up to speed with writing iOS and Android apps using React Native. If you're wondering what React Native is and why Facebook built it, this [blog post](https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/) explains that.
 
-We assume you have experience writing websites with React. If not, you can learn about it on the [React website](http://facebook.github.io/react/).
+We assume you have experience writing applications with React. If not, you can learn about it on the [React website](http://facebook.github.io/react/).
 
 
 ## Setup
 
-React Native requires OSX, Xcode, [Homebrew](http://brew.sh/), io.js (we recommend installing this via [nvm](https://github.com/creationix/nvm) or Homebrew), npm (installed automatically with io.js), and [watchman](https://facebook.github.io/watchman/docs/install.html). [Flow](https://github.com/facebook/flow) is optional.
+React Native requires the basic setup explained at [React Native Getting Started](https://facebook.github.io/react-native/docs/getting-started.html#content).
 
 After installing these dependencies there are two simple commands to get a React Native project all set up for development.
 
 1. `npm install -g react-native-cli`
 
-    react-native-cli is a command line interface that does the rest of the set up. It’s installable via npm. This will install `react-native`as a command in your terminal. You only ever need to do this once.
+    react-native-cli is a command line interface that does the rest of the set up. It’s installable via npm. This will install `react-native` as a command in your terminal. You only ever need to do this once.
 
 2. `react-native init AwesomeProject`
 
-    This command fetches the React Native source code and dependencies and then creates a new Xcode project in `AwesomeProject/AwesomeProject.xcodeproj`.
+    This command fetches the React Native source code and dependencies and then creates a new Xcode project in `AwesomeProject/iOS/AwesomeProject.xcodeproj` and a gradle project in `AwesomeProject/android/app`.
 
 
 ## Development
 
-You can now open this new project (`AwesomeProject/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with cmd+R. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing cmd+R in the simulator rather than recompiling in Xcode.
+For iOS, you can now open this new project (`AwesomeProject/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with `⌘+R`. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing `⌘+R` in the simulator rather than recompiling in Xcode.
+
+For Android, run `react-native run-android` from `AwesomeProject` to install the generated app on your emulator or device, and start the Node server which enables live code reloading. To see your changes you have to open the rage-shake-menu (either shake the device or press the menu button on devices, press F2 or Page Up for emulator, ⌘+M for Genymotion), and then press `Reload JS`.
 
 For this tutorial we'll be building a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
 
-
 ### Hello World
 
-`react-native init` will copy `Examples/SampleProject` to whatever you named your project, in this case AwesomeProject. This is a simple hello world app. You can edit `index.ios.js` to make changes to the app and then press cmd+R in the simulator to see the changes.
-
+`react-native init` will generate an app with the name of your project, in this case AwesomeProject. This is a simple hello world app. For iOS, you can edit `index.ios.js` to make changes to the app and then press ⌘+R in the simulator to see the changes. For Android, you can edit `index.android.js` to make changes to the app and press `Reload JS` from the rage shake menu to see the changes.
 
 ### Mocking data
 
-Before we write the code to fetch actual Rotten Tomatoes data let's mock some data so we can get our hands dirty with React Native. At Facebook we typically declare constants at the top of JS files, just below the requires, but feel free to add the following constant wherever you like. In `index.ios.js`:
+Before we write the code to fetch actual Rotten Tomatoes data let's mock some data so we can get our hands dirty with React Native. At Facebook we typically declare constants at the top of JS files, just below the requires, but feel free to add the following constant wherever you like. In `index.ios.js` or `index.android.js` :
 
 ```javascript
 var MOCKED_MOVIES_DATA = [
@@ -81,7 +81,7 @@ Now change the render function so that we're rendering the data mentioned above 
   }
 ```
 
-Press cmd+R and you should see "Title" above "2015". Notice that the Image doesn't render anything. This is because we haven't specified the width and height of the image we want to render. This is done via styles. While we're changing the styles let's also clean up the styles we're no longer using.
+Press `⌘+R` / `Reload JS` and you should see "Title" above "2015". Notice that the Image doesn't render anything. This is because we haven't specified the width and height of the image we want to render. This is done via styles. While we're changing the styles let's also clean up the styles we're no longer using.
 
 ```javascript
 var styles = StyleSheet.create({
@@ -107,10 +107,11 @@ And lastly we need to apply this style to the Image component:
         />
 ```
 
-Press cmd+R and the image should now render.
+Press `⌘+R` / `Reload JS` and the image should now render.
 
 <div class="tutorial-mock">
   <img src="/react-native/img/TutorialMock.png" />
+  <img src="/react-native/img/TutorialMock2.png" />
 </div>
 
 
@@ -184,10 +185,11 @@ Styling the text is pretty straightforward:
   },
 ```
 
-Go ahead and press cmd+R and you'll see the updated view.
+Go ahead and press `⌘+R` / `Reload JS` and you'll see the updated view.
 
 <div class="tutorial-mock">
   <img src="/react-native/img/TutorialStyledMock.png" />
+  <img src="/react-native/img/TutorialStyledMock2.png" />
 </div>
 
 ### Fetching real data
@@ -275,10 +277,11 @@ Now modify the render function to render a loading view if we don't have any mov
   },
 ```
 
-Now press cmd+R and you should see "Loading movies..." until the response comes back, then it will render the first movie it fetched from Rotten Tomatoes.
+Now press `⌘+R` / `Reload JS` and you should see "Loading movies..." until the response comes back, then it will render the first movie it fetched from Rotten Tomatoes.
 
 <div class="tutorial-mock">
   <img src="/react-native/img/TutorialSingleFetched.png" />
+  <img src="/react-native/img/TutorialSingleFetched2.png" />
 </div>
 
 ## ListView
@@ -361,6 +364,7 @@ And here's the final result:
 
 <div class="tutorial-mock">
   <img src="/react-native/img/TutorialFinal.png" />
+  <img src="/react-native/img/TutorialFinal2.png" />
 </div>
 
 There's still some work to be done to make it a fully functional app such as: adding navigation, search, infinite scroll loading, etc. Check the [Movies Example](https://github.com/facebook/react-native/tree/master/Examples/Movies) to see it all working.
