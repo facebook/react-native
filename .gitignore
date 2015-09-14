@@ -25,6 +25,12 @@ project.xcworkspace
 # OS X
 .DS_Store
 
+# Android/IJ
+.idea
+.gradle
+local.properties
+*.iml
+
 # Node
 node_modules
 *.log
