@@ -21,6 +21,12 @@ DerivedData
 *.ipa
 *.xcuserstate
 
+# Android/IJ
+.idea
+.gradle
+local.properties
+*.iml
+
 # node.js
 #
 node_modules/
