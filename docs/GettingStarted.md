@@ -7,19 +7,16 @@ permalink: docs/getting-started.html
 next: android-setup
 ---
 
-## Requirements
+## iOS Setup
 
-1. OS X - Only OS X is currently supported
-2. [Homebrew](http://brew.sh/) is the recommended way to install io.js, watchman, and flow.
-3. Install [io.js](https://iojs.org/) 1.0 or newer. io.js is the modern version of Node.
+1. [Homebrew](http://brew.sh/) is the recommended way to install io.js, watchman, and flow.
+2. Install [io.js](https://iojs.org/) 1.0 or newer. io.js is the modern version of Node.
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install iojs-v2 && nvm alias default iojs-v2`, which installs the latest compatible version of io.js and sets up your terminal so that typing `node` runs io.js. With nvm you can install multiple versions of Node and io.js and easily switch between them.
   - New to [npm](https://docs.npmjs.com/)?
-4. `brew install watchman`. We recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
-5. `brew install flow`. If you want to use [flow](http://www.flowtype.org).
+3. `brew install watchman`. We recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
+4. `brew install flow`. If you want to use [flow](http://www.flowtype.org).
 
 We recommend periodically running `brew update && brew upgrade` to keep your programs up-to-date.
-
-## iOS Setup
 
 [Xcode](https://developer.apple.com/xcode/downloads/) 6.3 or higher is required. It can be installed from the App Store.
 
