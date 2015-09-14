@@ -23,6 +23,7 @@ extern NSString *const RCTJSNavigationScheme;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, assign) BOOL cacheEnabled;
 
 - (void)goForward;
 - (void)goBack;

@@ -107,6 +107,11 @@ var WebView = React.createClass({
      * user can change the scale
      */
     scalesPageToFit: PropTypes.bool,
+
+    /**
+     * Used for iOS only. Configures the ability for cache policy to be used.
+     */
+    cacheEnabled: PropTypes.bool 
   },
 
   getInitialState: function() {
@@ -168,6 +173,7 @@ var WebView = React.createClass({
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         scalesPageToFit={this.props.scalesPageToFit}
+        cacheEnabled={this.props.cacheEnabled}
       />;
 
     return (
