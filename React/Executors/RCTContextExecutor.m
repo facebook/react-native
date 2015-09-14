@@ -225,7 +225,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       }
 
       __block BOOL isProfiling = NO;
-      [bridge.devMenu addItem:@"Profile" handler:^{
+      [bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:@"Profile" handler:^{
         if (isProfiling) {
           NSString *outputFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"cpu_profile.json"];
           nativeProfilerEnd(context, "profile", outputFile.UTF8String);
@@ -238,7 +238,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
           nativeProfilerStart(context, "profile");
         }
         isProfiling = !isProfiling;
-      }];
+      }]];
     }
   }
 #endif
