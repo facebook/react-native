@@ -8,24 +8,27 @@ next: testing
 ---
 
 ## Debugging React Native Apps
-To debug the javascript code of your react app do the following:
-
- 1. Run your application in the iOS simulator.
- 2. Press ```Command + D``` and a webpage should open up at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui). (Chrome only for now)
- 3. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
- 4. Press ```Command + Option + I``` to open the Chrome Developer tools, or open it via ```View``` -> ```Developer``` -> ```Developer Tools```.
- 5. You should now be able to debug as you normally would.
+To access the in-app developer menu, shake the iOS device or press `control + ⌘ + z` in the simulator.
 
 > Hint
 >
-> To debug on a real device: Open the file ```RCTWebSocketExecutor.m``` and change ```localhost``` to the IP address of your computer. Shake the device to open the development menu with the option to start debugging. 
+> To disable the developer menu for production builds, open your project in Xcode and select `Product` → `Scheme` → `Edit Scheme...` (or press `⌘ + <`). Next, select `Run` from the menu on the left and change the Build Configuration to `Release`.
 
-### Optional
-Install the [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) extension for Google Chrome. This will allow you to navigate the view hierarchy if you select the ```React``` tab when the developer tools are open.
+### Reload
+Selecting `Reload` or pressing `⌘ + r` in the simulator will reload the JavaScript that powers your application. If you have added new resources (such as an image to `Images.xcassets`) or modified any Objective-C/Swift code, you will need to re-build from Xcode for the changes to take effect (you can do this with `⌘ + r` in Xcode).
 
-## Live Reload
-To activate Live Reload do the following:
+### Chrome Developer Tools
+To debug the JavaScript code in Chrome, select `Debug in Chrome` from the developer menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
 
-1. Run your application in the iOS simulator.
-2. Press ```Control + Command + Z```.
-3. You will now see the `Enable/Disable Live Reload`, `Reload` and `Enable/Disable Debugging` options.
+Press `⌘ + option + i` or select `View` → `Developer` → `Developer Tools` to toggle the developer tools console. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
+
+To debug on a real device: Open the file `RCTWebSocketExecutor.m` and change `localhost` to the IP address of your computer. Shake the device to open the development menu with the option to start debugging.
+
+#### React Developer Tools (optional)
+Install the [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) extension for Google Chrome. This will allow you to navigate the component hierarchy via the `React` in the developer tools (see [facebook/react-devtools](https://github.com/facebook/react-devtools) for more information).
+
+### Live Reload
+Select `Enable Live Reload` via the developer menu to have the application automatically reload when changes are made to the JavaScript.
+
+### FPS (Frames per Second) Monitor
+On `0.5.0-rc` and higher versions, you can enable a FPS graph overlay in the developers menu in order to help you debug performance problems.

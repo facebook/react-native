@@ -17,7 +17,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var Dummy = React.createClass({
+var DummySegmentedControlIOS = React.createClass({
   render: function() {
     return (
       <View style={[styles.dummy, this.props.style]}>
@@ -46,4 +46,4 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = Dummy;
+module.exports = DummySegmentedControlIOS;

@@ -25,7 +25,7 @@ static NSString *RCTCurrentAppBackgroundState()
     };
   });
 
-  return states[@([[UIApplication sharedApplication] applicationState])] ?: @"unknown";
+  return states[@([UIApplication sharedApplication].applicationState)] ?: @"unknown";
 }
 
 @implementation RCTAppState
@@ -48,16 +48,25 @@ RCT_EXPORT_MODULE()
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
                              UIApplicationDidFinishLaunchingNotification]) {
-
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(handleAppStateDidChange)
                                                    name:name
                                                  object:nil];
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMemoryWarning)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
   }
   return self;
 }
 
+- (void)handleMemoryWarning
+{
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"memoryWarning"
+                                              body:nil];
+}
 
 - (void)dealloc
 {
@@ -85,6 +94,15 @@ RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
                   error:(__unused RCTResponseSenderBlock)error)
 {
   callback(@[@{@"app_state": _lastKnownState}]);
+}
+
+#pragma mark - RCTBridgeModule
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+     @"initialAppState" : RCTCurrentAppBackgroundState()
+   };
 }
 
 @end

@@ -11,27 +11,42 @@
  */
 'use strict';
 
-var ReactIOSStyleAttributes = require('ReactIOSStyleAttributes');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var View = require('View');
 
+export type ComponentInterface = ReactClass<any, any, any> | {
+  name?: string;
+  displayName?: string;
+  propTypes: Object;
+};
+
 function verifyPropTypes(
-  component: Function,
+  componentInterface: ComponentInterface,
   viewConfig: Object,
-  nativePropsToIgnore?: Object
+  nativePropsToIgnore?: ?Object
 ) {
   if (!viewConfig) {
     return; // This happens for UnimplementedView.
   }
-  var nativeProps = viewConfig.nativeProps;
+  var componentName = componentInterface.name ||
+    componentInterface.displayName ||
+    'unknown';
+  if (!componentInterface.propTypes) {
+    throw new Error(
+      '`' + componentName + '` has no propTypes defined`'
+    );
+  }
+
+  var nativeProps = viewConfig.NativeProps;
   for (var prop in nativeProps) {
-    if (!component.propTypes[prop] &&
+    if (!componentInterface.propTypes[prop] &&
         !View.propTypes[prop] &&
-        !ReactIOSStyleAttributes[prop] &&
+        !ReactNativeStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       throw new Error(
-        '`' + component.displayName + '` has no propType for native prop `' +
+        '`' + componentName + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
-        nativeProps[prop].type + '`'
+        nativeProps[prop] + '`'
       );
     }
   }

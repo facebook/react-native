@@ -69,7 +69,10 @@ function execute() {
       try { value = JSON.parse(value); } catch(e) { }
       metadata[key] = value;
     }
-    metadatas.files.push(metadata);
+
+    if (metadata.sidebar !== false) {
+      metadatas.files.push(metadata);
+    }
 
     if (metadata.permalink.match(/^https?:/)) {
       return;

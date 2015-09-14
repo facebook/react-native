@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var EventEmitter = require('EventEmitter');
+import type EventEmitter from 'EventEmitter';
 
 /**
  * Subscribable provides a mixin for safely subscribing a component to an

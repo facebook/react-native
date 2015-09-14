@@ -13,7 +13,6 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
-#import "RCTWrapperViewController.h"
 
 @implementation UIView (React)
 
@@ -24,7 +23,7 @@
 
 - (void)setReactTag:(NSNumber *)reactTag
 {
-  objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
+  objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (BOOL)isReactRootView
@@ -83,23 +82,31 @@
   self.layer.bounds = bounds;
 }
 
-- (UIViewController *)backingViewController
+- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+{
+  self.backgroundColor = inheritedBackgroundColor;
+}
+
+- (UIViewController *)reactViewController
 {
   id responder = [self nextResponder];
-  if ([responder isKindOfClass:[RCTWrapperViewController class]]) {
-    return responder;
+  while (responder) {
+    if ([responder isKindOfClass:[UIViewController class]]) {
+      return responder;
+    }
+    responder = [responder nextResponder];
   }
   return nil;
 }
 
-- (void)addControllerToClosestParent:(UIViewController *)controller
+- (void)reactAddControllerToClosestParent:(UIViewController *)controller
 {
   if (!controller.parentViewController) {
     UIView *parentView = (UIView *)self.reactSuperview;
     while (parentView) {
-      if (parentView.backingViewController) {
-        [parentView.backingViewController addChildViewController:controller];
-        [controller didMoveToParentViewController:parentView.backingViewController];
+      if (parentView.reactViewController) {
+        [parentView.reactViewController addChildViewController:controller];
+        [controller didMoveToParentViewController:parentView.reactViewController];
         break;
       }
       parentView = (UIView *)parentView.reactSuperview;
@@ -113,7 +120,7 @@
  */
 - (void)reactWillMakeFirstResponder {};
 - (void)reactDidMakeFirstResponder {};
-- (BOOL)reactRespondsToTouch:(UITouch *)touch
+- (BOOL)reactRespondsToTouch:(__unused UITouch *)touch
 {
   return YES;
 }

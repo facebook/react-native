@@ -14,6 +14,29 @@
 #import "RCTInvalidating.h"
 #import "RCTViewManager.h"
 
+/**
+ * Posted right before re-render happens. This is a chance for views to invalidate their state so
+ * next render cycle will pick up updated views and layout appropriately.
+ */
+RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
+
+/**
+ * Posted whenever a new root view is registered with RCTUIManager. The userInfo property
+ * will contain a RCTUIManagerRootViewKey with the registered root view.
+ */
+RCT_EXTERN NSString *const RCTUIManagerDidRegisterRootViewNotification;
+
+/**
+ * Posted whenever a root view is removed from the RCTUIManager. The userInfo property
+ * will contain a RCTUIManagerRootViewKey with the removed root view.
+ */
+RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
+
+/**
+ * Key for the root view property in the above notifications
+ */
+RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
+
 @protocol RCTScrollableProtocol;
 
 /**
@@ -21,6 +44,11 @@
  */
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
+/**
+ * The UIIManager has the concept of a designated "main scroll view", which is
+ * useful for apps built around a central scrolling content area (e.g. a
+ * timeline).
+ */
 @property (nonatomic, weak) id<RCTScrollableProtocol> mainScrollView;
 
 /**
@@ -35,10 +63,21 @@
 - (void)registerRootView:(UIView *)rootView;
 
 /**
- * Update the frame of a root view. This might be in response to a screen rotation
- * or some other layout event outsde of the React-managed view hierarchy.
+ * Gets the view associated with a reactTag.
  */
-- (void)setFrame:(CGRect)frame forRootView:(UIView *)rootView;
+- (UIView *)viewForReactTag:(NSNumber *)reactTag;
+
+/**
+ * Update the frame of a view. This might be in response to a screen rotation
+ * or some other layout event outside of the React-managed view hierarchy.
+ */
+- (void)setFrame:(CGRect)frame forView:(UIView *)view;
+
+/**
+ * Update the background color of a root view. This is usually triggered by
+ * manually setting the background color of the root view with native code.
+ */
+- (void)setBackgroundColor:(UIColor *)color forRootView:(UIView *)rootView;
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute

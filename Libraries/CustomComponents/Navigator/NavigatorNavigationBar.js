@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -32,6 +32,8 @@ var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
+var { Map } = require('immutable');
+
 var COMPONENT_NAMES = ['Title', 'LeftButton', 'RightButton'];
 
 var navStatePresentedIndex = function(navState) {
@@ -53,7 +55,6 @@ var NavigatorNavigationBar = React.createClass({
     }),
     navState: React.PropTypes.shape({
       routeStack: React.PropTypes.arrayOf(React.PropTypes.object),
-      idStack: React.PropTypes.arrayOf(React.PropTypes.number),
       presentedIndex: React.PropTypes.number,
     }),
     style: View.propTypes.style,
@@ -61,6 +62,16 @@ var NavigatorNavigationBar = React.createClass({
 
   statics: {
     Styles: NavigatorNavigationBarStyles,
+  },
+
+  componentWillMount: function() {
+    this._components = {};
+    this._descriptors = {};
+
+    COMPONENT_NAMES.forEach(componentName => {
+      this._components[componentName] = new Map();
+      this._descriptors[componentName] = new Map();
+    });
   },
 
   _getReusableProps: function(
@@ -104,7 +115,7 @@ var NavigatorNavigationBar = React.createClass({
     }
 
     COMPONENT_NAMES.forEach(function (componentName) {
-      var component = this.refs[componentName + index];
+      var component = this._components[componentName].get(this.props.navState.routeStack[index]);
       var props = this._getReusableProps(componentName, index);
       if (component && interpolate[componentName](props.style, amount)) {
         component.setNativeProps(props);
@@ -128,7 +139,7 @@ var NavigatorNavigationBar = React.createClass({
     var navState = this.props.navState;
     var components = COMPONENT_NAMES.map(function (componentName) {
       return navState.routeStack.map(
-        this._renderOrReturnComponent.bind(this, componentName)
+        this._getComponent.bind(this, componentName)
       );
     }, this);
 
@@ -139,28 +150,19 @@ var NavigatorNavigationBar = React.createClass({
     );
   },
 
-  _renderOrReturnComponent: function(
+  _getComponent: function(
     /*string*/componentName,
     /*object*/route,
     /*number*/index
-  ) /*object*/ {
-    var navState = this.props.navState;
-    var uid = navState.idStack[index];
-    var containerRef = componentName + 'Container' + uid;
-    var alreadyRendered = this.refs[containerRef];
-    if (alreadyRendered) {
-      // Don't bother re-calculating the children
-      return (
-        <StaticContainer
-          ref={containerRef}
-          key={containerRef}
-          shouldUpdate={false}
-        />
-      );
+  ) /*?Object*/ {
+    if (this._descriptors[componentName].includes(route)) {
+      return this._descriptors[componentName].get(route);
     }
 
+    var rendered = null;
+
     var content = this.props.routeMapper[componentName](
-      navState.routeStack[index],
+      this.props.navState.routeStack[index],
       this.props.navigator,
       index,
       this.props.navState
@@ -171,16 +173,18 @@ var NavigatorNavigationBar = React.createClass({
 
     var initialStage = index === navStatePresentedIndex(this.props.navState) ?
       NavigatorNavigationBarStyles.Stages.Center : NavigatorNavigationBarStyles.Stages.Left;
-    return (
-      <StaticContainer
-        ref={containerRef}
-        key={containerRef}
-        shouldUpdate={false}>
-        <View ref={componentName + index} style={initialStage[componentName]}>
-          {content}
-        </View>
-      </StaticContainer>
+    rendered = (
+      <View
+        ref={(ref) => {
+          this._components[componentName] = this._components[componentName].set(route, ref);
+        }}
+        style={initialStage[componentName]}>
+        {content}
+      </View>
     );
+
+    this._descriptors[componentName] = this._descriptors[componentName].set(route, rendered);
+    return rendered;
   },
 
 });

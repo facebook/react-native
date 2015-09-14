@@ -9,16 +9,20 @@
 
 #import "RCTView.h"
 
-@class RCTEventDispatcher;
+/**
+ * Special scheme used to pass messages to the injectedJavaScript
+ * code without triggering a page load. Usage:
+ *
+ *   window.location.href = RCTJSNavigationScheme + '://hello'
+ */
+extern NSString *const RCTJSNavigationScheme;
 
 @interface RCTWebView : RCTView
 
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
-@property (nonatomic, assign) BOOL shouldInjectAJAXHandler;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
-
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, copy) NSString *injectedJavaScript;
 
 - (void)goForward;
 - (void)goBack;

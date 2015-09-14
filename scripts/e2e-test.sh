@@ -15,7 +15,7 @@ export REACT_PACKAGER_LOG="$TEMP/server.log"
 # To make sure we actually installed the local version
 # of react-native, we will create a temp file inside SampleApp
 # and check that it exists after `react-native init`
-MARKER=$(mktemp $ROOT/Examples/SampleApp/XXXXXXXX)
+MARKER=$(mktemp $ROOT/local-cli/generator-ios/templates/main/XXXXXXXX)
 
 function cleanup {
   EXIT_CODE=$?
@@ -31,6 +31,7 @@ function cleanup {
 
   rm $MARKER
   [ $SINOPIA_PID ] && kill -9 $SINOPIA_PID
+  [ $SERVER_PID ] && kill -9 $SERVER_PID
   [ -f ~/.npmrc.bak ] && mv ~/.npmrc.bak ~/.npmrc
 }
 trap cleanup EXIT
@@ -60,11 +61,13 @@ npm publish $ROOT/react-native-cli
 
 npm install -g react-native-cli
 react-native init EndToEndTest
-cd EndToEndTest
+cd EndToEndTest/ios
 
 # Make sure we installed local version of react-native
 ls `basename $MARKER` > /dev/null
 
-flow
+flow --retries 10
 
+node ../node_modules/react-native/packager/packager.js --nonPersistent &
+SERVER_PID=$!
 xctool -scheme EndToEndTest -sdk iphonesimulator test

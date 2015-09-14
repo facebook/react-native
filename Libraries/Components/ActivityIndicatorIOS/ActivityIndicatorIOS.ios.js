@@ -12,14 +12,12 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
-var verifyPropTypes = require('verifyPropTypes');
 
 var GRAY = '#999999';
 
@@ -53,6 +51,12 @@ var ActivityIndicatorIOS = React.createClass({
       'small',
       'large',
     ]),
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     */
+    onLayout: PropTypes.func,
   },
 
   getDefaultProps: function(): DefaultProps {
@@ -65,10 +69,12 @@ var ActivityIndicatorIOS = React.createClass({
   },
 
   render: function() {
-    var {style, ...props} = this.props;
+    var {onLayout, style, ...props} = this.props;
     var sizeStyle = (this.props.size === 'large') ? styles.sizeLarge : styles.sizeSmall;
     return (
-      <View style={[styles.container, sizeStyle, style]}>
+      <View
+        onLayout={onLayout}
+        style={[styles.container, sizeStyle, style]}>
         <RCTActivityIndicatorView {...props} />
       </View>
     );
@@ -81,24 +87,19 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sizeSmall: {
+    width: 20,
     height: 20,
   },
   sizeLarge: {
+    width: 36,
     height: 36,
   }
 });
 
 var RCTActivityIndicatorView = requireNativeComponent(
   'RCTActivityIndicatorView',
-  null
+  ActivityIndicatorIOS,
+  {nativeOnly: {activityIndicatorViewStyle: true}},
 );
-if (__DEV__) {
-  var nativeOnlyProps = {activityIndicatorViewStyle: true};
-  verifyPropTypes(
-    ActivityIndicatorIOS,
-    RCTActivityIndicatorView.viewConfig,
-    nativeOnlyProps
-  );
-}
 
 module.exports = ActivityIndicatorIOS;

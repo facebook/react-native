@@ -10,6 +10,14 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTConvert.h"
+
+@interface RCTConvert (UIStatusBar)
+
++ (UIStatusBarStyle)UIStatusBarStyle:(id)json;
++ (UIStatusBarAnimation)UIStatusBarAnimation:(id)json;
+
+@end
 
 @interface RCTStatusBarManager : NSObject <RCTBridgeModule>
 

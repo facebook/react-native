@@ -94,7 +94,7 @@ var TouchDemo = React.createClass({
 
           <h2>Flexbox and Styling</h2>
           <p>
-            Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web syles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
+            Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web styles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
           </p>
           <Prism>
 {`var React = require('react-native');
@@ -176,7 +176,7 @@ RCT_EXPORT_MODULE();
 // Available as NativeModules.MyCustomModule.processString
 RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
 {
-  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"];]]);
+  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"]]);
 }
 @end`}
           </Prism>
@@ -187,19 +187,19 @@ var React = require('react-native');
 var { NativeModules, Text } = React;
 
 var Message = React.createClass({
+  getInitialState() {
+    return { text: 'Goodbye World.' };
+  },
+  componentDidMount() {
+    NativeModules.MyCustomModule.processString(this.state.text, (text) => {
+      this.setState({text});
+    });
+  },
   render: function() {
-    getInitialState() {
-      return { text: 'Goodbye World.' };
-    },
-    componentDidMount() {
-      NativeModules.MyCustomModule.processString(this.state.text, (text) => {
-        this.setState({text});
-      });
-    },
     return (
       <Text>{this.state.text}</Text>
     );
-  },
+  }
 });`}
           </Prism>
           <p>
@@ -215,12 +215,14 @@ var Message = React.createClass({
 
 @implementation MyCustomViewManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
   return [[MyCustomView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty);
+RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 @end`}
           </Prism>
           <Prism>

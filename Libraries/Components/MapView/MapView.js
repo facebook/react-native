@@ -15,10 +15,10 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
@@ -34,6 +34,34 @@ type MapRegion = {
 
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
+
+  checkAnnotationIds: function (annotations: Array<Object>) {
+
+    var newAnnotations = annotations.map(function (annotation) {
+      if (!annotation.id) {
+        // TODO: add a base64 (or similar) encoder here
+        annotation.id = encodeURIComponent(JSON.stringify(annotation));
+      }
+
+      return annotation;
+    });
+
+    this.setState({
+      annotations: newAnnotations
+    });
+  },
+
+  componentWillMount: function() {
+    if (this.props.annotations) {
+      this.checkAnnotationIds(this.props.annotations);
+    }
+  },
+
+  componentWillReceiveProps: function(nextProps: Object) {
+    if (nextProps.annotations) {
+      this.checkAnnotationIds(nextProps.annotations);
+    }
+  },
 
   propTypes: {
     /**
@@ -83,6 +111,19 @@ var MapView = React.createClass({
     scrollEnabled: React.PropTypes.bool,
 
     /**
+     * The map type to be displayed.
+     *
+     * - standard: standard road map (default)
+     * - satellite: satellite view
+     * - hybrid: satellite view with roads and points of interest overlayed
+     */
+    mapType: React.PropTypes.oneOf([
+      'standard',
+      'satellite',
+      'hybrid',
+    ]),
+
+    /**
      * The region to be displayed by the map.
      *
      * The region is defined by the center coordinates and the span of
@@ -114,10 +155,33 @@ var MapView = React.createClass({
       longitude: React.PropTypes.number.isRequired,
 
       /**
+       * Whether the pin drop should be animated or not
+       */
+      animateDrop: React.PropTypes.bool,
+
+      /**
        * Annotation title/subtile.
        */
       title: React.PropTypes.string,
       subtitle: React.PropTypes.string,
+
+      /**
+       * Whether the Annotation has callout buttons.
+       */
+      hasLeftCallout: React.PropTypes.bool,
+      hasRightCallout: React.PropTypes.bool,
+
+      /**
+       * Event handlers for callout buttons.
+       */
+      onLeftCalloutPress: React.PropTypes.func,
+      onRightCalloutPress: React.PropTypes.func,
+
+      /**
+       * annotation id
+       */
+      id: React.PropTypes.string
+
     })),
 
     /**
@@ -145,6 +209,11 @@ var MapView = React.createClass({
      * Callback that is called once, when the user is done moving the map.
      */
     onRegionChangeComplete: React.PropTypes.func,
+
+    /**
+     * Callback that is called once, when the user is clicked on a annotation.
+     */
+    onAnnotationPress: React.PropTypes.func,
   },
 
   _onChange: function(event: Event) {
@@ -157,15 +226,42 @@ var MapView = React.createClass({
     }
   },
 
+  _onPress: function(event: Event) {
+    if (event.nativeEvent.action === 'annotation-click') {
+      this.props.onAnnotationPress && this.props.onAnnotationPress(event.nativeEvent.annotation);
+    }
+
+    if (event.nativeEvent.action === 'callout-click') {
+      if (!this.props.annotations) {
+        return;
+      }
+
+      // Find the annotation with the id of what has been pressed
+      for (var i = 0; i < this.props.annotations.length; i++) {
+        var annotation = this.props.annotations[i];
+        if (annotation.id === event.nativeEvent.annotationId) {
+          // Pass the right function
+          if (event.nativeEvent.side === 'left') {
+            annotation.onLeftCalloutPress && annotation.onLeftCalloutPress(event.nativeEvent);
+          } else if (event.nativeEvent.side === 'right') {
+            annotation.onRightCalloutPress && annotation.onRightCalloutPress(event.nativeEvent);
+          }
+        }
+      }
+
+    }
+  },
+
   render: function() {
-    return <RCTMap {...this.props} onChange={this._onChange} />;
+    return <RCTMap {...this.props} onPress={this._onPress} onChange={this._onChange} />;
   },
 });
 
 if (Platform.OS === 'android') {
-  var RCTMap = createReactIOSNativeComponentClass({
+  var RCTMap = createReactNativeComponentClass({
     validAttributes: merge(
-      ReactIOSViewAttributes.UIView, {
+      ReactNativeViewAttributes.UIView, {
+        active: true,
         showsUserLocation: true,
         zoomEnabled: true,
         rotateEnabled: true,
@@ -181,7 +277,9 @@ if (Platform.OS === 'android') {
     uiViewClassName: 'RCTMap',
   });
 } else {
-  var RCTMap = requireNativeComponent('RCTMap', MapView);
+  var RCTMap = requireNativeComponent('RCTMap', MapView, {
+    nativeOnly: {onChange: true, onPress: true}
+  });
 }
 
 module.exports = MapView;

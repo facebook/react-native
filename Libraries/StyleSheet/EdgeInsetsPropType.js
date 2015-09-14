@@ -9,12 +9,11 @@
  * @providesModule EdgeInsetsPropType
  * @flow
  */
-'use strict'
+'use strict';
 
 var PropTypes = require('ReactPropTypes');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var insetsDiffer = require('insetsDiffer');
 
 var EdgeInsetsPropType = createStrictShapeTypeChecker({
   top: PropTypes.number,

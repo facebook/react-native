@@ -18,24 +18,6 @@
 #import "RCTWrapperViewController.h"
 #import "UIView+React.h"
 
-@interface RKCustomTabBarController : UITabBarController <RCTViewControllerProtocol>
-
-@end
-
-@implementation RKCustomTabBarController
-
-@synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
-@synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
-
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  _currentTopLayoutGuide = self.topLayoutGuide;
-  _currentBottomLayoutGuide = self.bottomLayoutGuide;
-}
-
-@end
-
 @interface RCTTabBar() <UITabBarControllerDelegate>
 
 @end
@@ -43,24 +25,24 @@
 @implementation RCTTabBar
 {
   BOOL _tabsChanged;
-  RCTEventDispatcher *_eventDispatcher;
   UITabBarController *_tabController;
   NSMutableArray *_tabViews;
 }
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:CGRectZero])) {
-    _eventDispatcher = eventDispatcher;
-    _tabViews = [[NSMutableArray alloc] init];
-    _tabController = [[RKCustomTabBarController alloc] init];
+  if ((self = [super initWithFrame:frame])) {
+    _tabViews = [NSMutableArray new];
+    _tabController = [UITabBarController new];
     _tabController.delegate = self;
     [self addSubview:_tabController.view];
   }
   return self;
 }
 
-- (UIViewController *)backingViewController
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (UIViewController *)reactViewController
 {
   return _tabController;
 }
@@ -105,16 +87,15 @@
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here whenever a transaction has finished
-  [self addControllerToClosestParent:_tabController];
+  [self reactAddControllerToClosestParent:_tabController];
 
   if (_tabsChanged) {
 
     NSMutableArray *viewControllers = [NSMutableArray array];
     for (RCTTabBarItem *tab in [self reactSubviews]) {
-      UIViewController *controller = tab.backingViewController;
+      UIViewController *controller = tab.reactViewController;
       if (!controller) {
-        controller = [[RCTWrapperViewController alloc] initWithContentView:tab
-                                                           eventDispatcher:_eventDispatcher];
+        controller = [[RCTWrapperViewController alloc] initWithContentView:tab];
       }
       [viewControllers addObject:controller];
     }
@@ -123,7 +104,8 @@
     _tabsChanged = NO;
   }
 
-  [[self reactSubviews] enumerateObjectsUsingBlock:^(RCTTabBarItem *tab, NSUInteger index, BOOL *stop) {
+  [[self reactSubviews] enumerateObjectsUsingBlock:
+   ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
     UIViewController *controller = _tabController.viewControllers[index];
     controller.tabBarItem = tab.barItem;
     if (tab.selected) {
@@ -132,13 +114,41 @@
   }];
 }
 
+- (UIColor *)barTintColor
+{
+  return _tabController.tabBar.barTintColor;
+}
+
+- (void)setBarTintColor:(UIColor *)barTintColor
+{
+  _tabController.tabBar.barTintColor = barTintColor;
+}
+
+- (UIColor *)tintColor
+{
+  return _tabController.tabBar.tintColor;
+}
+
+- (void)setTintColor:(UIColor *)tintColor
+{
+  _tabController.tabBar.tintColor = tintColor;
+}
+
+- (BOOL)translucent {
+  return _tabController.tabBar.isTranslucent;
+}
+
+- (void)setTranslucent:(BOOL)translucent {
+  _tabController.tabBar.translucent = translucent;
+}
+
 #pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
   RCTTabBarItem *tab = [self reactSubviews][index];
-  [_eventDispatcher sendInputEventWithName:@"topTap" body:@{@"target": tab.reactTag}];
+  if (tab.onPress) tab.onPress(nil);
   return NO;
 }
 

@@ -23,7 +23,10 @@
 /* globals GLOBAL: true, window: true */
 
 // Just to make sure the JS gets packaged up.
+require('RCTDebugComponentOwnership');
 require('RCTDeviceEventEmitter');
+require('PerformanceLogger');
+require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;
@@ -33,50 +36,34 @@ if (typeof window === 'undefined') {
   window = GLOBAL;
 }
 
-/**
- * The document must be shimmed before anything else that might define the
- * `ExecutionEnvironment` module (which checks for `document.createElement`).
- */
-function setupDocumentShim() {
-  // The browser defines Text and Image globals by default. If you forget to
-  // require them, then the error message is very confusing.
-  function getInvalidGlobalUseError(name) {
-    return new Error(
-      'You are trying to render the global ' + name + ' variable as a ' +
-      'React element. You probably forgot to require ' + name + '.'
-    );
-  }
-  GLOBAL.Text = {
-    get defaultProps() {
-      throw getInvalidGlobalUseError('Text');
-    }
-  };
-  GLOBAL.Image = {
-    get defaultProps() {
-      throw getInvalidGlobalUseError('Image');
-    }
-  };
-  // Force `ExecutionEnvironment.canUseDOM` to be false.
-  if (GLOBAL.document) {
-    GLOBAL.document.createElement = null;
-  }
-
-  // There is no DOM so MutationObserver doesn't make sense. It is used
-  // as feature detection in Bluebird Promise implementation
-  GLOBAL.MutationObserver = undefined;
-}
-
-function handleErrorWithRedBox(e) {
+function handleError(e, isFatal) {
   try {
-    require('ExceptionsManager').handleException(e);
+    require('ExceptionsManager').handleException(e, isFatal);
   } catch(ee) {
     console.log('Failed to print error: ', ee.message);
   }
 }
 
-function setupRedBoxErrorHandler() {
+function setUpRedBoxErrorHandler() {
   var ErrorUtils = require('ErrorUtils');
-  ErrorUtils.setGlobalHandler(handleErrorWithRedBox);
+  ErrorUtils.setGlobalHandler(handleError);
+}
+
+function setUpRedBoxConsoleErrorHandler() {
+  // ExceptionsManager transitively requires Promise so we install it after
+  var ExceptionsManager = require('ExceptionsManager');
+  var Platform = require('Platform');
+  // TODO (#6925182): Enable console.error redbox on Android
+  if (__DEV__ && Platform.OS === 'ios') {
+    ExceptionsManager.installConsoleErrorReporter();
+  }
+}
+
+function setupFlowChecker() {
+  if (__DEV__) {
+    var checkFlowAtRuntime = require('checkFlowAtRuntime');
+    checkFlowAtRuntime();
+  }
 }
 
 /**
@@ -86,7 +73,7 @@ function setupRedBoxErrorHandler() {
  * implement our own custom timing bridge that should be immune to
  * unexplainably dropped timing signals.
  */
-function setupTimers() {
+function setUpTimers() {
   var JSTimers = require('JSTimers');
   GLOBAL.setTimeout = JSTimers.setTimeout;
   GLOBAL.setInterval = JSTimers.setInterval;
@@ -101,42 +88,70 @@ function setupTimers() {
   };
 }
 
-function setupAlert() {
+function setUpAlert() {
   var RCTAlertManager = require('NativeModules').AlertManager;
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
       var alertOpts = {
         title: 'Alert',
         message: '' + text,
-        buttons: [{'cancel': 'Okay'}],
+        buttons: [{'cancel': 'OK'}],
       };
-      RCTAlertManager.alertWithArgs(alertOpts, null);
+      RCTAlertManager.alertWithArgs(alertOpts, function () {});
     };
   }
 }
 
-function setupPromise() {
+function setUpPromise() {
   // The native Promise implementation throws the following error:
   // ERROR: Event loop not supported.
   GLOBAL.Promise = require('Promise');
 }
 
-function setupXHR() {
+function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
   GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
-  GLOBAL.fetch = require('fetch');
+  GLOBAL.FormData = require('FormData');
+
+  var fetchPolyfill = require('fetch');
+  GLOBAL.fetch = fetchPolyfill.fetch;
+  GLOBAL.Headers = fetchPolyfill.Headers;
+  GLOBAL.Request = fetchPolyfill.Request;
+  GLOBAL.Response = fetchPolyfill.Response;
 }
 
-function setupGeolocation() {
+function setUpGeolocation() {
   GLOBAL.navigator = GLOBAL.navigator || {};
   GLOBAL.navigator.geolocation = require('Geolocation');
 }
 
-setupDocumentShim();
-setupRedBoxErrorHandler();
-setupTimers();
-setupAlert();
-setupPromise();
-setupXHR();
-setupGeolocation();
+function setUpWebSockets() {
+  GLOBAL.WebSocket = require('WebSocket');
+}
+
+function setupProfile() {
+  console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
+  console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
+  require('BridgeProfiling').swizzleReactPerf();
+}
+
+function setUpProcessEnv() {
+  GLOBAL.process = GLOBAL.process || {};
+  GLOBAL.process.env = GLOBAL.process.env || {};
+  if (!GLOBAL.process.env.NODE_ENV) {
+    GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
+  }
+}
+
+setUpRedBoxErrorHandler();
+setUpTimers();
+setUpAlert();
+setUpPromise();
+setUpXHR();
+setUpRedBoxConsoleErrorHandler();
+setUpGeolocation();
+setUpWebSockets();
+setupProfile();
+setUpProcessEnv();
+setupFlowChecker();

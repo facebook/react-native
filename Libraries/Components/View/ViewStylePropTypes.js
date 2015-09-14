@@ -13,12 +13,15 @@
 
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
+var TransformPropTypes = require('TransformPropTypes');
 
 /**
  * Warning: Some of these properties may not be supported in all releases.
  */
 var ViewStylePropTypes = {
   ...LayoutPropTypes,
+  ...TransformPropTypes,
+  backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
   backgroundColor: ReactPropTypes.string,
   borderColor: ReactPropTypes.string,
   borderTopColor: ReactPropTypes.string,
@@ -26,23 +29,19 @@ var ViewStylePropTypes = {
   borderBottomColor: ReactPropTypes.string,
   borderLeftColor: ReactPropTypes.string,
   borderRadius: ReactPropTypes.number,
+  borderTopLeftRadius: ReactPropTypes.number,
+  borderTopRightRadius: ReactPropTypes.number,
+  borderBottomLeftRadius: ReactPropTypes.number,
+  borderBottomRightRadius: ReactPropTypes.number,
+  borderStyle: ReactPropTypes.oneOf(['solid', 'dotted', 'dashed']),
   opacity: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
   shadowColor: ReactPropTypes.string,
   shadowOffset: ReactPropTypes.shape(
-    {h: ReactPropTypes.number, w: ReactPropTypes.number}
+    {width: ReactPropTypes.number, height: ReactPropTypes.number}
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
-  transform: ReactPropTypes.arrayOf(ReactPropTypes.object),
-  transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
-
-  // DEPRECATED
-  rotation: ReactPropTypes.number,
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
 };
 
 module.exports = ViewStylePropTypes;

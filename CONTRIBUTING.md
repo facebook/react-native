@@ -19,11 +19,12 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 1. Fork the repo and create your branch from `master`.
 2. If you've added code that should be tested, add tests!
 3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Make sure your code lints - we've done our best to make sure these rules match our internal linting guidelines.
-6. If you haven't already, complete the CLA.
+4. Ensure tests pass on Travis.
+5. Make sure your code lints (`node linter.js <files touched>`).
+6. Squash your commits (`git rebase -i`).
+7. If you haven't already, complete the CLA.
 
-### Contributor License Agreement ("CLA")
+### Contributor License Agreement (CLA)
 
 In order to accept your pull request, we need you to submit a CLA. You only need to do this once, so if you've done this for another Facebook open source project, you're good to go. If you are submitting a pull request for the first time, just let us know that you have completed the CLA and we can cross-check with your GitHub username.
 
@@ -33,11 +34,11 @@ In order to accept your pull request, we need you to submit a CLA. You only need
 
 ### Where to Find Known Issues
 
-We will be using GitHub Issues for our public bugs. We will keep a close eye on this and try to make it clear when we have an internal fix in progress. Before filing a new task, try to make sure your problem doesn't already exist.
+We are using GitHub Issues for our public bugs. We keep a close eye on this and try to make it clear when we have an internal fix in progress. Before filing a new task, try to make sure your problem doesn't already exist.
 
 ### Reporting New Issues
 
-The best way to get your bug fixed is to provide a reduced test case.
+The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [React Native Playground](https://rnplay.org/) snippet.
 
 ### Security Bugs
 

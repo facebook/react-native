@@ -19,6 +19,8 @@ var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var setImmediate = require('setImmediate');
 
+type Handle = number;
+
 var _emitter = new EventEmitter();
 var _interactionSet = new Set();
 var _addInteractionSet = new Set();
@@ -83,7 +85,7 @@ var InteractionManager = {
   /**
    * Notify manager that an interaction has started.
    */
-  createInteractionHandle(): number {
+  createInteractionHandle(): Handle {
     scheduleUpdate();
     var handle = ++_inc;
     _addInteractionSet.add(handle);
@@ -93,7 +95,7 @@ var InteractionManager = {
   /**
    * Notify manager that an interaction has completed.
    */
-  clearInteractionHandle(handle: number) {
+  clearInteractionHandle(handle: Handle) {
     invariant(
       !!handle,
       'Must provide a handle to clear.'

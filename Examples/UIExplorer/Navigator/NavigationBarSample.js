@@ -51,12 +51,11 @@ var NavigationBarRouteMapper = {
     var previousRoute = navState.routeStack[index - 1];
     return (
       <TouchableOpacity
-        onPress={() => navigator.pop()}>
-        <View style={styles.navBarLeftButton}>
-          <Text style={[styles.navBarText, styles.navBarButtonText]}>
-            {previousRoute.title}
-          </Text>
-        </View>
+        onPress={() => navigator.pop()}
+        style={styles.navBarLeftButton}>
+        <Text style={[styles.navBarText, styles.navBarButtonText]}>
+          {previousRoute.title}
+        </Text>
       </TouchableOpacity>
     );
   },
@@ -64,12 +63,11 @@ var NavigationBarRouteMapper = {
   RightButton: function(route, navigator, index, navState) {
     return (
       <TouchableOpacity
-        onPress={() => navigator.push(newRandomRoute())}>
-        <View style={styles.navBarRightButton}>
-          <Text style={[styles.navBarText, styles.navBarButtonText]}>
-            Next
-          </Text>
-        </View>
+        onPress={() => navigator.push(newRandomRoute())}
+        style={styles.navBarRightButton}>
+        <Text style={[styles.navBarText, styles.navBarButtonText]}>
+          Next
+        </Text>
       </TouchableOpacity>
     );
   },
@@ -91,6 +89,31 @@ function newRandomRoute() {
 }
 
 var NavigationBarSample = React.createClass({
+
+  componentWillMount: function() {
+    var navigator = this.props.navigator;
+
+    var callback = (event) => {
+      console.log(
+        `NavigationBarSample : event ${event.type}`,
+        {
+          route: JSON.stringify(event.data.route),
+          target: event.target,
+          type: event.type,
+        }
+      );
+    };
+
+    // Observe focus change events from this component.
+    this._listeners = [
+      navigator.navigationContext.addListener('willfocus', callback),
+      navigator.navigationContext.addListener('didfocus', callback),
+    ];
+  },
+
+  componentWillUnmount: function() {
+    this._listeners && this._listeners.forEach(listener => listener.remove());
+  },
 
   render: function() {
     return (

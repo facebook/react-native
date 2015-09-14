@@ -29,8 +29,16 @@ var GROUP_TYPES_OPTIONS = [
   'SavedPhotos', // default
 ];
 
+var ASSET_TYPE_OPTIONS = [
+  'All',
+  'Videos',
+  'Photos', // default
+];
+
+
 // Flow treats Object and Array as disjoint types, currently.
 deepFreezeAndThrowOnMutationInDev((GROUP_TYPES_OPTIONS: any));
+deepFreezeAndThrowOnMutationInDev((ASSET_TYPE_OPTIONS: any));
 
 /**
  * Shape of the param arg for the `getPhotos` function.
@@ -58,6 +66,16 @@ var getPhotosParamChecker = createStrictShapeTypeChecker({
    * titles.
    */
   groupName: ReactPropTypes.string,
+
+  /**
+  * Specifies filter on asset type
+  */
+  assetType: ReactPropTypes.oneOf(ASSET_TYPE_OPTIONS),
+
+  /**
+   * Filter by mimetype (e.g. image/jpeg).
+   */
+  mimeTypes: ReactPropTypes.arrayOf(ReactPropTypes.string),
 });
 
 /**
@@ -91,14 +109,28 @@ var getPhotosReturnChecker = createStrictShapeTypeChecker({
   }).isRequired,
 });
 
+/**
+ * `CameraRoll` provides access to the local camera roll / gallery.
+ */
 class CameraRoll {
+
+  static GroupTypesOptions: Array<string>;
+  static AssetTypeOptions: Array<string>;
   /**
-   * Saves the image with tag `tag` to the camera roll.
+   * Saves the image to the camera roll / gallery.
    *
-   * @param {string} tag - Can be any of the three kinds of tags we accept:
-   *                       1. URL
-   *                       2. assets-library tag
-   *                       3. tag returned from storing an image in memory
+   * @param {string} tag On Android, this is a local URI, such
+   * as `"file:///sdcard/img.png"`.
+   *
+   * On iOS, the tag can be one of the following:
+   *
+   *   - local URI
+   *   - assets-library tag
+   *   - a tag not maching any of the above, which means the image data will
+   * be stored in memory (and consume memory as long as the process is alive)
+   *
+   * @param successCallback Invoked with the value of `tag` on success.
+   * @param errorCallback Invoked with error message on error.
    */
   static saveImageWithTag(tag, successCallback, errorCallback) {
     invariant(
@@ -119,10 +151,10 @@ class CameraRoll {
    *  Invokes `callback` with photo identifier objects from the local camera
    *  roll of the device matching shape defined by `getPhotosReturnChecker`.
    *
-   *  @param {object} params - See `getPhotosParamChecker`.
-   *  @param {function} callback - Invoked with arg of shape defined by
-   *    `getPhotosReturnChecker` on success.
-   *  @param {function} errorCallback - Invoked with error message on error.
+   *  @param {object} params See `getPhotosParamChecker`.
+   *  @param {function} callback Invoked with arg of shape defined by
+   *  `getPhotosReturnChecker` on success.
+   *  @param {function} errorCallback Invoked with error message on error.
    */
   static getPhotos(params, callback, errorCallback) {
     var metaCallback = callback;
@@ -152,5 +184,6 @@ class CameraRoll {
 }
 
 CameraRoll.GroupTypesOptions = GROUP_TYPES_OPTIONS;
+CameraRoll.AssetTypeOptions = ASSET_TYPE_OPTIONS;
 
 module.exports = CameraRoll;

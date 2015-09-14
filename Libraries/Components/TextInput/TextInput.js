@@ -19,54 +19,20 @@ var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
-var merge = require('merge');
-
-var autoCapitalizeConsts = RCTUIManager.UIText.AutocapitalizationType;
-var keyboardTypeConsts = RCTUIManager.UIKeyboardType;
-var returnKeyTypeConsts = RCTUIManager.UIReturnKeyType;
-
-var RCTTextViewAttributes = merge(ReactIOSViewAttributes.UIView, {
-  autoCorrect: true,
-  autoCapitalize: true,
-  clearTextOnFocus: true,
-  color: true,
-  editable: true,
-  fontFamily: true,
-  fontSize: true,
-  fontStyle: true,
-  fontWeight: true,
-  keyboardType: true,
-  returnKeyType: true,
-  enablesReturnKeyAutomatically: true,
-  secureTextEntry: true,
-  selectTextOnFocus: true,
-  mostRecentEventCounter: true,
-  placeholder: true,
-  placeholderTextColor: true,
-  text: true,
-});
-
-var RCTTextFieldAttributes = merge(RCTTextViewAttributes, {
-  caretHidden: true,
-  enabled: true,
-  clearButtonMode: true,
-  clearTextOnFocus: true,
-  selectTextOnFocus: true,
-});
+var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
-  onSelectionChange: true,
-  onTextInput: true,
+  onSelectionChange: true, // not supported in Open Source yet
+  onTextInput: true, // not supported in Open Source yet
   children: true,
 };
 
@@ -78,17 +44,19 @@ var AndroidTextInputAttributes = {
   autoCapitalize: true,
   autoCorrect: true,
   autoFocus: true,
+  textAlign: true,
+  textAlignVertical: true,
   keyboardType: true,
+  mostRecentEventCount: true,
   multiline: true,
+  numberOfLines: true,
   password: true,
   placeholder: true,
+  placeholderTextColor: true,
   text: true,
   testID: true,
-};
-
-var viewConfigIOS = {
-  uiViewClassName: 'RCTTextField',
-  validAttributes: RCTTextFieldAttributes,
+  underlineColorAndroid: true,
+  editable : true,
 };
 
 var viewConfigAndroid = {
@@ -96,49 +64,42 @@ var viewConfigAndroid = {
   validAttributes: AndroidTextInputAttributes,
 };
 
-var crossPlatformKeyboardTypeMap = {
-  'numeric': 'decimal-pad',
-};
-
-type DefaultProps = {
-  bufferDelay: number;
-};
+var RCTTextView = requireNativeComponent('RCTTextView', null);
+var RCTTextField = requireNativeComponent('RCTTextField', null);
 
 type Event = Object;
 
 /**
  * A foundational component for inputting text into the app via a
- * keyboard.  Props provide configurability for several features, such as auto-
- * correction, auto-capitalization, placeholder text, and different keyboard
+ * keyboard. Props provide configurability for several features, such as
+ * auto-correction, auto-capitalization, placeholder text, and different keyboard
  * types, such as a numeric keypad.
  *
  * The simplest use case is to plop down a `TextInput` and subscribe to the
- * `onChangeText` events to read the user input.  There are also other events, such
- * as `onSubmitEditing` and `onFocus` that can be subscribed to.  A simple
+ * `onChangeText` events to read the user input. There are also other events,
+ * such as `onSubmitEditing` and `onFocus` that can be subscribed to. A simple
  * example:
  *
  * ```
- * <View>
  *   <TextInput
  *     style={{height: 40, borderColor: 'gray', borderWidth: 1}}
- *     onChangeText={(text) => this.setState({input: text})}
+ *     onChangeText={(text) => this.setState({text})}
+ *     value={this.state.text}
  *   />
- *   <Text>{'user input: ' + this.state.input}</Text>
- * </View>
  * ```
  *
- * The `value` prop can be used to set the value of the input in order to make
- * the state of the component clear, but <TextInput> does not behave as a true
- * controlled component by default because all operations are asynchronous.
- * Setting `value` once is like setting the default value, but you can change it
- * continuously based on `onChangeText` events as well.  If you really want to
- * force the component to always revert to the value you are setting, you can
- * set `controlled={true}`.
+ * Note that some props are only available with multiline={true/false}:
  *
- * The `multiline` prop is not supported in all releases, and some props are
- * multiline only.
+ *   var onlyMultiline = {
+ *     onSelectionChange: true, // not supported in Open Source yet
+ *     onTextInput: true, // not supported in Open Source yet
+ *     children: true,
+ *   };
+ *
+ *   var notMultiline = {
+ *     onSubmitEditing: true,
+ *   };
  */
-
 var TextInput = React.createClass({
   propTypes: {
     /**
@@ -156,38 +117,63 @@ var TextInput = React.createClass({
       'characters',
     ]),
     /**
-     * If false, disables auto-correct. Default value is true.
+     * If false, disables auto-correct. The default value is true.
      */
     autoCorrect: PropTypes.bool,
     /**
-     * If true, focuses the input on componentDidMount. Default value is false.
+     * If true, focuses the input on componentDidMount.
+     * The default value is false.
      */
     autoFocus: PropTypes.bool,
     /**
-     * If false, text is not editable. Default value is true.
+     * Set the position of the cursor from where editing will begin.
+     * @platorm android
+     */
+    textAlign: PropTypes.oneOf([
+      'start',
+      'center',
+      'end',
+    ]),
+    /**
+     * Aligns text vertically within the TextInput.
+     * @platform android
+     */
+    textAlignVertical: PropTypes.oneOf([
+      'top',
+      'center',
+      'bottom',
+    ]),
+    /**
+     * If false, text is not editable. The default value is true.
      */
     editable: PropTypes.bool,
     /**
      * Determines which keyboard to open, e.g.`numeric`.
+     *
+     * The following values work across platforms:
+     * - default
+     * - numeric
+     * - email-address
      */
     keyboardType: PropTypes.oneOf([
+      // Cross-platform
       'default',
-      // iOS
+      'numeric',
+      'email-address',
+      // iOS-only
       'ascii-capable',
       'numbers-and-punctuation',
       'url',
       'number-pad',
       'phone-pad',
       'name-phone-pad',
-      'email-address',
       'decimal-pad',
       'twitter',
       'web-search',
-      // Cross-platform
-      'numeric',
     ]),
     /**
      * Determines how the return key should look.
+     * @platform ios
      */
     returnKeyType: PropTypes.oneOf([
       'default',
@@ -203,12 +189,26 @@ var TextInput = React.createClass({
       'emergency-call',
     ]),
     /**
+     * Limits the maximum number of characters that can be entered. Use this
+     * instead of implementing the logic in JS to avoid flicker.
+     * @platform ios
+     */
+    maxLength: PropTypes.number,
+    /**
+     * Sets the number of lines for a TextInput. Use it with multiline set to
+     * true to be able to fill the lines.
+     * @platform android
+     */
+    numberOfLines: PropTypes.number,
+    /**
      * If true, the keyboard disables the return key when there is no text and
-     * automatically enables it when there is text. Default value is false.
+     * automatically enables it when there is text. The default value is false.
+     * @platform ios
      */
     enablesReturnKeyAutomatically: PropTypes.bool,
     /**
-     * If true, the text input can be multiple lines. Default value is false.
+     * If true, the text input can be multiple lines.
+     * The default value is false.
      */
     multiline: PropTypes.bool,
     /**
@@ -223,6 +223,10 @@ var TextInput = React.createClass({
      * Callback that is called when the text input's text changes.
      */
     onChange: PropTypes.func,
+    /**
+     * Callback that is called when the text input's text changes.
+     * Changed text is passed as an argument to the callback handler.
+     */
     onChangeText: PropTypes.func,
     /**
      * Callback that is called when text input ends.
@@ -233,10 +237,9 @@ var TextInput = React.createClass({
      */
     onSubmitEditing: PropTypes.func,
     /**
-     * If true, the text input obscures the text entered so that sensitive text
-     * like passwords stay secure. Default value is false.
+     * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
-    password: PropTypes.bool,
+    onLayout: PropTypes.func,
     /**
      * The string that will be rendered before text input has been entered
      */
@@ -246,29 +249,35 @@ var TextInput = React.createClass({
      */
     placeholderTextColor: PropTypes.string,
     /**
+     * If true, the text input obscures the text entered so that sensitive text
+     * like passwords stay secure. The default value is false.
+     */
+    secureTextEntry: PropTypes.bool,
+    /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
+     * @platform ios
      */
     selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
-     * The default value for the text input
+     * The value to show for the text input. TextInput is a controlled
+     * component, which means the native value will be forced to match this
+     * value prop if provided. For most uses this works great, but in some
+     * cases this may cause flickering - one common cause is preventing edits
+     * by keeping value the same. In addition to simply setting the same value,
+     * either set `editable={false}`, or set/update `maxLength` to prevent
+     * unwanted edits without flicker.
      */
     value: PropTypes.string,
     /**
-     * This helps avoid drops characters due to race conditions between JS and
-     * the native text input.  The default should be fine, but if you're
-     * potentially doing very slow operations on every keystroke then you may
-     * want to try increasing this.
+     * Provides an initial value that will change when the user starts typing.
+     * Useful for simple use-cases where you don't want to deal with listening
+     * to events and updating the value prop to keep the controlled state in sync.
      */
-    bufferDelay: PropTypes.number,
-    /**
-     * If you really want this to behave as a controlled component, you can set
-     * this true, but you will probably see flickering, dropped keystrokes,
-     * and/or laggy typing, depending on how you process onChange events.
-     */
-    controlled: PropTypes.bool,
+    defaultValue: PropTypes.string,
     /**
      * When the clear button should appear on the right side of the text view
+     * @platform ios
      */
     clearButtonMode: PropTypes.oneOf([
       'never',
@@ -278,10 +287,12 @@ var TextInput = React.createClass({
     ]),
     /**
      * If true, clears the text field automatically when editing begins
+     * @platform ios
      */
     clearTextOnFocus: PropTypes.bool,
     /**
-     * If true, selected the text automatically when editing begins
+     * If true, all text will automatically be selected on focus
+     * @platform ios
      */
     selectTextOnFocus: PropTypes.bool,
     /**
@@ -289,9 +300,14 @@ var TextInput = React.createClass({
      */
     style: Text.propTypes.style,
     /**
-     * Used to locate this view in end-to-end tests.
+     * Used to locate this view in end-to-end tests
      */
     testID: PropTypes.string,
+    /**
+     * The color of the textInput underline.
+     * @platform android
+     */
+    underlineColorAndroid: PropTypes.string,
   },
 
   /**
@@ -300,24 +316,17 @@ var TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig: ((Platform.OS === 'ios' ? viewConfigIOS :
+  viewConfig: ((Platform.OS === 'ios' ? RCTTextField.viewConfig :
     (Platform.OS === 'android' ? viewConfigAndroid : {})) : Object),
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
-      this.refs.input.getNativeNode();
-  },
-
-  getDefaultProps: function(): DefaultProps {
-    return {
-      bufferDelay: 100,
-    };
+      React.findNodeHandle(this.refs.input);
   },
 
   getInitialState: function() {
     return {
-      mostRecentEventCounter: 0,
-      bufferedValue: this.props.value,
+      mostRecentEventCount: 0,
     };
   },
 
@@ -357,75 +366,40 @@ var TextInput = React.createClass({
     }
   },
 
-  _bufferTimeout: (undefined: ?number),
+  getChildContext: function(): Object {
+    return {isInAParentText: true};
+  },
 
-  componentWillReceiveProps: function(newProps: {value: any}) {
-    if (newProps.value !== this.props.value) {
-      if (!this.isFocused()) {
-        // Set the value immediately if the input is not focused since that
-        // means there is no risk of the user typing immediately.
-        this.setState({bufferedValue: newProps.value});
-      } else {
-        // The following clear and setTimeout buffers the value such that if more
-        // characters are typed in quick succession, generating new values, the
-        // out of date values will get cancelled before they are ever sent to
-        // native.
-        //
-        // If we don't do this, it's likely the out of date values will blow
-        // away recently typed characters in the native input that JS was not
-        // yet aware of (since it is informed asynchronously), then the next
-        // character will be appended to the older value, dropping the
-        // characters in between.  Here is a potential sequence of events
-        // (recall we have multiple independently serial, interleaved queues):
-        //
-        // 1) User types 'R' => send 'R' to JS queue.
-        // 2) User types 'e' => send 'Re' to JS queue.
-        // 3) JS processes 'R' and sends 'R' back to native.
-        // 4) Native recieves 'R' and changes input from 'Re' back to 'R'.
-        // 5) User types 'a' => send 'Ra' to JS queue.
-        // 6) JS processes 'Re' and sends 'Re' back to native.
-        // 7) Native recieves 'Re' and changes input from 'R' back to 'Re'.
-        // 8) JS processes 'Ra' and sends 'Ra' back to native.
-        // 9) Native recieves final 'Ra' from JS - 'e' has been dropped!
-        //
-        // This isn't 100% foolproop (e.g. if it takes longer than
-        // `props.bufferDelay` ms to process one keystroke), and there are of
-        // course other potential algorithms to deal with this, but this is a
-        // simple solution that seems to reduce the chance of dropped characters
-        // drastically without compromising native input responsiveness (e.g. by
-        // introducing delay from a synchronization protocol).
-        this.clearTimeout(this._bufferTimeout);
-        this._bufferTimeout = this.setTimeout(
-          () => this.setState({bufferedValue: newProps.value}),
-          this.props.bufferDelay
-        );
-      }
-    }
+  childContextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
+  clear: function() {
+    this.setNativeProps({text: ''});
   },
 
   render: function() {
     if (Platform.OS === 'ios') {
-      return this._renderIOs();
+      return this._renderIOS();
     } else if (Platform.OS === 'android') {
       return this._renderAndroid();
     }
   },
 
-  _renderIOs: function() {
+  _getText: function(): ?string {
+    return typeof this.props.value === 'string' ?
+      this.props.value :
+      this.props.defaultValue;
+  },
+
+  _renderIOS: function() {
     var textContainer;
 
-    var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
-    var clearButtonMode = RCTUIManager.UITextField.clearButtonMode[this.props.clearButtonMode];
-
-    var keyboardType = keyboardTypeConsts[
-      crossPlatformKeyboardTypeMap[this.props.keyboardType] ||
-      this.props.keyboardType
-    ];
-    var returnKeyType = returnKeyTypeConsts[this.props.returnKeyType];
-
-    if (!this.props.multiline) {
+    var props = Object.assign({}, this.props);
+    props.style = [styles.input, this.props.style];
+    if (!props.multiline) {
       for (var propKey in onlyMultiline) {
-        if (this.props[propKey]) {
+        if (props[propKey]) {
           throw new Error(
             'TextInput prop `' + propKey + '` is only supported with multiline.'
           );
@@ -434,105 +408,104 @@ var TextInput = React.createClass({
       textContainer =
         <RCTTextField
           ref="input"
-          style={[styles.input, this.props.style]}
-          enabled={this.props.editable}
-          keyboardType={keyboardType}
-          returnKeyType={returnKeyType}
-          enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
-          secureTextEntry={this.props.password || this.props.secureTextEntry}
+          {...props}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onEndEditing={this.props.onEndEditing}
-          onSubmitEditing={this.props.onSubmitEditing}
           onSelectionChangeShouldSetResponder={() => true}
-          placeholder={this.props.placeholder}
-          placeholderTextColor={this.props.placeholderTextColor}
-          text={this.state.bufferedValue}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={this.props.autoCorrect}
-          clearButtonMode={clearButtonMode}
-          clearTextOnFocus={this.props.clearTextOnFocus}
-          selectTextOnFocus={this.props.selectTextOnFocus}
+          text={this._getText()}
+          mostRecentEventCount={this.state.mostRecentEventCount}
         />;
     } else {
       for (var propKey in notMultiline) {
-        if (this.props[propKey]) {
+        if (props[propKey]) {
           throw new Error(
             'TextInput prop `' + propKey + '` cannot be used with multiline.'
           );
         }
       }
 
-      var children = this.props.children;
+      var children = props.children;
       var childCount = 0;
       ReactChildren.forEach(children, () => ++childCount);
       invariant(
-        !(this.props.value && childCount),
+        !(props.value && childCount),
         'Cannot specify both value and children.'
       );
       if (childCount > 1) {
         children = <Text>{children}</Text>;
       }
-      if (this.props.inputView) {
-        children = [children, this.props.inputView];
+      if (props.inputView) {
+        children = [children, props.inputView];
       }
       textContainer =
         <RCTTextView
           ref="input"
-          style={[styles.input, this.props.style]}
+          {...props}
           children={children}
-          mostRecentEventCounter={this.state.mostRecentEventCounter}
-          editable={this.props.editable}
-          keyboardType={keyboardType}
-          returnKeyType={returnKeyType}
-          enablesReturnKeyAutomatically={this.props.enablesReturnKeyAutomatically}
-          secureTextEntry={this.props.password || this.props.secureTextEntry}
+          mostRecentEventCount={this.state.mostRecentEventCount}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onEndEditing={this.props.onEndEditing}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
-          placeholder={this.props.placeholder}
-          placeholderTextColor={this.props.placeholderTextColor}
-          text={this.state.bufferedValue}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={this.props.autoCorrect}
-          clearButtonMode={clearButtonMode}
-          selectTextOnFocus={this.props.selectTextOnFocus}
-          clearTextOnFocus={this.props.clearTextOnFocus}
+          text={this._getText()}
         />;
     }
 
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
-        rejectResponderTermination={true}>
+        rejectResponderTermination={true}
+        testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
     );
   },
 
   _renderAndroid: function() {
-    var autoCapitalize = autoCapitalizeConsts[this.props.autoCapitalize];
+    var autoCapitalize = RCTUIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
+    var textAlign =
+      RCTUIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
+    var textAlignVertical =
+      RCTUIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
+    var children = this.props.children;
+    var childCount = 0;
+    ReactChildren.forEach(children, () => ++childCount);
+    invariant(
+      !(this.props.value && childCount),
+      'Cannot specify both value and children.'
+    );
+    if (childCount > 1) {
+      children = <Text>{children}</Text>;
+    }
     var textContainer =
       <AndroidTextInput
         ref="input"
         style={[this.props.style]}
         autoCapitalize={autoCapitalize}
         autoCorrect={this.props.autoCorrect}
+        textAlign={textAlign}
+        textAlignVertical={textAlignVertical}
         keyboardType={this.props.keyboardType}
+        mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
+        numberOfLines={this.props.numberOfLines}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
+        onLayout={this.props.onLayout}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
-        text={this.state.bufferedValue}
+        placeholderTextColor={this.props.placeholderTextColor}
+        text={this._getText()}
+        underlineColorAndroid={this.props.underlineColorAndroid}
+        children={children}
+        editable={this.props.editable}
       />;
 
     return (
@@ -551,15 +524,32 @@ var TextInput = React.createClass({
   },
 
   _onPress: function(event: Event) {
-    this.focus();
+    if (this.props.editable || this.props.editable === undefined) {
+      this.focus();
+    }
   },
 
   _onChange: function(event: Event) {
-    if (this.props.controlled && event.nativeEvent.text !== this.props.value) {
-      this.refs.input.setNativeProps({text: this.props.value});
+    if (Platform.OS === 'android') {
+      // Android expects the event count to be updated as soon as possible.
+      this.refs.input.setNativeProps({
+        mostRecentEventCount: event.nativeEvent.eventCount,
+      });
     }
+    var text = event.nativeEvent.text;
+    var eventCount = event.nativeEvent.eventCount;
     this.props.onChange && this.props.onChange(event);
-    this.props.onChangeText && this.props.onChangeText(event.nativeEvent.text);
+    this.props.onChangeText && this.props.onChangeText(text);
+    this.setState({mostRecentEventCount: eventCount}, () => {
+      // This is a controlled component, so make sure to force the native value
+      // to match.  Most usage shouldn't need this, but if it does this will be
+      // more correct but might flicker a bit and/or cause the cursor to jump.
+      if (text !== this.props.value && typeof this.props.value === 'string') {
+        this.refs.input.setNativeProps({
+          text: this.props.value,
+        });
+      }
+    });
   },
 
   _onBlur: function(event: Event) {
@@ -579,10 +569,6 @@ var TextInput = React.createClass({
 
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
-    var counter = event.nativeEvent.eventCounter;
-    if (counter > this.state.mostRecentEventCounter) {
-      this.setState({mostRecentEventCounter: counter});
-    }
   },
 });
 
@@ -592,17 +578,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTTextView = createReactIOSNativeComponentClass({
-  validAttributes: RCTTextViewAttributes,
-  uiViewClassName: 'RCTTextView',
-});
-
-var RCTTextField = createReactIOSNativeComponentClass({
-  validAttributes: RCTTextFieldAttributes,
-  uiViewClassName: 'RCTTextField',
-});
-
-var AndroidTextInput = createReactIOSNativeComponentClass({
+var AndroidTextInput = createReactNativeComponentClass({
   validAttributes: AndroidTextInputAttributes,
   uiViewClassName: 'AndroidTextInput',
 });

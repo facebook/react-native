@@ -1,5 +1,4 @@
 /**
- * @generated SignedSource<<24fa633b4dd81b7fb40c2b2b0b7c97d0>>
  *
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * !! This file is a check-in from github!                       !!
@@ -449,11 +448,12 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth) {
   // We want to execute the next two loops one per line with flex-wrap
   int startLine = 0;
   int endLine = 0;
-  int nextLine = 0;
+  // int nextOffset = 0;
+  int alreadyComputedNextLayout = 0;
   // We aggregate the total dimensions of the container in those two variables
   float linesCrossDim = 0;
   float linesMainDim = 0;
-  while (endLine != node->children_count) {
+  while (endLine < node->children_count) {
     // <Loop A> Layout non flexible children and count children by type
 
     // mainContentDim is accumulation of the dimensions and margin of all the
@@ -497,7 +497,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth) {
         }
 
         // This is the main recursive call. We layout non flexible children.
-        if (nextLine == 0) {
+        if (alreadyComputedNextLayout == 0) {
           layoutNode(child, maxWidth);
         }
 
@@ -513,11 +513,15 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth) {
       // The element we are about to add would make us go to the next line
       if (isFlexWrap(node) &&
           !isUndefined(node->layout.dimensions[dim[mainAxis]]) &&
-          mainContentDim + nextContentDim > definedMainDim) {
-        nextLine = i + 1;
+          mainContentDim + nextContentDim > definedMainDim &&
+          // If there's only one element, then it's bigger than the content
+          // and needs its own line
+          i != startLine) {
+        nonFlexibleChildrenCount--;
+        alreadyComputedNextLayout = 1;
         break;
       }
-      nextLine = 0;
+      alreadyComputedNextLayout = 0;
       mainContentDim += nextContentDim;
       endLine = i + 1;
     }

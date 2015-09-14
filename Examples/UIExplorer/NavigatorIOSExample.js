@@ -19,6 +19,7 @@ var React = require('react-native');
 var ViewExample = require('./ViewExample');
 var createExamplePage = require('./createExamplePage');
 var {
+  AlertIOS,
   PixelRatio,
   ScrollView,
   StyleSheet,
@@ -89,6 +90,30 @@ var NavigatorIOSExample = React.createClass({
               onRightButtonPress: () => this.props.navigator.pop(),
               passProps: {
                 text: 'This page has a right button in the nav bar',
+              }
+            });
+          })}
+          {this._renderRow('Custom Left & Right Icons', () => {
+            this.props.navigator.push({
+              title: NavigatorIOSExample.title,
+              component: EmptyPage,
+              leftButtonTitle: 'Custom Left',
+              onLeftButtonPress: () => this.props.navigator.pop(),
+              rightButtonIcon: require('image!NavBarButtonPlus'),
+              onRightButtonPress: () => {
+                AlertIOS.alert(
+                  'Bar Button Action',
+                  'Recognized a tap on the bar button icon',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => console.log('Tapped OK'),
+                    },
+                  ]
+                );
+              },
+              passProps: {
+                text: 'This page has an icon for the right button in the nav bar',
               }
             });
           })}

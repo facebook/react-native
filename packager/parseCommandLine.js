@@ -24,12 +24,21 @@ function parseCommandLine(config) {
   // optimist default API requires you to write the command name three time
   // This is a small wrapper to accept an object instead
   for (var i = 0; i < config.length; ++i) {
+    if (config[i].type === 'string') {
+      optimist.string(config[i].command);
+    } else {
+      optimist.boolean(config[i].command);
+    }
+
     optimist
-      .boolean(config[i].command)
       .default(config[i].command, config[i].default)
       .describe(config[i].command, config[i].description);
+
+    if (config[i].required) {
+      optimist.demand(config[i].command);
+    }
   }
-  var argv = optimist.argv;
+  var argv = optimist.parse(process.argv);
 
   // optimist doesn't have support for --dev=false, instead it returns 'false'
   for (var i = 0; i < config.length; ++i) {
@@ -42,6 +51,15 @@ function parseCommandLine(config) {
     }
     if (argv[command] === 'false') {
       argv[command] = false;
+    }
+    if (config[i].type === 'string') {
+      // According to https://github.com/substack/node-optimist#numbers,
+      // every argument that looks like a number should be converted to one.
+      var strValue = argv[command];
+      var numValue = strValue ? Number(strValue) : undefined;
+      if (typeof numValue === 'number' && !isNaN(numValue)) {
+        argv[command] = numValue;
+      }
     }
   }
 

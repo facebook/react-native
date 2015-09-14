@@ -19,9 +19,11 @@ var React = require('react-native');
 var {
   Image,
   PixelRatio,
+  Platform,
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableNativeFeedback,
   View
 } = React;
 
@@ -32,10 +34,20 @@ var getTextFromScore = require('./getTextFromScore');
 var MovieCell = React.createClass({
   render: function() {
     var criticsScore = this.props.movie.ratings.critics_score;
+    var TouchableElement = TouchableHighlight;
+    if (Platform.OS === 'android') {
+      TouchableElement = TouchableNativeFeedback;
+    }
     return (
       <View>
-        <TouchableHighlight onPress={this.props.onSelect}>
+        <TouchableElement
+          onPress={this.props.onSelect}
+          onShowUnderlay={this.props.onHighlight}
+          onHideUnderlay={this.props.onUnhighlight}>
           <View style={styles.row}>
+            {/* $FlowIssue #7363964 - There's a bug in Flow where you cannot
+              * omit a property or set it to undefined if it's inside a shape,
+              * even if it isn't required */}
             <Image
               source={getImageSource(this.props.movie, 'det')}
               style={styles.cellImage}
@@ -53,8 +65,7 @@ var MovieCell = React.createClass({
               </Text>
             </View>
           </View>
-        </TouchableHighlight>
-        <View style={styles.cellBorder} />
+        </TouchableElement>
       </View>
     );
   }

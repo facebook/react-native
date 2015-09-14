@@ -120,6 +120,6 @@ var Geolocation = {
       subscriptions = [];
     }
   }
-}
+};
 
 module.exports = Geolocation;

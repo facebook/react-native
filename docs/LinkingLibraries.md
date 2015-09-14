@@ -1,9 +1,9 @@
 ---
-id: linking-libraries
-title: Linking Libraries
+id: linking-libraries-ios
+title: Linking Libraries (iOS)
 layout: docs
 category: Guides
-permalink: docs/linking-libraries.html
+permalink: docs/linking-libraries-ios.html
 next: debugging
 ---
 
@@ -17,7 +17,7 @@ For most of the libs it will be as simple as dragging two files, sometimes a thi
 step will be necessary, but no more than that.
 
 _All the libraries we ship with React Native live on the `Libraries` folder in
-the root of the repository. Some of them are pure JavaScript, and you just need
+the root of the repository. Some of them are pure JavaScript, and you only need
 to `require` it. Other libraries also rely on some native code, in that case
 you'll have to add these files to your app, otherwise the app will throw an
 error as soon as you try to use the library._
@@ -37,7 +37,7 @@ on Xcode);
 
 Click on your main project file (the one that represents the `.xcodeproj`)
 select `Build Phases` and drag the static library from the `Products` folder
-insed the Library you are importing to `Link Binary With Libraries`
+inside the Library you are importing to `Link Binary With Libraries`
 
 ![](/react-native/img/AddToBuildPhases.png)
 
@@ -47,9 +47,8 @@ Not every library will need this step, what you need to consider is:
 
 _Do I need to know the contents of the library at compile time?_
 
-What that means is, are you using this library on the native site or just in
-JavaScript? If you are just using it in JavaScript, you are good to go!
-
+What that means is, are you using this library on the native side or only in
+JavaScript? If you are only using it in JavaScript, you are good to go!
 
 This step is not necessary for libraries that we ship with React Native with the
 exception of `PushNotificationIOS` and `LinkingIOS`.
@@ -60,7 +59,7 @@ received.
 
 For that we need to know the library's headers. To achieve that you have to go
 to your project's file, select `Build Settings` and search for `Header Search
-Paths`. There you should include the path to you library (if it has relevant
+Paths`. There you should include the path to your library (if it has relevant
 files on subdirectories remember to make it `recursive`, like `React` on the
 example).
 

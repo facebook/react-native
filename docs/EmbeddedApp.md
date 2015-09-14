@@ -1,9 +1,9 @@
 ---
-id: embedded-app
-title: Integration with Existing App
+id: embedded-app-ios
+title: Integrating with Existing Apps (iOS)
 layout: docs
 category: Guides
-permalink: docs/embedded-app.html
+permalink: docs/embedded-app-ios.html
 next: javascript-environment
 ---
 
@@ -12,11 +12,12 @@ Since React makes no assumptions about the rest of your technology stack – it�
 ## Requirements
 
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
-- [Node.js](http://nodejs.org) – `brew install node`
+- [io.js](http://iojs.org)
+  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install iojs-v2 && nvm alias default iojs-v2`, which installs the latest compatible version of io.js and sets up your terminal so that typing `node` runs io.js.  With nvm you can install multiple versions of Node and io.js and easily switch between them.
 
 ## Install React Native Using CocoaPods
 
-[CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't install CocoaPods yet, checkout [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
+[CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't installed CocoaPods yet, check out [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
 
 When you are ready to work with CocoaPods, add the following line to `Podfile`. If you don't have one, then create it under the root directory of your project.
 
@@ -111,7 +112,7 @@ Here I disabled **AutoLayout** for simplicity. In real production world, you sho
 
 ## Add RCTRootView To Container View
 
-Ready for the most interesting part? Now we shall create the `RCTRootView`, where your React Native app lives in.
+Ready for the most interesting part? Now we shall create the `RCTRootView`, where your React Native app lives.
 
 In `ReactView.m`, we need to first initiate `RCTRootView` with the URI of your `index.ios.bundle`. `index.ios.bundle` will be created by packager and served by React Native server, which will be discussed later on.
 

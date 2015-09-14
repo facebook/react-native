@@ -8,23 +8,39 @@
  */
 'use strict';
 
+require('babel-core/register')({
+  only: /react-packager\/src/
+});
+
+useGracefulFs();
+
 var Activity = require('./src/Activity');
 var Server = require('./src/Server');
+var SocketInterface = require('./src/SocketInterface');
 
 exports.middleware = function(options) {
   var server = new Server(options);
   return server.processRequest.bind(server);
 };
 
-exports.buildPackageFromUrl = function(options, reqUrl) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
+exports.Activity = Activity;
 
-  var server = new Server(options);
-  return server.buildPackageFromUrl(reqUrl)
+// Renamed "package" to "bundle". But maintain backwards
+// compat.
+exports.buildPackage =
+exports.buildBundle = function(options, bundleOptions) {
+  var server = createServer(options);
+  return server.buildBundle(bundleOptions)
+    .then(function(p) {
+      server.end();
+      return p;
+    });
+};
+
+exports.buildPackageFromUrl =
+exports.buildBundleFromUrl = function(options, reqUrl) {
+  var server = createServer(options);
+  return server.buildBundleFromUrl(reqUrl)
     .then(function(p) {
       server.end();
       return p;
@@ -32,16 +48,32 @@ exports.buildPackageFromUrl = function(options, reqUrl) {
 };
 
 exports.getDependencies = function(options, main) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
-
-  var server = new Server(options);
+  var server = createServer(options);
   return server.getDependencies(main)
     .then(function(r) {
       server.end();
       return r.dependencies;
     });
 };
+
+exports.createClientFor = function(options) {
+  return SocketInterface.getOrCreateSocketFor(options);
+};
+
+SocketInterface.listenOnServerMessages();
+
+function useGracefulFs() {
+  var fs = require('fs');
+  var gracefulFs = require('graceful-fs');
+  gracefulFs.gracefulify(fs);
+}
+
+function createServer(options) {
+  Activity.disable();
+  // Don't start the filewatcher or the cache.
+  if (options.nonPersistent == null) {
+    options.nonPersistent = true;
+  }
+
+  return new Server(options);
+}

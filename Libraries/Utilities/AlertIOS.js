@@ -12,6 +12,7 @@
 'use strict';
 
 var RCTAlertManager = require('NativeModules').AlertManager;
+var invariant = require('invariant');
 
 var DEFAULT_BUTTON_TEXT = 'OK';
 var DEFAULT_BUTTON = {
@@ -47,14 +48,17 @@ class AlertIOS {
     message?: ?string,
     buttons?: Array<{
       text: ?string;
-      onPress: ?Function;
-    }>
+      onPress?: ?Function;
+    }>,
+    type?: ?string
   ): void {
     var callbacks = [];
     var buttonsSpec = [];
     title = title || '';
     message = message || '';
     buttons = buttons || [DEFAULT_BUTTON];
+    type = type || '';
+
     buttons.forEach((btn, index) => {
       callbacks[index] = btn.onPress;
       var btnDef = {};
@@ -65,12 +69,50 @@ class AlertIOS {
       title,
       message,
       buttons: buttonsSpec,
-    }, (id) => {
+      type,
+    }, (id, value) => {
       var cb = callbacks[id];
-      cb && cb();
+      cb && cb(value);
     });
   }
 
+  static prompt(
+    title: string,
+    value?: string,
+    buttons?: Array<{
+      text: ?string;
+      onPress?: ?Function;
+    }>,
+    callback?: ?Function
+  ): void {
+    if (arguments.length === 2) {
+      if (typeof value === 'object') {
+        buttons = value;
+        value = undefined;
+      } else if (typeof value === 'function') {
+        callback = value;
+        value = undefined;
+      }
+    } else if (arguments.length === 3 && typeof buttons === 'function') {
+      callback = buttons;
+      buttons = undefined;
+    }
+
+    invariant(
+      !(callback && buttons) && (callback || buttons),
+      'Must provide either a button list or a callback, but not both'
+    );
+
+    if (!buttons) {
+      buttons = [{
+        text: 'Cancel',
+      }, {
+        text: 'OK',
+        onPress: callback
+      }];
+    }
+    this.alert(title, value, buttons, 'plain-text');
+  }
 }
 
 module.exports = AlertIOS;

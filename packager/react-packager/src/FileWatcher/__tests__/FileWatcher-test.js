@@ -33,7 +33,7 @@ describe('FileWatcher', function() {
 
   pit('it should get the watcher instance when ready', function() {
     var fileWatcher = new FileWatcher(['rootDir']);
-    return fileWatcher._loading.then(function(watchers) {
+    return fileWatcher.getWatchers().then(function(watchers) {
       watchers.forEach(function(watcher) {
         expect(watcher instanceof Watcher).toBe(true);
       });
@@ -48,7 +48,7 @@ describe('FileWatcher', function() {
     var fileWatcher = new FileWatcher(['rootDir']);
     var handler = jest.genMockFn();
     fileWatcher.on('all', handler);
-    return fileWatcher._loading.then(function(){
+    return fileWatcher.getWatchers().then(function(){
       cb(1, 2, 3, 4);
       jest.runAllTimers();
       expect(handler.mock.calls[0]).toEqual([1, 2, 3, 4]);

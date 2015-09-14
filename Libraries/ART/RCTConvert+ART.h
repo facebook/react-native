@@ -17,7 +17,6 @@
 @interface RCTConvert (ART)
 
 + (CGPathRef)CGPath:(id)json;
-+ (CTFontRef)CTFont:(id)json;
 + (CTTextAlignment)CTTextAlignment:(id)json;
 + (ARTTextFrame)ARTTextFrame:(id)json;
 + (ARTCGFloatArray)ARTCGFloatArray:(id)json;

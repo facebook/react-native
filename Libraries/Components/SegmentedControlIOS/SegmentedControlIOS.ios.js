@@ -18,7 +18,6 @@ var React = require('React');
 var StyleSheet = require('StyleSheet');
 
 var requireNativeComponent = require('requireNativeComponent');
-var verifyPropTypes = require('verifyPropTypes');
 
 type DefaultProps = {
   values: Array<string>;
@@ -108,13 +107,7 @@ var styles = StyleSheet.create({
 
 var RCTSegmentedControl = requireNativeComponent(
   'RCTSegmentedControl',
-  null
+  SegmentedControlIOS
 );
-if (__DEV__) {
-  verifyPropTypes(
-    RCTSegmentedControl,
-    RCTSegmentedControl.viewConfig
-  );
-}
 
 module.exports = SegmentedControlIOS;

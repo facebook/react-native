@@ -17,21 +17,16 @@
 'use strict';
 
 var React = require('react-native');
+var {
+  Platform,
+} = React;
+var ReactNative = require('ReactNative');
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
 var invariant = require('invariant');
 
-class Example extends React.Component {
-  title: string;
-  description: string;
-}
-
-type ExampleModule = {
-  title: string;
-  description: string;
-  examples: Array<Example>;
-};
+import type { Example, ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
   : ReactClass<any, any, any> {
@@ -43,23 +38,39 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
       description: exampleModule.description,
     },
 
-    getBlock: function(example, i) {
+    getBlock: function(example: Example, i) {
+      if (example.platform) {
+        if (Platform.OS !== example.platform) {
+          return;
+        }
+        example.title += ' (' + example.platform + ' only)';
+      }
       // Hack warning: This is a hack because the www UI explorer requires
       // renderComponent to be called.
-      var originalRenderComponent = React.renderComponent;
       var originalRender = React.render;
+      var originalRenderComponent = React.renderComponent;
+      var originalIOSRender = ReactNative.render;
+      var originalIOSRenderComponent = ReactNative.renderComponent;
       var renderedComponent;
       // TODO remove typecasts when Flow bug #6560135 is fixed
       // and workaround is removed from react-native.js
-      (React: Object).render = (React: Object).renderComponent = function(element, container) {
-        renderedComponent = element;
-      };
+      (React: Object).render =
+      (React: Object).renderComponent =
+      (ReactNative: Object).render =
+      (ReactNative: Object).renderComponent =
+        function(element, container) {
+          renderedComponent = element;
+        };
       var result = example.render(null);
       if (result) {
-        renderedComponent = result;
+        renderedComponent = React.cloneElement(result, {
+          navigator: this.props.navigator,
+        });
       }
-      (React: Object).renderComponent = originalRenderComponent;
       (React: Object).render = originalRender;
+      (React: Object).renderComponent = originalRenderComponent;
+      (ReactNative: Object).render = originalIOSRender;
+      (ReactNative: Object).renderComponent = originalIOSRenderComponent;
       return (
         <UIExplorerBlock
           key={i}

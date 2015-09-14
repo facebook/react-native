@@ -15,10 +15,9 @@
  */
 'use strict';
 
-var AdSupportIOS = require('AdSupportIOS');
-
 var React = require('react-native');
 var {
+  AdSupportIOS,
   StyleSheet,
   Text,
   View,

@@ -29,13 +29,13 @@ var ReachabilitySubscription = React.createClass({
     };
   },
   componentDidMount: function() {
-    NetInfo.reachabilityIOS.addEventListener(
+    NetInfo.addEventListener(
       'change',
       this._handleReachabilityChange
     );
   },
   componentWillUnmount: function() {
-    NetInfo.reachabilityIOS.removeEventListener(
+    NetInfo.removeEventListener(
       'change',
       this._handleReachabilityChange
     );
@@ -63,16 +63,16 @@ var ReachabilityCurrent = React.createClass({
     };
   },
   componentDidMount: function() {
-    NetInfo.reachabilityIOS.addEventListener(
+    NetInfo.addEventListener(
       'change',
       this._handleReachabilityChange
     );
-    NetInfo.reachabilityIOS.fetch().done(
+    NetInfo.fetch().done(
       (reachability) => { this.setState({reachability}); }
     );
   },
   componentWillUnmount: function() {
-    NetInfo.reachabilityIOS.removeEventListener(
+    NetInfo.removeEventListener(
       'change',
       this._handleReachabilityChange
     );

@@ -12,22 +12,25 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactInstanceMap = require('ReactInstanceMap');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
 var Touchable = require('Touchable');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
+var createReactNativeComponentClass =
+  require('createReactNativeComponentClass');
 var merge = require('merge');
 
 var stylePropType = StyleSheetPropType(TextStylePropTypes);
 
 var viewConfig = {
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
+  validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
+    allowFontScaling: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -72,19 +75,24 @@ var Text = React.createClass({
   propTypes: {
     /**
      * Used to truncate the text with an elipsis after computing the text
-     * layout, including line wrapping, such that the total number of lines does
-     * not exceed this number.
+     * layout, including line wrapping, such that the total number of lines
+     * does not exceed this number.
      */
     numberOfLines: React.PropTypes.number,
     /**
-     * This function is called on press.  Text intrinsically supports press
-     * handling with a default highlight state (which can be disabled with
-     * `suppressHighlighting`).
+     * Invoked on mount and layout changes with
+     *
+     *   `{nativeEvent: {layout: {x, y, width, height}}}`
+     */
+    onLayout: React.PropTypes.func,
+    /**
+     * This function is called on press.
      */
     onPress: React.PropTypes.func,
     /**
-     * When true, no visual change is made when text is pressed down.  By
+     * When true, no visual change is made when text is pressed down. By
      * default, a gray oval highlights the text on press down.
+     * @platform ios
      */
     suppressHighlighting: React.PropTypes.bool,
     style: stylePropType,
@@ -92,14 +100,24 @@ var Text = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: React.PropTypes.string,
+    /**
+     * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
+     */
+    allowFontScaling: React.PropTypes.bool,
   },
 
   viewConfig: viewConfig,
 
-  getInitialState: function() {
+  getInitialState: function(): Object {
     return merge(this.touchableGetInitialState(), {
       isHighlighted: false,
     });
+  },
+  
+  getDefaultProps: function(): Object {
+    return {
+      allowFontScaling: true,
+    };
   },
 
   onStartShouldSetResponder: function(): bool {
@@ -171,12 +189,19 @@ var Text = React.createClass({
     return PRESS_RECT_OFFSET;
   },
 
+  getChildContext: function(): Object {
+    return {isInAParentText: true};
+  },
+
+  childContextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     var props = {};
     for (var key in this.props) {
       props[key] = this.props[key];
     }
-    props.ref = this.getNodeHandle();
     // Text is accessible by default
     if (props.accessible !== false) {
       props.accessible = true;
@@ -189,7 +214,14 @@ var Text = React.createClass({
     props.onResponderMove = this.handleResponderMove;
     props.onResponderRelease = this.handleResponderRelease;
     props.onResponderTerminate = this.handleResponderTerminate;
-    return <RCTText {...props} />;
+
+    // TODO: Switch to use contextTypes and this.context after React upgrade
+    var context = ReactInstanceMap.get(this)._context;
+    if (context.isInAParentText) {
+      return <RCTVirtualText {...props} />;
+    } else {
+      return <RCTText {...props} />;
+    }
   },
 });
 
@@ -202,6 +234,16 @@ type RectOffset = {
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
-var RCTText = createReactIOSNativeComponentClass(viewConfig);
+var RCTText = createReactNativeComponentClass(viewConfig);
+var RCTVirtualText = RCTText;
+
+if (Platform.OS === 'android') {
+  RCTVirtualText = createReactNativeComponentClass({
+    validAttributes: merge(ReactNativeViewAttributes.UIView, {
+      isHighlighted: true,
+    }),
+    uiViewClassName: 'RCTVirtualText',
+  });
+}
 
 module.exports = Text;

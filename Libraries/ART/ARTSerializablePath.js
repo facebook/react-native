@@ -8,8 +8,7 @@
  *
  * @providesModule ARTSerializablePath
  */
-
-"use strict";
+'use strict';
 
 // TODO: Move this into an ART mode called "serialized" or something
 

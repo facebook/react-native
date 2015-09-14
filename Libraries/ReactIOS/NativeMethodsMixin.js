@@ -12,10 +12,10 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var RCTPOPAnimationManager = NativeModules.POPAnimationManager;
 var RCTUIManager = NativeModules.UIManager;
 var TextInputState = require('TextInputState');
 
+var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var mergeFast = require('mergeFast');
@@ -37,30 +37,13 @@ type MeasureLayoutOnSuccessCallback = (
   height: number
 ) => void
 
-var animationIDInvariant = function(
-  funcName: string,
-  anim: number
-) {
-  invariant(
-    anim,
-    funcName + ' must be called with a valid animation ID returned from' +
-    ' POPAnimation.createAnimation, received: "' + anim + '"'
-  );
-};
 
 var NativeMethodsMixin = {
-  addAnimation: function(anim: number, callback?: (finished: bool) => void) {
-    animationIDInvariant('addAnimation', anim);
-    RCTPOPAnimationManager.addAnimation(this.getNodeHandle(), anim, callback);
-  },
-
-  removeAnimation: function(anim: number) {
-    animationIDInvariant('removeAnimation', anim);
-    RCTPOPAnimationManager.removeAnimation(this.getNodeHandle(), anim);
-  },
-
   measure: function(callback: MeasureOnSuccessCallback) {
-    RCTUIManager.measure(this.getNodeHandle(), callback);
+    RCTUIManager.measure(
+      findNodeHandle(this),
+      mountSafeCallback(this, callback)
+    );
   },
 
   measureLayout: function(
@@ -69,10 +52,10 @@ var NativeMethodsMixin = {
     onFail: () => void /* currently unused */
   ) {
     RCTUIManager.measureLayout(
-      this.getNodeHandle(),
+      findNodeHandle(this),
       relativeToNativeNode,
-      onFail,
-      onSuccess
+      mountSafeCallback(this, onFail),
+      mountSafeCallback(this, onSuccess)
     );
   },
 
@@ -106,18 +89,18 @@ var NativeMethodsMixin = {
     }
 
     RCTUIManager.updateView(
-      this.getNodeHandle(),
+      findNodeHandle(this),
       this.viewConfig.uiViewClassName,
       props
     );
   },
 
   focus: function() {
-    TextInputState.focusTextInput(this.getNodeHandle());
+    TextInputState.focusTextInput(findNodeHandle(this));
   },
 
   blur: function() {
-    TextInputState.blurTextInput(this.getNodeHandle());
+    TextInputState.blurTextInput(findNodeHandle(this));
   }
 };
 
@@ -151,5 +134,18 @@ if (__DEV__) {
     throwOnStylesProp(this, newProps);
   };
 }
+
+/**
+ * In the future, we should cleanup callbacks by cancelling them instead of
+ * using this.
+ */
+var mountSafeCallback = function(context: ReactComponent, callback: ?Function): any {
+  return function() {
+    if (!callback || (context.isMounted && !context.isMounted())) {
+      return;
+    }
+    return callback.apply(context, arguments);
+  };
+};
 
 module.exports = NativeMethodsMixin;

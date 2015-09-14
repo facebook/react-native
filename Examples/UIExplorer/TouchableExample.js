@@ -26,6 +26,8 @@ var {
   View,
 } = React;
 
+exports.displayName = (undefined: ?string);
+exports.description = 'Touchable and onPress examples';
 exports.title = '<Touchable*> and onPress';
 exports.examples = [
 {
@@ -75,6 +77,14 @@ exports.examples = [
   render: function(): ReactElement {
     return <TouchableFeedbackEvents />;
   },
+}, {
+  title: 'Touchable delay for events',
+  description: '<Touchable*> components also accept delayPressIn, ' +
+    'delayPressOut, and delayLongPress as props. These props impact the ' +
+    'timing of feedback events.',
+  render: function(): ReactElement {
+    return <TouchableDelayEvents />;
+  },
 }];
 
 var TextOnPressBox = React.createClass({
@@ -121,10 +131,11 @@ var TouchableFeedbackEvents = React.createClass({
   },
   render: function() {
     return (
-      <View>
+      <View testID="touchable_feedback_events">
         <View style={[styles.row, {justifyContent: 'center'}]}>
         <TouchableOpacity
           style={styles.wrapper}
+          testID="touchable_feedback_events_button"
           onPress={() => this._appendEvent('press')}
           onPressIn={() => this._appendEvent('pressIn')}
           onPressOut={() => this._appendEvent('pressOut')}
@@ -134,7 +145,46 @@ var TouchableFeedbackEvents = React.createClass({
           </Text>
         </TouchableOpacity>
       </View>
-        <View style={styles.eventLogBox}>
+        <View testID="touchable_feedback_events_console" style={styles.eventLogBox}>
+          {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
+        </View>
+      </View>
+    );
+  },
+  _appendEvent: function(eventName) {
+    var limit = 6;
+    var eventLog = this.state.eventLog.slice(0, limit - 1);
+    eventLog.unshift(eventName);
+    this.setState({eventLog});
+  },
+});
+
+var TouchableDelayEvents = React.createClass({
+  getInitialState: function() {
+    return {
+      eventLog: [],
+    };
+  },
+  render: function() {
+    return (
+      <View testID="touchable_delay_events">
+        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <TouchableOpacity
+          style={styles.wrapper}
+          testID="touchable_delay_events_button"
+          onPress={() => this._appendEvent('press')}
+          delayPressIn={400}
+          onPressIn={() => this._appendEvent('pressIn - 400ms delay')}
+          delayPressOut={1000}
+          onPressOut={() => this._appendEvent('pressOut - 1000ms delay')}
+          delayLongPress={800}
+          onLongPress={() => this._appendEvent('longPress - 800ms delay')}>
+          <Text style={styles.button}>
+            Press Me
+          </Text>
+        </TouchableOpacity>
+      </View>
+        <View style={styles.eventLogBox} testID="touchable_delay_events_console">
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
       </View>

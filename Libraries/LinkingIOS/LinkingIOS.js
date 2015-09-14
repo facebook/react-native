@@ -13,9 +13,10 @@
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTLinkingManager = require('NativeModules').LinkingManager;
+var Map = require('Map');
 var invariant = require('invariant');
 
-var _notifHandlers = {};
+var _notifHandlers = new Map();
 var _initialURL = RCTLinkingManager &&
   RCTLinkingManager.initialURL;
 
@@ -29,7 +30,7 @@ var DEVICE_NOTIF_EVENT = 'openURL';
  *
  * #### Handling deep links
  *
- * If your app was launched from a external url registered to your app you can
+ * If your app was launched from an external url registered to your app you can
  * access and handle it from any component you want with
  *
  * ```
@@ -80,10 +81,6 @@ var DEVICE_NOTIF_EVENT = 'openURL';
  *   }
  * });
  * ```
- *
- * _The iOS simulator does not support the `mailto:` and `tel:` schemas
- * because the Mail and Phone apps are not installed - you will need to test
- * them on a device._
  */
 class LinkingIOS {
   /**
@@ -95,10 +92,11 @@ class LinkingIOS {
       type === 'url',
       'LinkingIOS only supports `url` events'
     );
-    _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
+    var listener = RCTDeviceEventEmitter.addListener(
       DEVICE_NOTIF_EVENT,
       handler
     );
+    _notifHandlers.set(handler, listener);
   }
 
   /**
@@ -109,11 +107,12 @@ class LinkingIOS {
       type === 'url',
       'LinkingIOS only supports `url` events'
     );
-    if (!_notifHandlers[handler]) {
+    var listener = _notifHandlers.get(handler);
+    if (!listener) {
       return;
     }
-    _notifHandlers[handler].remove();
-    _notifHandlers[handler] = null;
+    listener.remove();
+    _notifHandlers.delete(handler);
   }
 
   /**
@@ -128,7 +127,7 @@ class LinkingIOS {
   }
 
   /**
-   * Determine wether or not the an installed app can handle a given `url`
+   * Determine wether or not an installed app can handle a given `url`
    * The callback function will be called with `bool supported` as the only argument
    */
   static canOpenURL(url: string, callback: Function) {

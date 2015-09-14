@@ -19,8 +19,8 @@ namely the node module format. We want to even go further, and let you
 choose your own packager and asset pipeline or even integrate into
 your existing infrastructure.
 
-React Native users need not to understand how the packager work,
-however, this documentation might be useful for advanced users and
+React Native users need not understand how the packager works.
+However, this documentation might be useful for advanced users and
 people who want to fix bugs or add features to the packager (patches
 welcome!).
 
@@ -62,7 +62,7 @@ if the option is boolean `1/0` or `true/false` is accepted.
 Here are the current options the packager accepts:
 
 * `dev` boolean, defaults to true: sets a global `__DEV__` variable
-  which will effect how the React Nativeg core libraries behave.
+  which will effect how the React Native core libraries behave.
 * `minify` boolean, defaults to false: whether to minify the bundle.
 * `runModule` boolean, defaults to true: whether to require your entry
   point module. So if you requested `moduleName`, this option will add

@@ -51,7 +51,7 @@ typedef struct RGBAPixel {
 {
     if ((self = [super init])) {
         _testName = [testName copy];
-        _fileManager = [[NSFileManager alloc] init];
+        _fileManager = [NSFileManager new];
     }
     return self;
 }

@@ -16,9 +16,9 @@
 'use strict';
 
 var React = require('react-native');
-var StyleSheet = require('StyleSheet');
 var {
   MapView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -29,7 +29,7 @@ var regionText = {
   longitude: '0',
   latitudeDelta: '0',
   longitudeDelta: '0',
-}
+};
 
 var MapRegionInput = React.createClass({
 
@@ -163,12 +163,12 @@ var MapViewExample = React.createClass({
           style={styles.map}
           onRegionChange={this._onRegionChange}
           onRegionChangeComplete={this._onRegionChangeComplete}
-          region={this.state.mapRegion}
-          annotations={this.state.annotations}
+          region={this.state.mapRegion || undefined}
+          annotations={this.state.annotations || undefined}
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}
-          region={this.state.mapRegionInput}
+          region={this.state.mapRegionInput || undefined}
         />
       </View>
     );
@@ -236,6 +236,7 @@ var styles = StyleSheet.create({
   },
 });
 
+exports.displayName = (undefined: ?string);
 exports.title = '<MapView>';
 exports.description = 'Base component to display maps';
 exports.examples = [

@@ -21,10 +21,42 @@ var {
   StyleSheet,
   Text,
   View,
+  ActivityIndicatorIOS
 } = React;
 
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 
+var NetworkImageExample = React.createClass({
+  watchID: (null: ?number),
+
+  getInitialState: function() {
+    return {
+      error: false,
+      loading: false,
+      progress: 0
+    };
+  },
+  render: function() {
+    var loader = this.state.loading ?
+      <View style={styles.progress}>
+        <Text>{this.state.progress}%</Text>
+        <ActivityIndicatorIOS style={{marginLeft:5}}/>
+      </View> : null;
+    return this.state.error ?
+      <Text>{this.state.error}</Text> :
+      <Image
+        source={this.props.source}
+        style={[styles.base, {overflow: 'visible'}]}
+        onLoadStart={(e) => this.setState({loading: true})}
+        onError={(e) => this.setState({error: e.nativeEvent.error, loading: false})}
+        onProgress={(e) => this.setState({progress: Math.round(100 * e.nativeEvent.loaded / e.nativeEvent.total)})}
+        onLoad={() => this.setState({loading: false, error: false})}>
+        {loader}
+      </Image>;
+  }
+});
+
+exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<Image>';
 exports.description = 'Base component for displaying different types of images.';
@@ -59,6 +91,24 @@ exports.examples = [
     },
   },
   {
+    title: 'Error Handler',
+    render: function() {
+      return (
+        <NetworkImageExample source={{uri: 'http://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
+      );
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Image Download Progress',
+    render: function() {
+      return (
+        <NetworkImageExample source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}}/>
+      );
+    },
+    platform: 'ios',
+  },
+  {
     title: 'Border Color',
     render: function() {
       return (
@@ -74,6 +124,7 @@ exports.examples = [
         </View>
       );
     },
+    platform: 'ios',
   },
   {
     title: 'Border Width',
@@ -91,6 +142,7 @@ exports.examples = [
         </View>
       );
     },
+    platform: 'ios',
   },
   {
     title: 'Border Radius',
@@ -98,17 +150,12 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image
-            style={[styles.base, styles.background, {borderRadius: 5}]}
-            source={smallImage}
+            style={[styles.base, {borderRadius: 5}]}
+            source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              styles.background,
-              styles.leftMargin,
-              {borderRadius: 19}
-            ]}
-            source={smallImage}
+            style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
+            source={fullImage}
           />
         </View>
       );
@@ -193,23 +240,46 @@ exports.examples = [
       'pixels to the tint color.',
     render: function() {
       return (
-        <View style={styles.horizontal}>
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, {tintColor: 'blue' }]}
-          />
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, styles.leftMargin, {tintColor: 'green' }]}
-          />
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, styles.leftMargin, {tintColor: 'red' }]}
-          />
-          <Image
-            source={require('image!uie_thumb_normal')}
-            style={[styles.icon, styles.leftMargin, {tintColor: 'black' }]}
-          />
+        <View>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa' }]}
+            />
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#4cd964' }]}
+            />
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#ff2d55' }]}
+            />
+            <Image
+              source={require('image!uie_thumb_normal')}
+              style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#8e8e93' }]}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            It also works with downloaded images:
+          </Text>
+          <View style={styles.horizontal}>
+            <Image
+              source={smallImage}
+              style={[styles.base, {borderRadius: 5, tintColor: '#5ac8fa' }]}
+            />
+            <Image
+              source={smallImage}
+              style={[styles.base, styles.leftMargin, {borderRadius: 5, tintColor: '#4cd964' }]}
+            />
+            <Image
+              source={smallImage}
+              style={[styles.base, styles.leftMargin, {borderRadius: 5, tintColor: '#ff2d55' }]}
+            />
+            <Image
+              source={smallImage}
+              style={[styles.base, styles.leftMargin, {borderRadius: 5, tintColor: '#8e8e93' }]}
+            />
+          </View>
         </View>
       );
     },
@@ -256,6 +326,18 @@ exports.examples = [
     },
   },
   {
+    title: 'Animated GIF',
+    render: function() {
+      return (
+        <Image
+          style={styles.gif}
+          source={{uri: 'http://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif'}}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
     title: 'Cap Insets',
     description:
       'When the image is resized, the corners of the size specified ' +
@@ -265,22 +347,32 @@ exports.examples = [
     render: function() {
       return <ImageCapInsetsExample />;
     },
+    platform: 'ios',
   },
 ];
 
 var fullImage = {uri: 'http://facebook.github.io/react/img/logo_og.png'};
-var smallImage = {uri: 'http://facebook.github.io/react/img/logo_small.png'};
+var smallImage = {uri: 'http://facebook.github.io/react/img/logo_small_2x.png'};
 
 var styles = StyleSheet.create({
   base: {
     width: 38,
     height: 38,
   },
+  progress: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: 100
+  },
   leftMargin: {
     marginLeft: 10,
   },
   background: {
     backgroundColor: '#222222'
+  },
+  sectionText: {
+    marginVertical: 6,
   },
   nestedText: {
     marginLeft: 12,
@@ -304,5 +396,9 @@ var styles = StyleSheet.create({
   },
   horizontal: {
     flexDirection: 'row',
-  }
+  },
+  gif: {
+    flex: 1,
+    height: 200,
+  },
 });

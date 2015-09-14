@@ -25,11 +25,27 @@ var TabBarIOS = React.createClass({
 
   propTypes: {
     style: View.propTypes.style,
+    /**
+     * Color of the currently selected tab icon
+     */
+    tintColor: React.PropTypes.string,
+    /**
+     * Background color of the tab bar
+     */
+    barTintColor: React.PropTypes.string,
+    /**
+     * A Boolean value that indicates whether the tab bar is translucent
+     */
+    translucent: React.PropTypes.bool,
   },
 
   render: function() {
     return (
-      <RCTTabBar style={[styles.tabGroup, this.props.style]}>
+      <RCTTabBar
+        style={[styles.tabGroup, this.props.style]}
+        tintColor={this.props.tintColor}
+        barTintColor={this.props.barTintColor}
+        translucent={this.props.translucent !== false}>
         {this.props.children}
       </RCTTabBar>
     );

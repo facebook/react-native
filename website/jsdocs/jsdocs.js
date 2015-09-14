@@ -19,6 +19,7 @@ var genericTransform = require('./generic-function-visitor');
 var genericVisitor = genericTransform.visitorList[0];
 var traverseFlat = require('./traverseFlat');
 var parseTypehint = require('./TypeExpressionParser').parse;
+var util = require('util');
 
 // Don't save object properties source code that is longer than this
 var MAX_PROPERTY_SOURCE_LENGTH = 1000;
@@ -105,10 +106,20 @@ function getFileDocBlock(commentsForFile) {
   commentsForFile.some(function(comment, i) {
     if (comment.loc.start.line === 1) {
       var lines = comment.value.split('\n');
+      var inCopyrightBlock = false;
       var filteredLines = lines.filter(function(line) {
-        var hasCopyright = !!line.match(/^\s*\*\s+Copyright/);
+        if (!!line.match(/^\s*\*\s+Copyright \(c\)/)) {
+          inCopyrightBlock = true;
+        }
+
         var hasProvides = !!line.match(/^\s*\*\s+@provides/);
-        return !hasCopyright && !hasProvides;
+        var hasFlow = !!line.match(/^\s*\*\s+@flow/);
+
+        if (hasFlow || hasProvides) {
+          inCopyrightBlock = false;
+        }
+
+        return !inCopyrightBlock && !hasFlow && !hasProvides;
       });
       docblock = filteredLines.join('\n');
       return true;
@@ -199,13 +210,21 @@ function sanitizeTypehint(string) {
 
 /**
  * @param {object} node
+ * @param {object} docNode  Node used for location/docblock purposes
  * @param {object} state
  * @param {string} source
  * @param {array<object>} commentsForFile
  * @param {array<string>} linesForFile
  * @return {object}
  */
-function getFunctionData(node, state, source, commentsForFile, linesForFile) {
+function getFunctionData(
+  node,
+  docNode,
+  state,
+  source,
+  commentsForFile,
+  linesForFile
+) {
   var params = [];
   var typechecks = commentsForFile.typechecks;
   var typehintsFromBlock = null;
@@ -277,9 +296,9 @@ function getFunctionData(node, state, source, commentsForFile, linesForFile) {
     });
   }
   return {
-    line: node.loc.start.line,
+    line: docNode.loc.start.line,
     source: source.substring.apply(source, node.range),
-    docblock: getDocBlock(node, commentsForFile, linesForFile),
+    docblock: getDocBlock(docNode, commentsForFile, linesForFile),
     modifiers: [],
     params: params,
     tparams: tparams,
@@ -299,6 +318,7 @@ function getObjectData(node, state, source, scopeChain,
     commentsForFile, linesForFile) {
   var methods = [];
   var properties = [];
+  var classes = [];
   var superClass = null;
   node.properties.forEach(function(property) {
     if (property.type === Syntax.SpreadProperty) {
@@ -310,7 +330,7 @@ function getObjectData(node, state, source, scopeChain,
 
     switch (property.value.type) {
     case Syntax.FunctionExpression:
-      var methodData = getFunctionData(property.value, state, source,
+      var methodData = getFunctionData(property.value, property, state, source,
         commentsForFile, linesForFile);
       methodData.name = property.key.name || property.key.value;
       methodData.source = source.substring.apply(source, property.range);
@@ -323,9 +343,11 @@ function getObjectData(node, state, source, scopeChain,
         scopeChain
       );
       if (expr) {
-        if (expr.type === Syntax.FunctionDeclaration) {
+        if (expr.type === Syntax.FunctionDeclaration ||
+            expr.type === Syntax.FunctionExpression) {
           var functionData =
-            getFunctionData(expr, state, source, commentsForFile, linesForFile);
+            getFunctionData(expr, property, state, source, commentsForFile,
+              linesForFile);
           functionData.name = property.key.name || property.key.value;
           functionData.modifiers.push('static');
           methods.push(functionData);
@@ -343,16 +365,24 @@ function getObjectData(node, state, source, scopeChain,
       }
       var docBlock = getDocBlock(property, commentsForFile, linesForFile);
       /* CodexVarDef: modifiers, type, name, default, docblock */
-      var propertyData = [
-        ['static'],
-        '',
+      if (property.value.type === Syntax.ClassDeclaration) {
+        var type = {name: property.value.id.name};
+        var classData = getClassData(property.value, state, source, commentsForFile, linesForFile);
+        classData.ownerProperty = property.key.name;
+        classes.push(classData);
+      } else {
+        var type = {name: property.value.type};
+      }
+      var propertyData = {
         // Cast to String because this can be a Number
         // Could also be a String literal (e.g. "key") hence the value
-        String(property.key.name || property.key.value),
+        name: String(property.key.name || property.key.value),
+        type,
+        docblock: docBlock || '',
+        source: source.substring.apply(source, property.range),
+        modifiers: ['static'],
         propertySource,
-        docBlock || '',
-        property.loc.start.line
-      ];
+      };
       properties.push(propertyData);
       break;
     }
@@ -360,6 +390,7 @@ function getObjectData(node, state, source, scopeChain,
   return {
     methods: methods,
     properties: properties,
+    classes: classes,
     superClass: superClass
   };
 }
@@ -379,7 +410,7 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
     if (bodyItem.type === Syntax.MethodDefinition) {
       if (bodyItem.value.type === Syntax.FunctionExpression) {
         var methodData =
-          getFunctionData(bodyItem.value, state, source,
+          getFunctionData(bodyItem.value, bodyItem, state, source,
             commentsForFile, linesForFile);
         methodData.name = bodyItem.key.name;
         methodData.source = source.substring.apply(source, bodyItem.range);
@@ -391,7 +422,9 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
     }
   });
   var data = {
-    methods: methods
+    name: node.id.name,
+    docblock: getDocBlock(node, commentsForFile, linesForFile),
+    methods: methods,
   };
   if (node.superClass && node.superClass.type === Syntax.Identifier) {
     data.superClass = node.superClass.name;
@@ -519,7 +552,8 @@ function parseSource(source) {
         break;
       case Syntax.FunctionDeclaration:
       case Syntax.FunctionExpression:
-        data = getFunctionData(definition, _state, source, ast.comments, lines);
+        data = getFunctionData(definition, definition, _state, source,
+          ast.comments, lines);
         data.type = 'function';
         break;
       default:

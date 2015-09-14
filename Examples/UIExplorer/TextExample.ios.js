@@ -25,7 +25,7 @@ var {
 var Entity = React.createClass({
   render: function() {
     return (
-      <Text style={styles.entity}>
+      <Text style={{fontWeight: '500', color: '#527fe4'}}>
         {this.props.children}
       </Text>
     );
@@ -34,7 +34,12 @@ var Entity = React.createClass({
 
 var AttributeToggler = React.createClass({
   getInitialState: function() {
-    return {fontWeight: '500', fontSize: 15};
+    return {fontWeight: 'bold', fontSize: 15};
+  },
+  toggleWeight: function() {
+    this.setState({
+      fontWeight: this.state.fontWeight === 'bold' ? 'normal' : 'bold'
+    });
   },
   increaseSize: function() {
     this.setState({
@@ -42,22 +47,26 @@ var AttributeToggler = React.createClass({
     });
   },
   render: function() {
-    var curStyle = {fontSize: this.state.fontSize};
+    var curStyle = {fontWeight: this.state.fontWeight, fontSize: this.state.fontSize};
     return (
-      <Text>
+      <View>
         <Text style={curStyle}>
           Tap the controls below to change attributes.
         </Text>
         <Text>
-          See how it will even work on{' '}
-          <Text style={curStyle}>
-            this nested text
-          </Text>
-          <Text onPress={this.increaseSize}>
-            {'>> Increase Size <<'}
-          </Text>
+          <Text>See how it will even work on <Text style={curStyle}>this nested text</Text></Text>
         </Text>
-      </Text>
+        <Text
+          style={{backgroundColor: '#ffaaaa', marginTop: 5}}
+          onPress={this.toggleWeight}>
+          Toggle Weight
+        </Text>
+        <Text
+          style={{backgroundColor: '#aaaaff', marginTop: 5}}
+          onPress={this.increaseSize}>
+          Increase Size
+        </Text>
+      </View>
     );
   }
 });
@@ -177,6 +186,44 @@ exports.examples = [
     );
   },
 }, {
+  title: 'Text Decoration',
+  render: function() {
+    return (
+      <View>
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'solid'}}>
+          Solid underline
+        </Text>
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'double', textDecorationColor: '#ff0000'}}>
+          Double underline with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'dashed', textDecorationColor: '#9CDC40'}}>
+          Dashed underline with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'underline', textDecorationStyle: 'dotted', textDecorationColor: 'blue'}}>
+          Dotted underline with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'none'}}>
+          None textDecoration
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'solid'}}>
+          Solid line-through
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'double', textDecorationColor: '#ff0000'}}>
+          Double line-through with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'dashed', textDecorationColor: '#9CDC40'}}>
+          Dashed line-through with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'dotted', textDecorationColor: 'blue'}}>
+          Dotted line-through with custom color
+        </Text>
+        <Text style={{textDecorationLine: 'underline line-through'}}>
+          Both underline and line-through
+        </Text>
+      </View>
+    );
+  },
+}, {
   title: 'Nested',
   description: 'Nested text components will inherit the styles of their ' +
     'parents (only backgroundColor is inherited from non-Text parents).  ' +
@@ -206,6 +253,12 @@ exports.examples = [
   render: function() {
     return (
       <View>
+        <Text>
+          auto (default) - english LTR
+        </Text>
+        <Text>
+          أحب اللغة العربية auto (default) - arabic RTL
+        </Text>
         <Text style={{textAlign: 'left'}}>
           left left left left left left left left left left left left left left left
         </Text>
@@ -214,6 +267,31 @@ exports.examples = [
         </Text>
         <Text style={{textAlign: 'right'}}>
           right right right right right right right right right right right right right
+        </Text>
+        <Text style={{textAlign: 'justify'}}>
+          justify: this text component{"'"}s contents are laid out with "textAlign: justify"
+          and as you can see all of the lines except the last one span the
+          available width of the parent container.
+        </Text>
+      </View>
+    );
+  },
+}, {
+  title: 'Letter Spacing',
+  render: function() {
+    return (
+      <View>
+        <Text style={{letterSpacing: 0}}>
+          letterSpacing = 0
+        </Text>
+        <Text style={{letterSpacing: 2, marginTop: 5}}>
+          letterSpacing = 2
+        </Text>
+        <Text style={{letterSpacing: 9, marginTop: 5}}>
+          letterSpacing = 9
+        </Text>
+        <Text style={{letterSpacing: -1, marginTop: 5}}>
+          letterSpacing = -1
         </Text>
       </View>
     );
@@ -257,43 +335,21 @@ exports.examples = [
   description: 'backgroundColor is inherited from all types of views.',
   render: function() {
     return (
-      <View style={{backgroundColor: 'yellow'}}>
-        <Text>
-          Yellow background inherited from View parent,
-          <Text style={{backgroundColor: '#ffaaaa'}}>
-            {' '}red background,
-            <Text style={{backgroundColor: '#aaaaff'}}>
-              {' '}blue background,
-              <Text>
-                {' '}inherited blue background,
-                <Text style={{backgroundColor: '#aaffaa'}}>
-                  {' '}nested green background.
-                </Text>
+      <Text style={{backgroundColor: 'yellow'}}>
+        Yellow container background,
+        <Text style={{backgroundColor: '#ffaaaa'}}>
+          {' '}red background,
+          <Text style={{backgroundColor: '#aaaaff'}}>
+            {' '}blue background,
+            <Text>
+              {' '}inherited blue background,
+              <Text style={{backgroundColor: '#aaffaa'}}>
+                {' '}nested green background.
               </Text>
             </Text>
           </Text>
         </Text>
-      </View>
-    );
-  },
-}, {
-  title: 'containerBackgroundColor attribute',
-  render: function() {
-    return (
-      <View>
-        <View style={{flexDirection: 'row', height: 85}}>
-          <View style={{backgroundColor: '#ffaaaa', width: 150}} />
-          <View style={{backgroundColor: '#aaaaff', width: 150}} />
-        </View>
-        <Text style={[styles.backgroundColorText, {top: -80}]}>
-          Default containerBackgroundColor (inherited) + backgroundColor wash
-        </Text>
-        <Text style={[
-          styles.backgroundColorText,
-          {top: -70, containerBackgroundColor: 'transparent'}]}>
-          {"containerBackgroundColor: 'transparent' + backgroundColor wash"}
-        </Text>
-      </View>
+      </Text>
     );
   },
 }, {
@@ -302,13 +358,41 @@ exports.examples = [
     return (
       <View>
         <Text numberOfLines={1}>
-          Maximum of one line no matter now much I write here. If I keep writing it{"'"}ll just truncate after one line
+          Maximum of one line, no matter how much I write here. If I keep writing, it{"'"}ll just truncate after one line.
         </Text>
         <Text numberOfLines={2} style={{marginTop: 20}}>
-          Maximum of two lines no matter now much I write here. If I keep writing it{"'"}ll just truncate after two lines
+          Maximum of two lines, no matter how much I write here. If I keep writing, it{"'"}ll just truncate after two lines.
         </Text>
         <Text style={{marginTop: 20}}>
-          No maximum lines specified no matter now much I write here. If I keep writing it{"'"}ll just keep going and going
+          No maximum lines specified, no matter how much I write here. If I keep writing, it{"'"}ll just keep going and going.
+        </Text>
+      </View>
+    );
+  },
+}, {
+  title: 'Text highlighting (tap the link to see highlight)',
+  render: function() {
+    return (
+      <View>
+        <Text>Lorem ipsum dolor sit amet, <Text suppressHighlighting={false} style={{backgroundColor: 'white', textDecorationLine: 'underline', color: 'blue'}} onPress={() => null}>consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud</Text> exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</Text>
+      </View>
+    );
+  },
+}, {
+  title: 'allowFontScaling attribute',
+  render: function() {
+    return (
+      <View>
+        <Text>
+          By default, text will respect Text Size accessibility setting on iOS.
+          It means that all font sizes will be increased or descreased depending on the value of Text Size setting in
+          {" "}<Text style={{fontWeight: 'bold'}}>Settings.app - Display & Brightness - Text Size</Text>
+        </Text>
+        <Text style={{marginTop: 10}}>
+          You can disable scaling for your Text component by passing {"\""}allowFontScaling={"{"}false{"}\""} prop.
+        </Text>
+        <Text allowFontScaling={false} style={{marginTop: 20}}>
+          This text will not scale.
         </Text>
       </View>
     );
@@ -317,11 +401,8 @@ exports.examples = [
 
 var styles = StyleSheet.create({
   backgroundColorText: {
-    left: 5,
+    margin: 5,
+    marginBottom: 0,
     backgroundColor: 'rgba(100, 100, 100, 0.3)'
-  },
-  entity: {
-    fontWeight: '500',
-    color: '#527fe4',
   },
 });

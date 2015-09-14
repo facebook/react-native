@@ -45,4 +45,3 @@ var truncate = function(
 };
 
 module.exports = truncate;
-

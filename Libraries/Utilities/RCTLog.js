@@ -9,7 +9,6 @@
  * @providesModule RCTLog
  * @flow
  */
- /* globals nativeLoggingHook */
 'use strict';
 
 var invariant = require('invariant');

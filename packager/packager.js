@@ -10,8 +10,9 @@
 
 var fs = require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
+var childProcess = require('child_process');
 var http = require('http');
+var isAbsolutePath = require('absolute-path');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
@@ -29,6 +30,8 @@ var chalk = require('chalk');
 var connect = require('connect');
 var ReactPackager = require('./react-packager');
 var blacklist = require('./blacklist.js');
+var checkNodeVersion = require('./checkNodeVersion');
+var formatBanner = require('./formatBanner');
 var launchEditor = require('./launchEditor.js');
 var parseCommandLine = require('./parseCommandLine.js');
 var webSocketProxy = require('./webSocketProxy.js');
@@ -36,19 +39,34 @@ var webSocketProxy = require('./webSocketProxy.js');
 var options = parseCommandLine([{
   command: 'port',
   default: 8081,
+  type: 'string',
 }, {
   command: 'root',
+  type: 'string',
   description: 'add another root(s) to be used by the packager in this project',
 }, {
   command: 'assetRoots',
+  type: 'string',
   description: 'specify the root directories of app assets'
-}, {
-  command: 'platform',
-  default: 'ios',
-  description: 'Specify the platform-specific blacklist (ios, android, web).'
 }, {
   command: 'skipflow',
   description: 'Disable flow checks'
+}, {
+  command: 'nonPersistent',
+  description: 'Disable file watcher'
+}, {
+  command: 'transformer',
+  type: 'string',
+  default: require.resolve('./transformer.js'),
+  description: 'Specify a custom transformer to be used (absolute path)'
+}, {
+  command: 'resetCache',
+  description: 'Removes cached files',
+  default: false,
+}, {
+  command: 'reset-cache',
+  description: 'Removes cached files',
+  default: false,
 }]);
 
 if (options.projectRoots) {
@@ -56,7 +74,11 @@ if (options.projectRoots) {
     options.projectRoots = options.projectRoots.split(',');
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
+     // packager is running from node_modules of another project
+    options.projectRoots = [path.resolve(__dirname, '../../..')];
+  } else if (__dirname.match(/Pods\/React\/packager$/)) {
     // packager is running from node_modules of another project
     options.projectRoots = [path.resolve(__dirname, '../../..')];
   } else {
@@ -65,37 +87,45 @@ if (options.projectRoots) {
 }
 
 if (options.root) {
-  if (typeof options.root === 'string') {
-    options.projectRoots.push(path.resolve(options.root));
-  } else {
-    options.root.forEach(function(root) {
-      options.projectRoots.push(path.resolve(root));
-    });
+  if (!Array.isArray(options.root)) {
+    options.root = options.root.split(',');
   }
+
+  options.root.forEach(function(root) {
+    options.projectRoots.push(path.resolve(root));
+  });
 }
 
 if (options.assetRoots) {
   if (!Array.isArray(options.assetRoots)) {
-    options.assetRoots = options.assetRoots.split(',');
+    options.assetRoots = options.assetRoots.split(',').map(function (dir) {
+      return path.resolve(process.cwd(), dir);
+    });
   }
 } else {
-  if (__dirname.match(/node_modules\/react-native\/packager$/)) {
+  // match on either path separator
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {
+    options.assetRoots = [path.resolve(__dirname, '../../..')];
+  } else if (__dirname.match(/Pods\/React\/packager$/)) {
     options.assetRoots = [path.resolve(__dirname, '../../..')];
   } else {
     options.assetRoots = [path.resolve(__dirname, '..')];
   }
 }
 
-console.log('\n' +
-' ===============================================================\n' +
-' |  Running packager on port ' + options.port +          '.       \n' +
-' |  Keep this packager running while developing on any JS         \n' +
-' |  projects. Feel free to close this tab and run your own      \n' +
-' |  packager instance if you prefer.                              \n' +
-' |                                                              \n' +
-' |     https://github.com/facebook/react-native                 \n' +
-' |                                                              \n' +
-' ===============================================================\n'
+checkNodeVersion();
+
+console.log(formatBanner(
+  'Running packager on port ' + options.port + '.\n'+
+  '\n' +
+  'Keep this packager running while developing on any JS projects. Feel free ' +
+  'to close this tab and run your own packager instance if you prefer.\n' +
+  '\n' +
+  'https://github.com/facebook/react-native', {
+    marginLeft: 1,
+    marginRight: 1,
+    paddingBottom: 1,
+  })
 );
 
 console.log(
@@ -168,7 +198,7 @@ function getDevToolsLauncher(options) {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
-      exec(path.join(__dirname, script) + ' ' + debuggerURL, function(err, stdout, stderr) {
+      childProcess.execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
         if (err) {
           console.log('Failed to run ' + script, err);
         }
@@ -193,14 +223,88 @@ function statusPageMiddleware(req, res, next) {
   }
 }
 
+function systraceProfileMiddleware(req, res, next) {
+  if (req.url !== '/systrace') {
+    next();
+    return;
+  }
+
+  console.log('Dumping profile information...');
+  const dumpName = '/tmp/dump_' + Date.now() + '.json';
+  const prefix = process.env.TRACE_VIEWER_PATH || '';
+  const cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
+  fs.writeFileSync(dumpName, req.rawBody);
+  childProcess.exec(cmd, function(error) {
+    if (error) {
+      if (error.code === 127) {
+        res.end(
+          '\n** Failed executing `' + cmd + '` **\n\n' +
+          'Google trace-viewer is required to visualize the data, You can install it with `brew install trace2html`\n\n' +
+          'NOTE: Your profile data was kept at:\n' + dumpName
+        );
+      } else {
+        console.error(error);
+        res.end('Unknown error %s', error.message);
+      }
+      return;
+    } else {
+      childProcess.exec('rm ' + dumpName);
+      childProcess.exec('open ' + dumpName.replace(/json$/, 'html'), function(err) {
+        if (err) {
+          console.error(err);
+          res.end(err.message);
+        } else {
+          res.end();
+        }
+      });
+    }
+  });
+}
+
+function cpuProfileMiddleware(req, res, next) {
+  if (req.url !== '/cpu-profile') {
+    next();
+    return;
+  }
+
+  console.log('Dumping CPU profile information...');
+  const dumpName = '/tmp/cpu-profile_' + Date.now();
+  fs.writeFileSync(dumpName + '.json', req.rawBody);
+
+  const cmd = path.join(__dirname, '..', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
+  childProcess.exec(cmd, function(error) {
+    if (error) {
+      console.error(error);
+      res.end('Unknown error: %s', error.message);
+    } else {
+      res.end(
+        'Your profile was generated at\n\n' + dumpName + '.cpuprofile\n\n' +
+        'Open `Chrome Dev Tools > Profiles > Load` and select the profile to visualize it.'
+      );
+    }
+  });
+}
+
 function getAppMiddleware(options) {
+  var transformerPath = options.transformer;
+  if (!isAbsolutePath(transformerPath)) {
+    transformerPath = path.resolve(process.cwd(), transformerPath);
+  }
+
   return ReactPackager.middleware({
+    nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
-    blacklistRE: blacklist(options.platform),
+    blacklistRE: blacklist(),
     cacheVersion: '2',
-    transformModulePath: require.resolve('./transformer.js'),
+    transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
-    assetExts: ['png', 'jpeg', 'jpg']
+    assetExts: ['png', 'jpeg', 'jpg'],
+    resetCache: options.resetCache || options['reset-cache'],
+    polyfillModuleNames: [
+      require.resolve(
+        '../Libraries/JavaScriptAppEngine/polyfills/document.js'
+      ),
+    ],
   });
 }
 
@@ -213,6 +317,8 @@ function runServer(
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
     .use(statusPageMiddleware)
+    .use(systraceProfileMiddleware)
+    .use(cpuProfileMiddleware)
     // Temporarily disable flow check until it's more stable
     //.use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));

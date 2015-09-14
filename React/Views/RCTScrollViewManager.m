@@ -10,10 +10,27 @@
 #import "RCTScrollViewManager.h"
 
 #import "RCTBridge.h"
-#import "RCTConvert.h"
 #import "RCTScrollView.h"
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
+
+@interface RCTScrollView (Private)
+
+- (NSArray *)calculateChildFramesData;
+
+@end
+
+@implementation RCTConvert (UIScrollView)
+
+RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
+  @"none": @(UIScrollViewKeyboardDismissModeNone),
+  @"on-drag": @(UIScrollViewKeyboardDismissModeOnDrag),
+  @"interactive": @(UIScrollViewKeyboardDismissModeInteractive),
+  // Backwards compatibility
+  @"onDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
+}), UIScrollViewKeyboardDismissModeNone, integerValue)
+
+@end
 
 @implementation RCTScrollViewManager
 
@@ -41,34 +58,28 @@ RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollsToTop, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSNumberArray)
+RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSIndexSet)
 RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets)
 RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 
-RCT_DEPRECATED_VIEW_PROPERTY(throttleScrollCallbackMS, scrollEventThrottle)
-
 - (NSDictionary *)constantsToExport
 {
   return @{
+    // TODO: unused - remove these?
     @"DecelerationRate": @{
-      @"Normal": @(UIScrollViewDecelerationRateNormal),
-      @"Fast": @(UIScrollViewDecelerationRateFast),
-    },
-    @"KeyboardDismissMode": @{
-      @"None": @(UIScrollViewKeyboardDismissModeNone),
-      @"Interactive": @(UIScrollViewKeyboardDismissModeInteractive),
-      @"OnDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
+      @"normal": @(UIScrollViewDecelerationRateNormal),
+      @"fast": @(UIScrollViewDecelerationRateFast),
     },
   };
 }
 
-RCT_EXPORT_METHOD(getContentSize:(NSNumber *)reactTag
+RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
 
     UIView *view = viewRegistry[reactTag];
     if (!view) {
@@ -82,6 +93,36 @@ RCT_EXPORT_METHOD(getContentSize:(NSNumber *)reactTag
       @"height" : @(size.height)
     }]);
   }];
+}
+
+RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
+                    callback:(RCTResponseSenderBlock)callback)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+
+    UIView *view = viewRegistry[reactTag];
+    if (!view) {
+      RCTLogError(@"Cannot find view with tag #%@", reactTag);
+      return;
+    }
+
+    NSArray *childFrames = [((RCTScrollView *)view) calculateChildFramesData];
+    if (childFrames) {
+      callback(@[childFrames]);
+    }
+  }];
+}
+
+- (NSArray *)customDirectEventTypes
+{
+  return @[
+    @"scrollBeginDrag",
+    @"scroll",
+    @"scrollEndDrag",
+    @"scrollAnimationEnd",
+    @"momentumScrollBegin",
+    @"momentumScrollEnd",
+  ];
 }
 
 @end

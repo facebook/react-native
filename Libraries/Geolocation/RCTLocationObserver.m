@@ -28,9 +28,9 @@ typedef NS_ENUM(NSInteger, RCTPositionErrorCode) {
 #define RCT_DEFAULT_LOCATION_ACCURACY kCLLocationAccuracyHundredMeters
 
 typedef struct {
-  NSTimeInterval timeout;
-  NSTimeInterval maximumAge;
-  CLLocationAccuracy accuracy;
+  double timeout;
+  double maximumAge;
+  double accuracy;
 } RCTLocationOptions;
 
 @implementation RCTConvert (RCTLocationOptions)
@@ -85,7 +85,9 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 
 - (void)dealloc
 {
-  [_timeoutTimer invalidate];
+  if (_timeoutTimer.valid) {
+    [_timeoutTimer invalidate];
+  }
 }
 
 @end
@@ -113,11 +115,11 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
 
-    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager = [CLLocationManager new];
     _locationManager.distanceFilter = RCT_DEFAULT_LOCATION_ACCURACY;
     _locationManager.delegate = self;
 
-    _pendingRequests = [[NSMutableArray alloc] init];
+    _pendingRequests = [NSMutableArray new];
   }
   return self;
 }
@@ -229,7 +231,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
 
   // Create request
-  RCTLocationRequest *request = [[RCTLocationRequest alloc] init];
+  RCTLocationRequest *request = [RCTLocationRequest new];
   request.successBlock = successBlock;
   request.errorBlock = errorBlock ?: ^(NSArray *args){};
   request.options = options;
@@ -250,7 +252,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
   // Create event
-  CLLocation *location = [locations lastObject];
+  CLLocation *location = locations.lastObject;
   _lastLocationEvent = @{
     @"coords": @{
       @"latitude": @(location.coordinate.latitude),
@@ -273,6 +275,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   // Fire all queued callbacks
   for (RCTLocationRequest *request in _pendingRequests) {
     request.successBlock(@[_lastLocationEvent]);
+    [request.timeoutTimer invalidate];
   }
   [_pendingRequests removeAllObjects];
 
@@ -311,6 +314,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   // Fire all queued error callbacks
   for (RCTLocationRequest *request in _pendingRequests) {
     request.errorBlock(@[jsError]);
+    [request.timeoutTimer invalidate];
   }
   [_pendingRequests removeAllObjects];
 

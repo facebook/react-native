@@ -11,22 +11,25 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert+MapKit.h"
+#import "RCTComponent.h"
 
 extern const CLLocationDegrees RCTMapDefaultSpan;
 extern const NSTimeInterval RCTMapRegionChangeObserveInterval;
 extern const CGFloat RCTMapZoomBoundBuffer;
 
-@class RCTEventDispatcher;
-
 @interface RCTMap: MKMapView
 
 @property (nonatomic, assign) BOOL followUserLocation;
-@property (nonatomic, assign) BOOL hasStartedLoading;
+@property (nonatomic, assign) BOOL hasStartedRendering;
 @property (nonatomic, assign) CGFloat minDelta;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
+@property (nonatomic, strong) NSMutableArray *annotationIds;
 
-- (void)setAnnotations:(MKShapeArray *)annotations;
+@property (nonatomic, copy) RCTBubblingEventBlock onChange;
+@property (nonatomic, copy) RCTBubblingEventBlock onPress;
+
+- (void)setAnnotations:(RCTPointAnnotationArray *)annotations;
 
 @end

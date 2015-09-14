@@ -36,14 +36,14 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/TicTacToe/TicTacToeApp.includeRequire.runModule.bundle"];
+  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/TicTacToe/TicTacToeApp.bundle?platform=ios&dev=true"];
 
   /**
    * OPTION 2
    * Load from pre-bundled file on disk. To re-generate the static bundle, `cd`
    * to your Xcode project folder in the terminal, and run
    *
-   * $ curl 'http://localhost:8081/Examples/TicTacToe/TicTacToeApp.includeRequire.runModule.bundle' -o main.jsbundle
+   * $ curl 'http://localhost:8081/Examples/TicTacToe/TicTacToeApp.bundle?platform=ios' -o main.jsbundle
    *
    * then add the `main.jsbundle` file to your project and uncomment this line:
    */
@@ -52,6 +52,7 @@
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"TicTacToeApp"
+                                                initialProperties:nil
                                                    launchOptions:launchOptions];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

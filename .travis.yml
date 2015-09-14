@@ -1,13 +1,23 @@
 language: objective-c
 
+osx_image: xcode6.4
+
 cache:
-  directories:
-  - node_modules
+    directories:
+        - node_modules
+        - .nvm
 
 before_install:
-  - brew update
+  # Update brew twice because the first run can fail: https://github.com/Homebrew/homebrew/issues/42553
+  - brew update; brew update
 install:
-  - brew reinstall flow xctool
+  - brew reinstall xctool nvm
+  - mkdir -p .nvm
+  - export NVM_DIR="$PWD/.nvm"
+  - source $(brew --prefix nvm)/nvm.sh
+  - nvm install iojs-v3
+  - rm -Rf `node -p "require('os').tmpDir()"`/jest_preprocess_cache
+  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm config set spin=false
   - npm install
 
@@ -27,7 +37,7 @@ script:
   then
 
     cd website
-    npm install
+    $(which npm) install
     ./setup.sh
     if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
       # Automatically publish the website

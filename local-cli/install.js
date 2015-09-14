@@ -5,11 +5,12 @@
  'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var exec = require('child_process').exec;
 
-var NODE_MODULE_PATH = './node_modules';
+var NODE_MODULE_PATH = path.resolve(__dirname, 'node_modules');
 
-var PODFILE_PATH = './Podfile';
+var PODFILE_PATH = path.resolve(__dirname, 'Podfile');
 
 function addDependency(name, path) {
   console.log('Found dependency: ' + name);
@@ -48,6 +49,10 @@ function installDependecies() {
 
 module.exports = {
   setupPodfile: function() {
+    var returnArgs = {
+      created: false
+    };
+
     var podfileText;
     try {
       podfileText = fs.readFileSync(PODFILE_PATH, 'utf8');
@@ -58,6 +63,7 @@ module.exports = {
     var reactPodfileBoilerplate = openingReactTag + closingReactTag;
 
     if (!podfileText) {
+      returnArgs.created = true;
       fs.appendFileSync(PODFILE_PATH, reactPodfileBoilerplate);
     } else {
       if (podfileText.indexOf(openingReactTag) === -1 || podfileText.indexOf(closingReactTag) === -1) {
@@ -67,6 +73,7 @@ module.exports = {
 
     try {
       podfileText = fs.readFileSync(PODFILE_PATH, 'utf8');
+      returnArgs.podfileText = podfileText;
     } catch(e) {}
 
     if (podfileText.indexOf('pod \'React\'') === -1) {
@@ -79,10 +86,13 @@ module.exports = {
           podfileText.slice(indexOfReactComponents)].join('');
 
         fs.writeFileSync(PODFILE_PATH, newPodfileText);
+        returnArgs.podfileText = newPodfileText;
       } catch(e) {
         throw e;
       }
     }
+
+    return returnArgs;
   },
   init: function(arguement) {
     // arguement is available for future arguement commands

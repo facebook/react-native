@@ -14,7 +14,7 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -23,9 +23,12 @@ var View = require('View');
 
 var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
+var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('keyOf');
 var merge = require('merge');
 var onlyChild = require('onlyChild');
+
+type Event = Object;
 
 var DEFAULT_PROPS = {
   activeOpacity: 0.8,
@@ -70,6 +73,14 @@ var TouchableHighlight = React.createClass({
      */
     underlayColor: React.PropTypes.string,
     style: View.propTypes.style,
+    /**
+     * Called immediately after the underlay is shown
+     */
+    onShowUnderlay: React.PropTypes.func,
+    /**
+     * Called immediately after the underlay is hidden
+     */
+    onHideUnderlay: React.PropTypes.func,
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -103,6 +114,7 @@ var TouchableHighlight = React.createClass({
   },
 
   componentDidMount: function() {
+    ensurePositiveDelayProps(this.props);
     ensureComponentIsNative(this.refs[CHILD_REF]);
   },
 
@@ -111,6 +123,7 @@ var TouchableHighlight = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    ensurePositiveDelayProps(nextProps);
     if (nextProps.activeOpacity !== this.props.activeOpacity ||
         nextProps.underlayColor !== this.props.underlayColor ||
         nextProps.style !== this.props.style) {
@@ -120,45 +133,63 @@ var TouchableHighlight = React.createClass({
 
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactIOSViewAttributes.RCTView
+    validAttributes: ReactNativeViewAttributes.RCTView
   },
 
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function() {
+  touchableHandleActivePressIn: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     this._showUnderlay();
-    this.props.onPressIn && this.props.onPressIn();
+    this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function() {
+  touchableHandleActivePressOut: function(e: Event) {
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
-    this.props.onPressOut && this.props.onPressOut();
+    this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function() {
+  touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._showUnderlay();
-    this._hideTimeout = this.setTimeout(this._hideUnderlay, 100);
-    this.props.onPress && this.props.onPress();
+    this._hideTimeout = this.setTimeout(this._hideUnderlay,
+      this.props.delayPressOut || 100);
+    this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function() {
     return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
   },
 
+  touchableGetHighlightDelayMS: function() {
+    return this.props.delayPressIn;
+  },
+
+  touchableGetLongPressDelayMS: function() {
+    return this.props.delayLongPress;
+  },
+
+  touchableGetPressOutDelayMS: function() {
+    return this.props.delayPressOut;
+  },
+
   _showUnderlay: function() {
+    if (!this.isMounted()) {
+      return;
+    }
+
     this.refs[UNDERLAY_REF].setNativeProps(this.state.activeUnderlayProps);
     this.refs[CHILD_REF].setNativeProps(this.state.activeProps);
+    this.props.onShowUnderlay && this.props.onShowUnderlay();
   },
 
   _hideUnderlay: function() {
@@ -170,26 +201,30 @@ var TouchableHighlight = React.createClass({
         ...INACTIVE_UNDERLAY_PROPS,
         style: this.state.underlayStyle,
       });
+      this.props.onHideUnderlay && this.props.onHideUnderlay();
     }
   },
 
   render: function() {
     return (
       <View
+        accessible={true}
+        accessibilityComponentType={this.props.accessibilityComponentType}
+        accessibilityTraits={this.props.accessibilityTraits}
         ref={UNDERLAY_REF}
         style={this.state.underlayStyle}
+        onLayout={this.props.onLayout}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
+        onResponderTerminate={this.touchableHandleResponderTerminate}
+        testID={this.props.testID}>
         {cloneWithProps(
           onlyChild(this.props.children),
           {
             ref: CHILD_REF,
-            accessible: true,
-            testID: this.props.testID,
           }
         )}
       </View>

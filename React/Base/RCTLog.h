@@ -43,17 +43,11 @@ typedef void (^RCTLogFunction)(
 );
 
 /**
- * Get a given thread's name (or the current queue, if in debug mode)
- */
-RCT_EXTERN NSString *RCTThreadName(NSThread *);
-
-/**
  * A method to generate a string from a collection of log data. To omit any
  * particular data from the log, just pass nil or zero for the argument.
  */
 RCT_EXTERN NSString *RCTFormatLog(
   NSDate *timestamp,
-  NSThread *thread,
   RCTLogLevel level,
   NSString *fileName,
   NSNumber *lineNumber,
@@ -66,7 +60,7 @@ RCT_EXTERN NSString *RCTFormatLog(
 extern RCTLogFunction RCTDefaultLogFunction;
 
 /**
- * These methods get and set the current logging threshold. This is the level
+ * These methods get and set the global logging threshold. This is the level
  * below which logs will be ignored. Default is RCTLogLevelInfo for debug and
  * RCTLogLevelError for production.
  */
@@ -74,7 +68,7 @@ RCT_EXTERN void RCTSetLogThreshold(RCTLogLevel threshold);
 RCT_EXTERN RCTLogLevel RCTGetLogThreshold(void);
 
 /**
- * These methods get and set the current logging function called by the RCTLogXX
+ * These methods get and set the global logging function called by the RCTLogXX
  * macros. You can use these to replace the standard behavior with custom log
  * functionality.
  */
@@ -89,6 +83,13 @@ RCT_EXTERN RCTLogFunction RCTGetLogFunction(void);
 RCT_EXTERN void RCTAddLogFunction(RCTLogFunction logFunction);
 
 /**
+ * This method temporarily overrides the log function while performing the
+ * specified block. This is useful for testing purposes (to detect if a given
+ * function logs something) or to suppress or override logging temporarily.
+ */
+RCT_EXTERN void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFunction logFunction);
+
+/**
  * This method adds a conditional prefix to any messages logged within the scope
  * of the passed block. This is useful for adding additional context to log
  * messages. The block will be performed synchronously on the current thread.
@@ -96,13 +97,12 @@ RCT_EXTERN void RCTAddLogFunction(RCTLogFunction logFunction);
 RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
 
 /**
- * Private logging functions - ignore these.
+ * Private logging function - ignore this.
  */
-RCT_EXTERN void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
 #define _RCTLog(lvl, ...) do { \
-  if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
-  _RCTLogFormat(lvl, __FILE__, __LINE__, __VA_ARGS__); \
-} while (0)
+if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
+_RCTLogFormat(lvl, __FILE__, __LINE__, __VA_ARGS__); } while (0)
+RCT_EXTERN void _RCTLogFormat(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
 
 /**
  * Logging macros. Use these to log information, warnings and errors in your

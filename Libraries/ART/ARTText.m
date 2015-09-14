@@ -19,15 +19,22 @@
   _alignment = alignment;
 }
 
+static void ARTFreeTextFrame(ARTTextFrame frame)
+{
+  if (frame.count) {
+    // We must release each line before freeing up this struct
+    for (int i = 0; i < frame.count; i++) {
+      CFRelease(frame.lines[i]);
+    }
+    free(frame.lines);
+    free(frame.widths);
+  }
+}
+
 - (void)setTextFrame:(ARTTextFrame)frame
 {
-  if (frame.lines != _textFrame.lines && _textFrame.count) {
-    // We must release each line before overriding the old one
-    for (int i = 0; i < _textFrame.count; i++) {
-      CFRelease(_textFrame.lines[0]);
-    }
-    free(_textFrame.lines);
-    free(_textFrame.widths);
+  if (frame.lines != _textFrame.lines) {
+    ARTFreeTextFrame(_textFrame);
   }
   [self invalidate];
   _textFrame = frame;
@@ -35,14 +42,7 @@
 
 - (void)dealloc
 {
-  if (_textFrame.count) {
-    // We must release each line before freeing up this struct
-    for (int i = 0; i < _textFrame.count; i++) {
-      CFRelease(_textFrame.lines[0]);
-    }
-    free(_textFrame.lines);
-    free(_textFrame.widths);
-  }
+  ARTFreeTextFrame(_textFrame);
 }
 
 - (void)renderLayerTo:(CGContextRef)context

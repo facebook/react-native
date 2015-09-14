@@ -9,7 +9,23 @@
 
 #import "RCTStatusBarManager.h"
 
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+
+@implementation RCTConvert (UIStatusBar)
+
+RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
+  @"default": @(UIStatusBarStyleDefault),
+  @"light-content": @(UIStatusBarStyleLightContent),
+}), UIStatusBarStyleDefault, integerValue);
+
+RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
+  @"none": @(UIStatusBarAnimationNone),
+  @"fade": @(UIStatusBarAnimationFade),
+  @"slide": @(UIStatusBarAnimationSlide),
+}), UIStatusBarAnimationNone, integerValue);
+
+@end
 
 @implementation RCTStatusBarManager
 
@@ -18,7 +34,8 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   static BOOL value;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] ?: @YES boolValue];
+    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:
+              @"UIViewControllerBasedStatusBarAppearance"] ?: @YES boolValue];
   });
 
   return value;
@@ -26,9 +43,51 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge = _bridge;
+
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+    [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
+}
+
+- (void)emitEvent:(NSString *)eventName forNotification:(NSNotification *)notification
+{
+  CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
+  NSDictionary *event = @{
+    @"frame": @{
+        @"x": @(frame.origin.x),
+        @"y": @(frame.origin.y),
+        @"width": @(frame.size.width),
+        @"height": @(frame.size.height),
+    },
+  };
+  [_bridge.eventDispatcher sendDeviceEventWithName:eventName body:event];
+}
+
+- (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
+{
+  [self emitEvent:@"statusBarFrameDidChange" forNotification:notification];
+}
+
+- (void)applicationWillChangeStatusBarFrame:(NSNotification *)notification
+{
+  [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
 }
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
@@ -55,19 +114,9 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
   }
 }
 
-- (NSDictionary *)constantsToExport
+RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
-  return @{
-    @"Style": @{
-      @"default": @(UIStatusBarStyleDefault),
-      @"lightContent": @(UIStatusBarStyleLightContent),
-    },
-    @"Animation": @{
-      @"none": @(UIStatusBarAnimationNone),
-      @"fade": @(UIStatusBarAnimationFade),
-      @"slide": @(UIStatusBarAnimationSlide),
-    },
-  };
+  [UIApplication sharedApplication].networkActivityIndicatorVisible = visible;
 }
 
 @end

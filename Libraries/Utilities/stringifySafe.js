@@ -17,12 +17,19 @@
  */
 function stringifySafe(arg: any): string {
   var ret;
+  var type = typeof arg;
   if (arg === undefined) {
     ret = 'undefined';
   } else if (arg === null) {
     ret = 'null';
-  } else if (typeof arg === 'string') {
+  } else if (type === 'string') {
     ret = '"' + arg + '"';
+  } else if (type === 'function') {
+    try {
+      ret = arg.toString();
+    } catch (e) {
+      ret = '[function unknown]';
+    }
   } else {
     // Perform a try catch, just in case the object has a circular
     // reference or stringify throws for some other reason.
@@ -36,7 +43,7 @@ function stringifySafe(arg: any): string {
       }
     }
   }
-  return ret || '["' + typeof arg + '" failed to stringify]';
+  return ret || '["' + type + '" failed to stringify]';
 }
 
 module.exports = stringifySafe;
