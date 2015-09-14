@@ -383,18 +383,110 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   [self invalidate];
 }
 
+- (void)executeJSString:(NSString*)execString
+                context:(NSNumber *)executorID
+               callback:(RCTJavaScriptCallback)onComplete
+{
+    RCTAssert(onComplete != nil, @"onComplete block should not be nil");
+    __weak RCTContextExecutor *weakSelf = self;
+    [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
+        RCTContextExecutor *strongSelf = weakSelf;
+        if (!strongSelf || !strongSelf.isValid || ![RCTGetExecutorID(strongSelf) isEqualToNumber:executorID]) {
+            return;
+        }
+        
+        JSValueRef errorJSRef = NULL;
+        JSValueRef resultJSRef = NULL;
+        JSGlobalContextRef contextJSRef = JSContextGetGlobalContext(strongSelf->_context.ctx);
+        JSObjectRef globalObjectJSRef = JSContextGetGlobalObject(strongSelf->_context.ctx);
+        
+        // get require
+        JSStringRef requireNameJSStringRef = JSStringCreateWithUTF8CString("require");
+        JSValueRef requireJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, requireNameJSStringRef, &errorJSRef);
+        JSStringRelease(requireNameJSStringRef);
+        
+        if (requireJSRef != NULL && !JSValueIsUndefined(contextJSRef, requireJSRef) && errorJSRef == NULL) {
+            
+            // get module
+            JSStringRef moduleNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)name);
+            JSValueRef moduleNameJSRef = JSValueMakeString(contextJSRef, moduleNameJSStringRef);
+            JSValueRef moduleJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)requireJSRef, NULL, 1, (const JSValueRef *)&moduleNameJSRef, &errorJSRef);
+            JSStringRelease(moduleNameJSStringRef);
+            
+            if (moduleJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, moduleJSRef)) {
+                
+                // get method
+                JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);
+                JSValueRef methodJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
+                JSStringRelease(methodNameJSStringRef);
+                
+                if (methodJSRef != NULL && errorJSRef == NULL) {
+                    
+                    // direct method invoke with no arguments
+                    if (arguments.count == 0) {
+                        resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
+                    }
+                    
+                    // direct method invoke with 1 argument
+                    else if(arguments.count == 1) {
+                        JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
+                        JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
+                        resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
+                        JSStringRelease(argsJSStringRef);
+                        
+                    } else {
+                        // apply invoke with array of arguments
+                        JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
+                        JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
+                        JSStringRelease(applyNameJSStringRef);
+                        
+                        if (applyJSRef != NULL && errorJSRef == NULL) {
+                            // invoke apply
+                            JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
+                            JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
+                            
+                            JSValueRef args[2];
+                            args[0] = JSValueMakeNull(contextJSRef);
+                            args[1] = argsJSRef;
+                            
+                            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
+                            JSStringRelease(argsJSStringRef);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!resultJSRef) {
+            onComplete(nil, RCTNSErrorFromJSError(contextJSRef, errorJSRef));
+            return;
+        }
+        
+        // Looks like making lots of JSC API calls is slower than communicating by using a JSON
+        // string. Also it ensures that data stuctures don't have cycles and non-serializable fields.
+        // see [RCTContextExecutorTests testDeserializationPerf]
+        id objcValue;
+        // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
+        // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
+        if (!JSValueIsNull(contextJSRef, resultJSRef)) {
+            JSStringRef jsJSONString = JSValueCreateJSONString(contextJSRef, resultJSRef, 0, nil);
+            if (jsJSONString) {
+                NSString *objcJSONString = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, jsJSONString);
+                JSStringRelease(jsJSONString);
+                
+                objcValue = RCTJSONParse(objcJSONString, NULL);
+            }
+        }
+        
+        onComplete(objcValue, nil);
+    }), 0, @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
+}
+
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
              callback:(RCTJavaScriptCallback)onComplete
 {
-  RCTAssert(onComplete != nil, @"onComplete block should not be nil");
-  __weak RCTContextExecutor *weakSelf = self;
-  [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
-    RCTContextExecutor *strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.isValid) {
-      return;
-    }
     NSError *error;
     NSString *argsString = (arguments.count == 1) ? RCTJSONStringify(arguments[0], &error) : RCTJSONStringify(arguments, &error);
     if (!argsString) {
@@ -403,91 +495,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
-    JSValueRef errorJSRef = NULL;
-    JSValueRef resultJSRef = NULL;
-    JSGlobalContextRef contextJSRef = JSContextGetGlobalContext(strongSelf->_context.ctx);
-    JSObjectRef globalObjectJSRef = JSContextGetGlobalObject(strongSelf->_context.ctx);
-
-    // get require
-    JSStringRef requireNameJSStringRef = JSStringCreateWithUTF8CString("require");
-    JSValueRef requireJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, requireNameJSStringRef, &errorJSRef);
-    JSStringRelease(requireNameJSStringRef);
-
-    if (requireJSRef != NULL && !JSValueIsUndefined(contextJSRef, requireJSRef) && errorJSRef == NULL) {
-
-      // get module
-      JSStringRef moduleNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)name);
-      JSValueRef moduleNameJSRef = JSValueMakeString(contextJSRef, moduleNameJSStringRef);
-      JSValueRef moduleJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)requireJSRef, NULL, 1, (const JSValueRef *)&moduleNameJSRef, &errorJSRef);
-      JSStringRelease(moduleNameJSStringRef);
-
-      if (moduleJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, moduleJSRef)) {
-
-        // get method
-        JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);
-        JSValueRef methodJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
-        JSStringRelease(methodNameJSStringRef);
-
-        if (methodJSRef != NULL && errorJSRef == NULL) {
-
-          // direct method invoke with no arguments
-          if (arguments.count == 0) {
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
-          }
-
-          // direct method invoke with 1 argument
-          else if(arguments.count == 1) {
-            JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
-            JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
-            JSStringRelease(argsJSStringRef);
-
-          } else {
-            // apply invoke with array of arguments
-            JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
-            JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
-            JSStringRelease(applyNameJSStringRef);
-
-            if (applyJSRef != NULL && errorJSRef == NULL) {
-              // invoke apply
-              JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
-              JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-
-              JSValueRef args[2];
-              args[0] = JSValueMakeNull(contextJSRef);
-              args[1] = argsJSRef;
-
-              resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
-              JSStringRelease(argsJSStringRef);
-            }
-          }
-        }
-      }
-    }
-
-    if (!resultJSRef) {
-      onComplete(nil, RCTNSErrorFromJSError(contextJSRef, errorJSRef));
-      return;
-    }
-
-    // Looks like making lots of JSC API calls is slower than communicating by using a JSON
-    // string. Also it ensures that data stuctures don't have cycles and non-serializable fields.
-    // see [RCTContextExecutorTests testDeserializationPerf]
-    id objcValue;
-    // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
-    // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
-    if (!JSValueIsNull(contextJSRef, resultJSRef)) {
-      JSStringRef jsJSONString = JSValueCreateJSONString(contextJSRef, resultJSRef, 0, nil);
-      if (jsJSONString) {
-        NSString *objcJSONString = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, jsJSONString);
-        JSStringRelease(jsJSONString);
-
-        objcValue = RCTJSONParse(objcJSONString, NULL);
-      }
-    }
-
-    onComplete(objcValue, nil);
-  }), 0, @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
+    NSString *execString = [NSString stringWithFormat:@"require('%@').%@.apply(null, %@);", name, method, argsString];
+    [self executeJSString:execString context:executorID callback:onComplete];
 }
 
 - (void)executeApplicationScript:(NSString *)script
