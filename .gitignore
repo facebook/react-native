@@ -26,7 +26,8 @@ project.xcworkspace
 .DS_Store
 
 # Android/IJ
-.idea
+.idea/workspace.xml
+.idea/libraries
 .gradle
 local.properties
 *.iml
