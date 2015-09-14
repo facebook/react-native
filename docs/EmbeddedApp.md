@@ -35,6 +35,15 @@ Then install your pods:
 $ pod install
 ```
 
+## Generate Swift Bridging Header
+**(For iOS apps written in Swift)**
+
+There is a cli command that will generate the imports you need to be able to call ReactNative from your Swift code. You can pass in all specs that you included in your project as a comma separated list. The output can be sent to a file using `--out <filename>`.
+
+```
+react-native swift-bridge --out Bridging-Header.h React,RCTText
+```
+
 ## Create Your React Native App
 
 There are two pieces you’ll need to set up:

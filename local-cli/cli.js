@@ -5,8 +5,6 @@
 'use strict';
 
 var fs = require('fs');
-var spawn = require('child_process').spawn;
-var path = require('path');
 var generateAndroid = require('./generate-android.js');
 var init = require('./init.js');
 var install = require('./install.js');
@@ -14,6 +12,7 @@ var bundle = require('./bundle.js');
 var newLibrary = require('./new-library.js');
 var runAndroid = require('./run-android.js');
 var runPackager = require('./run-packager.js');
+var swiftBridge = require('./swift-bridge.js');
 
 function printUsage() {
   console.log([
@@ -24,7 +23,8 @@ function printUsage() {
     '  install: installs npm react components',
     '  bundle: builds the javascript bundle for offline use',
     '  new-library: generates a native library bridge',
-    '  android: generates an Android project for your app'
+    '  android: generates an Android project for your app',
+    '  swift-bridge: generates import statements for swift bridging header',
   ].join('\n'));
   process.exit(1);
 }
@@ -55,6 +55,9 @@ function run() {
     break;
   case 'new-library':
     newLibrary.init(args);
+    break;
+  case 'swift-bridge':
+    swiftBridge.init(args);
     break;
   case 'init':
     printInitWarning();
