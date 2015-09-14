@@ -20,11 +20,9 @@ var StyleSheet = require('StyleSheet');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 
-var REACT_DEVTOOLS_HOOK: ?Object = typeof window !== 'undefined' ? window.__REACT_DEVTOOLS_BACKEND__ : null;
-
-if (REACT_DEVTOOLS_HOOK) {
+if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
   // required for devtools to be able to edit react native styles
-  REACT_DEVTOOLS_HOOK.resolveRNStyle = require('flattenStyle');
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.resolveRNStyle = require('flattenStyle');
 }
 
 class Inspector extends React.Component {
@@ -34,7 +32,7 @@ class Inspector extends React.Component {
     super(props);
 
     this.state = {
-      devtoolsBackend: null,
+      devtoolsAgent: null,
       panelPos: 'bottom',
       inspecting: true,
       perfing: false,
@@ -43,16 +41,12 @@ class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    if (REACT_DEVTOOLS_HOOK) {
+    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
       this.attachToDevtools = this.attachToDevtools.bind(this);
-      REACT_DEVTOOLS_HOOK.addStartupListener(this.attachToDevtools);
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
       // if devtools is already started
-      // TODO(jared): should addStartupListener just go ahead and call the
-      // listener if the devtools is already started? might be unexpected...
-      // is there some name other than `addStartupListener` that would be
-      // better?
-      if (REACT_DEVTOOLS_HOOK.backend) {
-        this.attachToDevtools(REACT_DEVTOOLS_HOOK.backend);
+      if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
+        this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
       }
     }
   }
@@ -61,14 +55,14 @@ class Inspector extends React.Component {
     if (this._subs) {
       this._subs.map(fn => fn());
     }
-    if (REACT_DEVTOOLS_HOOK) {
-      REACT_DEVTOOLS_HOOK.removeStartupListener(this.attachToDevtools);
+    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
     }
   }
 
-  attachToDevtools(backend: Object) {
+  attachToDevtools(agent: Object) {
     var _hideWait = null;
-    var hlSub = backend.sub('highlight', ({node, name, props}) => {
+    var hlSub = agent.sub('highlight', ({node, name, props}) => {
       clearTimeout(_hideWait);
       UIManager.measure(node, (x, y, width, height, left, top) => {
         this.setState({
@@ -80,7 +74,10 @@ class Inspector extends React.Component {
         });
       });
     });
-    var hideSub = backend.sub('hideHighlight', () => {
+    var hideSub = agent.sub('hideHighlight', () => {
+      if (this.state.inspected === null) {
+        return;
+      }
       // we wait to actually hide in order to avoid flicker
       _hideWait = setTimeout(() => {
         this.setState({
@@ -90,12 +87,12 @@ class Inspector extends React.Component {
     });
     this._subs = [hlSub, hideSub];
 
-    backend.on('shutdown', () => {
-      this.setState({devtoolsBackend: null});
+    agent.on('shutdown', () => {
+      this.setState({devtoolsAgent: null});
       this._subs = null;
     });
     this.setState({
-      devtoolsBackend: backend,
+      devtoolsAgent: agent,
     });
   }
 
@@ -114,8 +111,8 @@ class Inspector extends React.Component {
   }
 
   onTouchInstance(instance: Object, frame: Object, pointerY: number) {
-    if (this.state.devtoolsBackend) {
-      this.state.devtoolsBackend.selectFromReactInstance(instance, true);
+    if (this.state.devtoolsAgent) {
+      this.state.devtoolsAgent.selectFromReactInstance(instance, true);
     }
     var hierarchy = InspectorUtils.getOwnerHierarchy(instance);
     var publicInstance = instance.getPublicInstance();
@@ -159,7 +156,7 @@ class Inspector extends React.Component {
           />}
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
-            devtoolsIsOpen={!!this.state.devtoolsBackend}
+            devtoolsIsOpen={!!this.state.devtoolsAgent}
             inspecting={this.state.inspecting}
             perfing={this.state.perfing}
             setPerfing={this.setPerfing.bind(this)}

@@ -47,15 +47,16 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"http", @"https", @"file"] containsObject:[request.URL.scheme lowercaseString]];
+  return [@[@"http", @"https", @"file"] containsObject:request.URL.scheme.lowercaseString];
 }
 
-- (id)sendRequest:(NSURLRequest *)request
-     withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
+                         withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_session && [self isValid]) {
-    NSOperationQueue *callbackQueue = [[NSOperationQueue alloc] init];
+    NSOperationQueue *callbackQueue = [NSOperationQueue new];
+    callbackQueue.maxConcurrentOperationCount = 1;
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
@@ -68,12 +69,22 @@ RCT_EXPORT_MODULE()
   return task;
 }
 
-- (void)cancelRequest:(NSURLSessionDataTask *)requestToken
+- (void)cancelRequest:(NSURLSessionDataTask *)task
 {
-  [requestToken cancel];
+  [task cancel];
+  [_delegates removeObjectForKey:task];
 }
 
 #pragma mark - NSURLSession delegate
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+   didSendBodyData:(int64_t)bytesSent
+    totalBytesSent:(int64_t)totalBytesSent
+totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+{
+  [[_delegates objectForKey:task] URLRequest:task didSendDataWithProgress:totalBytesSent];
+}
 
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)task

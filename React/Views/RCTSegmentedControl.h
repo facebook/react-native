@@ -9,13 +9,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTEventDispatcher;
+#import "RCTComponent.h"
 
 @interface RCTSegmentedControl : UISegmentedControl
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
-
 @property (nonatomic, copy) NSArray *values;
 @property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end

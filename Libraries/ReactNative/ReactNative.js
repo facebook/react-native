@@ -14,7 +14,6 @@
 var ReactChildren = require('ReactChildren');
 var ReactClass = require('ReactClass');
 var ReactComponent = require('ReactComponent');
-var ReactContext = require('ReactContext');
 var ReactCurrentOwner = require('ReactCurrentOwner');
 var ReactElement = require('ReactElement');
 var ReactElementValidator = require('ReactElementValidator');
@@ -22,11 +21,13 @@ var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactNativeDefaultInjection = require('ReactNativeDefaultInjection');
 var ReactNativeMount = require('ReactNativeMount');
 var ReactPropTypes = require('ReactPropTypes');
+var ReactUpdates = require('ReactUpdates');
 
 var deprecated = require('deprecated');
 var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
 var onlyChild = require('onlyChild');
+var warning = require('warning');
 
 ReactNativeDefaultInjection.inject();
 
@@ -52,7 +53,7 @@ var resolveDefaultProps = function(element) {
 };
 
 // Experimental optimized element creation
-var augmentElement = function(element: ReactElement) {
+var augmentElement = function(element: ReactElement): ReactElement {
   if (__DEV__) {
     invariant(
       false,
@@ -61,7 +62,6 @@ var augmentElement = function(element: ReactElement) {
     );
   }
   element._owner = ReactCurrentOwner.current;
-  element._context = ReactContext.current;
   if (element.type.defaultProps) {
     resolveDefaultProps(element);
   }
@@ -95,7 +95,11 @@ var ReactNative = {
   render: render,
   unmountComponentAtNode: ReactNativeMount.unmountComponentAtNode,
 
- // Hook for JSX spread, don't use this for anything else.
+  /* eslint-disable camelcase */
+  unstable_batchedUpdates: ReactUpdates.batchedUpdates,
+  /* eslint-enable camelcase */
+
+  // Hook for JSX spread, don't use this for anything else.
   __spread: Object.assign,
 
   unmountComponentAtNodeAndRemoveContainer: ReactNativeMount.unmountComponentAtNodeAndRemoveContainer,
@@ -103,20 +107,14 @@ var ReactNative = {
   isValidElement: ReactElement.isValidElement,
 
   // Deprecations (remove for 0.13)
-  renderComponent: deprecated(
-    'React',
-    'renderComponent',
-    'render',
-    this,
-    render
-  ),
-  isValidComponent: deprecated(
-    'React',
-    'isValidComponent',
-    'isValidElement',
-    this,
-    ReactElement.isValidElement
-  )
+  renderComponent: function(
+    element: ReactElement,
+    mountInto: number,
+    callback?: ?(() => void)
+  ): ?ReactComponent {
+    warning('Use React.render instead of React.renderComponent');
+    return ReactNative.render(element, mountInto, callback);
+  },
 };
 
 // Inject the runtime into a devtools global hook regardless of browser.

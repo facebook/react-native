@@ -18,7 +18,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTNavItem alloc] init];
+  return [RCTNavItem new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(navigationBarHidden, BOOL)
@@ -38,5 +38,8 @@ RCT_EXPORT_VIEW_PROPERTY(leftButtonIcon, UIImage)
 
 RCT_EXPORT_VIEW_PROPERTY(rightButtonIcon, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString)
+
+RCT_EXPORT_VIEW_PROPERTY(onNavLeftButtonTap, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onNavRightButtonTap, RCTBubblingEventBlock)
 
 @end

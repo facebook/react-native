@@ -10,6 +10,8 @@
  */
 'use strict';
 
+require('regenerator/runtime');
+
 var React = require('react-native');
 
 var {
@@ -59,12 +61,12 @@ var IntegrationTestsApp = React.createClass({
         <View style={styles.separator} />
         <ScrollView>
           {TESTS.map((test) => [
-            <TouchableOpacity onPress={() => this.setState({test})}>
-              <View style={styles.row}>
-                <Text style={styles.testName}>
-                  {test.displayName}
-                </Text>
-              </View>
+            <TouchableOpacity
+              onPress={() => this.setState({test})}
+              style={styles.row}>
+              <Text style={styles.testName}>
+                {test.displayName}
+              </Text>
             </TouchableOpacity>,
             <View style={styles.separator} />
           ])}

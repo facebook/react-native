@@ -12,26 +12,20 @@
 'use strict';
 
 var GLOBAL = GLOBAL || this;
+var TRACE_TAG_REACT_APPS = 1 << 17;
 
 var BridgeProfiling = {
-  profile(profileName?: any, args?: any) {
+  profile(profileName?: any) {
     if (GLOBAL.__BridgeProfilingIsProfiling) {
-      if (args) {
-        try {
-          args = JSON.stringify(args);
-        } catch(err) {
-          args = err.message;
-        }
-      }
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      console.profile(profileName, args);
+      console.profile(TRACE_TAG_REACT_APPS, profileName);
     }
   },
 
-  profileEnd(profileName?: string) {
+  profileEnd() {
     if (GLOBAL.__BridgeProfilingIsProfiling) {
-      console.profileEnd(profileName);
+      console.profileEnd(TRACE_TAG_REACT_APPS);
     }
   },
 
@@ -39,16 +33,16 @@ var BridgeProfiling = {
     var ReactPerf = require('ReactPerf');
     var originalMeasure = ReactPerf.measure;
     ReactPerf.measure = function (objName, fnName, func) {
-      func = originalMeasure.call(ReactPerf, objName, fnName, func);
+      func = originalMeasure.apply(ReactPerf, arguments);
       return function (component) {
-        BridgeProfiling.profile();
-        var ret = func.apply(this, arguments);
         if (GLOBAL.__BridgeProfilingIsProfiling) {
           var name = this._instance && this._instance.constructor &&
             (this._instance.constructor.displayName ||
              this._instance.constructor.name);
-          BridgeProfiling.profileEnd(`${objName}.${fnName}(${name})`);
+          BridgeProfiling.profile(`${objName}.${fnName}(${name})`);
         }
+        var ret = func.apply(this, arguments);
+        BridgeProfiling.profileEnd();
         return ret;
       };
     };

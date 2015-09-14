@@ -10,7 +10,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var execFile = require('child_process').execFile;
+var childProcess = require('child_process');
 var http = require('http');
 var isAbsolutePath = require('absolute-path');
 
@@ -49,11 +49,6 @@ var options = parseCommandLine([{
   type: 'string',
   description: 'specify the root directories of app assets'
 }, {
-  command: 'platform',
-  type: 'string',
-  default: 'ios',
-  description: 'Specify the platform-specific blacklist (ios, android, web).'
-}, {
   command: 'skipflow',
   description: 'Disable flow checks'
 }, {
@@ -64,6 +59,14 @@ var options = parseCommandLine([{
   type: 'string',
   default: require.resolve('./transformer.js'),
   description: 'Specify a custom transformer to be used (absolute path)'
+}, {
+  command: 'resetCache',
+  description: 'Removes cached files',
+  default: false,
+}, {
+  command: 'reset-cache',
+  description: 'Removes cached files',
+  default: false,
 }]);
 
 if (options.projectRoots) {
@@ -195,7 +198,7 @@ function getDevToolsLauncher(options) {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
-      execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
+      childProcess.execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
         if (err) {
           console.log('Failed to run ' + script, err);
         }
@@ -220,6 +223,68 @@ function statusPageMiddleware(req, res, next) {
   }
 }
 
+function systraceProfileMiddleware(req, res, next) {
+  if (req.url !== '/systrace') {
+    next();
+    return;
+  }
+
+  console.log('Dumping profile information...');
+  const dumpName = '/tmp/dump_' + Date.now() + '.json';
+  const prefix = process.env.TRACE_VIEWER_PATH || '';
+  const cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
+  fs.writeFileSync(dumpName, req.rawBody);
+  childProcess.exec(cmd, function(error) {
+    if (error) {
+      if (error.code === 127) {
+        res.end(
+          '\n** Failed executing `' + cmd + '` **\n\n' +
+          'Google trace-viewer is required to visualize the data, You can install it with `brew install trace2html`\n\n' +
+          'NOTE: Your profile data was kept at:\n' + dumpName
+        );
+      } else {
+        console.error(error);
+        res.end('Unknown error %s', error.message);
+      }
+      return;
+    } else {
+      childProcess.exec('rm ' + dumpName);
+      childProcess.exec('open ' + dumpName.replace(/json$/, 'html'), function(err) {
+        if (err) {
+          console.error(err);
+          res.end(err.message);
+        } else {
+          res.end();
+        }
+      });
+    }
+  });
+}
+
+function cpuProfileMiddleware(req, res, next) {
+  if (req.url !== '/cpu-profile') {
+    next();
+    return;
+  }
+
+  console.log('Dumping CPU profile information...');
+  const dumpName = '/tmp/cpu-profile_' + Date.now();
+  fs.writeFileSync(dumpName + '.json', req.rawBody);
+
+  const cmd = path.join(__dirname, '..', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
+  childProcess.exec(cmd, function(error) {
+    if (error) {
+      console.error(error);
+      res.end('Unknown error: %s', error.message);
+    } else {
+      res.end(
+        'Your profile was generated at\n\n' + dumpName + '.cpuprofile\n\n' +
+        'Open `Chrome Dev Tools > Profiles > Load` and select the profile to visualize it.'
+      );
+    }
+  });
+}
+
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
   if (!isAbsolutePath(transformerPath)) {
@@ -229,11 +294,12 @@ function getAppMiddleware(options) {
   return ReactPackager.middleware({
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
-    blacklistRE: blacklist(options.platform),
+    blacklistRE: blacklist(),
     cacheVersion: '2',
     transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
+    resetCache: options.resetCache || options['reset-cache'],
     polyfillModuleNames: [
       require.resolve(
         '../Libraries/JavaScriptAppEngine/polyfills/document.js'
@@ -251,6 +317,8 @@ function runServer(
     .use(openStackFrameInEditor)
     .use(getDevToolsLauncher(options))
     .use(statusPageMiddleware)
+    .use(systraceProfileMiddleware)
+    .use(cpuProfileMiddleware)
     // Temporarily disable flow check until it's more stable
     //.use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));

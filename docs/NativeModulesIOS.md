@@ -1,10 +1,10 @@
 ---
-id: nativemodulesios
+id: native-modules-ios
 title: Native Modules (iOS)
 layout: docs
 category: Guides
-permalink: docs/nativemodulesios.html
-next: nativecomponentsios
+permalink: docs/native-modules-ios.html
+next: native-components-ios
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -229,6 +229,47 @@ console.log(CalendarManager.firstDayOfTheWeek);
 ```
 
 Note that the constants are exported only at initialization time, so if you change `constantsToExport` values at runtime it won't affect the JavaScript environment.
+
+### Enum Constants
+
+Enums that are defined via `NS_ENUM` cannot be used as method arguments without first extending RCTConvert.
+
+In order to export the following `NS_ENUM` definition:
+
+```objc
+typedef NS_ENUM(NSInteger, UIStatusBarAnimation) {
+    UIStatusBarAnimationNone,
+    UIStatusBarAnimationFade,
+    UIStatusBarAnimationSlide,
+};
+```
+
+You must create a class extension of RCTConvert like so:
+
+```objc
+@implementation RCTConvert (StatusBarAnimation)
+  RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
+                                               @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
+                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide),
+                      UIStatusBarAnimationNone, integerValue)
+@end
+```
+
+You can then define methods and export your enum constants like this:
+
+```objc
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
+            @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
+            @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide) }
+};
+    
+RCT_EXPORT_METHOD(updateStatusBarAnimation:(UIStatusBarAnimation)animation
+                                completion:(RCTResponseSenderBlock)callback)
+```
+
+Your enum will then be automatically unwrapped using the selector provided (`integerValue` in the above example) before being passed to your exported method.
 
 
 ## Sending Events to JavaScript

@@ -15,8 +15,11 @@ jest
 
 jest.mock('fs');
 
+var Cache = require('../../Cache');
+
 var OPTIONS = {
-  transformModulePath: '/foo/bar'
+  transformModulePath: '/foo/bar',
+  cache: new Cache({}),
 };
 
 describe('Transformer', function() {
@@ -28,9 +31,6 @@ describe('Transformer', function() {
     jest.setMock('worker-farm', jest.genMockFn().mockImpl(function() {
       return workers;
     }));
-    require('../Cache').prototype.get.mockImpl(function(filePath, callback) {
-      return callback();
-    });
     require('fs').readFile.mockImpl(function(file, callback) {
       callback(null, 'content');
     });

@@ -1,9 +1,9 @@
 ---
-id: embedded-app
-title: Integration with Existing App
+id: embedded-app-ios
+title: Integrating with Existing Apps (iOS)
 layout: docs
 category: Guides
-permalink: docs/embedded-app.html
+permalink: docs/embedded-app-ios.html
 next: javascript-environment
 ---
 
@@ -12,8 +12,8 @@ Since React makes no assumptions about the rest of your technology stack – it�
 ## Requirements
 
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
-- [io.js](http://iojs.org) – `brew install iojs && brew link iojs --force` or from [nvm](https://github.com/creationix/nvm)
-  - You may have to run `brew unlink node` if you have previously installed Node
+- [io.js](http://iojs.org)
+  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install iojs-v2 && nvm alias default iojs-v2`, which installs the latest compatible version of io.js and sets up your terminal so that typing `node` runs io.js.  With nvm you can install multiple versions of Node and io.js and easily switch between them.
 
 ## Install React Native Using CocoaPods
 

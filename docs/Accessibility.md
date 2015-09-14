@@ -1,10 +1,10 @@
 ---
 id: accessibility
-title: Accessibility
+title: Accessibility (iOS)
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: nativemodulesios
+next: native-modules-ios
 ---
 
 Accessibility on iOS encompasses many topics, but for many, accessibility is synonymous with VoiceOver, a technology available since iOS 3.0. It acts as a screen reader, allowing people with visual impairments to use their iOS devices. Click [here](https://developer.apple.com/accessibility/ios/) to learn more.

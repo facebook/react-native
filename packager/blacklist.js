@@ -13,28 +13,27 @@ var path = require('path');
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  'website',
-  'node_modules/react-tools/src/utils/ImmutableObject.js',
-  'node_modules/react-tools/src/core/ReactInstanceHandles.js',
-  'node_modules/react-tools/src/event/EventPropagators.js'
+  'node_modules/react-tools/src/React.js',
+  'node_modules/react-tools/src/renderers/shared/event/EventPropagators.js',
+  'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
+  'node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js',
+];
+
+// Raw unescaped patterns in case you need to use wildcards
+var sharedBlacklistWildcards = [
+  'website\/node_modules\/.*',
 ];
 
 var platformBlacklists = {
   web: [
-    '.ios.js'
+    '.ios.js',
+    '.android.js',
   ],
   ios: [
-    'node_modules/react-tools/src/browser/ui/React.js',
-    'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
-    'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
     '.web.js',
     '.android.js',
   ],
   android: [
-    'node_modules/react-tools/src/browser/ui/React.js',
-    'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
-    'node_modules/react-tools/src/browser/ReactTextComponent.js',
-    'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
     '.web.js',
     '.ios.js',
   ],
@@ -51,6 +50,7 @@ function blacklist(platform, additionalBlacklist) {
     (additionalBlacklist || []).concat(sharedBlacklist)
       .concat(platformBlacklists[platform] || [])
       .map(escapeRegExp)
+      .concat(sharedBlacklistWildcards)
       .join('|') +
     ')$'
   );

@@ -3,7 +3,7 @@ var b = require('react-docgen/node_modules/recast').types.builders;
 var docgen = require('react-docgen');
 
 function stylePropTypeHandler(documentation, path) {
-  var propTypesPath = docgen.utils.getPropertyValuePath(path, 'propTypes');
+  var propTypesPath = docgen.utils.getMemberValuePath(path, 'propTypes');
   if (!propTypesPath) {
     return;
   }
@@ -36,8 +36,8 @@ function stylePropTypeHandler(documentation, path) {
 }
 
 function findExportedOrFirst(node, recast) {
-  return docgen.resolver.findExportedReactCreateClassCall(node, recast) ||
-    docgen.resolver.findAllReactCreateClassCalls(node, recast)[0];
+  return docgen.resolver.findExportedComponentDefinition(node, recast) ||
+    docgen.resolver.findAllComponentDefinitions(node, recast)[0];
 }
 
 function findExportedObject(ast, recast) {

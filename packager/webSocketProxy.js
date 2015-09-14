@@ -17,7 +17,19 @@ function attachToServer(server, path) {
   });
   var clients = [];
 
+  function sendSpecial(message) {
+    clients.forEach(function (cn) {
+      try {
+        cn.send(JSON.stringify(message));
+      } catch(e) {
+        console.warn('WARN: ' + e.message);
+      }
+    });
+  }
+
   wss.on('connection', function(ws) {
+    var id = Math.random().toString(15).slice(10, 20);
+    sendSpecial({$open: id});
     clients.push(ws);
 
     var allClientsExcept = function(ws) {
@@ -26,10 +38,12 @@ function attachToServer(server, path) {
 
     ws.onerror = function() {
       clients = allClientsExcept(ws);
+      sendSpecial({$error: id});
     };
 
     ws.onclose = function() {
       clients = allClientsExcept(ws);
+      sendSpecial({$close: id});
     };
 
     ws.on('message', function(message) {

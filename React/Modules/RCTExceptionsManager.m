@@ -20,6 +20,8 @@
   NSUInteger _reloadRetries;
 }
 
+@synthesize bridge = _bridge;
+
 RCT_EXPORT_MODULE()
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
@@ -44,7 +46,7 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
     [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
     return;
   }
-  [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
+  [_bridge.redBox showErrorMessage:message withStack:stack];
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
@@ -56,7 +58,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
     return;
   }
 
-  [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
+  [_bridge.redBox showErrorMessage:message withStack:stack];
 
   if (!RCT_DEBUG) {
 
@@ -95,7 +97,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
     return;
   }
 
-  [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
+  [_bridge.redBox updateErrorMessage:message withStack:stack];
 }
 
 // Deprecated.  Use reportFatalException directly instead.

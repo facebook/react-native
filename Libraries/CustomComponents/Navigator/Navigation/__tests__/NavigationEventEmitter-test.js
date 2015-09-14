@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -34,27 +34,48 @@ jest
 var NavigationEventEmitter = require('NavigationEventEmitter');
 
 describe('NavigationEventEmitter', () => {
-  it('emit event', () => {
-    var target = {};
-    var emitter = new NavigationEventEmitter(target);
-    var focusCounter = 0;
-    var focusTarget;
+  it('emits event', () => {
+    var context = {};
+    var emitter = new NavigationEventEmitter(context);
+    var logs = [];
 
-    emitter.addListener('focus', (event) => {
-      focusCounter++;
-      focusTarget = event.target;
+    emitter.addListener('ping', (event) => {
+      var {type, data, target, defaultPrevented} = event;
+
+      logs.push({
+        data,
+        defaultPrevented,
+        target,
+        type,
+      });
+
     });
 
-    emitter.emit('focus');
-    emitter.emit('blur');
+    emitter.emit('ping', 'hello');
 
-    expect(focusCounter).toBe(1);
-    expect(focusTarget).toBe(target);
+    expect(logs.length).toBe(1);
+    expect(logs[0].target).toBe(context);
+    expect(logs[0].type).toBe('ping');
+    expect(logs[0].data).toBe('hello');
+    expect(logs[0].defaultPrevented).toBe(false);
   });
 
-  it('put nested emit call in queue', () => {
-    var target = {};
-    var emitter = new NavigationEventEmitter(target);
+  it('does not emit event that has no listeners', () => {
+    var context = {};
+    var emitter = new NavigationEventEmitter(context);
+    var pinged = false;
+
+    emitter.addListener('ping', () => {
+      pinged = true;
+    });
+
+    emitter.emit('yo', 'bo');
+    expect(pinged).toBe(false);
+  });
+
+  it('puts nested emit call in a queue', () => {
+    var context = {};
+    var emitter = new NavigationEventEmitter(context);
     var logs = [];
 
     emitter.addListener('one', () => {
@@ -76,5 +97,64 @@ describe('NavigationEventEmitter', () => {
     emitter.emit('one');
 
     expect(logs).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('calls callback after emitting', () => {
+    var context = {};
+    var emitter = new NavigationEventEmitter(context);
+    var logs = [];
+
+    emitter.addListener('ping', (event) => {
+      var {type, data, target, defaultPrevented} = event;
+      logs.push({
+        data,
+        defaultPrevented,
+        target,
+        type,
+      });
+      event.preventDefault();
+    });
+
+    emitter.emit('ping', 'hello', (event) => {
+      var {type, data, target, defaultPrevented} = event;
+      logs.push({
+        data,
+        defaultPrevented,
+        target,
+        type,
+      });
+    });
+
+    expect(logs.length).toBe(2);
+    expect(logs[1].target).toBe(context);
+    expect(logs[1].type).toBe('ping');
+    expect(logs[1].data).toBe('hello');
+    expect(logs[1].defaultPrevented).toBe(true);
+  });
+
+  it('calls callback after emitting the current event and before ' +
+       'emitting the next event', () => {
+    var context = {};
+    var emitter = new NavigationEventEmitter(context);
+    var logs = [];
+
+    emitter.addListener('ping', (event) => {
+      logs.push('ping');
+      emitter.emit('pong');
+    });
+
+    emitter.addListener('pong', (event) => {
+      logs.push('pong');
+    });
+
+    emitter.emit('ping', null, () => {
+      logs.push('did-ping');
+    });
+
+    expect(logs).toEqual([
+      'ping',
+      'did-ping',
+      'pong',
+    ]);
   });
 });

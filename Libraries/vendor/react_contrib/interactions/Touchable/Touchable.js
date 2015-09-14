@@ -636,19 +636,19 @@ var TouchableMixin = {
     }
 
     if (IsPressingIn[curState] && signal === Signals.LONG_PRESS_DETECTED) {
-      this.touchableHandleLongPress && this.touchableHandleLongPress();
+      this.touchableHandleLongPress && this.touchableHandleLongPress(e);
     }
 
     if (newIsHighlight && !curIsHighlight) {
       this._savePressInLocation(e);
-      this.touchableHandleActivePressIn && this.touchableHandleActivePressIn();
+      this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
     } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
       if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
         this.pressOutDelayTimeout = this.setTimeout(function() {
-          this.touchableHandleActivePressOut();
+          this.touchableHandleActivePressOut(e);
         }, this.touchableGetPressOutDelayMS());
       } else {
-        this.touchableHandleActivePressOut();
+        this.touchableHandleActivePressOut(e);
       }
     }
 

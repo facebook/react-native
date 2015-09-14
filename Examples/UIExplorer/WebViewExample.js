@@ -58,24 +58,24 @@ var WebViewExample = React.createClass({
     return (
       <View style={[styles.container]}>
         <View style={[styles.addressBarRow]}>
-          <TouchableOpacity onPress={this.goBack}>
-            <View style={this.state.backButtonEnabled ? styles.navButton : styles.disabledButton}>
-              <Text>
-                 {'<'}
-              </Text>
-            </View>
+          <TouchableOpacity
+            onPress={this.goBack}
+            style={this.state.backButtonEnabled ? styles.navButton : styles.disabledButton}>
+            <Text>
+               {'<'}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={this.goForward}>
-            <View style={this.state.forwardButtonEnabled ? styles.navButton : styles.disabledButton}>
-              <Text>
-                {'>'}
-              </Text>
-            </View>
+          <TouchableOpacity
+            onPress={this.goForward}
+            style={this.state.forwardButtonEnabled ? styles.navButton : styles.disabledButton}>
+            <Text>
+              {'>'}
+            </Text>
           </TouchableOpacity>
           <TextInput
             ref={TEXT_INPUT_REF}
             autoCapitalize="none"
-            value={this.state.url}
+            defaultValue={this.state.url}
             onSubmitEditing={this.onSubmitEditing}
             onChange={this.handleTextInputChange}
             clearButtonMode="while-editing"

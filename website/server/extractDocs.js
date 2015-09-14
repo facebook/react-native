@@ -134,7 +134,7 @@ function renderAPI(type) {
     try {
       json = jsDocs(fs.readFileSync(filepath).toString());
     } catch(e) {
-      console.error('Cannot parse file', filepath);
+      console.error('Cannot parse file', filepath, e);
       json = {};
     }
     return componentsToMarkdown(type, json, filepath, n++);
@@ -165,11 +165,13 @@ var components = [
   '../Libraries/CustomComponents/ListView/ListView.js',
   '../Libraries/Components/MapView/MapView.js',
   '../Libraries/CustomComponents/Navigator/Navigator.js',
+  '../Libraries/Modal/Modal.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Picker/PickerIOS.ios.js',
+  '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
-  '../Libraries/Components/SliderIOS/SliderIOS.js',
+  '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
@@ -185,12 +187,13 @@ var components = [
 var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/Utilities/AlertIOS.js',
+  '../Libraries/Animated/Animated.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',
   '../Libraries/CameraRoll/CameraRoll.js',
   '../Libraries/Interaction/InteractionManager.js',
-  '../Libraries/Animation/LayoutAnimation.js',
+  '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
@@ -223,7 +226,7 @@ var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
     docgen.parse(
       fs.readFileSync(filepath),
       docgenHelpers.findExportedObject,
-      [docgen.handlers.propTypeHandler]
+      [docgen.handlers.propTypeHandler, docgen.handlers.propTypeCompositionHandler]
     );
 
   return docs;
