@@ -341,7 +341,7 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
 
   @Override
   protected MyCustomView createViewInstance(ThemedReactContext reactContext) {
-    return new MyCustomView(reactContext)
+    return new MyCustomView(reactContext);
   }
 
   @Override
