@@ -227,11 +227,13 @@ class TimingAnimation extends Animation {
 
 type DecayAnimationConfig = {
   velocity: number | {x: number, y: number};
+  clampValue?: number;
   deceleration?: number;
 };
 
 type DecayAnimationConfigSingle = {
   velocity: number;
+  clampValue?: number;
   deceleration?: number;
 };
 
@@ -239,6 +241,7 @@ class DecayAnimation extends Animation {
   _startTime: number;
   _lastValue: number;
   _fromValue: number;
+  _clampValue: number;
   _deceleration: number;
   _velocity: number;
   _onUpdate: (value: number) => void;
@@ -249,6 +252,7 @@ class DecayAnimation extends Animation {
   ) {
     super();
     this._deceleration = config.deceleration || 0.998;
+    this._clampValue = config.clampValue;
     this._velocity = config.velocity;
   }
 
@@ -273,6 +277,12 @@ class DecayAnimation extends Animation {
       (this._velocity / (1 - this._deceleration)) *
       (1 - Math.exp(-(1 - this._deceleration) * (now - this._startTime)));
 
+    if (this._clampValue != null && this._tryClamping(value)) {
+      this._onUpdate(this._clampValue);
+      this.__debouncedOnEnd({finished: true});
+      return;
+    }
+
     this._onUpdate(value);
 
     if (Math.abs(this._lastValue - value) < 0.1) {
@@ -290,6 +300,13 @@ class DecayAnimation extends Animation {
     this.__active = false;
     window.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
+  }
+
+  _tryClamping(
+    value: number,
+  ): void {
+    var distance = (this._clampValue - value) * (this._velocity >= 0 ? 1 : -1);
+    return distance <= 0;
   }
 }
 
