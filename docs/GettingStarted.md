@@ -46,6 +46,8 @@ To write React Native apps for Android, you will need to install the Android SDK
 * Press the menu button (F2 by default, or ⌘-M in Genymotion) and select *Reload JS* to see your change!
 * Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your app's logs
 
+_Note: If you are using a device, see the [Running on Device page](http://facebook.github.io/react-native/docs/running-on-device-android.html#content)._
+
 Congratulations! You've successfully run and modified your first React Native app.
 
 _If you run into any issues getting started, see the [troubleshooting page](/react-native/docs/troubleshooting.html#content)._
