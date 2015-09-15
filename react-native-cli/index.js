@@ -144,8 +144,9 @@ function createProject(name) {
       process.exit(1);
     }
 
+    var args = [projectName].concat(process.argv.slice(4));
     cli = require(CLI_MODULE_PATH());
-    cli.init(root, projectName);
+    cli.init(root, args);
   });
 }
 
