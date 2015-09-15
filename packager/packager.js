@@ -8,15 +8,26 @@
  */
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var childProcess = require('child_process');
-var http = require('http');
-var isAbsolutePath = require('absolute-path');
+try {
+  var fs = require('fs');
+  var path = require('path');
+  var childProcess = require('child_process');
+  var http = require('http');
+  var isAbsolutePath = require('absolute-path');
 
-var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
+  var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
-if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
+  var chalk = require('chalk');
+  var connect = require('connect');
+  var ReactPackager = require('./react-packager');
+  var blacklist = require('./blacklist.js');
+  var checkNodeVersion = require('./checkNodeVersion');
+  var formatBanner = require('./formatBanner');
+  var launchEditor = require('./launchEditor.js');
+  var parseCommandLine = require('./parseCommandLine.js');
+  var webSocketProxy = require('./webSocketProxy.js');
+}
+catch (err) {
   console.log(
     '\n' +
     'Could not find dependencies.\n' +
@@ -25,16 +36,6 @@ if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   );
   process.exit();
 }
-
-var chalk = require('chalk');
-var connect = require('connect');
-var ReactPackager = require('./react-packager');
-var blacklist = require('./blacklist.js');
-var checkNodeVersion = require('./checkNodeVersion');
-var formatBanner = require('./formatBanner');
-var launchEditor = require('./launchEditor.js');
-var parseCommandLine = require('./parseCommandLine.js');
-var webSocketProxy = require('./webSocketProxy.js');
 
 var options = parseCommandLine([{
   command: 'port',
