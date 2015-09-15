@@ -31,7 +31,7 @@ Example:
 This is needed to fetch the dependencies for the packager.
 
 ```bash
-cd react-native-android
+cd react-native
 npm install
 ```
 
@@ -40,7 +40,7 @@ npm install
 To build the framework code:
 
 ```bash
-cd react-native-android
+cd react-native
 ./gradlew :ReactAndroid:assembleDebug
 ```
 
@@ -55,7 +55,7 @@ To install a snapshot version of the framework code in your local Maven repo:
 To run the Sample app:
 
 ```bash
-cd react-native-android
+cd react-native
 ./gradlew :Examples:SampleApp:android:app:installDebug
 # Start the packager in a separate shell:
 # Make sure you ran npm install
@@ -77,7 +77,7 @@ You'll need to do one additional step until we release the React Native Gradle p
     mkdir -p /Applications/Android\ Studio.app/Contents/gradle/m2repository/com/facebook/react
     cp -r ~/.m2/repository/com/facebook/react/gradleplugin /Applications/Android\ Studio.app/Contents/gradle/m2repository/com/facebook/react/
 
-Now, open Android Studio, click _Import Non-Android Studio project_ and find your `react-native-android` repo.
+Now, open Android Studio, click _Import Non-Android Studio project_ and find your `react-native` repo.
   
 In the configurations dropdown, _app_ should be selected. Click _Run_.
 
