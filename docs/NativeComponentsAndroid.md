@@ -129,7 +129,7 @@ var iface = {
 module.exports = requireNativeComponent('RCTImageView', iface);
 ```
 
-`requireNativeComponent` commonly takes two parameters, the first is the name of the native view and the second is an object that describes the component interface. The component interface should declare a friendly `name` for use in debug messages and must declare the `propTypes` reflected by the Native View. The `propTypes` are used for checking the validity of a user's use of the native view.
+`requireNativeComponent` commonly takes two parameters, the first is the name of the native view and the second is an object that describes the component interface. The component interface should declare a friendly `name` for use in debug messages and must declare the `propTypes` reflected by the Native View. The `propTypes` are used for checking the validity of a user's use of the native view.  Note that if you need your JavaScript component to do more than just specify a name and propTypes, like do custom event handling, you can wrap the native component in a normal react component.  In that case, you want to pass in the wrapper component instead of `iface` to `requireNativeComponent`.  This is illustrated in the `MyCustomView` example below.
 
 # Events
 
@@ -160,10 +160,10 @@ class MyCustomView extends React.Component {
     this._onChange = this._onChange.bind(this);
   }
   _onChange(event: Event) {
-    if (!this.props.onChange) {
+    if (!this.props.onChangeMessage) {
       return;
     }
-    this.props.onChange(event.nativeEvent.message);
+    this.props.onChangeMessage(event.nativeEvent.message);
   }
   render() {
     return <RCTMyCustomView {...this.props} onChange={this._onChange} />;
@@ -173,7 +173,13 @@ MyCustomView.propTypes = {
   /**
    * Callback that is called continuously when the user is dragging the map.
    */
-  onChange: React.PropTypes.func,
+  onChangeMessage: React.PropTypes.func,
   ...
 };
+
+var RCTMyCustomView = requireNativeComponent(`RCTMyCustomView`, MyCustomView, {
+  nativeOnly: {onChange: true}
+});
 ```
+
+Note the use of `nativeOnly` above.  Sometimes you'll have some special properties that you need to expose for the native component, but don't actually want them as part of the API for the associated React component.  For example, `Switch` has a custom `onChange` handler for the raw native event, and exposes an `onValueChange` handler property that is invoked with just the boolean value rather than the raw event (similar to `onChangeMessage` in the example above).  Since you don't want these native only properties to be part of the API, you don't want to put them in `propTypes`, but if you don't you'll get an error.  The solution is simply to call them out via the `nativeOnly` option.
