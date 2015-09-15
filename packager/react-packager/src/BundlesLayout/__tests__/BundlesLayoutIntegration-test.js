@@ -9,25 +9,8 @@
 'use strict';
 
 jest
-  .dontMock('absolute-path')
-  .dontMock('crypto')
-  .dontMock('underscore')
-  .dontMock('path')
-  .dontMock('../index')
-  .dontMock('../../lib/getAssetDataFromName')
-  .dontMock('../../DependencyResolver/crawlers')
-  .dontMock('../../DependencyResolver/crawlers/node')
-  .dontMock('../../DependencyResolver/DependencyGraph/docblock')
-  .dontMock('../../DependencyResolver/fastfs')
-  .dontMock('../../DependencyResolver/replacePatterns')
-  .dontMock('../../DependencyResolver')
-  .dontMock('../../DependencyResolver/DependencyGraph')
-  .dontMock('../../DependencyResolver/AssetModule_DEPRECATED')
-  .dontMock('../../DependencyResolver/AssetModule')
-  .dontMock('../../DependencyResolver/Module')
-  .dontMock('../../DependencyResolver/Package')
-  .dontMock('../../DependencyResolver/Polyfill')
-  .dontMock('../../DependencyResolver/ModuleCache');
+  .autoMockOff()
+  .mock('../../Cache');
 
 const Promise = require('promise');
 const path = require('path');

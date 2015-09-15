@@ -125,7 +125,7 @@ describe('Bundler', function() {
         });
       });
 
-    wrapModule.mockImpl(function(module, code) {
+    wrapModule.mockImpl(function(response, module, code) {
       return Promise.resolve('lol ' + code + ' lol');
     });
 
