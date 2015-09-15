@@ -176,11 +176,6 @@ RCT_EXPORT_MODULE()
                                name:RCTJavaScriptDidLoadNotification
                              object:nil];
 
-    [notificationCenter addObserver:self
-                           selector:@selector(jsLoaded:)
-                               name:RCTJavaScriptDidFailToLoadNotification
-                             object:nil];
-
     _defaults = [NSUserDefaults standardUserDefaults];
     _settings = [[NSMutableDictionary alloc] initWithDictionary:[_defaults objectForKey:RCTDevMenuSettingsKey]];
     _extraMenuItems = [NSMutableArray new];
@@ -271,6 +266,8 @@ RCT_EXPORT_MODULE()
  */
 - (void)updateSettings:(NSDictionary *)settings
 {
+  [_settings setDictionary:settings];
+
   // Fire handlers for items whose values have changed
   for (RCTDevMenuItem *item in _extraMenuItems) {
     if (item.key) {
@@ -282,11 +279,6 @@ RCT_EXPORT_MODULE()
     }
   }
 
-  if ([settings isEqualToDictionary:_settings]) {
-    return;
-  }
-
-  [_settings setDictionary:settings];
   self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
   self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
   self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
