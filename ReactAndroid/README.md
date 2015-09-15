@@ -16,7 +16,7 @@ Make sure you have the following installed:
 - SDK build tools version 22.0.1 (buildToolsVersion in [`build.gradle`](build.gradle))
 - Android Support Repository 17 (for Android Support Library)
  
-Point Gradle to your Android SDK - in the root of your clone of the github repo, create a file called `local.properties` with the following contents:
+Point Gradle to your Android SDK: either have `$ANDROID_SDK` and `$ANDROID_NDK` defined, or create a `local.properties` file in the root of your `react-native` checkout with the following contents:
 
     sdk.dir=absolute_path_to_android_sdk
     ndk.dir=absolute_path_to_android_ndk
