@@ -25,6 +25,7 @@
   "files": [
     "React",
     "React.podspec",
+    "ReactAndroid",
     "Libraries",
     "packager",
     "cli.js",
