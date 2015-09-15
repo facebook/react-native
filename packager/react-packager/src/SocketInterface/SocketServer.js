@@ -114,7 +114,6 @@ class SocketServer {
   _reply(sock, id, type, data) {
     debug('request finished', type);
 
-    this._jobs--;
     data = toJSON(data);
 
     sock.write(bser.dumpToBuffer({
@@ -122,6 +121,11 @@ class SocketServer {
       type,
       data,
     }));
+
+    // Debounce the kill timer to make sure all the bytes are sent through
+    // the socket and the client has time to fully finish and disconnect.
+    this._dieEventually();
+    this._jobs--;
   }
 
   _dieEventually(delay = MAX_IDLE_TIME) {
