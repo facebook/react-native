@@ -35,6 +35,8 @@ type ReactNativeBaseComponentViewConfig = {
   uiViewClassName: string;
 }
 
+// require('UIManagerStatTracker').install(); // uncomment to enable
+
 /**
  * @constructor ReactNativeBaseComponent
  * @extends ReactComponent
