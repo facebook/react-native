@@ -31,7 +31,7 @@ var PanResponderExample = React.createClass({
 
   statics: {
     title: 'PanResponder Sample',
-    description: 'Basic gesture handling example',
+    description: 'Shows the use of PanResponder to provide basic gesture handling.',
   },
 
   _panResponder: {},

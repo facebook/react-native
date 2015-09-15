@@ -27,7 +27,7 @@ var {
 } = React;
 
 exports.displayName = (undefined: ?string);
-exports.description = 'Touchable and onPress examples';
+exports.description = 'Touchable and onPress examples.';
 exports.title = '<Touchable*> and onPress';
 exports.examples = [
 {

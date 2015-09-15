@@ -94,7 +94,7 @@ var styles = StyleSheet.create({
 });
 
 exports.title = 'Border';
-exports.description = 'View borders';
+exports.description = 'Demonstrates some of the border styles available to Views.';
 exports.examples = [
   {
     title: 'Equal-Width / Same-Color',
