@@ -35,3 +35,4 @@ local.properties
 node_modules
 *.log
 .nvm
+npm-debug.log
