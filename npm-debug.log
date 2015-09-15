@@ -1,0 +1,33 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/iojs/3.2.0/bin/iojs',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'shrinkwrap',
+1 verbose cli   '--dev' ]
+2 info using npm@2.13.5
+3 info using node@v3.2.0
+4 verbose stack Error: Problems were encountered
+4 verbose stack Please correct and try again.
+4 verbose stack missing: timed-out@^2.0.0, required by got@2.9.2
+4 verbose stack missing: timed-out@^2.0.0, required by got@3.3.1
+4 verbose stack     at shrinkwrap_ (/usr/local/lib/node_modules/npm/lib/shrinkwrap.js:37:15)
+4 verbose stack     at /usr/local/lib/node_modules/npm/lib/shrinkwrap.js:31:5
+4 verbose stack     at /usr/local/lib/node_modules/npm/lib/ls.js:47:30
+4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:142:5
+4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:263:14
+4 verbose stack     at cb (/usr/local/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:263:14
+4 verbose stack     at cb (/usr/local/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:263:14
+4 verbose stack     at cb (/usr/local/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+5 verbose cwd /Users/cpojer/Projects/fbsource/fbobjc/Libraries/FBReactKit/js/react-native-github
+6 error Darwin 14.5.0
+7 error argv "/usr/local/Cellar/iojs/3.2.0/bin/iojs" "/usr/local/bin/npm" "shrinkwrap" "--dev"
+8 error node v3.2.0
+9 error npm  v2.13.5
+10 error Problems were encountered
+10 error Please correct and try again.
+10 error missing: timed-out@^2.0.0, required by got@2.9.2
+10 error missing: timed-out@^2.0.0, required by got@3.3.1
+11 error If you need help, you may report this error at:
+11 error     <https://github.com/npm/npm/issues>
+12 verbose exit [ 1, true ]
