@@ -58,7 +58,7 @@ To run the Sample app:
 cd react-native-android
 ./gradlew :Examples:SampleApp:android:app:installDebug
 # Start the packager in a separate shell:
-# Make sure you ran npm install
+# Make sure you run npm install
 ./packager/packager.sh
 # Open SampleApp in your emulator, Menu button -> Reload JS should work
 ```
