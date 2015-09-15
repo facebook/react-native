@@ -14,7 +14,8 @@ var childProcess = require('child_process');
 var http = require('http');
 var isAbsolutePath = require('absolute-path');
 
-var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
+// Temporarily disable flow check until it's more stable
+// var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
 if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
   console.log(
