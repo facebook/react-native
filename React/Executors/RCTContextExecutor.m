@@ -33,6 +33,8 @@
 #if RCT_JSC_PROFILER
 #include <dlfcn.h>
 
+static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
+
 #ifndef RCT_JSC_PROFILER_DYLIB
 #define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[[UIDevice currentDevice] systemVersion] integerValue]] ofType:@"dylib" inDirectory:@"RCTJSCProfiler"] UTF8String]
 #endif
@@ -224,9 +226,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
         nativeProfilerEnableByteCode();
       }
 
-      __block BOOL isProfiling = NO;
-      [bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:@"Profile" handler:^{
-        if (isProfiling) {
+      [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
+        if (shouldStart) {
+          nativeProfilerStart(context, "profile");
+        } else {
           NSString *outputFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"cpu_profile.json"];
           nativeProfilerEnd(context, "profile", outputFile.UTF8String);
           NSData *profileData = [NSData dataWithContentsOfFile:outputFile
@@ -234,10 +237,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                                          error:NULL];
 
           RCTProfileSendResult(bridge, @"cpu-profile", profileData);
-        } else {
-          nativeProfilerStart(context, "profile");
         }
-        isProfiling = !isProfiling;
       }]];
     }
   }
