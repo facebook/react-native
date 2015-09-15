@@ -476,7 +476,7 @@ var ScrollResponderMixin = {
    * you had explicitly focused a node etc).
    */
   scrollResponderKeyboardWillShow: function(e: Event) {
-    this.keyboardWillOpenTo = e;
+    if (e.endCoordinates) this.keyboardWillOpenTo = e;
     this.props.onKeyboardWillShow && this.props.onKeyboardWillShow(e);
   },
 
@@ -488,7 +488,7 @@ var ScrollResponderMixin = {
   scrollResponderKeyboardDidShow: function(e: Event) {
     // TODO(7693961): The event for DidShow is not available on iOS yet.
     // Use the one from WillShow and do not assign.
-    if (e) {
+    if (e && e.endCoordinates) {
       this.keyboardWillOpenTo = e;
     }
     this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
