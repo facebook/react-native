@@ -20,6 +20,7 @@ if (__DEV__) {
   require('RCTRenderingPerf');
 }
 
+
 var runnables = {};
 
 type ComponentProvider = () => ReactClass<any, any, any>;
