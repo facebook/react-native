@@ -13,6 +13,7 @@
  *
  * @flow
  */
+
 'use strict';
 
 var React = require('react-native');
@@ -30,7 +31,7 @@ var ToastExample = React.createClass({
 
   statics: {
     title: 'Toast Example',
-    description: 'Toast Example',
+    description: 'Example that demostrates the use of an Android Toast to provide feedback.',
   },
 
   getInitialState: function() {

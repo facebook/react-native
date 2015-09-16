@@ -45,7 +45,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *
  * ```
  *   componentWillMount: function() {
- *     this._panResponder = PanResponder.create({
+ *     this._panGesture = PanResponder.create({
  *       // Ask to be the responder:
  *       onStartShouldSetPanResponder: (evt, gestureState) => true,
  *       onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
