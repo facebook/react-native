@@ -8,7 +8,10 @@
  */
 'use strict';
 
-global.__DEV__ = true;
-global.setImmediate = global.setImmediate || function(fn) {
-  return setTimeout(fn, 0);
+var transformer = require('../packager/transformer.js');
+
+module.exports = {
+  process(src, file) {
+    return transformer.transform(src, file).code;
+  }
 };
