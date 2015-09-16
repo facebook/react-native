@@ -38,7 +38,7 @@ Alert
 ```
 
 ### Props that are only supported on one platform
-There are properties that work on one platform only, either because they can inherently only be supported on that platform or because they haven't been implemented on the other platforms yet. All of these are annotated with `@platform` in JS docs and have a platform badge on the website (generated from JS docs). See e.g. [Image](https://facebook.github.io/react-native/docs/image.html).
+There are properties that work on one platform only, either because they can inherently only be supported on that platform or because they haven't been implemented on the other platforms yet. All of these are annotated with `@platform` in JS docs and have a platform badge on the website. See e.g. [Image](https://facebook.github.io/react-native/docs/image.html).
 
 ### Publishing modules on Android
 
@@ -76,7 +76,7 @@ We don't support shadows on Android currently. These are notoriously hard to imp
 
 ### Layout-only nodes on Android
 
-An optimization feature of the Android version of React Native is for views which only contribute to the layout to not have a native view, only their layout properties are propagated to their children views. This optimization is to provide stability in deep view hierarchies for React Native and is therefore enabled by default. Should you depend on a view being present or internal tests incorrectly detect a view is layout only it will be necessary to turn off this behavior. To do this, set `collapsable` to false as in this example:
+An optimization feature of the Android version of React Native is for views which only contribute to the layout to not have a native view, only their layout properties are propagated to their children views. This optimization is to provide stability in deep view hierarchies for React Native and gis therefore enabled by default. Should you depend on a view being present or internal tests incorrectly detect a view is layout only it will be necessary to turn off this behavior. To do this, set `collapsable` to false as in this example:
 ```
 <View collapsable={false}>
     ...
