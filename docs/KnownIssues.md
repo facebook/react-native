@@ -63,9 +63,13 @@ There is a noted difference in the handling of Views with an opacity of 0 betwee
 
 The behavior on Android is what you would expect from the web as well.  If you want to be able to click through an overlaying transparent view, you can set `pointerEvents='none'` on it.
 
-### The `overflow` style property defaults to `hidden` and cannot be changed
+### The `overflow` style property defaults to `hidden` and cannot be changed on Android
 
 This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks.
+
+### No support for shadows on Android
+
+We don't support shadows on Android currently. These are notoriously hard to implement as they require drawing outside of a view's bounds and Android's invalidation logic has a hard time with that. A possible solution is to use [elevation](https://developer.android.com/training/material/shadows-clipping.html), but more experimentation will be required.
 
 ### Layout-only nodes on Android
 
