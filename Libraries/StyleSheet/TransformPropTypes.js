@@ -29,13 +29,6 @@ var TransformPropTypes = {
     ])
   ),
   transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
-
-  // DEPRECATED
-  rotation: ReactPropTypes.number,
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
 };
 
 module.exports = TransformPropTypes;
