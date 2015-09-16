@@ -37,7 +37,7 @@ Pasteboard
 Alert
 ```
 
-### Props that are only supported on one platform
+### Some props are only supported on one platform
 There are properties that work on one platform only, either because they can inherently only be supported on that platform or because they haven't been implemented on the other platforms yet. All of these are annotated with `@platform` in JS docs and have a platform badge on the website. See e.g. [Image](https://facebook.github.io/react-native/docs/image.html).
 
 ### Publishing modules on Android
