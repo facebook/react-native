@@ -271,10 +271,27 @@ RCT_EXPORT_MODULE()
     encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
   }
 
+  // Attempt to decode text
   NSString *responseText = [[NSString alloc] initWithData:data encoding:encoding];
   if (!responseText && data.length) {
-    RCTLogWarn(@"Received data was invalid.");
-    return;
+
+    // We don't have an encoding, or the encoding is incorrect, so now we
+    // try to guess (unfortunately, this feature is available of iOS 8+ only)
+    if ([NSString respondsToSelector:@selector(stringEncodingForData:
+                                               encodingOptions:
+                                               convertedString:
+                                               usedLossyConversion:)]) {
+      [NSString stringEncodingForData:data
+                      encodingOptions:nil
+                      convertedString:&responseText
+                  usedLossyConversion:NULL];
+    }
+
+    // If we still can't decode it, bail out
+    if (!responseText) {
+      RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
+      return;
+    }
   }
 
   NSArray *responseJSON = @[task.requestID, responseText ?: @""];
