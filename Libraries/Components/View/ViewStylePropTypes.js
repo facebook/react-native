@@ -34,6 +34,7 @@ var ViewStylePropTypes = {
   borderBottomLeftRadius: ReactPropTypes.number,
   borderBottomRightRadius: ReactPropTypes.number,
   borderStyle: ReactPropTypes.oneOf(['solid', 'dotted', 'dashed']),
+  borderWidth: ReactPropTypes.number,
   opacity: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
   shadowColor: ReactPropTypes.string,
