@@ -16,16 +16,17 @@ var CLI_MODULE_PATH = function() {
     process.cwd(),
     'node_modules',
     'react-native',
-    'cli'
+    'cli.js'
   );
 };
 
 checkForVersionArgument();
 
 var cli;
-try {
-  cli = require(CLI_MODULE_PATH());
-} catch(e) {}
+var cliPath = CLI_MODULE_PATH();
+if (fs.existsSync(cliPath)) {
+  cli = require(cliPath);
+}
 
 if (cli) {
   cli.run();
