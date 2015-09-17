@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.text.Editable;
@@ -31,7 +32,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.BaseViewPropertyApplicator;
-import com.facebook.react.uimanager.CSSColorUtil;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -53,6 +53,10 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
+  @UIProp(UIProp.Type.STRING)
+  public static final String PROP_TEXT_INPUT_TEXT = "text";
+  @UIProp(UIProp.Type.NUMBER)
+  public static final String PROP_TEXT_INPUT_MOST_RECENT_EVENT_COUNT = "mostRecentEventCount";
   @UIProp(UIProp.Type.NUMBER)
   public static final String PROP_FONT_SIZE = ViewProps.FONT_SIZE;
   @UIProp(UIProp.Type.BOOLEAN)
@@ -65,7 +69,7 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
   public static final String PROP_TEXT_ALIGN_VERTICAL = "textAlignVertical";
   @UIProp(UIProp.Type.STRING)
   public static final String PROP_TEXT_INPUT_HINT = "placeholder";
-  @UIProp(UIProp.Type.STRING)
+  @UIProp(UIProp.Type.COLOR)
   public static final String PROP_TEXT_INPUT_HINT_COLOR = "placeholderTextColor";
   @UIProp(UIProp.Type.NUMBER)
   public static final String PROP_TEXT_INPUT_NUMLINES = ViewProps.NUMBER_OF_LINES;
@@ -77,8 +81,10 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
   public static final String PROP_TEXT_INPUT_PASSWORD = "password";
   @UIProp(UIProp.Type.BOOLEAN)
   public static final String PROP_TEXT_INPUT_EDITABLE = "editable";
-  @UIProp(UIProp.Type.STRING)
+  @UIProp(UIProp.Type.COLOR)
   public static final String PROP_TEXT_INPUT_UNDERLINE_COLOR = "underlineColorAndroid";
+  @UIProp(UIProp.Type.NUMBER)
+  public static final String PROP_TEST_ID = "testID";
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
@@ -93,6 +99,7 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
     ReactEditText editText = new ReactEditText(context);
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
+    editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
@@ -185,12 +192,11 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
 
     //Prevents flickering color while waiting for JS update.
     if (props.hasKey(ViewProps.COLOR)) {
-      final String colorStr = props.getString(ViewProps.COLOR);
-      if (colorStr != null) {
-        final int color = CSSColorUtil.getColor(colorStr);
-        view.setTextColor(color);
-      } else {
+      if (props.isNull(ViewProps.COLOR)) {
         view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
+      } else {
+        final int textColor = props.getColorInt(ViewProps.COLOR, Color.TRANSPARENT);
+        view.setTextColor(textColor);
       }
     }
 
@@ -199,25 +205,21 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
     }
 
     if (props.hasKey(PROP_TEXT_INPUT_HINT_COLOR)) {
-      final String colorStr = props.getString(PROP_TEXT_INPUT_HINT_COLOR);
-      if (colorStr != null) {
-        final int color = CSSColorUtil.getColor(colorStr);
-        view.setHintTextColor(color);
-      } else {
+      if (props.isNull(PROP_TEXT_INPUT_HINT_COLOR)) {
         view.setHintTextColor(DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext()));
-        // We need to invalidate in order to force EditText to update hint color.
-        // see updateTextColors() method in TextView.java
-        view.invalidate();
+      } else {
+        final int hintColor = props.getColorInt(PROP_TEXT_INPUT_HINT_COLOR, Color.TRANSPARENT);
+        view.setHintTextColor(hintColor);
       }
     }
 
     if (props.hasKey(PROP_TEXT_INPUT_UNDERLINE_COLOR)) {
-      String colorStr = props.getString(PROP_TEXT_INPUT_UNDERLINE_COLOR);
-      if (colorStr != null) {
-        int color = CSSColorUtil.getColor(colorStr);
-        view.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_IN);
-      } else {
+      if (props.isNull(PROP_TEXT_INPUT_UNDERLINE_COLOR)) {
         view.getBackground().clearColorFilter();
+      } else {
+        final int underlineColor =
+            props.getColorInt(PROP_TEXT_INPUT_UNDERLINE_COLOR, Color.TRANSPARENT);
+        view.getBackground().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
       }
     }
 

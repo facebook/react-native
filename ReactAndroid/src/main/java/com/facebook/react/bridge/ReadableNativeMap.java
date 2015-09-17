@@ -51,6 +51,11 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     return (int) getDouble(name);
   }
 
+  // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
+  @Override
+  public int getColorInt(String name) {
+    return (int) (long) getDouble(name);
+  }
   /**
    * Implementation of a {@link ReadableNativeMap} iterator in native memory.
    */

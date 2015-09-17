@@ -238,7 +238,7 @@ import com.facebook.csslayout.Spacing;
    */
   private int getFullBorderColor() {
     return (mBorderColor != null && !CSSConstants.isUndefined(mBorderColor.getRaw(Spacing.ALL))) ?
-        (int) mBorderColor.getRaw(Spacing.ALL) : DEFAULT_BORDER_COLOR;
+        (int) (long) mBorderColor.getRaw(Spacing.ALL) : DEFAULT_BORDER_COLOR;
   }
 
   private void drawRectangularBackgroundWithBorders(Canvas canvas) {
@@ -296,6 +296,7 @@ import com.facebook.csslayout.Spacing;
   }
 
   private int getBorderColor(int position) {
-    return mBorderColor != null ? (int) mBorderColor.get(position) : DEFAULT_BORDER_COLOR;
+    // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
+    return mBorderColor != null ? (int) (long) mBorderColor.get(position) : DEFAULT_BORDER_COLOR;
   }
 }

@@ -7,53 +7,54 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<153b6759d2dd8fe8cf6d58a422450b96>>
+// @generated SignedSource<<638f16255d86b878b0377e1070cc2b44>>
 
 package com.facebook.csslayout;
+
+import java.util.Arrays;
 
 /**
  * Where the output of {@link LayoutEngine#layoutNode(CSSNode, float)} will go in the CSSNode.
  */
 public class CSSLayout {
+  public static final int POSITION_LEFT = 0;
+  public static final int POSITION_TOP = 1;
+  public static final int POSITION_RIGHT = 2;
+  public static final int POSITION_BOTTOM = 3;
 
-  public float top;
-  public float left;
-  public float right;
-  public float bottom;
-  public float width = CSSConstants.UNDEFINED;
-  public float height = CSSConstants.UNDEFINED;
+  public static final int DIMENSION_WIDTH = 0;
+  public static final int DIMENSION_HEIGHT = 1;
+
+  public float[] position = new float[4];
+  public float[] dimensions = new float[2];
   public CSSDirection direction = CSSDirection.LTR;
 
   /**
    * This should always get called before calling {@link LayoutEngine#layoutNode(CSSNode, float)}
    */
   public void resetResult() {
-    left = 0;
-    top = 0;
-    right = 0;
-    bottom = 0;
-    width = CSSConstants.UNDEFINED;
-    height = CSSConstants.UNDEFINED;
+    Arrays.fill(position, 0);
+    Arrays.fill(dimensions, CSSConstants.UNDEFINED);
     direction = CSSDirection.LTR;
   }
 
   public void copy(CSSLayout layout) {
-    left = layout.left;
-    top = layout.top;
-    right = layout.right;
-    bottom = layout.bottom;
-    width = layout.width;
-    height = layout.height;
+    position[POSITION_LEFT] = layout.position[POSITION_LEFT];
+    position[POSITION_TOP] = layout.position[POSITION_TOP];
+    position[POSITION_RIGHT] = layout.position[POSITION_RIGHT];
+    position[POSITION_BOTTOM] = layout.position[POSITION_BOTTOM];
+    dimensions[DIMENSION_WIDTH] = layout.dimensions[DIMENSION_WIDTH];
+    dimensions[DIMENSION_HEIGHT] = layout.dimensions[DIMENSION_HEIGHT];
     direction = layout.direction;
   }
 
   @Override
   public String toString() {
     return "layout: {" +
-        "left: " + left + ", " +
-        "top: " + top + ", " +
-        "width: " + width + ", " +
-        "height: " + height +
+        "left: " + position[POSITION_LEFT] + ", " +
+        "top: " + position[POSITION_TOP] + ", " +
+        "width: " + dimensions[DIMENSION_WIDTH] + ", " +
+        "height: " + dimensions[DIMENSION_HEIGHT] + ", " +
         "direction: " + direction +
         "}";
   }
