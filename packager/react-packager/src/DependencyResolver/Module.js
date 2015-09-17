@@ -144,7 +144,7 @@ class Module {
  * Extract all required modules from a `code` string.
  */
 const blockCommentRe = /\/\*(.|\n|\r)*?\*\//g;
-const lineCommentRe = /\/\/(.|\r)+(\n|$)/g;
+const lineCommentRe = /\/\/.*(\r|\n|$)/g;
 function extractRequires(code /*: string*/) /*: Array<string>*/ {
   var deps = {
     sync: [],
