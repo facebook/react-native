@@ -17,7 +17,7 @@ var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
@@ -166,9 +166,6 @@ var toolbarAttributes = {
   titleColor: true,
 };
 
-var NativeToolbar = createReactNativeComponentClass({
-  validAttributes: toolbarAttributes,
-  uiViewClassName: 'ToolbarAndroid',
-});
+var NativeToolbar = requireNativeComponent('ToolbarAndroid', null);
 
 module.exports = ToolbarAndroid;

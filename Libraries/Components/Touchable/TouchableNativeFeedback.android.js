@@ -21,6 +21,7 @@ var createReactNativeComponentClass = require('createReactNativeComponentClass')
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
+var processColor = require('processColor');
 
 var rippleBackgroundPropType = createStrictShapeTypeChecker({
   type: React.PropTypes.oneOf(['RippleAndroid']),
@@ -112,7 +113,7 @@ var TouchableNativeFeedback = React.createClass({
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackgroundBorderless'};
     },
     Ripple: function(color, borderless) {
-      return {type: 'RippleAndroid', color: color, borderless: borderless};
+      return {type: 'RippleAndroid', color: processColor(color), borderless: borderless};
     },
   },
 
