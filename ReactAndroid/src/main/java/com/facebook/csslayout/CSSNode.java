@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<c3a1298e36789dcda4cc2776d48646a7>>
+// @generated SignedSource<<560f2fd13ec8e1100a71958529146055>>
 
 package com.facebook.csslayout;
 
@@ -16,6 +16,13 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.facebook.infer.annotation.Assertions;
+
+import static com.facebook.csslayout.CSSLayout.DIMENSION_HEIGHT;
+import static com.facebook.csslayout.CSSLayout.DIMENSION_WIDTH;
+import static com.facebook.csslayout.CSSLayout.POSITION_BOTTOM;
+import static com.facebook.csslayout.CSSLayout.POSITION_LEFT;
+import static com.facebook.csslayout.CSSLayout.POSITION_RIGHT;
+import static com.facebook.csslayout.CSSLayout.POSITION_TOP;
 
 /**
  * A CSS Node. It has a style object you can manipulate at {@link #style}. After calling
@@ -58,6 +65,9 @@ public class CSSNode {
   /*package*/ final CachedCSSLayout lastLayout = new CachedCSSLayout();
 
   public int lineIndex = 0;
+
+  /*package*/ CSSNode nextAbsoluteChild;
+  /*package*/ CSSNode nextFlexChild;
 
   private @Nullable ArrayList<CSSNode> mChildren;
   private @Nullable CSSNode mParent;
@@ -296,61 +306,61 @@ public class CSSNode {
   }
 
   public void setPositionTop(float positionTop) {
-    if (!valuesEqual(style.positionTop, positionTop)) {
-      style.positionTop = positionTop;
+    if (!valuesEqual(style.position[POSITION_TOP], positionTop)) {
+      style.position[POSITION_TOP] = positionTop;
       dirty();
     }
   }
 
   public void setPositionBottom(float positionBottom) {
-    if (!valuesEqual(style.positionBottom, positionBottom)) {
-      style.positionBottom = positionBottom;
+    if (!valuesEqual(style.position[POSITION_BOTTOM], positionBottom)) {
+      style.position[POSITION_BOTTOM] = positionBottom;
       dirty();
     }
   }
 
   public void setPositionLeft(float positionLeft) {
-    if (!valuesEqual(style.positionLeft, positionLeft)) {
-      style.positionLeft = positionLeft;
+    if (!valuesEqual(style.position[POSITION_LEFT], positionLeft)) {
+      style.position[POSITION_LEFT] = positionLeft;
       dirty();
     }
   }
 
   public void setPositionRight(float positionRight) {
-    if (!valuesEqual(style.positionRight, positionRight)) {
-      style.positionRight = positionRight;
+    if (!valuesEqual(style.position[POSITION_RIGHT], positionRight)) {
+      style.position[POSITION_RIGHT] = positionRight;
       dirty();
     }
   }
 
   public void setStyleWidth(float width) {
-    if (!valuesEqual(style.width, width)) {
-      style.width = width;
+    if (!valuesEqual(style.dimensions[DIMENSION_WIDTH], width)) {
+      style.dimensions[DIMENSION_WIDTH] = width;
       dirty();
     }
   }
 
   public void setStyleHeight(float height) {
-    if (!valuesEqual(style.height, height)) {
-      style.height = height;
+    if (!valuesEqual(style.dimensions[DIMENSION_HEIGHT], height)) {
+      style.dimensions[DIMENSION_HEIGHT] = height;
       dirty();
     }
   }
 
   public float getLayoutX() {
-    return layout.left;
+    return layout.position[POSITION_LEFT];
   }
 
   public float getLayoutY() {
-    return layout.top;
+    return layout.position[POSITION_TOP];
   }
 
   public float getLayoutWidth() {
-    return layout.width;
+    return layout.dimensions[DIMENSION_WIDTH];
   }
 
   public float getLayoutHeight() {
-    return layout.height;
+    return layout.dimensions[DIMENSION_HEIGHT];
   }
 
   public CSSDirection getLayoutDirection() {
@@ -368,14 +378,14 @@ public class CSSNode {
    * Get this node's width, as defined in the style.
    */
   public float getStyleWidth() {
-    return style.width;
+    return style.dimensions[DIMENSION_WIDTH];
   }
 
   /**
    * Get this node's height, as defined in the style.
    */
   public float getStyleHeight() {
-    return style.height;
+    return style.dimensions[DIMENSION_HEIGHT];
   }
 
   /**

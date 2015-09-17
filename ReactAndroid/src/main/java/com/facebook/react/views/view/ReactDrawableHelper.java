@@ -21,7 +21,7 @@ import android.util.TypedValue;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.uimanager.CSSColorUtil;
+import com.facebook.react.uimanager.ViewProps;
 
 /**
  * Utility class that helps with converting android drawable description used in JS to an actual
@@ -60,11 +60,10 @@ import com.facebook.react.uimanager.CSSColorUtil;
         throw new JSApplicationIllegalArgumentException("Ripple drawable is not available on " +
             "android API <21");
       }
-      String colorName = drawableDescriptionDict.hasKey("color") ?
-          drawableDescriptionDict.getString("color") : null;
       int color;
-      if (colorName != null) {
-        color = CSSColorUtil.getColor(colorName);
+      if (drawableDescriptionDict.hasKey(ViewProps.COLOR) &&
+          !drawableDescriptionDict.isNull(ViewProps.COLOR)) {
+        color = drawableDescriptionDict.getColorInt(ViewProps.COLOR);
       } else {
         if (context.getTheme().resolveAttribute(
             android.R.attr.colorControlHighlight,

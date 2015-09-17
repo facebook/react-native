@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -31,7 +32,6 @@ import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.uimanager.CSSColorUtil;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
@@ -307,21 +307,19 @@ public class ReactTextShadowNode extends ReactShadowNode {
       markUpdated();
     }
     if (styles.hasKey(ViewProps.COLOR)) {
-      String colorString = styles.getString(ViewProps.COLOR);
-      if (colorString == null) {
+      if (styles.isNull(ViewProps.COLOR)) {
         mIsColorSet = false;
       } else {
-        mColor = CSSColorUtil.getColor(colorString);
+        mColor = styles.getColorInt(ViewProps.COLOR, Color.TRANSPARENT);
         mIsColorSet = true;
       }
       markUpdated();
     }
     if (styles.hasKey(ViewProps.BACKGROUND_COLOR)) {
-      String colorString = styles.getString(ViewProps.BACKGROUND_COLOR);
-      if (colorString == null) {
+      if (styles.isNull(ViewProps.BACKGROUND_COLOR)) {
         mIsBackgroundColorSet = false;
       } else {
-        mBackgroundColor = CSSColorUtil.getColor(colorString);
+        mBackgroundColor = styles.getColorInt(ViewProps.BACKGROUND_COLOR, Color.TRANSPARENT);
         mIsBackgroundColorSet = true;
       }
       markUpdated();

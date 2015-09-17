@@ -262,7 +262,8 @@ class FormUploader extends React.Component {
 
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
-exports.description = 'XMLHttpRequest';
+exports.description = 'Example that demostrates upload and download requests ' +
+  'using XMLHttpRequest.';
 exports.examples = [{
   title: 'File Download',
   render() {

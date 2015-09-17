@@ -37,6 +37,9 @@ Pasteboard
 Alert
 ```
 
+### Some props are only supported on one platform
+There are properties that work on one platform only, either because they can inherently only be supported on that platform or because they haven't been implemented on the other platforms yet. All of these are annotated with `@platform` in JS docs and have a small badge next to them on the website. See e.g. [Image](https://facebook.github.io/react-native/docs/image.html).
+
 ### Publishing modules on Android
 
 There is currently no easy way of publishing custom native modules on Android. Smooth work flow for contributors is important and this will be looked at very closely after the initial Open Source release. Of course the aim will be to streamline and optimize the process between iOS and Android as much as possible.
@@ -63,13 +66,17 @@ There is a noted difference in the handling of Views with an opacity of 0 betwee
 
 The behavior on Android is what you would expect from the web as well.  If you want to be able to click through an overlaying transparent view, you can set `pointerEvents='none'` on it.
 
-### The `overflow` style property defaults to `hidden` and cannot be changed
+### The `overflow` style property defaults to `hidden` and cannot be changed on Android
 
 This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks.
 
+### No support for shadows on Android
+
+We don't support shadows on Android currently. These are notoriously hard to implement as they require drawing outside of a view's bounds and Android's invalidation logic has a hard time with that. A possible solution is to use [elevation](https://developer.android.com/training/material/shadows-clipping.html), but more experimentation will be required.
+
 ### Layout-only nodes on Android
 
-An optimization feature of the Android version of React Native is for views which only contribute to the layout to not have a native view, only their layout properties are propagated to their children views. This optimization is to provide stability in deep view hierarchies for React Native and is therefore enabled by default. Should you depend on a view being present or internal tests incorrectly detect a view is layout only it will be necessary to turn off this behavior. To do this, set `collapsable` to false as in this example:
+An optimization feature of the Android version of React Native is for views which only contribute to the layout to not have a native view, only their layout properties are propagated to their children views. This optimization is to provide stability in deep view hierarchies for React Native and gis therefore enabled by default. Should you depend on a view being present or internal tests incorrectly detect a view is layout only it will be necessary to turn off this behavior. To do this, set `collapsable` to false as in this example:
 ```
 <View collapsable={false}>
     ...

@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<ec76950a22dda1c6e98eafc15ccf7cd3>>
+// @generated SignedSource<<2fc400ad927a17e1b13430210531ce86>>
 
 package com.facebook.csslayout;
 
@@ -30,13 +30,17 @@ public class CSSStyle {
   public Spacing padding = new Spacing();
   public Spacing border = new Spacing();
 
-  public float positionTop = CSSConstants.UNDEFINED;
-  public float positionBottom = CSSConstants.UNDEFINED;
-  public float positionLeft = CSSConstants.UNDEFINED;
-  public float positionRight = CSSConstants.UNDEFINED;
+  public float[] position = {
+      CSSConstants.UNDEFINED,
+      CSSConstants.UNDEFINED,
+      CSSConstants.UNDEFINED,
+      CSSConstants.UNDEFINED,
+  };
 
-  public float width = CSSConstants.UNDEFINED;
-  public float height = CSSConstants.UNDEFINED;
+  public float[] dimensions = {
+      CSSConstants.UNDEFINED,
+      CSSConstants.UNDEFINED,
+  };
 
   public float minWidth = CSSConstants.UNDEFINED;
   public float minHeight = CSSConstants.UNDEFINED;

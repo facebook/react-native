@@ -44,4 +44,10 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   public int getInt(int index) {
     return (int) getDouble(index);
   }
+
+  // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
+  @Override
+  public int getColorInt(int index) {
+    return (int) (long) getDouble(index);
+  }
 }

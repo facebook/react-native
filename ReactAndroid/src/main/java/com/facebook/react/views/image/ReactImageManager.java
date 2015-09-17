@@ -11,9 +11,10 @@ package com.facebook.react.views.image;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Color;
+
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.react.uimanager.CSSColorUtil;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -76,11 +77,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       view.setBorderRadius(props.getFloat(PROP_BORDER_RADIUS, 0.0f));
     }
     if (props.hasKey(PROP_TINT_COLOR)) {
-      String tintColorString = props.getString(PROP_TINT_COLOR);
-      if (tintColorString == null) {
+      if (props.isNull(PROP_TINT_COLOR)) {
         view.clearColorFilter();
       } else {
-        view.setColorFilter(CSSColorUtil.getColor(tintColorString));
+        final int tintColor = props.getColorInt(PROP_TINT_COLOR, Color.TRANSPARENT);
+        view.setColorFilter(tintColor);
       }
     }
     view.maybeUpdateView();

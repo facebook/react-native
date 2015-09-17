@@ -24,16 +24,13 @@ import android.view.View;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.uimanager.CSSColorUtil;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIProp;
+import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
-import com.facebook.react.uimanager.ViewGroupManager;
 
 /**
  * Manages instances of Toolbar.
@@ -48,11 +45,11 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
   public static final String PROP_NAV_ICON = "navIcon";
   @UIProp(UIProp.Type.STRING)
   public static final String PROP_SUBTITLE = "subtitle";
-  @UIProp(UIProp.Type.STRING)
+  @UIProp(UIProp.Type.COLOR)
   public static final String PROP_SUBTITLE_COLOR = "subtitleColor";
   @UIProp(UIProp.Type.STRING)
   public static final String PROP_TITLE = "title";
-  @UIProp(UIProp.Type.STRING)
+  @UIProp(UIProp.Type.COLOR)
   public static final String PROP_TITLE_COLOR = "titleColor";
   @UIProp(UIProp.Type.ARRAY)
   public static final String PROP_ACTIONS = "actions";
@@ -81,23 +78,15 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
       toolbar.setSubtitle(props.getString(PROP_SUBTITLE));
     }
     if (props.hasKey(PROP_SUBTITLE_COLOR)) {
-      String color = props.getString(PROP_SUBTITLE_COLOR);
-      if (color != null) {
-        toolbar.setSubtitleTextColor(CSSColorUtil.getColor(color));
-      } else {
-        toolbar.setSubtitleTextColor(defaultColors[1]);
-      }
+      final int subtitleColor = props.getColorInt(PROP_SUBTITLE_COLOR, defaultColors[1]);
+      toolbar.setSubtitleTextColor(subtitleColor);
     }
     if (props.hasKey(PROP_TITLE)) {
       toolbar.setTitle(props.getString(PROP_TITLE));
     }
     if (props.hasKey(PROP_TITLE_COLOR)) {
-      String color = props.getString(PROP_TITLE_COLOR);
-      if (color != null) {
-        toolbar.setTitleTextColor(CSSColorUtil.getColor(color));
-      } else {
-        toolbar.setTitleTextColor(defaultColors[0]);
-      }
+      final int titleColor = props.getColorInt(PROP_TITLE_COLOR, defaultColors[0]);
+      toolbar.setTitleTextColor(titleColor);
     }
     if (props.hasKey(PROP_NAV_ICON)) {
       String navIcon = props.getString(PROP_NAV_ICON);
