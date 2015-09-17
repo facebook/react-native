@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
@@ -23,8 +24,8 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.BaseViewPropertyApplicator;
-import com.facebook.react.uimanager.CSSColorUtil;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
@@ -32,7 +33,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.common.annotations.VisibleForTesting;
 
 /**
  * View manager for AndroidViews (plain React Views).
@@ -103,9 +103,13 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     for (int i = 0; i < SPACING_TYPES.length; i++) {
       String key = PROPS_BORDER_COLOR[i];
       if (props.hasKey(key)) {
-        String color = props.getString(key);
-        float colorFloat = color == null ? CSSConstants.UNDEFINED : CSSColorUtil.getColor(color);
-        view.setBorderColor(SPACING_TYPES[i], colorFloat);
+        float color = CSSConstants.UNDEFINED;
+        if (!props.isNull(PROPS_BORDER_COLOR[i])) {
+          // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
+          int colorInt = props.getColorInt(PROPS_BORDER_COLOR[i], Color.TRANSPARENT);
+          color = colorInt;
+        }
+        view.setBorderColor(SPACING_TYPES[i], color);
       }
     }
 

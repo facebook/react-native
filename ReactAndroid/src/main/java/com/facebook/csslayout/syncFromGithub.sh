@@ -42,7 +42,6 @@ set -e # exit if any command fails
 echo "Making github project..."
 pushd $GITHUB
 COMMIT_ID=$(git rev-parse HEAD)
-make
 popd
 
 SRC=$GITHUB/src/java/src/com/facebook/csslayout

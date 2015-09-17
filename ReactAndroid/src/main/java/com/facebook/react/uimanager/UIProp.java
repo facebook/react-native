@@ -36,7 +36,8 @@ public @interface UIProp {
     NUMBER("number"),
     STRING("String"),
     MAP("Map"),
-    ARRAY("Array");
+    ARRAY("Array"),
+    COLOR("Color");
 
     private final String mType;
 

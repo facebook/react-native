@@ -23,7 +23,6 @@ import com.facebook.react.bridge.ReadableMap;
  */
 public class BaseViewPropertyApplicator {
 
-  private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
   private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
@@ -55,7 +54,7 @@ public class BaseViewPropertyApplicator {
     props.put(PROP_ACCESSIBILITY_LABEL, UIProp.Type.STRING);
     props.put(PROP_ACCESSIBILITY_COMPONENT_TYPE, UIProp.Type.STRING);
     props.put(PROP_ACCESSIBILITY_LIVE_REGION, UIProp.Type.STRING);
-    props.put(PROP_BACKGROUND_COLOR, UIProp.Type.STRING);
+    props.put(ViewProps.BACKGROUND_COLOR, UIProp.Type.STRING);
     props.put(PROP_IMPORTANT_FOR_ACCESSIBILITY, UIProp.Type.STRING);
     props.put(PROP_OPACITY, UIProp.Type.NUMBER);
     props.put(PROP_ROTATION, UIProp.Type.NUMBER);
@@ -73,13 +72,9 @@ public class BaseViewPropertyApplicator {
   }
 
   public static void applyCommonViewProperties(View view, CatalystStylesDiffMap props) {
-    if (props.hasKey(PROP_BACKGROUND_COLOR)) {
-      String backgroundString = props.getString(PROP_BACKGROUND_COLOR);
-      if (backgroundString == null) {
-        view.setBackgroundColor(Color.TRANSPARENT);
-      } else {
-        view.setBackgroundColor(CSSColorUtil.getColor(backgroundString));
-      }
+    if (props.hasKey(ViewProps.BACKGROUND_COLOR)) {
+      final int backgroundColor = props.getColorInt(ViewProps.BACKGROUND_COLOR, Color.TRANSPARENT);
+      view.setBackgroundColor(backgroundColor);
     }
     if (props.hasKey(PROP_DECOMPOSED_MATRIX)) {
       ReadableMap decomposedMatrix = props.getMap(PROP_DECOMPOSED_MATRIX);
