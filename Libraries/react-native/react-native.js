@@ -71,6 +71,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   Settings: require('Settings'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  VibrationAndroid: require('VibrationAndroid'),
   VibrationIOS: require('VibrationIOS'),
 
   // Plugins
