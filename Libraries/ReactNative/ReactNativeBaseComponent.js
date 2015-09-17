@@ -158,13 +158,23 @@ ReactNativeBaseComponent.Mixin = {
       validAttributes
     );
 
+    for (var key in updatePayload) {
+      var process = validAttributes[key] && validAttributes[key].process;
+      if (process) {
+        updatePayload[key] = process(updatePayload[key]);
+      }
+    }
+
     // The style property is a deeply nested element which includes numbers
     // to represent static objects. Most of the time, it doesn't change across
     // renders, so it's faster to spend the time checking if it is different
     // before actually doing the expensive flattening operation in order to
     // compute the diff.
     if (styleDiffer(nextProps.style, prevProps.style)) {
-      var nextFlattenedStyle = precomputeStyle(flattenStyle(nextProps.style));
+      var nextFlattenedStyle = precomputeStyle(
+        flattenStyle(nextProps.style),
+        this.viewConfig.validAttributes
+      );
       updatePayload = diffRawProperties(
         updatePayload,
         this.previousFlattenedStyle,
