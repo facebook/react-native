@@ -412,7 +412,7 @@ var ListView = React.createClass({
 
   _measureAndUpdateScrollProps: function() {
     var scrollComponent = this.getScrollResponder();
-    if (!scrollComponent || !scrollComponent.getInnerViewNode) {
+    if (!scrollComponent || !scrollComponent.getInnerViewNode()) {
       return;
     }
     RCTUIManager.measureLayout(
