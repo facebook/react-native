@@ -56,7 +56,7 @@ class Module {
               return this.path;
             }
 
-            return path.join(name, path.relative(p.root, this.path));
+            return path.join(name, path.relative(p.root, this.path)).replace(/\\/g, '/');
           });
       })
     );
