@@ -15,7 +15,7 @@ next: android-setup
   - Install **nvm** with Homebrew or [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`. With nvm you can install multiple versions of Node.js and easily switch between them.
   - New to [npm](https://docs.npmjs.com/)?
 4. `brew install watchman`. We recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
-5. `brew install flow`. If you want to use [flow](http://www.flowtype.org).
+5. `brew install flow`, if you want to use [flow](http://www.flowtype.org).
 
 We recommend periodically running `brew update && brew upgrade` to keep your programs up-to-date.
 
