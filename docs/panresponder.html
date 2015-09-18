@@ -61,15 +61,15 @@ are the responder.</p></li></ul></div></div></div></span></div><div><h3><a class
 
 <span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
-  StyleSheet<span class="token punctuation">,</span>
   PanResponder<span class="token punctuation">,</span>
+  StyleSheet<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
+  processColor<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> CIRCLE_SIZE <span class="token operator">=</span> <span class="token number">80</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CIRCLE_COLOR <span class="token operator">=</span> <span class="token string">&#x27;blue&#x27;</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CIRCLE_HIGHLIGHT_COLOR <span class="token operator">=</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">;</span>
-
 
 <span class="token keyword">var</span> PanResponderExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
@@ -122,13 +122,13 @@ are the responder.</p></li></ul></div></div></div></span></div><div><h3><a class
 
   _highlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>circle &amp;&amp; <span class="token keyword">this</span><span class="token punctuation">.</span>circle<span class="token punctuation">.</span><span class="token function">setNativeProps<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-      backgroundColor<span class="token punctuation">:</span> CIRCLE_HIGHLIGHT_COLOR
+      backgroundColor<span class="token punctuation">:</span> <span class="token function">processColor<span class="token punctuation">(</span></span>CIRCLE_HIGHLIGHT_COLOR<span class="token punctuation">)</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   _unHighlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>circle &amp;&amp; <span class="token keyword">this</span><span class="token punctuation">.</span>circle<span class="token punctuation">.</span><span class="token function">setNativeProps<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-      backgroundColor<span class="token punctuation">:</span> CIRCLE_COLOR
+      backgroundColor<span class="token punctuation">:</span> <span class="token function">processColor<span class="token punctuation">(</span></span>CIRCLE_COLOR<span class="token punctuation">)</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
