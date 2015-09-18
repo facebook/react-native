@@ -9,6 +9,3 @@
 'use strict';
 
 global.__DEV__ = true;
-global.setImmediate = global.setImmediate || function(fn) {
-  return setTimeout(fn, 0);
-};

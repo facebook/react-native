@@ -11,17 +11,11 @@ jest
 
 const Promise = require('promise');
 
+var AssetServer = require('../');
+var crypto = require('crypto');
+var fs = require('fs');
+
 describe('AssetServer', () => {
-  let AssetServer;
-  let crypto;
-  let fs;
-
-  beforeEach(() => {
-    AssetServer = require('../');
-    crypto = require('crypto');
-    fs = require('fs');
-  });
-
   describe('assetServer.get', () => {
     pit('should work for the simple case', () => {
       const server = new AssetServer({
