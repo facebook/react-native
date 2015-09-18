@@ -1,10 +1,10 @@
 ---
 id: linking-libraries-ios
-title: Linking Libraries (iOS)
+title: Linking Libraries
 layout: docs
-category: Guides
+category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
-next: debugging
+next: running-on-device-ios
 ---
 
 Not every app uses all the native capabilities, and including the code to support
