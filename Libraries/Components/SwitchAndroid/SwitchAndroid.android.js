@@ -51,12 +51,16 @@ var SwitchAndroid = React.createClass({
   },
 
   _onChange: function(event) {
-    this.props.onChange && this.props.onChange(event);
-    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
-
     // The underlying switch might have changed, but we're controlled,
     // and so want to ensure it represents our value.
     this.refs[SWITCH].setNativeProps({on: this.props.value});
+
+    if (this.props.value === event.nativeEvent.value || this.props.disabled) {
+      return;
+    }
+
+    this.props.onChange && this.props.onChange(event);
+    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
   },
 
   render: function() {
