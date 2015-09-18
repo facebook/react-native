@@ -1,10 +1,10 @@
 ---
 id: running-on-device-android
-title: Running On Device (Android)
+title: Running On Device
 layout: docs
-category: Guides
+category: Guides (Android)
 permalink: docs/running-on-device-android.html
-next: embedded-app-ios
+next: activityindicatorios
 ---
 
 ## USB Debugging
