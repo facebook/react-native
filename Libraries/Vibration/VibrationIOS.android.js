@@ -6,18 +6,28 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Stub of VibrationIOS for Android.
- *
- * @providesModule VibrationIOS
+ * @providesModule VibrationAndroid
  */
+
 'use strict';
 
-var warning = require('warning');
+var RCTVibrationAndroid = require('NativeModules').VibrationAndroid;
 
-var VibrationIOS = {
-  vibrate: function() {
-    warning('VibrationIOS is not supported on this platform!');
-  }
+/**
+ * This exposes the native VibrationAndroid module as a JS module. This has a function 'vibrate'
+ * which takes the following parameters:
+ *
+ * 1. int duration: The duration of the vibration in milliseconds.
+ */
+
+var VibrationAndroid = {
+
+  vibrate: function (
+    duration: number
+  ): void {
+    RCTVibrationAndroid.vibrate(duration);
+  },
+
 };
 
-module.exports = VibrationIOS;
+module.exports = VibrationAndroid;
