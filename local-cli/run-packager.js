@@ -3,16 +3,16 @@
 var path = require('path');
 var child_process = require('child_process');
 
-module.exports = function(newWindow) {
+module.exports = function(newWindow, args) {
   if (newWindow) {
     var launchPackagerScript =
       path.resolve(__dirname, '..', 'packager', 'launchPackager.command');
     if (process.platform === 'darwin') {
-      child_process.spawnSync('open', [launchPackagerScript]);
+      child_process.spawnSync('open', [launchPackagerScript].concat(args));
     } else if (process.platform === 'linux') {
       child_process.spawn(
         'xterm',
-        ['-e', 'sh', launchPackagerScript],
+        ['-e', 'sh', launchPackagerScript].concat(args),
         {detached: true});
     }
   } else {
@@ -20,6 +20,6 @@ module.exports = function(newWindow) {
         path.resolve(__dirname, '..', 'packager', 'packager.sh'),
         '--projectRoots',
         process.cwd(),
-      ], {stdio: 'inherit'});
+      ].concat(args), {stdio: 'inherit'});
   }
 };
