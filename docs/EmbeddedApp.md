@@ -1,10 +1,10 @@
 ---
 id: embedded-app-ios
-title: Integrating with Existing Apps (iOS)
+title: Integrating with Existing Apps
 layout: docs
-category: Guides
+category: Guides (iOS)
 permalink: docs/embedded-app-ios.html
-next: javascript-environment
+next: native-modules-android
 ---
 
 Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [CocoaPods](http://cocoapods.org/).

@@ -4,7 +4,7 @@ title: Known Issues
 layout: docs
 category: Guides
 permalink: docs/known-issues.html
-next: activityindicatorios
+next: native-modules-ios
 ---
 
 ### Missing Modules and Native Views
