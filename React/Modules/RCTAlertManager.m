@@ -40,6 +40,13 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
+- (void)invalidate
+{
+    for (UIAlertView *alert in _alerts) {
+        [alert dismissWithClickedButtonIndex:0 animated:YES];
+    }
+}
+
 /**
  * @param {NSDictionary} args Dictionary of the form
  *
