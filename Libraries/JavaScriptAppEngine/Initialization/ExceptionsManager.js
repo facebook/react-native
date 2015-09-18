@@ -36,7 +36,7 @@ function reportException(e: Exception, isFatal: bool, stack?: any) {
     if (isFatal) {
       RCTExceptionsManager.reportFatalException(e.message, stack, currentExceptionID);
     } else {
-      RCTExceptionsManager.reportSoftException(e.message, stack);
+      RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())

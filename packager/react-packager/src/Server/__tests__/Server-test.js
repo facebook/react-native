@@ -14,8 +14,7 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
-    .dontMock('../')
-    .setMock('chalk', { dim: function(s) { return s; } });
+    .dontMock('../');
 
 const Promise = require('promise');
 
@@ -155,7 +154,7 @@ describe('processRequest', () => {
       });
     });
 
-    pit('rebuilds the bundles that contain a file when that file is changed', () => {
+    it('rebuilds the bundles that contain a file when that file is changed', () => {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(
@@ -178,21 +177,25 @@ describe('processRequest', () => {
 
       requestHandler = server.processRequest.bind(server);
 
-      return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .then(response => {
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+        .done(response => {
           expect(response).toEqual('this is the first source');
           expect(bundleFunc.mock.calls.length).toBe(1);
-          triggerFileChange('all','path/file.js', options.projectRoots[0]);
-          jest.runAllTimers();
-          jest.runAllTimers();
-        })
-        .then(() => {
-          expect(bundleFunc.mock.calls.length).toBe(2);
-          return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-            .then(response =>
-              expect(response).toEqual('this is the rebuilt source')
-            );
         });
+
+      jest.runAllTicks();
+
+      triggerFileChange('all','path/file.js', options.projectRoots[0]);
+      jest.runAllTimers();
+      jest.runAllTicks();
+
+      expect(bundleFunc.mock.calls.length).toBe(2);
+
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+        .done(response =>
+          expect(response).toEqual('this is the rebuilt source')
+        );
+      jest.runAllTicks();
     });
   });
 
@@ -259,30 +262,33 @@ describe('processRequest', () => {
   });
 
   describe('buildbundle(options)', () => {
-    it('Calls the bundler with the correct args', () => {
-      server.buildBundle({
+    pit('Calls the bundler with the correct args', () => {
+      return server.buildBundle({
         entryFile: 'foo file'
-      });
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'foo file',
-        true,
-        undefined,
-        true,
-        undefined
+      }).then(() =>
+        expect(Bundler.prototype.bundle).toBeCalledWith(
+          'foo file',
+          true,
+          undefined,
+          true,
+          undefined
+        )
       );
     });
   });
 
   describe('buildBundleFromUrl(options)', () => {
-    it('Calls the bundler with the correct args', () => {
-      server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false');
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'path/to/foo.js',
-        false,
-        '/path/to/foo.map?dev=false&runModule=false',
-        false,
-        undefined
-      );
+    pit('Calls the bundler with the correct args', () => {
+      return server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false')
+        .then(() =>
+          expect(Bundler.prototype.bundle).toBeCalledWith(
+            'path/to/foo.js',
+            false,
+            '/path/to/foo.map?dev=false&runModule=false',
+            false,
+            undefined
+          )
+        );
     });
   });
 });

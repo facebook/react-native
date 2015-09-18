@@ -18,6 +18,7 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var keyMirror = require('keyMirror');
 var matricesDiffer = require('matricesDiffer');
+var processColor = require('processColor');
 var sizesDiffer = require('sizesDiffer');
 
 var ReactNativeStyleAttributes = {
@@ -31,5 +32,17 @@ ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
 
 // Do not rely on this attribute.
 ReactNativeStyleAttributes.decomposedMatrix = 'decomposedMatrix';
+
+var colorAttributes = { process: processColor };
+ReactNativeStyleAttributes.backgroundColor = colorAttributes;
+ReactNativeStyleAttributes.borderBottomColor = colorAttributes;
+ReactNativeStyleAttributes.borderColor = colorAttributes;
+ReactNativeStyleAttributes.borderLeftColor = colorAttributes;
+ReactNativeStyleAttributes.borderRightColor = colorAttributes;
+ReactNativeStyleAttributes.borderTopColor = colorAttributes;
+ReactNativeStyleAttributes.color = colorAttributes;
+ReactNativeStyleAttributes.shadowColor = colorAttributes;
+ReactNativeStyleAttributes.textDecorationColor = colorAttributes;
+ReactNativeStyleAttributes.tintColor = colorAttributes;
 
 module.exports = ReactNativeStyleAttributes;

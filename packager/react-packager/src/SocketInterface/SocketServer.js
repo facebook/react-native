@@ -59,7 +59,12 @@ class SocketServer {
     const bunser = new bser.BunserBuf();
     sock.on('data', (buf) => bunser.append(buf));
     bunser.on('value', (m) => this._handleMessage(sock, m));
-    bunser.on('error', (e) => console.error(e));
+    bunser.on('error', (e) => {
+      e.message = 'Unhandled error from the bser buffer. ' +
+                  'Either error on encoding or message handling: \n' +
+                  e.message;
+      throw e;
+    });
   }
 
   _handleMessage(sock, m) {
@@ -109,7 +114,6 @@ class SocketServer {
   _reply(sock, id, type, data) {
     debug('request finished', type);
 
-    this._jobs--;
     data = toJSON(data);
 
     sock.write(bser.dumpToBuffer({
@@ -117,6 +121,11 @@ class SocketServer {
       type,
       data,
     }));
+
+    // Debounce the kill timer to make sure all the bytes are sent through
+    // the socket and the client has time to fully finish and disconnect.
+    this._dieEventually();
+    this._jobs--;
   }
 
   _dieEventually(delay = MAX_IDLE_TIME) {
@@ -148,7 +157,7 @@ class SocketServer {
           process.send({ type: 'createdServer' });
         },
         error => {
-          if (error.code === 'EADDRINUSE') {
+          if (error.code === 'EADDRINUSE' || error.code === 'EEXIST') {
             // Server already listening, this may happen if multiple
             // clients where started in quick succussion (buck).
             process.send({ type: 'createdServer' });

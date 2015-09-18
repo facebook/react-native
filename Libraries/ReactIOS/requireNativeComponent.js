@@ -18,6 +18,7 @@ var createReactNativeComponentClass = require('createReactNativeComponentClass')
 var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');
 var matricesDiffer = require('matricesDiffer');
+var processColor = require('processColor');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
@@ -57,8 +58,22 @@ function requireNativeComponent(
   viewConfig.validAttributes = {};
   viewConfig.propTypes = componentInterface && componentInterface.propTypes;
   for (var key in nativeProps) {
+    var useAttribute = false;
+    var attribute = {};
+
     var differ = TypeToDifferMap[nativeProps[key]];
-    viewConfig.validAttributes[key] = differ ? {diff: differ} : true;
+    if (differ) {
+      attribute.diff = differ;
+      useAttribute = true;
+    }
+
+    var processor = TypeToProcessorMap[nativeProps[key]];
+    if (processor) {
+      attribute.process = processor;
+      useAttribute = true;
+    }
+
+    viewConfig.validAttributes[key] = useAttribute ? attribute : true;
   }
   if (__DEV__) {
     componentInterface && verifyPropTypes(
@@ -78,6 +93,16 @@ var TypeToDifferMap = {
   UIEdgeInsets: insetsDiffer,
   // Android Types
   // (not yet implemented)
+};
+
+var TypeToProcessorMap = {
+  // iOS Types
+  CGColor: processColor,
+  CGColorArray: processColor,
+  UIColor: processColor,
+  UIColorArray: processColor,
+  // Android Types
+  Color: processColor,
 };
 
 module.exports = requireNativeComponent;

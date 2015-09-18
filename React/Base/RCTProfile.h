@@ -119,6 +119,12 @@ RCT_EXTERN void RCTProfileHookModules(RCTBridge *);
  */
 RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
 
+/**
+ * Send systrace or cpu profiling information to the packager
+ * to present to the user
+ */
+RCT_EXTERN void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *profielData);
+
 #else
 
 #define RCTProfileBeginFlowEvent()
@@ -143,5 +149,7 @@ RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
 
 #define RCTProfileHookModules(...)
 #define RCTProfileUnhookModules(...)
+
+#define RCTProfileSendResult(...)
 
 #endif

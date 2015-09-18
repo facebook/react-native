@@ -4,24 +4,29 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  */
 
+'use strict';
+
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
-var prompt = require("prompt");
+var prompt = require('prompt');
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
     process.cwd(),
     'node_modules',
     'react-native',
-    'cli'
+    'cli.js'
   );
 };
 
+checkForVersionArgument();
+
 var cli;
-try {
-  cli = require(CLI_MODULE_PATH());
-} catch(e) {}
+var cliPath = CLI_MODULE_PATH();
+if (fs.existsSync(cliPath)) {
+  cli = require(cliPath);
+}
 
 if (cli) {
   cli.run();
@@ -80,7 +85,7 @@ function init(name) {
   validatePackageName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name)
+    createAfterConfirmation(name);
   } else {
     createProject(name);
   }
@@ -140,7 +145,15 @@ function createProject(name) {
       process.exit(1);
     }
 
-    var cli = require(CLI_MODULE_PATH());
+    cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
+}
+
+function checkForVersionArgument() {
+  if (process.argv.indexOf('-v') >= 0 || process.argv.indexOf('--version') >= 0) {
+    var pjson = require('./package.json');
+    console.log(pjson.version);
+    process.exit();
+  }
 }

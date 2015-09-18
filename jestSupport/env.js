@@ -8,7 +8,7 @@
  */
 'use strict';
 
-window.__DEV__ = true;
-window.Env = {};
-
-require.requireActual('./setupEnvPolyfills');
+global.__DEV__ = true;
+global.setImmediate = global.setImmediate || function(fn) {
+  return setTimeout(fn, 0);
+};

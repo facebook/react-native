@@ -39,11 +39,16 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
-                  stack:(NSArray *)stack)
+                  stack:(NSArray *)stack
+                  exceptionId:(nonnull NSNumber *)exceptionId)
 {
   // TODO(#7070533): report a soft error to the server
   if (_delegate) {
-    [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
+    if ([_delegate respondsToSelector:@selector(handleSoftJSExceptionWithMessage:stack:exceptionId:)]) {
+      [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+    } else {
+      [_delegate handleSoftJSExceptionWithMessage:message stack:stack];
+    }
     return;
   }
   [_bridge.redBox showErrorMessage:message withStack:stack];
@@ -51,10 +56,14 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray *)stack
-                  exceptionId:(__unused NSNumber *)exceptionId)
+                  exceptionId:(nonnull NSNumber *)exceptionId)
 {
   if (_delegate) {
-    [_delegate handleFatalJSExceptionWithMessage:message stack:stack];
+    if ([_delegate respondsToSelector:@selector(handleFatalJSExceptionWithMessage:stack:exceptionId:)]) {
+      [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+    } else {
+      [_delegate handleFatalJSExceptionWithMessage:message stack:stack];
+    }
     return;
   }
 
@@ -90,10 +99,14 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
                   stack:(NSArray *)stack
-                  exceptionId:(__unused NSNumber *)exceptionId)
+                  exceptionId:(nonnull NSNumber *)exceptionId)
 {
   if (_delegate) {
-    [_delegate updateJSExceptionWithMessage:message stack:stack];
+    if ([_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
+      [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+    } else {
+      [_delegate updateJSExceptionWithMessage:message stack:stack];
+    }
     return;
   }
 
@@ -104,6 +117,6 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
 RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
                   stack:(NSArray *)stack)
 {
-  [self reportFatalException:message stack:stack exceptionId:nil];
+  [self reportFatalException:message stack:stack exceptionId:@-1];
 }
 @end

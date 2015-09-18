@@ -16,11 +16,11 @@ var warning = require('warning');
 class AppStateIOS {
 
   static addEventListener(type, handler) {
-    warning('Cannot listen to AppStateIOS events on Android.');
+    warning(false, 'Cannot listen to AppStateIOS events on Android.');
   }
 
   static removeEventListener(type, handler) {
-    warning('Cannot remove AppStateIOS listener on Android.');
+    warning(false, 'Cannot remove AppStateIOS listener on Android.');
   }
 
 }

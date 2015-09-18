@@ -26,12 +26,12 @@ var styles = StyleSheet.create({
   },
   border1: {
     borderWidth: 10,
-    borderColor: '#a52a2a',
+    borderColor: 'brown',
   },
   borderRadius: {
     borderWidth: 10,
     borderRadius: 10,
-    borderColor: '#00ffff',
+    borderColor: 'cyan',
   },
   border2: {
     borderWidth: 10,
@@ -94,7 +94,7 @@ var styles = StyleSheet.create({
 });
 
 exports.title = 'Border';
-exports.description = 'View borders';
+exports.description = 'Demonstrates some of the border styles available to Views.';
 exports.examples = [
   {
     title: 'Equal-Width / Same-Color',

@@ -12,8 +12,8 @@ Since React makes no assumptions about the rest of your technology stack – it�
 ## Requirements
 
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
-- [io.js](http://iojs.org)
-  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install iojs-v2 && nvm alias default iojs-v2`, which installs the latest compatible version of io.js and sets up your terminal so that typing `node` runs io.js.  With nvm you can install multiple versions of Node and io.js and easily switch between them.
+- [Node.js](http://nodejs.org)
+  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
 
 ## Install React Native Using CocoaPods
 

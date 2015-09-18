@@ -13,8 +13,7 @@ jest
   .dontMock('underscore')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
-  .dontMock('../')
-  .setMock('chalk', { dim: function(s) { return s; } });
+  .dontMock('../');
 
 jest.mock('fs');
 
@@ -125,7 +124,7 @@ describe('Bundler', function() {
         });
       });
 
-    wrapModule.mockImpl(function(module, code) {
+    wrapModule.mockImpl(function(response, module, code) {
       return Promise.resolve('lol ' + code + ' lol');
     });
 

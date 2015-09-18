@@ -20,7 +20,11 @@ function loadCacheSync(cachePath) {
   } catch (e) {
     if (e instanceof SyntaxError) {
       console.warn('Unable to parse cache file. Will clear and continue.');
-      fs.unlinkSync(cachePath);
+      try {
+        fs.unlinkSync(cachePath);
+      } catch (err) {
+        // Someone else might've deleted it.
+      }
       return Object.create(null);
     }
     throw e;
