@@ -86,7 +86,10 @@ static css_dim_t RCTMeasure(void *context, float width)
   parentProperties = [super processUpdatedProperties:applierBlocks
                                     parentProperties:parentProperties];
 
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width];
+  UIEdgeInsets padding = self.paddingAsInsets;
+  CGFloat width = self.frame.size.width - (padding.left + padding.right);
+  
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:width];
   [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
     RCTText *view = viewRegistry[self.reactTag];
     view.textStorage = textStorage;
@@ -105,9 +108,6 @@ static css_dim_t RCTMeasure(void *context, float width)
 
 - (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width
 {
-  UIEdgeInsets padding = self.paddingAsInsets;
-  width -= (padding.left + padding.right);
-
   if (_cachedTextStorage && width == _cachedTextStorageWidth) {
     return _cachedTextStorage;
   }
