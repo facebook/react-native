@@ -10,13 +10,13 @@
 
 jest.autoMockOff();
 
+var Activity = require('../');
+
 describe('Activity', () => {
   const origConsoleLog = console.log;
-  let Activity;
 
   beforeEach(() => {
     console.log = jest.genMockFn();
-    Activity = require('../');
     jest.runOnlyPendingTimers();
   });
 
@@ -68,9 +68,7 @@ describe('Activity', () => {
 
       expect(() => {
         Activity.endEvent(eid);
-      }).toThrow('event(3) has already ended!');
-
-      jest.runOnlyPendingTimers();
+      }).toThrow('event(1) has already ended!');
     });
   });
 

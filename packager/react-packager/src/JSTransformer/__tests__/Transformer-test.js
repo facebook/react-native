@@ -9,21 +9,18 @@
 'use strict';
 
 jest
-  .dontMock('worker-farm')
   .dontMock('../../lib/ModuleTransport')
-  .dontMock('../index');
+  .dontMock('../');
 
 jest.mock('fs');
 
 var Cache = require('../../Cache');
+var Transformer = require('../');
+var fs = require('fs');
 
-var OPTIONS = {
-  transformModulePath: '/foo/bar',
-  cache: new Cache({}),
-};
+var options;
 
 describe('Transformer', function() {
-  var Transformer;
   var workers;
 
   beforeEach(function() {
@@ -31,21 +28,22 @@ describe('Transformer', function() {
     jest.setMock('worker-farm', jest.genMockFn().mockImpl(function() {
       return workers;
     }));
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'content');
-    });
-    Transformer = require('../');
+
+    options = {
+      transformModulePath: '/foo/bar',
+      cache: new Cache({}),
+    };
   });
 
   pit('should loadFileAndTransform', function() {
     workers.mockImpl(function(data, callback) {
       callback(null, { code: 'transformed', map: 'sourceMap' });
     });
-    require('fs').readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImpl(function(file, callback) {
       callback(null, 'content');
     });
 
-    return new Transformer(OPTIONS).loadFileAndTransform('file')
+    return new Transformer(options).loadFileAndTransform('file')
       .then(function(data) {
         expect(data).toEqual({
           code: 'transformed',
@@ -60,7 +58,7 @@ describe('Transformer', function() {
     var message = 'message';
     var snippet = 'snippet';
 
-    require('fs').readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImpl(function(file, callback) {
       callback(null, 'var x;\nvar answer = 1 = x;');
     });
 
@@ -76,7 +74,7 @@ describe('Transformer', function() {
       callback(babelError);
     });
 
-    return new Transformer(OPTIONS).loadFileAndTransform('foo-file.js')
+    return new Transformer(options).loadFileAndTransform('foo-file.js')
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
         expect(error.message).toBe('SyntaxError ' + message);

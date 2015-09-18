@@ -15,23 +15,21 @@ jest.dontMock('../')
 jest.mock('path');
 
 var Promise = require('promise');
+var HasteDependencyResolver = require('../');
+var Module = require('../Module');
+var Polyfill = require('../Polyfill');
+
+var path = require('path');
 var _ = require('underscore');
 
 describe('HasteDependencyResolver', function() {
-  var HasteDependencyResolver;
-  var Module;
-  var Polyfill;
-
   beforeEach(function() {
-    Module = require('../Module');
-    Polyfill = require('../Polyfill');
     Polyfill.mockClear();
 
     // For the polyfillDeps
-    require('path').join.mockImpl(function(a, b) {
+    path.join.mockImpl(function(a, b) {
       return b;
     });
-    HasteDependencyResolver = require('../');
   });
 
   class ResolutionResponseMock {

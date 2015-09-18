@@ -11,8 +11,7 @@
     "scriptPreprocessor": "jestSupport/preprocessor.js",
     "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "packager/react-packager/src/Activity/"
+      "/node_modules/"
     ],
     "testFileExtensions": [
       "js"
@@ -38,7 +37,7 @@
     "jestSupport"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "NODE_ENV=test jest",
     "lint": "node linter.js Examples/ Libraries/",
     "start": "./packager/packager.sh || true"
   },

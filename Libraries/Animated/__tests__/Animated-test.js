@@ -98,9 +98,10 @@ describe('Animated', () => {
 
 
   it('stops animation when detached', () => {
-    // jest environment doesn't have requestAnimationFrame :(
-    window.requestAnimationFrame = jest.genMockFunction();
-    window.cancelAnimationFrame = jest.genMockFunction();
+    // jest environment doesn't have cancelAnimationFrame :(
+    if (!window.cancelAnimationFrame) {
+      window.cancelAnimationFrame = jest.genMockFunction();
+    }
 
     var anim = new Animated.Value(0);
     var callback = jest.genMockFunction();

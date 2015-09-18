@@ -18,10 +18,14 @@ jest.setMock('worker-farm', function() { return () => {}; })
 
 const Promise = require('promise');
 
+var Bundler = require('../../Bundler');
+var FileWatcher = require('../../FileWatcher');
+var Server = require('../');
+var Server = require('../../Server');
+var AssetServer = require('../../AssetServer');
+
 describe('processRequest', () => {
   var server;
-  var Bundler;
-  var FileWatcher;
 
   const options = {
      projectRoots: ['root'],
@@ -47,9 +51,6 @@ describe('processRequest', () => {
   var triggerFileChange;
 
   beforeEach(() => {
-    Bundler = require('../../Bundler');
-    FileWatcher = require('../../FileWatcher');
-
     Bundler.prototype.bundle = jest.genMockFunction().mockImpl(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
@@ -68,7 +69,6 @@ describe('processRequest', () => {
 
     Bundler.prototype.invalidateFile = invalidatorFunc;
 
-    const Server = require('../');
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
   });
@@ -172,7 +172,6 @@ describe('processRequest', () => {
 
       Bundler.prototype.bundle = bundleFunc;
 
-      const Server = require('../../Server');
       server = new Server(options);
 
       requestHandler = server.processRequest.bind(server);
@@ -232,11 +231,6 @@ describe('processRequest', () => {
   });
 
   describe('/assets endpoint', () => {
-    var AssetServer;
-    beforeEach(() => {
-      AssetServer = require('../../AssetServer');
-    });
-
     it('should serve simple case', () => {
       const req = {url: '/assets/imgs/a.png'};
       const res = {end: jest.genMockFn()};
