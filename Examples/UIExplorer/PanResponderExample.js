@@ -11,21 +11,21 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @flow
+ * @flow-weak
  */
 'use strict';
 
 var React = require('react-native');
 var {
-  StyleSheet,
   PanResponder,
+  StyleSheet,
   View,
+  processColor,
 } = React;
 
 var CIRCLE_SIZE = 80;
 var CIRCLE_COLOR = 'blue';
 var CIRCLE_HIGHLIGHT_COLOR = 'green';
-
 
 var PanResponderExample = React.createClass({
 
@@ -78,13 +78,13 @@ var PanResponderExample = React.createClass({
 
   _highlight: function() {
     this.circle && this.circle.setNativeProps({
-      backgroundColor: CIRCLE_HIGHLIGHT_COLOR
+      backgroundColor: processColor(CIRCLE_HIGHLIGHT_COLOR)
     });
   },
 
   _unHighlight: function() {
     this.circle && this.circle.setNativeProps({
-      backgroundColor: CIRCLE_COLOR
+      backgroundColor: processColor(CIRCLE_COLOR)
     });
   },
 

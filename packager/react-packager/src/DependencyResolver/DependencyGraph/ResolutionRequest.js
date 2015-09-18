@@ -226,7 +226,7 @@ class ResolutionRequest {
         realModuleName => {
           const searchQueue = [];
           for (let currDir = path.dirname(fromModule.path);
-               currDir !== '/';
+               currDir !== path.parse(fromModule.path).root;
                currDir = path.dirname(currDir)) {
             searchQueue.push(
               path.join(currDir, 'node_modules', realModuleName)

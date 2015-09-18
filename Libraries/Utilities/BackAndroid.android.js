@@ -6,9 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Detect hardware back button presses, and programatically invoke the default back button
- * functionality to exit the app if there are no listeners or if none of the listeners return true.
- *
  * @providesModule BackAndroid
  */
 
@@ -38,6 +35,22 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   }
 });
 
+/**
+ * Detect hardware back button presses, and programatically invoke the default back button
+ * functionality to exit the app if there are no listeners or if none of the listeners return true.
+ *
+ * Example:
+ *
+ * ```js
+ * BackAndroid.addEventListener('hardwareBackPress', function() {
+ * 	 if (!this.onMainScreen()) {
+ * 	   this.goBack();
+ * 	   return true;
+ * 	 }
+ * 	 return false;
+ * });
+ * ```
+ */
 var BackAndroid = {
 
   exitApp: function() {

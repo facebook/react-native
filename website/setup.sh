@@ -18,3 +18,4 @@ git checkout origin/gh-pages
 git checkout -b gh-pages
 git branch --set-upstream-to=origin/gh-pages
 cd ../react-native/website
+
