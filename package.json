@@ -12,7 +12,7 @@
     "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "packager/react-packager/src/Activity/"
+      "packager/react-packager/"
     ],
     "testFileExtensions": [
       "js"
