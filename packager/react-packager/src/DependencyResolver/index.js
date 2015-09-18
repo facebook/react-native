@@ -163,9 +163,6 @@ HasteDependencyResolver.prototype.getDebugInfo = function() {
 };
 
 function defineModuleCode({moduleName, code, deps}) {
-  //change Win path like'\\' or '\' to '/'
-  deps = deps.replace(/\\+/g,'/');
-  moduleName = moduleName.replace(/\\+/g,'/');
   return [
     `__d(`,
     `'${moduleName}',`,
