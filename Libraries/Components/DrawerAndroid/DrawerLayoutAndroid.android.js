@@ -57,8 +57,8 @@ var DRAWER_STATES = [
  *       drawerWidth={300}
  *       drawerPosition={DrawerLayoutAndroid.positions.Left}
  *       renderNavigationView={() => navigationView}>
- *       <Text style={{10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
- *       <Text style={{10, fontSize: 15, textAlign: 'right'}}>World!</Text>
+ *       <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
+ *       <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>
  *     </DrawerLayoutAndroid>
  *   );
  * },
