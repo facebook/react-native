@@ -62,6 +62,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       WritableMap params = Arguments.createMap();
 
       params.putInt("id", id);
+      params.putString("message", e.getMessage());
 
       sendEvent("websocketFailed", params);
 
