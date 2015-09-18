@@ -70,7 +70,7 @@ var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *       <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
  *         <Text style={{margin: 30}}>Button</Text>
  *       </View>
- *     </TouchableHighlight>
+ *     </TouchableNativeFeedback>
  *   );
  * },
  * ```
