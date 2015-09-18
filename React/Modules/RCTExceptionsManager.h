@@ -13,9 +13,15 @@
 
 @protocol RCTExceptionsManagerDelegate <NSObject>
 
+// NOTE: Remove these three methods and the @optional directive after updating the codebase to use only the three below
+@optional
 - (void)handleSoftJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
 - (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
 - (void)updateJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
+
+- (void)handleSoftJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId;
+- (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId;
+- (void)updateJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId;
 
 @end
 
