@@ -25,12 +25,13 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebSocketModule extends ReactContextBaseJavaModule {
   private WebSocketClient mWebSocketClient;
-  private Map<String, WebSocketClient> mWebSocketConnections = new HashMap();
+
+  private List<WebSocketClient> mWebSocketConnections = new ArrayList<>();
 
   private ReactContext reactContext;
 
@@ -88,11 +89,18 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       @Override
-      public void onClose(int i, String s, boolean b) {
+      public void onClose(
+              final int code,
+              final String reason,
+              final boolean wasClean
+      ) {
+
         WritableMap params = Arguments.createMap();
 
         params.putInt("id", id);
-        params.putInt("code", i);
+        params.putInt("code", code);
+        params.putString("reason", reason);
+        params.putBoolean("wasClean", wasClean);
 
         sendEvent("websocketClosed", params);
       }
@@ -110,12 +118,12 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
     mWebSocketClient.connect();
 
-    mWebSocketConnections.put(String.valueOf(id), mWebSocketClient);
+    mWebSocketConnections.add(id, mWebSocketClient);
   }
 
   @ReactMethod
-  public void close(int id) {
-    WebSocketClient mWebSocketClient = mWebSocketConnections.get(String.valueOf(id));
+  public void close(final int id) {
+    WebSocketClient mWebSocketClient = mWebSocketConnections.get(id);
 
     if (mWebSocketClient != null) {
       mWebSocketClient.close();
@@ -123,8 +131,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void send(String message, int id) {
-    WebSocketClient mWebSocketClient = mWebSocketConnections.get(String.valueOf(id));
+  public void send(final String message, final int id) {
+    WebSocketClient mWebSocketClient = mWebSocketConnections.get(id);
 
     if (mWebSocketClient != null) {
       mWebSocketClient.send(message);
