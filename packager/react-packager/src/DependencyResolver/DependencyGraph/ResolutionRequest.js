@@ -225,8 +225,8 @@ class ResolutionRequest {
       return this._redirectRequire(fromModule, toModuleName).then(
         realModuleName => {
           const searchQueue = [];
-          for (let currDir = path.dirname(fromModule.path);
-               currDir !== '/';
+          for (let currDir = path.dirname(fromModule.path),rootPath = path.parse(fromModule.path).root;
+               currDir !== rootPath;
                currDir = path.dirname(currDir)) {
             searchQueue.push(
               path.join(currDir, 'node_modules', realModuleName)
