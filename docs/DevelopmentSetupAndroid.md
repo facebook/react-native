@@ -9,7 +9,7 @@ next: tutorial
 
 This guide describes basic steps of the android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
 
-These instructions only cover installation "from scratch". If you happen to have some old, outdated version of Android SDK make sure to update required packages to the version mentioned below and install all the missing ones.
+These instructions only cover installation "from scratch". If you happen to have some old, outdated version of Android SDK make sure to update required packages to the version mentioned below and install all the missing ones and make sure `ANDROID_HOME` points to your existing SDK.
 
 ### Install and configure SDK
 
