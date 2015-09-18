@@ -226,7 +226,11 @@ void _RCTLogFormat(
           }
         }
       }];
-      [[RCTBridge currentBridge].redBox showErrorMessage:message withStack:stack];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        // red box is thread safe, but by deferring to main queue we avoid a startup
+        // race condition that causes the module to be accessed before it has loaded
+        [[RCTBridge currentBridge].redBox showErrorMessage:message withStack:stack];
+      });
     }
 
     // Log to JS executor

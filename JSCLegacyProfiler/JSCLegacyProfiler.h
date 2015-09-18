@@ -6,20 +6,7 @@
 
 extern "C" {
 
-JSValueRef nativeProfilerStart(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception);
-
-JSValueRef nativeProfilerEnd(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception);
+void nativeProfilerStart(JSContextRef ctx, const char *title);
+const char *nativeProfilerEnd(JSContextRef ctx, const char *title);
 
 }

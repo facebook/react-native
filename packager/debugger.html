@@ -85,6 +85,10 @@ function connectToDebuggerProxy() {
 
   ws.onmessage = function(message) {
     var object = JSON.parse(message.data);
+    if (!object.method) {
+      return;
+    }
+
     var sendReply = function(result) {
       ws.send(JSON.stringify({replyID: object.id, result: result}));
     };

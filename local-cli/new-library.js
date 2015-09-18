@@ -44,7 +44,7 @@ function newLibrary(libraryName) {
   console.log('Created library in', libraryDest);
   console.log('Next Steps:');
   console.log('   Link your library in Xcode:');
-  console.log('   https://facebook.github.io/react-native/docs/linking-libraries.html#content');
+  console.log('   https://facebook.github.io/react-native/docs/linking-libraries-ios.html#content');
   console.log('');
 }
 

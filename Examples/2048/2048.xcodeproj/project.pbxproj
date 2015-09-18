@@ -13,6 +13,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1461632C1AC3E22900C2F5AD /* libReact.a */; };
 		5F82F1781B85785200FAE87E /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F82F1771B85784500FAE87E /* libRCTWebSocket.a */; };
+		5FBEDC691B97B63D00D51354 /* _048_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBEDC681B97B63D00D51354 /* _048_Tests.m */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 3C86DF461ADF2C930047B81A;
 			remoteInfo = RCTWebSocket;
+		};
+		5FBEDC6A1B97B63D00D51354 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = 2048;
 		};
 		832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -50,6 +58,9 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = 2048/main.m; sourceTree = "<group>"; };
 		146163271AC3E22900C2F5AD /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		5F82F1721B85784500FAE87E /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = ../../Libraries/WebSocket/RCTWebSocket.xcodeproj; sourceTree = "<group>"; };
+		5FBEDC641B97B63D00D51354 /* 2048 Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "2048 Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FBEDC671B97B63D00D51354 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5FBEDC681B97B63D00D51354 /* _048_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = _048_Tests.m; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -61,6 +72,13 @@
 				5F82F1781B85785200FAE87E /* libRCTWebSocket.a in Frameworks */,
 				1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5FBEDC611B97B63D00D51354 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +114,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5FBEDC651B97B63D00D51354 /* 2048 Tests */ = {
+			isa = PBXGroup;
+			children = (
+				5FBEDC681B97B63D00D51354 /* _048_Tests.m */,
+				5FBEDC661B97B63D00D51354 /* Supporting Files */,
+			);
+			path = "2048 Tests";
+			sourceTree = "<group>";
+		};
+		5FBEDC661B97B63D00D51354 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				5FBEDC671B97B63D00D51354 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,6 +154,7 @@
 			children = (
 				13B07FAE1A68108700A75B9A /* 2048 */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				5FBEDC651B97B63D00D51354 /* 2048 Tests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
 			indentWidth = 2;
@@ -129,6 +165,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* 2048.app */,
+				5FBEDC641B97B63D00D51354 /* 2048 Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -153,6 +190,24 @@
 			productReference = 13B07F961A680F5B00A75B9A /* 2048.app */;
 			productType = "com.apple.product-type.application";
 		};
+		5FBEDC631B97B63D00D51354 /* 2048 Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5FBEDC711B97B63D00D51354 /* Build configuration list for PBXNativeTarget "2048 Tests" */;
+			buildPhases = (
+				5FBEDC601B97B63D00D51354 /* Sources */,
+				5FBEDC611B97B63D00D51354 /* Frameworks */,
+				5FBEDC621B97B63D00D51354 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5FBEDC6B1B97B63D00D51354 /* PBXTargetDependency */,
+			);
+			name = "2048 Tests";
+			productName = "2048 Tests";
+			productReference = 5FBEDC641B97B63D00D51354 /* 2048 Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -161,6 +216,12 @@
 			attributes = {
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = Facebook;
+				TargetAttributes = {
+					5FBEDC631B97B63D00D51354 = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "2048" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -190,6 +251,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* 2048 */,
+				5FBEDC631B97B63D00D51354 /* 2048 Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -228,6 +290,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5FBEDC621B97B63D00D51354 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -240,7 +309,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5FBEDC601B97B63D00D51354 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5FBEDC691B97B63D00D51354 /* _048_Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5FBEDC6B1B97B63D00D51354 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* 2048 */;
+			targetProxy = 5FBEDC6A1B97B63D00D51354 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
@@ -288,6 +373,47 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = 2048;
+			};
+			name = Release;
+		};
+		5FBEDC6C1B97B63D00D51354 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "2048 Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/2048.app/2048";
+			};
+			name = Debug;
+		};
+		5FBEDC6D1B97B63D00D51354 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "2048 Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/2048.app/2048";
 			};
 			name = Release;
 		};
@@ -389,6 +515,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		5FBEDC711B97B63D00D51354 /* Build configuration list for PBXNativeTarget "2048 Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5FBEDC6C1B97B63D00D51354 /* Debug */,
+				5FBEDC6D1B97B63D00D51354 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "2048" */ = {
 			isa = XCConfigurationList;

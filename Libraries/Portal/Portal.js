@@ -18,6 +18,9 @@ var _portalRef: any;
 var lastUsedTag = 0;
 
 /*
+ * Note: Only intended for Android at the moment.  Just use Modal in your iOS
+ * code.
+ *
  * A container that renders all the modals on top of everything else in the application.
  *
  * Portal makes it possible for application code to pass modal views all the way up to

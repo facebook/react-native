@@ -26,7 +26,17 @@ trap cleanup EXIT
 
 node ./packager/packager.js --nonPersistent &
 SERVER_PID=$!
+
+xctool \
+  -project Examples/2048/2048.xcodeproj \
+  -scheme 2048 \
+  -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.3' \
+  test
+
 xctool \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
-  -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.3' \
+  -scheme UIExplorer \
+  -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.3' \
   test

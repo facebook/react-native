@@ -11,7 +11,9 @@
 jest
   .dontMock('underscore')
   .dontMock('absolute-path')
-  .dontMock('../');
+  .dontMock('../')
+  .dontMock('../../lib/loadCacheSync')
+  .dontMock('../../lib/getCacheFilePath');
 
 jest
   .mock('os')

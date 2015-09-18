@@ -314,7 +314,7 @@ RCT_EXPORT_MODULE()
       self.liveReloadEnabled = !_liveReloadEnabled;
     }]];
 
-    NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Profiling" : @"Start Profiling";
+    NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Systrace" : @"Start Systrace";
     [items addObject:[[RCTDevMenuItem alloc] initWithTitle:profilingTitle handler:^{
       self.profilingEnabled = !_profilingEnabled;
     }]];

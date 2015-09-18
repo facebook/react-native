@@ -57,7 +57,7 @@
   expectErrorRegex:@"because shouldThrow"];
 }
 
-- (void)testTimers
+- (void)DISABLED_testTimers // #8192477
 {
   [_runner runTest:_cmd module:@"TimersTest"];
 }
