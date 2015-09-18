@@ -18,7 +18,7 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTModuleMap.h"
-#import "RCTModuleMethod.h"
+#import "RCTBridgeMethod.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTPerfStats.h"
 #import "RCTProfile.h"
@@ -767,7 +767,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     return NO;
   }
 
-  RCTModuleMethod *method = moduleData.methods[methodID];
+  id<RCTBridgeMethod> method = moduleData.methods[methodID];
   if (RCT_DEBUG && !method) {
     RCTLogError(@"Unknown methodID: %zd for module: %zd (%@)", methodID, moduleID, moduleData.name);
     return NO;
@@ -783,12 +783,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
   }
 
-  RCTProfileEndEvent(0, @"objc_call", @{
-    @"module": NSStringFromClass(method.moduleClass),
-    @"method": method.JSMethodName,
-    @"selector": NSStringFromSelector(method.selector),
-    @"args": RCTJSONStringify(RCTNullIfNil(params), NULL),
-  });
+  NSMutableDictionary *args = [method.profileArgs mutableCopy];
+  [args setValue:method.JSMethodName forKey:@"method"];
+  [args setValue:RCTJSONStringify(RCTNullIfNil(params), NULL) forKey:@"args"];
+
+  RCTProfileEndEvent(0, @"objc_call", args);
 
   return YES;
 }

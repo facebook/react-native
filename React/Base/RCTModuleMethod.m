@@ -50,7 +50,10 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
   NSArray *_argumentBlocks;
   NSString *_objCMethodName;
   SEL _selector;
+  NSDictionary *_profileArgs;
 }
+
+@synthesize JSMethodName = _JSMethodName;
 
 static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
                                 id valueOrType, const char *issue)
@@ -368,6 +371,19 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
     [self processMethodSignature];
   }
   return _selector;
+}
+
+- (NSDictionary *)profileArgs
+{
+  if (_profileArgs) {
+    // This sets _selector
+    [self processMethodSignature];
+    _profileArgs = @{
+      @"module": NSStringFromClass(_moduleClass),
+      @"selector": NSStringFromSelector(_selector),
+    };
+  }
+  return _profileArgs;
 }
 
 - (void)invokeWithBridge:(RCTBridge *)bridge
