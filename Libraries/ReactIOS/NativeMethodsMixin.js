@@ -77,15 +77,34 @@ var NativeMethodsMixin = {
         break;
       }
     }
-    var style = precomputeStyle(flattenStyle(nativeProps.style));
+
+    var validAttributes = this.viewConfig.validAttributes;
+    var hasProcessedProps = false;
+    var processedProps = {};
+    for (var key in nativeProps) {
+      var process = validAttributes[key] && validAttributes[key].process;
+      if (process) {
+        hasProcessedProps = true;
+        processedProps[key] = process(nativeProps[key]);
+      }
+    }
+
+    var style = precomputeStyle(
+      flattenStyle(processedProps.style || nativeProps.style),
+      this.viewConfig.validAttributes
+    );
 
     var props = null;
     if (hasOnlyStyle) {
       props = style;
-    } else if (!style) {
-      props = nativeProps;
     } else {
-      props = mergeFast(nativeProps, style);
+      props = nativeProps;
+      if (hasProcessedProps) {
+        props = mergeFast(props, processedProps);
+      }
+      if (style) {
+        props = mergeFast(props, style);
+      }
     }
 
     RCTUIManager.updateView(

@@ -78,6 +78,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   NativeAppEventEmitter: require('RCTNativeAppEventEmitter'),
   NativeModules: require('NativeModules'),
   Platform: require('Platform'),
+  processColor: require('processColor'),
   requireNativeComponent: require('requireNativeComponent'),
 
   // Prop Types
