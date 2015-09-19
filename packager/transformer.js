@@ -10,20 +10,26 @@
  */
 'use strict';
 
-var babel = require('babel-core');
+const babel = require('babel-core');
+const inlineRequires = require('fbjs-scripts/babel/inline-requires');
 
-function transform(srcTxt, filename, options) {
-  var plugins = [];
+function transform(src, filename, options) {
+  const plugins = [];
 
   if (process.env.NODE_ENV === 'production') {
-    plugins = plugins.concat(['node-env-inline', 'dunderscore-dev-inline']);
+    plugins.push('node-env-inline', 'dunderscore-dev-inline');
+  } else if (process.env.NODE_ENV === 'test') {
+    plugins.push({
+      position: 'after',
+      transformer: inlineRequires,
+    });
   }
 
-  var result = babel.transform(srcTxt, {
+  const result = babel.transform(src, {
     retainLines: true,
     compact: true,
     comments: false,
-    filename: filename,
+    filename,
     whitelist: [
       'es6.arrowFunctions',
       'es6.blockScoping',
@@ -42,24 +48,21 @@ function transform(srcTxt, filename, options) {
       'react.displayName',
       'regenerator',
     ],
-    plugins: plugins,
+    plugins,
     sourceFileName: filename,
     sourceMaps: false,
     extra: options || {},
   });
 
   return {
-    code: result.code,
+    code: result.code
   };
 }
 
 module.exports = function(data, callback) {
-  var result;
+  let result;
   try {
-    result = transform(
-      data.sourceCode,
-      data.filename
-    );
+    result = transform(data.sourceCode, data.filename);
   } catch (e) {
     callback(e);
     return;
