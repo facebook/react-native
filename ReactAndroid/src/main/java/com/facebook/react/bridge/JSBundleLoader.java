@@ -34,6 +34,18 @@ public abstract class JSBundleLoader {
   }
 
   /**
+   * This loader loads a JS bundle from a location on the file system.
+   */
+  public static JSBundleLoader createFileLoader(final String fileName) {
+    return new JSBundleLoader() {
+      @Override
+      public void loadScript(ReactBridge bridge) {
+        bridge.loadScriptFromFile(fileName);
+      }
+    };
+  }
+
+  /**
    * This loader is used when bundle gets reloaded from dev server. In that case loader expect JS
    * bundle to be prefetched and stored in local file. We do that to avoid passing large strings
    * between java and native code and avoid allocating memory in java to fit whole JS bundle in it.
