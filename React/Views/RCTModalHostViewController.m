@@ -9,18 +9,17 @@
 
 #import "RCTModalHostViewController.h"
 
-@interface RCTModalHostViewController ()
-
-@end
-
-@implementation RCTModalHostViewController
+@implementation RCTModalHostViewController {
+  CGRect _lastViewFrame;
+}
 
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
 
-  if (self.boundsDidChangeBlock) {
+  if (self.boundsDidChangeBlock && !CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
     self.boundsDidChangeBlock(self.view.bounds);
+    _lastViewFrame = self.view.frame;
   }
 }
 
