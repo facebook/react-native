@@ -8,10 +8,18 @@
  */
 'use strict';
 
-var transformer = require('../packager/transformer.js');
+const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
+const path = require('path');
+const transformer = require('../packager/transformer.js');
 
 module.exports = {
   process(src, file) {
     return transformer.transform(src, file).code;
-  }
+  },
+
+  getCacheKey: createCacheKeyFunction([
+    __filename,
+    path.join(__dirname, '../packager/transformer.js'),
+    path.join(__dirname, '../node_modules/babel-core/package.json'),
+  ]),
 };
