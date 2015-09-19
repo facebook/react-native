@@ -12,27 +12,89 @@
 'use strict';
 
 var WebSocketBase = require('WebSocketBase');
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var RCTWebSocketManager = require('NativeModules').WebSocketAndroid;
+
+var WebSocketId = 0;
 
 class WebSocket extends WebSocketBase {
+  _socketId: number;
+  _subs: any;
 
   connectToSocketImpl(url: string): void {
-    console.warn('WebSocket is not yet supported on Android');
+    this._socketId = WebSocketId++;
+    RCTWebSocketManager.connect(url, this._socketId);
+    this._registerEvents(this._socketId);
   }
 
   closeConnectionImpl(): void{
-    console.warn('WebSocket is not yet supported on Android');
+    RCTWebSocketManager.close(this._socketId);
   }
 
   cancelConnectionImpl(): void {
-    console.warn('WebSocket is not yet supported on Android');
+    RCTWebSocketManager.close(this._socketId);
   }
 
   sendStringImpl(message: string): void {
-    console.warn('WebSocket is not yet supported on Android');
+    RCTWebSocketManager.send(message, this._socketId);
   }
 
   sendArrayBufferImpl(): void {
-    console.warn('WebSocket is not yet supported on Android');
+    console.warn('WebSocket.sendArrayBuffer() is not yet supported on Android');
+  }
+
+  _registerEvents(id: number): void {
+    this._subs = [
+      RCTDeviceEventEmitter.addListener(
+        'websocketMessage',
+        function(ev) {
+          if (ev.id !== id) {
+            return;
+          }
+          this.onmessage && this.onmessage({
+            data: ev.data
+          });
+        }.bind(this)
+      ),
+      RCTDeviceEventEmitter.addListener(
+        'websocketOpen',
+        function(ev) {
+          if (ev.id !== id) {
+            return;
+          }
+          this.readyState = this.OPEN;
+          this.onopen && this.onopen();
+        }.bind(this)
+      ),
+      RCTDeviceEventEmitter.addListener(
+        'websocketClosed',
+        function(ev) {
+          if (ev.id !== id) {
+            return;
+          }
+          this.readyState = this.CLOSED;
+          this.onclose && this.onclose(ev);
+          this._unregisterEvents();
+          RCTWebSocketManager.close(id);
+        }.bind(this)
+      ),
+      RCTDeviceEventEmitter.addListener(
+        'websocketFailed',
+        function(ev) {
+          if (ev.id !== id) {
+            return;
+          }
+          this.onerror && this.onerror(new Error(ev.message));
+          this._unregisterEvents();
+          RCTWebSocketManager.close(id);
+        }.bind(this)
+      )
+    ];
+  }
+
+  _unregisterEvents(): void {
+    this._subs.forEach(e => e.remove());
+    this._subs = [];
   }
 }
 

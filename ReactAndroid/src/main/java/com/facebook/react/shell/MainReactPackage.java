@@ -19,6 +19,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.network.NetworkingModule;
+import com.facebook.react.modules.network.WebSocketModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -46,6 +47,7 @@ public class MainReactPackage implements ReactPackage {
       new AsyncStorageModule(reactContext),
       new FrescoModule(reactContext),
       new NetworkingModule(reactContext),
+      new WebSocketModule(reactContext),
       new ToastModule(reactContext));
   }
 
