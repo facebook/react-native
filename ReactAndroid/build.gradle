@@ -240,7 +240,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-ws:2.4.0'
     compile 'com.squareup.okio:okio:1.5.0'
     compile 'org.webkit:android-jsc:r174650'
-    compile "org.java-websocket:Java-WebSocket:1.3.0"
 }
 
 apply from: 'release.gradle'
