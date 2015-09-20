@@ -52,7 +52,7 @@ var NavigatorNavigationBar = React.createClass({
       Title: React.PropTypes.func.isRequired,
       LeftButton: React.PropTypes.func.isRequired,
       RightButton: React.PropTypes.func.isRequired,
-    }),
+    }).isRequired,
     navState: React.PropTypes.shape({
       routeStack: React.PropTypes.arrayOf(React.PropTypes.object),
       presentedIndex: React.PropTypes.number,
