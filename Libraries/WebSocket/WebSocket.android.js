@@ -30,8 +30,16 @@ class WebSocket extends WebSocketBase {
     this._registerEvents(this._socketId);
   }
 
-  closeConnectionImpl(): void {
-    RCTWebSocketManager.close(this._socketId);
+  closeConnectionImpl(code?: number, reason?: string): void {
+    /*
+     * The status code 1000 means 'CLOSE_NORMAL'
+     * Reason is empty string by to match browser behaviour
+     * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+     */
+    let statusCode = typeof code === 'number' ? code : 1000,
+        closeReason = typeof reason === 'string' ? reason : '';
+
+    RCTWebSocketManager.close(statusCode, closeReason, this._socketId);
   }
 
   cancelConnectionImpl(): void {

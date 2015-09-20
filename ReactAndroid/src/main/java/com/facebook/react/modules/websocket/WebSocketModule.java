@@ -134,17 +134,12 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void close(final int id) {
+  public void close(final int code, final String reason, final int id) {
     WebSocket mWebSocketClient = mWebSocketConnections.get(id);
 
     if (mWebSocketClient != null) {
       try {
-        /*
-         * The status code 1000 means 'CLOSE_NORMAL'
-         * Reason is empty string to match browser behaviour
-         * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-         */
-        mWebSocketClient.close(1000, "");
+        mWebSocketClient.close(code, reason);
 
         mWebSocketConnections.remove(id);
       } catch (IOException e) {
