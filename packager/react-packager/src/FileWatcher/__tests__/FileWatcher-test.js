@@ -19,14 +19,14 @@ jest
     }
   });
 
-var FileWatcher = require('../');
-var sane = require('sane');
-
 describe('FileWatcher', function() {
+  var FileWatcher;
   var Watcher;
 
   beforeEach(function() {
-    Watcher = sane.WatchmanWatcher;
+    require('mock-modules').dumpCache();
+    FileWatcher = require('../');
+    Watcher = require('sane').WatchmanWatcher;
     Watcher.prototype.once.mockImplementation(function(type, callback) {
       callback();
     });

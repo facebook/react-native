@@ -15,12 +15,12 @@ jest
 jest.mock('fs');
 
 var Cache = require('../../Cache');
-var Transformer = require('../');
 var fs = require('fs');
 
 var options;
 
 describe('Transformer', function() {
+  var Transformer;
   var workers;
 
   beforeEach(function() {
@@ -33,6 +33,7 @@ describe('Transformer', function() {
       transformModulePath: '/foo/bar',
       cache: new Cache({}),
     };
+    Transformer = require('../');
   });
 
   pit('should loadFileAndTransform', function() {

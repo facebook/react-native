@@ -68,7 +68,7 @@ describe('Activity', () => {
 
       expect(() => {
         Activity.endEvent(eid);
-      }).toThrow('event(1) has already ended!');
+      }).toThrow('event(3) has already ended!');
     });
   });
 
@@ -80,8 +80,8 @@ describe('Activity', () => {
       Activity.signal(EVENT_NAME, DATA);
       jest.runOnlyPendingTimers();
 
-      expect(console.log.mock.calls.length).toBe(1);
-      const consoleMsg = console.log.mock.calls[0][0];
+      expect(console.log.mock.calls.length).toBe(3);
+      const consoleMsg = console.log.mock.calls[2][0];
       expect(consoleMsg).toContain(EVENT_NAME);
       expect(consoleMsg).toContain(JSON.stringify(DATA));
     });
