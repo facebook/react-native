@@ -18,6 +18,8 @@ var WebSocketBase = require('WebSocketBase');
 
 var WebSocketId = 0;
 
+var CLOSE_NORMAL = 1000;
+
 class WebSocket extends WebSocketBase {
   _socketId: number;
   _subs: any;
@@ -36,14 +38,14 @@ class WebSocket extends WebSocketBase {
      * Reason is empty string by to match browser behaviour
      * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
      */
-    let statusCode = typeof code === 'number' ? code : 1000,
+    let statusCode = typeof code === 'number' ? code : CLOSE_NORMAL,
         closeReason = typeof reason === 'string' ? reason : '';
 
     RCTWebSocketManager.close(statusCode, closeReason, this._socketId);
   }
 
   cancelConnectionImpl(): void {
-    RCTWebSocketManager.close(this._socketId);
+    RCTWebSocketManager.close(CLOSE_NORMAL, '', this._socketId);
   }
 
   sendStringImpl(message: string): void {
@@ -89,7 +91,7 @@ class WebSocket extends WebSocketBase {
 
           this._unregisterEvents();
 
-          RCTWebSocketManager.close(id);
+          RCTWebSocketManager.close(CLOSE_NORMAL, '', id);
       }),
       RCTDeviceEventEmitter.addListener('websocketFailed', ev => {
         if (ev.id !== id) {
@@ -99,7 +101,7 @@ class WebSocket extends WebSocketBase {
         this.onerror && this.onerror(new Error(ev.message));
         this._unregisterEvents();
 
-        RCTWebSocketManager.close(id);
+        RCTWebSocketManager.close(CLOSE_NORMAL, '', id);
       })
     ];
   }
