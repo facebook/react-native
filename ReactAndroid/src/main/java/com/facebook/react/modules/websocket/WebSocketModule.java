@@ -139,6 +139,11 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
     if (mWebSocketClient != null) {
       try {
+        /*
+         * The status code 1000 means 'CLOSE_NORMAL'
+         * Reason is empty string to match browser behaviour
+         * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+         */
         mWebSocketClient.close(1000, "");
 
         mWebSocketConnections.remove(id);
