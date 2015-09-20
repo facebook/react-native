@@ -4,7 +4,7 @@ title: Testing
 layout: docs
 category: Guides
 permalink: docs/testing.html
-next: running-on-device-ios
+next: javascript-environment
 ---
 
 ## Running Tests and Contributing

@@ -4,7 +4,7 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: native-modules-ios
+next: direct-manipulation
 ---
 
 ## iOS

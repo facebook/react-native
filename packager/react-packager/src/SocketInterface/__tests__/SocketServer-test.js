@@ -14,26 +14,24 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('fs')
     .dontMock('../SocketServer');
 
+var PackagerServer = require('../../Server');
+var SocketServer = require('../SocketServer');
+var bser = require('bser');
+var net = require('net');
+
 describe('SocketServer', () => {
-  let PackagerServer;
-  let SocketServer;
   let netServer;
   let bunser;
 
   beforeEach(() => {
-    SocketServer = require('../SocketServer');
-
     const {EventEmitter} = require.requireActual('events');
     netServer = new EventEmitter();
     netServer.listen = jest.genMockFn();
-    require('net').createServer.mockImpl(() => netServer);
+    net.createServer.mockImpl(() => netServer);
 
-    const bser = require('bser');
     bunser = new EventEmitter();
     bser.BunserBuf.mockImpl(() => bunser);
     bser.dumpToBuffer.mockImpl((a) => a);
-
-    PackagerServer = require('../../Server');
   });
 
   pit('create a server', () => {

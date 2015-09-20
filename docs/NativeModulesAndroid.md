@@ -1,10 +1,10 @@
 ---
 id: native-modules-android
-title: Native Modules (Android)
+title: Native Modules
 layout: docs
-category: Guides
+category: Guides (Android)
 permalink: docs/native-modules-android.html
-next: native-components-ios
+next: native-components-android
 ---
 
 Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -129,7 +129,7 @@ To make it simpler for to access your new functionality from JavaScript, it is c
 'use strict';
 
 /**
- * This exposes the native ToastAndroid module as a JS module. This has a function 'showText'
+ * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
  * which takes the following parameters:
  *
  * 1. String message: A string with the text to toast

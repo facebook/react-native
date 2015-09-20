@@ -1,10 +1,10 @@
 ---
 id: running-on-device-ios
-title: Running On Device (iOS)
+title: Running On Device
 layout: docs
-category: Guides
+category: Guides (iOS)
 permalink: docs/running-on-device-ios.html
-next: running-on-device-android
+next: embedded-app-ios
 ---
 
 Note that running on device requires [Apple Developer account](https://developer.apple.com/register) and provisioning your iPhone. This guide covers only React Native specific topic.
@@ -13,7 +13,7 @@ Note that running on device requires [Apple Developer account](https://developer
 
 You can iterate quickly on device using development server. To do that, your laptop and your phone have to be on the same wifi network.
 
-1. Open `iOS/AppDelegate.m`
+1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Change the IP in the URL from `localhost` to your laptop's IP
 3. In Xcode select your phone as build target and press "Build and run"
 
@@ -25,7 +25,7 @@ You can iterate quickly on device using development server. To do that, your lap
 
 You can also pack all the JavaScript code within the app itself. This way you can test it without development server running and submit the app to the AppStore.
 
-1. Open `iOS/AppDelegate.m`
+1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Follow the instructions for "OPTION 2":
   * Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
   * Run the `react-native bundle` command in terminal from the root directory of your app

@@ -174,6 +174,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/youmeyou/id949540333?mt=8',
     author: 'youmeyou, LLC',
   },
+  {
+    name: 'Ziliun',
+    icon: 'https://lh3.googleusercontent.com/c6ot13BVlU-xONcQi-llFmKXZCLRGbfrCv1RnctWtOELtPYMc0A52srXAfkU897QIg=w300',
+    link: 'https://play.google.com/store/apps/details?id=com.ziliunapp',
+    author: 'Sonny Lazuardi',
+  },
 ];
 
 var showcase = React.createClass({

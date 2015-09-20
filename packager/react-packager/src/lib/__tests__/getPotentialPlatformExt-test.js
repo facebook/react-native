@@ -10,9 +10,10 @@
 
 jest.dontMock('../getPlatformExtension');
 
+var getPlatformExtension = require('../getPlatformExtension');
+
 describe('getPlatformExtension', function() {
   it('should get platform ext', function() {
-    var getPlatformExtension = require('../getPlatformExtension');
     expect(getPlatformExtension('a.ios.js')).toBe('ios');
     expect(getPlatformExtension('a.android.js')).toBe('android');
     expect(getPlatformExtension('/b/c/a.ios.js')).toBe('ios');

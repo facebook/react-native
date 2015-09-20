@@ -20,19 +20,19 @@ jest
   .mock('fs');
 
 var Promise = require('promise');
+var Cache = require('../');
+var fs = require('fs');
+var os = require('os');
+var _ = require('underscore');
 
 describe('JSTransformer Cache', () => {
-  var Cache;
-
   beforeEach(() => {
-    require('os').tmpDir.mockImpl(() => 'tmpDir');
-
-    Cache = require('../');
+    os.tmpDir.mockImpl(() => 'tmpDir');
   });
 
   describe('getting/setting', () => {
     pit('calls loader callback for uncached file', () => {
-      require('fs').stat.mockImpl((file, callback) => {
+      fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => {}
@@ -54,7 +54,7 @@ describe('JSTransformer Cache', () => {
     });
 
     pit('supports storing multiple fields', () => {
-      require('fs').stat.mockImpl((file, callback) => {
+      fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => {}
@@ -82,7 +82,7 @@ describe('JSTransformer Cache', () => {
     });
 
     pit('gets the value from the loader callback', () => {
-      require('fs').stat.mockImpl((file, callback) =>
+      fs.stat.mockImpl((file, callback) =>
         callback(null, {
           mtime: {
             getTime: () => {}
@@ -104,7 +104,7 @@ describe('JSTransformer Cache', () => {
     });
 
     pit('caches the value after the first call', () => {
-      require('fs').stat.mockImpl((file, callback) => {
+      fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => {}
@@ -134,7 +134,7 @@ describe('JSTransformer Cache', () => {
 
     pit('clears old field when getting new field and mtime changed', () => {
       var mtime = 0;
-      require('fs').stat.mockImpl((file, callback) => {
+      fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => mtime++
@@ -179,8 +179,6 @@ describe('JSTransformer Cache', () => {
         }
       };
 
-      var fs = require('fs');
-
       fs.existsSync.mockImpl(() => true);
 
       fs.statSync.mockImpl(filePath => fileStats[filePath]);
@@ -220,7 +218,7 @@ describe('JSTransformer Cache', () => {
     });
 
     pit('should not load outdated cache', () => {
-      require('fs').stat.mockImpl((file, callback) =>
+      fs.stat.mockImpl((file, callback) =>
         callback(null, {
           mtime: {
             getTime: () => {}
@@ -259,7 +257,7 @@ describe('JSTransformer Cache', () => {
       var index = 0;
       var mtimes = [10, 20, 30];
       var debounceIndex = 0;
-      require('underscore').debounce = callback => {
+      _.debounce = callback => {
         return () => {
           if (++debounceIndex === 3) {
             callback();
@@ -267,7 +265,6 @@ describe('JSTransformer Cache', () => {
         };
       };
 
-      var fs = require('fs');
       fs.stat.mockImpl((file, callback) =>
         callback(null, {
           mtime: {

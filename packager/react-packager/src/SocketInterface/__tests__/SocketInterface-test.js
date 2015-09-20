@@ -13,23 +13,19 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('child_process')
     .dontMock('../');
 
+var SocketInterface = require('../');
+var SocketClient = require('../SocketClient');
+var childProcess = require('child_process');
+var fs = require('fs');
+
 describe('SocketInterface', () => {
-  let SocketInterface;
-  let SocketClient;
-
-  beforeEach(() => {
-    SocketInterface = require('../');
-    SocketClient = require('../SocketClient');
-  });
-
   describe('getOrCreateSocketFor', () => {
     pit('creates socket path by hashing options', () => {
-      const fs = require('fs');
       fs.existsSync = jest.genMockFn().mockImpl(() => true);
       fs.unlinkSync = jest.genMockFn();
       let callback;
 
-      require('child_process').spawn.mockImpl(() => ({
+      childProcess.spawn.mockImpl(() => ({
         on: (event, cb) => callback = cb,
         send: (message) => {
           setImmediate(() => callback({ type: 'createdServer' }));
@@ -58,13 +54,12 @@ describe('SocketInterface', () => {
     });
 
     pit('should fork a server', () => {
-      const fs = require('fs');
       fs.existsSync = jest.genMockFn().mockImpl(() => false);
       fs.unlinkSync = jest.genMockFn();
       let sockPath;
       let callback;
 
-      require('child_process').spawn.mockImpl(() => ({
+      childProcess.spawn.mockImpl(() => ({
         on: (event, cb) => callback = cb,
         send: (message) => {
           expect(message.type).toBe('createSocketServer');

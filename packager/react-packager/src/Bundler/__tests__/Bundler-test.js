@@ -17,40 +17,38 @@ jest
 
 jest.mock('fs');
 
-var Promise = require('promise');
+var Bundler = require('../');
+var JSTransformer = require('../../JSTransformer');
+var DependencyResolver = require('../../DependencyResolver');
+var sizeOf = require('image-size');
+var fs = require('fs');
 
 describe('Bundler', function() {
   var getDependencies;
   var wrapModule;
-  var Bundler;
   var bundler;
   var assetServer;
   var modules;
-  var ProgressBar;
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
     wrapModule = jest.genMockFn();
-    require('../../DependencyResolver').mockImpl(function() {
+    DependencyResolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
         wrapModule: wrapModule,
       };
     });
 
-    Bundler = require('../');
-
-    require('fs').statSync.mockImpl(function() {
+    fs.statSync.mockImpl(function() {
       return {
         isDirectory: () => true
       };
     });
 
-    require('fs').readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImpl(function(file, callback) {
       callback(null, '{"json":true}');
     });
-
-    ProgressBar = require('progress');
 
     assetServer = {
       getAssetData: jest.genMockFn(),
@@ -114,7 +112,7 @@ describe('Bundler', function() {
       });
     });
 
-    require('../../JSTransformer').prototype.loadFileAndTransform
+    JSTransformer.prototype.loadFileAndTransform
       .mockImpl(function(path) {
         return Promise.resolve({
           code: 'transformed ' + path,
@@ -128,7 +126,7 @@ describe('Bundler', function() {
       return Promise.resolve('lol ' + code + ' lol');
     });
 
-    require('image-size').mockImpl(function(path, cb) {
+    sizeOf.mockImpl(function(path, cb) {
       cb(null, { width: 50, height: 100 });
     });
 

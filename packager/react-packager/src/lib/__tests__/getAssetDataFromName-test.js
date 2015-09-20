@@ -11,13 +11,9 @@
 jest.dontMock('../getPlatformExtension')
     .dontMock('../getAssetDataFromName');
 
+var getAssetDataFromName = require('../getAssetDataFromName');
+
 describe('getAssetDataFromName', () => {
-  let getAssetDataFromName;
-
-  beforeEach(() => {
-    getAssetDataFromName = require('../getAssetDataFromName');
-  });
-
   it('should get data from name', () => {
     expect(getAssetDataFromName('a/b/c.png')).toEqual({
       resolution: 1,

@@ -19,23 +19,15 @@ jest
 jest
   .mock('fs');
 
+var Fastfs = require('../fastfs');
+var Module = require('../Module');
+var ModuleCache = require('../ModuleCache');
+var Promise = require('promise');
+var fs = require('fs');
+var FileWatcher = require('../../FileWatcher');
+
 describe('Module', () => {
-  var Fastfs;
-  var Module;
-  var ModuleCache;
-  var Promise;
-  var fs;
-
-  const FileWatcher = require('../../FileWatcher');
   const fileWatcher = new FileWatcher(['/root']);
-
-  beforeEach(function() {
-    Fastfs = require('../fastfs');
-    Module = require('../Module');
-    ModuleCache = require('../ModuleCache');
-    Promise = require('promise');
-    fs = require('fs');
-  });
 
   describe('Async Dependencies', () => {
     function expectAsyncDependenciesToEqual(expected) {
