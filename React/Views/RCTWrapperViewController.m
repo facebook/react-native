@@ -22,7 +22,6 @@
 {
   UIView *_wrapperView;
   UIView *_contentView;
-  RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayoutLength;
   CGFloat _previousBottomLayoutLength;
 }
