@@ -321,7 +321,7 @@ Now modify the render function so that once we have our data it renders a ListVi
   },
 ```
 
-The `DataSource` is an interface that `ListView` is using to determine which rows have changed over the course of updates.
+The `dataSource` is an interface that `ListView` is using to determine which rows have changed over the course of updates.
 
 You'll notice we used `dataSource` from `this.state`. The next step is to add an empty `dataSource` to the object returned by `getInitialState`. Also, now that we're storing the data in `dataSource`, we should no longer use `this.state.movies` to avoid storing data twice. We can use boolean property of the state (`this.state.loaded`) to tell whether data fetching has finished.
 
