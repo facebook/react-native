@@ -43,7 +43,7 @@ function getPlatformFromPath(filepath) {
   while (ext = path.extname(filepath)) {
     filepath = path.basename(filepath, ext);
   }
-  
+
   if (endsWith(filepath, 'Android')) {
     return ANDROID_SUFFIX;
   } else if (endsWith(filepath, 'IOS')) {
@@ -107,7 +107,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
   var componentPlatform = getPlatformFromPath(filepath);
   var docFilePath = '../docs/' + componentName + '.md';
-  
+
   if (fs.existsSync(docFilePath)) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
@@ -226,6 +226,7 @@ var apis = [
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
+  '../Libraries/IntentAndroid/IntentAndroid.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',

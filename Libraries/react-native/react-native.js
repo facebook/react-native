@@ -64,6 +64,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   InteractionManager: require('InteractionManager'),
   LayoutAnimation: require('LayoutAnimation'),
   LinkingIOS: require('LinkingIOS'),
+  IntentAndroid: require('IntentAndroid'),
   NetInfo: require('NetInfo'),
   PanResponder: require('PanResponder'),
   PixelRatio: require('PixelRatio'),
