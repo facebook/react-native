@@ -61,7 +61,7 @@ import com.facebook.soloader.SoLoader;
  *
  * The lifecycle of the instance of {@link ReactInstanceManager} should be bound to the activity
  * that owns the {@link ReactRootView} that is used to render react application using this
- * instance manager (see {@link ReactRootView#startReactApplication}). It's required tp pass
+ * instance manager (see {@link ReactRootView#startReactApplication}). It's required to pass
  * owning activity's lifecycle events to the instance manager (see {@link #onPause},
  * {@link #onDestroy} and {@link #onResume}).
  *
