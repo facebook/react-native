@@ -285,7 +285,7 @@ function getAppMiddleware(options) {
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
     blacklistRE: blacklist(),
-    cacheVersion: '2',
+    cacheVersion: '3',
     transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],

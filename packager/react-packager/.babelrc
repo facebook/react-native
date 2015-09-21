@@ -20,6 +20,7 @@
     "es7.objectRestSpread",
     "flow",
     "react",
+    "react.displayName",
     "regenerator"
   ],
   "sourceMaps": false
