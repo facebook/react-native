@@ -76,7 +76,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
   
   UIAlertView *alertView = RCTAlertView(title, nil, self, nil, nil);
-
   NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
 
   if ([type isEqualToString:@"plain-text"]) {

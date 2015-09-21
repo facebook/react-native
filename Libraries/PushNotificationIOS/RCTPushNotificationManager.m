@@ -158,17 +158,12 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
 
   UIApplication *app = RCTSharedApplication();
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_8_0
-
   id notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
   [app registerUserNotificationSettings:notificationSettings];
   [app registerForRemoteNotifications];
-  
 #else
-  
   [app registerForRemoteNotificationTypes:types];
-
 #endif
-
 }
 
 RCT_EXPORT_METHOD(abandonPermissions)
