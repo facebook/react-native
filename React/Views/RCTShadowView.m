@@ -219,7 +219,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
                 parentConstraint:(__unused CGSize)parentConstraint
 {
   [self fillCSSNode:_cssNode];
-  layoutNode(_cssNode, CSS_UNDEFINED);
+  layoutNode(_cssNode, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
 }
 
