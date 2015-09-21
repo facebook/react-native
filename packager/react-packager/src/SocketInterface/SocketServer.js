@@ -37,6 +37,11 @@ class SocketServer {
       });
     });
 
+    process.on('uncaughtException', (error) => {
+      debug('uncaught error', error);
+      setImmediate(() => process.exit(1));
+    });
+
     this._numConnections = 0;
     this._server.on('connection', (sock) => this._handleConnection(sock));
 
