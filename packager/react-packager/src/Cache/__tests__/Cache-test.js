@@ -21,13 +21,14 @@ jest
 
 var Promise = require('promise');
 var fs = require('fs');
+var os = require('os');
 var _ = require('underscore');
 
+var Cache = require('../');
+
 describe('JSTransformer Cache', () => {
-  var Cache;
   beforeEach(() => {
-    require('os').tmpDir.mockImpl(() => 'tmpDir');
-    Cache = require('../');
+    os.tmpDir.mockImpl(() => 'tmpDir');
   });
 
   describe('getting/setting', () => {
