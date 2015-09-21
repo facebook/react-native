@@ -2389,8 +2389,9 @@
       "resolved": "https://registry.npmjs.org/immutable/-/immutable-3.7.5.tgz"
     },
     "jest-cli": {
-      "version": "0.5.5",
-      "from": "jest-cli@0.5.5",
+      "version": "0.5.7",
+      "from": "jest-cli@0.5.7",
+      "resolved": "https://registry.npmjs.org/jest-cli/-/jest-cli-0.5.7.tgz",
       "dependencies": {
         "coffee-script": {
           "version": "1.10.0",
@@ -2711,26 +2712,19 @@
           "resolved": "https://registry.npmjs.org/jasmine-pit/-/jasmine-pit-2.0.2.tgz"
         },
         "jsdom": {
-          "version": "6.3.0",
-          "from": "jsdom@6.3.0",
-          "resolved": "https://registry.npmjs.org/jsdom/-/jsdom-6.3.0.tgz",
+          "version": "6.5.0",
+          "from": "jsdom@6.5.0",
+          "resolved": "https://registry.npmjs.org/jsdom/-/jsdom-6.5.0.tgz",
           "dependencies": {
             "acorn": {
-              "version": "1.2.2",
-              "from": "acorn@>=1.2.1 <2.0.0",
-              "resolved": "https://registry.npmjs.org/acorn/-/acorn-1.2.2.tgz"
+              "version": "2.4.0",
+              "from": "acorn@>=2.4.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/acorn/-/acorn-2.4.0.tgz"
             },
             "acorn-globals": {
               "version": "1.0.6",
               "from": "acorn-globals@>=1.0.4 <2.0.0",
-              "resolved": "https://registry.npmjs.org/acorn-globals/-/acorn-globals-1.0.6.tgz",
-              "dependencies": {
-                "acorn": {
-                  "version": "2.4.0",
-                  "from": "acorn@>=2.1.0 <3.0.0",
-                  "resolved": "https://registry.npmjs.org/acorn/-/acorn-2.4.0.tgz"
-                }
-              }
+              "resolved": "https://registry.npmjs.org/acorn-globals/-/acorn-globals-1.0.6.tgz"
             },
             "browser-request": {
               "version": "0.3.3",
@@ -2749,7 +2743,7 @@
             },
             "escodegen": {
               "version": "1.7.0",
-              "from": "escodegen@>=1.7.0 <1.8.0",
+              "from": "escodegen@>=1.6.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/escodegen/-/escodegen-1.7.0.tgz",
               "dependencies": {
                 "estraverse": {
@@ -2902,9 +2896,9 @@
               "resolved": "https://registry.npmjs.org/parse5/-/parse5-1.5.0.tgz"
             },
             "request": {
-              "version": "2.62.0",
+              "version": "2.63.0",
               "from": "request@>=2.55.0 <3.0.0",
-              "resolved": "https://registry.npmjs.org/request/-/request-2.62.0.tgz",
+              "resolved": "https://registry.npmjs.org/request/-/request-2.63.0.tgz",
               "dependencies": {
                 "bl": {
                   "version": "1.0.0",
@@ -2983,14 +2977,14 @@
                   "resolved": "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz"
                 },
                 "mime-types": {
-                  "version": "2.1.6",
+                  "version": "2.1.7",
                   "from": "mime-types@>=2.1.2 <2.2.0",
-                  "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.6.tgz",
+                  "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.7.tgz",
                   "dependencies": {
                     "mime-db": {
-                      "version": "1.18.0",
-                      "from": "mime-db@>=1.18.0 <1.19.0",
-                      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.18.0.tgz"
+                      "version": "1.19.0",
+                      "from": "mime-db@>=1.19.0 <1.20.0",
+                      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.19.0.tgz"
                     }
                   }
                 },
@@ -3042,9 +3036,9 @@
                   "resolved": "https://registry.npmjs.org/hawk/-/hawk-3.1.0.tgz",
                   "dependencies": {
                     "hoek": {
-                      "version": "2.15.0",
+                      "version": "2.16.3",
                       "from": "hoek@>=2.0.0 <3.0.0",
-                      "resolved": "https://registry.npmjs.org/hoek/-/hoek-2.15.0.tgz"
+                      "resolved": "https://registry.npmjs.org/hoek/-/hoek-2.16.3.tgz"
                     },
                     "boom": {
                       "version": "2.8.0",
@@ -3151,9 +3145,9 @@
               "resolved": "https://registry.npmjs.org/symbol-tree/-/symbol-tree-3.1.2.tgz"
             },
             "tough-cookie": {
-              "version": "1.2.0",
-              "from": "tough-cookie@>=1.1.0 <2.0.0",
-              "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-1.2.0.tgz"
+              "version": "2.0.0",
+              "from": "tough-cookie@>=2.0.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.0.0.tgz"
             },
             "whatwg-url-compat": {
               "version": "0.6.5",
