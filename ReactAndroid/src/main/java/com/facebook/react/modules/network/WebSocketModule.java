@@ -34,7 +34,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "WebSocketAndroid";
+        return "WebSocketManager";
     }
 
     @ReactMethod

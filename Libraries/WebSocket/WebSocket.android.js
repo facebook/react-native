@@ -11,9 +11,10 @@
  */
 'use strict';
 
-var WebSocketBase = require('WebSocketBase');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTWebSocketManager = require('NativeModules').WebSocketAndroid;
+var RCTWebSocketManager = require('NativeModules').WebSocketManager;
+
+var WebSocketBase = require('WebSocketBase');
 
 var WebSocketId = 0;
 
@@ -27,7 +28,7 @@ class WebSocket extends WebSocketBase {
     this._registerEvents(this._socketId);
   }
 
-  closeConnectionImpl(): void{
+  closeConnectionImpl(): void {
     RCTWebSocketManager.close(this._socketId);
   }
 
@@ -40,7 +41,13 @@ class WebSocket extends WebSocketBase {
   }
 
   sendArrayBufferImpl(): void {
-    console.warn('WebSocket.sendArrayBuffer() is not yet supported on Android');
+    // TODO
+    console.warn('Sending ArrayBuffers is not yet supported');
+  }
+
+  _unregisterEvents(): void {
+    this._subs.forEach(e => e.remove());
+    this._subs = [];
   }
 
   _registerEvents(id: number): void {
@@ -92,10 +99,6 @@ class WebSocket extends WebSocketBase {
     ];
   }
 
-  _unregisterEvents(): void {
-    this._subs.forEach(e => e.remove());
-    this._subs = [];
-  }
 }
 
 module.exports = WebSocket;
