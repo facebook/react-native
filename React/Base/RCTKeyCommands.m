@@ -97,12 +97,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   static NSTimeInterval lastCommand = 0;
   if (RCTIsIOS8OrEarlier() || CACurrentMediaTime() - lastCommand > 0.5) {
     for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
-      if ([command.keyCommand.input isEqualToString:key.input] &&
-          command.keyCommand.modifierFlags == key.modifierFlags) {
-        if (command.block) {
+      if (([command.keyCommand.input isEqualToString:key.input] &&
+          command.keyCommand.modifierFlags == key.modifierFlags) &&
+		  command.block) {
           command.block(key);
           lastCommand = CACurrentMediaTime();
-        }
       }
     }
   }
