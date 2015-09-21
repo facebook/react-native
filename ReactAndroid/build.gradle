@@ -10,8 +10,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
 // We download various C++ open-source dependencies into downloads.
-// We then copy both downloaded code and our custom makefiles and headers into third-party-ndk
-// After that we build native code from src/main/jni with module path pointing at third-party-ndk
+// We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
+// After that we build native code from src/main/jni with module path pointing at third-party-ndk.
 
 def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
@@ -243,4 +243,3 @@ dependencies {
 }
 
 apply from: 'release.gradle'
-
