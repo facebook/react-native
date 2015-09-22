@@ -70,6 +70,7 @@
     "semver": "^5.0.1",
     "source-map": "^0.4.4",
     "stacktrace-parser": "^0.1.3",
+    "temp": "0.8.3",
     "tinycolor2": "^1.1.2",
     "uglify-js": "^2.4.24",
     "underscore": "^1.8.3",

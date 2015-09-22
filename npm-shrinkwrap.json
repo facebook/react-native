@@ -4166,6 +4166,23 @@
       "from": "stacktrace-parser@0.1.3",
       "resolved": "https://registry.npmjs.org/stacktrace-parser/-/stacktrace-parser-0.1.3.tgz"
     },
+    "temp": {
+      "version": "0.8.3",
+      "from": "temp@0.8.3",
+      "resolved": "https://registry.npmjs.org/temp/-/temp-0.8.3.tgz",
+      "dependencies": {
+        "os-tmpdir": {
+          "version": "1.0.1",
+          "from": "os-tmpdir@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.1.tgz"
+        },
+        "rimraf": {
+          "version": "2.2.8",
+          "from": "rimraf@>=2.2.6 <2.3.0",
+          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.2.8.tgz"
+        }
+      }
+    },
     "tinycolor2": {
       "version": "1.1.2",
       "from": "tinycolor2@*",
