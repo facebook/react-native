@@ -57,7 +57,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
   }
 
   @ReactMethod
-  public void reportSoftException(String title, ReadableArray details) {
+  public void reportSoftException(String title, ReadableArray details, int exceptionId) {
     FLog.e(ReactConstants.TAG, title + "\n" + stackTraceToString(details));
   }
 
