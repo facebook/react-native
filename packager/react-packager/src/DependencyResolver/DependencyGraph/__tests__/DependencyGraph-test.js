@@ -14,7 +14,8 @@ const Promise = require('promise');
 
 jest
   .mock('fs')
-  .mock('../../../Cache');
+  .mock('../../../Cache')
+  .mock('../../../Activity');
 
 var Cache = require('../../../Cache');
 var DependencyGraph = require('../index');

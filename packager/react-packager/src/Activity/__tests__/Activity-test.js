@@ -57,33 +57,15 @@ describe('Activity', () => {
     });
 
     it('throws when called with an invalid eventId', () => {
-      expect(() => Activity.endEvent(42)).toThrow(
-        'event(42) is not a valid event id!',
-      );
+      expect(() => Activity.endEvent(42)).toThrow();
     });
 
     it('throws when called with an expired eventId', () => {
       const eid = Activity.startEvent('', '');
       Activity.endEvent(eid);
-
       expect(() => {
         Activity.endEvent(eid);
-      }).toThrow('event(1) has already ended!');
-    });
-  });
-
-  describe('signal', () => {
-    it('writes a SIGNAL event out to the console', () => {
-      const EVENT_NAME = 'EVENT_NAME';
-      const DATA = {someData: 42};
-
-      Activity.signal(EVENT_NAME, DATA);
-      jest.runOnlyPendingTimers();
-
-      expect(console.log.mock.calls.length).toBe(1);
-      const consoleMsg = console.log.mock.calls[0][0];
-      expect(consoleMsg).toContain(EVENT_NAME);
-      expect(consoleMsg).toContain(JSON.stringify(DATA));
+      }).toThrow();
     });
   });
 });
