@@ -46,7 +46,13 @@ class SocketClient {
 
     this._sock.on('close', () => {
       if (!this._closing) {
-        throw new Error('Server closed unexpectedly' + getServerLogs());
+        const sockPathExists = fs.existsSync(sockPath);
+        throw new Error(
+          'Server closed unexpectedly.\n' +
+          'Socket path: `' + sockPath + '` ' +
+          (sockPathExists ? ' exists.' : 'doesn\'t exist') + '\n' +
+          getServerLogs()
+        );
       }
     });
   }
