@@ -23,8 +23,15 @@ class SocketServer {
     this._server = net.createServer();
     this._server.listen(sockPath);
     this._ready = new Promise((resolve, reject) => {
-      this._server.on('error', (e) => reject(e));
-      this._server.on('listening', () => {
+      this._server.once('error', (e) => reject(e));
+      this._server.once('listening', () => {
+        // Remove error listener so we make sure errors propagate.
+        this._server.removeAllListeners('error');
+        this._server.on(
+          'close',
+          () => debug('server closed')
+        );
+
         debug(
           'Process %d listening on socket path %s ' +
           'for server with options %j',
@@ -41,7 +48,7 @@ class SocketServer {
     });
 
     process.on('uncaughtException', (error) => {
-      debug('uncaught error', error);
+      debug('uncaught error', error.stack);
       setImmediate(() => process.exit(1));
     });
 
