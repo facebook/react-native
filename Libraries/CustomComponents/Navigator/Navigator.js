@@ -178,7 +178,7 @@ var GESTURE_ACTIONS = [
  *  - `replacePrevious(route)` - Replace the previous scene
  *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
  *     array of routes
- *  - `popToRoute(route)` - Pop to a particular scene, as specified by it's
+ *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
  *     route. All scenes after it will be unmounted
  *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
  *     other scene
