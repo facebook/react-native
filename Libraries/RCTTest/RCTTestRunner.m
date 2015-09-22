@@ -44,7 +44,7 @@ static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
     _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
     RCTAssert(_scriptURL != nil, @"Could not locate main.jsBundle");
 #else
-    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+    _scriptURL = RCTPackagerURL( [NSString stringWithFormat:@"/%@.bundle?platform=ios&dev=true", app] );
 #endif
   }
   return self;

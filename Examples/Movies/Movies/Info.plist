@@ -52,5 +52,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>RCTPackager</key>
+	<dict>
+		<key>url</key>
+		<string>http://localhost</string>
+		<key>port</key>
+		<integer>8089</integer>
+	</dict>
 </dict>
 </plist>

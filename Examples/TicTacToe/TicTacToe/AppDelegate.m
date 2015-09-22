@@ -15,6 +15,7 @@
 #import "AppDelegate.h"
 
 #import "RCTRootView.h"
+#import "RCTUtils.h"
 
 @implementation AppDelegate
 
@@ -36,8 +37,8 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/TicTacToe/TicTacToeApp.bundle?platform=ios&dev=true"];
-
+  jsCodeLocation = RCTPackagerURL(@"/Examples/TicTacToe/TicTacToeApp.bundle?platform=ios&dev=true");
+  
   /**
    * OPTION 2
    * Load from pre-bundled file on disk. To re-generate the static bundle, `cd`

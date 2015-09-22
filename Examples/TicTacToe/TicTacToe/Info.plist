@@ -37,10 +37,16 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
-  <dict>
-    <!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/-->
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-  </dict>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>RCTPackager</key>
+	<dict>
+		<key>url</key>
+		<string>http://localhost</string>
+		<key>port</key>
+		<integer>8090</integer>
+	</dict>
 </dict>
 </plist>

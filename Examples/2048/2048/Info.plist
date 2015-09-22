@@ -39,5 +39,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>RCTPackager</key>
+	<dict>
+		<key>url</key>
+		<string>http://localhost</string>
+		<key>port</key>
+		<integer>8088</integer>
+	</dict>
 </dict>
 </plist>
