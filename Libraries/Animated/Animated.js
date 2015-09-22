@@ -1551,5 +1551,18 @@ module.exports = {
    */
   createAnimatedComponent,
 
+  /*
+   * Use only in 'propTypes' to check for correct type e.g.
+   *```javascript
+   *  propTypes: {
+   *    myAnimatedValue: React.PropTypes.oneOfType([
+   *      React.PropTypes.instanceOf(React.Animated.Value),
+   *      React.PropTypes.instanceOf(React.Animated.Interpolation),
+   *    ]),
+   *  },
+   *```
+   */
+  Interpolation: AnimatedInterpolation,
+
   __PropsOnlyForTests: AnimatedProps,
 };
