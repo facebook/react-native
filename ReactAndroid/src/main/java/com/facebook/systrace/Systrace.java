@@ -9,7 +9,6 @@
 
 package com.facebook.systrace;
 
-
 /**
  * Systrace stub.
  */
