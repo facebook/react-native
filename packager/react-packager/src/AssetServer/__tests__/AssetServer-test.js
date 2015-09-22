@@ -217,6 +217,12 @@ describe('AssetServer', () => {
           type: 'png',
           name: 'b',
           scales: [1, 2, 4, 4.5],
+          files: [
+            '/root/imgs/b@1x.png',
+            '/root/imgs/b@2x.png',
+            '/root/imgs/b@4x.png',
+            '/root/imgs/b@4.5x.png',
+          ],
           hash: 'wow such hash',
         });
       });
@@ -253,6 +259,12 @@ describe('AssetServer', () => {
           type: 'jpg',
           name: 'b',
           scales: [1, 2, 4, 4.5],
+          files: [
+            '/root/imgs/b@1x.jpg',
+            '/root/imgs/b@2x.jpg',
+            '/root/imgs/b@4x.jpg',
+            '/root/imgs/b@4.5x.jpg',
+          ],
           hash: 'wow such hash',
         });
       });
