@@ -268,6 +268,7 @@ class Bundler {
         width: dimensions.width / module.resolution,
         height: dimensions.height / module.resolution,
         scales: assetData.scales,
+        files: assetData.files,
         hash: assetData.hash,
         name: assetData.name,
         type: assetData.type,
