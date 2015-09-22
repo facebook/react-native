@@ -99,7 +99,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
       if (([command.keyCommand.input isEqualToString:key.input] &&
           command.keyCommand.modifierFlags == key.modifierFlags) &&
-		  command.block) {
+      command.block) {
           command.block(key);
           lastCommand = CACurrentMediaTime();
       }
