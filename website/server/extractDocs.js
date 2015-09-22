@@ -34,6 +34,8 @@ function getNameFromPath(filepath) {
     return 'Transforms';
   } else if (filepath === 'TabBarItemIOS') {
     return 'TabBarIOS.Item';
+  } else if (filepath === 'AnimatedImplementation') {
+    return 'Animated';
   }
   return filepath;
 }
@@ -43,7 +45,7 @@ function getPlatformFromPath(filepath) {
   while (ext = path.extname(filepath)) {
     filepath = path.basename(filepath, ext);
   }
-  
+
   if (endsWith(filepath, 'Android')) {
     return ANDROID_SUFFIX;
   } else if (endsWith(filepath, 'IOS')) {
@@ -107,7 +109,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
   var componentPlatform = getPlatformFromPath(filepath);
   var docFilePath = '../docs/' + componentName + '.md';
-  
+
   if (fs.existsSync(docFilePath)) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
@@ -217,7 +219,7 @@ var components = [
 var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/Utilities/AlertIOS.js',
-  '../Libraries/Animated/Animated.js',
+  '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',
