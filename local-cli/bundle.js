@@ -29,7 +29,7 @@ function getBundle(flags) {
     projectRoots: projectRoots,
     transformModulePath: require.resolve('../packager/transformer.js'),
     assetRoots: assetRoots,
-    cacheVersion: '2',
+    cacheVersion: '3',
     blacklistRE: blacklist('ios'),
   };
 
