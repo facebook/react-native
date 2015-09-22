@@ -13,8 +13,9 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.WritableMap;
 
 /**
- * JS module interface - main entry point for launching react application for a given key.
+ * JS module interface - main entry point for launching React application for a given key.
  */
 public interface AppRegistry extends JavaScriptModule {
+
   void runApplication(String appKey, WritableMap appParameters);
 }
