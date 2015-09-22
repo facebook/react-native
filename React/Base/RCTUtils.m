@@ -337,6 +337,42 @@ BOOL RCTRunningInTestEnvironment(void)
   return isTestEnvironment;
 }
 
+BOOL RCTRunningInAppExtension(void)
+{
+  return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+}
+
+id RCTSharedApplication(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+  
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles)
+{
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
+    return nil;
+  }
+  
+  UIAlertView *alertView = [[UIAlertView alloc] init];
+  alertView.title = title;
+  alertView.message = message;
+  alertView.delegate = delegate;
+  if (cancelButtonTitle != nil) {
+    [alertView addButtonWithTitle:cancelButtonTitle];
+    alertView.cancelButtonIndex = 0;
+  }
+  for (NSString *buttonTitle in otherButtonTitles)
+  {
+    [alertView addButtonWithTitle:buttonTitle];
+  }
+  return alertView;
+}
+
 BOOL RCTImageHasAlpha(CGImageRef image)
 {
   switch (CGImageGetAlphaInfo(image)) {

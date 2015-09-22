@@ -12,6 +12,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 
 static NSString *RCTCurrentAppBackgroundState()
 {
@@ -25,7 +26,11 @@ static NSString *RCTCurrentAppBackgroundState()
     };
   });
 
-  return states[@([UIApplication sharedApplication].applicationState)] ?: @"unknown";
+  if (RCTRunningInAppExtension()) {
+    return @"extension";
+  }
+
+  return states[@(RCTSharedApplication().applicationState)] ?: @"unknown";
 }
 
 @implementation RCTAppState
