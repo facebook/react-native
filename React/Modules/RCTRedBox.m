@@ -126,7 +126,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   self.hidden = YES;
   [self resignFirstResponder];
-  [[UIApplication sharedApplication].delegate.window makeKeyWindow];
+  [RCTSharedApplication().delegate.window makeKeyWindow];
 }
 
 - (void)reload

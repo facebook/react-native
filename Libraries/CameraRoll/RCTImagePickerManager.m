@@ -10,6 +10,8 @@
 
 #import "RCTImagePickerManager.h"
 #import "RCTRootView.h"
+#import "RCTLog.h"
+#import "RCTUtils.h"
 
 #import <UIKit/UIKit.h>
 
@@ -53,7 +55,12 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
                   successCallback:(RCTResponseSenderBlock)callback
                   cancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
-  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+  if (RCTRunningInAppExtension()) {
+    cancelCallback(@[@"Camera access is unavailable in an app extension"]);
+    return;
+  }
+  
+  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
 
   UIImagePickerController *imagePicker = [UIImagePickerController new];
@@ -75,7 +82,12 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
                   successCallback:(RCTResponseSenderBlock)callback
                   cancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
-  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+  if (RCTRunningInAppExtension()) {
+    cancelCallback(@[@"Image picker is currently unavailable in an app extension"]);
+    return;
+  }
+  
+  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
 
   UIImagePickerController *imagePicker = [UIImagePickerController new];
@@ -109,7 +121,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
@@ -125,7 +137,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 

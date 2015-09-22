@@ -10,6 +10,7 @@
 #import "RCTPerfStats.h"
 
 #import "RCTDefines.h"
+#import "RCTUtils.h"
 
 #if RCT_DEV
 
@@ -66,7 +67,11 @@ RCT_EXPORT_MODULE()
 
 - (void)show
 {
-  UIView *targetView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
+  if (RCTRunningInAppExtension()) {
+    return;
+  }
+  
+  UIView *targetView = RCTSharedApplication().delegate.window.rootViewController.view;
 
   targetView.frame = (CGRect){
     targetView.frame.origin,
