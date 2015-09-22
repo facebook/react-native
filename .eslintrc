@@ -55,7 +55,6 @@
     "no-debugger": 1,                // disallow use of debugger
     "no-dupe-keys": 1,               // disallow duplicate keys when creating object literals
     "no-empty": 0,                   // disallow empty statements
-    "no-empty-class": 1,             // disallow the use of empty character classes in regular expressions
     "no-ex-assign": 1,               // disallow assigning to the exception in a catch block
     "no-extra-boolean-cast": 1,      // disallow double-negation boolean casts in a boolean context
     "no-extra-parens": 0,            // disallow unnecessary parentheses (off by default)
@@ -172,11 +171,9 @@
     "no-lonely-if": 0,               // disallow if as the only statement in an else block (off by default)
     "no-new-object": 1,              // disallow use of the Object constructor
     "no-spaced-func": 1,             // disallow space between function identifier and application
-    "no-space-before-semi": 1,       // disallow space before semicolon
     "no-ternary": 0,                 // disallow the use of ternary operators (off by default)
     "no-trailing-spaces": 1,         // disallow trailing whitespace at the end of lines
     "no-underscore-dangle": 0,       // disallow dangling underscores in identifiers
-    "no-wrap-func": 1,               // disallow wrapping of non-IIFE statements in parens
     "no-mixed-spaces-and-tabs": 1,   // disallow mixed spaces and tabs for indentation
     "quotes": [1, "single", "avoid-escape"], // specify whether double or single quotes should be used
     "quote-props": 0,                // require quotes around object literal property names (off by default)
