@@ -16,16 +16,6 @@ var isAbsolutePath = require('absolute-path');
 
 var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
-if (!fs.existsSync(path.resolve(__dirname, '..', 'node_modules'))) {
-  console.log(
-    '\n' +
-    'Could not find dependencies.\n' +
-    'Ensure dependencies are installed - ' +
-    'run \'npm install\' from project root.\n'
-  );
-  process.exit();
-}
-
 var chalk = require('chalk');
 var connect = require('connect');
 var ReactPackager = require('./react-packager');
