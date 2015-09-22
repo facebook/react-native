@@ -30,6 +30,8 @@
 
 [libs]
 Libraries/react-native/react-native-interface.js
+# for local-cli's generator
+node_modules/react-native/Libraries/react-native/react-native-interface.js
 
 [options]
 module.system=haste

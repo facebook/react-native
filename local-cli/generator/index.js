@@ -34,7 +34,7 @@ module.exports = yeoman.generators.NamedBase.extend({
 
   configuring: function() {
     this.fs.copy(
-      this.templatePath('_flowconfig'),
+      path.resolve(__dirname, '..', '..', '.flowconfig'),
       this.destinationPath('.flowconfig')
     );
     this.fs.copy(
