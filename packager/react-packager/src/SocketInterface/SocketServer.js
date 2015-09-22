@@ -33,7 +33,10 @@ class SocketServer {
           options
         );
         resolve(this);
-        process.on('exit', () => fs.unlinkSync(sockPath));
+        process.on('exit', code => {
+          debug('exit code:', code);
+          fs.unlinkSync(sockPath);
+        });
       });
     });
 
