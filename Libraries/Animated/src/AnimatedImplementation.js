@@ -6,20 +6,17 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Animated
+ * @providesModule AnimatedImplementation
  * @flow
  */
 'use strict';
 
 var Easing = require('Easing');
-var Image = require('Image');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
-var Text = require('Text');
-var View = require('View');
 var invariant = require('invariant');
 
 var flattenStyle = require('flattenStyle');
@@ -1476,19 +1473,6 @@ module.exports = {
    * 2D value class for driving 2D animations, such as pan gestures.
    */
   ValueXY: AnimatedValueXY,
-
-  /**
-   * An animatable View component.
-   */
-  View: createAnimatedComponent(View),
-  /**
-   * An animatable Text component.
-   */
-  Text: createAnimatedComponent(Text),
-  /**
-   * An animatable Image component.
-   */
-  Image: createAnimatedComponent(Image),
 
   /**
    * Animates a value from an initial velocity to zero based on a decay
