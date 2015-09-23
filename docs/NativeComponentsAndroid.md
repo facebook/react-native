@@ -96,7 +96,7 @@ Setting properties on a view is not handled by automatically calling setter meth
 
 ## 5. Register the `ViewManager`
 
-The final Java step is to register the ViewManager to the application, this happens in a similar way to [Native Modules](NativeModulesAndroid.md), via the applications package member function `createViewManagers.`
+The final Java step is to register the ViewManager to the application, this happens in a similar way to [Native Modules](native-modules-android.html), via the applications package member function `createViewManagers.`
 
 ```java
   @Override
