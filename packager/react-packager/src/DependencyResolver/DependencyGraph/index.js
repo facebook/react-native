@@ -73,7 +73,7 @@ class DependencyGraph {
     this._opts = validateOpts(options);
     this._cache = this._opts.cache;
     this._helpers = new Helpers(this._opts);
-    this.load();
+    this.load().done();
   }
 
   load() {
