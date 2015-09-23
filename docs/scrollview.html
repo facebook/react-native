@@ -61,7 +61,14 @@ The default value is zero, which means the scroll event will be sent
 only once each time the view is scrolled.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="scrollindicatorinsets"></a><span class="platform">ios</span>scrollIndicatorInsets <span class="propType">{top: number, left: number, bottom: number, right: number}</span> <a class="hash-link" href="#scrollindicatorinsets">#</a></h4><div><p>The amount by which the scroll view indicators are inset from the edges
 of the scroll view. This should normally be set to the same value as
 the <code>contentInset</code>. Defaults to <code>{0, 0, 0, 0}</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="scrollstotop"></a><span class="platform">ios</span>scrollsToTop <span class="propType">bool</span> <a class="hash-link" href="#scrollstotop">#</a></h4><div><p>When true, the scroll view scrolls to top when the status bar is tapped.
-The default value is true.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="stickyheaderindices"></a><span class="platform">ios</span>stickyHeaderIndices <span class="propType">[number]</span> <a class="hash-link" href="#stickyheaderindices">#</a></h4><div><p>An array of child indices determining which children get docked to the
+The default value is true.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="snaptoalignment"></a><span class="platform">ios</span>snapToAlignment <span class="propType">enum(&#x27;start&#x27;, &quot;center&quot;, &#x27;end&#x27;)</span> <a class="hash-link" href="#snaptoalignment">#</a></h4><div><p>When <code>snapToInterval</code> is set, <code>snapToAlignment</code> will define the relationship
+of the the snapping to the scroll view.
+  - <code>start</code> (the default) will align the snap at the left (horizontal) or top (vertical)
+  - <code>center</code> will align the snap in the center
+  - <code>end</code> will align the snap at the right (horizontal) or bottom (vertical)</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="snaptointerval"></a><span class="platform">ios</span>snapToInterval <span class="propType">number</span> <a class="hash-link" href="#snaptointerval">#</a></h4><div><p>When set, causes the scroll view to stop at multiples of the value of
+<code>snapToInterval</code>. This can be used for paginating through children
+that have lengths smaller than the scroll view. Used in combination
+with <code>snapToAlignment</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="stickyheaderindices"></a><span class="platform">ios</span>stickyHeaderIndices <span class="propType">[number]</span> <a class="hash-link" href="#stickyheaderindices">#</a></h4><div><p>An array of child indices determining which children get docked to the
 top of the screen when scrolling. For example, passing
 <code>stickyHeaderIndices={[0]}</code> will cause the first child to be fixed to the
 top of the scroll view. This property is not supported in conjunction
