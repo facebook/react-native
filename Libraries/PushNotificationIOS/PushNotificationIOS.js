@@ -99,8 +99,34 @@ class PushNotificationIOS {
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo` : An optional object containing additional notification data.
+   * - `repeatInterval` : The interval to repeat as a string.  Possible values: `minute`, `hour`, `day`, `week`, `month`, `year`.
    */
   static scheduleLocalNotification(details: Object) {
+    if (details) {
+      switch (details.repeatInterval) {
+          case 'year':
+              details.repeatInterval = 4; // NSCalendarUnit.CalendarUnitYear
+              break;
+          case 'month':
+              details.repeatInterval = 8; // NSCalendarUnit.CalendarUnitMonth
+              break;
+          case 'week':
+              details.repeatInterval = 8192; // NSCalendarUnit.CalendarUnitWeekOfYear
+              break;
+          case 'day':
+              details.repeatInterval = 16; // NSCalendarUnit.CalendarUnitDay
+              break;
+          case 'hour':
+              details.repeatInterval = 32; // NSCalendarUnit.CalendarUnitHour
+              break;
+          case 'minute':
+              details.repeatInterval = 64; // NSCalendarUnit.CalendarUnitMinute
+              break;
+          default:
+              details.repeatInterval = 0;
+      }
+    }
+
     RCTPushNotificationManager.scheduleLocalNotification(details);
   }
 
