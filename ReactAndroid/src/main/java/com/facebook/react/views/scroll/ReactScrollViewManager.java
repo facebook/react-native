@@ -85,6 +85,13 @@ public class ReactScrollViewManager
   }
 
   @Override
+  public void scrollWithoutAnimationTo(
+      ReactScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    scrollView.scrollTo(data.mDestX, data.mDestY);
+  }
+
+  @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.builder()
         .put(ScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onScroll"))

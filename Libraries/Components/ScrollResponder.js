@@ -367,6 +367,26 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * Like `scrollResponderScrollTo` but immediately scrolls to the given
+   * position
+   */
+  scrollResponderScrollWithouthAnimationTo: function(offsetX: number, offsetY: number) {
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        React.findNodeHandle(this),
+        RCTUIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
+        [offsetX, offsetY],
+      );
+    } else {
+      RCTUIManager.scrollWithoutAnimationTo(
+        React.findNodeHandle(this),
+        offsetX,
+        offsetY
+      );
+    }
+  },
+
+  /**
    * A helper function to zoom to a specific rect in the scrollview.
    * @param {object} rect Should have shape {x, y, width, height}
    */
