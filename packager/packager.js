@@ -220,9 +220,9 @@ function systraceProfileMiddleware(req, res, next) {
   }
 
   console.log('Dumping profile information...');
-  const dumpName = '/tmp/dump_' + Date.now() + '.json';
-  const prefix = process.env.TRACE_VIEWER_PATH || '';
-  const cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
+  var dumpName = '/tmp/dump_' + Date.now() + '.json';
+  var prefix = process.env.TRACE_VIEWER_PATH || '';
+  var cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
   fs.writeFileSync(dumpName, req.rawBody);
   childProcess.exec(cmd, function(error) {
     if (error) {
@@ -258,10 +258,10 @@ function cpuProfileMiddleware(req, res, next) {
   }
 
   console.log('Dumping CPU profile information...');
-  const dumpName = '/tmp/cpu-profile_' + Date.now();
+  var dumpName = '/tmp/cpu-profile_' + Date.now();
   fs.writeFileSync(dumpName + '.json', req.rawBody);
 
-  const cmd = path.join(__dirname, '..', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
+  var cmd = path.join(__dirname, '..', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
   childProcess.exec(cmd, function(error) {
     if (error) {
       console.error(error);
