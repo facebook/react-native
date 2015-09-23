@@ -55,9 +55,35 @@ class PushNotificationIOS {
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
    * - `alertBody` : The message displayed in the notification alert.
+   * - `repeatInterval` : The interval to repeat as a string.  Possible values: `minute`, `hour`, `day`, `week`, `month`, `year`.
    *
    */
   static scheduleLocalNotification(details: Object) {
+    if (details) {
+      switch (details.repeatInterval) {
+          case 'year':
+              details.repeatInterval = 4; // NSCalendarUnit.CalendarUnitYear
+              break;
+          case 'month': 
+              details.repeatInterval = 8; // NSCalendarUnit.CalendarUnitMonth
+              break;
+          case 'week':
+              details.repeatInterval = 8192; // NSCalendarUnit.CalendarUnitWeekOfYear
+              break;
+          case 'day':
+              details.repeatInterval = 16; // NSCalendarUnit.CalendarUnitDay
+              break;
+          case 'hour':
+              details.repeatInterval = 32; // NSCalendarUnit.CalendarUnitHour
+              break;
+          case 'minute':
+              details.repeatInterval = 64; // NSCalendarUnit.CalendarUnitMinute
+              break;
+          default:
+              details.repeatInterval = 0;
+      }
+    }
+
     RCTPushNotificationManager.scheduleLocalNotification(details);
   }
 
