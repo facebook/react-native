@@ -35,11 +35,11 @@ NSString *const RCTProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
 
-NSDictionary *RCTProfileInfo;
-NSUInteger RCTProfileEventID = 0;
-NSMutableDictionary *RCTProfileOngoingEvents;
-NSTimeInterval RCTProfileStartTime;
-NSRecursiveLock *_RCTProfileLock;
+static BOOL RCTProfileProfiling;
+static NSDictionary *RCTProfileInfo;
+static NSMutableDictionary *RCTProfileOngoingEvents;
+static NSTimeInterval RCTProfileStartTime;
+static NSUInteger RCTProfileEventID = 0;
 
 #pragma mark - Macros
 
@@ -56,11 +56,54 @@ if (!RCTProfileIsProfiling()) { \
 }
 
 #define RCTProfileLock(...) \
-[_RCTProfileLock lock]; \
+[_RCTProfileLock() lock]; \
 __VA_ARGS__ \
-[_RCTProfileLock unlock]
+[_RCTProfileLock() unlock]
+
+#pragma mark - systrace glue code
+
+static RCTProfileCallbacks *callbacks;
+static char *systrace_buffer;
+
+static systrace_arg_t *RCTProfileSystraceArgsFromNSDictionary(NSDictionary *args)
+{
+  if (args.count == 0) {
+    return NULL;
+  }
+
+  systrace_arg_t *systrace_args = malloc(sizeof(systrace_arg_t) * args.count);
+  __block size_t i = 0;
+  [args enumerateKeysAndObjectsUsingBlock:^(id key, id value, __unused BOOL *stop) {
+    const char *keyc = [key description].UTF8String;
+    systrace_args[i].key = keyc;
+    systrace_args[i].key_len = (int)strlen(keyc);
+
+    const char *valuec = RCTJSONStringify(value, nil).UTF8String;
+    systrace_args[i].value = valuec;
+    systrace_args[i].value_len = (int)strlen(valuec);
+    i++;
+  }];
+  return systrace_args;
+}
+
+void RCTProfileRegisterCallbacks(RCTProfileCallbacks *cb)
+{
+  callbacks = cb;
+}
 
 #pragma mark - Private Helpers
+
+static NSLock *_RCTProfileLock()
+{
+  static dispatch_once_t token;
+  static NSLock *lock;
+  dispatch_once(&token, ^{
+    lock = [NSLock new];
+    lock.name = @"RCTProfileLock";
+  });
+
+  return lock;
+}
 
 static NSNumber *RCTProfileTimestamp(NSTimeInterval timestamp)
 {
@@ -215,28 +258,28 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 BOOL RCTProfileIsProfiling(void)
 {
-  RCTProfileLock(
-    BOOL profiling = RCTProfileInfo != nil;
-  );
-  return profiling;
+  return RCTProfileProfiling;
 }
 
 void RCTProfileInit(RCTBridge *bridge)
 {
   RCTProfileHookModules(bridge);
+  RCTProfileProfiling = YES;
 
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    _RCTProfileLock = [NSRecursiveLock new];
-  });
-  RCTProfileLock(
-    RCTProfileStartTime = CACurrentMediaTime();
-    RCTProfileOngoingEvents = [NSMutableDictionary new];
-    RCTProfileInfo = @{
-      RCTProfileTraceEvents: [NSMutableArray new],
-      RCTProfileSamples: [NSMutableArray new],
-    };
-  );
+  if (callbacks != NULL) {
+    size_t buffer_size = 1 << 22;
+    systrace_buffer = calloc(1, buffer_size);
+    callbacks->start(~((uint64_t)0), systrace_buffer, buffer_size);
+  } else {
+    RCTProfileLock(
+      RCTProfileStartTime = CACurrentMediaTime();
+      RCTProfileOngoingEvents = [NSMutableDictionary new];
+      RCTProfileInfo = @{
+        RCTProfileTraceEvents: [NSMutableArray new],
+        RCTProfileSamples: [NSMutableArray new],
+      };
+    );
+  }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidStartProfiling
                                                       object:nil];
@@ -247,16 +290,26 @@ NSString *RCTProfileEnd(RCTBridge *bridge)
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
                                                       object:nil];
 
+  RCTProfileProfiling = NO;
+
   RCTProfileLock(
-    NSString *log = RCTJSONStringify(RCTProfileInfo, NULL);
-    RCTProfileEventID = 0;
-    RCTProfileInfo = nil;
-    RCTProfileOngoingEvents = nil;
+    RCTProfileUnhookModules(bridge);
   );
 
-  RCTProfileUnhookModules(bridge);
+  if (callbacks != NULL) {
+    callbacks->stop();
 
-  return log;
+    return @(systrace_buffer);
+  } else {
+    RCTProfileLock(
+      NSString *log = RCTJSONStringify(RCTProfileInfo, NULL);
+      RCTProfileEventID = 0;
+      RCTProfileInfo = nil;
+      RCTProfileOngoingEvents = nil;
+    );
+
+    return log;
+  }
 }
 
 static NSMutableArray *RCTProfileGetThreadEvents(void)
@@ -273,6 +326,12 @@ static NSMutableArray *RCTProfileGetThreadEvents(void)
 void RCTProfileBeginEvent(uint64_t tag, NSString *name, NSDictionary *args)
 {
   CHECK();
+
+  if (callbacks != NULL) {
+    callbacks->begin_section(tag, name.UTF8String, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    return;
+  }
+
   NSMutableArray *events = RCTProfileGetThreadEvents();
   [events addObject:@[
     RCTProfileTimestamp(CACurrentMediaTime()),
@@ -283,11 +342,16 @@ void RCTProfileBeginEvent(uint64_t tag, NSString *name, NSDictionary *args)
 }
 
 void RCTProfileEndEvent(
-  __unused uint64_t tag,
+  uint64_t tag,
   NSString *category,
   NSDictionary *args
 ) {
   CHECK();
+
+  if (callbacks != NULL) {
+    callbacks->end_section(tag, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    return;
+  }
 
   NSMutableArray *events = RCTProfileGetThreadEvents();
   NSArray *event = events.lastObject;
@@ -312,7 +376,7 @@ void RCTProfileEndEvent(
 }
 
 int RCTProfileBeginAsyncEvent(
-  __unused uint64_t tag,
+  uint64_t tag,
   NSString *name,
   NSDictionary *args
 ) {
@@ -320,25 +384,35 @@ int RCTProfileBeginAsyncEvent(
 
   static int eventID = 0;
 
-  RCTProfileLock(
-    RCTProfileOngoingEvents[@(eventID)] = @[
-      RCTProfileTimestamp(CACurrentMediaTime()),
-      name,
-      RCTNullIfNil(args),
-    ];
-  );
+  if (callbacks != NULL) {
+    callbacks->begin_async_section(tag, name.UTF8String, eventID, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+  } else {
+    RCTProfileLock(
+      RCTProfileOngoingEvents[@(eventID)] = @[
+        RCTProfileTimestamp(CACurrentMediaTime()),
+        name,
+        RCTNullIfNil(args),
+      ];
+    );
+  }
 
   return eventID++;
 }
 
 void RCTProfileEndAsyncEvent(
-  __unused uint64_t tag,
+  uint64_t tag,
   NSString *category,
   int cookie,
-  __unused NSString *name,
+  NSString *name,
   NSDictionary *args
 ) {
   CHECK();
+
+  if (callbacks != NULL) {
+    callbacks->end_async_section(tag, name.UTF8String, cookie, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    return;
+  }
+
   RCTProfileLock(
     NSArray *event = RCTProfileOngoingEvents[@(cookie)];
     if (event) {
@@ -358,11 +432,16 @@ void RCTProfileEndAsyncEvent(
 }
 
 void RCTProfileImmediateEvent(
-  __unused uint64_t tag,
+  uint64_t tag,
   NSString *name,
   char scope
 ) {
   CHECK();
+
+  if (callbacks != NULL) {
+    callbacks->instant_section(tag, name.UTF8String, scope);
+    return;
+  }
 
   RCTProfileLock(
     RCTProfileAddEvent(RCTProfileTraceEvents,
@@ -380,6 +459,12 @@ NSNumber *_RCTProfileBeginFlowEvent(void)
   static NSUInteger flowID = 0;
 
   CHECK(@0);
+
+  if (callbacks != NULL) {
+    // flow events not supported yet
+    return @0;
+  }
+
   RCTProfileAddEvent(RCTProfileTraceEvents,
     @"name": @"flow",
     @"id": @(++flowID),
@@ -394,6 +479,11 @@ NSNumber *_RCTProfileBeginFlowEvent(void)
 void _RCTProfileEndFlowEvent(NSNumber *flowID)
 {
   CHECK();
+
+  if (callbacks != NULL) {
+    return;
+  }
+
   RCTProfileAddEvent(RCTProfileTraceEvents,
     @"name": @"flow",
     @"id": flowID,
