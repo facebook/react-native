@@ -11,6 +11,7 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ImageIO/ImageIO.h>
+#import <libkern/OSAtomic.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTBridge.h"
@@ -45,17 +46,26 @@ RCT_EXPORT_MODULE()
 
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
+  __block volatile uint32_t cancelled = 0;
+
   [[self assetsLibrary] assetForURL:imageURL resultBlock:^(ALAsset *asset) {
+    if (cancelled) {
+      return;
+    }
+
     if (asset) {
       // ALAssetLibrary API is async and will be multi-threaded. Loading a few full
       // resolution images at once will spike the memory up to store the image data,
       // and might trigger memory warnings and/or OOM crashes.
       // To improve this, process the loaded asset in a serial queue.
       dispatch_async(RCTAssetsLibraryImageLoaderQueue(), ^{
+        if (cancelled) {
+          return;
+        }
+
         // Also make sure the image is released immediately after it's used so it
         // doesn't spike the memory up during the process.
         @autoreleasepool {
-
           BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
           ALAssetRepresentation *representation = [asset defaultRepresentation];
 
@@ -78,12 +88,18 @@ RCT_EXPORT_MODULE()
       completionHandler(error, nil);
     }
   } failureBlock:^(NSError *loadError) {
+    if (cancelled) {
+      return;
+    }
+
     NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@.\niOS Error: %@", imageURL, loadError];
     NSError *error = RCTErrorWithMessage(errorText);
     completionHandler(error, nil);
   }];
 
-  return ^{};
+  return ^{
+    OSAtomicOr32Barrier(1, &cancelled);
+  };
 }
 
 @end
