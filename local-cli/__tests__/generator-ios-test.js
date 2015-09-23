@@ -34,7 +34,7 @@ describe('react:ios', function() {
       jest.runAllTicks();
       jest.runOnlyPendingTimers();
       return generated;
-    }, "generation", 750);
+    }, 'Timed out generating TestApp iOS project', 5000);
   });
 
   it('creates files', function() {

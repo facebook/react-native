@@ -9,6 +9,7 @@ describe('react:react', function() {
   var assert;
 
   beforeEach(function() {
+    console.log('generating....');
     // A deep dependency of yeoman spams console.log with giant json objects.
     // yeoman-generator/node_modules/
     //   download/node_modules/
@@ -35,10 +36,11 @@ describe('react:react', function() {
       jest.runAllTicks();
       jest.runOnlyPendingTimers();
       return generated;
-    }, "generation", 750);
+    }, 'Timed out generating TestApp project', 5000);
   });
 
   it('creates files', function() {
+    console.log('testing creates files');
     assert.file([
       '.flowconfig',
       '.gitignore',
@@ -49,6 +51,7 @@ describe('react:react', function() {
   });
 
   it('replaces vars in index.ios.js', function() {
+    console.log('testing replaces vars in index.ios.js');
     assert.fileContent('index.ios.js', 'var TestApp = React.createClass({');
     assert.fileContent(
       'index.ios.js',
@@ -78,5 +81,5 @@ describe('react:react', function() {
     var stat = fs.statSync('android');
 
     expect(stat.isDirectory()).toBe(true);
-  })
+  });
 });
