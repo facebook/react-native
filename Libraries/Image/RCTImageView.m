@@ -18,6 +18,21 @@
 
 #import "UIView+React.h"
 
+/**
+ * Determines whether an image of `currentSize` should be reloaded for display
+ * at `idealSize`.
+ */
+static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize) {
+  static const CGFloat upscaleThreshold = 1.2;
+  static const CGFloat downscaleThreshold = 0.5;
+
+  CGFloat widthMultiplier = idealSize.width / currentSize.width;
+  CGFloat heightMultiplier = idealSize.height / currentSize.height;
+
+  return widthMultiplier > upscaleThreshold || widthMultiplier < downscaleThreshold ||
+    heightMultiplier > upscaleThreshold || heightMultiplier < downscaleThreshold;
+}
+
 @interface RCTImageView ()
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadStart;
@@ -146,8 +161,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [self cancelImageLoad];
 
-  if (_src && !CGSizeEqualToSize(self.frame.size, CGSizeZero)) {
-
+  if (_src && self.frame.size.width > 0 && self.frame.size.height > 0) {
     if (_onLoadStart) {
       _onLoadStart(nil);
     }
@@ -199,15 +213,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _targetSize = frame.size;
     [self reloadImage];
   } else if ([RCTImageView srcNeedsReload:_src]) {
-    CGSize idealSize = RCTTargetSize(self.image.size, self.image.scale, frame.size,
-                                     RCTScreenScale(), self.contentMode, YES);
-    CGFloat widthChangeFraction = ABS(_targetSize.width - idealSize.width) / _targetSize.width;
-    CGFloat heightChangeFraction = ABS(_targetSize.height - idealSize.height) / _targetSize.height;
+    CGSize imageSize = self.image.size;
+    CGSize idealSize = RCTTargetSize(imageSize, self.image.scale, frame.size, RCTScreenScale(), self.contentMode, YES);
 
-    // If the combined change is more than 20%, reload the asset in case there is a better size.
-    if (widthChangeFraction + heightChangeFraction > 0.2) {
-      _targetSize = idealSize;
-      [self reloadImage];
+    if (RCTShouldReloadImageForSizeChange(imageSize, idealSize)) {
+      if (RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) {
+        // If the existing image or an image being loaded are not the right size, reload the asset in case there is a
+        // better size available.
+        _targetSize = idealSize;
+        [self reloadImage];
+      }
+    } else {
+      // Our existing image is good enough.
+      [self cancelImageLoad];
+      _targetSize = imageSize;
     }
   }
 }
