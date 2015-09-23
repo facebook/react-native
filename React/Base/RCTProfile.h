@@ -125,6 +125,34 @@ RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
  */
 RCT_EXTERN void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *profielData);
 
+/**
+ * Systrace gluecode
+ *
+ * allow to use systrace to back RCTProfile
+ */
+
+typedef struct {
+  const char *key;
+  int key_len;
+  const char *value;
+  int value_len;
+} systrace_arg_t;
+
+typedef struct {
+  void (*start)(uint64_t enabledTags, char *buffer, size_t bufferSize);
+  void (*stop)(void);
+
+  void (*begin_section)(uint64_t tag, const char *name, size_t numArgs, systrace_arg_t *args);
+  void (*end_section)(uint64_t tag, size_t numArgs, systrace_arg_t *args);
+
+  void (*begin_async_section)(uint64_t tag, const char *name, int cookie, size_t numArgs, systrace_arg_t *args);
+  void (*end_async_section)(uint64_t tag, const char *name, int cookie, size_t numArgs, systrace_arg_t *args);
+
+  void (*instant_section)(uint64_t tag, const char *name, char scope);
+} RCTProfileCallbacks;
+
+RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
+
 #else
 
 #define RCTProfileBeginFlowEvent()
