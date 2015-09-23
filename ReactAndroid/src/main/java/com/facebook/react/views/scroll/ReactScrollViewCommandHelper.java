@@ -25,9 +25,11 @@ import com.facebook.react.common.MapBuilder;
 public class ReactScrollViewCommandHelper {
 
   public static final int COMMAND_SCROLL_TO = 1;
+  public static final int COMMAND_SCROLL_WITHOUT_ANIMATION_TO = 2;
 
   public interface ScrollCommandHandler<T> {
     void scrollTo(T scrollView, ScrollToCommandData data);
+    void scrollWithoutAnimationTo(T scrollView, ScrollToCommandData data);
   }
 
   public static class ScrollToCommandData {
@@ -41,7 +43,11 @@ public class ReactScrollViewCommandHelper {
   }
 
   public static Map<String,Integer> getCommandsMap() {
-    return MapBuilder.of("scrollTo", COMMAND_SCROLL_TO);
+    return MapBuilder.of(
+        "scrollTo",
+        COMMAND_SCROLL_TO,
+        "scrollWithoutAnimationTo",
+        COMMAND_SCROLL_WITHOUT_ANIMATION_TO);
   }
 
   public static <T> void receiveCommand(
@@ -53,11 +59,18 @@ public class ReactScrollViewCommandHelper {
     Assertions.assertNotNull(scrollView);
     Assertions.assertNotNull(args);
     switch (commandType) {
-      case COMMAND_SCROLL_TO:
+      case COMMAND_SCROLL_TO: {
         int destX = Math.round(PixelUtil.toPixelFromDIP(args.getInt(0)));
         int destY = Math.round(PixelUtil.toPixelFromDIP(args.getInt(1)));
         viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY));
         return;
+      }
+      case COMMAND_SCROLL_WITHOUT_ANIMATION_TO: {
+        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getInt(0)));
+        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getInt(1)));
+        viewManager.scrollWithoutAnimationTo(scrollView, new ScrollToCommandData(destX, destY));
+        return;
+      }
       default:
         throw new IllegalArgumentException(String.format(
             "Unsupported command %d received by %s.",
