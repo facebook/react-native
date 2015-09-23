@@ -32,6 +32,12 @@
 {
   RCTBridge *_bridge;
   CGSize _targetSize;
+
+  /**
+   * A block that can be invoked to cancel the most recent call to -reloadImage,
+   * if any.
+   */
+  RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -120,8 +126,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)cancelImageLoad
+{
+  RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
+  if (previousCancellationBlock) {
+    previousCancellationBlock();
+    _reloadImageCancellationBlock = nil;
+  }
+}
+
+- (void)clearImage
+{
+  [self cancelImageLoad];
+  [self.layer removeAnimationForKey:@"contents"];
+  self.image = nil;
+}
+
 - (void)reloadImage
 {
+  [self cancelImageLoad];
+
   if (_src && !CGSizeEqualToSize(self.frame.size, CGSizeZero)) {
 
     if (_onLoadStart) {
@@ -138,13 +162,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       };
     }
 
-    [_bridge.imageLoader loadImageWithTag:_src
-                                     size:self.bounds.size
-                                    scale:RCTScreenScale()
-                               resizeMode:self.contentMode
-                            progressBlock:progressHandler
-                          completionBlock:^(NSError *error, UIImage *image) {
-
+    _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithTag:_src
+                                                                     size:self.bounds.size
+                                                                    scale:RCTScreenScale()
+                                                               resizeMode:self.contentMode
+                                                            progressBlock:progressHandler
+                                                          completionBlock:^(NSError *error, UIImage *image) {
       if (image.reactKeyframeAnimation) {
         [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
       } else {
@@ -165,8 +188,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
     }];
   } else {
-    [self.layer removeAnimationForKey:@"contents"];
-    self.image = nil;
+    [self clearImage];
   }
 }
 
@@ -195,8 +217,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [super didMoveToWindow];
 
   if (!self.window) {
-    [self.layer removeAnimationForKey:@"contents"];
-    self.image = nil;
+    [self clearImage];
   } else if (self.src) {
     [self reloadImage];
   }
