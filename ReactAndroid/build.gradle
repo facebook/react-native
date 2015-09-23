@@ -160,11 +160,18 @@ def findNdkBuildFullPath() {
 
 def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
-    if (ndkBuildFullPath == null || !new File(ndkBuildFullPath).canExecute()) {
+    if (ndkBuildFullPath == null) {
         throw new GradleScriptException(
             "ndk-build binary cannot be found, check if you've set " +
             "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
             "setup in local.properties",
+            null)
+    }
+    if (!new File(ndkBuildFullPath).canExecute()) {
+        throw new GradleScriptException(
+            "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
+            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.proerties, is set correctly.\n" +
+            "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
             null)
     }
     return ndkBuildFullPath
