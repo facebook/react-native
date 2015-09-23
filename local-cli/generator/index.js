@@ -2,6 +2,7 @@
 
 var path = require('path');
 var yeoman = require('yeoman-generator');
+var utils = require('../generator-utils');
 
 module.exports = yeoman.generators.NamedBase.extend({
   constructor: function() {
@@ -33,10 +34,12 @@ module.exports = yeoman.generators.NamedBase.extend({
   },
 
   configuring: function() {
-    this.fs.copy(
-      this.templatePath('_flowconfig'),
-      this.destinationPath('.flowconfig')
+    utils.copyAndReplace(
+      this.templatePath('../../../.flowconfig'),
+      this.destinationPath('.flowconfig'),
+      { 'Libraries\/react-native\/react-native-interface.js' : 'node_modules/react-native/Libraries/react-native/react-native-interface.js' }
     );
+
     this.fs.copy(
       this.templatePath('_gitignore'),
       this.destinationPath('.gitignore')
