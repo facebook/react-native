@@ -5,10 +5,21 @@ jest.autoMockOff();
 var path = require('path');
 
 describe('react:android', function () {
-  var assert = require('yeoman-generator').assert;
+  var assert;
 
   beforeEach(function (done) {
+    // A deep dependency of yeoman spams console.log with giant json objects.
+    // yeoman-generator/node_modules/
+    //   download/node_modules/
+    //     caw/node_modules/
+    //       get-proxy/node_modules/
+    //         rc/index.js
+    var log = console.log;
+    console.log = function() {};
+    assert = require('yeoman-generator').assert;
     var helpers = require('yeoman-generator').test;
+    console.log = log;
+
     var generated = false;
 
     runs(function() {
@@ -26,7 +37,7 @@ describe('react:android', function () {
       jest.runAllTicks();
       jest.runOnlyPendingTimers();
       return generated;
-    }, "generation", 750);
+    }, 'Timed out generating TestApp Android project', 5000);
   });
 
   it('creates files', function () {
