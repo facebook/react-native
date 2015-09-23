@@ -29,7 +29,10 @@ class SocketClient {
 
     this._sock = net.connect(sockPath);
     this._ready = new Promise((resolve, reject) => {
-      this._sock.on('connect', () => resolve(this));
+      this._sock.on('connect', () => {
+        this._sock.removeAllListeners('error');
+        resolve(this);
+      });
       this._sock.on('error', (e) => {
         e.message = `Error connecting to server on ${sockPath} ` +
                     `with error: ${e.message}`;
