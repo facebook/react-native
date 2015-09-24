@@ -184,6 +184,12 @@ function getDevToolsLauncher(options) {
       var debuggerPath = path.join(__dirname, 'debugger.html');
       res.writeHead(200, {'Content-Type': 'text/html'});
       fs.createReadStream(debuggerPath).pipe(res);
+
+    } else if (req.url === '/debuggerWorker.js') {
+      var workerPath = path.join(__dirname, 'debuggerWorker.js');
+      res.writeHead(200, {'Content-Type': 'application/javascript'});
+      fs.createReadStream(workerPath).pipe(res);
+
     } else if (req.url === '/launch-chrome-devtools') {
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
       var script = 'launchChromeDevTools.applescript';
