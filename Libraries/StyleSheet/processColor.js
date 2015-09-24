@@ -11,6 +11,7 @@
 'use strict';
 
 var tinycolor = require('tinycolor2');
+var Platform = require('Platform');
 
 function processColor(color) {
   if (!color || typeof color === 'number') {
@@ -19,7 +20,15 @@ function processColor(color) {
     return color.map(processColor);
   } else {
     var hexString = tinycolor(color).toHex8();
-    return parseInt(hexString, 16);
+    var colorInt = parseInt(hexString, 16);
+    if (Platform.OS === 'android') {
+      // Android use 32 bit *signed* integer to represent the color
+      // We utilize the fact that bitwise operations in JS also operates on
+      // signed 32 bit integers, so that we can use those to convert from
+      // *unsiged* to *signed* 32bit int that way.
+      colorInt = colorInt | 0x0;
+    }
+    return colorInt;
   }
 }
 

@@ -27,7 +27,7 @@ static jmethodID gReadableNativeMapCtor;
 
 namespace exceptions {
 
-static const char *gUnknownNativeTypeExceptionClass =
+static const char *gUnexpectedNativeTypeExceptionClass =
   "com/facebook/react/bridge/UnexpectedNativeTypeException";
 
 template <typename T>
@@ -65,7 +65,7 @@ static jobject createReadableNativeMapWithContents(JNIEnv* env, folly::dynamic m
   }
 
   if (!map.isObject()) {
-    throwNewJavaException(exceptions::gUnknownNativeTypeExceptionClass,
+    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass,
                           "expected Map, got a %s", map.typeName());
   }
 
@@ -120,7 +120,7 @@ static jobject getType(folly::dynamic::Type type) {
     case folly::dynamic::Type::ARRAY:
       return type::gTypeArrayValue;
     default:
-      throwNewJavaException(exceptions::gUnknownNativeTypeExceptionClass, "Unknown type");
+      throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, "Unknown type");
   }
 }
 
@@ -129,7 +129,7 @@ static jobject getType(folly::dynamic::Type type) {
 struct ReadableNativeArray : public NativeArray {
   static void mapException(const std::exception& ex) {
     if (dynamic_cast<const folly::TypeError*>(&ex) != 0) {
-      throwNewJavaException(exceptions::gUnknownNativeTypeExceptionClass, ex.what());
+      throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
     }
   }
 
@@ -151,6 +151,17 @@ struct ReadableNativeArray : public NativeArray {
       return val.getInt();
     }
     return val.getDouble();
+  }
+
+  jint getInt(jint index) {
+    auto integer = array.at(index).getInt();
+    jint javaint = static_cast<jint>(integer);
+    if (integer != javaint) {
+      throwNewJavaException(
+        exceptions::gUnexpectedNativeTypeExceptionClass,
+        "Value '%lld' doesn't fit into a 32 bit signed int", integer);
+    }
+    return javaint;
   }
 
   jstring getString(jint index) {
@@ -179,6 +190,7 @@ struct ReadableNativeArray : public NativeArray {
         makeNativeMethod("isNull", ReadableNativeArray::isNull),
         makeNativeMethod("getBoolean", ReadableNativeArray::getBoolean),
         makeNativeMethod("getDouble", ReadableNativeArray::getDouble),
+        makeNativeMethod("getInt", ReadableNativeArray::getInt),
         makeNativeMethod("getString", ReadableNativeArray::getString),
         makeNativeMethod("getArray", "(I)Lcom/facebook/react/bridge/ReadableNativeArray;",
                          ReadableNativeArray::getArray),
@@ -202,6 +214,11 @@ struct WritableNativeArray : public ReadableNativeArray {
   }
 
   void pushDouble(jdouble value) {
+    exceptions::throwIfObjectAlreadyConsumed(this, "Receiving array already consumed");
+    array.push_back(value);
+  }
+
+  void pushInt(jint value) {
     exceptions::throwIfObjectAlreadyConsumed(this, "Receiving array already consumed");
     array.push_back(value);
   }
@@ -243,6 +260,7 @@ struct WritableNativeArray : public ReadableNativeArray {
         makeNativeMethod("pushNull", WritableNativeArray::pushNull),
         makeNativeMethod("pushBoolean", WritableNativeArray::pushBoolean),
         makeNativeMethod("pushDouble", WritableNativeArray::pushDouble),
+        makeNativeMethod("pushInt", WritableNativeArray::pushInt),
         makeNativeMethod("pushString", WritableNativeArray::pushString),
         makeNativeMethod("pushNativeArray", "(Lcom/facebook/react/bridge/WritableNativeArray;)V",
                          WritableNativeArray::pushArray),
@@ -282,6 +300,12 @@ static void putBoolean(JNIEnv* env, jobject obj, jstring key, jboolean value) {
 }
 
 static void putDouble(JNIEnv* env, jobject obj, jstring key, jdouble value) {
+  auto map = extractRefPtr<NativeMap>(env, obj);
+  exceptions::throwIfObjectAlreadyConsumed(map, "Receiving map already consumed");
+  map->map.insert(fromJString(env, key), value);
+}
+
+static void putInt(JNIEnv* env, jobject obj, jstring key, jint value) {
   auto map = extractRefPtr<NativeMap>(env, obj);
   exceptions::throwIfObjectAlreadyConsumed(map, "Receiving map already consumed");
   map->map.insert(fromJString(env, key), value);
@@ -368,7 +392,7 @@ static jboolean getBooleanKey(JNIEnv* env, jobject obj, jstring keyName) {
   try {
     return getMapValue(env, obj, keyName).getBool() ? JNI_TRUE : JNI_FALSE;
   } catch (const folly::TypeError& ex) {
-    throwNewJavaException(exceptions::gUnknownNativeTypeExceptionClass, ex.what());
+    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
   }
 }
 
@@ -380,7 +404,22 @@ static jdouble getDoubleKey(JNIEnv* env, jobject obj, jstring keyName) {
   try {
     return val.getDouble();
   } catch (const folly::TypeError& ex) {
-    throwNewJavaException(exceptions::gUnknownNativeTypeExceptionClass, ex.what());
+    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
+  }
+}
+
+static jint getIntKey(JNIEnv* env, jobject obj, jstring keyName) {
+  try {
+    auto integer = getMapValue(env, obj, keyName).getInt();
+    jint javaint = static_cast<jint>(integer);
+    if (integer != javaint) {
+      throwNewJavaException(
+        exceptions::gUnexpectedNativeTypeExceptionClass,
+        "Value '%lld' doesn't fit into a 32 bit signed int", integer);
+    }
+    return javaint;
+  } catch (const folly::TypeError& ex) {
+    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
   }
 }
 
@@ -393,7 +432,7 @@ static jstring getStringKey(JNIEnv* env, jobject obj, jstring keyName) {
     LocalString value(val.getString().c_str());
     return static_cast<jstring>(env->NewLocalRef(value.string()));
   } catch (const folly::TypeError& ex) {
-    throwNewJavaException(exceptions::gUnknownNativeTypeExceptionClass, ex.what());
+    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
   }
 }
 
@@ -651,6 +690,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("isNull", map::readable::isNull),
         makeNativeMethod("getBoolean", map::readable::getBooleanKey),
         makeNativeMethod("getDouble", map::readable::getDoubleKey),
+        makeNativeMethod("getInt", map::readable::getIntKey),
         makeNativeMethod("getString", map::readable::getStringKey),
         makeNativeMethod(
           "getArray", "(Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableNativeArray;",
@@ -667,6 +707,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("putNull", map::writable::putNull),
         makeNativeMethod("putBoolean", map::writable::putBoolean),
         makeNativeMethod("putDouble", map::writable::putDouble),
+        makeNativeMethod("putInt", map::writable::putInt),
         makeNativeMethod("putString", map::writable::putString),
         makeNativeMethod(
           "putNativeArray", "(Ljava/lang/String;Lcom/facebook/react/bridge/WritableNativeArray;)V",

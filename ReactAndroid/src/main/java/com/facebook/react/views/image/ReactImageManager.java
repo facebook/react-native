@@ -80,7 +80,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       if (props.isNull(PROP_TINT_COLOR)) {
         view.clearColorFilter();
       } else {
-        final int tintColor = props.getColorInt(PROP_TINT_COLOR, Color.TRANSPARENT);
+        final int tintColor = props.getInt(PROP_TINT_COLOR, Color.TRANSPARENT);
         view.setColorFilter(tintColor);
       }
     }

@@ -106,7 +106,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
         float color = CSSConstants.UNDEFINED;
         if (!props.isNull(PROPS_BORDER_COLOR[i])) {
           // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
-          int colorInt = props.getColorInt(PROPS_BORDER_COLOR[i], Color.TRANSPARENT);
+          int colorInt = props.getInt(PROPS_BORDER_COLOR[i], Color.TRANSPARENT);
           color = colorInt;
         }
         view.setBorderColor(SPACING_TYPES[i], color);

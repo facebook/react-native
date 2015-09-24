@@ -64,18 +64,7 @@ public class CatalystStylesDiffMap {
   }
 
   public int getInt(String name, int restoreNullToDefaultValue) {
-    return mBackingMap.isNull(name) ? restoreNullToDefaultValue : (int) mBackingMap.getDouble(name);
-  }
-
-  // Colors have values between 0x00000000 and 0xFFFFFFFF, which fits in an integer, but is sent as
-  // a double over the bridge. Because color values can be higher than Integer.MAX_VALUE, it is not
-  // correct to convert doubles to int directly, since they can be truncated to Integer.MAX_VALUE
-  // instead of being converted to negative values. Converting from double to long maintains the
-  // initial value, and is then correctly converted to int. This is the expected behavior according
-  // to the java spec, see http://stackoverflow.com/questions/10641559 for more.
-  public int getColorInt(String name, int restoreNullToDefaultValue) {
-    return mBackingMap.isNull(name) ? restoreNullToDefaultValue :
-        (int) (long) mBackingMap.getDouble(name);
+    return mBackingMap.isNull(name) ? restoreNullToDefaultValue : mBackingMap.getInt(name);
   }
 
   @Nullable

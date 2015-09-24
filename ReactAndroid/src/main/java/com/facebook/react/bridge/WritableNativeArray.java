@@ -32,12 +32,9 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
   @Override
   public native void pushDouble(double value);
   @Override
-  public native void pushString(String value);
-
+  public native void pushInt(int value);
   @Override
-  public void pushInt(int value) {
-    pushDouble(value);
-  }
+  public native void pushString(String value);
 
   // Note: this consumes the map so do not reuse it.
   @Override
