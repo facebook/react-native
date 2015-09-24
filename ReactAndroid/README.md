@@ -25,7 +25,7 @@ Point Gradle to your Android SDK: either have `$ANDROID_SDK` and `$ANDROID_NDK` 
 Example:
 
     sdk.dir=/Users/your_unix_name/android-sdk-macosx
-    ndk.dir=/Users/your_unix_name/android-ndk/android-ndk-r10c
+    ndk.dir=/Users/your_unix_name/android-ndk/android-ndk-r10e
 
 ## Run `npm install`
 
