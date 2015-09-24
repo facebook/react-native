@@ -32,7 +32,7 @@ class SocketClient {
       this._sock.on('connect', () => {
         this._sock.removeAllListeners('error');
         process.on('uncaughtException', (error) => {
-          debug('uncaught error', error.stack);
+          console.error('uncaught error', error.stack);
           setImmediate(() => process.exit(1));
         });
         resolve(this);
