@@ -31,6 +31,7 @@ function transform(src, filename, options) {
     comments: false,
     filename,
     whitelist: [
+      // Keep in sync with packager/react-packager/.babelrc
       'es6.arrowFunctions',
       'es6.blockScoping',
       'es6.classes',
