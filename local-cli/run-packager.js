@@ -9,10 +9,10 @@ module.exports = function(newWindow) {
       path.resolve(__dirname, '..', 'packager', 'launchPackager.command')
     ]);
   } else {
-    child_process.spawn('sh', [
-        path.resolve(__dirname, '..', 'packager', 'packager.sh'),
-        '--projectRoots',
-        process.cwd(),
+      child_process.spawn('node', [
+          path.resolve(__dirname, '..', 'packager', 'packager.js'),
+          '--projectRoots',
+          process.cwd(),
       ], {stdio: 'inherit'});
   }
 };
