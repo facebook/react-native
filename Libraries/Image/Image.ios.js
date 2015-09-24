@@ -170,6 +170,12 @@ var Image = React.createClass({
     var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
     var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
 
+    // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
+    // TODO: Remove this hack once we have one image implementation #8389274
+    if (isNetwork && tintColor) {
+      RawImage = RCTImageView;
+    }
+
     return (
       <RawImage
         {...this.props}
