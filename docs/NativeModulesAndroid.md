@@ -109,11 +109,13 @@ class AnExampleReactPackage implements ReactPackage {
 The package needs to be provided to the ReactInstanceManager when it is built. See `UIExplorerActivity.java` for an example. The default package when you initialize a new project is `MainReactPackage.java`.
 
 ```java
+// <your react-native app>/MainActivity.java
 mReactInstanceManager = ReactInstanceManager.builder()
   .setApplication(getApplication())
   .setBundleAssetName("AnExampleApp.android.bundle")
   .setJSMainModuleName("Examples/AnExampleApp/AnExampleApp.android")
   .addPackage(new AnExampleReactPackage())
+  .addPackage(new ToastPackage())           // provide toast package
   .setUseDeveloperSupport(true)
   .setInitialLifecycleState(LifecycleState.RESUMED)
   .build();
