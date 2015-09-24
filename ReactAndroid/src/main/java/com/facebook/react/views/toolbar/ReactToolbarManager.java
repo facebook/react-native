@@ -78,14 +78,14 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
       toolbar.setSubtitle(props.getString(PROP_SUBTITLE));
     }
     if (props.hasKey(PROP_SUBTITLE_COLOR)) {
-      final int subtitleColor = props.getColorInt(PROP_SUBTITLE_COLOR, defaultColors[1]);
+      final int subtitleColor = props.getInt(PROP_SUBTITLE_COLOR, defaultColors[1]);
       toolbar.setSubtitleTextColor(subtitleColor);
     }
     if (props.hasKey(PROP_TITLE)) {
       toolbar.setTitle(props.getString(PROP_TITLE));
     }
     if (props.hasKey(PROP_TITLE_COLOR)) {
-      final int titleColor = props.getColorInt(PROP_TITLE_COLOR, defaultColors[0]);
+      final int titleColor = props.getInt(PROP_TITLE_COLOR, defaultColors[0]);
       toolbar.setTitleTextColor(titleColor);
     }
     if (props.hasKey(PROP_NAV_ICON)) {

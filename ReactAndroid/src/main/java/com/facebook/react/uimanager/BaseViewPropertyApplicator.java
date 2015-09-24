@@ -73,7 +73,7 @@ public class BaseViewPropertyApplicator {
 
   public static void applyCommonViewProperties(View view, CatalystStylesDiffMap props) {
     if (props.hasKey(ViewProps.BACKGROUND_COLOR)) {
-      final int backgroundColor = props.getColorInt(ViewProps.BACKGROUND_COLOR, Color.TRANSPARENT);
+      final int backgroundColor = props.getInt(ViewProps.BACKGROUND_COLOR, Color.TRANSPARENT);
       view.setBackgroundColor(backgroundColor);
     }
     if (props.hasKey(PROP_DECOMPOSED_MATRIX)) {
