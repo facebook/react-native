@@ -41,6 +41,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
     public final int totalFrames;
     public final int totalJsFrames;
     public final int totalExpectedFrames;
+    public final int total4PlusFrameStutters;
     public final double fps;
     public final double jsFps;
     public final int totalTimeMs;
@@ -49,12 +50,14 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
         int totalFrames,
         int totalJsFrames,
         int totalExpectedFrames,
+        int total4PlusFrameStutters,
         double fps,
         double jsFps,
         int totalTimeMs) {
       this.totalFrames = totalFrames;
       this.totalJsFrames = totalJsFrames;
       this.totalExpectedFrames = totalExpectedFrames;
+      this.total4PlusFrameStutters = total4PlusFrameStutters;
       this.fps = fps;
       this.jsFps = jsFps;
       this.totalTimeMs = totalTimeMs;
@@ -72,6 +75,8 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
   private long mFirstFrameTime = -1;
   private long mLastFrameTime = -1;
   private int mNumFrameCallbacks = 0;
+  private int mExpectedNumFramesPrev = 0;
+  private int m4PlusFrameStutters = 0;
   private int mNumFrameCallbacksWithBatchDispatches = 0;
   private boolean mIsRecordingFpsInfoAtEachFrame = false;
   private @Nullable TreeMap<Long, FpsInfo> mTimeToFps;
@@ -103,18 +108,25 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
     }
 
     mNumFrameCallbacks++;
+    int expectedNumFrames = getExpectedNumFrames();
+    int framesDropped = expectedNumFrames - mExpectedNumFramesPrev - 1;
+    if (framesDropped >= 4) {
+      m4PlusFrameStutters++;
+    }
 
     if (mIsRecordingFpsInfoAtEachFrame) {
       Assertions.assertNotNull(mTimeToFps);
       FpsInfo info = new FpsInfo(
           getNumFrames(),
           getNumJSFrames(),
-          getExpectedNumFrames(),
+          expectedNumFrames,
+          m4PlusFrameStutters,
           getFPS(),
           getJSFPS(),
           getTotalTimeMS());
       mTimeToFps.put(System.currentTimeMillis(), info);
     }
+    mExpectedNumFramesPrev = expectedNumFrames;
 
     mChoreographer.postFrameCallback(this);
   }
@@ -168,6 +180,10 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
     return expectedFrames;
   }
 
+  public int get4PlusFrameStutters() {
+    return m4PlusFrameStutters;
+  }
+
   public int getTotalTimeMS() {
     return (int) ((double) mLastFrameTime - mFirstFrameTime) / 1000000;
   }
@@ -189,6 +205,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
     mFirstFrameTime = -1;
     mLastFrameTime = -1;
     mNumFrameCallbacks = 0;
+    m4PlusFrameStutters = 0;
     mNumFrameCallbacksWithBatchDispatches = 0;
     mIsRecordingFpsInfoAtEachFrame = false;
     mTimeToFps = null;
