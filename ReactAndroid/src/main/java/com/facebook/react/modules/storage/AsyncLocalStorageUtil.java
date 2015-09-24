@@ -24,9 +24,9 @@ import com.facebook.react.bridge.ReadableArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.KEY_COLUMN;
-import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.TABLE_CATALYST;
-import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.VALUE_COLUMN;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUMN;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.TABLE_CATALYST;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COLUMN;
 
 /**
  * Helper for database operations.
