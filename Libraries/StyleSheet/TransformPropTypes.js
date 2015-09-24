@@ -25,7 +25,9 @@ var TransformPropTypes = {
       ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
       ReactPropTypes.shape({translateX: ReactPropTypes.number}),
-      ReactPropTypes.shape({translateY: ReactPropTypes.number})
+      ReactPropTypes.shape({translateY: ReactPropTypes.number}),
+      ReactPropTypes.shape({skewX: ReactPropTypes.string}),
+      ReactPropTypes.shape({skewY: ReactPropTypes.string})
     ])
   ),
   transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
