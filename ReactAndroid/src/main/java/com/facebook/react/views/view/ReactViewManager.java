@@ -69,15 +69,15 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   }
 
   @Override
-  public Map<String, UIProp.Type> getNativeProps() {
-    Map<String, UIProp.Type> nativeProps = super.getNativeProps();
+  public Map<String, String> getNativeProps() {
+    Map<String, String> nativeProps = super.getNativeProps();
     Map<String, UIProp.Type> baseProps = BaseViewPropertyApplicator.getCommonProps();
     for (Map.Entry<String, UIProp.Type> entry : baseProps.entrySet()) {
-      nativeProps.put(entry.getKey(), entry.getValue());
+      nativeProps.put(entry.getKey(), entry.getValue().toString());
     }
     for (int i = 0; i < SPACING_TYPES.length; i++) {
-      nativeProps.put(ViewProps.BORDER_WIDTHS[i], UIProp.Type.NUMBER);
-      nativeProps.put(PROPS_BORDER_COLOR[i], UIProp.Type.STRING);
+      nativeProps.put(ViewProps.BORDER_WIDTHS[i], UIProp.Type.NUMBER.toString());
+      nativeProps.put(PROPS_BORDER_COLOR[i], UIProp.Type.STRING.toString());
     }
     return nativeProps;
   }
@@ -106,7 +106,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
         float color = CSSConstants.UNDEFINED;
         if (!props.isNull(PROPS_BORDER_COLOR[i])) {
           // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
-          int colorInt = props.getColorInt(PROPS_BORDER_COLOR[i], Color.TRANSPARENT);
+          int colorInt = props.getInt(PROPS_BORDER_COLOR[i], Color.TRANSPARENT);
           color = colorInt;
         }
         view.setBorderColor(SPACING_TYPES[i], color);

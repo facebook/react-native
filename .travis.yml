@@ -28,7 +28,17 @@ script:
   elif [ "$TEST_TYPE" = js ]
   then
 
-    flow check && npm test
+    flow check && npm test -- '\/Libraries\/'
+
+  elif [ "$TEST_TYPE" = packager ]
+  then
+
+    npm test -- '\/packager\/'
+
+  elif [ "$TEST_TYPE" = cli ]
+  then
+
+    npm test -- '\/(local|private|react-native)-cli\/'
 
   elif [ "$TEST_TYPE" = build_website ]
   then
@@ -57,6 +67,8 @@ env:
   matrix:
     - TEST_TYPE=objc
     - TEST_TYPE=js
+    - TEST_TYPE=packager
+    - TEST_TYPE=cli
     - TEST_TYPE=build_website
     - TEST_TYPE=e2e
   global:

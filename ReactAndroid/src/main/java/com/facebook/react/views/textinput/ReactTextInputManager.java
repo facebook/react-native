@@ -195,7 +195,7 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
       if (props.isNull(ViewProps.COLOR)) {
         view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
       } else {
-        final int textColor = props.getColorInt(ViewProps.COLOR, Color.TRANSPARENT);
+        final int textColor = props.getInt(ViewProps.COLOR, Color.TRANSPARENT);
         view.setTextColor(textColor);
       }
     }
@@ -208,7 +208,7 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
       if (props.isNull(PROP_TEXT_INPUT_HINT_COLOR)) {
         view.setHintTextColor(DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext()));
       } else {
-        final int hintColor = props.getColorInt(PROP_TEXT_INPUT_HINT_COLOR, Color.TRANSPARENT);
+        final int hintColor = props.getInt(PROP_TEXT_INPUT_HINT_COLOR, Color.TRANSPARENT);
         view.setHintTextColor(hintColor);
       }
     }
@@ -218,7 +218,7 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
         view.getBackground().clearColorFilter();
       } else {
         final int underlineColor =
-            props.getColorInt(PROP_TEXT_INPUT_UNDERLINE_COLOR, Color.TRANSPARENT);
+            props.getInt(PROP_TEXT_INPUT_UNDERLINE_COLOR, Color.TRANSPARENT);
         view.getBackground().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
       }
     }

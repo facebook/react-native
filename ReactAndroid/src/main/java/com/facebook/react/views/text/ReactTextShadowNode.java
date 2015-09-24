@@ -310,7 +310,7 @@ public class ReactTextShadowNode extends ReactShadowNode {
       if (styles.isNull(ViewProps.COLOR)) {
         mIsColorSet = false;
       } else {
-        mColor = styles.getColorInt(ViewProps.COLOR, Color.TRANSPARENT);
+        mColor = styles.getInt(ViewProps.COLOR, Color.TRANSPARENT);
         mIsColorSet = true;
       }
       markUpdated();
@@ -319,7 +319,7 @@ public class ReactTextShadowNode extends ReactShadowNode {
       if (styles.isNull(ViewProps.BACKGROUND_COLOR)) {
         mIsBackgroundColorSet = false;
       } else {
-        mBackgroundColor = styles.getColorInt(ViewProps.BACKGROUND_COLOR, Color.TRANSPARENT);
+        mBackgroundColor = styles.getInt(ViewProps.BACKGROUND_COLOR, Color.TRANSPARENT);
         mIsBackgroundColorSet = true;
       }
       markUpdated();

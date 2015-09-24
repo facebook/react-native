@@ -63,7 +63,7 @@ import com.facebook.react.uimanager.ViewProps;
       int color;
       if (drawableDescriptionDict.hasKey(ViewProps.COLOR) &&
           !drawableDescriptionDict.isNull(ViewProps.COLOR)) {
-        color = drawableDescriptionDict.getColorInt(ViewProps.COLOR);
+        color = drawableDescriptionDict.getInt(ViewProps.COLOR);
       } else {
         if (context.getTheme().resolveAttribute(
             android.R.attr.colorControlHighlight,

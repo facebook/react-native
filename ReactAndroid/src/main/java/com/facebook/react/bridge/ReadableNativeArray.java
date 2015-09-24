@@ -32,6 +32,8 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   @Override
   public native double getDouble(int index);
   @Override
+  public native int getInt(int index);
+  @Override
   public native String getString(int index);
   @Override
   public native ReadableNativeArray getArray(int index);
@@ -39,15 +41,4 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   public native ReadableNativeMap getMap(int index);
   @Override
   public native ReadableType getType(int index);
-
-  @Override
-  public int getInt(int index) {
-    return (int) getDouble(index);
-  }
-
-  // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
-  @Override
-  public int getColorInt(int index) {
-    return (int) (long) getDouble(index);
-  }
 }
