@@ -24,7 +24,7 @@ describe('react:ios', function() {
 
     runs(function() {
       helpers.run(path.resolve(__dirname, '../generator-ios'))
-        .withArguments(['TestApp'])
+        .withArguments(['TestAppIOS'])
         .on('end', function() {
           generated = true;
         });
@@ -40,58 +40,58 @@ describe('react:ios', function() {
   it('creates files', function() {
     assert.file([
       'ios/main.jsbundle',
-      'ios/TestApp/AppDelegate.h',
-      'ios/TestApp/AppDelegate.m',
-      'ios/TestApp/Base.lproj/LaunchScreen.xib',
-      'ios/TestApp/Images.xcassets/AppIcon.appiconset/Contents.json',
-      'ios/TestApp/Info.plist',
-      'ios/TestApp/main.m',
-      'ios/TestApp.xcodeproj/project.pbxproj',
-      'ios/TestApp.xcodeproj/xcshareddata/xcschemes/TestApp.xcscheme',
-      'ios/TestAppTests/TestAppTests.m',
-      'ios/TestAppTests/Info.plist'
+      'ios/TestAppIOS/AppDelegate.h',
+      'ios/TestAppIOS/AppDelegate.m',
+      'ios/TestAppIOS/Base.lproj/LaunchScreen.xib',
+      'ios/TestAppIOS/Images.xcassets/AppIcon.appiconset/Contents.json',
+      'ios/TestAppIOS/Info.plist',
+      'ios/TestAppIOS/main.m',
+      'ios/TestAppIOS.xcodeproj/project.pbxproj',
+      'ios/TestAppIOS.xcodeproj/xcshareddata/xcschemes/TestAppIOS.xcscheme',
+      'ios/TestAppIOSTests/TestAppIOSTests.m',
+      'ios/TestAppIOSTests/Info.plist'
     ]);
   });
 
   it('replaces vars in AppDelegate.m', function() {
-    var appDelegate = 'ios/TestApp/AppDelegate.m';
+    var appDelegate = 'ios/TestAppIOS/AppDelegate.m';
 
-    assert.fileContent(appDelegate, 'moduleName:@"TestApp"');
+    assert.fileContent(appDelegate, 'moduleName:@"TestAppIOS"');
     assert.noFileContent(appDelegate, 'SampleApp');
   });
 
   it('replaces vars in LaunchScreen.xib', function() {
-    var launchScreen = 'ios/TestApp/Base.lproj/LaunchScreen.xib';
+    var launchScreen = 'ios/TestAppIOS/Base.lproj/LaunchScreen.xib';
 
-    assert.fileContent(launchScreen, 'text="TestApp"');
+    assert.fileContent(launchScreen, 'text="TestAppIOS"');
     assert.noFileContent(launchScreen, 'SampleApp');
   });
 
-  it('replaces vars in TestAppTests.m', function() {
-    var tests = 'ios/TestAppTests/TestAppTests.m';
+  it('replaces vars in TestAppIOSTests.m', function() {
+    var tests = 'ios/TestAppIOSTests/TestAppIOSTests.m';
 
-    assert.fileContent(tests, '@interface TestAppTests : XCTestCase');
-    assert.fileContent(tests, '@implementation TestAppTests');
+    assert.fileContent(tests, '@interface TestAppIOSTests : XCTestCase');
+    assert.fileContent(tests, '@implementation TestAppIOSTests');
     assert.noFileContent(tests, 'SampleApp');
   });
 
   it('replaces vars in project.pbxproj', function() {
-    var pbxproj = 'ios/TestApp.xcodeproj/project.pbxproj';
-    assert.fileContent(pbxproj, '"TestApp"');
-    assert.fileContent(pbxproj, '"TestAppTests"');
-    assert.fileContent(pbxproj, 'TestApp.app');
-    assert.fileContent(pbxproj, 'TestAppTests.xctest');
+    var pbxproj = 'ios/TestAppIOS.xcodeproj/project.pbxproj';
+    assert.fileContent(pbxproj, '"TestAppIOS"');
+    assert.fileContent(pbxproj, '"TestAppIOSTests"');
+    assert.fileContent(pbxproj, 'TestAppIOS.app');
+    assert.fileContent(pbxproj, 'TestAppIOSTests.xctest');
 
     assert.noFileContent(pbxproj, 'SampleApp');
   });
 
   it('replaces vars in xcscheme', function() {
-    var xcscheme = 'ios/TestApp.xcodeproj/xcshareddata/xcschemes/TestApp.xcscheme';
-    assert.fileContent(xcscheme, '"TestApp"');
-    assert.fileContent(xcscheme, '"TestApp.app"');
-    assert.fileContent(xcscheme, 'TestApp.xcodeproj');
-    assert.fileContent(xcscheme, '"TestAppTests.xctest"');
-    assert.fileContent(xcscheme, '"TestAppTests"');
+    var xcscheme = 'ios/TestAppIOS.xcodeproj/xcshareddata/xcschemes/TestAppIOS.xcscheme';
+    assert.fileContent(xcscheme, '"TestAppIOS"');
+    assert.fileContent(xcscheme, '"TestAppIOS.app"');
+    assert.fileContent(xcscheme, 'TestAppIOS.xcodeproj');
+    assert.fileContent(xcscheme, '"TestAppIOSTests.xctest"');
+    assert.fileContent(xcscheme, '"TestAppIOSTests"');
 
     assert.noFileContent(xcscheme, 'SampleApp');
   });
