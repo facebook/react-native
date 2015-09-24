@@ -5,15 +5,26 @@ jest.autoMockOff();
 var path = require('path');
 
 describe('react:android', function () {
-  var assert = require('yeoman-generator').assert;
+  var assert;
 
   beforeEach(function (done) {
+    // A deep dependency of yeoman spams console.log with giant json objects.
+    // yeoman-generator/node_modules/
+    //   download/node_modules/
+    //     caw/node_modules/
+    //       get-proxy/node_modules/
+    //         rc/index.js
+    var log = console.log;
+    console.log = function() {};
+    assert = require('yeoman-generator').assert;
     var helpers = require('yeoman-generator').test;
+    console.log = log;
+
     var generated = false;
 
     runs(function() {
       helpers.run(path.resolve(__dirname, '..', 'generator-android'))
-        .withArguments(['TestApp'])
+        .withArguments(['TestAppAndroid'])
         .withOptions({
           'package': 'com.reactnative.test',
         })
@@ -67,11 +78,11 @@ describe('react:android', function () {
     );
     assert.fileContent(
       path.join('android', 'app', 'src', 'main', 'java', 'com', 'reactnative', 'test', 'MainActivity.java'),
-      'mReactRootView.startReactApplication(mReactInstanceManager, "TestApp", null);'
+      'mReactRootView.startReactApplication(mReactInstanceManager, "TestAppAndroid", null);'
     );
     assert.fileContent(
       path.join('android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'),
-      '<string name="app_name">TestApp</string>'
+      '<string name="app_name">TestAppAndroid</string>'
     );
   });
 });
