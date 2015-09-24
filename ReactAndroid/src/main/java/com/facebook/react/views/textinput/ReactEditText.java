@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Rect;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
@@ -85,7 +86,8 @@ public class ReactEditText extends EditText {
   // since we only allow JS to change focus, which in turn causes TextView to crash.
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+    if (keyCode == KeyEvent.KEYCODE_ENTER &&
+        ((getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) == 0 )) {
       hideSoftKeyboard();
       return true;
     }
