@@ -327,12 +327,18 @@ public class ReactInstanceManager {
         return;
       }
     }
+
+    // Load from file system if bundle name is an absolute path.
+    JSBundleLoader loader = mBundleAssetName.startsWith("/")
+            ? JSBundleLoader.createFileLoader(mBundleAssetName)
+            : JSBundleLoader.createAssetLoader(
+                mApplicationContext.getAssets(),
+                mBundleAssetName);
+
     // Use JS file from assets
     recreateReactContext(
         new JSCJavaScriptExecutor(),
-        JSBundleLoader.createAssetLoader(
-            mApplicationContext.getAssets(),
-            mBundleAssetName));
+        loader);
   }
 
   private void recreateReactContext(
