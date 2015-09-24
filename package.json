@@ -8,11 +8,10 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "jest": {
-    "scriptPreprocessor": "jestSupport/scriptPreprocess.js",
+    "scriptPreprocessor": "jestSupport/preprocessor.js",
     "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "packager/react-packager/src/Activity/"
+      "/node_modules/"
     ],
     "testFileExtensions": [
       "js"
@@ -35,49 +34,58 @@
     "LICENSE",
     "PATENTS",
     "README.md",
-    "jestSupport"
+    "jestSupport",
+    ".flowconfig"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "NODE_ENV=test jest",
     "lint": "node linter.js Examples/ Libraries/",
-    "start": "./packager/packager.sh"
+    "start": "./packager/packager.sh || true"
   },
   "bin": {
     "react-native-start": "packager/packager.sh"
   },
   "dependencies": {
-    "absolute-path": "0.0.0",
-    "babel": "5.4.3",
-    "babel-core": "5.6.4",
-    "chalk": "^1.0.0",
-    "connect": "2.8.3",
-    "debug": "~2.1.0",
-    "graceful-fs": "^3.0.6",
-    "image-size": "0.3.5",
-    "immutable": "^3.7.4",
-    "joi": "~5.1.0",
-    "jstransform": "11.0.1",
-    "module-deps": "3.5.6",
-    "optimist": "0.6.1",
-    "promise": "^7.0.3",
-    "react-timer-mixin": "^0.13.1",
+    "absolute-path": "^0.0.0",
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.23",
+    "bser": "^1.0.2",
+    "chalk": "^1.1.1",
+    "connect": "^2.8.3",
+    "debug": "^2.2.0",
+    "fbjs-scripts": "^0.2.1",
+    "graceful-fs": "^4.1.2",
+    "image-size": "^0.3.5",
+    "immutable": "^3.7.5",
+    "joi": "^6.6.1",
+    "jstransform": "^11.0.3",
+    "module-deps": "^3.9.1",
+    "optimist": "^0.6.1",
+    "progress": "^1.1.8",
+    "promise": "^7.0.4",
+    "react-timer-mixin": "^0.13.2",
     "react-tools": "git://github.com/facebook/react#b4e74e38e43ac53af8acd62c78c9213be0194245",
-    "rebound": "^0.0.12",
-    "sane": "^1.1.2",
-    "semver": "^4.3.6",
-    "source-map": "0.1.31",
-    "stacktrace-parser": "frantic/stacktrace-parser#493c5e5638",
-    "uglify-js": "~2.4.16",
-    "underscore": "1.7.0",
+    "rebound": "^0.0.13",
+    "regenerator": "^0.8.36",
+    "sane": "^1.2.0",
+    "semver": "^5.0.1",
+    "source-map": "^0.4.4",
+    "stacktrace-parser": "^0.1.3",
+    "tinycolor2": "^1.1.2",
+    "uglify-js": "^2.4.24",
+    "underscore": "^1.8.3",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
-    "ws": "^0.7.2",
-    "yargs": "1.3.2"
+    "ws": "^0.8.0",
+    "yargs": "^3.24.0",
+    "yeoman-environment": "^1.2.7",
+    "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
-    "jest-cli": "facebook/jest#0.5.x",
-    "babel-eslint": "3.1.5",
-    "eslint": "0.21.2",
-    "eslint-plugin-react": "2.3.0"
+    "jest-cli": "0.5.7",
+    "babel-eslint": "4.1.1",
+    "eslint": "1.3.1",
+    "eslint-plugin-react": "3.3.1",
+    "temp": "0.8.3"
   }
 }

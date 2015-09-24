@@ -17,7 +17,7 @@ var icon = this.props.active ? require('image!my-icon-active') : require('image!
 
 When your entire codebase respects this convention, you're able to do interesting things like automatically packaging the assets that are being used in your app. Note that in the current form, nothing is enforced, but it will be in the future.
 
-### Adding Static Resources to your App using Images.xcassets
+### Adding Static Resources to your iOS App using Images.xcassets
 
 ![](/react-native/img/StaticImageAssets.png)
 
@@ -25,8 +25,24 @@ When your entire codebase respects this convention, you're able to do interestin
 >
 > Any time you add a new resource to `Images.xcassets` you will need to re-build your app through Xcode before you can use it - a reload from within the simulator is not enough.
 
-*This process is currently being improved, a much better workflow will be
-available shortly.*
+*This process is currently being improved, a much better workflow will be available shortly.*
+
+### Adding Static Resources to your Android app
+
+Add your images as [bitmap drawables](http://developer.android.com/guide/topics/resources/drawable-resource.html#Bitmap) to the android project (`<yourapp>/android/app/src/main/res`). To provide different resolutions of your assets, check out [using configuration qualifiers](http://developer.android.com/guide/practices/screens_support.html#qualifiers). Normally, you will want to put your assets in the following directories (create them under `res` if they don't exist):
+
+* `drawable-mdpi` (1x)
+* `drawable-hdpi` (1.5x)
+* `drawable-xhdpi` (2x)
+* `drawable-xxhdpi` (3x)
+
+If you're missing a resolution for your asset, Android will take the next best thing and resize it for you.
+
+> **NOTE**: App build required for new resources
+>
+> Any time you add a new resource to your drawables you will need to re-build your app by running `react-native run-android` before you can use it - reloading the JS is not enough.
+
+*This process is currently being improved, a much better workflow will be available shortly.*
 
 ## Network Resources
 

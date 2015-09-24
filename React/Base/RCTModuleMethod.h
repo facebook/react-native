@@ -9,19 +9,29 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTBridgeMethod.h"
+
 @class RCTBridge;
 
-typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
-  RCTJavaScriptFunctionKindNormal,
-  RCTJavaScriptFunctionKindAsync,
+typedef NS_ENUM(NSUInteger, RCTNullability) {
+  RCTNullabilityUnspecified,
+  RCTNullable,
+  RCTNonnullable,
 };
 
-@interface RCTModuleMethod : NSObject
+@interface RCTMethodArgument : NSObject
 
-@property (nonatomic, copy, readonly) NSString *moduleClassName;
-@property (nonatomic, copy, readonly) NSString *JSMethodName;
-@property (nonatomic, assign, readonly) SEL selector;
-@property (nonatomic, assign, readonly) RCTJavaScriptFunctionKind functionKind;
+@property (nonatomic, copy, readonly) NSString *type;
+@property (nonatomic, readonly) RCTNullability nullability;
+@property (nonatomic, readonly) BOOL unused;
+
+@end
+
+@interface RCTModuleMethod : NSObject <RCTBridgeMethod>
+
+@property (nonatomic, readonly) Class moduleClass;
+@property (nonatomic, readonly) SEL selector;
+@property (nonatomic, readonly) RCTFunctionType functionType;
 
 - (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName

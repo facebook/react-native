@@ -10,8 +10,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTComponent.h"
+
 @interface RCTSwitch : UISwitch
 
 @property (nonatomic, assign) BOOL wasOn;
+@property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end

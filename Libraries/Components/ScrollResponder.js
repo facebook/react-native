@@ -181,7 +181,7 @@ var ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponderCapture: function(e: Event): boolean {
     // First see if we want to eat taps while the keyboard is up
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (!this.props.keyboardShouldPersistTaps &&
+    if (this.props.keyboardShouldPersistTaps === false &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput) {
       return true;
@@ -242,7 +242,7 @@ var ScrollResponderMixin = {
     // By default scroll views will unfocus a textField
     // if another touch occurs outside of it
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (!this.props.keyboardShouldPersistTaps &&
+    if (this.props.keyboardShouldPersistTaps === false &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput  &&
       !this.state.observedScrollSinceBecomingResponder &&
@@ -359,6 +359,26 @@ var ScrollResponderMixin = {
       );
     } else {
       RCTUIManager.scrollTo(
+        React.findNodeHandle(this),
+        offsetX,
+        offsetY
+      );
+    }
+  },
+
+  /**
+   * Like `scrollResponderScrollTo` but immediately scrolls to the given
+   * position
+   */
+  scrollResponderScrollWithouthAnimationTo: function(offsetX: number, offsetY: number) {
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        React.findNodeHandle(this),
+        RCTUIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
+        [offsetX, offsetY],
+      );
+    } else {
+      RCTUIManager.scrollWithoutAnimationTo(
         React.findNodeHandle(this),
         offsetX,
         offsetY

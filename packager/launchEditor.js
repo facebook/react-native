@@ -10,7 +10,37 @@
 
 var chalk = require('chalk');
 var fs = require('fs');
-var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
+
+function isTerminalEditor(editor) {
+  switch (editor) {
+    case 'vim':
+    case 'emacs':
+    case 'nano':
+      return true;
+  }
+  return false;
+}
+
+function getArgumentsForLineNumber(editor, fileName, lineNumber) {
+  switch (editor) {
+    case 'vim':
+    case 'mvim':
+      return [fileName, '+' + lineNumber];
+    case 'atom':
+    case 'subl':
+    case 'sublime':
+      return [fileName + ':' + lineNumber];
+    case 'joe':
+    case 'emacs':
+      return ['+' + lineNumber, fileName];
+  }
+
+  // For all others, drop the lineNumber until we have
+  // a mapping above, since providing the lineNumber incorrectly
+  // can result in errors or confusing behavior.
+  return [fileName];
+}
 
 function printInstructions(title) {
   console.log([
@@ -25,28 +55,45 @@ function printInstructions(title) {
   ].join('\n'));
 }
 
+var _childProcess = null;
 function launchEditor(fileName, lineNumber) {
   if (!fs.existsSync(fileName)) {
     return;
   }
 
-  var argument = fileName;
-  if (lineNumber) {
-    argument += ':' + lineNumber;
+  var editor = process.env.REACT_EDITOR || process.env.EDITOR;
+  if (!editor) {
+    printInstructions('PRO TIP');
+    return;
   }
 
-  var editor = process.env.REACT_EDITOR || process.env.EDITOR;
-  if (editor) {
-    console.log('Opening ' + chalk.underline(fileName) + ' with ' + chalk.bold(editor));
-    exec(editor + ' ' + argument, function(error) {
-      if (error) {
-        console.log(chalk.red(error.message));
-        printInstructions('How to fix');
-      }
-    });
-  } else {
-    printInstructions('PRO TIP');
+  var args = [fileName];
+  if (lineNumber) {
+    args = getArgumentsForLineNumber(editor, fileName, lineNumber);
   }
+  console.log('Opening ' + chalk.underline(fileName) + ' with ' + chalk.bold(editor));
+
+  if (_childProcess && isTerminalEditor(editor)) {
+    // There's an existing editor process already and it's attached
+    // to the terminal, so go kill it. Otherwise two separate editor
+    // instances attach to the stdin/stdout which gets confusing.
+    _childProcess.kill('SIGKILL');
+  }
+
+  _childProcess = spawn(editor, args, {stdio: 'inherit'});
+  _childProcess.on('exit', function(errorCode) {
+    _childProcess = null;
+
+    if (errorCode) {
+      console.log(chalk.red('Your editor exited with an error!'));
+      printInstructions('Keep these instructions in mind:');
+    }
+  });
+
+  _childProcess.on('error', function(error) {
+    console.log(chalk.red(error.message));
+    printInstructions('How to fix:');
+  })
 }
 
 module.exports = launchEditor;

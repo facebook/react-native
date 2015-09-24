@@ -1,0 +1,18 @@
+PROJECT_NAME           = "Facebook JNI"
+PROJECT_BRIEF          = "Helper library to provide safe and convenient access to JNI with very low overhead"
+JAVADOC_AUTOBRIEF      = YES
+EXTRACT_ALL            = YES
+RECURSIVE              = YES
+EXCLUDE                = tests Asserts.h Countable.h GlobalReference.h LocalReference.h LocalString.h Registration.h WeakReference.h jni_helpers.h Environment.h
+EXCLUDE_PATTERNS       = *-inl.h *.cpp
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+ENABLE_PREPROCESSING   = YES
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_SCOPE_NAMES       = YES
+HIDE_FRIEND_COMPOUNDS  = YES
+HIDE_UNDOC_CLASSES     = YES
+SHOW_INCLUDE_FILES     = NO
+PREDEFINED             = LOG_TAG=fbjni
+EXAMPLE_PATH           = samples
+#ENABLED_SECTIONS       = INTERNAL

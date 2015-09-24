@@ -18,33 +18,28 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-// Special scheme that allow JS to notify the WebView to emit
-// navigation event.
-//
-// JavaScript Example:
-//   window.location.href = 'react-js-navigation://hello'
 NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
+
+@property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 
 @end
 
 @implementation RCTWebView
 {
-  RCTEventDispatcher *_eventDispatcher;
   UIWebView *_webView;
   NSString *_injectedJavaScript;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  RCTAssertParam(eventDispatcher);
-
-  if ((self = [super initWithFrame:CGRectZero])) {
+  if ((self = [super initWithFrame:frame])) {
     super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    _eventDispatcher = eventDispatcher;
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
     [self addSubview:_webView];
@@ -52,8 +47,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)goForward
 {
@@ -101,9 +95,6 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   [super layoutSubviews];
   _webView.frame = self.bounds;
-  [RCTView autoAdjustInsetsForView:self
-                    withScrollView:_webView.scrollView
-                      updateOffset:YES];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
@@ -128,35 +119,40 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (NSMutableDictionary *)baseEvent
 {
-  NSURL *url = _webView.request.URL;
-  NSString *title = [_webView stringByEvaluatingJavaScriptFromString:@"document.title"];
   NSMutableDictionary *event = [[NSMutableDictionary alloc] initWithDictionary: @{
-    @"target": self.reactTag,
-    @"url": url ? [url absoluteString] : @"",
+    @"url": _webView.request.URL.absoluteString ?: @"",
     @"loading" : @(_webView.loading),
-    @"title": title,
-    @"canGoBack": @([_webView canGoBack]),
-    @"canGoForward" : @([_webView canGoForward]),
+    @"title": [_webView stringByEvaluatingJavaScriptFromString:@"document.title"],
+    @"canGoBack": @(_webView.canGoBack),
+    @"canGoForward" : @(_webView.canGoForward),
   }];
 
   return event;
 }
 
-#pragma mark - UIWebViewDelegate methods
+- (void)refreshContentInset
+{
+  [RCTView autoAdjustInsetsForView:self
+                    withScrollView:_webView.scrollView
+                      updateOffset:YES];
+}
 
+#pragma mark - UIWebViewDelegate methods
 
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
-  // We have this check to filter out iframe requests and whatnot
-  BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
-  if (isTopFrame) {
-    NSMutableDictionary *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{
-      @"url": [request.URL absoluteString],
-      @"navigationType": @(navigationType)
-    }];
-    [_eventDispatcher sendInputEventWithName:@"topLoadingStart" body:event];
+  if (_onLoadingStart) {
+    // We have this check to filter out iframe requests and whatnot
+    BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
+    if (isTopFrame) {
+      NSMutableDictionary *event = [self baseEvent];
+      [event addEntriesFromDictionary: @{
+        @"url": (request.URL).absoluteString,
+        @"navigationType": @(navigationType)
+      }];
+      _onLoadingStart(event);
+    }
   }
 
   // JS Navigation handler
@@ -165,21 +161,24 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-  if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
-    // NSURLErrorCancelled is reported when a page has a redirect OR if you load
-    // a new URL in the WebView before the previous one came back. We can just
-    // ignore these since they aren't real errors.
-    // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
-    return;
-  }
+  if (_onLoadingError) {
 
-  NSMutableDictionary *event = [self baseEvent];
-  [event addEntriesFromDictionary: @{
-    @"domain": error.domain,
-    @"code": @(error.code),
-    @"description": [error localizedDescription],
-  }];
-  [_eventDispatcher sendInputEventWithName:@"topLoadingError" body:event];
+    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
+      // NSURLErrorCancelled is reported when a page has a redirect OR if you load
+      // a new URL in the WebView before the previous one came back. We can just
+      // ignore these since they aren't real errors.
+      // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
+      return;
+    }
+
+    NSMutableDictionary *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"domain": error.domain,
+      @"code": @(error.code),
+      @"description": error.localizedDescription,
+    }];
+    _onLoadingError(event);
+  }
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
@@ -189,8 +188,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   }
 
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
-  if (!webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
-    [_eventDispatcher sendInputEventWithName:@"topLoadingFinish" body:[self baseEvent]];
+  if (_onLoadingFinish && !webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+    _onLoadingFinish([self baseEvent]);
   }
 }
 

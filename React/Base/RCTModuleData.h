@@ -14,7 +14,7 @@
 @interface RCTModuleData : NSObject
 
 @property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, strong, readonly) NSNumber *uid;
+@property (nonatomic, strong, readonly) NSNumber *moduleID;
 @property (nonatomic, strong, readonly) id<RCTBridgeModule> instance;
 
 @property (nonatomic, strong, readonly) Class moduleClass;
@@ -25,7 +25,7 @@
 @property (nonatomic, strong) dispatch_queue_t queue;
 
 - (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                             uid:(NSNumber *)uid
+                        moduleID:(NSNumber *)moduleID
                         instance:(id<RCTBridgeModule>)instance NS_DESIGNATED_INITIALIZER;
 
 - (void)dispatchBlock:(dispatch_block_t)block;

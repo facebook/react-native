@@ -9,6 +9,7 @@
 
 #import "RCTTextManager.h"
 
+#import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
@@ -24,12 +25,12 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTText alloc] init];
+  return [RCTText new];
 }
 
 - (RCTShadowView *)shadowView
 {
-  return [[RCTShadowText alloc] init];
+  return [RCTShadowText new];
 }
 
 #pragma mark - Shadow properties
@@ -49,6 +50,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textDecorationStyle, NSUnderlineStyle)
 RCT_EXPORT_SHADOW_PROPERTY(textDecorationColor, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(textDecorationLine, RCTTextDecorationLineType)
 RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
+RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
 {
@@ -64,11 +66,12 @@ RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
     }
 
     NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
-    for (NSInteger i = 0; i < [queue count]; i++) {
+    for (NSInteger i = 0; i < queue.count; i++) {
       RCTShadowView *shadowView = queue[i];
       RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
 
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
+        ((RCTShadowText *)shadowView).fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
         [(RCTShadowText *)shadowView recomputeText];
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
         RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'",

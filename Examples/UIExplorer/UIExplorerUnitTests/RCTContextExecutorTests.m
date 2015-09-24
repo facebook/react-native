@@ -33,7 +33,7 @@
 - (void)setUp
 {
   [super setUp];
-  _executor = [[RCTContextExecutor alloc] init];
+  _executor = [RCTContextExecutor new];
   [_executor setUp];
 }
 
@@ -129,7 +129,7 @@ static uint64_t _get_time_nanoseconds(void)
   ";
 
   [_executor executeApplicationScript:script sourceURL:[NSURL URLWithString:@"http://localhost:8081/"] onComplete:^(__unused NSError *error) {
-    NSMutableArray *params = [[NSMutableArray alloc] init];
+    NSMutableArray *params = [NSMutableArray new];
     id data = @1;
     for (int i = 0; i < 4; i++) {
       double samples[runs / frequency];

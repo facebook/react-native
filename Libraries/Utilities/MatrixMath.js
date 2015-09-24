@@ -31,6 +31,23 @@ var MatrixMath = {
     ];
   },
 
+  createOrthographic: function(left, right, bottom, top, near, far) {
+    var a = 2 / (right - left);
+    var b = 2 / (top - bottom);
+    var c = -2 / (far - near);
+
+    var tx = -(right + left) / (right - left);
+    var ty = -(top + bottom) / (top - bottom);
+    var tz = -(far + near) / (far - near);
+
+    return [
+        a,  0,  0,  0,
+        0,  b,  0,  0,
+        0,  0,  c,  0,
+        tx, ty, tz, 1
+    ];
+  },
+
   createFrustum: function(left, right, bottom, top, near, far) {
     var r_width  = 1 / (right - left);
     var r_height = 1 / (top - bottom);
@@ -45,6 +62,19 @@ var MatrixMath = {
       x, 0, 0, 0,
       0, y, 0, 0,
       A, B, C,-1,
+      0, 0, D, 0,
+    ];
+  },
+
+  createPerspective: function(fovInRadians, aspect, near, far) {
+    var h = 1 / Math.tan(fovInRadians);
+    var r_depth  = 1 / (near - far);
+    var C = (far + near) * r_depth;
+    var D = 2 * (far * near * r_depth);
+    return [
+      h/aspect, 0, 0, 0,
+      0, h, 0, 0,
+      0, 0, C,-1,
       0, 0, D, 0,
     ];
   },

@@ -13,19 +13,20 @@ jest
   .dontMock('events')
   .dontMock('../')
   .dontMock('q')
-  .setMock(
-    'child_process',
-    { exec: function(cmd, cb) { cb(null, '/usr/bin/watchman'); } }
-  );
+  .setMock('child_process', {
+    exec: function(cmd, cb) {
+      cb(null, '/usr/bin/watchman');
+    }
+  });
+
+var FileWatcher = require('../');
+var sane = require('sane');
 
 describe('FileWatcher', function() {
-  var FileWatcher;
   var Watcher;
 
   beforeEach(function() {
-    require('mock-modules').dumpCache();
-    FileWatcher = require('../');
-    Watcher = require('sane').WatchmanWatcher;
+    Watcher = sane.WatchmanWatcher;
     Watcher.prototype.once.mockImplementation(function(type, callback) {
       callback();
     });
@@ -65,5 +66,4 @@ describe('FileWatcher', function() {
       expect(Watcher.prototype.close).toBeCalled();
     });
   });
-
 });

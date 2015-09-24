@@ -21,7 +21,8 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 3. If you've changed APIs, update the documentation.
 4. Ensure tests pass on Travis.
 5. Make sure your code lints (`node linter.js <files touched>`).
-6. If you haven't already, complete the CLA.
+6. Squash your commits (`git rebase -i`).
+7. If you haven't already, complete the CLA.
 
 ### Contributor License Agreement (CLA)
 
@@ -33,7 +34,7 @@ In order to accept your pull request, we need you to submit a CLA. You only need
 
 ### Where to Find Known Issues
 
-We will be using GitHub Issues for our public bugs. We will keep a close eye on this and try to make it clear when we have an internal fix in progress. Before filing a new task, try to make sure your problem doesn't already exist.
+We are using GitHub Issues for our public bugs. We keep a close eye on this and try to make it clear when we have an internal fix in progress. Before filing a new task, try to make sure your problem doesn't already exist.
 
 ### Reporting New Issues
 

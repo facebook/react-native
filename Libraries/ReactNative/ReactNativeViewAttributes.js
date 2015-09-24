@@ -19,11 +19,18 @@ ReactNativeViewAttributes.UIView = {
   pointerEvents: true,
   accessible: true,
   accessibilityLabel: true,
+  accessibilityComponentType: true,
+  accessibilityLiveRegion: true,
   accessibilityTraits: true,
+  importantForAccessibility: true,
   testID: true,
+  renderToHardwareTextureAndroid: true,
+  shouldRasterizeIOS: true,
   onLayout: true,
   onAccessibilityTap: true,
   onMagicTap: true,
+  collapsable: true,
+  needsOffscreenAlphaCompositing: true,
 };
 
 ReactNativeViewAttributes.RCTView = merge(

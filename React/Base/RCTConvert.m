@@ -16,12 +16,6 @@
 
 @implementation RCTConvert
 
-void RCTLogConvertError(id json, const char *type)
-{
-  RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to %s",
-              json, [json classForCoder], type);
-}
-
 RCT_CONVERTER(id, id, self)
 
 RCT_CONVERTER(BOOL, BOOL, boolValue)
@@ -35,43 +29,38 @@ RCT_NUMBER_CONVERTER(uint64_t, unsignedLongLongValue);
 RCT_NUMBER_CONVERTER(NSInteger, integerValue)
 RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
 
-RCT_CUSTOM_CONVERTER(NSArray *, NSArray, [NSArray arrayWithArray:json])
+/**
+ * This macro is used for creating converter functions for directly
+ * representable json values that require no conversion.
+ */
+#if RCT_DEBUG
+#define RCT_JSON_CONVERTER(type)           \
++ (type *)type:(id)json                    \
+{                                          \
+  if ([json isKindOfClass:[type class]]) { \
+    return json;                           \
+  } else if (json) {                       \
+    RCTLogConvertError(json, @#type);      \
+  }                                        \
+  return nil;                              \
+}
+#else
+#define RCT_JSON_CONVERTER(type)           \
++ (type *)type:(id)json { return json; }
+#endif
+
+RCT_JSON_CONVERTER(NSArray)
+RCT_JSON_CONVERTER(NSDictionary)
+RCT_JSON_CONVERTER(NSString)
+RCT_JSON_CONVERTER(NSNumber)
+
 RCT_CUSTOM_CONVERTER(NSSet *, NSSet, [NSSet setWithArray:json])
-RCT_CUSTOM_CONVERTER(NSDictionary *, NSDictionary, [NSDictionary dictionaryWithDictionary:json])
-RCT_CONVERTER(NSString *, NSString, description)
-
-+ (NSNumber *)NSNumber:(id)json
-{
-  if ([json isKindOfClass:[NSNumber class]]) {
-    return json;
-  } else if ([json isKindOfClass:[NSString class]]) {
-    static NSNumberFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      formatter = [[NSNumberFormatter alloc] init];
-      formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    });
-    NSNumber *number = [formatter numberFromString:json];
-    if (!number) {
-      RCTLogConvertError(json, "a number");
-    }
-    return number;
-  } else if (json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a number");
-  }
-  return nil;
-}
-
-+ (NSData *)NSData:(id)json
-{
-  // TODO: should we automatically decode base64 data? Probably not...
-  return [[self NSString:json] dataUsingEncoding:NSUTF8StringEncoding];
-}
+RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncoding])
 
 + (NSIndexSet *)NSIndexSet:(id)json
 {
   json = [self NSNumberArray:json];
-  NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
+  NSMutableIndexSet *indexSet = [NSMutableIndexSet new];
   for (NSNumber *number in json) {
     NSInteger index = number.integerValue;
     if (RCT_DEBUG && index < 0) {
@@ -85,7 +74,7 @@ RCT_CONVERTER(NSString *, NSString, description)
 + (NSURL *)NSURL:(id)json
 {
   NSString *path = [self NSString:json];
-  if (!path.length) {
+  if (!path) {
     return nil;
   }
 
@@ -97,7 +86,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
 
     // Check if it has a scheme
-    if ([path rangeOfString:@"[a-zA-Z][a-zA-Z._-]+:" options:NSRegularExpressionSearch].location == 0) {
+    if ([path rangeOfString:@":"].location != NSNotFound) {
       path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
       URL = [NSURL URLWithString:path];
       if (URL) {
@@ -106,18 +95,18 @@ RCT_CONVERTER(NSString *, NSString, description)
     }
 
     // Assume that it's a local path
-    path = [path stringByRemovingPercentEncoding];
+    path = path.stringByRemovingPercentEncoding;
     if ([path hasPrefix:@"~"]) {
       // Path is inside user directory
-      path = [path stringByExpandingTildeInPath];
-    } else if (![path isAbsolutePath]) {
+      path = path.stringByExpandingTildeInPath;
+    } else if (!path.absolutePath) {
       // Assume it's a resource path
-      path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:path];
+      path = [[NSBundle mainBundle].resourcePath stringByAppendingPathComponent:path];
     }
     return [NSURL fileURLWithPath:path];
   }
   @catch (__unused NSException *e) {
-    RCTLogConvertError(json, "a valid URL");
+    RCTLogConvertError(json, @"a valid URL");
     return nil;
   }
 }
@@ -131,7 +120,7 @@ RCT_CONVERTER(NSString *, NSString, description)
 + (RCTFileURL *)RCTFileURL:(id)json
 {
   NSURL *fileURL = [self NSURL:json];
-  if (![fileURL isFileURL]) {
+  if (!fileURL.fileURL) {
     RCTLogError(@"URI must be a local file, '%@' isn't.", fileURL);
     return nil;
   }
@@ -150,7 +139,7 @@ RCT_CONVERTER(NSString *, NSString, description)
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      formatter = [[NSDateFormatter alloc] init];
+      formatter = [NSDateFormatter new];
       formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
       formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
       formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -161,8 +150,8 @@ RCT_CONVERTER(NSString *, NSString, description)
                   "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
     }
     return date;
-  } else if (json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a date");
+  } else if (json) {
+    RCTLogConvertError(json, @"a date");
   }
   return nil;
 }
@@ -175,24 +164,23 @@ RCT_CUSTOM_CONVERTER(NSTimeZone *, NSTimeZone, [NSTimeZone timeZoneForSecondsFro
 
 NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
 {
-  if (!json || json == (id)kCFNull) {
+  if (!json) {
     return defaultValue;
   }
   if ([json isKindOfClass:[NSNumber class]]) {
-    NSArray *allValues = [mapping allValues];
-    if ([[mapping allValues] containsObject:json] || [json isEqual:defaultValue]) {
+    NSArray *allValues = mapping.allValues;
+    if ([mapping.allValues containsObject:json] || [json isEqual:defaultValue]) {
       return json;
     }
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
     return defaultValue;
   }
-
-  if (![json isKindOfClass:[NSString class]]) {
+  if (RCT_DEBUG && ![json isKindOfClass:[NSString class]]) {
     RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@",
                 typeName, [json classForCoder], json);
   }
   id value = mapping[json];
-  if (!value && [json description].length > 0) {
+  if (RCT_DEBUG && !value && [json description].length > 0) {
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [[mapping allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)]);
   }
   return value ?: defaultValue;
@@ -207,7 +195,7 @@ NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, 
     long long result = 0;
     for (id arrayElement in json) {
       NSNumber *value = RCTConvertEnumValue(typeName, mapping, defaultValue, arrayElement);
-      result |= [value longLongValue];
+      result |= value.longLongValue;
     }
     return @(result);
   }
@@ -338,8 +326,8 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
     for (NSUInteger i = 0; i < count; i++) {
       result[i] = [RCTConvert CGFloat:json[fields[i]]];
     }
-  } else if (RCT_DEBUG && json && json != (id)kCFNull) {
-    RCTLogConvertError(json, type);
+  } else if (json) {
+    RCTLogConvertError(json, @(type));
   }
 }
 
@@ -391,255 +379,21 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
 + (UIColor *)UIColor:(id)json
 {
-  // Check color cache
-  static RCTCache *colorCache = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    colorCache = [[RCTCache alloc] init];
-    colorCache.countLimit = 128;
-  });
-  UIColor *color = colorCache[json];
-  if (color) {
-    return color;
+  if ([json isKindOfClass:[NSArray class]]) {
+    NSArray *components = [self NSNumberArray:json];
+    CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
+    return [UIColor colorWithRed:[self CGFloat:components[0]]
+                           green:[self CGFloat:components[1]]
+                            blue:[self CGFloat:components[2]]
+                           alpha:alpha];
+  } else {
+    NSUInteger argb = [self NSUInteger:json];
+    CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
+    CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
+    CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
+    CGFloat b = (argb & 0xFF) / 255.0;
+    return [UIColor colorWithRed:r green:g blue:b alpha:a];
   }
-
-  if ([json isKindOfClass:[NSString class]]) {
-
-    // Check named colors
-    static NSDictionary *namedColors = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      namedColors = @{
-
-        // CSS colors
-        @"aliceblue": @"#f0f8ff",
-        @"antiquewhite": @"#faebd7",
-        @"aqua": @"#00ffff",
-        @"aquamarine": @"#7fffd4",
-        @"azure": @"#f0ffff",
-        @"beige": @"#f5f5dc",
-        @"bisque": @"#ffe4c4",
-        @"black": @"#000000",
-        @"blanchedalmond": @"#ffebcd",
-        @"blue": @"#0000ff",
-        @"blueviolet": @"#8a2be2",
-        @"brown": @"#a52a2a",
-        @"burlywood": @"#deb887",
-        @"cadetblue": @"#5f9ea0",
-        @"chartreuse": @"#7fff00",
-        @"chocolate": @"#d2691e",
-        @"coral": @"#ff7f50",
-        @"cornflowerblue": @"#6495ed",
-        @"cornsilk": @"#fff8dc",
-        @"crimson": @"#dc143c",
-        @"cyan": @"#00ffff",
-        @"darkblue": @"#00008b",
-        @"darkcyan": @"#008b8b",
-        @"darkgoldenrod": @"#b8860b",
-        @"darkgray": @"#a9a9a9",
-        @"darkgrey": @"#a9a9a9",
-        @"darkgreen": @"#006400",
-        @"darkkhaki": @"#bdb76b",
-        @"darkmagenta": @"#8b008b",
-        @"darkolivegreen": @"#556b2f",
-        @"darkorange": @"#ff8c00",
-        @"darkorchid": @"#9932cc",
-        @"darkred": @"#8b0000",
-        @"darksalmon": @"#e9967a",
-        @"darkseagreen": @"#8fbc8f",
-        @"darkslateblue": @"#483d8b",
-        @"darkslategray": @"#2f4f4f",
-        @"darkslategrey": @"#2f4f4f",
-        @"darkturquoise": @"#00ced1",
-        @"darkviolet": @"#9400d3",
-        @"deeppink": @"#ff1493",
-        @"deepskyblue": @"#00bfff",
-        @"dimgray": @"#696969",
-        @"dimgrey": @"#696969",
-        @"dodgerblue": @"#1e90ff",
-        @"firebrick": @"#b22222",
-        @"floralwhite": @"#fffaf0",
-        @"forestgreen": @"#228b22",
-        @"fuchsia": @"#ff00ff",
-        @"gainsboro": @"#dcdcdc",
-        @"ghostwhite": @"#f8f8ff",
-        @"gold": @"#ffd700",
-        @"goldenrod": @"#daa520",
-        @"gray": @"#808080",
-        @"grey": @"#808080",
-        @"green": @"#008000",
-        @"greenyellow": @"#adff2f",
-        @"honeydew": @"#f0fff0",
-        @"hotpink": @"#ff69b4",
-        @"indianred": @"#cd5c5c",
-        @"indigo": @"#4b0082",
-        @"ivory": @"#fffff0",
-        @"khaki": @"#f0e68c",
-        @"lavender": @"#e6e6fa",
-        @"lavenderblush": @"#fff0f5",
-        @"lawngreen": @"#7cfc00",
-        @"lemonchiffon": @"#fffacd",
-        @"lightblue": @"#add8e6",
-        @"lightcoral": @"#f08080",
-        @"lightcyan": @"#e0ffff",
-        @"lightgoldenrodyellow": @"#fafad2",
-        @"lightgray": @"#d3d3d3",
-        @"lightgrey": @"#d3d3d3",
-        @"lightgreen": @"#90ee90",
-        @"lightpink": @"#ffb6c1",
-        @"lightsalmon": @"#ffa07a",
-        @"lightseagreen": @"#20b2aa",
-        @"lightskyblue": @"#87cefa",
-        @"lightslategray": @"#778899",
-        @"lightslategrey": @"#778899",
-        @"lightsteelblue": @"#b0c4de",
-        @"lightyellow": @"#ffffe0",
-        @"lime": @"#00ff00",
-        @"limegreen": @"#32cd32",
-        @"linen": @"#faf0e6",
-        @"magenta": @"#ff00ff",
-        @"maroon": @"#800000",
-        @"mediumaquamarine": @"#66cdaa",
-        @"mediumblue": @"#0000cd",
-        @"mediumorchid": @"#ba55d3",
-        @"mediumpurple": @"#9370db",
-        @"mediumseagreen": @"#3cb371",
-        @"mediumslateblue": @"#7b68ee",
-        @"mediumspringgreen": @"#00fa9a",
-        @"mediumturquoise": @"#48d1cc",
-        @"mediumvioletred": @"#c71585",
-        @"midnightblue": @"#191970",
-        @"mintcream": @"#f5fffa",
-        @"mistyrose": @"#ffe4e1",
-        @"moccasin": @"#ffe4b5",
-        @"navajowhite": @"#ffdead",
-        @"navy": @"#000080",
-        @"oldlace": @"#fdf5e6",
-        @"olive": @"#808000",
-        @"olivedrab": @"#6b8e23",
-        @"orange": @"#ffa500",
-        @"orangered": @"#ff4500",
-        @"orchid": @"#da70d6",
-        @"palegoldenrod": @"#eee8aa",
-        @"palegreen": @"#98fb98",
-        @"paleturquoise": @"#afeeee",
-        @"palevioletred": @"#db7093",
-        @"papayawhip": @"#ffefd5",
-        @"peachpuff": @"#ffdab9",
-        @"peru": @"#cd853f",
-        @"pink": @"#ffc0cb",
-        @"plum": @"#dda0dd",
-        @"powderblue": @"#b0e0e6",
-        @"purple": @"#800080",
-        @"rebeccapurple": @"#663399",
-        @"red": @"#ff0000",
-        @"rosybrown": @"#bc8f8f",
-        @"royalblue": @"#4169e1",
-        @"saddlebrown": @"#8b4513",
-        @"salmon": @"#fa8072",
-        @"sandybrown": @"#f4a460",
-        @"seagreen": @"#2e8b57",
-        @"seashell": @"#fff5ee",
-        @"sienna": @"#a0522d",
-        @"silver": @"#c0c0c0",
-        @"skyblue": @"#87ceeb",
-        @"slateblue": @"#6a5acd",
-        @"slategray": @"#708090",
-        @"slategrey": @"#708090",
-        @"snow": @"#fffafa",
-        @"springgreen": @"#00ff7f",
-        @"steelblue": @"#4682b4",
-        @"tan": @"#d2b48c",
-        @"teal": @"#008080",
-        @"thistle": @"#d8bfd8",
-        @"tomato": @"#ff6347",
-        @"turquoise": @"#40e0d0",
-        @"violet": @"#ee82ee",
-        @"wheat": @"#f5deb3",
-        @"white": @"#ffffff",
-        @"whitesmoke": @"#f5f5f5",
-        @"yellow": @"#ffff00",
-        @"yellowgreen": @"#9acd32",
-
-        // Nonstandard color extensions
-        @"transparent": @"rgba(0,0,0,0)",
-      };
-    });
-    NSString *colorString = namedColors[json];
-    if (!colorString) {
-      colorString = json;
-    }
-
-    // Parse color
-    double red = 0, green = 0, blue = 0;
-    double alpha = 1.0;
-    if ([colorString hasPrefix:@"#"]) {
-      uint32_t redInt = 0, greenInt = 0, blueInt = 0;
-      if (colorString.length == 4) { // 3 digit hex
-        sscanf([colorString UTF8String], "#%01x%01x%01x", &redInt, &greenInt, &blueInt);
-        // expand to 6 digit hex
-        red = redInt | (redInt << 4);
-        green = greenInt | (greenInt << 4);
-        blue = blueInt | (blueInt << 4);
-      } else if (colorString.length == 7) { // 6 digit hex
-        sscanf(colorString.UTF8String, "#%02x%02x%02x", &redInt, &greenInt, &blueInt);
-        red = redInt;
-        green = greenInt;
-        blue = blueInt;
-      } else {
-        RCTLogError(@"Invalid hex color %@. Hex colors should be 3 or 6 digits long.", colorString);
-        alpha = -1;
-      }
-    } else if ([colorString hasPrefix:@"rgba("]) {
-      sscanf(colorString.UTF8String, "rgba(%lf,%lf,%lf,%lf)", &red, &green, &blue, &alpha);
-    } else if ([colorString hasPrefix:@"rgb("]) {
-      sscanf(colorString.UTF8String, "rgb(%lf,%lf,%lf)", &red, &green, &blue);
-    } else {
-      RCTLogError(@"Unrecognized color format '%@', must be one of #hex|rgba|rgb or a valid CSS color name.", colorString);
-      alpha = -1;
-    }
-    if (alpha < 0) {
-      RCTLogError(@"Invalid color string '%@'", colorString);
-    } else {
-      color = [UIColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:alpha];
-    }
-
-  } else if ([json isKindOfClass:[NSArray class]]) {
-
-    if ([json count] < 3 || [json count] > 4) {
-      RCTLogError(@"Expected array with count 3 or 4, but count is %zd: %@", [json count], json);
-    } else {
-
-      // Color array
-      color = [UIColor colorWithRed:[self CGFloat:json[0]]
-                              green:[self CGFloat:json[1]]
-                               blue:[self CGFloat:json[2]]
-                              alpha:[json count] > 3 ? [self CGFloat:json[3]] : 1];
-    }
-
-  } else if ([json isKindOfClass:[NSDictionary class]]) {
-
-    // Color dictionary
-    color = [UIColor colorWithRed:[self CGFloat:json[@"r"]]
-                            green:[self CGFloat:json[@"g"]]
-                             blue:[self CGFloat:json[@"b"]]
-                            alpha:[self CGFloat:json[@"a"] ?: @1]];
-
-  }
-  else if (RCT_DEBUG && json && json != (id)kCFNull) {
-    RCTLogConvertError(json, "a color");
-  }
-
-  // Default color
-  if (!color) {
-    color = [UIColor whiteColor];
-  }
-
-  // Cache and return
-  if (json) {
-    colorCache[json] = color;
-  }
-  return color;
 }
 
 + (CGColorRef)CGColor:(id)json
@@ -652,7 +406,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   // TODO: we might as well cache the result of these checks (and possibly the
   // image itself) so as to reduce overhead on subsequent checks of the same input
 
-  if (!json || json == (id)kCFNull) {
+  if (!json) {
     return nil;
   }
 
@@ -665,38 +419,48 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     path = [self NSString:json[@"uri"]];
     scale = [self CGFloat:json[@"scale"]];
   } else {
-    RCTLogConvertError(json, "an image");
+    RCTLogConvertError(json, @"an image");
   }
 
   NSURL *URL = [self NSURL:path];
-  NSString *scheme = [URL.scheme lowercaseString];
-  if ([scheme isEqualToString:@"file"]) {
-
-    if ([NSThread currentThread] == [NSThread mainThread]) {
-      // Image may reside inside a .car file, in which case we have no choice
-      // but to use +[UIImage imageNamed] - but this method isn't thread safe
-      image = [UIImage imageNamed:path];
+  NSString *scheme = URL.scheme.lowercaseString;
+  if (path && [scheme isEqualToString:@"file"]) {
+    if (RCT_DEBUG || [NSThread currentThread] == [NSThread mainThread]) {
+      if ([URL.path hasPrefix:[NSBundle mainBundle].resourcePath]) {
+        // Image may reside inside a .car file, in which case we have no choice
+        // but to use +[UIImage imageNamed] - but this method isn't thread safe
+        static NSMutableDictionary *XCAssetMap = nil;
+        if (!XCAssetMap) {
+          XCAssetMap = [NSMutableDictionary new];
+        }
+        NSNumber *isAsset = XCAssetMap[path];
+        if (!isAsset || isAsset.boolValue) {
+          image = [UIImage imageNamed:path];
+          if (RCT_DEBUG && image) {
+            // If we succeeded in loading the image via imageNamed, and the
+            // method wasn't called on the main thread, that's a coding error
+            RCTAssertMainThread();
+          }
+        }
+        if (!isAsset) {
+          // Avoid calling `+imageNamed` again in future if it's not needed.
+          XCAssetMap[path] = @(image != nil);
+        }
+      }
     }
 
     if (!image) {
       // Attempt to load from the file system
-      if ([path pathExtension].length == 0) {
+      if (path.pathExtension.length == 0) {
         path = [path stringByAppendingPathExtension:@"png"];
       }
       image = [UIImage imageWithContentsOfFile:path];
     }
 
-    // We won't warn about nil images because there are legitimate cases
-    // where we find out if a string is an image by using this method, but
-    // we do enforce thread-safe API usage with the following check
-    if (RCT_DEBUG && !image && [UIImage imageNamed:path]) {
-      RCTAssertMainThread();
-    }
-
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else {
-    RCTLogConvertError(json, "an image. Only local files or data URIs are supported");
+    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
   }
 
   if (scale > 0) {
@@ -779,31 +543,33 @@ static BOOL RCTFontIsCondensed(UIFont *font)
            withFamily:json[@"fontFamily"]
                  size:json[@"fontSize"]
                weight:json[@"fontWeight"]
-                style:json[@"fontStyle"]];
+                style:json[@"fontStyle"]
+          scaleMultiplier:1.0f];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
-  return [self UIFont:font withFamily:nil size:json weight:nil style:nil];
+  return [self UIFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:json style:nil];
+  return [self UIFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:nil style:json];
+  return [self UIFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
 {
-  return [self UIFont:font withFamily:json size:nil weight:nil style:nil];
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style
+   scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
   NSString *const RCTDefaultFontFamily = @"System";
@@ -828,6 +594,9 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
   // Get font attributes
   fontSize = [self CGFloat:size] ?: fontSize;
+  if (scaleMultiplier > 0.0 && scaleMultiplier != 1.0) {
+    fontSize = round(fontSize * scaleMultiplier);
+  }
   familyName = [self NSString:family] ?: familyName;
   isItalic = style ? [self RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [self RCTFontWeight:weight] : fontWeight;
@@ -924,17 +693,29 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
   return values;
 }
 
-RCT_ARRAY_CONVERTER(NSString)
-RCT_ARRAY_CONVERTER(NSDictionary)
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(RCTFileURL)
-RCT_ARRAY_CONVERTER(NSNumber)
 RCT_ARRAY_CONVERTER(UIColor)
+
+/**
+ * This macro is used for creating converter functions for directly
+ * representable json array values that require no conversion.
+ */
+#if RCT_DEBUG
+#define RCT_JSON_ARRAY_CONVERTER(type) RCT_ARRAY_CONVERTER(type)
+#else
+#define RCT_JSON_ARRAY_CONVERTER(type) + (NSArray *)type##Array:(id)json { return json; }
+#endif
+
+RCT_JSON_ARRAY_CONVERTER(NSArray)
+RCT_JSON_ARRAY_CONVERTER(NSString)
+RCT_JSON_ARRAY_CONVERTER(NSDictionary)
+RCT_JSON_ARRAY_CONVERTER(NSNumber)
 
 // Can't use RCT_ARRAY_CONVERTER due to bridged cast
 + (NSArray *)CGColorArray:(id)json
 {
-  NSMutableArray *colors = [[NSMutableArray alloc] init];
+  NSMutableArray *colors = [NSMutableArray new];
   for (id value in [self NSArray:json]) {
     [colors addObject:(__bridge id)[self CGColor:value]];
   }
@@ -1051,177 +832,3 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
 }), RCTAnimationTypeEaseInEaseOut, integerValue)
 
 @end
-
-BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json)
-{
-  // Split keypath
-  NSArray *parts = [keyPath componentsSeparatedByString:@"."];
-  NSString *key = [parts lastObject];
-  for (NSUInteger i = 0; i < parts.count - 1; i++) {
-    target = [target valueForKey:parts[i]];
-    if (!target) {
-      return NO;
-    }
-  }
-
-  // Get property setter
-  SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                     [[key substringToIndex:1] uppercaseString],
-                                     [key substringFromIndex:1]]);
-
-  // Fail early
-  if (![target respondsToSelector:setter]) {
-    return NO;
-  }
-
-  @try {
-
-    NSMethodSignature *signature = [RCTConvert methodSignatureForSelector:type];
-    switch (signature.methodReturnType[0]) {
-
-#define RCT_SET_CASE(_value, _type) \
-      case _value: { \
-        _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
-        void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
-        set(target, setter, convert([RCTConvert class], type, json)); \
-        break; \
-      }
-
-        RCT_SET_CASE(':', SEL)
-        RCT_SET_CASE('*', const char *)
-        RCT_SET_CASE('c', char)
-        RCT_SET_CASE('C', unsigned char)
-        RCT_SET_CASE('s', short)
-        RCT_SET_CASE('S', unsigned short)
-        RCT_SET_CASE('i', int)
-        RCT_SET_CASE('I', unsigned int)
-        RCT_SET_CASE('l', long)
-        RCT_SET_CASE('L', unsigned long)
-        RCT_SET_CASE('q', long long)
-        RCT_SET_CASE('Q', unsigned long long)
-        RCT_SET_CASE('f', float)
-        RCT_SET_CASE('d', double)
-        RCT_SET_CASE('B', BOOL)
-        RCT_SET_CASE('^', void *)
-
-      case '@': {
-        id (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;
-        void (*set)(id, SEL, id) = (typeof(set))objc_msgSend;
-        set(target, setter, convert([RCTConvert class], type, json));
-        break;
-      }
-      case '{':
-      default: {
-
-        // Get converted value
-        void *value = malloc(signature.methodReturnLength);
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-        [invocation setTarget:[RCTConvert class]];
-        [invocation setSelector:type];
-        [invocation setArgument:&json atIndex:2];
-        [invocation invoke];
-        [invocation getReturnValue:value];
-
-        // Set converted value
-        signature = [target methodSignatureForSelector:setter];
-        invocation = [NSInvocation invocationWithMethodSignature:signature];
-        [invocation setArgument:&setter atIndex:1];
-        [invocation setArgument:value atIndex:2];
-        [invocation invokeWithTarget:target];
-        free(value);
-
-        break;
-      }
-    }
-    return YES;
-  }
-  @catch (NSException *exception) {
-    RCTLogError(@"Exception thrown while attempting to set property '%@' of \
-                '%@' with value '%@': %@", key, [target class], json, exception);
-    return NO;
-  }
-}
-
-BOOL RCTCopyProperty(id target, id source, NSString *keyPath)
-{
-  // Split keypath
-  NSArray *parts = [keyPath componentsSeparatedByString:@"."];
-  NSString *key = [parts lastObject];
-  for (NSUInteger i = 0; i < parts.count - 1; i++) {
-    source = [source valueForKey:parts[i]];
-    target = [target valueForKey:parts[i]];
-    if (!source || !target) {
-      return NO;
-    }
-  }
-
-  // Get property getter
-  SEL getter = NSSelectorFromString(key);
-
-  // Get property setter
-  SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                     [[key substringToIndex:1] uppercaseString],
-                                     [key substringFromIndex:1]]);
-
-  // Fail early
-  if (![source respondsToSelector:getter] || ![target respondsToSelector:setter]) {
-    return NO;
-  }
-
-  NSMethodSignature *signature = [source methodSignatureForSelector:getter];
-  switch (signature.methodReturnType[0]) {
-
-#define RCT_COPY_CASE(_value, _type) \
-    case _value: { \
-      _type (*get)(id, SEL) = (typeof(get))objc_msgSend; \
-      void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
-      set(target, setter, get(source, getter)); \
-      break; \
-    }
-
-      RCT_COPY_CASE(':', SEL)
-      RCT_COPY_CASE('*', const char *)
-      RCT_COPY_CASE('c', char)
-      RCT_COPY_CASE('C', unsigned char)
-      RCT_COPY_CASE('s', short)
-      RCT_COPY_CASE('S', unsigned short)
-      RCT_COPY_CASE('i', int)
-      RCT_COPY_CASE('I', unsigned int)
-      RCT_COPY_CASE('l', long)
-      RCT_COPY_CASE('L', unsigned long)
-      RCT_COPY_CASE('q', long long)
-      RCT_COPY_CASE('Q', unsigned long long)
-      RCT_COPY_CASE('f', float)
-      RCT_COPY_CASE('d', double)
-      RCT_COPY_CASE('B', BOOL)
-      RCT_COPY_CASE('^', void *)
-
-    case '@': {
-      id (*get)(id, SEL) = (typeof(get))objc_msgSend;
-      void (*set)(id, SEL, id) = (typeof(set))objc_msgSend;
-      set(target, setter, get(source, getter));
-      break;
-    }
-    case '{':
-    default: {
-
-      // Get value
-      void *value = malloc(signature.methodReturnLength);
-      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-      [invocation setArgument:&getter atIndex:1];
-      [invocation invokeWithTarget:source];
-      [invocation getReturnValue:value];
-
-      // Set value
-      signature = [target methodSignatureForSelector:setter];
-      invocation = [NSInvocation invocationWithMethodSignature:signature];
-      [invocation setArgument:&setter atIndex:1];
-      [invocation setArgument:value atIndex:2];
-      [invocation invokeWithTarget:target];
-      free(value);
-
-      break;
-    }
-  }
-  return YES;
-}

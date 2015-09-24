@@ -9,6 +9,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTComponent.h"
+
 @interface RCTSlider : UISlider
+
+@property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end

@@ -99,7 +99,7 @@
 
 - (RCTShadowView *)_shadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
 {
-  RCTShadowView *shadowView = [[RCTShadowView alloc] init];
+  RCTShadowView *shadowView = [RCTShadowView new];
 
   css_style_t style = shadowView.cssNode->style;
   styleBlock(&style);

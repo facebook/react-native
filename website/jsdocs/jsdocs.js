@@ -19,6 +19,7 @@ var genericTransform = require('./generic-function-visitor');
 var genericVisitor = genericTransform.visitorList[0];
 var traverseFlat = require('./traverseFlat');
 var parseTypehint = require('./TypeExpressionParser').parse;
+var util = require('util');
 
 // Don't save object properties source code that is longer than this
 var MAX_PROPERTY_SOURCE_LENGTH = 1000;
@@ -317,6 +318,7 @@ function getObjectData(node, state, source, scopeChain,
     commentsForFile, linesForFile) {
   var methods = [];
   var properties = [];
+  var classes = [];
   var superClass = null;
   node.properties.forEach(function(property) {
     if (property.type === Syntax.SpreadProperty) {
@@ -341,7 +343,8 @@ function getObjectData(node, state, source, scopeChain,
         scopeChain
       );
       if (expr) {
-        if (expr.type === Syntax.FunctionDeclaration) {
+        if (expr.type === Syntax.FunctionDeclaration ||
+            expr.type === Syntax.FunctionExpression) {
           var functionData =
             getFunctionData(expr, property, state, source, commentsForFile,
               linesForFile);
@@ -362,16 +365,24 @@ function getObjectData(node, state, source, scopeChain,
       }
       var docBlock = getDocBlock(property, commentsForFile, linesForFile);
       /* CodexVarDef: modifiers, type, name, default, docblock */
-      var propertyData = [
-        ['static'],
-        '',
+      if (property.value.type === Syntax.ClassDeclaration) {
+        var type = {name: property.value.id.name};
+        var classData = getClassData(property.value, state, source, commentsForFile, linesForFile);
+        classData.ownerProperty = property.key.name;
+        classes.push(classData);
+      } else {
+        var type = {name: property.value.type};
+      }
+      var propertyData = {
         // Cast to String because this can be a Number
         // Could also be a String literal (e.g. "key") hence the value
-        String(property.key.name || property.key.value),
+        name: String(property.key.name || property.key.value),
+        type,
+        docblock: docBlock || '',
+        source: source.substring.apply(source, property.range),
+        modifiers: ['static'],
         propertySource,
-        docBlock || '',
-        property.loc.start.line
-      ];
+      };
       properties.push(propertyData);
       break;
     }
@@ -379,6 +390,7 @@ function getObjectData(node, state, source, scopeChain,
   return {
     methods: methods,
     properties: properties,
+    classes: classes,
     superClass: superClass
   };
 }
@@ -410,7 +422,9 @@ function getClassData(node, state, source, commentsForFile, linesForFile) {
     }
   });
   var data = {
-    methods: methods
+    name: node.id.name,
+    docblock: getDocBlock(node, commentsForFile, linesForFile),
+    methods: methods,
   };
   if (node.superClass && node.superClass.type === Syntax.Identifier) {
     data.superClass = node.superClass.name;

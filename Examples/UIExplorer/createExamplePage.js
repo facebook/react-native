@@ -17,6 +17,9 @@
 'use strict';
 
 var React = require('react-native');
+var {
+  Platform,
+} = React;
 var ReactNative = require('ReactNative');
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
@@ -36,6 +39,12 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
     },
 
     getBlock: function(example: Example, i) {
+      if (example.platform) {
+        if (Platform.OS !== example.platform) {
+          return;
+        }
+        example.title += ' (' + example.platform + ' only)';
+      }
       // Hack warning: This is a hack because the www UI explorer requires
       // renderComponent to be called.
       var originalRender = React.render;
