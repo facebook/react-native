@@ -34,6 +34,10 @@ import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COL
 public final class AsyncStorageModule
     extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable {
 
+  // SQL variable number limit, defined by SQLITE_LIMIT_VARIABLE_NUMBER:
+  // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
+  private static final int MAX_SQL_KEYS = 999;
+
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
 
@@ -104,47 +108,50 @@ public final class AsyncStorageModule
         String[] columns = {KEY_COLUMN, VALUE_COLUMN};
         HashSet<String> keysRemaining = SetBuilder.newHashSet();
         WritableArray data = Arguments.createArray();
-        Cursor cursor = mReactDatabaseSupplier.get().query(
-            TABLE_CATALYST,
-            columns,
-            AsyncLocalStorageUtil.buildKeySelection(keys.size()),
-            AsyncLocalStorageUtil.buildKeySelectionArgs(keys),
-            null,
-            null,
-            null);
-
-        try {
-          if (cursor.getCount() != keys.size()) {
-            // some keys have not been found - insert them with null into the final array
-            for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
-              keysRemaining.add(keys.getString(keyIndex));
+        for (int keyStart = 0; keyStart < keys.size(); keyStart += MAX_SQL_KEYS) {
+          int keyCount = Math.min(keys.size() - keyStart, MAX_SQL_KEYS);
+          Cursor cursor = mReactDatabaseSupplier.get().query(
+              TABLE_CATALYST,
+              columns,
+              AsyncLocalStorageUtil.buildKeySelection(keyCount),
+              AsyncLocalStorageUtil.buildKeySelectionArgs(keys, keyStart, keyCount),
+              null,
+              null,
+              null);
+          keysRemaining.clear();
+          try {
+            if (cursor.getCount() != keys.size()) {
+              // some keys have not been found - insert them with null into the final array
+              for (int keyIndex = keyStart; keyIndex < keyStart + keyCount; keyIndex++) {
+                keysRemaining.add(keys.getString(keyIndex));
+              }
             }
+
+            if (cursor.moveToFirst()) {
+              do {
+                WritableArray row = Arguments.createArray();
+                row.pushString(cursor.getString(0));
+                row.pushString(cursor.getString(1));
+                data.pushArray(row);
+                keysRemaining.remove(cursor.getString(0));
+              } while (cursor.moveToNext());
+            }
+          } catch (Exception e) {
+            FLog.w(ReactConstants.TAG, "Exception in database multiGet ", e);
+            callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()), null);
+          } finally {
+            cursor.close();
           }
 
-          if (cursor.moveToFirst()) {
-            do {
-              WritableArray row = Arguments.createArray();
-              row.pushString(cursor.getString(0));
-              row.pushString(cursor.getString(1));
-              data.pushArray(row);
-              keysRemaining.remove(cursor.getString(0));
-            } while (cursor.moveToNext());
-
+          for (String key : keysRemaining) {
+            WritableArray row = Arguments.createArray();
+            row.pushString(key);
+            row.pushNull();
+            data.pushArray(row);
           }
-        } catch (Exception e) {
-          FLog.w(ReactConstants.TAG, "Exception in database multiGet ", e);
-          callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()), null);
-        } finally {
-          cursor.close();
+          keysRemaining.clear();
         }
 
-        for (String key : keysRemaining) {
-          WritableArray row = Arguments.createArray();
-          row.pushString(key);
-          row.pushNull();
-          data.pushArray(row);
-        }
-        keysRemaining.clear();
         callback.invoke(null, data);
       }
     }.execute();
@@ -223,14 +230,21 @@ public final class AsyncStorageModule
           return;
         }
 
+        mReactDatabaseSupplier.get().beginTransaction();
         try {
-          mReactDatabaseSupplier.get().delete(
-              TABLE_CATALYST,
-              AsyncLocalStorageUtil.buildKeySelection(keys.size()),
-              AsyncLocalStorageUtil.buildKeySelectionArgs(keys));
+          for (int keyStart = 0; keyStart < keys.size(); keyStart += MAX_SQL_KEYS) {
+            int keyCount = Math.min(keys.size() - keyStart, MAX_SQL_KEYS);
+            mReactDatabaseSupplier.get().delete(
+                TABLE_CATALYST,
+                AsyncLocalStorageUtil.buildKeySelection(keyCount),
+                AsyncLocalStorageUtil.buildKeySelectionArgs(keys, keyStart, keyCount));
+          }
+          mReactDatabaseSupplier.get().setTransactionSuccessful();
         } catch (Exception e) {
           FLog.w(ReactConstants.TAG, "Exception in database multiRemove ", e);
           callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
+        } finally {
+          mReactDatabaseSupplier.get().endTransaction();
         }
         callback.invoke();
       }
