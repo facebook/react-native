@@ -367,6 +367,9 @@
   };
 
   function setupConsole(global) {
+
+    var originalConsole = global.console;
+
     if (!global.nativeLoggingHook) {
       return;
     }
@@ -461,6 +464,17 @@
       trace: getNativeLogFunction(LOG_LEVELS.trace),
       table: consoleTablePolyfill
     };
+
+    // If available, also call the original `console` method since that is
+    // sometimes useful, Ex. On OS X, this will let you see rich output to
+    // the Safari REPL console
+    Object.keys(global.console).forEach(methodName => {
+      var reactNativeMethod = global.console[methodName];
+      global.console[methodName] = function() {
+        originalConsole[methodName].apply(originalConsole, arguments);
+        reactNativeMethod.apply(global.console, arguments);
+      }
+    });
 
   }
 
