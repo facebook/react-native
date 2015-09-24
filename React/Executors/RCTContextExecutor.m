@@ -587,7 +587,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
 RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-pointer-compare"
   if (JSGlobalContextSetName != NULL) {
+#pragma clang diagnostic pop
     JSStringRef JSName = JSStringCreateWithCFString((__bridge CFStringRef)name);
     JSGlobalContextSetName(_context.ctx, JSName);
     JSStringRelease(JSName);
