@@ -196,6 +196,7 @@ public class ReactImageView extends GenericDraweeView {
 
     DraweeController draweeController = mDraweeControllerBuilder
         .reset()
+        .setAutoPlayAnimations(true)
         .setCallerContext(mCallerContext)
         .setOldController(getController())
         .setImageRequest(imageRequest)
