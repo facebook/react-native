@@ -35,12 +35,12 @@
 
   /**
    * OPTION 2
-   * Load from pre-bundled file on disk. To re-generate the static bundle
-   * from the root of your project directory, run
+   * Load from pre-bundled file on disk. To re-generate the static bundle, `cd`
+   * to your Xcode project folder and run
    *
-   * $ react-native bundle --minify
+   * $ curl 'http://localhost:8081/Examples/SampleApp/index.ios.bundle?platform=ios' -o main.jsbundle
    *
-   * see http://facebook.github.io/react-native/docs/runningondevice.html
+   * then uncomment this line:
    */
 
 //   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
