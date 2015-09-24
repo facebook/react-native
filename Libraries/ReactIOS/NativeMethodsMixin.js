@@ -12,7 +12,6 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var RCTPOPAnimationManager = NativeModules.POPAnimationManager;
 var RCTUIManager = NativeModules.UIManager;
 var TextInputState = require('TextInputState');
 
@@ -38,32 +37,8 @@ type MeasureLayoutOnSuccessCallback = (
   height: number
 ) => void
 
-var animationIDInvariant = function(
-  funcName: string,
-  anim: number
-) {
-  invariant(
-    anim,
-    funcName + ' must be called with a valid animation ID returned from' +
-    ' POPAnimation.createAnimation, received: "' + anim + '"'
-  );
-};
 
 var NativeMethodsMixin = {
-  addAnimation: function(anim: number, callback?: (finished: bool) => void) {
-    animationIDInvariant('addAnimation', anim);
-    RCTPOPAnimationManager.addAnimation(
-      findNodeHandle(this),
-      anim,
-      mountSafeCallback(this, callback)
-    );
-  },
-
-  removeAnimation: function(anim: number) {
-    animationIDInvariant('removeAnimation', anim);
-    RCTPOPAnimationManager.removeAnimation(findNodeHandle(this), anim);
-  },
-
   measure: function(callback: MeasureOnSuccessCallback) {
     RCTUIManager.measure(
       findNodeHandle(this),
@@ -102,15 +77,34 @@ var NativeMethodsMixin = {
         break;
       }
     }
-    var style = precomputeStyle(flattenStyle(nativeProps.style));
+
+    var validAttributes = this.viewConfig.validAttributes;
+    var hasProcessedProps = false;
+    var processedProps = {};
+    for (var key in nativeProps) {
+      var process = validAttributes[key] && validAttributes[key].process;
+      if (process) {
+        hasProcessedProps = true;
+        processedProps[key] = process(nativeProps[key]);
+      }
+    }
+
+    var style = precomputeStyle(
+      flattenStyle(processedProps.style || nativeProps.style),
+      this.viewConfig.validAttributes
+    );
 
     var props = null;
     if (hasOnlyStyle) {
       props = style;
-    } else if (!style) {
-      props = nativeProps;
     } else {
-      props = mergeFast(nativeProps, style);
+      props = nativeProps;
+      if (hasProcessedProps) {
+        props = mergeFast(props, processedProps);
+      }
+      if (style) {
+        props = mergeFast(props, style);
+      }
     }
 
     RCTUIManager.updateView(

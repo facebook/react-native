@@ -12,10 +12,10 @@ jest
   .dontMock('AssetRegistry')
   .dontMock('../resolveAssetSource');
 
-var AssetRegistry;
-var Platform;
-var SourceCode;
-var resolveAssetSource;
+var AssetRegistry = require('AssetRegistry');
+var Platform = require('Platform');
+var NativeModules = require('NativeModules');
+var resolveAssetSource = require('../resolveAssetSource');
 
 function expectResolvesAsset(input, expectedSource) {
   var assetId = AssetRegistry.registerAsset(input);
@@ -25,10 +25,7 @@ function expectResolvesAsset(input, expectedSource) {
 describe('resolveAssetSource', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
-    AssetRegistry = require('AssetRegistry');
-    Platform = require('Platform');
-    SourceCode = require('NativeModules').SourceCode;
-    resolveAssetSource = require('../resolveAssetSource');
+    __DEV__ = true;
   });
 
   it('returns same source for simple static and network images', () => {
@@ -63,7 +60,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from network (DEV)', () => {
     beforeEach(() => {
-      SourceCode.scriptURL = 'http://10.0.0.1:8081/main.bundle';
+      NativeModules.SourceCode.scriptURL =
+        'http://10.0.0.1:8081/main.bundle';
+      Platform.OS = 'ios';
     });
 
     it('uses network image', () => {
@@ -81,7 +80,7 @@ describe('resolveAssetSource', () => {
         isStatic: false,
         width: 100,
         height: 200,
-        uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?hash=5b6f00f',
+        uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
       });
     });
 
@@ -100,27 +99,18 @@ describe('resolveAssetSource', () => {
         isStatic: false,
         width: 100,
         height: 200,
-        uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?hash=5b6f00f',
+        uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
       });
     });
 
   });
 
   describe('bundle was loaded from file (PROD) on iOS', () => {
-    var originalDevMode;
-    var originalPlatform;
-
     beforeEach(() => {
-      SourceCode.scriptURL = 'file:///Path/To/Simulator/main.bundle';
-      originalDevMode = __DEV__;
-      originalPlatform = Platform.OS;
+      NativeModules.SourceCode.scriptURL =
+        'file:///Path/To/Simulator/main.bundle';
       __DEV__ = false;
       Platform.OS = 'ios';
-    });
-
-    afterEach(() => {
-      __DEV__ = originalDevMode;
-      Platform.OS = originalPlatform;
     });
 
     it('uses pre-packed image', () => {
@@ -144,20 +134,11 @@ describe('resolveAssetSource', () => {
   });
 
   describe('bundle was loaded from file (PROD) on Android', () => {
-    var originalDevMode;
-    var originalPlatform;
-
     beforeEach(() => {
-      SourceCode.scriptURL = 'file:///Path/To/Simulator/main.bundle';
-      originalDevMode = __DEV__;
-      originalPlatform = Platform.OS;
+      NativeModules.SourceCode.scriptURL =
+        'file:///Path/To/Simulator/main.bundle';
       __DEV__ = false;
       Platform.OS = 'android';
-    });
-
-    afterEach(() => {
-      __DEV__ = originalDevMode;
-      Platform.OS = originalPlatform;
     });
 
     it('uses pre-packed image', () => {

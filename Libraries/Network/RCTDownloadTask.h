@@ -15,7 +15,7 @@
 typedef void (^RCTURLRequestCompletionBlock)(NSURLResponse *response, NSData *data, NSError *error);
 typedef void (^RCTURLRequestCancellationBlock)(void);
 typedef void (^RCTURLRequestIncrementalDataBlock)(NSData *data);
-typedef void (^RCTURLRequestProgressBlock)(double progress, double total);
+typedef void (^RCTURLRequestProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTURLRequestResponseBlock)(NSURLResponse *response);
 
 @interface RCTDownloadTask : NSObject <RCTURLRequestDelegate>

@@ -4,24 +4,29 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  */
 
+'use strict';
+
 var fs = require('fs');
 var path = require('path');
-var spawn = require('child_process').spawn;
-var prompt = require("prompt");
+var exec = require('child_process').exec;
+var prompt = require('prompt');
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
     process.cwd(),
     'node_modules',
     'react-native',
-    'cli'
+    'cli.js'
   );
 };
 
+checkForVersionArgument();
+
 var cli;
-try {
-  cli = require(CLI_MODULE_PATH());
-} catch(e) {}
+var cliPath = CLI_MODULE_PATH();
+if (fs.existsSync(cliPath)) {
+  cli = require(cliPath);
+}
 
 if (cli) {
   cli.run();
@@ -80,7 +85,7 @@ function init(name) {
   validatePackageName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name)
+    createAfterConfirmation(name);
   } else {
     createProject(name);
   }
@@ -131,27 +136,24 @@ function createProject(name) {
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
   process.chdir(root);
 
-  run('npm install --save react-native', function(e) {
+  console.log('Installing react-native package from npm...');
+  exec('npm install --save react-native', function(e, stdout, stderr) {
     if (e) {
+      console.log(stdout);
+      console.error(stderr);
       console.error('`npm install --save react-native` failed');
       process.exit(1);
     }
 
-    var cli = require(CLI_MODULE_PATH());
+    cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }
 
-function run(command, cb) {
-  var parts = command.split(/\s+/);
-  var cmd = parts[0];
-  var args = parts.slice(1);
-  var proc = spawn(cmd, args, {stdio: 'inherit'});
-  proc.on('close', function(code) {
-    if (code !== 0) {
-      cb(new Error('Command exited with a non-zero status'));
-    } else {
-      cb(null);
-    }
-  });
+function checkForVersionArgument() {
+  if (process.argv.indexOf('-v') >= 0 || process.argv.indexOf('--version') >= 0) {
+    var pjson = require('./package.json');
+    console.log(pjson.version);
+    process.exit();
+  }
 }

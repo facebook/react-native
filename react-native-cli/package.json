@@ -3,6 +3,9 @@
   "version": "0.1.4",
   "description": "The ReactNative cli tools",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "bin": {
     "react-native": "index.js"
   },

@@ -32,7 +32,7 @@ function parseErrorStack(e, sourceMapInstance) {
     return [];
   }
 
-  var stack = stacktraceParser.parse(e.stack);
+  var stack = Array.isArray(e.stack) ? e.stack : stacktraceParser.parse(e.stack);
 
   var framesToPop = e.framesToPop || 0;
   while (framesToPop--) {

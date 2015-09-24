@@ -171,7 +171,7 @@ id RCTJSONClean(id object)
 
 NSString *RCTMD5Hash(NSString *string)
 {
-  const char *str = [string UTF8String];
+  const char *str = string.UTF8String;
   unsigned char result[CC_MD5_DIGEST_LENGTH];
   CC_MD5(str, (CC_LONG)strlen(str), result);
 
@@ -335,6 +335,42 @@ BOOL RCTRunningInTestEnvironment(void)
     isTestEnvironment = NSClassFromString(@"SenTestCase") || NSClassFromString(@"XCTest");
   });
   return isTestEnvironment;
+}
+
+BOOL RCTRunningInAppExtension(void)
+{
+  return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+}
+
+id RCTSharedApplication(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+  
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles)
+{
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
+    return nil;
+  }
+  
+  UIAlertView *alertView = [[UIAlertView alloc] init];
+  alertView.title = title;
+  alertView.message = message;
+  alertView.delegate = delegate;
+  if (cancelButtonTitle != nil) {
+    [alertView addButtonWithTitle:cancelButtonTitle];
+    alertView.cancelButtonIndex = 0;
+  }
+  for (NSString *buttonTitle in otherButtonTitles)
+  {
+    [alertView addButtonWithTitle:buttonTitle];
+  }
+  return alertView;
 }
 
 BOOL RCTImageHasAlpha(CGImageRef image)

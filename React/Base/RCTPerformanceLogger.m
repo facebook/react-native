@@ -27,12 +27,14 @@ void RCTPerformanceLoggerEnd(RCTPLTag tag)
 NSArray *RCTPerformanceLoggerOutput(void)
 {
   return @[
-    @(RCTPLData[0][0]),
-    @(RCTPLData[0][1]),
-    @(RCTPLData[1][0]),
-    @(RCTPLData[1][1]),
-    @(RCTPLData[2][0]),
-    @(RCTPLData[2][1]),
+    @(RCTPLData[RCTPLScriptDownload][0]),
+    @(RCTPLData[RCTPLScriptDownload][1]),
+    @(RCTPLData[RCTPLScriptExecution][0]),
+    @(RCTPLData[RCTPLScriptExecution][1]),
+    @(RCTPLData[RCTPLNativeModuleInit][0]),
+    @(RCTPLData[RCTPLNativeModuleInit][1]),
+    @(RCTPLData[RCTPLTTI][0]),
+    @(RCTPLData[RCTPLTTI][1]),
   ];
 }
 
@@ -71,6 +73,7 @@ RCT_EXPORT_MODULE()
     @[
       @"ScriptDownload",
       @"ScriptExecution",
+      @"NativeModuleInit",
       @"TTI",
     ],
   ]];

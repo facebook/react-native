@@ -211,7 +211,7 @@ class PushNotificationIOS {
    * Listening to the `notification` event and invoking
    * `popInitialNotification` is sufficient
    */
-  constructor(nativeNotif) {
+  constructor(nativeNotif: Object) {
     this._data = {};
 
     // Extract data from Apple's `aps` dict as defined:

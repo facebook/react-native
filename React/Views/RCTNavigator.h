@@ -10,7 +10,6 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTFrameUpdate.h"
-#import "RCTInvalidating.h"
 
 @class RCTBridge;
 

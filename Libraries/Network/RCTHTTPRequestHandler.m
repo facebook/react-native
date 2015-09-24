@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"http", @"https", @"file"] containsObject:[request.URL.scheme lowercaseString]];
+  return [@[@"http", @"https", @"file"] containsObject:request.URL.scheme.lowercaseString];
 }
 
 - (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
@@ -55,7 +55,8 @@ RCT_EXPORT_MODULE()
 {
   // Lazy setup
   if (!_session && [self isValid]) {
-    NSOperationQueue *callbackQueue = [[NSOperationQueue alloc] init];
+    NSOperationQueue *callbackQueue = [NSOperationQueue new];
+    callbackQueue.maxConcurrentOperationCount = 1;
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self

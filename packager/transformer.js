@@ -10,47 +10,59 @@
  */
 'use strict';
 
-var babel = require('babel-core');
+const babel = require('babel-core');
+const inlineRequires = require('fbjs-scripts/babel/inline-requires');
 
-function transform(srcTxt, filename, options) {
-  var result = babel.transform(srcTxt, {
+function transform(src, filename, options) {
+  const plugins = [];
+
+  if (process.env.NODE_ENV === 'production') {
+    plugins.push('node-env-inline', 'dunderscore-dev-inline');
+  } else if (process.env.NODE_ENV === 'test') {
+    plugins.push({
+      position: 'after',
+      transformer: inlineRequires,
+    });
+  }
+
+  const result = babel.transform(src, {
     retainLines: true,
     compact: true,
     comments: false,
-    filename: filename,
+    filename,
     whitelist: [
       'es6.arrowFunctions',
       'es6.blockScoping',
       'es6.classes',
       'es6.destructuring',
-      'es6.parameters.rest',
+      'es6.parameters',
       'es6.properties.computed',
       'es6.properties.shorthand',
       'es6.spread',
       'es6.templateLiterals',
+      'es7.asyncFunctions',
       'es7.trailingFunctionCommas',
       'es7.objectRestSpread',
       'flow',
       'react',
       'react.displayName',
+      'regenerator',
     ],
+    plugins,
     sourceFileName: filename,
     sourceMaps: false,
     extra: options || {},
   });
 
   return {
-    code: result.code,
+    code: result.code
   };
 }
 
 module.exports = function(data, callback) {
-  var result;
+  let result;
   try {
-    result = transform(
-      data.sourceCode,
-      data.filename
-    );
+    result = transform(data.sourceCode, data.filename);
   } catch (e) {
     callback(e);
     return;

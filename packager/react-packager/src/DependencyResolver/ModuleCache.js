@@ -7,17 +7,23 @@ const path = require('path');
 
 class ModuleCache {
 
-  constructor(fastfs) {
+  constructor(fastfs, cache) {
     this._moduleCache = Object.create(null);
     this._packageCache = Object.create(null);
     this._fastfs = fastfs;
+    this._cache = cache;
     fastfs.on('change', this._processFileChange.bind(this));
   }
 
   getModule(filePath) {
     filePath = path.resolve(filePath);
     if (!this._moduleCache[filePath]) {
-      this._moduleCache[filePath] = new Module(filePath, this._fastfs, this);
+      this._moduleCache[filePath] = new Module(
+        filePath,
+        this._fastfs,
+        this,
+        this._cache,
+      );
     }
     return this._moduleCache[filePath];
   }
@@ -28,7 +34,8 @@ class ModuleCache {
       this._moduleCache[filePath] = new AssetModule(
         filePath,
         this._fastfs,
-        this
+        this,
+        this._cache,
       );
     }
     return this._moduleCache[filePath];
@@ -37,7 +44,11 @@ class ModuleCache {
   getPackage(filePath) {
     filePath = path.resolve(filePath);
     if (!this._packageCache[filePath]){
-      this._packageCache[filePath] = new Package(filePath, this._fastfs);
+      this._packageCache[filePath] = new Package(
+        filePath,
+        this._fastfs,
+        this._cache,
+      );
     }
     return this._packageCache[filePath];
   }
@@ -64,8 +75,15 @@ class ModuleCache {
 
   _processFileChange(type, filePath, root) {
     const absPath = path.join(root, filePath);
-    delete this._moduleCache[absPath];
-    delete this._packageCache[absPath];
+
+    if (this._moduleCache[absPath]) {
+      this._moduleCache[absPath].invalidate();
+      delete this._moduleCache[absPath];
+    }
+    if (this._packageCache[absPath]) {
+      this._packageCache[absPath].invalidate();
+      delete this._packageCache[absPath];
+    }
   }
 }
 

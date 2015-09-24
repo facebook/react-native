@@ -94,7 +94,7 @@ var styles = StyleSheet.create({
 });
 
 exports.title = 'Border';
-exports.description = 'View borders';
+exports.description = 'Demonstrates some of the border styles available to Views.';
 exports.examples = [
   {
     title: 'Equal-Width / Same-Color',
@@ -134,6 +134,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'border*Width & border*Color',
+    platform: 'ios',
     render() {
       return <View style={[styles.box, styles.border5]} />;
     }
@@ -141,6 +142,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'border*Width & border*Color',
+    platform: 'ios',
     render() {
       return <View style={[styles.box, styles.border6]} />;
     }
@@ -148,6 +150,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'borderRadius & clipping',
+    platform: 'ios',
     render() {
       return (
         <View style={[styles.box, styles.border7]}>

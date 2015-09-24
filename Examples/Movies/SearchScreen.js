@@ -19,6 +19,8 @@ var React = require('react-native');
 var {
   ActivityIndicatorIOS,
   ListView,
+  Platform,
+  ProgressBarAndroid,
   StyleSheet,
   Text,
   TextInput,
@@ -27,9 +29,11 @@ var {
 var TimerMixin = require('react-timer-mixin');
 
 var invariant = require('invariant');
+var dismissKeyboard = require('dismissKeyboard');
 
 var MovieCell = require('./MovieCell');
 var MovieScreen = require('./MovieScreen');
+var SearchBar = require('SearchBar');
 
 /**
  * This is for demo purposes only, and rate limited.
@@ -219,11 +223,20 @@ var SearchScreen = React.createClass({
   },
 
   selectMovie: function(movie: Object) {
-    this.props.navigator.push({
-      title: movie.title,
-      component: MovieScreen,
-      passProps: {movie},
-    });
+    if (Platform.OS === 'ios') {
+      this.props.navigator.push({
+        title: movie.title,
+        component: MovieScreen,
+        passProps: {movie},
+      });
+    } else {
+      dismissKeyboard();
+      this.props.navigator.push({
+        title: movie.title,
+        name: 'movie',
+        movie: movie,
+      });
+    }
   },
 
   onSearchChange: function(event: Object) {
@@ -237,7 +250,15 @@ var SearchScreen = React.createClass({
     if (!this.hasMore() || !this.state.isLoadingTail) {
       return <View style={styles.scrollSpinner} />;
     }
-    return <ActivityIndicatorIOS style={styles.scrollSpinner} />;
+    if (Platform.OS === 'ios') {
+      return <ActivityIndicatorIOS style={styles.scrollSpinner} />;
+    } else {
+      return (
+        <View  style={{alignItems: 'center'}}>
+          <ProgressBarAndroid styleAttr="Large"/>
+        </View>
+      );
+    }
   },
 
   renderSeparator: function(
@@ -295,7 +316,8 @@ var SearchScreen = React.createClass({
         <SearchBar
           onSearchChange={this.onSearchChange}
           isLoading={this.state.isLoading}
-          onFocus={() => this.refs.listview.getScrollResponder().scrollTo(0, 0)}
+          onFocus={() =>
+            this.refs.listview && this.refs.listview.getScrollResponder().scrollTo(0, 0)}
         />
         <View style={styles.separator} />
         {content}
@@ -323,27 +345,6 @@ var NoMovies = React.createClass({
   }
 });
 
-var SearchBar = React.createClass({
-  render: function() {
-    return (
-      <View style={styles.searchBar}>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          onChange={this.props.onSearchChange}
-          placeholder="Search a movie..."
-          onFocus={this.props.onFocus}
-          style={styles.searchBarInput}
-        />
-        <ActivityIndicatorIOS
-          animating={this.props.isLoading}
-          style={styles.spinner}
-        />
-      </View>
-    );
-  }
-});
-
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -356,24 +357,9 @@ var styles = StyleSheet.create({
     marginTop: 80,
     color: '#888888',
   },
-  searchBar: {
-    marginTop: 64,
-    padding: 3,
-    paddingLeft: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  searchBarInput: {
-    fontSize: 15,
-    flex: 1,
-    height: 30,
-  },
   separator: {
     height: 1,
     backgroundColor: '#eeeeee',
-  },
-  spinner: {
-    width: 30,
   },
   scrollSpinner: {
     marginVertical: 20,

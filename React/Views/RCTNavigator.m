@@ -193,6 +193,9 @@ NSInteger kNeverProgressed = -10000;
 
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
 
+@property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
+@property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
+
 @property (nonatomic, assign) NSInteger previousRequestedTopOfStack;
 
 // Previous views are only mainted in order to detect incorrect
@@ -293,8 +296,8 @@ NSInteger kNeverProgressed = -10000;
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
@@ -308,12 +311,13 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_bridge.eventDispatcher sendInputEventWithName:@"topNavigationProgress" body:@{
-      @"fromIndex": @(_currentlyTransitioningFrom),
-      @"toIndex": @(_currentlyTransitioningTo),
-      @"progress": @(nextProgress),
-      @"target": self.reactTag
-    }];
+    if (_onNavigationProgress) {
+      _onNavigationProgress(@{
+        @"fromIndex": @(_currentlyTransitioningFrom),
+        @"toIndex": @(_currentlyTransitioningTo),
+        @"progress": @(nextProgress),
+      });
+    }
   }
 }
 
@@ -322,7 +326,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   _navigationController.delegate = nil;
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
   return _navigationController;
 }
@@ -416,10 +420,11 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)handleTopOfStackChanged
 {
-  [_bridge.eventDispatcher sendInputEventWithName:@"topNavigateBack" body:@{
-    @"target":self.reactTag,
-    @"stackLength":@(_navigationController.viewControllers.count)
-  }];
+  if (_onNavigationComplete) {
+    _onNavigationComplete(@{
+      @"stackLength":@(_navigationController.viewControllers.count)
+    });
+  }
 }
 
 - (void)dispatchFakeScrollEvent
@@ -444,7 +449,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here
-  [self addControllerToClosestParent:_navigationController];
+  [self reactAddControllerToClosestParent:_navigationController];
 
   NSUInteger viewControllerCount = _navigationController.viewControllers.count;
   // The "react count" is the count of views that are visible on the navigation
@@ -501,13 +506,13 @@ BOOL jsGettingtooSlow =
   }
   if (jsGettingAhead) {
     if (reactPushOne) {
-      UIView *lastView = [_currentViews lastObject];
-      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView eventDispatcher:_bridge.eventDispatcher];
+      UIView *lastView = _currentViews.lastObject;
+      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
       [_navigationController pushViewController:vc animated:(currentReactCount > 1)];
     } else if (reactPopN) {
-      UIViewController *viewControllerToPopTo = [[_navigationController viewControllers] objectAtIndex:(currentReactCount - 1)];
+      UIViewController *viewControllerToPopTo = _navigationController.viewControllers[(currentReactCount - 1)];
       _numberOfViewControllerMovesToIgnore = viewControllerCount - currentReactCount;
       [_navigationController popToViewController:viewControllerToPopTo animated:YES];
     } else {

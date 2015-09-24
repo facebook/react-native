@@ -120,10 +120,22 @@ RCT_EXPORT_MODULE(TestModule)
   [_bridge invalidate];
 }
 
+#define RUN_RUNLOOP_WHILE(CONDITION) \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:0.1]; \
+while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
+  [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
+} \
+_Pragma("clang diagnostic pop")
+
 - (void)testHookRegistration
 {
   TestExecutor *executor =  [_bridge.batchedBridge valueForKey:@"_javaScriptExecutor"];
-  NSString *injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"];
+
+  NSString *injectedStuff;
+  RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+
   NSDictionary *moduleConfig = RCTJSONParse(injectedStuff, NULL);
   NSDictionary *remoteModuleConfig = moduleConfig[@"remoteModuleConfig"];
   NSDictionary *testModuleConfig = remoteModuleConfig[@"TestModule"];
@@ -142,7 +154,10 @@ RCT_EXPORT_MODULE(TestModule)
 - (void)testCallNativeMethod
 {
   TestExecutor *executor =  [_bridge.batchedBridge valueForKey:@"_javaScriptExecutor"];
-  NSString *injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"];
+
+  NSString *injectedStuff;
+  RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+
   NSDictionary *moduleConfig = RCTJSONParse(injectedStuff, NULL);
   NSDictionary *remoteModuleConfig = moduleConfig[@"remoteModuleConfig"];
   NSDictionary *testModuleConfig = remoteModuleConfig[@"TestModule"];
@@ -170,7 +185,7 @@ RCT_EXPORT_MODULE(TestModule)
 }
 
 RCT_EXPORT_METHOD(testMethod:(NSInteger)integer
-                  number:(NSNumber *)number
+                  number:(nonnull NSNumber *)number
                   string:(NSString *)string
                   dictionary:(NSDictionary *)dict
                   callback:(RCTResponseSenderBlock)callback)
