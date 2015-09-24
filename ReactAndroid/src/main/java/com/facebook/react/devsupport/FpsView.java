@@ -43,7 +43,7 @@ public class FpsView extends FrameLayout {
     mTextView = (TextView) findViewById(R.id.fps_text);
     mFrameCallback = new FpsDebugFrameCallback(Choreographer.getInstance(), reactContext);
     mFPSMonitorRunnable = new FPSMonitorRunnable();
-    setCurrentFPS(0, 0);
+    setCurrentFPS(0, 0, 0, 0);
   }
 
   @Override
@@ -61,11 +61,13 @@ public class FpsView extends FrameLayout {
     mFPSMonitorRunnable.stop();
   }
 
-  private void setCurrentFPS(double currentFPS, double currentJSFPS) {
+  private void setCurrentFPS(double currentFPS, double currentJSFPS, int droppedUIFrames, int total4PlusFrameStutters) {
     String fpsString = String.format(
         Locale.US,
-        "UI FPS: %.1f\nJS FPS: %.1f",
+        "UI: %.1f fps\n%d dropped so far\n%d stutters (4+) so far\nJS: %.1f fps",
         currentFPS,
+        droppedUIFrames,
+        total4PlusFrameStutters,
         currentJSFPS);
     mTextView.setText(fpsString);
     FLog.d(ReactConstants.TAG, fpsString);
@@ -77,14 +79,17 @@ public class FpsView extends FrameLayout {
   private class FPSMonitorRunnable implements Runnable {
 
     private boolean mShouldStop = false;
+    private int mTotalFramesDropped = 0;
+    private int mTotal4PlusFrameStutters = 0;
 
     @Override
     public void run() {
       if (mShouldStop) {
         return;
       }
-
-      setCurrentFPS(mFrameCallback.getFPS(), mFrameCallback.getJSFPS());
+      mTotalFramesDropped += mFrameCallback.getExpectedNumFrames() - mFrameCallback.getNumFrames();
+      mTotal4PlusFrameStutters += mFrameCallback.get4PlusFrameStutters();
+      setCurrentFPS(mFrameCallback.getFPS(), mFrameCallback.getJSFPS(), mTotalFramesDropped, mTotal4PlusFrameStutters);
       mFrameCallback.reset();
 
       postDelayed(this, UPDATE_INTERVAL_MS);
