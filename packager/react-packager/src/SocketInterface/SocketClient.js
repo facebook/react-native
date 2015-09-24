@@ -31,6 +31,10 @@ class SocketClient {
     this._ready = new Promise((resolve, reject) => {
       this._sock.on('connect', () => {
         this._sock.removeAllListeners('error');
+        process.on('uncaughtException', (error) => {
+          debug('uncaught error', error.stack);
+          setImmediate(() => process.exit(1));
+        });
         resolve(this);
       });
       this._sock.on('error', (e) => {
@@ -49,13 +53,24 @@ class SocketClient {
 
     this._sock.on('close', () => {
       if (!this._closing) {
-        const sockPathExists = fs.existsSync(sockPath);
-        throw new Error(
-          'Server closed unexpectedly.\n' +
-          'Socket path: `' + sockPath + '` ' +
-          (sockPathExists ? ' exists.' : 'doesn\'t exist') + '\n' +
-          getServerLogs()
-        );
+        const terminate = (result) => {
+          const sockPathExists = fs.existsSync(sockPath);
+          throw new Error(
+            'Server closed unexpectedly.\n' +
+            'Server ping connection attempt result: ' + result + '\n' +
+            'Socket path: `' + sockPath + '` ' +
+            (sockPathExists ? ' exists.' : 'doesn\'t exist') + '\n' +
+            getServerLogs()
+          );
+        };
+
+        // before throwing ping the server to see if it's still alive
+        const socket = net.connect(sockPath);
+        socket.on('connect', () => {
+          socket.end();
+          terminate('OK');
+        });
+        socket.on('error', error => terminate(error));
       }
     });
   }
