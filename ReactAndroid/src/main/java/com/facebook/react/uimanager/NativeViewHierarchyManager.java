@@ -93,7 +93,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       throw new IllegalViewOperationException("Trying to update view with tag " + tag
           + " which doesn't exist");
     }
-    viewManager.updateView(viewToUpdate, props);
+    viewManager.updateProperties(viewToUpdate, props);
   }
 
   public void updateViewExtraData(int tag, Object extraData) {
@@ -179,7 +179,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     // creating another (potentially much more expensive) mapping from view to React tag
     view.setId(tag);
     if (initialProps != null) {
-      viewManager.updateView(view, initialProps);
+      viewManager.updateProperties(view, initialProps);
     }
   }
 
