@@ -40,9 +40,12 @@ var notMultiline = {
   onSubmitEditing: true,
 };
 
-var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
-var RCTTextView = requireNativeComponent('RCTTextView', null);
-var RCTTextField = requireNativeComponent('RCTTextField', null);
+if (Platform.OS === 'android') {
+  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
+} else if (Platform.OS === 'ios') {
+  var RCTTextView = requireNativeComponent('RCTTextView', null);
+  var RCTTextField = requireNativeComponent('RCTTextField', null);
+}
 
 type Event = Object;
 
