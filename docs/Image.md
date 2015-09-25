@@ -29,7 +29,7 @@ When your entire codebase respects this convention, you're able to do interestin
 
 > **NOTE**: PNG images are required when loading with `require('image!my-icon')`
 >
-> At this time, only PNG images are supported in iOS. There is an [issue](https://github.com/facebook/react-native/issues/646) that is currently addressing this bug. In the meantime a quick fix is to rename your files to image.png or to use the `isStatic` flag like: `source={{ uri: 'image', isStatic: true }}`.
+> At this time, only PNG images are supported in iOS. There is an [issue](https://github.com/facebook/react-native/issues/646) that is currently addressing this bug. In the meantime a quick fix is to rename your files to image.png or to use the `uri` flag like: `source={{ uri: 'my-icon' }}`.
 
 ### Adding Static Resources to your Android app
 
