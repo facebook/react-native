@@ -1004,7 +1004,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth, css_direction
           if (alignItem == CSS_ALIGN_STRETCH) {
             // You can only stretch if the dimension has not already been set
             // previously.
-            if (!isDimDefined(child, crossAxis)) {
+            if (isUndefined(child->layout.dimensions[dim[crossAxis]])) {
               child->layout.dimensions[dim[crossAxis]] = fmaxf(
                 boundAxis(child, crossAxis, containerCrossAxis -
                   paddingAndBorderAxisCross - getMarginAxis(child, crossAxis)),
