@@ -10,7 +10,7 @@
 
 const path = require('path');
 
-const SUPPORTED_PLATFORM_EXTS = ['android', 'ios'];
+const SUPPORTED_PLATFORM_EXTS = ['android', 'ios', 'web'];
 
 const re = new RegExp(
   '[^\\.]+\\.(' + SUPPORTED_PLATFORM_EXTS.join('|') + ')\\.\\w+$'
