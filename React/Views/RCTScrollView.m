@@ -471,7 +471,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return;
   }
 
-  static const CGFloat leeway = 50.0;
+  static const CGFloat leeway = 1.0;
 
   const CGSize contentSize = _scrollView.contentSize;
   const CGRect bounds = _scrollView.bounds;
