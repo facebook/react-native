@@ -24,7 +24,8 @@ function printUsage() {
     '  install: installs npm react components',
     '  bundle: builds the javascript bundle for offline use',
     '  new-library: generates a native library bridge',
-    '  android: generates an Android project for your app'
+    '  android: generates an Android project for your app',
+    '  run-android: open app in the Android simulator'
   ].join('\n'));
   process.exit(1);
 }
