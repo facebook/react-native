@@ -24,10 +24,9 @@ import android.view.View;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
@@ -38,21 +37,6 @@ import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
 
   private static final String REACT_CLASS = "ToolbarAndroid";
-
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_LOGO = "logo";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_NAV_ICON = "navIcon";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_SUBTITLE = "subtitle";
-  @UIProp(UIProp.Type.COLOR)
-  public static final String PROP_SUBTITLE_COLOR = "subtitleColor";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_TITLE = "title";
-  @UIProp(UIProp.Type.COLOR)
-  public static final String PROP_TITLE_COLOR = "titleColor";
-  @UIProp(UIProp.Type.ARRAY)
-  public static final String PROP_ACTIONS = "actions";
 
   private static final String PROP_ACTION_ICON = "icon";
   private static final String PROP_ACTION_SHOW = "show";
@@ -69,43 +53,81 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
     return new Toolbar(reactContext);
   }
 
-  @Override
-  public void updateView(Toolbar toolbar, CatalystStylesDiffMap props) {
-    super.updateView(toolbar, props);
+  @ReactProp(name = "logo")
+  public void setLogo(Toolbar view, @Nullable String logo) {
+    if (logo != null) {
+      view.setLogo(getDrawableResourceByName(view.getContext(), logo));
+    } else {
+      view.setLogo(null);
+    }
+  }
 
-    int[] defaultColors = getDefaultColors(toolbar.getContext());
-    if (props.hasKey(PROP_SUBTITLE)) {
-      toolbar.setSubtitle(props.getString(PROP_SUBTITLE));
+  @ReactProp(name = "navIcon")
+  public void setNavIcon(Toolbar view, @Nullable String navIcon) {
+    if (navIcon != null) {
+      view.setNavigationIcon(getDrawableResourceByName(view.getContext(), navIcon));
+    } else {
+      view.setNavigationIcon(null);
     }
-    if (props.hasKey(PROP_SUBTITLE_COLOR)) {
-      final int subtitleColor = props.getInt(PROP_SUBTITLE_COLOR, defaultColors[1]);
-      toolbar.setSubtitleTextColor(subtitleColor);
+  }
+
+  @ReactProp(name = "subtitle")
+  public void setSubtitle(Toolbar view, @Nullable String subtitle) {
+    view.setSubtitle(subtitle);
+  }
+
+  @ReactProp(name = "subtitleColor", customType = "Color")
+  public void setSubtitleColor(Toolbar view, @Nullable Integer subtitleColor) {
+    int[] defaultColors = getDefaultColors(view.getContext());
+    if (subtitleColor != null) {
+      view.setSubtitleTextColor(subtitleColor);
+    } else {
+      view.setSubtitleTextColor(defaultColors[1]);
     }
-    if (props.hasKey(PROP_TITLE)) {
-      toolbar.setTitle(props.getString(PROP_TITLE));
+  }
+
+  @ReactProp(name = "title")
+  public void setTitle(Toolbar view, @Nullable String title) {
+    view.setTitle(title);
+  }
+
+  @ReactProp(name = "titleColor", customType = "Color")
+  public void setTitleColor(Toolbar view, @Nullable Integer titleColor) {
+    int[] defaultColors = getDefaultColors(view.getContext());
+    if (titleColor != null) {
+      view.setTitleTextColor(titleColor);
+    } else {
+      view.setTitleTextColor(defaultColors[0]);
     }
-    if (props.hasKey(PROP_TITLE_COLOR)) {
-      final int titleColor = props.getInt(PROP_TITLE_COLOR, defaultColors[0]);
-      toolbar.setTitleTextColor(titleColor);
-    }
-    if (props.hasKey(PROP_NAV_ICON)) {
-      String navIcon = props.getString(PROP_NAV_ICON);
-      if (navIcon != null) {
-        toolbar.setNavigationIcon(getDrawableResourceByName(toolbar.getContext(), navIcon));
-      } else {
-        toolbar.setNavigationIcon(null);
+  }
+
+  @ReactProp(name = "actions")
+  public void setActions(Toolbar view, @Nullable ReadableArray actions) {
+    Menu menu = view.getMenu();
+    menu.clear();
+    if (actions != null) {
+      for (int i = 0; i < actions.size(); i++) {
+        ReadableMap action = actions.getMap(i);
+        MenuItem item = menu.add(Menu.NONE, Menu.NONE, i, action.getString(PROP_ACTION_TITLE));
+        String icon = action.hasKey(PROP_ACTION_ICON) ? action.getString(PROP_ACTION_ICON) : null;
+        if (icon != null) {
+          item.setIcon(getDrawableResourceByName(view.getContext(), icon));
+        }
+        String show = action.hasKey(PROP_ACTION_SHOW) ? action.getString(PROP_ACTION_SHOW) : null;
+        if (show != null) {
+          int showAsAction = MenuItem.SHOW_AS_ACTION_NEVER;
+          if ("always".equals(show)) {
+            showAsAction = MenuItem.SHOW_AS_ACTION_ALWAYS;
+          } else if ("ifRoom".equals(show)) {
+            showAsAction = MenuItem.SHOW_AS_ACTION_IF_ROOM;
+          }
+          if (action.hasKey(PROP_ACTION_SHOW_WITH_TEXT) &&
+              action.getBoolean(PROP_ACTION_SHOW_WITH_TEXT)) {
+            showAsAction = showAsAction | MenuItem.SHOW_AS_ACTION_WITH_TEXT;
+          }
+          item.setShowAsAction(showAsAction);
+        }
       }
-    }
-    if (props.hasKey(PROP_LOGO)) {
-      String logo = props.getString(PROP_LOGO);
-      if (logo != null) {
-        toolbar.setLogo(getDrawableResourceByName(toolbar.getContext(), logo));
-      } else {
-        toolbar.setLogo(null);
-      }
-    }
-    if (props.hasKey(PROP_ACTIONS)) {
-      setActions(toolbar, props.getArray(PROP_ACTIONS));
     }
   }
 
@@ -139,35 +161,6 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
-  }
-
-  private static void setActions(Toolbar toolbar, @Nullable ReadableArray actions) {
-    Menu menu = toolbar.getMenu();
-    menu.clear();
-    if (actions != null) {
-      for (int i = 0; i < actions.size(); i++) {
-        ReadableMap action = actions.getMap(i);
-        MenuItem item = menu.add(Menu.NONE, Menu.NONE, i, action.getString(PROP_ACTION_TITLE));
-        String icon = action.hasKey(PROP_ACTION_ICON) ? action.getString(PROP_ACTION_ICON) : null;
-        if (icon != null) {
-          item.setIcon(getDrawableResourceByName(toolbar.getContext(), icon));
-        }
-        String show = action.hasKey(PROP_ACTION_SHOW) ? action.getString(PROP_ACTION_SHOW) : null;
-        if (show != null) {
-          int showAsAction = MenuItem.SHOW_AS_ACTION_NEVER;
-          if ("always".equals(show)) {
-            showAsAction = MenuItem.SHOW_AS_ACTION_ALWAYS;
-          } else if ("ifRoom".equals(show)) {
-            showAsAction = MenuItem.SHOW_AS_ACTION_IF_ROOM;
-          }
-          if (action.hasKey(PROP_ACTION_SHOW_WITH_TEXT) &&
-              action.getBoolean(PROP_ACTION_SHOW_WITH_TEXT)) {
-            showAsAction = showAsAction | MenuItem.SHOW_AS_ACTION_WITH_TEXT;
-          }
-          item.setShowAsAction(showAsAction);
-        }
-      }
-    }
   }
 
   private static int[] getDefaultColors(Context context) {
