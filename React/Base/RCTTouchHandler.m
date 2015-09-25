@@ -242,7 +242,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
 {
   [super touchesBegan:touches withEvent:event];
 
-  // "start" has to record new touches beforeckirjiuhucekbebjditeucultigvijfe extracting the event.
+  // "start" has to record new touches before extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
   if (_dispatchedInitialTouches) {
