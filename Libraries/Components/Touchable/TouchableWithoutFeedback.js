@@ -111,9 +111,9 @@ var TouchableWithoutFeedback = React.createClass({
 
   // Clicks
 
-  _onClick: function() {
+  _onClick: function(e: Event) {
     if (!EventPluginUtils.useTouchEvents) {
-      this.touchableHandlePress();
+      this.touchableHandlePress(e);
     }
   },
 

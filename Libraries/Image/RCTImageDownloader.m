@@ -18,15 +18,26 @@
 CGSize RCTTargetSizeForClipRect(CGRect);
 CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
 
+static NSURLCache *_sharedURLCache;
+static NSCache *_sharedMemCache;
+
 @implementation RCTImageDownloader
 {
   dispatch_queue_t _processingQueue;
-  NSCache *_memCache;
 }
 
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
++ (void)initialize {
+  [super initialize];
+    
+  _sharedMemCache = [[NSCache alloc] init];
+  _sharedURLCache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024
+                                                  diskCapacity:200 * 1024 * 1024
+                                                      diskPath:@"React/RCTImageDownloader"];
+}
 
 + (RCTImageDownloader *)sharedInstance
 {
@@ -38,11 +49,13 @@ RCT_EXPORT_MODULE()
   return sharedInstance;
 }
 
++ (void)setCache:(NSURLCache *)cache {
+  _sharedURLCache = cache;
+}
+
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _memCache = [[NSCache alloc] init];
-    _cache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 diskCapacity:200 * 1024 * 1024 diskPath:@"React/RCTImageDownloader"];
     _processingQueue = dispatch_queue_create("com.facebook.React.DownloadProcessingQueue", DISPATCH_QUEUE_SERIAL);
   }
   return self;
@@ -62,7 +75,6 @@ RCT_EXPORT_MODULE()
     return ^{};
   }
 
-  __weak RCTImageDownloader *weakSelf = self;
   RCTURLRequestCompletionBlock runBlocks = ^(NSURLResponse *response, NSData *data, NSError *error) {
 
     if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
@@ -82,7 +94,7 @@ RCT_EXPORT_MODULE()
 
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   {
-    NSCachedURLResponse *cachedResponse = [_cache cachedResponseForRequest:request];
+    NSCachedURLResponse *cachedResponse = [_sharedURLCache cachedResponseForRequest:request];
     if (cachedResponse) {
       runBlocks(cachedResponse.response, cachedResponse.data, nil);
       return ^{};
@@ -91,9 +103,8 @@ RCT_EXPORT_MODULE()
 
   RCTDownloadTask *task = [_bridge.networking downloadTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
     if (response && !error) {
-      RCTImageDownloader *strongSelf = weakSelf;
       NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
-      [strongSelf->_cache storeCachedResponse:cachedResponse forRequest:request];
+      [_sharedURLCache storeCachedResponse:cachedResponse forRequest:request];
     }
     runBlocks(response, data, error);
   }];
@@ -110,7 +121,7 @@ RCT_EXPORT_MODULE()
                                          progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                        completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
-  UIImage *cachedImage = [_memCache objectForKey:url];
+  UIImage *cachedImage = [_sharedMemCache objectForKey:url];
   if (cachedImage) {
     completionBlock(nil, cachedImage);
     return ^{};
@@ -137,7 +148,7 @@ RCT_EXPORT_MODULE()
 
     UIImage *image = [UIImage imageWithData:data scale:scale];
       
-    [_memCache setObject:image forKey:url];
+    [_sharedMemCache setObject:image forKey:url];
 
     if (image && !CGSizeEqualToSize(size, CGSizeZero)) {
 

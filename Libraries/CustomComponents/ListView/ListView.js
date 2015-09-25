@@ -34,10 +34,12 @@ var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
+var Platform = require('Platform');
 
 var isEmpty = require('isEmpty');
 var logError = require('logError');
 var merge = require('merge');
+var findNodeHandle = require('findNodeHandle');
 
 var PropTypes = React.PropTypes;
 
@@ -274,9 +276,13 @@ var ListView = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
       this.setState((state, props) => {
-        var rowsToRender = Math.min(
-          state.curRenderedRowsCount + props.pageSize,
-          props.dataSource.getRowCount()
+        var rowsToRender = Math.max(
+          props.initialListSize,
+          state.curRenderedRowsCount,
+        );
+        rowsToRender = Math.min(
+          rowsToRender,
+          props.dataSource.getRowCount(),
         );
         return {
           prevRenderedRowsCount: 0,
@@ -297,7 +303,7 @@ var ListView = React.createClass({
   },
 
   scrollToEndOnNextLayout: function() {
-    this.scrollProperties.shouldScrollToEndOnNextLayout = true;
+    this.refs[SCROLLVIEW_REF].scrollToEndOnNextContentChange();
   },
 
   render: function() {
@@ -436,7 +442,26 @@ var ListView = React.createClass({
   },
 
   _onLayout: function(e) {
-    this._measureAndUpdateScrollProps();
+    // Ignore any calls before we are fully laid out and measured.
+    if (!this.scrollProperties.contentLength && !this.scrollProperties.visibleLength) {
+      return;
+    }
+
+    // If we're currently scrolled near the end (within 20px),
+    // contiue staying pinned to the end after the layout update
+    var endOffset = this.scrollProperties.contentLength - this.scrollProperties.visibleLength;
+    var shouldScrollToEnd = this.scrollProperties.offset >= endOffset - 20;
+
+    // If the user isn't scrolled but the bounds of the page have changed to hide
+    // content, scroll to the bottom.
+    if (this.scrollProperties.offset == 0 && endOffset < 0) {
+      shouldScrollToEnd = true;
+    }
+
+    this._setScrollVisibleLength(0, 0, e.nativeEvent.layout.width, e.nativeEvent.layout.height);
+    if (shouldScrollToEnd) {
+      this._scrollToEnd();
+    }
     if (this.props.onLayout) {
       this.props.onLayout(e);
     }
@@ -451,14 +476,16 @@ var ListView = React.createClass({
     if (!scrollComponent || !scrollComponent.getInnerViewNode) {
       return;
     }
+
+    var scrollNode = Platform.OS == 'web' ? scrollComponent : findNodeHandle(scrollComponent);
     RCTUIManager.measureLayout(
       scrollComponent.getInnerViewNode(),
-      React.findNodeHandle(scrollComponent),
+      scrollNode,
       logError,
       this._setScrollContentLength
     );
     RCTUIManager.measureLayoutRelativeToParent(
-      React.findNodeHandle(scrollComponent),
+      scrollNode,
       logError,
       this._setScrollVisibleLength
     );
@@ -467,7 +494,7 @@ var ListView = React.createClass({
     // every platform
     RCTScrollViewManager && RCTScrollViewManager.calculateChildFrames &&
       RCTScrollViewManager.calculateChildFrames(
-        React.findNodeHandle(scrollComponent),
+        scrollNode,
         this._updateChildFrames,
       );
   },
@@ -482,15 +509,10 @@ var ListView = React.createClass({
       height : width;
     this._updateVisibleRows();
     this._renderMoreRowsIfNeeded();
-
-    if (!!this.scrollProperties.shouldScrollToEndOnNextLayout) {
-      this.scrollProperties.shouldScrollToEndOnNextLayout = false;
-      this._scrollToEnd();
-    }
   },
 
   _scrollToEnd: function() {
-    var offset = this.scrollProperties.contentLength - this.scrollProperties.visibleLength;
+    var offset = Math.max(this.scrollProperties.contentLength - this.scrollProperties.visibleLength, 0);
     var offsetX = this.props.horizontal ? offset : 0;
     var offsetY = this.props.horizontal ? 0 : offset;
     this.getScrollResponder().scrollTo(offsetY, offsetX);

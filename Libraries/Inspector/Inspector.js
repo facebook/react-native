@@ -20,6 +20,8 @@ var StyleSheet = require('StyleSheet');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 
+var findNodeHandle = require('findNodeHandle');
+
 var REACT_DEVTOOLS_HOOK: ?Object = typeof window !== 'undefined' ? window.__REACT_DEVTOOLS_GLOBAL_HOOK__ : null;
 
 if (REACT_DEVTOOLS_HOOK) {
@@ -101,7 +103,7 @@ class Inspector extends React.Component {
   setSelection(i: number) {
     var instance = this.state.hierarchy[i];
     var publicInstance = instance.getPublicInstance();
-    UIManager.measure(React.findNodeHandle(instance), (x, y, width, height, left, top) => {
+    UIManager.measure(findNodeHandle(instance), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},

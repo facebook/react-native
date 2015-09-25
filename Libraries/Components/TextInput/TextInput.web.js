@@ -76,20 +76,46 @@ var TextInput = React.createClass({
         placeholder: PropTypes.string,
 
         /**
-         * The default value for the text input
+         * The controlled input component value
          */
         value: PropTypes.string,
+
+        /**
+         * The default value for the text input
+         */
+        defaultValue: PropTypes.string,
 
         /*
         * If true, the text field will not be editable
         */
         manualInput: PropTypes.bool,
+
+        /*
+        * If true, the text input will not be editable until after it is rendered.
+        * Set this for legacy Android devices that have weird focus behavior.
+        */
+        delayEditability: PropTypes.bool,
     },
 
     getDefaultProps: function() {
         return {
             editable: true,
         };
+    },
+
+    componentWillMount: function() {
+        this._canFocus = !this.props.delayEditability;
+    },
+
+    componentDidMount: function() {
+        if (this.props.delayEditability) {
+            // HACK keep the input disabled long enough for all events to be processed
+            // but not too long that a user's legitimate focus attempt will be discarded.
+            setTimeout(() => {
+                this._canFocus = true;
+                this.refs.input.getDOMNode().disabled = this._isDisabled();
+            }, 100);
+        }
     },
 
     render: function() {
@@ -99,11 +125,15 @@ var TextInput = React.createClass({
                 {...this.props}
                 onChange={this._onChange}
                 onKeyDown={this._onKeyDown}
-                disabled={!this.props.editable || this.props.manualInput}
+                disabled={!this._canFocus || this._isDisabled()}
                 type={this.props.password ? "password" : "text"}
                 style={webifyStyle(this.props.style)}
             />
         );
+    },
+
+    _isDisabled: function() {
+        return !this.props.editable || this.props.manualInput;
     },
 
     _getDOMNode: function() {

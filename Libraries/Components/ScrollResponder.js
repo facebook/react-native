@@ -22,6 +22,7 @@ var RCTUIManagerDeprecated = NativeModules.UIManager;
 var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
 
 var warning = require('warning');
+var findNodeHandle = require('findNodeHandle');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -351,7 +352,7 @@ var ScrollResponderMixin = {
    * can also be used to quickly scroll to any element we want to focus
    */
   scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
-    RCTUIManagerDeprecated.scrollTo(React.findNodeHandle(this), offsetX, offsetY);
+    RCTUIManagerDeprecated.scrollTo(findNodeHandle(this), offsetX, offsetY);
   },
 
   /**
@@ -359,7 +360,7 @@ var ScrollResponderMixin = {
    * @param {object} rect Should have shape {x, y, width, height}
    */
   scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
-    RCTUIManagerDeprecated.zoomToRect(React.findNodeHandle(this), rect);
+    RCTUIManagerDeprecated.zoomToRect(findNodeHandle(this), rect);
   },
 
   /**
@@ -377,7 +378,7 @@ var ScrollResponderMixin = {
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
     RCTUIManager.measureLayout(
       nodeHandle,
-      React.findNodeHandle(this),
+      findNodeHandle(this),
       this.scrollResponderTextInputFocusError,
       this.scrollResponderInputMeasureAndScrollToKeyboard
     );

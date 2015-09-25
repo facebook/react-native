@@ -62,7 +62,7 @@ var configChecker = createStrictShapeTypeChecker({
   delete: animChecker,
 });
 
-type Config = {
+export type Config = {
   duration: number;
   create?: Anim;
   update?: Anim;

@@ -21,8 +21,8 @@ var StyleSheet = require('StyleSheet');
 var StaticContainer = require('StaticContainer.react');
 var View = require('View');
 
-var createReactNativeComponentClass =
-  require('createReactNativeComponentClass');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
 var logError = require('logError');
 var merge = require('merge');
@@ -70,7 +70,7 @@ var RCTNavigatorItem = createReactNativeComponentClass({
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
-      React.findNodeHandle(this),
+      findNodeHandle(this),
       logError,
       cb
     );

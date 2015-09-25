@@ -689,7 +689,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   if (self.inverted) {
     if (newContentSize.height > oldContentSize.height) {
       CGFloat offsetHeight = oldOffset.y + viewportSize.height;
-      if (offsetHeight > newContentSize.height) {
+      if (self.scrollToEndOnNextContentChange) {
+        self.scrollToEndOnNextContentChange = NO;
+        // scroll to end of list
+        newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
+      } else if (offsetHeight > newContentSize.height) {
         // offset falls outside of bounds, scroll back to end of list
         newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
       } else if (ABS(oldOffset.y) < FLT_EPSILON) {
@@ -740,6 +744,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
     CGPoint newOffset = [self calculateOffsetForContentSize:contentSize];
     _scrollView.contentSize = contentSize;
     _scrollView.contentOffset = newOffset;
+      
+    [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
+                                     reactTag:self.reactTag
+                                   scrollView:self.scrollView
+                                     userData:nil];
   }
   [_scrollView dockClosestSectionHeader];
 }

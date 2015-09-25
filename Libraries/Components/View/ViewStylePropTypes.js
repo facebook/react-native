@@ -44,9 +44,9 @@ var ViewStylePropTypes = {
   shadowRadius: ReactPropTypes.number,
 
   // web
-  overflow: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
-  overflowX: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
-  overflowY: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
+  overflow: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll', 'auto']),
+  overflowX: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll', 'auto']),
+  overflowY: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll', 'auto']),
   WebkitOverflowScrolling: ReactPropTypes.string,
   background: ReactPropTypes.string,
   cursor: ReactPropTypes.string,

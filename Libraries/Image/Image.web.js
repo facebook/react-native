@@ -61,18 +61,34 @@ var Image = React.createClass({
                 borderImage: `url(${source.uri}) ${capPercents.top}% ${capPercents.right}% ${capPercents.bottom}% ${capPercents.left}% stretch`,
             })
         }
-        if (props.resizeMode == "stretch") {
-            style.width = "100%";
+        if (props.resizeMode == 'stretch') {
+            style.width = '100%';
+        }
+        if (props.resizeMode == 'contain') {
+            style.display = 'inline';
+            style.maxWidth = '100%';
+            style.maxHeight = '100%';
         }
         return {style: style};
     },
 
     render: function() {
-        var style = webifyStyle([this.state.style, this.props.style]);
         if (this.props.source.capInsets) {
-            return <div {...this.props} style={style} />;
+            var style = webifyStyle([this.state.style, this.props.style]);
+            return <div style={style} />;
+
+        } else if (this.props.resizeMode == 'contain') {
+            var outerStyle = webifyStyle([this.props.style, {textAlign: 'center'}]);
+            var innerStyle = webifyStyle(this.state.style);
+            return (
+                <div style={outerStyle}>
+                    <img style={innerStyle} src={this.props.source.uri} />
+                </div>
+            );
+
         } else {
-            return <img {...this.props} style={style} src={this.props.source.uri} />;
+            var style = webifyStyle([this.state.style, this.props.style]);
+            return <img style={style} src={this.props.source.uri} />;
         }
     },
 

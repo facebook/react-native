@@ -18,6 +18,7 @@ var Subscribable = require('Subscribable');
 var View = require('View');
 var WarningBox = require('WarningBox');
 
+var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
 
 var AppContainer = React.createClass({
@@ -32,7 +33,7 @@ var AppContainer = React.createClass({
       ? null
       : <Inspector
           rootTag={this.props.rootTag}
-          inspectedViewTag={React.findNodeHandle(this.refs.main)}
+          inspectedViewTag={findNodeHandle(this.refs.main)}
         />;
     this.setState({inspector});
   },

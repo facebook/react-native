@@ -26,7 +26,31 @@ var BatchedBridge = {
       },
 
       measureLayout: function(nodeHandle, relativeToNativeNode, onFail, onSuccess) {
-        warning(false, "measureLayout() is not implemented on web");
+        var nodeMeasure = nodeHandle.getDOMNode().getBoundingClientRect();
+        var ancestorMeasure = relativeToNativeNode.getDOMNode().getBoundingClientRect();
+        onSuccess(
+          nodeMeasure.left - ancestorMeasure.left,
+          nodeMeasure.top - ancestorMeasure.top,
+          nodeMeasure.width,
+          nodeMeasure.height,
+        );
+      },
+
+      measureLayoutRelativeToParent: function(nodeHandle, onFail, onSuccess) {
+        var node = nodeHandle.getDOMNode();
+        var nodeMeasure = node.getBoundingClientRect();
+
+        var ancestorMeasure = {left: 0, top: 0};
+        if (!!node.parentElement) {
+          ancestorMeasure = node.parentElement.getBoundingClientRect();
+        }
+
+        onSuccess(
+          nodeMeasure.left - ancestorMeasure.left,
+          nodeMeasure.top - ancestorMeasure.top,
+          nodeMeasure.width,
+          nodeMeasure.height,
+        );
       },
 
       configureNextLayoutAnimation: function(config, onAnimationDidEnd, onError) {
@@ -65,10 +89,31 @@ var BatchedBridge = {
 
       checkPermissions: function(callback) {
         if (window.Even_PushNotifications) {
-          callback(JSON.parse(window.Even_PushNotifications.checkPermissions()));
+          window.setTimeout(function() {
+            callback(JSON.parse(window.Even_PushNotifications.checkPermissions()));
+          }, 0);
         } else {
-          callback({});
+          window.setTimeout(function() {
+            callback({});
+          }, 0);
         }
+      },
+
+    },
+
+    ActionSheetManager: {
+
+      showShareActionSheetWithOptions: function(options, failureCallback, successCallback) {
+        if (window.Even_Sharing) {
+          window.Even_Sharing.share(options.message || options.url);
+          successCallback();
+        } else {
+          console.error('Not supported on this platform');
+        }
+      },
+
+      showActionSheetWithOptions: function(options, failureCallback, successCallback) {
+        console.error('Not supported on this platform');
       },
 
     },

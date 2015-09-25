@@ -21,6 +21,7 @@ if (!RCTAnimationManager) {
 
 var React = require('React');
 var AnimationUtils = require('AnimationUtils');
+var findNodeHandle = require('findNodeHandle');
 
 type EasingFunction = (t: number) => number;
 
@@ -55,7 +56,7 @@ var AnimationExperimental = {
     },
     callback?: ?(finished: bool) => void
   ): number {
-    var nodeHandle = React.findNodeHandle(anim.node);
+    var nodeHandle = findNodeHandle(anim.node);
     var easingSample = AnimationUtils.evaluateEasingFunction(
       anim.duration,
       anim.easing

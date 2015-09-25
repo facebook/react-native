@@ -14,9 +14,7 @@
 
 @interface RCTImageDownloader : NSObject <RCTBridgeModule>
 
-@property (nonatomic, strong) NSURLCache *cache;
-
-+ (RCTImageDownloader *)sharedInstance;
++ (void)setCache:(NSURLCache *)cache;
 
 /**
  * Downloads an image and decompresses it a the size specified. The compressed

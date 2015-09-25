@@ -52,7 +52,7 @@ var resolveDefaultProps = function(element) {
 };
 
 // Experimental optimized element creation
-var augmentElement = function(element: ReactElement) {
+var augmentElement = function(element: ReactElement): ReactElement {
   if (__DEV__) {
     invariant(
       false,
@@ -70,7 +70,7 @@ var augmentElement = function(element: ReactElement) {
 
 var render = function(
   element: ReactElement,
-  mountInto: number,
+  mountInto: any,
   callback?: ?(() => void)
 ): ?ReactComponent {
   return ReactNativeMount.renderComponent(element, mountInto, callback);

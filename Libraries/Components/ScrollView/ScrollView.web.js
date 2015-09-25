@@ -6,7 +6,7 @@
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
-var webifyStyle = require('webifyStyle');
+var flattenStyle = require('flattenStyle');
 
 var styles = StyleSheet.create({
 
@@ -46,6 +46,14 @@ var ScrollView = React.createClass({
         this.refs.scrollView.getDOMNode().scrollLeft = x;
     },
 
+    scrollWithoutAnimationTo: function(y, x) {
+        this.scrollTo(y, x);
+    },
+
+    scrollToEndOnNextContentChange: function() {
+        this._scrollToEndOnNextContentChange = true;
+    },
+
     scrollToEnd: function() {
         var scrollProps = this.scrollProperties;
         var offsetX = scrollProps.contentSize.width - scrollProps.layout.width;
@@ -74,15 +82,24 @@ var ScrollView = React.createClass({
         }
     },
 
-    componentDidUpdate: function() {
+    componentDidUpdate: function(oldProps, oldState) {
         if (this.props.inverted) {
             var oldScrollProps = this.scrollProperties;
             var newScrollProps = this._updateScrollProperties();
             var contentDelta = newScrollProps.contentSize.height - oldScrollProps.contentSize.height;
             if (contentDelta > 0) {
-                this.scrollTo(oldScrollProps.contentOffset.y + contentDelta, 0);
+                if (!!this._scrollToEndOnNextContentChange) {
+                    this._scrollToEndOnNextContentChange = false;
+                    this.scrollToEnd();
+                } else {
+                    this.scrollTo(oldScrollProps.contentOffset.y + contentDelta, 0);
+                }
             }
         }
+    },
+
+    getInnerViewNode: function(): any {
+        return this.refs.containerView;
     },
 
     render: function() {
@@ -91,9 +108,11 @@ var ScrollView = React.createClass({
             paddingRight,
             paddingBottom,
             paddingLeft,
+            paddingVertical,
+            paddingHorizontal,
             padding,
             ...style,
-        } = webifyStyle(this.props.style);
+        } = flattenStyle(this.props.style || {});
 
         var scrollStyle = [
             /*
@@ -104,14 +123,14 @@ var ScrollView = React.createClass({
             */
             {
                 position: 'absolute',
-                top: paddingTop || padding || 0,
-                right: paddingRight || padding || 0,
-                bottom: paddingBottom || padding || 0,
-                left: paddingLeft || padding || 0,
+                top: paddingTop || paddingVertical || padding || 0,
+                right: paddingRight || paddingHorizontal || padding || 0,
+                bottom: paddingBottom || paddingVertical || padding || 0,
+                left: paddingLeft || paddingHorizontal || padding || 0,
             },
             styles.scroll,
             (this.props.horizontal ? styles.horizontal : null),
-            (this.props.horizontal ? {overflowX: 'scroll'} : {overflowY: 'scroll'}),
+            (this.props.horizontal ? {overflowX: 'auto'} : {overflowY: 'auto'}),
         ];
 
         var containerStyle = [

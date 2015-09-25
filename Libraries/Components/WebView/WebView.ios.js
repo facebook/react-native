@@ -21,6 +21,7 @@ var View = require('View');
 var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var requireNativeComponent = require('requireNativeComponent');
+var findNodeHandle = require('findNodeHandle');
 
 var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
@@ -201,7 +202,7 @@ var WebView = React.createClass({
   },
 
   getWebViewHandle: function(): any {
-    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
   onLoadingStart: function(event: Event) {

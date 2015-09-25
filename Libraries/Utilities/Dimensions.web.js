@@ -8,13 +8,25 @@ var invariant = require('invariant');
 var dimensions = {
 
     window: {
-        width: window.innerWidth,
-        height: window.innerHeight,
         scale: window.devicePixelRatio,
         fontScale: window.devicePixelRatio,
     },
 
 };
+
+if (window.Even_DeviceInfo) {
+    var size = JSON.parse(window.Even_DeviceInfo.getWindowSize());
+    dimensions.window.width = size.width;
+    dimensions.window.height = size.height;
+
+} else {
+    var updateWindowSize = function() {
+        dimensions.window.width = window.innerWidth;
+        dimensions.window.height = window.innerHeight;
+    };
+    updateWindowSize();
+    window.addEventListener('resize', updateWindowSize);
+}
 
 class Dimensions {
   

@@ -32,6 +32,7 @@ var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
+var findNodeHandle = require('findNodeHandle');
 
 var PropTypes = React.PropTypes;
 
@@ -116,6 +117,7 @@ var ScrollView = React.createClass({
      * assuming new content is added above, not below.
      */
     inverted: PropTypes.bool,
+    scrollToEndOnNextContentChange: PropTypes.bool,
     /**
      * These styles will be applied to the scroll view content container which
      * wraps all of the child views. Example:
@@ -287,19 +289,25 @@ var ScrollView = React.createClass({
   },
 
   getInnerViewNode: function(): any {
-    return React.findNodeHandle(this.refs[INNERVIEW]);
+    return findNodeHandle(this.refs[INNERVIEW]);
+  },
+
+  scrollToEndOnNextContentChange: function() {
+    this.refs[SCROLLVIEW].setNativeProps({
+      scrollToEndOnNextContentChange: true,
+    });
   },
 
   scrollTo: function(destY?: number, destX?: number) {
     if (Platform.OS === 'android') {
       RCTUIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
+        findNodeHandle(this),
         RCTUIManager.RCTScrollView.Commands.scrollTo,
         [destX || 0, destY || 0]
       );
     } else {
       RCTUIManager.scrollTo(
-        React.findNodeHandle(this),
+        findNodeHandle(this),
         destX || 0,
         destY || 0
       );
@@ -308,7 +316,7 @@ var ScrollView = React.createClass({
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
     RCTUIManager.scrollWithoutAnimationTo(
-      React.findNodeHandle(this),
+      findNodeHandle(this),
       destX || 0,
       destY || 0
     );

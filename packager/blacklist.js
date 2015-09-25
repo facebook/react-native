@@ -21,7 +21,8 @@ var sharedBlacklist = [
 
 var platformBlacklists = {
   web: [
-    '.ios.js'
+    '.android.js',
+    '.ios.js',
   ],
   ios: [
     'node_modules/react-tools/src/browser/ui/React.js',

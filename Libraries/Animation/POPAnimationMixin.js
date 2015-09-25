@@ -26,6 +26,7 @@ var POPAnimation = POPAnimationOrNull;
 
 var invariant = require('invariant');
 var warning = require('warning');
+var findNodeHandle = require('findNodeHandle');
 
 var POPAnimationMixin = {
   /**
@@ -85,7 +86,7 @@ var POPAnimationMixin = {
       'Invalid refKey ' + refKey + ' for anim:\n' + JSON.stringify(anim) +
         '\nvalid refs: ' + JSON.stringify(Object.keys(this.refs))
     );
-    var refNodeHandle = React.findNodeHandle(this.refs[refKey]);
+    var refNodeHandle = findNodeHandle(this.refs[refKey]);
     this.startAnimationWithNodeHandle(refNodeHandle, animID, doneCallback);
   },
 
@@ -198,7 +199,7 @@ var POPAnimationMixin = {
    */
   stopAnimations: function(refKey: string) {
     invariant(this.refs[refKey], 'invalid ref');
-    this.stopNodeHandleAnimations(React.findNodeHandle(this.refs[refKey]));
+    this.stopNodeHandleAnimations(findNodeHandle(this.refs[refKey]));
   },
 
   /**

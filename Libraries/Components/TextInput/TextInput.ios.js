@@ -29,6 +29,7 @@ var createReactNativeComponentClass = require('createReactNativeComponentClass')
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
 var requireNativeComponent = require('requireNativeComponent');
+var findNodeHandle = require('findNodeHandle');
 
 var onlyMultiline = {
   onSelectionChange: true, // not supported in Open Source yet
@@ -297,7 +298,7 @@ var TextInput = React.createClass({
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
-      React.findNodeHandle(this.refs.input);
+      findNodeHandle(this.refs.input);
   },
 
   getInitialState: function() {

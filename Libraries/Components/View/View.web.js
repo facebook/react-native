@@ -24,6 +24,23 @@ var View = React.createClass({
         style: stylePropType,
     },
 
+    componentWillMount: function() {
+        this.cachedMeasurement = {
+            width: 0,
+            height: 0,
+        };
+    },
+
+    componentDidMount: function() {
+        // Listen for window resize as an indicator
+        // that our measurements may have changed
+        window.addEventListener('resize', this._onWindowResize);
+    },
+
+    componentWillUnmount: function() {
+        window.removeEventListener('resize', this._onWindowResize);
+    },
+
     setNativeProps: function(props) {
         if (!this.refs.div) {
             return;
@@ -72,19 +89,27 @@ var View = React.createClass({
         );
     },
 
+    _onWindowResize: function(e) {
+        this._onLayout();
+    },
+
     _onLayout: function() {
         if (!this.props.onLayout || !this.refs.div) {
             return;
         }
         var measure = this.measure();
-        this.props.onLayout({
-            nativeEvent: {
-                layout: {
-                    width: measure.width,
-                    height: measure.height,
+        if (measure.width != this.cachedMeasurement.width ||
+            measure.height != this.cachedMeasurement.height) {
+            this.cachedMeasurement = measure;
+            this.props.onLayout({
+                nativeEvent: {
+                    layout: {
+                        width: measure.width,
+                        height: measure.height,
+                    },
                 },
-            },
-        });
+            });
+        }
     },
 
     _onTouchStart: function(e) {

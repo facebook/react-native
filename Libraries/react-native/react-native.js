@@ -42,7 +42,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   WebView: require('WebView'),
 
   // APIs
-  // ActionSheetIOS: require('ActionSheetIOS'),
+  ActionSheetIOS: require('ActionSheetIOS'),
   // AdSupportIOS: require('AdSupportIOS'),
   // AlertIOS: require('AlertIOS'),
   Animated: require('Animated'),

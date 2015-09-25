@@ -14,16 +14,22 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-@interface RCTTextField ()<UITextFieldDelegate>
+@interface RCTTextFieldDelegate : NSObject<UITextFieldDelegate>
+
+@end
+
+@interface RCTTextField ()
+
+@property (nonatomic, strong) RCTTextFieldDelegate *helperDelegate;
+@property (nonatomic, strong) RCTEventDispatcher *eventDispatcher;
+@property (nonatomic, assign) NSInteger nativeEventCount;
 
 @end
 
 @implementation RCTTextField
 {
-  RCTEventDispatcher *_eventDispatcher;
   NSMutableArray *_reactSubviews;
   BOOL _jsRequestingFirstResponder;
-  NSInteger _nativeEventCount;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -34,40 +40,16 @@
     [self addTarget:self action:@selector(_textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(_textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(_textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
-    self.delegate = self;
     _reactSubviews = [[NSMutableArray alloc] init];
-    self.delegate = self;
+
+    _helperDelegate = [[RCTTextFieldDelegate alloc] init];
+    self.delegate = _helperDelegate;
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(-initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
-
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-  if (_maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
-    return YES;
-  }
-  NSUInteger allowedLength = _maxLength.integerValue - textField.text.length + range.length;
-  if (string.length > allowedLength) {
-    if (string.length > 1) {
-      // Truncate the input string so the result is exactly maxLength
-      NSString *limitedString = [string substringToIndex:allowedLength];
-      NSMutableString *newString = textField.text.mutableCopy;
-      [newString replaceCharactersInRange:range withString:limitedString];
-      textField.text = newString;
-      // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
-                                                          offset:(range.location + allowedLength)];
-      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
-      [self _textFieldDidChange];
-    }
-    return NO;
-  } else {
-    return YES;
-  }
-}
 
 - (void)setText:(NSString *)text
 {
@@ -182,15 +164,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                eventCount:_nativeEventCount];
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                 reactTag:self.reactTag
-                                     text:self.text
-                               eventCount:_nativeEventCount];
-  return NO;
-}
-
 - (void)_textFieldBeginEditing
 {
   if (_selectTextOnFocus) {
@@ -228,6 +201,50 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (BOOL)canBecomeFirstResponder
 {
   return _jsRequestingFirstResponder;
+}
+
+@end
+
+
+#pragma mark -
+#pragma mark Delegate
+
+@implementation RCTTextFieldDelegate
+
+- (BOOL)textField:(UITextField *)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+  RCTTextField *textField = (RCTTextField *)aTextField;
+  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+    return YES;
+  }
+  NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
+  if (string.length > allowedLength) {
+    if (string.length > 1) {
+      // Truncate the input string so the result is exactly maxLength
+      NSString *limitedString = [string substringToIndex:allowedLength];
+      NSMutableString *newString = textField.text.mutableCopy;
+      [newString replaceCharactersInRange:range withString:limitedString];
+      textField.text = newString;
+      // Collapse selection at end of insert to match normal paste behavior
+      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
+                                                                 offset:(range.location + allowedLength)];
+      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
+      [textField _textFieldDidChange];
+    }
+    return NO;
+  } else {
+    return YES;
+  }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)aTextField
+{
+  RCTTextField *textField = (RCTTextField *)aTextField;
+  [textField.eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                          reactTag:textField.reactTag
+                                              text:textField.text
+                                        eventCount:textField.nativeEventCount];
+  return NO;
 }
 
 @end

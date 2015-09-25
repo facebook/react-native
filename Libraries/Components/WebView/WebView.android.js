@@ -19,6 +19,7 @@ var View = require('View');
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
+var findNodeHandle = require('findNodeHandle');
 
 var PropTypes = React.PropTypes;
 var RCTUIManager = require('NativeModules').UIManager;
@@ -158,7 +159,7 @@ var WebView = React.createClass({
   },
 
   getWebWiewHandle: function() {
-    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
   onLoadingStart: function(event) {
