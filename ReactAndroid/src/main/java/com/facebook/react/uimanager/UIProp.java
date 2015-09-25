@@ -25,6 +25,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *   @UIProp(UIProp.Type.BOOLEAN) public static final String PROP_FOO = "foo";
  *   @UIProp(UIProp.Type.STRING) public static final String PROP_BAR = "bar";
  * }
+ *
+ * TODO(krzysztof): Kill this class once @ReactProp refactoring is done
  */
 @Target(ElementType.FIELD)
 @Retention(RUNTIME)
