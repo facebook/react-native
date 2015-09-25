@@ -451,7 +451,7 @@ static float getDimWithMargin(css_node_t *node, css_flex_direction_t axis) {
 
 static bool isDimDefined(css_node_t *node, css_flex_direction_t axis) {
   float value = node->style.dimensions[dim[axis]];
-  return !isUndefined(value) && value > 0.0;
+  return !isUndefined(value) && value >= 0.0;
 }
 
 static bool isPosDefined(css_node_t *node, css_position_t position) {
