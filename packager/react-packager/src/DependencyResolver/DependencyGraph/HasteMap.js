@@ -8,9 +8,8 @@
  */
 'use strict';
 
-const chalk = require('chalk');
 const path = require('path');
-const getPlatformExtension = require('../../lib/getPlatformExtension');
+const getPontentialPlatformExt = require('../../lib/getPlatformExtension');
 
 class HasteMap {
   constructor({ fastfs, moduleCache, helpers }) {
@@ -18,7 +17,6 @@ class HasteMap {
     this._moduleCache = moduleCache;
     this._helpers = helpers;
     this._map = Object.create(null);
-    this._warnedAbout = Object.create(null);
   }
 
   build() {
@@ -37,9 +35,6 @@ class HasteMap {
 
   processFileChange(type, absPath) {
     return Promise.resolve().then(() => {
-      // Rewarn after file changes.
-      this._warnedAbout = Object.create(null);
-
       /*eslint no-labels: 0 */
       if (type === 'delete' || type === 'change') {
         loop: for (let name in this._map) {
@@ -69,39 +64,19 @@ class HasteMap {
   }
 
   getModule(name, platform = null) {
-    if (!this._map[name]) {
-      return null;
-    }
-
-    const modules = this._map[name];
-    if (platform != null) {
-      for (let i = 0; i < modules.length; i++) {
-        if (getPlatformExtension(modules[i].path) === platform) {
-          return modules[i];
+    if (this._map[name]) {
+      const modules = this._map[name];
+      if (platform != null) {
+        for (let i = 0; i < modules.length; i++) {
+          if (getPontentialPlatformExt(modules[i].path) === platform) {
+            return modules[i];
+          }
         }
       }
 
-      if (modules.length > 1) {
-        if (!this._warnedAbout[name]) {
-          this._warnedAbout[name] = true;
-          console.warn(
-            chalk.yellow(
-              '\nWARNING: Found multiple haste modules or packages ' +
-              'with the name `%s`. Please fix this by adding it to ' +
-              'the blacklist or deleting the modules keeping only one.\n' +
-              'One of the following modules will be selected at random:\n%s\n'
-            ),
-            name,
-            modules.map(m => m.path).join('\n'),
-          );
-        }
-
-        const randomIndex = Math.floor(Math.random() * modules.length);
-        return modules[randomIndex];
-      }
+      return modules[0];
     }
-
-    return modules[0];
+    return null;
   }
 
   _processHasteModule(file) {
