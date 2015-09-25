@@ -109,8 +109,8 @@ import com.facebook.react.views.text.ReactTextShadowNode;
           styles.getInt(ReactTextInputManager.PROP_TEXT_INPUT_MOST_RECENT_EVENT_COUNT, 0);
     }
 
-    if (styles.hasKey(ReactTextInputManager.PROP_TEXT_INPUT_NUMLINES)) {
-      mNumLines = styles.getInt(ReactTextInputManager.PROP_TEXT_INPUT_NUMLINES, UNSET);
+    if (styles.hasKey(ViewProps.NUMBER_OF_LINES)) {
+      mNumLines = styles.getInt(ViewProps.NUMBER_OF_LINES, UNSET);
     }
   }
 
