@@ -79,6 +79,10 @@ import com.facebook.csslayout.Spacing;
   private @Nullable RectF mTempRectForBorderRadius;
   private boolean mNeedUpdatePathForBorderRadius = false;
   private float mBorderRadius = CSSConstants.UNDEFINED;
+  private float mBorderTopLeftRadius = CSSConstants.UNDEFINED;
+  private float mBorderTopRightRadius = CSSConstants.UNDEFINED;
+  private float mBorderBottomLeftRadius = CSSConstants.UNDEFINED;
+  private float mBorderBottomRightRadius = CSSConstants.UNDEFINED;
 
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -87,7 +91,12 @@ import com.facebook.csslayout.Spacing;
 
   @Override
   public void draw(Canvas canvas) {
-    if (!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
+    if ((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) ||
+        (!CSSConstants.isUndefined(mBorderTopLeftRadius) && mBorderTopLeftRadius > 0) ||
+        (!CSSConstants.isUndefined(mBorderTopRightRadius) && mBorderTopRightRadius > 0) ||
+        (!CSSConstants.isUndefined(mBorderBottomLeftRadius) && mBorderBottomLeftRadius > 0) ||
+        (!CSSConstants.isUndefined(mBorderBottomRightRadius) && mBorderBottomRightRadius > 0)
+    ) {
       drawRoundedBackgroundWithBorders(canvas);
     } else {
       drawRectangularBackgroundWithBorders(canvas);
@@ -168,6 +177,34 @@ import com.facebook.csslayout.Spacing;
     }
   }
 
+  public void setTopRightRadius(float topRightRadius) {
+    if (mBorderTopRightRadius != topRightRadius) {
+      mBorderTopRightRadius = topRightRadius;
+      invalidateSelf();
+    }
+  }
+
+  public void setTopLeftRadius(float topLeftRadius) {
+    if (mBorderTopLeftRadius != topLeftRadius) {
+      mBorderTopLeftRadius = topLeftRadius;
+      invalidateSelf();
+    }
+  }
+
+  public void setBottomRightRadius(float bottomRightRadius) {
+    if (mBorderBottomRightRadius != bottomRightRadius) {
+      mBorderBottomRightRadius = bottomRightRadius;
+      invalidateSelf();
+    }
+  }
+
+  public void setBottomLeftRadius(float bottomLeftRadius) {
+    if (mBorderBottomLeftRadius != bottomLeftRadius) {
+      mBorderBottomLeftRadius = bottomLeftRadius;
+      invalidateSelf();
+    }
+  }
+
   public void setColor(int color) {
     mColor = color;
     invalidateSelf();
@@ -213,10 +250,35 @@ import com.facebook.csslayout.Spacing;
     if (fullBorderWidth > 0) {
       mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
     }
+
+    float radius = CSSConstants.isUndefined(mBorderRadius)
+      ? 0
+      : mBorderRadius;
+
+    float topLeftRadius = CSSConstants.isUndefined(mBorderTopLeftRadius)
+      ? radius
+      : mBorderTopLeftRadius;
+
+    float topRightRadius = CSSConstants.isUndefined(mBorderTopRightRadius)
+      ? radius
+      : mBorderTopRightRadius;
+
+    float bottomLeftRadius = CSSConstants.isUndefined(mBorderBottomLeftRadius)
+      ? radius
+      : mBorderBottomLeftRadius;
+
+    float bottomRightRadius = CSSConstants.isUndefined(mBorderBottomRightRadius)
+      ? radius
+      : mBorderBottomRightRadius;
+
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
-        mBorderRadius,
-        mBorderRadius,
+        new float[]{
+          topLeftRadius,topLeftRadius,
+          topRightRadius,topRightRadius,
+          bottomRightRadius,bottomRightRadius,
+          bottomLeftRadius,bottomLeftRadius,
+        },
         Path.Direction.CW);
 
     mPathEffectForBorderStyle = mBorderStyle != null
