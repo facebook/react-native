@@ -8,7 +8,4 @@
  */
 'use strict';
 
-window.__DEV__ = true;
-window.Env = {};
-
-require.requireActual('./setupEnvPolyfills');
+global.__DEV__ = true;

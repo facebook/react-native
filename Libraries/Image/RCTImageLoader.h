@@ -10,14 +10,21 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridge.h"
+#import "RCTURLRequestHandler.h"
 
 @class ALAssetsLibrary;
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* UIImage or CAAnimation */);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 typedef void (^RCTImageLoaderCancellationBlock)(void);
 
-@interface RCTImageLoader : NSObject <RCTBridgeModule>
+@interface UIImage (React)
+
+@property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
+
+@end
+
+@interface RCTImageLoader : NSObject <RCTBridgeModule, RCTURLRequestHandler>
 
 /**
  * Loads the specified image at the highest available resolution.
@@ -38,14 +45,91 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
- * Is the specified image tag an asset library image?
+ * Finds an appropriate image decoder and passes the target size, scale and
+ * resizeMode for optimal image decoding.
  */
-+ (BOOL)isAssetLibraryImage:(NSString *)imageTag;
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(UIViewContentMode)resizeMode
+                                   completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+
+@end
+
+@interface RCTBridge (RCTImageLoader)
 
 /**
- * Is the specified image tag a remote image?
+ * The shared image loader instance
  */
-+ (BOOL)isRemoteImage:(NSString *)imageTag;
+@property (nonatomic, readonly) RCTImageLoader *imageLoader;
+
+@end
+
+/**
+ * Provides the interface needed to register an image data loader. Image data
+ * loaders are also bridge modules, so should be registered using
+ * RCT_EXPORT_MODULE().
+ */
+@protocol RCTImageURLLoader <RCTBridgeModule>
+
+/**
+ * Indicates whether this data loader is capable of processing the specified
+ * request URL. Typically the handler would examine the scheme/protocol of the
+ * URL to determine this.
+ */
+- (BOOL)canLoadImageURL:(NSURL *)requestURL;
+
+/**
+ * Send a network request to load the request URL. The method should call the
+ * progressHandler (if applicable) and the completionHandler when the request
+ * has finished. The method should also return a cancellation block, if
+ * applicable.
+ */
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+
+@optional
+
+/**
+ * If more than one RCTImageURLLoader responds YES to `-canLoadImageURL:`
+ * then `imageLoaderPriority` is used to determine which one to use. The handler
+ * with the highest priority will be selected. Default priority is zero. If
+ * two or more valid handlers have the same priority, the selection order is
+ * undefined.
+ */
+- (float)imageLoaderPriority;
+
+@end
+
+/**
+ * Provides the interface needed to register an image decoder. Image decoders
+ * are also bridge modules, so should be registered using RCT_EXPORT_MODULE().
+ */
+@protocol RCTImageDecoder <RCTBridgeModule>
+
+/**
+ * Indicates whether this handler is capable of decoding the specified data.
+ * Typically the handler would examine some sort of header data to determine
+ * this.
+ */
+- (BOOL)canDecodeImageData:(NSData *)imageData;
+
+/**
+ * Decode an image from the data object. The method should call the
+ * completionHandler when the decoding operation  has finished. The method
+ * should also return a cancellation block, if applicable.
+ */
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+
+@optional
+
+/**
+ * If more than one RCTImageDecoder responds YES to `-canDecodeImageData:`
+ * then `imageDecoderPriority` is used to determine which one to use. The
+ * handler with the highest priority will be selected. Default priority is zero.
+ * If two or more valid handlers have the same priority, the selection order is
+ * undefined.
+ */
+- (float)imageDecoderPriority;
 
 @end
 

@@ -45,7 +45,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *
  * ```
  *   componentWillMount: function() {
- *     this._panGesture = PanResponder.create({
+ *     this._panResponder = PanResponder.create({
  *       // Ask to be the responder:
  *       onStartShouldSetPanResponder: (evt, gestureState) => true,
  *       onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
@@ -92,7 +92,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/ResponderExample.js)
+ * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/PanResponderExample.js)
  */
 
 var PanResponder = {
@@ -294,7 +294,7 @@ var PanResponder = {
           return false;
         }
         PanResponder._updateGestureStateOnMove(gestureState, touchHistory);
-        return config.onMoveShouldSetResponderCapture ?
+        return config.onMoveShouldSetPanResponderCapture ?
           config.onMoveShouldSetPanResponderCapture(e, gestureState) : false;
       },
 

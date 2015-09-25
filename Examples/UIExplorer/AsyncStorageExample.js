@@ -29,18 +29,23 @@ var COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
 
 var BasicStorageExample = React.createClass({
   componentDidMount() {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((value) => {
-        if (value !== null){
-          this.setState({selectedValue: value});
-          this._appendMessage('Recovered selection from disk: ' + value);
-        } else {
-          this._appendMessage('Initialized with no selection on disk.');
-        }
-      })
-      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
-      .done();
+    this._loadInitialState().done();
   },
+
+  async _loadInitialState() {
+    try {
+      var value = await AsyncStorage.getItem(STORAGE_KEY);
+      if (value !== null){
+        this.setState({selectedValue: value});
+        this._appendMessage('Recovered selection from disk: ' + value);
+      } else {
+        this._appendMessage('Initialized with no selection on disk.');
+      }
+    } catch (error) {
+      this._appendMessage('AsyncStorage error: ' + error.message);
+    }
+  },
+
   getInitialState() {
     return {
       selectedValue: COLORS[0],
@@ -80,19 +85,23 @@ var BasicStorageExample = React.createClass({
     );
   },
 
-  _onValueChange(selectedValue) {
+  async _onValueChange(selectedValue) {
     this.setState({selectedValue});
-    AsyncStorage.setItem(STORAGE_KEY, selectedValue)
-      .then(() => this._appendMessage('Saved selection to disk: ' + selectedValue))
-      .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
-      .done();
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, selectedValue);
+      this._appendMessage('Saved selection to disk: ' + selectedValue);
+    } catch (error) {
+      this._appendMessage('AsyncStorage error: ' + error.message);
+    }
   },
 
-  _removeStorage() {
-    AsyncStorage.removeItem(STORAGE_KEY)
-      .then(() => this._appendMessage('Selection removed from disk.'))
-      .catch((error) => { this._appendMessage('AsyncStorage error: ' + error.message) })
-      .done();
+  async _removeStorage() {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEY);
+      this._appendMessage('Selection removed from disk.');
+    } catch (error) {
+      this._appendMessage('AsyncStorage error: ' + error.message);
+    }
   },
 
   _appendMessage(message) {

@@ -21,12 +21,12 @@
 
 RCT_EXPORT_MODULE()
 
-- (id)init
+- (instancetype)init
 {
   if ((self = [super init])) {
 
     // TODO: need a way to clear this store
-    _store = [[NSMutableDictionary alloc] init];
+    _store = [NSMutableDictionary new];
   }
   return self;
 }
@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
 - (NSString *)storeImage:(UIImage *)image
 {
   RCTAssertMainThread();
-  NSString *tag = [NSString stringWithFormat:@"rct-image-store://%tu", [_store count]];
+  NSString *tag = [NSString stringWithFormat:@"rct-image-store://%tu", _store.count];
   _store[tag] = image;
   return tag;
 }
@@ -97,44 +97,27 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   }
 }
 
-#pragma mark - RCTURLRequestHandler
+#pragma mark - RCTImageLoader
 
-- (BOOL)canHandleRequest:(NSURLRequest *)request
+- (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return [@[@"rct-image-store"] containsObject:[request.URL.scheme lowercaseString]];
+  return [requestURL.scheme.lowercaseString isEqualToString:@"rct-image-store"];
 }
 
-- (id)sendRequest:(NSURLRequest *)request
-     withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  NSString *imageTag = [request.URL absoluteString];
+  NSString *imageTag = imageURL.absoluteString;
   [self getImageForTag:imageTag withBlock:^(UIImage *image) {
-    if (!image) {
-      NSError *error = RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag]);
-      [delegate URLRequest:request didCompleteWithError:error];
-      return;
-    }
-
-    NSString *mimeType = nil;
-    NSData *imageData = nil;
-    if (RCTImageHasAlpha(image.CGImage)) {
-      mimeType = @"image/png";
-      imageData = UIImagePNGRepresentation(image);
+    if (image) {
+      completionHandler(nil, image);
     } else {
-      mimeType = @"image/jpeg";
-      imageData = UIImageJPEGRepresentation(image, 1.0);
+      NSString *errorMessage = [NSString stringWithFormat:@"Unable to load image from image store: %@", imageTag];
+      NSError *error = RCTErrorWithMessage(errorMessage);
+      completionHandler(error, nil);
     }
-
-    NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
-                                                        MIMEType:mimeType
-                                           expectedContentLength:imageData.length
-                                                textEncodingName:nil];
-
-    [delegate URLRequest:request didReceiveResponse:response];
-    [delegate URLRequest:request didReceiveData:imageData];
-    [delegate URLRequest:request didCompleteWithError:nil];
   }];
-  return request;
+
+  return nil;
 }
 
 @end

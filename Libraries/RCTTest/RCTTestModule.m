@@ -44,7 +44,7 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
 
     NSString *testName = NSStringFromSelector(_testSelector);
-    _snapshotCounter[testName] = [@([_snapshotCounter[testName] integerValue] + 1) stringValue];
+    _snapshotCounter[testName] = (@([_snapshotCounter[testName] integerValue] + 1)).stringValue;
 
     NSError *error = nil;
     BOOL success = [_controller compareSnapshotOfView:_view

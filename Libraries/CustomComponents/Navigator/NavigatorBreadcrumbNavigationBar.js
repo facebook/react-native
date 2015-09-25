@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -119,16 +119,16 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     }
 
     if (interpolate.Crumb(CRUMB_PROPS[index].style, amount)) {
-      this.refs['crumb_' + index].setNativeProps(CRUMB_PROPS[index]);
+      this._setPropsIfExists('crumb_' + index, CRUMB_PROPS[index]);
     }
     if (interpolate.Icon(ICON_PROPS[index].style, amount)) {
-      this.refs['icon_' + index].setNativeProps(ICON_PROPS[index]);
+      this._setPropsIfExists('icon_' + index, ICON_PROPS[index]);
     }
     if (interpolate.Separator(SEPARATOR_PROPS[index].style, amount)) {
-      this.refs['separator_' + index].setNativeProps(SEPARATOR_PROPS[index]);
+      this._setPropsIfExists('separator_' + index, SEPARATOR_PROPS[index]);
     }
     if (interpolate.Title(TITLE_PROPS[index].style, amount)) {
-      this.refs['title_' + index].setNativeProps(TITLE_PROPS[index]);
+      this._setPropsIfExists('title_' + index, TITLE_PROPS[index]);
     }
     var right = this.refs['right_' + index];
     if (right &&
@@ -165,13 +165,10 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       renderToHardwareTextureAndroid: renderToHardwareTexture,
     };
 
-    this.refs['icon_' + index].setNativeProps(props);
-    this.refs['separator_' + index].setNativeProps(props);
-    this.refs['title_' + index].setNativeProps(props);
-    var right = this.refs['right_' + index];
-    if (right) {
-      right.setNativeProps(props);
-    }
+    this._setPropsIfExists('icon_' + index, props);
+    this._setPropsIfExists('separator_' + index, props);
+    this._setPropsIfExists('title_' + index, props);
+    this._setPropsIfExists('right_' + index, props);
   },
 
   componentWillMount: function() {
@@ -259,6 +256,11 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     );
     this._descriptors.right = this._descriptors.right.set(route, rightButtonDescriptor);
     return rightButtonDescriptor;
+  },
+
+  _setPropsIfExists: function(ref, props) {
+    var ref = this.refs[ref];
+    ref && ref.setNativeProps(props);
   },
 });
 

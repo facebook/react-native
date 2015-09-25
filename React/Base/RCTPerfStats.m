@@ -10,6 +10,7 @@
 #import "RCTPerfStats.h"
 
 #import "RCTDefines.h"
+#import "RCTUtils.h"
 
 #if RCT_DEV
 
@@ -32,7 +33,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    _container = [[UIView alloc] init];
+    _container = [UIView new];
     _container.backgroundColor = [UIColor colorWithRed:0 green:0 blue:34/255.0 alpha:1];
     _container.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
   }
@@ -66,7 +67,11 @@ RCT_EXPORT_MODULE()
 
 - (void)show
 {
-  UIView *targetView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+  if (RCTRunningInAppExtension()) {
+    return;
+  }
+  
+  UIView *targetView = RCTSharedApplication().delegate.window.rootViewController.view;
 
   targetView.frame = (CGRect){
     targetView.frame.origin,
@@ -112,6 +117,15 @@ RCT_EXPORT_MODULE()
 
 @end
 
+@implementation RCTBridge (RCTPerfStats)
+
+- (RCTPerfStats *)perfStats
+{
+  return self.modules[RCTBridgeModuleNameForClass([RCTPerfStats class])];
+}
+
+@end
+
 #else
 
 @implementation RCTPerfStats
@@ -121,13 +135,13 @@ RCT_EXPORT_MODULE()
 
 @end
 
-#endif
-
 @implementation RCTBridge (RCTPerfStats)
 
 - (RCTPerfStats *)perfStats
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTPerfStats class])];
+  return nil;
 }
 
 @end
+
+#endif

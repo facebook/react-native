@@ -40,7 +40,7 @@ static BOOL RCTIsIOS8OrEarlier()
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (id)copyWithZone:(__unused NSZone *)zone
 {
@@ -152,7 +152,7 @@ RCT_NOT_IMPLEMENTED(-init)
   static RCTKeyCommands *sharedInstance;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
+    sharedInstance = [self new];
   });
 
   return sharedInstance;
@@ -161,7 +161,7 @@ RCT_NOT_IMPLEMENTED(-init)
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _commands = [[NSMutableSet alloc] init];
+    _commands = [NSMutableSet new];
   }
   return self;
 }

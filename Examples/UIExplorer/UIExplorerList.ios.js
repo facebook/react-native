@@ -37,6 +37,7 @@ var COMPONENTS = [
   require('./ListViewGridLayoutExample'),
   require('./ListViewPagingExample'),
   require('./MapViewExample'),
+  require('./ModalExample'),
   require('./Navigator/NavigatorExample'),
   require('./NavigatorIOSColorsExample'),
   require('./NavigatorIOSExample'),
@@ -48,7 +49,7 @@ var COMPONENTS = [
   require('./SwitchIOSExample'),
   require('./TabBarIOSExample'),
   require('./TextExample.ios'),
-  require('./TextInputExample'),
+  require('./TextInputExample.ios'),
   require('./TouchableExample'),
   require('./ViewExample'),
   require('./WebViewExample'),
@@ -59,7 +60,8 @@ var APIS = [
   require('./ActionSheetIOSExample'),
   require('./AdSupportIOSExample'),
   require('./AlertIOSExample'),
-  require('./AnimationExample/AnExApp'),
+  require('./AnimatedExample'),
+  require('./AnimatedGratuitousApp/AnExApp'),
   require('./AppStateIOSExample'),
   require('./AsyncStorageExample'),
   require('./BorderExample'),
@@ -73,7 +75,8 @@ var APIS = [
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
   require('./VibrationIOSExample'),
-  require('./XHRExample'),
+  require('./XHRExample.ios'),
+  require('./ImageEditingExample'),
 ];
 
 // Register suitable examples for snapshot tests
@@ -121,25 +124,6 @@ class UIExplorerList extends React.Component {
     );
   }
 
-  componentWillMount() {
-    this.props.navigator.navigationContext.addListener('didfocus', function(event) {
-      if (event.data.route.title === 'UIExplorer') {
-        Settings.set({visibleExample: null});
-      }
-    });
-  }
-
-  componentDidMount() {
-    var visibleExampleTitle = Settings.get('visibleExample');
-    if (visibleExampleTitle) {
-      var predicate = (example) => example.title === visibleExampleTitle;
-      var foundExample = APIS.find(predicate) || COMPONENTS.find(predicate);
-      if (foundExample) {
-        setTimeout(() => this._openExample(foundExample), 100);
-      }
-    }
-  }
-
   renderAdditionalView(renderRow: Function, renderTextInput: Function): React.Component {
     return renderTextInput(styles.searchTextInput);
   }
@@ -162,7 +146,6 @@ class UIExplorerList extends React.Component {
   }
 
   onPressRow(example: any) {
-    Settings.set({visibleExample: example.title});
     this._openExample(example);
   }
 }

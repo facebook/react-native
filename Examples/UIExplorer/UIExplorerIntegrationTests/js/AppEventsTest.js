@@ -19,7 +19,7 @@ var {
   Text,
   View,
 } = React;
-var TestModule = NativeModules.TestModule || NativeModules.SnapshotTestManager;
+var TestModule = NativeModules.TestModule;
 
 var deepDiffer = require('deepDiffer');
 

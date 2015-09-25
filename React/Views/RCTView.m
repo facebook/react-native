@@ -49,7 +49,7 @@ static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
   // we do support clipsToBounds, so if that's enabled
   // we'll update the clipping
 
-  if (self.clipsToBounds && [self.subviews count] > 0) {
+  if (self.clipsToBounds && self.subviews.count > 0) {
     clipRect = [clipView convertRect:clipRect toView:self];
     clipRect = CGRectIntersection(clipRect, self.bounds);
     clipView = self;
@@ -93,7 +93,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
-    NSString *label = [subview accessibilityLabel];
+    NSString *label = subview.accessibilityLabel;
     if (label) {
       [str appendString:@" "];
       [str appendString:label];
@@ -123,13 +123,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomLeftRadius = -1;
     _borderBottomRightRadius = -1;
 
-    _backgroundColor = [super backgroundColor];
+    _backgroundColor = super.backgroundColor;
   }
 
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityLabel
 {
@@ -167,8 +167,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
 
 - (BOOL)accessibilityActivate
 {
-  if (self.accessibilityTapHandler) {
-    self.accessibilityTapHandler(self);
+  if (_onAccessibilityTap) {
+    _onAccessibilityTap(nil);
     return YES;
   } else {
     return NO;
@@ -177,8 +177,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
 
 - (BOOL)accessibilityPerformMagicTap
 {
-  if (self.magicTapHandler) {
-    self.magicTapHandler(self);
+  if (_onMagicTap) {
+    _onMagicTap(nil);
     return YES;
   } else {
     return NO;
@@ -210,8 +210,8 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     baseInset.left += autoInset.left;
     baseInset.right += autoInset.right;
   }
-  [scrollView setContentInset:baseInset];
-  [scrollView setScrollIndicatorInsets:baseInset];
+  scrollView.contentInset = baseInset;
+  scrollView.scrollIndicatorInsets = baseInset;
 
   if (updateOffset) {
     // If we're adjusting the top inset, then let's also adjust the contentOffset so that the view
@@ -229,7 +229,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
 + (UIEdgeInsets)contentInsetsForView:(UIView *)view
 {
   while (view) {
-    UIViewController *controller = view.backingViewController;
+    UIViewController *controller = view.reactViewController;
     if (controller) {
       return (UIEdgeInsets){
         controller.topLayoutGuide.length, 0,
@@ -333,7 +333,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     return [super react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
   }
 
-  if ([_reactSubviews count] == 0) {
+  if (_reactSubviews.count == 0) {
     // Do nothing if we have no subviews
     return;
   }
@@ -405,7 +405,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
   // offscreen views. If _reactSubviews is nil, we can assume
   // that [self reactSubviews] and [self subviews] are the same
 
-  return _reactSubviews ?: [self subviews];
+  return _reactSubviews ?: self.subviews;
 }
 
 - (void)updateClippedSubviews
@@ -523,7 +523,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
                                      _backgroundColor.CGColor,
                                      self.clipsToBounds);
 
-  const CGRect contentsCenter = ({
+  CGRect contentsCenter = ({
     CGSize size = image.size;
     UIEdgeInsets insets = image.capInsets;
     CGRectMake(
@@ -540,6 +540,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:unused)
     [image drawInRect:(CGRect){CGPointZero, size}];
     image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
   layer.backgroundColor = NULL;

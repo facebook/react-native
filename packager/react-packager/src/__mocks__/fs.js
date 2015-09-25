@@ -10,7 +10,14 @@
 
 var fs = jest.genMockFromModule('fs');
 
+function asyncCallback(callback) {
+  return function() {
+    setImmediate(() => callback.apply(this, arguments));
+  };
+}
+
 fs.realpath.mockImpl(function(filepath, callback) {
+  callback = asyncCallback(callback);
   var node;
   try {
     node = getToNode(filepath);
@@ -24,6 +31,7 @@ fs.realpath.mockImpl(function(filepath, callback) {
 });
 
 fs.readdir.mockImpl(function(filepath, callback) {
+  callback = asyncCallback(callback);
   var node;
   try {
     node = getToNode(filepath);
@@ -42,6 +50,7 @@ fs.readdir.mockImpl(function(filepath, callback) {
 });
 
 fs.readFile.mockImpl(function(filepath, encoding, callback) {
+  callback = asyncCallback(callback);
   if (arguments.length === 2) {
     callback = encoding;
     encoding = null;
@@ -60,6 +69,7 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
 });
 
 fs.stat.mockImpl(function(filepath, callback) {
+  callback = asyncCallback(callback);
   var node;
   try {
     node = getToNode(filepath);

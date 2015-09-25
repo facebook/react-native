@@ -37,7 +37,7 @@
 
 - (void)setUp
 {
-  self.cache = [[RCTCache alloc] init];
+  self.cache = [RCTCache new];
   self.cache.countLimit = 3;
   self.cache.totalCostLimit = 100;
 }

@@ -12,6 +12,7 @@
 'use strict';
 
 var MatrixMath = require('MatrixMath');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var Platform = require('Platform');
 
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
@@ -22,17 +23,55 @@ var stringifySafe = require('stringifySafe');
  * This method provides a hook where flattened styles may be precomputed or
  * otherwise prepared to become better input data for native code.
  */
-function precomputeStyle(style: ?Object): ?Object {
-  if (!style || !style.transform) {
+function precomputeStyle(style: ?Object, validAttributes: Object): ?Object {
+  if (!style) {
     return style;
   }
-  invariant(
-    !style.transformMatrix,
-    'transformMatrix and transform styles cannot be used on the same component'
-  );
-  var newStyle = _precomputeTransforms({...style});
+
+  var hasPreprocessKeys = false;
+  for (var i = 0, keys = Object.keys(style); i < keys.length; i++) {
+    var key = keys[i];
+    if (_processor(key, validAttributes)) {
+      hasPreprocessKeys = true;
+      break;
+    }
+  }
+
+  if (!hasPreprocessKeys && !style.transform) {
+    return style;
+  }
+
+  var newStyle = {...style};
+  for (var i = 0, keys = Object.keys(style); i < keys.length; i++) {
+    var key = keys[i];
+    var process = _processor(key, validAttributes);
+    if (process) {
+      newStyle[key] = process(newStyle[key]);
+    }
+  }
+
+  if (style.transform) {
+    invariant(
+      !style.transformMatrix,
+      'transformMatrix and transform styles cannot be used on the same component'
+    );
+
+    newStyle = _precomputeTransforms(newStyle);
+  }
+
   deepFreezeAndThrowOnMutationInDev(newStyle);
   return newStyle;
+}
+
+function _processor(key: string, validAttributes: Object) {
+  var process = validAttributes[key] && validAttributes[key].process;
+  if (!process) {
+    process =
+      ReactNativeStyleAttributes[key] &&
+      ReactNativeStyleAttributes[key].process;
+  }
+
+  return process;
 }
 
 /**
@@ -88,6 +127,12 @@ function _precomputeTransforms(style: Object): Object {
         break;
       case 'translateY':
         _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [0, value]);
+        break;
+      case 'skewX':
+        _multiplyTransform(result, MatrixMath.reuseSkewXCommand, [_convertToRadians(value)]);
+        break;
+      case 'skewY':
+        _multiplyTransform(result, MatrixMath.reuseSkewYCommand, [_convertToRadians(value)]);
         break;
       default:
         throw new Error('Invalid transform name: ' + key);
@@ -170,6 +215,8 @@ function _validateTransform(key, value, transformation) {
     case 'rotateY':
     case 'rotateZ':
     case 'rotate':
+    case 'skewX':
+    case 'skewY':
       invariant(
         typeof value === 'string',
         'Transform with key of "%s" must be a string: %s',

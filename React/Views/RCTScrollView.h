@@ -44,9 +44,11 @@
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
+@property (nonatomic, assign) int snapToInterval;
+@property (nonatomic, copy) NSString *snapToAlignment;
+@property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 @property (nonatomic, assign) BOOL inverted;
 @property (nonatomic, assign) BOOL scrollToEndOnNextContentChange;
-@property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 
 @end
 

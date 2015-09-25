@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -56,8 +56,10 @@ var PropTypes = React.PropTypes;
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
 var SCENE_DISABLED_NATIVE_PROPS = {
+  pointerEvents: 'none',
   style: {
-    left: SCREEN_WIDTH,
+    top: SCREEN_HEIGHT,
+    bottom: -SCREEN_HEIGHT,
     opacity: 0,
   },
 };
@@ -107,7 +109,8 @@ var styles = StyleSheet.create({
     top: 0,
   },
   disabledScene: {
-    left: SCREEN_WIDTH,
+    top: SCREEN_HEIGHT,
+    bottom: -SCREEN_HEIGHT,
   },
   transitioner: {
     flex: 1,
@@ -175,7 +178,7 @@ var GESTURE_ACTIONS = [
  *  - `replacePrevious(route)` - Replace the previous scene
  *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
  *     array of routes
- *  - `popToRoute(route)` - Pop to a particular scene, as specified by it's
+ *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
  *     route. All scenes after it will be unmounted
  *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
  *     other scene
@@ -529,15 +532,19 @@ var Navigator = React.createClass({
   _enableScene: function(sceneIndex) {
     // First, determine what the defined styles are for scenes in this navigator
     var sceneStyle = flattenStyle([styles.baseScene, this.props.sceneStyle]);
-    // Then restore the left value for this scene
+    // Then restore the pointer events and top value for this scene
     var enabledSceneNativeProps = {
-      left: sceneStyle.left,
+      pointerEvents: 'auto',
+      style: {
+        top: sceneStyle.top,
+        bottom: sceneStyle.bottom,
+      },
     };
     if (sceneIndex !== this.state.transitionFromIndex &&
         sceneIndex !== this.state.presentedIndex) {
       // If we are not in a transition from this index, make sure opacity is 0
       // to prevent the enabled scene from flashing over the presented scene
-      enabledSceneNativeProps.opacity = 0;
+      enabledSceneNativeProps.style.opacity = 0;
     }
     this.refs['scene_' + sceneIndex] &&
       this.refs['scene_' + sceneIndex].setNativeProps(enabledSceneNativeProps);
@@ -551,8 +558,8 @@ var Navigator = React.createClass({
     } else if (this.state.activeGesture) {
       toIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
     }
-    this._setRenderSceneToHarwareTextureAndroid(fromIndex, true);
-    this._setRenderSceneToHarwareTextureAndroid(toIndex, true);
+    this._setRenderSceneToHardwareTextureAndroid(fromIndex, true);
+    this._setRenderSceneToHardwareTextureAndroid(toIndex, true);
     var navBar = this._navBar;
     if (navBar && navBar.onAnimationStart) {
       navBar.onAnimationStart(fromIndex, toIndex);
@@ -562,7 +569,7 @@ var Navigator = React.createClass({
   _onAnimationEnd: function() {
     var max = this.state.routeStack.length - 1;
     for (var index = 0; index <= max; index++) {
-      this._setRenderSceneToHarwareTextureAndroid(index, false);
+      this._setRenderSceneToHardwareTextureAndroid(index, false);
     }
 
     var navBar = this._navBar;
@@ -571,7 +578,7 @@ var Navigator = React.createClass({
     }
   },
 
-  _setRenderSceneToHarwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
+  _setRenderSceneToHardwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
     var viewAtIndex = this.refs['scene_' + sceneIndex];
     if (viewAtIndex === null || viewAtIndex === undefined) {
       return;
@@ -683,6 +690,9 @@ var Navigator = React.createClass({
   },
 
   _handlePanResponderTerminate: function(e, gestureState) {
+    if (this.state.activeGesture == null) {
+      return;
+    }
     var destIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
     this._detachGesture();
     var transitionBackToPresentedIndex = this.state.presentedIndex;
@@ -918,7 +928,19 @@ var Navigator = React.createClass({
   },
 
   pop: function() {
-    this._popN(1);
+    if (this.state.transitionQueue.length) {
+      // This is the workaround to prevent user from firing multiple `pop()`
+      // calls that may pop the routes beyond the limit.
+      // Because `this.state.presentedIndex` does not update until the
+      // transition starts, we can't reliably use `this.state.presentedIndex`
+      // to know whether we can safely keep popping the routes or not at this
+      //  moment.
+      return;
+    }
+
+    if (this.state.presentedIndex > 0) {
+      this._popN(1);
+    }
   },
 
   /**
@@ -1021,8 +1043,10 @@ var Navigator = React.createClass({
 
   _renderScene: function(route, i) {
     var disabledSceneStyle = null;
+    var disabledScenePointerEvents = 'auto';
     if (i !== this.state.presentedIndex) {
       disabledSceneStyle = styles.disabledScene;
+      disabledScenePointerEvents = 'none';
     }
     return (
       <View
@@ -1031,6 +1055,7 @@ var Navigator = React.createClass({
         onStartShouldSetResponderCapture={() => {
           return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
         }}
+        pointerEvents={disabledScenePointerEvents}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
         {this.props.renderScene(
           route,

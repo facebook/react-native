@@ -25,13 +25,13 @@
 
 - (void)testDictionary
 {
-  NSObject<RCTViewNodeProtocol> *myView = [[UIView alloc] init];
+  id<RCTComponent> myView = [UIView new];
   myView.reactTag = @4;
 
-  NSObject<RCTViewNodeProtocol> *myOtherView = [[UIView alloc] init];
+  id<RCTComponent> myOtherView = [UIView new];
   myOtherView.reactTag = @5;
 
-  RCTSparseArray *registry = [[RCTSparseArray alloc] init];
+  RCTSparseArray *registry = [RCTSparseArray new];
   XCTAssertNil(registry[@4], @"how did you have a view when none are registered?");
   XCTAssertNil(registry[@5], @"how did you have a view when none are registered?");
 

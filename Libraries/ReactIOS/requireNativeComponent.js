@@ -18,6 +18,7 @@ var createReactNativeComponentClass = require('createReactNativeComponentClass')
 var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');
 var matricesDiffer = require('matricesDiffer');
+var processColor = require('processColor');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
@@ -27,19 +28,22 @@ var warning = require('warning');
  * implementations.  Config information is extracted from data exported from the
  * RCTUIManager module.  You should also wrap the native component in a
  * hand-written component with full propTypes definitions and other
- * documentation - pass the hand-written component in as `wrapperComponent` to
+ * documentation - pass the hand-written component in as `componentInterface` to
  * verify all the native props are documented via `propTypes`.
  *
  * If some native props shouldn't be exposed in the wrapper interface, you can
- * pass null for `wrapperComponent` and call `verifyPropTypes` directly
+ * pass null for `componentInterface` and call `verifyPropTypes` directly
  * with `nativePropsToIgnore`;
  *
  * Common types are lined up with the appropriate prop differs with
  * `TypeToDifferMap`.  Non-scalar types not in the map default to `deepDiffer`.
  */
+import type { ComponentInterface } from 'verifyPropTypes';
+
 function requireNativeComponent(
   viewName: string,
-  wrapperComponent: ?Function
+  componentInterface?: ?ComponentInterface,
+  extraConfig?: ?{nativeOnly?: Object},
 ): Function {
   var viewConfig = RCTUIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
@@ -52,12 +56,31 @@ function requireNativeComponent(
   };
   viewConfig.uiViewClassName = viewName;
   viewConfig.validAttributes = {};
+  viewConfig.propTypes = componentInterface && componentInterface.propTypes;
   for (var key in nativeProps) {
+    var useAttribute = false;
+    var attribute = {};
+
     var differ = TypeToDifferMap[nativeProps[key]];
-    viewConfig.validAttributes[key] = differ ? {diff: differ} : true;
+    if (differ) {
+      attribute.diff = differ;
+      useAttribute = true;
+    }
+
+    var processor = TypeToProcessorMap[nativeProps[key]];
+    if (processor) {
+      attribute.process = processor;
+      useAttribute = true;
+    }
+
+    viewConfig.validAttributes[key] = useAttribute ? attribute : true;
   }
   if (__DEV__) {
-    wrapperComponent && verifyPropTypes(wrapperComponent, viewConfig);
+    componentInterface && verifyPropTypes(
+      componentInterface,
+      viewConfig,
+      extraConfig && extraConfig.nativeOnly
+    );
   }
   return createReactNativeComponentClass(viewConfig);
 }
@@ -70,6 +93,16 @@ var TypeToDifferMap = {
   UIEdgeInsets: insetsDiffer,
   // Android Types
   // (not yet implemented)
+};
+
+var TypeToProcessorMap = {
+  // iOS Types
+  CGColor: processColor,
+  CGColorArray: processColor,
+  UIColor: processColor,
+  UIColorArray: processColor,
+  // Android Types
+  Color: processColor,
 };
 
 module.exports = requireNativeComponent;

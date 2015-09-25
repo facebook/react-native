@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -41,8 +41,8 @@ var BASE_STYLES = {
     position: 'absolute',
     top: STATUS_BAR_HEIGHT,
     left: 0,
+    right: 0,
     alignItems: 'center',
-    width: SCREEN_WIDTH,
     height: NAV_BAR_HEIGHT,
     backgroundColor: 'transparent',
   },
@@ -52,18 +52,16 @@ var BASE_STYLES = {
     left: 0,
     overflow: 'hidden',
     opacity: 1,
-    width: SCREEN_WIDTH / 3,
     height: NAV_BAR_HEIGHT,
     backgroundColor: 'transparent',
   },
   RightButton: {
     position: 'absolute',
     top: STATUS_BAR_HEIGHT,
-    left: 2 * SCREEN_WIDTH / 3,
+    right: 0,
     overflow: 'hidden',
     opacity: 1,
     alignItems: 'flex-end',
-    width: SCREEN_WIDTH / 3,
     height: NAV_BAR_HEIGHT,
     backgroundColor: 'transparent',
   },

@@ -12,13 +12,13 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
+var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 
 var RCTUIManager = NativeModules.UIManager;
-var RCTUIManagerDeprecated = NativeModules.UIManager;
 var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
 
 var warning = require('warning');
@@ -182,7 +182,7 @@ var ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponderCapture: function(e: Event): boolean {
     // First see if we want to eat taps while the keyboard is up
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (!this.props.keyboardShouldPersistTaps &&
+    if (this.props.keyboardShouldPersistTaps === false &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput) {
       return true;
@@ -243,7 +243,7 @@ var ScrollResponderMixin = {
     // By default scroll views will unfocus a textField
     // if another touch occurs outside of it
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (!this.props.keyboardShouldPersistTaps &&
+    if (this.props.keyboardShouldPersistTaps === false &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput  &&
       !this.state.observedScrollSinceBecomingResponder &&
@@ -352,7 +352,39 @@ var ScrollResponderMixin = {
    * can also be used to quickly scroll to any element we want to focus
    */
   scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
-    RCTUIManagerDeprecated.scrollTo(findNodeHandle(this), offsetX, offsetY);
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        React.findNodeHandle(this),
+        RCTUIManager.RCTScrollView.Commands.scrollTo,
+        [Math.round(offsetX), Math.round(offsetY)],
+      );
+    } else {
+      RCTUIManager.scrollTo(
+        React.findNodeHandle(this),
+        offsetX,
+        offsetY,
+      );
+    }
+  },
+
+  /**
+   * Like `scrollResponderScrollTo` but immediately scrolls to the given
+   * position
+   */
+  scrollResponderScrollWithouthAnimationTo: function(offsetX: number, offsetY: number) {
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        RCTUIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
+        [offsetX, offsetY],
+      );
+    } else {
+      RCTUIManager.scrollWithoutAnimationTo(
+        findNodeHandle(this),
+        offsetX,
+        offsetY
+      );
+    }
   },
 
   /**
@@ -360,7 +392,7 @@ var ScrollResponderMixin = {
    * @param {object} rect Should have shape {x, y, width, height}
    */
   scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
-    RCTUIManagerDeprecated.zoomToRect(findNodeHandle(this), rect);
+    RCTUIManager.zoomToRect(findNodeHandle(this), rect);
   },
 
   /**
@@ -378,7 +410,7 @@ var ScrollResponderMixin = {
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
     RCTUIManager.measureLayout(
       nodeHandle,
-      findNodeHandle(this),
+      findNodeHandle(this.getInnerViewNode()),
       this.scrollResponderTextInputFocusError,
       this.scrollResponderInputMeasureAndScrollToKeyboard
     );
@@ -430,6 +462,10 @@ var ScrollResponderMixin = {
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardWillHide', this.scrollResponderKeyboardWillHide);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidShow', this.scrollResponderKeyboardDidShow);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidHide', this.scrollResponderKeyboardDidHide);
+    warning(this.getInnerViewNode, 'You need to implement getInnerViewNode in '
+       + this.constructor.displayName + ' to get full'
+       + 'functionality from ScrollResponder mixin. See example of ListView and'
+       + ' ScrollView.');
   },
 
   /**

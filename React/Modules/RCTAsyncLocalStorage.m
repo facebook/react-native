@@ -66,7 +66,7 @@ static NSString *RCTGetStorageDirectory()
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    storageDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
   return storageDirectory;
@@ -161,9 +161,10 @@ RCT_EXPORT_MODULE()
     RCTDeleteStorageDirectory();
   }
   _clearOnInvalidate = NO;
-  _manifest = [[NSMutableDictionary alloc] init];
+  _manifest = [NSMutableDictionary new];
   _haveSetup = NO;
 }
+
 - (BOOL)isValid
 {
   return _haveSetup;
@@ -198,10 +199,10 @@ RCT_EXPORT_MODULE()
   if (!_haveSetup) {
     NSDictionary *errorOut;
     NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), nil, &errorOut);
-    _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [[NSMutableDictionary alloc] init];
+    _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [NSMutableDictionary new];
     if (error) {
       RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
-      _manifest = [[NSMutableDictionary alloc] init];
+      _manifest = [NSMutableDictionary new];
     }
     _haveSetup = YES;
   }
@@ -376,7 +377,7 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
 
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
-  _manifest = [[NSMutableDictionary alloc] init];
+  _manifest = [NSMutableDictionary new];
   NSError *error = RCTDeleteStorageDirectory();
   if (callback) {
     callback(@[RCTNullIfNil(error)]);
@@ -389,7 +390,7 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
   if (errorOut) {
     callback(@[errorOut, (id)kCFNull]);
   } else {
-    callback(@[(id)kCFNull, [_manifest allKeys]]);
+    callback(@[(id)kCFNull, _manifest.allKeys]);
   }
 }
 

@@ -7,27 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
-
 #import "RCTBridge.h"
 #import "RCTImageLoader.h"
 
-@interface RCTImageDownloader : NSObject <RCTBridgeModule>
+@interface RCTImageDownloader : NSObject <RCTImageURLLoader>
 
 + (void)setCache:(NSURLCache *)cache;
-
-/**
- * Downloads an image and decompresses it a the size specified. The compressed
- * image will be cached in memory and to disk. Note that the callback block
- * will not be executed on the same thread you called the method from, nor on
- * the main thread. Returns a token that can be used to cancel the download.
- */
-- (RCTImageLoaderCancellationBlock)downloadImageForURL:(NSURL *)url
-                                                  size:(CGSize)size
-                                                 scale:(CGFloat)scale
-                                            resizeMode:(UIViewContentMode)resizeMode
-                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                       completionBlock:(RCTImageLoaderCompletionBlock)block;
 
 @end
 

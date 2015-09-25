@@ -19,3 +19,5 @@ packages:
 
 logs:
   - {type: file, path: sinopia.log, format: pretty, level: http}
+
+max_body_size: '50mb'
