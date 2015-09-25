@@ -16,16 +16,11 @@ import android.view.ViewGroup;
  * Class providing children management API for view managers of classes extending ViewGroup.
  */
 public abstract class ViewGroupManager <T extends ViewGroup>
-    extends ViewManager<T, ReactShadowNode> {
+    extends BaseViewManager<T, ReactShadowNode> {
 
   @Override
   public ReactShadowNode createCSSNodeInstance() {
     return new ReactShadowNode();
-  }
-
-  @Override
-  public void updateView(T root, CatalystStylesDiffMap props) {
-    BaseViewPropertyApplicator.applyCommonViewProperties(root, props);
   }
 
   @Override

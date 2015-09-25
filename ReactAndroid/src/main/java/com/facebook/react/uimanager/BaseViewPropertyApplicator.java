@@ -20,6 +20,8 @@ import com.facebook.react.bridge.ReadableMap;
 
 /**
  * Takes common view properties from JS and applies them to a given {@link View}.
+ *
+ * TODO(krzysztof): Blow away this class once refactoring is complete
  */
 public class BaseViewPropertyApplicator {
 
