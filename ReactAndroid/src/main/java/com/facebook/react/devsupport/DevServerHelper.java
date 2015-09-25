@@ -78,10 +78,10 @@ import okio.Sink;
 
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
+  private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
   private @Nullable OkHttpClient mOnChangePollingClient;
-  private @Nullable Handler mRestartOnChangePollingHandler;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
 
   public DevServerHelper(DevInternalSettings settings) {
@@ -92,6 +92,7 @@ import okio.Sink;
     // No read or write timeouts by default
     mClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
     mClient.setWriteTimeout(0, TimeUnit.MILLISECONDS);
+    mRestartOnChangePollingHandler = new Handler();
   }
 
   /** Intent action for reloading the JS */
@@ -193,10 +194,7 @@ import okio.Sink;
 
   public void stopPollingOnChangeEndpoint() {
     mOnChangePollingEnabled = false;
-    if (mRestartOnChangePollingHandler != null) {
-      mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
-      mRestartOnChangePollingHandler = null;
-    }
+    mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
     if (mOnChangePollingClient != null) {
       mOnChangePollingClient.cancel(this);
       mOnChangePollingClient = null;
@@ -216,7 +214,6 @@ import okio.Sink;
     mOnChangePollingClient
         .setConnectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS))
         .setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-    mRestartOnChangePollingHandler = new Handler();
     enqueueOnChangeEndpointLongPolling();
   }
 
@@ -246,7 +243,7 @@ import okio.Sink;
           // of a failure, so that we don't flood network queue with frequent requests in case when
           // dev server is down
           FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
-          Assertions.assertNotNull(mRestartOnChangePollingHandler).postDelayed(
+          mRestartOnChangePollingHandler.postDelayed(
               new Runnable() {
             @Override
             public void run() {

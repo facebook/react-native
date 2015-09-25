@@ -82,7 +82,8 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         Assertions.assertNotNull(mJSTimersModule).callTimers(timersToCall);
       }
 
-      mReactChoreographer.postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this);
+      Assertions.assertNotNull(mReactChoreographer)
+          .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this);
     }
   }
 
@@ -90,14 +91,13 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private final PriorityQueue<Timer> mTimers;
   private final SparseArray<Timer> mTimerIdsToTimers;
   private final AtomicBoolean isPaused = new AtomicBoolean(false);
-  private final ReactChoreographer mReactChoreographer;
   private final FrameCallback mFrameCallback = new FrameCallback();
+  private @Nullable ReactChoreographer mReactChoreographer;
   private @Nullable JSTimersExecution mJSTimersModule;
   private boolean mFrameCallbackPosted = false;
 
   public Timing(ReactApplicationContext reactContext) {
     super(reactContext);
-    mReactChoreographer = ReactChoreographer.getInstance();
     // We store timers sorted by finish time.
     mTimers = new PriorityQueue<Timer>(
         11, // Default capacity: for some reason they don't expose a (Comparator) constructor
@@ -119,6 +119,8 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   @Override
   public void initialize() {
+    // Safe to acquire choreographer here, as initialize() is invoked from UI thread.
+    mReactChoreographer = ReactChoreographer.getInstance();
     mJSTimersModule = getReactApplicationContext().getCatalystInstance()
         .getJSModule(JSTimersExecution.class);
     getReactApplicationContext().addLifecycleEventListener(this);
@@ -151,7 +153,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   private void setChoreographerCallback() {
     if (!mFrameCallbackPosted) {
-      mReactChoreographer.postFrameCallback(
+      Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
           ReactChoreographer.CallbackType.TIMERS_EVENTS,
           mFrameCallback);
       mFrameCallbackPosted = true;
@@ -160,7 +162,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   private void clearChoreographerCallback() {
     if (mFrameCallbackPosted) {
-      mReactChoreographer.removeFrameCallback(
+      Assertions.assertNotNull(mReactChoreographer).removeFrameCallback(
           ReactChoreographer.CallbackType.TIMERS_EVENTS,
           mFrameCallback);
       mFrameCallbackPosted = false;
