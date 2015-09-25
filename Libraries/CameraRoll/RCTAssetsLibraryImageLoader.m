@@ -69,6 +69,21 @@ RCT_EXPORT_MODULE()
           BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
           ALAssetRepresentation *representation = [asset defaultRepresentation];
 
+          #if RCT_DEV
+          CGSize sizeBeingLoaded = size;
+          if (useMaximumSize) {
+            CGSize pointSize = representation.dimensions;
+            sizeBeingLoaded = CGSizeMake(pointSize.width * representation.scale, pointSize.height * representation.scale);
+          }
+
+          CGSize screenSize = UIScreen.mainScreen.nativeBounds.size;
+          CGFloat maximumPixelDimension = fmax(screenSize.width, screenSize.height);
+
+          if (sizeBeingLoaded.width > maximumPixelDimension || sizeBeingLoaded.height > maximumPixelDimension) {
+            RCTLogInfo(@"[PERF ASSETS] Loading %@ at size %@, which is larger than screen size %@", representation.filename, NSStringFromCGSize(sizeBeingLoaded), NSStringFromCGSize(screenSize));
+          }
+          #endif
+
           UIImage *image;
           NSError *error = nil;
           if (useMaximumSize) {
