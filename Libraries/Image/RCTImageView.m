@@ -218,6 +218,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
     if (RCTShouldReloadImageForSizeChange(imageSize, idealSize)) {
       if (RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) {
+        RCTLogInfo(@"[PERF IMAGEVIEW] Reloading image %@ as size %@", _src, NSStringFromCGSize(idealSize));
+
         // If the existing image or an image being loaded are not the right size, reload the asset in case there is a
         // better size available.
         _targetSize = idealSize;
