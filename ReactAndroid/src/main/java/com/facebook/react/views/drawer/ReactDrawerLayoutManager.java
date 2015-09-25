@@ -21,10 +21,10 @@ import android.view.View;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.drawer.events.DrawerClosedEvent;
@@ -41,11 +41,6 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   public static final int OPEN_DRAWER = 1;
   public static final int CLOSE_DRAWER = 2;
-
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_DRAWER_POSITION = "drawerPosition";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_DRAWER_WIDTH = "drawerWidth";
 
   @Override
   public String getName() {
@@ -65,22 +60,20 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     return new ReactDrawerLayout(context);
   }
 
-  @Override
-  public void updateView(ReactDrawerLayout view, CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-
-    if (props.hasKey(PROP_DRAWER_POSITION)) {
-      int drawerPosition = props.getInt(PROP_DRAWER_POSITION, -1);
-      if (Gravity.START == drawerPosition || Gravity.END == drawerPosition) {
-        view.setDrawerPosition(drawerPosition);
-      } else {
-        throw new JSApplicationIllegalArgumentException("Unknown drawerPosition " + drawerPosition);
-      }
+  @ReactProp(name = "drawerPosition", defaultInt = Gravity.START)
+  public void setDrawerPosition(ReactDrawerLayout view, int drawerPosition) {
+    if (Gravity.START == drawerPosition || Gravity.END == drawerPosition) {
+      view.setDrawerPosition(drawerPosition);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Unknown drawerPosition " + drawerPosition);
     }
+  }
 
-    if (props.hasKey(PROP_DRAWER_WIDTH)) {
-      view.setDrawerWidth(props.getInt(PROP_DRAWER_WIDTH, ReactDrawerLayout.DEFAULT_DRAWER_WIDTH));
-    }
+  @ReactProp(name = "drawerWidth", defaultFloat = Float.NaN)
+  public void getDrawerWidth(ReactDrawerLayout view, float width) {
+    int widthInPx = Float.isNaN(width) ?
+        ReactDrawerLayout.DEFAULT_DRAWER_WIDTH : Math.round(PixelUtil.toPixelFromDIP(width));
+    view.setDrawerWidth(widthInPx);
   }
 
   @Override
