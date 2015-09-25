@@ -355,13 +355,13 @@ var ScrollResponderMixin = {
       RCTUIManager.dispatchViewManagerCommand(
         React.findNodeHandle(this),
         RCTUIManager.RCTScrollView.Commands.scrollTo,
-        [offsetX, offsetY],
+        [Math.round(offsetX), Math.round(offsetY)],
       );
     } else {
       RCTUIManager.scrollTo(
         React.findNodeHandle(this),
         offsetX,
-        offsetY
+        offsetY,
       );
     }
   },
