@@ -15,7 +15,7 @@ You can generate a private signing key using `keytool`.
 
     $ keytool -genkey -v -keystore my-release-key.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000
 
-This example prompts you for passwords for the keystore and key, and to provide the Distinguished Name fields for your key. It then generates the keystore as a file called `my-release-key.keystore`.
+This command prompts you for passwords for the keystore and key, and to provide the Distinguished Name fields for your key. It then generates the keystore as a file called `my-release-key.keystore`.
 
 The keystore contains a single key, valid for 10000 days. The alias is a name that you will use later when signing your app, so remember to take note of the alias.
 
@@ -24,7 +24,7 @@ _Note: Remember to keep your keystore file private and never commit it to versio
 ### Setting up gradle variables
 
 1. Place the `my-release-key.keystore` file under the `android/app` directory in your project folder.
-2. Edit the file `~/.gradle/gradle.properties` and add the following (replace `*****` with the correct keystore keystore, alias and key password),
+2. Edit the file `~/.gradle/gradle.properties` and add the following (replace `*****` with the correct keystore password, alias and key password),
 
 ```
 MYAPP_RELEASE_STORE_FILE=my-release-key.keystore
