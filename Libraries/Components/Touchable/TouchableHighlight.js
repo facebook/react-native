@@ -109,8 +109,8 @@ var TouchableHighlight = React.createClass({
         }
       },
       underlayStyle: [
-        TOUCHABLE_PROPS.style,
-        INACTIVE_UNDERLAY_PROPS.style,
+        TOUCHABLE_STYLE,
+        {backgroundColor: 'transparent'},
         props.style,
         props.disabled && {opacity: 0.66},
       ]
@@ -170,7 +170,7 @@ var TouchableHighlight = React.createClass({
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: SyntheticEvent) {
     if (this.props.disabled) {
       return;
     }
@@ -218,32 +218,9 @@ var TouchableHighlight = React.createClass({
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     if (this.refs[UNDERLAY_REF]) {
-      this.refs[CHILD_REF].setNativeProps(INACTIVE_CHILD_PROPS);
-      this.refs[UNDERLAY_REF].setNativeProps({
-        ...INACTIVE_UNDERLAY_PROPS,
-        style: this.state.underlayStyle,
-      });
+      this.refs[CHILD_REF].setNativeProps({style: INACTIVE_CHILD_STYLE});
+      this.refs[UNDERLAY_REF].setNativeProps({style: this.state.underlayStyle});
       this.props.onHideUnderlay && this.props.onHideUnderlay();
-    }
-  },
-
-  // Clicks
-
-  _onMouseEnter: function() {
-    if (!EventPluginUtils.useTouchEvents) {
-      this.touchableHandleActivePressIn();
-    }
-  },
-
-  _onMouseLeave: function() {
-    if (!EventPluginUtils.useTouchEvents) {
-      this.touchableHandleActivePressOut();
-    }
-  },
-
-  _onClick: function() {
-    if (!EventPluginUtils.useTouchEvents) {
-      this.touchableHandlePress();
     }
   },
 
@@ -257,15 +234,13 @@ var TouchableHighlight = React.createClass({
         {...this.props}
         style={this.state.underlayStyle}
         onLayout={this.props.onLayout}
+        stopPropagation={true}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
-        onMouseEnter={this._onMouseEnter}
-        onMouseLeave={this._onMouseLeave}
-        onClick={this._onClick}
         testID={this.props.testID}>
         {cloneWithProps(
           onlyChild(this.props.children),
@@ -281,14 +256,8 @@ var TouchableHighlight = React.createClass({
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 var CHILD_REF = keyOf({childRef: null});
 var UNDERLAY_REF = keyOf({underlayRef: null});
-var INACTIVE_CHILD_PROPS = {
-  style: StyleSheet.create({x: {opacity: 1.0}}).x,
-};
-var INACTIVE_UNDERLAY_PROPS = {
-  style: StyleSheet.create({x: {backgroundColor: 'transparent'}}).x,
-};
-var TOUCHABLE_PROPS = {
-  style: StyleSheet.create({x: {cursor: 'pointer'}}).x,
-};
+
+var INACTIVE_CHILD_STYLE = StyleSheet.create({x: {opacity: 1.0}}).x;
+var TOUCHABLE_STYLE = StyleSheet.create({x: {cursor: 'pointer'}}).x;
 
 module.exports = TouchableHighlight;

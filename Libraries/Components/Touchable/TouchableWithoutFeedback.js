@@ -90,7 +90,7 @@ var TouchableWithoutFeedback = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: SyntheticEvent) {
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -123,14 +123,6 @@ var TouchableWithoutFeedback = React.createClass({
     return this.props.delayPressOut || 0;
   },
 
-  // Clicks
-
-  _onClick: function(e: Event) {
-    if (!EventPluginUtils.useTouchEvents) {
-      this.touchableHandlePress(e);
-    }
-  },
-
   render: function(): ReactElement {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     return (React: any).cloneElement(onlyChild(this.props.children), {
@@ -138,6 +130,7 @@ var TouchableWithoutFeedback = React.createClass({
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
+      stopPropagation: true,
       onLayout: this.props.onLayout,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
@@ -145,7 +138,6 @@ var TouchableWithoutFeedback = React.createClass({
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
-      onClick: this._onClick,
     });
   }
 });

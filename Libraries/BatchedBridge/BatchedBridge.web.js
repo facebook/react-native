@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var warning = require('warning');
+var React = require('React');
 
 var BatchedBridge = {
 
@@ -26,8 +26,8 @@ var BatchedBridge = {
       },
 
       measureLayout: function(nodeHandle, relativeToNativeNode, onFail, onSuccess) {
-        var nodeMeasure = nodeHandle.getDOMNode().getBoundingClientRect();
-        var ancestorMeasure = relativeToNativeNode.getDOMNode().getBoundingClientRect();
+        var nodeMeasure = React.findDOMNode(nodeHandle).getBoundingClientRect();
+        var ancestorMeasure = React.findDOMNode(relativeToNativeNode).getBoundingClientRect();
         onSuccess(
           nodeMeasure.left - ancestorMeasure.left,
           nodeMeasure.top - ancestorMeasure.top,
@@ -37,7 +37,7 @@ var BatchedBridge = {
       },
 
       measureLayoutRelativeToParent: function(nodeHandle, onFail, onSuccess) {
-        var node = nodeHandle.getDOMNode();
+        var node = React.findDOMNode(nodeHandle);
         var nodeMeasure = node.getBoundingClientRect();
 
         var ancestorMeasure = {left: 0, top: 0};

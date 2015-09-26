@@ -12,6 +12,8 @@ var RCTUIManager = require('NativeModules').UIManager;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
+var findNodeHandle = require('findNodeHandle');
+
 var _portalRef: any;
 
 // Unique identifiers for modals.
@@ -136,7 +138,7 @@ var Portal = React.createClass({
       setTimeout(() => {
         if (this._getOpenModals().length > 0) {
           RCTUIManager.sendAccessibilityEvent(
-            React.findNodeHandle(this),
+            findNodeHandle(this),
             RCTUIManager.AccessibilityEventTypes.typeWindowStateChanged);
         }
       }, 0);

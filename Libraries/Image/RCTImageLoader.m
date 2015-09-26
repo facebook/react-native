@@ -235,17 +235,3 @@ RCT_EXPORT_MODULE()
 }
 
 @end
-
-@implementation RCTBridge (RCTImageLoader)
-
-- (RCTImageLoader *)imageLoader
-{
-  return self.modules[RCTBridgeModuleNameForClass([RCTImageLoader class])];
-}
-
-- (ALAssetsLibrary *)assetsLibrary
-{
-  return [self.imageLoader assetsLibrary];
-}
-
-@end

@@ -71,7 +71,6 @@ RCT_EXPORT_MODULE()
     return ^{};
   }
 
-  __weak RCTImageDownloader *weakSelf = self;
   RCTURLRequestCompletionBlock runBlocks = ^(NSURLResponse *response, NSData *data, NSError *error) {
 
     if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
@@ -100,9 +99,8 @@ RCT_EXPORT_MODULE()
 
   RCTDownloadTask *task = [_bridge.networking downloadTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
     if (response && !error) {
-      RCTImageDownloader *strongSelf = weakSelf;
       NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
-      [strongSelf->_cache storeCachedResponse:cachedResponse forRequest:request];
+      [_sharedURLCache storeCachedResponse:cachedResponse forRequest:request];
     }
     runBlocks(response, data, error);
   }];
@@ -119,9 +117,9 @@ RCT_EXPORT_MODULE()
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  UIImage *cachedImage = [_sharedMemCache objectForKey:url];
+  UIImage *cachedImage = [_sharedMemCache objectForKey:imageURL];
   if (cachedImage) {
-    completionBlock(nil, cachedImage);
+    completionHandler(nil, cachedImage);
     return ^{};
   }
 
@@ -156,7 +154,7 @@ RCT_EXPORT_MODULE()
 
       UIImage *image = [UIImage imageWithData:data];
 
-      [_sharedMemCache setObject:image forKey:url];
+      [_sharedMemCache setObject:image forKey:imageURL];
 
       if (image) {
         if (progressHandler) {
@@ -204,15 +202,6 @@ RCT_EXPORT_MODULE()
     RCTLogError(@"Unexpected image schema %@", imageURL.scheme);
     return ^{};
   }
-}
-
-@end
-
-@implementation RCTBridge (RCTImageDownloader)
-
-- (RCTImageDownloader *)imageDownloader
-{
-  return self.modules[RCTBridgeModuleNameForClass([RCTImageDownloader class])];
 }
 
 @end

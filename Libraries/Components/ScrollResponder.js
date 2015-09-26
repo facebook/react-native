@@ -354,13 +354,13 @@ var ScrollResponderMixin = {
   scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
     if (Platform.OS === 'android') {
       RCTUIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
+        findNodeHandle(this),
         RCTUIManager.RCTScrollView.Commands.scrollTo,
         [Math.round(offsetX), Math.round(offsetY)],
       );
     } else {
       RCTUIManager.scrollTo(
-        React.findNodeHandle(this),
+        findNodeHandle(this),
         offsetX,
         offsetY,
       );

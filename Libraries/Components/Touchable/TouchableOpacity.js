@@ -164,12 +164,6 @@ var TouchableOpacity = React.createClass({
     }
   },
 
-  _onClick: function() {
-    if (!EventPluginUtils.useTouchEvents) {
-      this.touchableHandlePress();
-    }
-  },
-
   render: function() {
     return (
       <Animated.View
@@ -179,6 +173,7 @@ var TouchableOpacity = React.createClass({
         style={[this.props.style, {opacity: this.state.anim}, {cursor: 'pointer'}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        stopPropagation={true}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
@@ -187,7 +182,7 @@ var TouchableOpacity = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}
         onMouseEnter={this._onMouseEnter}
         onMouseLeave={this._onMouseLeave}
-        onClick={this._onClick}>
+        >
         {this.props.children}
       </Animated.View>
     );

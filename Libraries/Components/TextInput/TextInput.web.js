@@ -113,7 +113,7 @@ var TextInput = React.createClass({
             // but not too long that a user's legitimate focus attempt will be discarded.
             setTimeout(() => {
                 this._canFocus = true;
-                this.refs.input.getDOMNode().disabled = this._isDisabled();
+                this.refs.input.disabled = this._isDisabled();
             }, 100);
         }
     },
@@ -137,7 +137,7 @@ var TextInput = React.createClass({
     },
 
     _getDOMNode: function() {
-        return this.refs.input.getDOMNode();
+        return this.refs.input;
     },
 
     _onKeyDown: function(e) {

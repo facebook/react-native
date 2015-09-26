@@ -222,7 +222,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
       UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
                                                                  offset:(range.location + allowedLength)];
       textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
-      [textField _textFieldDidChange];
+      [textField textFieldDidChange];
     }
     return NO;
   } else {

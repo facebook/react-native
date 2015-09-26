@@ -132,17 +132,3 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 - (float)imageDecoderPriority;
 
 @end
-
-@interface RCTBridge (RCTImageLoader)
-
-/**
- * The shared image loader instance
- */
-@property (nonatomic, readonly) RCTImageLoader *imageLoader;
-
-/**
- * The shared asset library instance.
- */
-@property (nonatomic, readonly) ALAssetsLibrary *assetsLibrary;
-
-@end

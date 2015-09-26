@@ -72,7 +72,6 @@ function showHelp() {
     '  --inlineSource\t\tspecify whether or not to include inline source maps',
     '  --root\t\tadd another root(s) to be used in bundling in this project',
     '  --assetRoots\t\tspecify the root directories of app assets',
-    '  --platform\t\tspecify the platform for which you are building',
     '  --out\t\tspecify the output file',
     '  --url\t\tspecify the bundle file url',
     '  --platform\t\tspecify the platform(android/ios)',
@@ -90,7 +89,6 @@ module.exports = {
       root: args.indexOf('--root') !== -1 ? args[args.indexOf('--root') + 1] : false,
       platform: args.indexOf('--platform') !== -1 ? args[args.indexOf('--platform') + 1] : false,
       assetRoots: args.indexOf('--assetRoots') !== -1 ? args[args.indexOf('--assetRoots') + 1] : false,
-      platform: args.indexOf('--platform') !== -1 ? args[args.indexOf('--platform') + 1] : false,
       out: args.indexOf('--out') !== -1 ? args[args.indexOf('--out') + 1] : false,
       url: args.indexOf('--url') !== -1 ? args[args.indexOf('--url') + 1] : false,
     }

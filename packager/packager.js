@@ -297,7 +297,7 @@ function getAppMiddleware(options) {
   return ReactPackager.middleware({
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
-    blacklistRE: blacklist(),
+    blacklistRE: blacklist(options.platform),
     cacheVersion: '3',
     transformModulePath: transformerPath,
     assetRoots: options.assetRoots,

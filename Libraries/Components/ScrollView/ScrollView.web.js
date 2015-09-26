@@ -42,8 +42,8 @@ var ScrollView = React.createClass({
     },
 
     scrollTo: function(y, x) {
-        this.refs.scrollView.getDOMNode().scrollTop = y;
-        this.refs.scrollView.getDOMNode().scrollLeft = x;
+        this.refs.scrollView.scrollTop = y;
+        this.refs.scrollView.scrollLeft = x;
     },
 
     scrollWithoutAnimationTo: function(y, x) {
@@ -152,7 +152,7 @@ var ScrollView = React.createClass({
     _updateScrollProperties: function() {
         var layout = this.refs.scrollView.measure();
         var containerLayout = this.refs.containerView.measure();
-        var scrollViewNode = this.refs.scrollView.getDOMNode();
+        var scrollViewNode = this.refs.scrollView;
         var contentSize = {
             width: containerLayout.width,
             height: containerLayout.height,
