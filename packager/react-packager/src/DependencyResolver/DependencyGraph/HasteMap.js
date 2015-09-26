@@ -12,6 +12,8 @@ const chalk = require('chalk');
 const path = require('path');
 const getPlatformExtension = require('../../lib/getPlatformExtension');
 
+const GENERIC_PLATFORM = 'generic';
+
 class HasteMap {
   constructor({ fastfs, moduleCache, helpers }) {
     this._fastfs = fastfs;
@@ -43,11 +45,14 @@ class HasteMap {
       /*eslint no-labels: 0 */
       if (type === 'delete' || type === 'change') {
         loop: for (let name in this._map) {
-          let modules = this._map[name];
-          for (var i = 0; i < modules.length; i++) {
-            if (modules[i].path === absPath) {
-              modules.splice(i, 1);
-              break loop;
+          const modulesMap = this._map[name];
+          for (let platform in modulesMap) {
+            const modules = modulesMap[platform];
+            for (var i = 0; i < modules.length; i++) {
+              if (modules[i].path === absPath) {
+                modules.splice(i, 1);
+                break loop;
+              }
             }
           }
         }
@@ -69,36 +74,45 @@ class HasteMap {
   }
 
   getModule(name, platform = null) {
-    if (!this._map[name]) {
+    const modulesMap = this._map[name];
+    if (modulesMap == null) {
       return null;
     }
 
-    const modules = this._map[name];
-    if (platform != null) {
-      for (let i = 0; i < modules.length; i++) {
-        if (getPlatformExtension(modules[i].path) === platform) {
-          return modules[i];
-        }
+    // If no platform is given we choose the generic platform module list.
+    // If a platform is given and no modules exist we fallback
+    // to the generic platform module list.
+    let modules;
+    if (platform == null) {
+      modules = modulesMap[GENERIC_PLATFORM];
+    } else {
+      modules = modulesMap[platform];
+      if (modules == null) {
+        modules = modulesMap[GENERIC_PLATFORM];
+      }
+    }
+
+    if (modules == null) {
+      return null;
+    }
+
+    if (modules.length > 1) {
+      if (!this._warnedAbout[name]) {
+        this._warnedAbout[name] = true;
+        console.warn(
+          chalk.yellow(
+            '\nWARNING: Found multiple haste modules or packages ' +
+            'with the name `%s`. Please fix this by adding it to ' +
+            'the blacklist or deleting the modules keeping only one.\n' +
+            'One of the following modules will be selected at random:\n%s\n'
+          ),
+          name,
+          modules.map(m => m.path).join('\n'),
+        );
       }
 
-      if (modules.length > 1) {
-        if (!this._warnedAbout[name]) {
-          this._warnedAbout[name] = true;
-          console.warn(
-            chalk.yellow(
-              '\nWARNING: Found multiple haste modules or packages ' +
-              'with the name `%s`. Please fix this by adding it to ' +
-              'the blacklist or deleting the modules keeping only one.\n' +
-              'One of the following modules will be selected at random:\n%s\n'
-            ),
-            name,
-            modules.map(m => m.path).join('\n'),
-          );
-        }
-
-        const randomIndex = Math.floor(Math.random() * modules.length);
-        return modules[randomIndex];
-      }
+      const randomIndex = Math.floor(Math.random() * modules.length);
+      return modules[randomIndex];
     }
 
     return modules[0];
@@ -129,15 +143,17 @@ class HasteMap {
 
   _updateHasteMap(name, mod) {
     if (this._map[name] == null) {
-      this._map[name] = [];
+      this._map[name] = Object.create(null);
     }
 
-    if (mod.type === 'Module') {
-      // Modules takes precendence over packages.
-      this._map[name].unshift(mod);
-    } else {
-      this._map[name].push(mod);
+    const moduleMap = this._map[name];
+    const modulePlatform = getPlatformExtension(mod.path) || GENERIC_PLATFORM;
+
+    if (!moduleMap[modulePlatform]) {
+      moduleMap[modulePlatform] = [];
     }
+
+    moduleMap[modulePlatform].push(mod);
   }
 }
 
