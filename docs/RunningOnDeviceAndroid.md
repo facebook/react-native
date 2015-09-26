@@ -4,7 +4,7 @@ title: Running On Device
 layout: docs
 category: Guides (Android)
 permalink: docs/running-on-device-android.html
-next: activityindicatorios
+next: signed-apk-android
 ---
 
 ## USB Debugging
