@@ -17,6 +17,25 @@ var sharedBlacklist = [
   'node_modules/react-tools/src/renderers/shared/event/EventPropagators.js',
   'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
   'node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js',
+
+  // Those conflicts with the ones in react-tools/. We need to blacklist the
+  // internal version otherwise they won't work in open source.
+  'downstream/core/invariant.js',
+  'downstream/key-mirror/keyMirror.js',
+  'downstream/core/emptyFunction.js',
+  'downstream/core/emptyObject.js',
+  'downstream/key-mirror/keyOf.js',
+  'downstream/core/dom/isNode.js',
+  'downstream/core/TouchEventUtils.js',
+  'downstream/core/nativeRequestAnimationFrame.js',
+  'downstream/core/dom/containsNode.js',
+  'downstream/core/dom/isTextNode.js',
+  'downstream/functional/mapObject.js',
+  'downstream/core/camelize.js',
+  'downstream/core/hyphenate.js',
+  'downstream/core/createArrayFromMixed.js',
+  'downstream/core/toArray.js',
+  'downstream/core/dom/getActiveElement.js',
 ];
 
 // Raw unescaped patterns in case you need to use wildcards
