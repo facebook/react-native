@@ -35,6 +35,7 @@ function transform(src, filename, options) {
       'es6.arrowFunctions',
       'es6.blockScoping',
       'es6.classes',
+      'es6.constants',
       'es6.destructuring',
       'es6.parameters',
       'es6.properties.computed',
