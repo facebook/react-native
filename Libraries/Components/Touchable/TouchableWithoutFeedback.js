@@ -14,7 +14,6 @@
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
-var EventPluginUtils = require('EventPluginUtils');
 var View = require('View');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
@@ -137,7 +136,7 @@ var TouchableWithoutFeedback = React.createClass({
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
-      onResponderTerminate: this.touchableHandleResponderTerminate,
+      onResponderTerminate: this.touchableHandleResponderTerminate
     });
   }
 });

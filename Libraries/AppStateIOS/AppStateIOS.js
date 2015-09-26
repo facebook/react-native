@@ -12,8 +12,9 @@
 'use strict';
 
 var Map = require('Map');
+var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTAppState = require('NativeModules').AppState;
+var RCTAppState = NativeModules.AppState;
 
 var logError = require('logError');
 var invariant = require('invariant');

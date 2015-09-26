@@ -19,7 +19,6 @@ var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var EventPluginUtils = require('EventPluginUtils');
 var View = require('View');
 
 var cloneWithProps = require('cloneWithProps');
