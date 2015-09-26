@@ -1134,66 +1134,6 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('providesModule wins when conflict with package', function() {
-      var root = '/root';
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("aPackage")',
-          ].join('\n'),
-          'b.js': [
-            '/**',
-            ' * @providesModule aPackage',
-            ' */',
-          ].join('\n'),
-          'aPackage': {
-            'package.json': JSON.stringify({
-              name: 'aPackage',
-              main: 'main.js'
-            }),
-            'main.js': 'lol'
-          }
-        }
-      });
-
-      var dgraph = new DependencyGraph({
-        roots: [root],
-        fileWatcher: fileWatcher,
-        assetExts: ['png', 'jpg'],
-        cache: cache,
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['aPackage'],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-            {
-              id: 'aPackage',
-              path: '/root/b.js',
-              dependencies: [],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-          ]);
-      });
-    });
-
     pit('should be forgiving with missing requires', function() {
       var root = '/root';
       fs.__setMockFilesystem({
@@ -2616,6 +2556,11 @@ describe('DependencyGraph', function() {
              * @providesModule a
              */
           `,
+          'a.web.js': `
+            /**
+             * @providesModule a
+             */
+          `,
         }
       });
 
@@ -3680,6 +3625,88 @@ describe('DependencyGraph', function() {
               },
             ]);
         });
+      });
+    });
+  });
+
+  describe('warnings', () => {
+    let warn = console.warn;
+
+    beforeEach(() => {
+      console.warn = jest.genMockFn();
+    });
+
+    afterEach(() => {
+      console.warn = warn;
+    });
+
+    pit('should warn about colliding module names', function() {
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': `
+            /**
+             * @providesModule index
+             */
+             require('a');
+          `,
+          'a.js': `
+            /**
+             * @providesModule a
+             */
+          `,
+          'b.js': `
+            /**
+             * @providesModule a
+             */
+          `,
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: ['/root'],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+        expect(console.warn.mock.calls.length).toBe(1);
+      });
+    });
+
+
+    pit('should warn about colliding module names within a platform', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.ios.js': `
+            /**
+             * @providesModule index
+             */
+             require('a');
+          `,
+          'a.ios.js': `
+            /**
+             * @providesModule a
+             */
+          `,
+          'b.ios.js': `
+            /**
+             * @providesModule a
+             */
+          `,
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js', 'ios').then(function(deps) {
+        expect(console.warn.mock.calls.length).toBe(1);
       });
     });
   });
