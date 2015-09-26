@@ -20,9 +20,9 @@ Users can feel huge differences in the usability of web apps vs. native, and thi
 
 These features make users more comfortable while using an app, because it allows people to experiment and interact without fear of making mistakes.
 
-### TouchableHighlight and Touchable*
+### TouchableHighlight and TouchableX
 
-The responder system can be complicated to use. So we have provided an abstract `Touchable` implementation for things that should be "tappable". This uses the responder system and allows you to easily configure tap interactions declaratively. Use `TouchableHighlight` anywhere where you would use a button or link on web.
+The responder system can be complicated to use. So we have provided an abstract `Touchable` implementation for things that should be "tappable". This uses the responder system and allows you to easily configure tap interactions declaratively. These are the `TouchableX` family of functions. Use `TouchableHighlight` anywhere where you would use a button or link on web.
 
 
 ## Responder Lifecycle
