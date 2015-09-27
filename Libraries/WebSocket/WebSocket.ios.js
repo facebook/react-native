@@ -16,6 +16,9 @@ var RCTWebSocketManager = require('NativeModules').WebSocketManager;
 
 var WebSocketBase = require('WebSocketBase');
 
+var Event = require('Event');
+var MessageEvent = require('MessageEvent');
+
 var WebSocketId = 0;
 
 class WebSocket extends WebSocketBase {
@@ -111,16 +114,3 @@ class WebSocket extends WebSocketBase {
 }
 
 module.exports = WebSocket;
-
-class Event {
-  constructor(type) {
-    this.type = type.toString();
-  }
-}
-
-class MessageEvent extends Event {
-  constructor(type, eventInitDict) {
-    super(type);
-    Object.assign(this, eventInitDict);
-  }
-}
