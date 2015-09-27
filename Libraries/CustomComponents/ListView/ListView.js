@@ -559,27 +559,26 @@ var ListView = React.createClass({
   },
 
   _onScroll: function(e) {
-    var isVertical = !this.props.horizontal;
-    this.scrollProperties.visibleLength = e.nativeEvent.layoutMeasurement[
-      isVertical ? 'height' : 'width'
-    ];
-    this.scrollProperties.contentLength = e.nativeEvent.contentSize[
-      isVertical ? 'height' : 'width'
-    ];
-    this.scrollProperties.offset = e.nativeEvent.contentOffset[
-      isVertical ? 'y' : 'x'
-    ];
+    var lengthKey = this.props.horizontal ? 'width' : 'height';
+    var offsetKey = this.props.horizontal ? 'x' : 'y';
+    this.scrollProperties.visibleLength = e.nativeEvent.layoutMeasurement[lengthKey];
+    this.scrollProperties.contentLength = e.nativeEvent.contentSize[lengthKey];
+    this.scrollProperties.offset = e.nativeEvent.contentOffset[offsetKey];
     this._updateVisibleRows(e.nativeEvent.updatedChildFrames);
-    var nearEnd = this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold;
-    if (nearEnd &&
-        this.props.onEndReached &&
-        this.scrollProperties.contentLength !== this._sentEndForContentLength &&
-        this.state.curRenderedRowsCount === this.props.dataSource.getRowCount()) {
-      this._sentEndForContentLength = this.scrollProperties.contentLength;
-      this.props.onEndReached(e);
-    } else {
-      this._renderMoreRowsIfNeeded();
+
+    if (this.props.onEndReached) {
+      var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
+      var isEndReached = distanceFromEnd < this.props.onEndReachedThreshold;
+
+      if (isEndReached !== this._isEndReached) {
+        this._isEndReached = isEndReached;
+        if (isEndReached) {
+          this.props.onEndReached(e);
+        }
+      }
     }
+
+    this._renderMoreRowsIfNeeded();
 
     this.props.onScroll && this.props.onScroll(e);
   },
