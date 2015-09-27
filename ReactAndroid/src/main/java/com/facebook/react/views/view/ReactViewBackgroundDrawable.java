@@ -180,6 +180,11 @@ import com.facebook.csslayout.Spacing;
 
   private void drawRoundedBackgroundWithBorders(Canvas canvas) {
     updatePath();
+
+    if (mPathForBorderRadius == null) {
+      return;
+    }
+
     int useColor = ColorUtil.multiplyColorAlpha(mColor, mAlpha);
     if ((useColor >>> 24) != 0) { // color is not transparent
       mPaint.setColor(useColor);
