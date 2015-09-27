@@ -139,26 +139,80 @@ var GESTURE_ACTIONS = [
  * ### Basic Usage
  *
  * ```
- *   <Navigator
- *     initialRoute={{name: 'My First Scene', index: 0}}
- *     renderScene={(route, navigator) =>
- *       <MySceneComponent
- *         name={route.name}
- *         onForward={() => {
- *           var nextIndex = route.index + 1;
- *           navigator.push({
- *             name: 'Scene ' + nextIndex,
- *             index: nextIndex,
- *           });
- *         }}
- *         onBack={() => {
- *           if (route.index > 0) {
- *             navigator.pop();
- *           }
- *         }}
- *       />
+ *   // NavigatorExample.js
+ *
+ *   'use strict';
+ *
+ *   var React = require('react-native');
+ *   var {
+ *     Navigator,
+ *     AppRegistry,
+ *     StyleSheet,
+ *     Text,
+ *     View,
+ *   } = React;
+ *
+ *   var SomeScene = React.createClass({
+ *     onForward() {
+ *       var nextIndex = this.props.index + 1;
+ *       this.props.navigator.push({
+ *         message: 'Scene ' + nextIndex,
+ *         index: nextIndex,
+ *       });
+ *     },
+ *
+ *     onBackward() {
+ *       this.props.navigator.pop();
+ *     },
+ *
+ *     render() {
+ *       return (
+ *         <View>
+ *           <Text onPress={this.onForward}>
+ *             {this.props.message}
+ *           </Text>
+ *
+ *           <Text onPress={this.onBackward}>
+ *             Press me to go back a scene.
+ *           </Text>
+ *         </View>
+ *       );
  *     }
- *   />
+ *   });
+ *
+ *   var NavigationExample = React.createClass({
+ *     renderScene(route, navigator) {
+ *       switch(route.message) {
+ *         // Cases for your various scenes go here
+ *         //
+ *         // case "Some message"
+ *         //   return (
+ *         //     <SomeOtherScene
+ *         //   );
+ *         //   break;
+ *         default:
+ *           return (
+ *             <SomeScene
+ *               message={route.message}
+ *               index={route.index}
+ *               navigator={navigator}
+ *             />
+ *           );
+ *       }
+ *     },
+ *
+ *     render() {
+ *       return (
+ *         <Navigator
+ *           initialRoute={{ message: "First Scene. Press me to go to the next scene.", index: 1}}
+ *           renderScene={this.renderScene}
+ *           configureScene={(route) => {return Navigator.SceneConfigs.PushFromRight;} }
+ *         />
+ *       );
+ *     }
+ *   });
+ *
+ *   AppRegistry.registerComponent('NavigationExample', () => NavigationExample);
  * ```
  *
  * ### Navigator Methods
