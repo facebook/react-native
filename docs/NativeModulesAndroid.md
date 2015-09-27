@@ -89,21 +89,44 @@ ReadableArray -> Array
 ### Register the Module
 
 The last step within Java is to register the Module; this happens in the `createNativeModules` of your apps package. If a module is not registered it will not be available from JavaScript.
-
+In the Module registry class it is important you override three methods `createNativeModules`, `createJSModules` and `createViewManagers`.
 ```java
-class AnExampleReactPackage implements ReactPackage {
+//AnExampleReactPackage.java
+package com.facebook.react.modules.toast;
 
-  ...
+import java.util.ArrayList;
+import java.util.List;
+
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+
+
+public class AnExampleReactPackage implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-
+    
+    //Registering the module.
     modules.add(new ToastModule(reactContext));
 
     return modules;
   }
+
+  @Override
+  public List<Class<? extends JavaScriptModule>> createJSModules() {
+      return new ArrayList();
+  }
+
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+      return new ArrayList();
+  }
+}
 ```
 
 The package needs to be provided to the ReactInstanceManager when it is built. See `UIExplorerActivity.java` for an example. The default package when you initialize a new project is `MainReactPackage.java`.
