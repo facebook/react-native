@@ -484,9 +484,11 @@ var ListView = React.createClass({
   },
 
   _getDistanceFromEnd: function(scrollProperties) {
-    return scrollProperties.contentLength -
-      scrollProperties.visibleLength -
-      scrollProperties.offset;
+    var maxLength = Math.max(
+      scrollProperties.contentLength,
+      scrollProperties.visibleLength
+    );
+    return maxLength - scrollProperties.visibleLength - scrollProperties.offset;
   },
 
   _updateVisibleRows: function(updatedFrames) {
