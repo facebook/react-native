@@ -16,6 +16,9 @@ var RCTWebSocketModule = require('NativeModules').WebSocketModule;
 
 var WebSocketBase = require('WebSocketBase');
 
+var Event = require('Event');
+var MessageEvent = require('MessageEvent');
+
 var WebSocketId = 0;
 
 var CLOSE_NORMAL = 1000;
@@ -70,9 +73,12 @@ class WebSocket extends WebSocketBase {
           return;
         }
 
-        this.onmessage && this.onmessage({
+        var event = new MessageEvent('message', {
           data: ev.data
         });
+
+        this.onmessage && this.onmessage(event);
+        this.dispatchEvent(event);
       }),
       RCTDeviceEventEmitter.addListener('websocketOpen', ev => {
         if (ev.id !== id) {
@@ -80,7 +86,11 @@ class WebSocket extends WebSocketBase {
         }
 
         this.readyState = this.OPEN;
-        this.onopen && this.onopen();
+
+        var event = new Event('open');
+
+        this.onopen && this.onopen(event);
+        this.dispatchEvent(event);
       }),
       RCTDeviceEventEmitter.addListener('websocketClosed', ev => {
         if (ev.id !== id) {
@@ -88,8 +98,11 @@ class WebSocket extends WebSocketBase {
         }
 
         this.readyState = this.CLOSED;
-        this.onclose && this.onclose(ev);
 
+        var event = new Event('close');
+
+        this.onclose && this.onclose(event);
+        this.dispatchEvent(event);
         this._unregisterEvents();
 
         RCTWebSocketModule.close(CLOSE_NORMAL, '', id);
@@ -99,7 +112,12 @@ class WebSocket extends WebSocketBase {
           return;
         }
 
-        this.onerror && this.onerror(new Error(ev.message));
+        var event = new Event('error');
+
+        event.message = ev.message;
+
+        this.onerror && this.onerror(event);
+        this.dispatchEvent(event);
         this._unregisterEvents();
 
         RCTWebSocketModule.close(CLOSE_NORMAL, '', id);
@@ -109,7 +127,12 @@ class WebSocket extends WebSocketBase {
           return;
         }
 
-        this.onerror && this.onerror(new Error(ev.message));
+        var event = new Event('error');
+
+        event.message = ev.message;
+
+        this.onerror && this.onerror(event);
+        this.dispatchEvent(event);
       })
     ];
   }

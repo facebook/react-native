@@ -147,7 +147,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
     if (client == null) {
       FLog.w(
-              ReactConstants.TAG,
+        ReactConstants.TAG,
         "Could not find WebSocket connection for " + id);
       return;
     }
