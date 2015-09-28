@@ -31,9 +31,10 @@ function buildAndRun() {
   }
   try {
     var packageName = fs.readFileSync('app/src/main/AndroidManifest.xml', 'utf8').match(/package="(.+?)"/)[1];
+    var adbPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME + '/platform-tools/adb' : 'adb';
     var adbArgs = ['shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
-    console.log(chalk.bold('Starting the app (adb ' + adbArgs.join(' ') + ')...'));
-    child_process.spawnSync('adb', adbArgs, {
+    console.log(chalk.bold('Starting the app (' + adbPath + ' ' + adbArgs.join(' ') + ')...'));
+    child_process.spawnSync(adbPath, adbArgs, {
       stdio: [process.stdin, process.stdout, process.stderr]
     });
   } catch (e) {
@@ -62,6 +63,8 @@ module.exports = function() {
         console.log(chalk.yellow('[warn] JS server not recognized, continuing with build...'));
       }
       buildAndRun();
+      // make sure we don't wait around for the packager process
+      process.exit();
     });
   });
   statusReq.on('error', function() {
