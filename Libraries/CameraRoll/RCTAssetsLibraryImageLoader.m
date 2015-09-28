@@ -76,7 +76,14 @@ RCT_EXPORT_MODULE()
             sizeBeingLoaded = CGSizeMake(pointSize.width * representation.scale, pointSize.height * representation.scale);
           }
 
-          CGSize screenSize = UIScreen.mainScreen.nativeBounds.size;
+          CGSize screenSize;
+          if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedDescending) {
+            screenSize = UIScreen.mainScreen.nativeBounds.size;
+          } else {
+            CGSize mainScreenSize = [UIScreen mainScreen].bounds.size;
+            CGFloat mainScreenScale = [[UIScreen mainScreen] scale];
+            screenSize = CGSizeMake(mainScreenSize.width * mainScreenScale, mainScreenSize.height * mainScreenScale);
+          }
           CGFloat maximumPixelDimension = fmax(screenSize.width, screenSize.height);
 
           if (sizeBeingLoaded.width > maximumPixelDimension || sizeBeingLoaded.height > maximumPixelDimension) {
