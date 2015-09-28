@@ -235,10 +235,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)textViewDidChange:(UITextView *)textView
 {
   if (_autoGrow) {
-    _textView.scrollEnabled = NO;
-  
-    [_textView sizeToFit];
+    float currentHeight = _textView.frame.size.height;
     float newHeight;
+
+    _textView.scrollEnabled = NO;
+    [_textView sizeToFit];
 
     if (_textView.frame.size.height >= _origHeight) {
       newHeight = _textView.frame.size.height;
@@ -246,8 +247,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       newHeight = _origHeight;
     }
   
-    CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, newHeight);
-    [_bridge.uiManager setFrame:newFrame forView:self];
+    if (newHeight != currentHeight) {
+      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, newHeight);
+      [_bridge.uiManager setFrame:newFrame
+                          forView:self];
+    }
   }
 
   [self _setPlaceholderVisibility];
