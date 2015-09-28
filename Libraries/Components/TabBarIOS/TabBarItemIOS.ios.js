@@ -15,6 +15,7 @@ var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
+var resolveAssetSource = require('resolveAssetSource');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -114,7 +115,8 @@ var TabBarItemIOS = React.createClass({
     return (
       <RCTTabBarItem
         {...this.props}
-        icon={this.props.systemIcon || this.props.icon}
+        icon={this.props.systemIcon || resolveAssetSource(this.props.icon)}
+        selectedIcon={resolveAssetSource(this.props.selectedIcon)}
         badge={badge}
         style={[styles.tab, this.props.style]}>
         {tabContents}
