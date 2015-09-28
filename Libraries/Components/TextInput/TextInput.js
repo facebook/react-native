@@ -102,7 +102,7 @@ var TextInput = React.createClass({
      */
     autoCorrect: PropTypes.bool,
     /**
-     * If true, and the input is multiline, the input's height will grow automatically. The default value is true.
+     * If true, and the input is multiline, the input's height will grow automatically. The default value is false.
      * @platorm ios
      */
     autoGrow: PropTypes.bool,
