@@ -6,8 +6,21 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ProgressBarAndroid
+ * @providesModule ToastAndroid
  */
 'use strict';
 
-module.exports = require('UnimplementedView');
+var warning = require('warning');
+
+var ToastAndroid = {
+
+  show: function (
+    message: string,
+    duration: number
+  ): void {
+    warning(false, 'Cannot use ToastAndroid on iOS.');
+  },
+
+};
+
+module.exports = ToastAndroid;
