@@ -149,6 +149,15 @@ var styles = StyleSheet.create({
     right: 5,
     backgroundColor: 'red',
   },
+  multilineAutoGrow: {
+    borderWidth: 0.5,
+    borderColor: '#0f0f0f',
+    flex: 1,
+    fontSize: 13,
+    height: 30,
+    padding: 4,
+    marginBottom: 4,
+  },
   eventLabel: {
     margin: 3,
     fontSize: 12,
@@ -434,6 +443,13 @@ exports.examples = [
             style={styles.multiline}>
             <View style={styles.multilineChild}/>
           </TextInput>
+          <TextInput
+            placeholder="auto growing multiline text input"
+            multiline={true}
+            autoGrow={true}
+            style={styles.multilineAutoGrow}
+          />
+
         </View>
       );
     }
