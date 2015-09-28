@@ -77,6 +77,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (! _origHeight) {
     _origHeight = self.frame.size.height;
   }
+  [self updateTextViewFrame];
 }
 
 - (void)updatePlaceholder
@@ -99,6 +100,44 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)updateTextViewFrame
+{
+  if (self.superview == nil) {
+    return;
+  }
+
+  if (_autoGrow) {
+    UITextView *textView;
+    if (_placeholderView) {
+      textView = [_placeholderView isHidden] ? _textView : _placeholderView;
+    } else {
+      textView = _textView;
+    }
+    
+    if (CGRectIsEmpty(self.frame)) {
+      return;
+    }
+
+    float currentHeight = textView.frame.size.height;
+    float newHeight;
+
+    textView.scrollEnabled = NO;
+    [textView sizeToFit];
+
+    if (textView.frame.size.height >= _origHeight) {
+      newHeight = textView.frame.size.height;
+    } else {
+      newHeight = _origHeight;
+    }
+  
+    if (newHeight != currentHeight) {
+      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, newHeight);
+      [_bridge.uiManager setFrame:newFrame
+                          forView:self];
+    }
+  }
+}
+
 - (UIFont *)font
 {
   return _textView.font;
@@ -108,6 +147,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _textView.font = font;
   [self updatePlaceholder];
+  [self updateTextViewFrame];
 }
 
 - (UIColor *)textColor
@@ -124,6 +164,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _placeholder = placeholder;
   [self updatePlaceholder];
+  [self updateTextViewFrame];
 }
 
 - (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
@@ -234,27 +275,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-  if (_autoGrow) {
-    float currentHeight = _textView.frame.size.height;
-    float newHeight;
-
-    _textView.scrollEnabled = NO;
-    [_textView sizeToFit];
-
-    if (_textView.frame.size.height >= _origHeight) {
-      newHeight = _textView.frame.size.height;
-    } else {
-      newHeight = _origHeight;
-    }
-  
-    if (newHeight != currentHeight) {
-      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, newHeight);
-      [_bridge.uiManager setFrame:newFrame
-                          forView:self];
-    }
-  }
-
   [self _setPlaceholderVisibility];
+  [self updateTextViewFrame];
+
   _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
