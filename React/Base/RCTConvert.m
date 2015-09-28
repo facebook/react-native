@@ -413,11 +413,13 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   UIImage *image;
   NSString *path;
   CGFloat scale = 0.0;
+  BOOL isPackagerAsset = NO;
   if ([json isKindOfClass:[NSString class]]) {
     path = json;
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     path = [self NSString:json[@"uri"]];
     scale = [self CGFloat:json[@"scale"]];
+    isPackagerAsset = [self BOOL:json[@"__packager_asset"]];
   } else {
     RCTLogConvertError(json, @"an image");
   }
@@ -458,6 +460,8 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
 
   } else if ([scheme isEqualToString:@"data"]) {
+    image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
+  } else if ([scheme isEqualToString:@"http"] && isPackagerAsset) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else {
     RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
