@@ -103,7 +103,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-
 public class AnExampleReactPackage implements ReactPackage {
 
   @Override
@@ -119,12 +118,12 @@ public class AnExampleReactPackage implements ReactPackage {
 
   @Override
   public List<Class<? extends JavaScriptModule>> createJSModules() {
-      return new ArrayList();
+    return new ArrayList();
   }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-      return new ArrayList();
+    return new ArrayList();
   }
 }
 ```
