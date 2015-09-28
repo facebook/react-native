@@ -77,10 +77,12 @@ describe('resolveAssetSource', () => {
         name: 'logo',
         type: 'png',
       }, {
+        __packager_asset: true,
         isStatic: false,
         width: 100,
         height: 200,
         uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
+        scale: 1,
       });
     });
 
@@ -96,10 +98,12 @@ describe('resolveAssetSource', () => {
         name: 'logo',
         type: 'png',
       }, {
+        __packager_asset: true,
         isStatic: false,
         width: 100,
         height: 200,
         uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
+        scale: 2,
       });
     });
 
@@ -125,6 +129,7 @@ describe('resolveAssetSource', () => {
         name: 'logo',
         type: 'png',
       }, {
+        __packager_asset: true,
         isStatic: true,
         width: 100,
         height: 200,
@@ -153,6 +158,7 @@ describe('resolveAssetSource', () => {
         name: '!@Logo#1_€', // Invalid chars shouldn't get passed to native
         type: 'png',
       }, {
+        __packager_asset: true,
         isStatic: true,
         width: 100,
         height: 200,
