@@ -35,7 +35,11 @@ function _dependencies(argv, conf, resolve, reject) {
       command: 'output',
       description: 'File name where to store the output, ex. /tmp/dependencies.txt',
       type: 'string',
-    }
+    }, {
+      command: 'platform',
+      description: 'The platform extension used for selecting modules',
+      type: 'string',
+    },
   ], argv);
 
   const rootModuleAbsolutePath = args['entry-file'];
@@ -57,6 +61,11 @@ function _dependencies(argv, conf, resolve, reject) {
     )
   )[0];
 
+  const options = {
+    platform: args.platform,
+    entryFile: relativePath,
+  };
+
   const writeToFile = args.output;
   const outStream = writeToFile
     ? fs.createWriteStream(args.output)
@@ -66,7 +75,7 @@ function _dependencies(argv, conf, resolve, reject) {
   log('Waiting for the packager.');
   resolve(ReactPackager.createClientFor(config).then(client => {
     log('Packager client was created');
-    return client.getDependencies(relativePath)
+    return client.getDependencies(options)
       .then(deps => {
         log('Packager returned dependencies');
         client.close();
