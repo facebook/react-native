@@ -39,7 +39,8 @@ RCT_EXPORT_MODULE()
   // Have to exclude 'file://' from the main bundle, otherwise this would conflict with RCTAssetBundleImageLoader
   return
     [requestURL.scheme compare:@"http" options:NSCaseInsensitiveSearch range:NSMakeRange(0, 4)] == NSOrderedSame ||
-    ([requestURL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame && ![requestURL.path hasPrefix:[NSBundle mainBundle].resourcePath]) ||
+    ([requestURL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame &&
+     ![requestURL.path hasPrefix:[NSBundle bundleForClass:[self class]].resourcePath]) ||
     [requestURL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame;
 }
 

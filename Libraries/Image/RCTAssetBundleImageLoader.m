@@ -21,7 +21,7 @@ RCT_EXPORT_MODULE()
     return nil;
   }
 
-  NSString *resourcesPath = [NSBundle mainBundle].resourcePath;
+  NSString *resourcesPath = [NSBundle bundleForClass:[self class]].resourcePath;
   NSString *requestPath = requestURL.absoluteURL.path;
   if (requestPath.length < resourcesPath.length + 1) {
     return nil;
@@ -37,8 +37,9 @@ RCT_EXPORT_MODULE()
     return NO;
   }
 
-  if ([[NSBundle mainBundle] URLForResource:imageName withExtension:nil] ||
-      [[NSBundle mainBundle] URLForResource:imageName withExtension:@"png"]) {
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  if ([bundle URLForResource:imageName withExtension:nil] ||
+      [bundle URLForResource:imageName withExtension:@"png"]) {
     return YES;
   }
 
