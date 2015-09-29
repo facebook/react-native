@@ -269,6 +269,7 @@ NSInteger kNeverProgressed = -10000;
 }
 
 @synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -321,6 +322,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
+  }
+}
+
 - (void)dealloc
 {
   _navigationController.delegate = nil;
@@ -355,14 +366,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
-    _paused = NO;
+    self.paused = NO;
   }
   completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
     _dummyView.frame = CGRectZero;
-    _paused = YES;
+    self.paused = YES;
     // Reset the parallel position tracker
   }];
 }
