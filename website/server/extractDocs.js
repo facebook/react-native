@@ -232,6 +232,7 @@ var apis = [
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
+  '../Libraries/QuickActionsIOS/QuickActionsIOS.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',

@@ -75,6 +75,12 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/PushNotificationIOS/*.js"
   end
 
+  s.subspec 'QuickActionsIOS' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/QuickActionsIOS/*.{h,m}"
+    ss.preserve_paths   = "Libraries/QuickActionsIOS/*.js"
+  end
+
   s.subspec 'RCTSettings' do |ss|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Settings/*.{h,m}"
@@ -104,5 +110,5 @@ Pod::Spec.new do |s|
     ss.source_files     = "Libraries/LinkingIOS/*.{h,m}"
     ss.preserve_paths   = "Libraries/LinkingIOS/*.js"
   end
-  
+
 end
