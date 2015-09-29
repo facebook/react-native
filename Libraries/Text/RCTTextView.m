@@ -22,6 +22,7 @@
   BOOL _jsRequestingFirstResponder;
   BOOL _autoGrow;
   float _origHeight;
+  float _maxHeight;
   NSString *_placeholder;
   UITextView *_placeholderView;
   UITextView *_textView;
@@ -113,7 +114,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     float currentHeight = _textView.frame.size.height;
     float newHeight;
 
-    _textView.scrollEnabled = NO;
     [_textView sizeToFit];
 
     if (_textView.frame.size.height >= _origHeight) {
@@ -121,9 +121,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     } else {
       newHeight = _origHeight;
     }
-  
+
     if (newHeight != currentHeight) {
-      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, newHeight);
+      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, fminf(newHeight, _maxHeight));
       [_bridge.uiManager setFrame:newFrame
                           forView:self];
     }
@@ -240,6 +240,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setAutoGrow:(BOOL)autoGrow
 {
   _autoGrow = autoGrow;
+}
+
+- (void)setMaxHeight:(float)maxHeight
+{
+  _maxHeight = maxHeight;
 }
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView

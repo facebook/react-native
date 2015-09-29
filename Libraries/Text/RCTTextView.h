@@ -19,6 +19,7 @@
 
 @property (nonatomic, assign) BOOL autoCorrect;
 @property (nonatomic, assign) BOOL autoGrow;
+@property (nonatomic, assign) float maxHeight;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
