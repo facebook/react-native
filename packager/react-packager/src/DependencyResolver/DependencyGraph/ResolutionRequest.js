@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const debug = require('debug')('ReactPackager:DependencyGraph');
+const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const util = require('util');
 const path = require('path');
 const isAbsolutePath = require('absolute-path');

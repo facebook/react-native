@@ -11,7 +11,7 @@
 const Activity = require('../../Activity');
 const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
 const Fastfs = require('../fastfs');
-const debug = require('debug')('ReactPackager:DependencyGraph');
+const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const path = require('path');
 
 class DeprecatedAssetMap {

@@ -14,6 +14,7 @@ const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
 const util = require('util');
 const workerFarm = require('worker-farm');
+const debug = require('debug')('ReactNativePackager:JStransformer');
 
 const readFile = Promise.denodeify(fs.readFile);
 
@@ -86,6 +87,8 @@ class Transformer {
       return Promise.reject(new Error('No transfrom module'));
     }
 
+    debug('transforming file', filePath);
+
     return this._cache.get(
       filePath,
       'transformedSource',
@@ -106,6 +109,8 @@ class Transformer {
               );
               throw formatError(res.error, filePath);
             }
+
+            debug('done transforming file', filePath);
 
             return new ModuleTransport({
               code: res.code,
