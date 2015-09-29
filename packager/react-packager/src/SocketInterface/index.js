@@ -13,7 +13,7 @@ const SocketClient = require('./SocketClient');
 const SocketServer = require('./SocketServer');
 const _ = require('underscore');
 const crypto = require('crypto');
-const debug = require('debug')('ReactPackager:SocketInterface');
+const debug = require('debug')('ReactNativePackager:SocketInterface');
 const fs = require('fs');
 const net = require('net');
 const path = require('path');
@@ -90,7 +90,7 @@ function createServer(resolve, reject, options, sockPath) {
 
   // Enable server debugging by default since it's going to a log file.
   const env = _.clone(process.env);
-  env.DEBUG = 'ReactPackager:SocketServer';
+  env.DEBUG = 'ReactNativePackager:SocketServer';
 
   // We have to go through the main entry point to make sure
   // we go through the babel require hook.

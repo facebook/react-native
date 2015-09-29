@@ -1,7 +1,7 @@
 'use strict';
 
 const Promise = require('promise');
-const debug = require('debug')('DependencyGraph');
+const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const fs = require('fs');
 const path = require('path');
 

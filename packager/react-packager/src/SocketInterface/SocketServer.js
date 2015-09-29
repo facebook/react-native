@@ -11,7 +11,7 @@
 const Promise = require('promise');
 const Server = require('../Server');
 const bser = require('bser');
-const debug = require('debug')('ReactPackager:SocketServer');
+const debug = require('debug')('ReactNativePackager:SocketServer');
 const fs = require('fs');
 const net = require('net');
 
