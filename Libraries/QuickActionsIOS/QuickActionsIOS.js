@@ -11,14 +11,14 @@
  */
 'use strict';
 
-// var RCTQuickActionsManager = require('NativeModules').QuickActionsManager;
+var RCTQuickActionsManager = require('NativeModules').QuickActionsManager;
 
 var invariant = require('invariant');
 
 type Action = {
   type: String,
   title: String,
-  subtitle: String
+  subtitle?: String
   // icon: String // TODO
 };
 
@@ -28,12 +28,21 @@ var QuickActionsIOS = {
    *
    * You must pass a list of Actions that will be set on IOS Home Screen. Pass
    * an empty list if you want to unset the actions.
+   *
+   * Each action must have a title key and a type key used when opening the app.
+   * An optional subtitle key can be added.
    */
   setQuickActionsWithActionList(actionList: Array<Action>) {
     invariant(
       actionList instanceof Array && actionList !== null,
       'The action list must be a valid array'
     );
+    invariant(
+      actionList.filter(action => action.type && action.title).length
+        === actionList.length,
+      'The action list must have each item with a type and a title key'
+    );
+    RCTQuickActionsManager.setQuickActionsWithActionList(actionList);
   }
 };
 
