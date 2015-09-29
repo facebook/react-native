@@ -54,29 +54,37 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
-  @ReactProp(name = "borderRadius")
-  public void setBorderRadius(ReactViewGroup view, float borderRadius) {
-    view.setBorderRadius(PixelUtil.toPixelFromDIP(borderRadius));
-  }
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_VERTICAL_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_VERTICAL_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_VERTICAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_VERTICAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_HORIZONTAL_RADIUS
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactViewGroup view, int index, float radius) {
+    if (!CSSConstants.isUndefined(radius)) {
+      radius = PixelUtil.toPixelFromDIP(radius);
+    }
 
-  @ReactProp(name = "borderTopLeftRadius")
-  public void setBorderTopLeftRadius(ReactViewGroup view, float borderTopLeftRadius) {
-    view.setBorderTopLeftRadius(PixelUtil.toPixelFromDIP(borderTopLeftRadius));
-  }
+    if (index == 0) {
+      view.setBorderRadius(0, 8, radius);
+      return;
+    }
 
-  @ReactProp(name = "borderTopRightRadius")
-  public void setBorderTopRightRadius(ReactViewGroup view, float borderTopRightRadius) {
-    view.setBorderTopRightRadius(PixelUtil.toPixelFromDIP(borderTopRightRadius));
-  }
+    if (index < 5) {
+      view.setBorderRadius((index-1)*2, 2, radius);
+      return;
+    }
 
-  @ReactProp(name = "borderBottomLeftRadius")
-  public void setBorderBottomLeftRadius(ReactViewGroup view, float borderBottomLeftRadius) {
-    view.setBorderBottomLeftRadius(PixelUtil.toPixelFromDIP(borderBottomLeftRadius));
-  }
-
-  @ReactProp(name = "borderBottomRightRadius")
-  public void setBorderBottomRightRadius(ReactViewGroup view, float borderBottomRightRadius) {
-    view.setBorderBottomRightRadius(PixelUtil.toPixelFromDIP(borderBottomRightRadius));
+    view.setBorderRadius(index-5, 1, radius);
   }
 
   @ReactProp(name = "borderStyle")
