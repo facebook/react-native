@@ -221,6 +221,13 @@ exports.examples = [
             style={styles.singleLine}
             underlineColorAndroid="blue"
           />
+          <TextInput
+            defaultValue="Same BackgroundColor as View "
+            style={[styles.singleLine, {backgroundColor: 'rgba(100, 100, 100, 0.3)'}]}>
+            <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
+              Darker backgroundColor
+            </Text>
+          </TextInput>
         </View>
       );
     }

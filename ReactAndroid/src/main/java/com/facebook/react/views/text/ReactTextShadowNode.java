@@ -134,7 +134,7 @@ public class ReactTextShadowNode extends ReactShadowNode {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<SetSpanOperation>();
     buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
-    if (textCSSNode.mFontSize == -1) {
+    if (textCSSNode.mFontSize == UNSET) {
       sb.setSpan(
           new AbsoluteSizeSpan((int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))),
           0,
@@ -315,7 +315,8 @@ public class ReactTextShadowNode extends ReactShadowNode {
       }
       markUpdated();
     }
-    if (styles.hasKey(ViewProps.BACKGROUND_COLOR)) {
+    // Don't apply background color to anchor TextView since it will be applied on the View directly
+    if (styles.hasKey(ViewProps.BACKGROUND_COLOR) && this.isVirtualAnchor() == false) {
       if (styles.isNull(ViewProps.BACKGROUND_COLOR)) {
         mIsBackgroundColorSet = false;
       } else {
