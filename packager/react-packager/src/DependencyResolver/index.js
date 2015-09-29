@@ -49,15 +49,6 @@ var validateOpts = declareOpts({
   },
   providesModuleNodeModules: {
     type: 'array',
-    default: [
-      'react-tools',
-      'react-native',
-      // Parse requires AsyncStorage. They will
-      // change that to require('react-native') which
-      // should work after this release and we can
-      // remove it from here.
-      'parse',
-    ],
   },
 });
 
