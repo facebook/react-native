@@ -354,7 +354,13 @@ var self = {};
       xhr.onload = function() {
         var status = (xhr.status === 1223) ? 204 : xhr.status
         if (status < 100 || status > 599) {
-          reject(new TypeError('Network request failed'))
+          var msg = 'Network request failed'
+          if (xhr.responseText) {
+            msg += ' ("' + xhr.responseText + '")'
+          } else {
+            msg += ' (no other details)'
+          }
+          reject(new TypeError(msg))
           return
         }
         var options = {
