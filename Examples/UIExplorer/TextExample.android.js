@@ -310,6 +310,15 @@ var TextExample = React.createClass({
               </Text>
             </Text>
           </Text>
+          <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
+            Same alpha as background,
+            <Text>
+              Inherited alpha from background,
+              <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
+                Reapply alpha
+              </Text>
+            </Text>
+          </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="containerBackgroundColor attribute">
           <View style={{flexDirection: 'row', height: 85}}>
