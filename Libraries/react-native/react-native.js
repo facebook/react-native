@@ -68,6 +68,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   PanResponder: require('PanResponder'),
   PixelRatio: require('PixelRatio'),
   PushNotificationIOS: require('PushNotificationIOS'),
+  QuickActionsIOS: require('QuickActionsIOS'),
   Settings: require('Settings'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),

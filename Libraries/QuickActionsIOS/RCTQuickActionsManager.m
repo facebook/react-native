@@ -16,8 +16,7 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(setQuickActionsWithActionList:
-                  (NSArray <NSDictionary *> *)actionList)
+RCT_EXPORT_METHOD(setQuickActionsWithActionList: (NSArray *)actionList)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to set quick actions from app extension");

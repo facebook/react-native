@@ -58,6 +58,7 @@
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
+		F0C658191BBB3E6F0075A3CC /* libRCTQuickActions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C658181BBB3D650075A3CC /* libRCTQuickActions.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,12 +167,12 @@
 			remoteGlobalIDString = 832C81801AAF6DEF007FA2F7;
 			remoteInfo = RCTVibration;
 		};
-		F0C658001BBB36BF0075A3CC /* PBXContainerItemProxy */ = {
+		F0C658171BBB3D650075A3CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F0C657FC1BBB36BF0075A3CC /* QuickActionsIOS.xcodeproj */;
+			containerPortal = F0C658131BBB3D640075A3CC /* RCTQuickActions.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = QuickActionsIOS;
+			remoteInfo = RCTQuickActions;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -238,7 +239,7 @@
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
-		F0C657FC1BBB36BF0075A3CC /* QuickActionsIOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickActionsIOS.xcodeproj; path = ../../Libraries/QuickActionsIOS/QuickActionsIOS.xcodeproj; sourceTree = "<group>"; };
+		F0C658131BBB3D640075A3CC /* RCTQuickActions.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTQuickActions.xcodeproj; path = ../../Libraries/QuickActionsIOS/RCTQuickActions.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +267,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0C658191BBB3E6F0075A3CC /* libRCTQuickActions.a in Frameworks */,
 				14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */,
 				147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */,
 				134454601AAFCABD003F0779 /* libRCTAdSupport.a in Frameworks */,
@@ -296,7 +298,6 @@
 		1316A21D1AA397F400C0188E /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				F0C657FC1BBB36BF0075A3CC /* QuickActionsIOS.xcodeproj */,
 				14AADEFF1AC3DB95002390C9 /* React.xcodeproj */,
 				14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */,
 				134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */,
@@ -306,6 +307,7 @@
 				357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */,
 				134180261AA91779003F314A /* RCTNetwork.xcodeproj */,
 				14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */,
+				F0C658131BBB3D640075A3CC /* RCTQuickActions.xcodeproj */,
 				13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */,
 				58005BE41ABA80530062E044 /* RCTTest.xcodeproj */,
 				13417FEA1AA914B8003F314A /* RCTText.xcodeproj */,
@@ -556,10 +558,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F0C657FD1BBB36BF0075A3CC /* Products */ = {
+		F0C658141BBB3D640075A3CC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F0C658011BBB36BF0075A3CC /* libQuickActionsIOS.a */,
+				F0C658181BBB3D650075A3CC /* libRCTQuickActions.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -653,10 +655,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = F0C657FD1BBB36BF0075A3CC /* Products */;
-					ProjectRef = F0C657FC1BBB36BF0075A3CC /* QuickActionsIOS.xcodeproj */;
-				},
-				{
 					ProductGroup = 147CED471AB34F8C00DA3E4C /* Products */;
 					ProjectRef = 14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */;
 				},
@@ -687,6 +685,10 @@
 				{
 					ProductGroup = 14DC67E81AB71876001358AB /* Products */;
 					ProjectRef = 14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */;
+				},
+				{
+					ProductGroup = F0C658141BBB3D640075A3CC /* Products */;
+					ProjectRef = F0C658131BBB3D640075A3CC /* RCTQuickActions.xcodeproj */;
 				},
 				{
 					ProductGroup = 834C36CE1AF8DA610019C93C /* Products */;
@@ -821,11 +823,11 @@
 			remoteRef = D85B829B1AB6D5CE003F4FE2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F0C658011BBB36BF0075A3CC /* libQuickActionsIOS.a */ = {
+		F0C658181BBB3D650075A3CC /* libRCTQuickActions.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libQuickActionsIOS.a;
-			remoteRef = F0C658001BBB36BF0075A3CC /* PBXContainerItemProxy */;
+			path = libRCTQuickActions.a;
+			remoteRef = F0C658171BBB3D650075A3CC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
