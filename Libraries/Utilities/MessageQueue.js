@@ -83,11 +83,19 @@ class MessageQueue {
             '__callFunction' : '__invokeCallback';
           guard(() => this[method].apply(this, call.args));
         });
-        BridgeProfiling.profile('ReactUpdates.batchedUpdates()');
+
+        this.__callImmediates();
       });
-      BridgeProfiling.profileEnd();
+
+      // batchedUpdates might still trigger setImmediates
+      while (JSTimersExecution.immediates.length) {
+        ReactUpdates.batchedUpdates(() => {
+          this.__callImmediates();
+        });
+      }
     });
-    return this.flushedQueue();
+
+    return this.__flushedQueue();
   }
 
   callFunctionReturnFlushedQueue(module, method, args) {
@@ -101,17 +109,25 @@ class MessageQueue {
   }
 
   flushedQueue() {
-    BridgeProfiling.profile('JSTimersExecution.callImmediates()');
-    guard(() => JSTimersExecution.callImmediates());
-    BridgeProfiling.profileEnd();
-    let queue = this._queue;
-    this._queue = [[],[],[]];
-    return queue[0].length ? queue : null;
+    this.__callImmediates();
+    return this.__flushedQueue();
   }
 
   /**
    * "Private" methods
    */
+
+  __callImmediates() {
+    BridgeProfiling.profile('JSTimersExecution.callImmediates()');
+    guard(() => JSTimersExecution.callImmediates());
+    BridgeProfiling.profileEnd();
+  }
+
+  __flushedQueue() {
+    let queue = this._queue;
+    this._queue = [[],[],[]];
+    return queue[0].length ? queue : null;
+  }
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       // eventually delete old debug info
