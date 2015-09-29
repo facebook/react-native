@@ -101,7 +101,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
       path = path.stringByExpandingTildeInPath;
     } else if (!path.absolutePath) {
       // Assume it's a resource path
-      path = [[NSBundle mainBundle].resourcePath stringByAppendingPathComponent:path];
+      path = [[NSBundle bundleForClass:[self class]].resourcePath stringByAppendingPathComponent:path];
     }
     return [NSURL fileURLWithPath:path];
   }
@@ -426,28 +426,22 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   NSURL *URL = [self NSURL:path];
   NSString *scheme = URL.scheme.lowercaseString;
-  if (path && [scheme isEqualToString:@"file"]) {
-    if (RCT_DEBUG || [NSThread currentThread] == [NSThread mainThread]) {
-      if ([URL.path hasPrefix:[NSBundle mainBundle].resourcePath]) {
-        // Image may reside inside a .car file, in which case we have no choice
-        // but to use +[UIImage imageNamed] - but this method isn't thread safe
-        static NSMutableDictionary *XCAssetMap = nil;
-        if (!XCAssetMap) {
-          XCAssetMap = [NSMutableDictionary new];
-        }
-        NSNumber *isAsset = XCAssetMap[path];
-        if (!isAsset || isAsset.boolValue) {
-          image = [UIImage imageNamed:path];
-          if (RCT_DEBUG && image) {
-            // If we succeeded in loading the image via imageNamed, and the
-            // method wasn't called on the main thread, that's a coding error
-            RCTAssertMainThread();
-          }
-        }
-        if (!isAsset) {
-          // Avoid calling `+imageNamed` again in future if it's not needed.
-          XCAssetMap[path] = @(image != nil);
-        }
+  if (URL && [scheme isEqualToString:@"file"]) {
+    RCTAssertMainThread();
+    if ([URL.path hasPrefix:[NSBundle bundleForClass:[self class]].resourcePath]) {
+      // Image may reside inside a .car file, in which case we have no choice
+      // but to use +[UIImage imageNamed] - but this method isn't thread safe
+      static NSMutableDictionary *XCAssetMap = nil;
+      if (!XCAssetMap) {
+        XCAssetMap = [NSMutableDictionary new];
+      }
+      NSNumber *isAsset = XCAssetMap[path];
+      if (!isAsset || isAsset.boolValue) {
+        image = [UIImage imageNamed:URL.path];
+      }
+      if (!isAsset) {
+        // Avoid calling `+imageNamed` again in future if it's not needed.
+        XCAssetMap[path] = @(image != nil);
       }
     }
 
