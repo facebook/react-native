@@ -122,8 +122,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       newHeight = _origHeight;
     }
 
+    if (_maxHeight > _origHeight) {
+      newHeight = fminf(newHeight, _maxHeight);
+    }
+    
     if (newHeight != currentHeight) {
-      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, fminf(newHeight, _maxHeight));
+      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, newHeight);
       [_bridge.uiManager setFrame:newFrame
                           forView:self];
     }
