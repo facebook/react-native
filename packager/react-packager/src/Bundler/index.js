@@ -78,6 +78,9 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
+  providesModuleNodeModules: {
+    type: 'array',
+  },
 });
 
 class Bundler {
@@ -103,6 +106,7 @@ class Bundler {
       fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
       cache: this._cache,
+      providesModuleNodeModules: opts.providesModuleNodeModules,
     });
 
     this._bundlesLayout = new BundlesLayout({

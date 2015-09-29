@@ -63,6 +63,9 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
+  providesModuleNodeModules: {
+    type: 'array',
+  },
 });
 
 const bundleOpts = declareOpts({

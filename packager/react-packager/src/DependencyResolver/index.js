@@ -47,6 +47,18 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  providesModuleNodeModules: {
+    type: 'array',
+    default: [
+      'react-tools',
+      'react-native',
+      // Parse requires AsyncStorage. They will
+      // change that to require('react-native') which
+      // should work after this release and we can
+      // remove it from here.
+      'parse',
+    ],
+  },
 });
 
 function HasteDependencyResolver(options) {
@@ -62,6 +74,7 @@ function HasteDependencyResolver(options) {
     },
     fileWatcher: opts.fileWatcher,
     cache: opts.cache,
+    providesModuleNodeModules: opts.providesModuleNodeModules,
   });
 
 

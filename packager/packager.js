@@ -103,6 +103,12 @@ if (options.assetRoots) {
   }
 }
 
+if (options.providesModuleNodeModules) {
+  if (!Array.isArray(options.providesModuleNodeModules)) {
+    options.providesModuleNodeModules = options.providesModuleNodeModules.split(',');
+  }
+}
+
 checkNodeVersion();
 
 console.log(formatBanner(
@@ -301,6 +307,15 @@ function getAppMiddleware(options) {
         '../Libraries/JavaScriptAppEngine/polyfills/document.js'
       ),
     ],
+    providesModuleNodeModules: [
+      'react-tools',
+      'react-native',
+      // Parse requires AsyncStorage. They will
+      // change that to require('react-native') which
+      // should work after this release and we can
+      // remove it from here.
+      'parse',
+    ].concat(options.providesModuleNodeModules || []),
   });
 }
 
