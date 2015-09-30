@@ -206,8 +206,8 @@ public class ReactViewGroup extends ViewGroup implements
     getOrCreateReactViewBackground().setBorderColor(position, color);
   }
 
-  public void setBorderRadius(float borderRadius) {
-    getOrCreateReactViewBackground().setRadius(borderRadius);
+  public void setBorderRadius(int position, int count, float radius) {
+    getOrCreateReactViewBackground().setBorderRadius(position, count, radius);
   }
 
   public void setBorderStyle(@Nullable String style) {

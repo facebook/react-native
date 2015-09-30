@@ -78,16 +78,17 @@ import com.facebook.csslayout.Spacing;
   private @Nullable Path mPathForBorderRadius;
   private @Nullable RectF mTempRectForBorderRadius;
   private boolean mNeedUpdatePathForBorderRadius = false;
-  private float mBorderRadius = CSSConstants.UNDEFINED;
 
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private int mColor = Color.TRANSPARENT;
   private int mAlpha = 255;
 
+  private @Nullable float[] mBorderRadius;
+
   @Override
   public void draw(Canvas canvas) {
-    if (!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
+    if (mBorderRadius != null) {
       drawRoundedBackgroundWithBorders(canvas);
     } else {
       drawRectangularBackgroundWithBorders(canvas);
@@ -161,9 +162,25 @@ import com.facebook.csslayout.Spacing;
     }
   }
 
-  public void setRadius(float radius) {
-    if (mBorderRadius != radius) {
-      mBorderRadius = radius;
+  public void setBorderRadius(int position, int count, float radius) {
+
+    if (mBorderRadius == null) {
+      mBorderRadius = new float[8];
+    }
+
+    if (CSSConstants.isUndefined(radius) || radius < 0) {
+      radius = 0f;
+    }
+
+    boolean changed = false;
+
+    for(int i = position; i < (position + count); i++) {
+      if (!FloatUtil.floatsEqual(mBorderRadius[i], radius)) {
+        mBorderRadius[i] = radius;
+      }
+    }
+
+    if (changed) {
       invalidateSelf();
     }
   }
@@ -213,9 +230,11 @@ import com.facebook.csslayout.Spacing;
     if (fullBorderWidth > 0) {
       mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
     }
+
+
+
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
-        mBorderRadius,
         mBorderRadius,
         Path.Direction.CW);
 
