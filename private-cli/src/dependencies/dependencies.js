@@ -39,7 +39,7 @@ function _dependencies(argv, conf, resolve, reject) {
       command: 'platform',
       description: 'The platform extension used for selecting modules',
       type: 'string',
-    },
+    }
   ], argv);
 
   const rootModuleAbsolutePath = args['entry-file'];
@@ -75,22 +75,22 @@ function _dependencies(argv, conf, resolve, reject) {
   log('Waiting for the packager.');
   resolve(ReactPackager.createClientFor(config).then(client => {
     log('Packager client was created');
-    return client.getDependencies(options)
+    return client.getOrderedDependencyPaths(options)
       .then(deps => {
         log('Packager returned dependencies');
         client.close();
 
-        deps.forEach(module => {
+        deps.forEach(modulePath => {
           // Temporary hack to disable listing dependencies not under this directory.
           // Long term, we need either
           // (a) JS code to not depend on anything outside this directory, or
           // (b) Come up with a way to declare this dependency in Buck.
           const isInsideProjectRoots = config.projectRoots.filter(root =>
-            module.path.startsWith(root)
+            modulePath.startsWith(root)
           ).length > 0;
 
           if (isInsideProjectRoots) {
-            outStream.write(module.path + '\n');
+            outStream.write(modulePath + '\n');
           }
         });
         writeToFile && outStream.end();

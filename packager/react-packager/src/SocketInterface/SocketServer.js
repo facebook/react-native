@@ -121,6 +121,14 @@ class SocketServer {
         );
         break;
 
+      case 'getOrderedDependencyPaths':
+        this._jobs++;
+        this._packagerServer.getOrderedDependencyPaths(m.data).then(
+          (dependencies) => this._reply(sock, m.id, 'result', dependencies),
+          handleError,
+        );
+        break;
+
       default:
         this._reply(sock, m.id, 'error', 'Unknown message type: ' + m.type);
     }

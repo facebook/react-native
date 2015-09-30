@@ -86,6 +86,13 @@ class SocketClient {
     });
   }
 
+  getOrderedDependencyPaths(main) {
+    return this._send({
+      type: 'getOrderedDependencyPaths',
+      data: main,
+    });
+  }
+
   buildBundle(options) {
     return this._send({
       type: 'buildBundle',

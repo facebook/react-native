@@ -200,6 +200,13 @@ class Server {
     });
   }
 
+  getOrderedDependencyPaths(options) {
+    return Promise.resolve().then(() => {
+      const opts = dependencyOpts(options);
+      return this._bundler.getOrderedDependencyPaths(opts);
+    });
+  }
+
   _onFileChange(type, filepath, root) {
     const absPath = path.join(root, filepath);
     this._bundler.invalidateFile(absPath);
