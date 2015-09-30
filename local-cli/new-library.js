@@ -16,7 +16,7 @@ function newLibrary(libraryName) {
   var root = process.cwd();
   var libraries = path.resolve(root, 'Libraries');
   var libraryDest = path.resolve(libraries, libraryName);
-  var source = path.resolve('Libraries', 'Sample') + '/';
+  var source = path.resolve('node_modules', 'react-native', 'Libraries', 'Sample') + '/';
 
   if (!fs.existsSync(libraries)) {
     fs.mkdir(libraries);
