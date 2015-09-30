@@ -53,7 +53,7 @@ var ApplicationShortcutsIOS = {
    * and return its type otherwise it will return `null`
    */
   popShortcutType(): ?string {
-    var initialShortcutType= _initialShortcutType;
+    var initialShortcutType = _initialShortcutType;
     _initialShortcutType = null;
     return initialShortcutType;
   }

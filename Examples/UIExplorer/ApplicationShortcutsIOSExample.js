@@ -37,6 +37,9 @@ var SHORTCUTS = [
 var ApplicationShortcutsExample = React.createClass({
   componentWillMount() {
     ApplicationShortcutsIOS.setApplicationShortcutsWithList(SHORTCUTS);
+    this.state = {
+      shortcutType: ApplicationShortcutsIOS.popShortcutType()
+    };
   },
 
   render() {
@@ -47,8 +50,8 @@ var ApplicationShortcutsExample = React.createClass({
         </Text>
         {this.state.shortcutType ?
           <Text>
-            You opened the app with a shorcut of the {this.state.shortcutType}
-            type.
+            You opened the app with a shorcut with type:
+            {this.state.shortcutType}
           </Text> : null}
       </View>
     );
