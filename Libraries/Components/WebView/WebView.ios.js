@@ -107,6 +107,17 @@ var WebView = React.createClass({
      * user can change the scale
      */
     scalesPageToFit: PropTypes.bool,
+    /**
+    * Determines whether HTML5 videos play inline or use the native full-screen 
+    * controller.
+    * default value `false`
+    * **NOTE** : "In order for video to play inline, not only does this 
+    * property need to be set to true, but the video element in the HTML 
+    * document must also include the webkit-playsinline attribute."
+    * @platform ios
+    */
+    allowsInlineMediaPlayback: PropTypes.bool,
+
   },
 
   getInitialState: function() {
@@ -168,6 +179,7 @@ var WebView = React.createClass({
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         scalesPageToFit={this.props.scalesPageToFit}
+        allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
       />;
 
     return (
