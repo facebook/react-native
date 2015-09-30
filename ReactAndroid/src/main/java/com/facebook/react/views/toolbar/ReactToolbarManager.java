@@ -11,19 +11,20 @@ package com.facebook.react.views.toolbar;
 
 import javax.annotation.Nullable;
 
+import java.util.Map;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.SystemClock;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -32,16 +33,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 
 /**
- * Manages instances of Toolbar.
+ * Manages instances of ReactToolbar.
  */
-public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
+public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   private static final String REACT_CLASS = "ToolbarAndroid";
-
-  private static final String PROP_ACTION_ICON = "icon";
-  private static final String PROP_ACTION_SHOW = "show";
-  private static final String PROP_ACTION_SHOW_WITH_TEXT = "showWithText";
-  private static final String PROP_ACTION_TITLE = "title";
 
   @Override
   public String getName() {
@@ -49,35 +45,27 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
   }
 
   @Override
-  protected Toolbar createViewInstance(ThemedReactContext reactContext) {
-    return new Toolbar(reactContext);
+  protected ReactToolbar createViewInstance(ThemedReactContext reactContext) {
+    return new ReactToolbar(reactContext);
   }
 
   @ReactProp(name = "logo")
-  public void setLogo(Toolbar view, @Nullable String logo) {
-    if (logo != null) {
-      view.setLogo(getDrawableResourceByName(view.getContext(), logo));
-    } else {
-      view.setLogo(null);
-    }
+  public void setLogo(ReactToolbar view, @Nullable ReadableMap logo) {
+    view.setLogoSource(logo);
   }
 
   @ReactProp(name = "navIcon")
-  public void setNavIcon(Toolbar view, @Nullable String navIcon) {
-    if (navIcon != null) {
-      view.setNavigationIcon(getDrawableResourceByName(view.getContext(), navIcon));
-    } else {
-      view.setNavigationIcon(null);
-    }
+  public void setNavIcon(ReactToolbar view, @Nullable ReadableMap navIcon) {
+    view.setNavIconSource(navIcon);
   }
 
   @ReactProp(name = "subtitle")
-  public void setSubtitle(Toolbar view, @Nullable String subtitle) {
+  public void setSubtitle(ReactToolbar view, @Nullable String subtitle) {
     view.setSubtitle(subtitle);
   }
 
   @ReactProp(name = "subtitleColor", customType = "Color")
-  public void setSubtitleColor(Toolbar view, @Nullable Integer subtitleColor) {
+  public void setSubtitleColor(ReactToolbar view, @Nullable Integer subtitleColor) {
     int[] defaultColors = getDefaultColors(view.getContext());
     if (subtitleColor != null) {
       view.setSubtitleTextColor(subtitleColor);
@@ -87,12 +75,12 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
   }
 
   @ReactProp(name = "title")
-  public void setTitle(Toolbar view, @Nullable String title) {
+  public void setTitle(ReactToolbar view, @Nullable String title) {
     view.setTitle(title);
   }
 
   @ReactProp(name = "titleColor", customType = "Color")
-  public void setTitleColor(Toolbar view, @Nullable Integer titleColor) {
+  public void setTitleColor(ReactToolbar view, @Nullable Integer titleColor) {
     int[] defaultColors = getDefaultColors(view.getContext());
     if (titleColor != null) {
       view.setTitleTextColor(titleColor);
@@ -102,37 +90,12 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
   }
 
   @ReactProp(name = "actions")
-  public void setActions(Toolbar view, @Nullable ReadableArray actions) {
-    Menu menu = view.getMenu();
-    menu.clear();
-    if (actions != null) {
-      for (int i = 0; i < actions.size(); i++) {
-        ReadableMap action = actions.getMap(i);
-        MenuItem item = menu.add(Menu.NONE, Menu.NONE, i, action.getString(PROP_ACTION_TITLE));
-        String icon = action.hasKey(PROP_ACTION_ICON) ? action.getString(PROP_ACTION_ICON) : null;
-        if (icon != null) {
-          item.setIcon(getDrawableResourceByName(view.getContext(), icon));
-        }
-        String show = action.hasKey(PROP_ACTION_SHOW) ? action.getString(PROP_ACTION_SHOW) : null;
-        if (show != null) {
-          int showAsAction = MenuItem.SHOW_AS_ACTION_NEVER;
-          if ("always".equals(show)) {
-            showAsAction = MenuItem.SHOW_AS_ACTION_ALWAYS;
-          } else if ("ifRoom".equals(show)) {
-            showAsAction = MenuItem.SHOW_AS_ACTION_IF_ROOM;
-          }
-          if (action.hasKey(PROP_ACTION_SHOW_WITH_TEXT) &&
-              action.getBoolean(PROP_ACTION_SHOW_WITH_TEXT)) {
-            showAsAction = showAsAction | MenuItem.SHOW_AS_ACTION_WITH_TEXT;
-          }
-          item.setShowAsAction(showAsAction);
-        }
-      }
-    }
+  public void setActions(ReactToolbar view, @Nullable ReadableArray actions) {
+    view.setActions(actions);
   }
 
   @Override
-  protected void addEventEmitters(final ThemedReactContext reactContext, final Toolbar view) {
+  protected void addEventEmitters(final ThemedReactContext reactContext, final ReactToolbar view) {
     final EventDispatcher mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
         .getEventDispatcher();
     view.setNavigationOnClickListener(
@@ -145,7 +108,7 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
         });
 
     view.setOnMenuItemClickListener(
-        new Toolbar.OnMenuItemClickListener() {
+        new ReactToolbar.OnMenuItemClickListener() {
           @Override
           public boolean onMenuItemClick(MenuItem menuItem) {
             mEventDispatcher.dispatchEvent(
@@ -156,6 +119,17 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
             return true;
           }
         });
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedViewConstants() {
+    return MapBuilder.<String, Object>of(
+        "ShowAsAction",
+        MapBuilder.of(
+            "never", MenuItem.SHOW_AS_ACTION_NEVER,
+            "always", MenuItem.SHOW_AS_ACTION_ALWAYS,
+            "ifRoom", MenuItem.SHOW_AS_ACTION_IF_ROOM));
   }
 
   @Override
@@ -203,14 +177,6 @@ public class ReactToolbarManager extends ViewGroupManager<Toolbar> {
     if (style != null) {
       style.recycle();
     }
-  }
-
-  private static int getDrawableResourceByName(Context context, String name) {
-    name = name.toLowerCase().replace("-", "_");
-    return context.getResources().getIdentifier(
-        name,
-        "drawable",
-        context.getPackageName());
   }
 
 }

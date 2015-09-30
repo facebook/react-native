@@ -13,11 +13,13 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
@@ -26,6 +28,12 @@ var requireNativeComponent = require('requireNativeComponent');
  * subtitle in the middle and the actions on the right.
  *
  * If the toolbar has an only child, it will be displayed between the title and actions.
+ *
+ * Although the Toolbar supports remote images for the logo, navigation and action icons, this
+ * should only be used in DEV mode where `require('./some_icon.png')` translates into a packager
+ * URL. In release mode you should always use a drawable resource for these icons. Using
+ * `require('./some_icon.png')` will do this automatically for you, so as long as you don't
+ * explicitly use e.g. `{uri: 'http://...'}`, you will be good.
  *
  * Example:
  *
@@ -115,16 +123,10 @@ var ToolbarAndroid = React.createClass({
       ...this.props,
     };
     if (this.props.logo) {
-      if (!this.props.logo.isStatic) {
-        throw 'logo prop should be a static image (obtained via ix)';
-      }
-      nativeProps.logo = this.props.logo.uri;
+      nativeProps.logo = resolveAssetSource(this.props.logo);
     }
     if (this.props.navIcon) {
-      if (!this.props.navIcon.isStatic) {
-        throw 'navIcon prop should be static image (obtained via ix)';
-      }
-      nativeProps.navIcon = this.props.navIcon.uri;
+      nativeProps.navIcon = resolveAssetSource(this.props.navIcon);
     }
     if (this.props.actions) {
       nativeProps.actions = [];
@@ -133,10 +135,10 @@ var ToolbarAndroid = React.createClass({
           ...this.props.actions[i],
         };
         if (action.icon) {
-          if (!action.icon.isStatic) {
-            throw 'action icons should be static images (obtained via ix)';
-          }
-          action.icon = action.icon.uri;
+          action.icon = resolveAssetSource(action.icon);
+        }
+        if (action.show) {
+          action.show = RCTUIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
         }
         nativeProps.actions.push(action);
       }
