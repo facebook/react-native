@@ -54,9 +54,37 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
-  @ReactProp(name = "borderRadius")
-  public void setBorderRadius(ReactViewGroup view, float borderRadius) {
-    view.setBorderRadius(PixelUtil.toPixelFromDIP(borderRadius));
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_VERTICAL_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_VERTICAL_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_VERTICAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_VERTICAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_HORIZONTAL_RADIUS
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactViewGroup view, int index, float radius) {
+    if (!CSSConstants.isUndefined(radius)) {
+      radius = PixelUtil.toPixelFromDIP(radius);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(0, 8, radius);
+      return;
+    }
+
+    if (index < 5) {
+      view.setBorderRadius((index-1)*2, 2, radius);
+      return;
+    }
+
+    view.setBorderRadius(index-5, 1, radius);
   }
 
   @ReactProp(name = "borderStyle")
