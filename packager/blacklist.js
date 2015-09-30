@@ -36,6 +36,12 @@ var sharedBlacklist = [
   'downstream/core/createArrayFromMixed.js',
   'downstream/core/toArray.js',
   'downstream/core/dom/getActiveElement.js',
+  'downstream/core/dom/focusNode.js',
+  'downstream/core/dom/getUnboundedScrollPosition.js',
+  'downstream/core/createNodesFromMarkup.js',
+  'downstream/core/CSSCore.js',
+  'downstream/core/getMarkupWrap.js',
+  'downstream/core/hyphenateStyleName.js',
 ];
 
 // Raw unescaped patterns in case you need to use wildcards
