@@ -96,6 +96,21 @@ const bundleOpts = declareOpts({
   }
 });
 
+const dependencyOpts = declareOpts({
+  platform: {
+    type: 'string',
+    required: true,
+  },
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+  entryFile: {
+    type: 'string',
+    required: true,
+  },
+});
+
 class Server {
   constructor(options) {
     const opts = validateOpts(options);
@@ -174,8 +189,22 @@ class Server {
     return this.buildBundle(options);
   }
 
-  getDependencies(main) {
-    return this._bundler.getDependencies(main);
+  getDependencies(options) {
+    return Promise.resolve().then(() => {
+      const opts = dependencyOpts(options);
+      return this._bundler.getDependencies(
+        opts.entryFile,
+        opts.dev,
+        opts.platform,
+      );
+    });
+  }
+
+  getOrderedDependencyPaths(options) {
+    return Promise.resolve().then(() => {
+      const opts = dependencyOpts(options);
+      return this._bundler.getOrderedDependencyPaths(opts);
+    });
   }
 
   _onFileChange(type, filepath, root) {

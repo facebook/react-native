@@ -25,7 +25,6 @@
   "files": [
     "React",
     "React.podspec",
-    "Examples/SampleApp",
     "Libraries",
     "packager",
     "cli.js",

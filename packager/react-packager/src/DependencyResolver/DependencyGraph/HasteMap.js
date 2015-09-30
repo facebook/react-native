@@ -103,16 +103,14 @@ class HasteMap {
           chalk.yellow(
             '\nWARNING: Found multiple haste modules or packages ' +
             'with the name `%s`. Please fix this by adding it to ' +
-            'the blacklist or deleting the modules keeping only one.\n' +
-            'One of the following modules will be selected at random:\n%s\n'
+            'the blacklist or deleting the modules keeping only one.\n'
           ),
           name,
           modules.map(m => m.path).join('\n'),
         );
       }
 
-      const randomIndex = Math.floor(Math.random() * modules.length);
-      return modules[randomIndex];
+      return modules[0];
     }
 
     return modules[0];
