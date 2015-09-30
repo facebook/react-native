@@ -13,6 +13,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
@@ -27,28 +28,29 @@
   /**
    * Arrays managed in parallel tracking native touch object along with the
    * native view that was touched, and the React touch data dictionary.
-   * This must be kept track of because `UIKit` destroys the touch targets
-   * if touches are canceled and we have no other way to recover this information.
+   * These must be kept track of because `UIKit` destroys the touch targets
+   * if touches are canceled, and we have no other way to recover this info.
    */
   NSMutableOrderedSet *_nativeTouches;
   NSMutableArray *_reactTouches;
   NSMutableArray *_touchViews;
 
+  BOOL _dispatchedInitialTouches;
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  if ((self = [super initWithTarget:nil action:NULL])) {
+  RCTAssertParam(bridge);
 
-    RCTAssert(bridge != nil, @"Expect an event dispatcher");
+  if ((self = [super initWithTarget:self action:@selector(handleGestureUpdate:)])) {
 
     _bridge = bridge;
-
-    _nativeTouches = [[NSMutableOrderedSet alloc] init];
-    _reactTouches = [[NSMutableArray alloc] init];
-    _touchViews = [[NSMutableArray alloc] init];
+    _dispatchedInitialTouches = NO;
+    _nativeTouches = [NSMutableOrderedSet new];
+    _reactTouches = [NSMutableArray new];
+    _touchViews = [NSMutableArray new];
 
     // `cancelsTouchesInView` is needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
@@ -57,6 +59,8 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action)
 
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   RCTTouchEventTypeStart,
@@ -107,8 +111,8 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
     reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
-    reactTouch[@"touches"] = [NSNull null];        // We hijack this touchObj to serve both as an event
-    reactTouch[@"changedTouches"] = [NSNull null]; // and as a Touch object, so making this JIT friendly.
+    reactTouch[@"touches"] = (id)kCFNull;        // We hijack this touchObj to serve both as an event
+    reactTouch[@"changedTouches"] = (id)kCFNull; // and as a Touch object, so making this JIT friendly.
 
     // Add to arrays
     [_touchViews addObject:targetView];
@@ -148,8 +152,6 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
 }
 
-RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
-
 /**
  * Constructs information about touch events to send across the serialized
  * boundary. This data should be compliant with W3C `Touch` objects. This data
@@ -163,10 +165,10 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
  */
 - (void)_updateAndDispatchTouches:(NSSet *)touches
                         eventName:(NSString *)eventName
-                  originatingTime:(CFTimeInterval)originatingTime
+                  originatingTime:(__unused CFTimeInterval)originatingTime
 {
   // Update touches
-  NSMutableArray *changedIndexes = [[NSMutableArray alloc] init];
+  NSMutableArray *changedIndexes = [NSMutableArray new];
   for (UITouch *touch in touches) {
     NSInteger index = [_nativeTouches indexOfObject:touch];
     if (index == NSNotFound) {
@@ -188,6 +190,7 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveTouches);
     [reactTouches addObject:[touch copy]];
   }
 
+  eventName = RCTNormalizeInputEventName(eventName);
   [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
                     args:@[eventName, reactTouches, changedIndexes]];
 }
@@ -217,6 +220,24 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   return NO;
 }
 
+- (void)handleGestureUpdate:(__unused UIGestureRecognizer *)gesture
+{
+  // If gesture just recognized, send all touches to JS as if they just began.
+  if (self.state == UIGestureRecognizerStateBegan) {
+    [self _updateAndDispatchTouches:_nativeTouches.set eventName:@"topTouchStart" originatingTime:0];
+
+    // We store this flag separately from `state` because after a gesture is
+    // recognized, its `state` changes immediately but its action (this
+    // method) isn't fired until dependent gesture recognizers have failed. We
+    // only want to send move/end/cancel touches if we've sent the touchStart.
+    _dispatchedInitialTouches = YES;
+  }
+
+  // For the other states, we could dispatch the updates here but since we
+  // specifically send info about which touches changed, it's simpler to
+  // dispatch the updates from the raw touch methods below.
+}
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
@@ -224,21 +245,20 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   // "start" has to record new touches before extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
-  [self _updateAndDispatchTouches:touches eventName:@"topTouchStart" originatingTime:event.timestamp];
-
-  self.state = UIGestureRecognizerStateBegan;
+  if (_dispatchedInitialTouches) {
+    [self _updateAndDispatchTouches:touches eventName:@"touchStart" originatingTime:event.timestamp];
+    self.state = UIGestureRecognizerStateChanged;
+  } else {
+    self.state = UIGestureRecognizerStateBegan;
+  }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-  if (self.state == UIGestureRecognizerStateFailed) {
-    return;
-  }
 
-  [self _updateAndDispatchTouches:touches eventName:@"topTouchMove" originatingTime:event.timestamp];
-
-  if (self.state == UIGestureRecognizerStateBegan) {
+  if (_dispatchedInitialTouches) {
+    [self _updateAndDispatchTouches:touches eventName:@"touchMove" originatingTime:event.timestamp];
     self.state = UIGestureRecognizerStateChanged;
   }
 }
@@ -246,37 +266,48 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
-  [self _updateAndDispatchTouches:touches eventName:@"topTouchEnd" originatingTime:event.timestamp];
-  [self _recordRemovedTouches:touches];
 
-  if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
-    self.state = UIGestureRecognizerStateEnded;
-  } else if (RCTAnyTouchesChanged(event.allTouches)) {
-    self.state = UIGestureRecognizerStateChanged;
+  if (_dispatchedInitialTouches) {
+    [self _updateAndDispatchTouches:touches eventName:@"touchEnd" originatingTime:event.timestamp];
+
+    if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
+      self.state = UIGestureRecognizerStateEnded;
+    } else if (RCTAnyTouchesChanged(event.allTouches)) {
+      self.state = UIGestureRecognizerStateChanged;
+    }
   }
+  [self _recordRemovedTouches:touches];
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
-  [self _updateAndDispatchTouches:touches eventName:@"topTouchCancel" originatingTime:event.timestamp];
-  [self _recordRemovedTouches:touches];
 
-  if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
-    self.state = UIGestureRecognizerStateCancelled;
-  } else if (RCTAnyTouchesChanged(event.allTouches)) {
-    self.state = UIGestureRecognizerStateChanged;
+  if (_dispatchedInitialTouches) {
+    [self _updateAndDispatchTouches:touches eventName:@"touchCancel" originatingTime:event.timestamp];
+
+    if (RCTAllTouchesAreCancelledOrEnded(event.allTouches)) {
+      self.state = UIGestureRecognizerStateCancelled;
+    } else if (RCTAnyTouchesChanged(event.allTouches)) {
+      self.state = UIGestureRecognizerStateChanged;
+    }
   }
+  [self _recordRemovedTouches:touches];
 }
 
-- (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
+- (BOOL)canPreventGestureRecognizer:(__unused UIGestureRecognizer *)preventedGestureRecognizer
 {
   return NO;
 }
 
-- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
+- (BOOL)canBePreventedByGestureRecognizer:(__unused UIGestureRecognizer *)preventingGestureRecognizer
 {
   return NO;
+}
+
+- (void)reset
+{
+  _dispatchedInitialTouches = NO;
 }
 
 @end

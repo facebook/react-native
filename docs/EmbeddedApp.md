@@ -1,10 +1,10 @@
 ---
-id: embedded-app
-title: Integration with Existing App
+id: embedded-app-ios
+title: Integrating with Existing Apps
 layout: docs
-category: Guides
-permalink: docs/embedded-app.html
-next: javascript-environment
+category: Guides (iOS)
+permalink: docs/embedded-app-ios.html
+next: native-modules-android
 ---
 
 Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [CocoaPods](http://cocoapods.org/).
@@ -12,11 +12,12 @@ Since React makes no assumptions about the rest of your technology stack – it�
 ## Requirements
 
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
-- [Node.js](http://nodejs.org) – `brew install node`
+- [Node.js](http://nodejs.org)
+  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
 
 ## Install React Native Using CocoaPods
 
-[CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't install CocoaPods yet, checkout [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
+[CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't installed CocoaPods yet, check out [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
 
 When you are ready to work with CocoaPods, add the following line to `Podfile`. If you don't have one, then create it under the root directory of your project.
 

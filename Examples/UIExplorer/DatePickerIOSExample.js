@@ -125,6 +125,7 @@ var Heading = React.createClass({
   }
 });
 
+exports.displayName = (undefined: ?string);
 exports.title = '<DatePickerIOS>';
 exports.description = 'Select dates and times using the native UIDatePicker.';
 exports.examples = [

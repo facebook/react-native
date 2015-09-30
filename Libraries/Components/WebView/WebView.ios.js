@@ -43,6 +43,8 @@ var NavigationType = {
   other: RCTWebViewManager.NavigationType.Other,
 };
 
+var JSNavigationScheme = RCTWebViewManager.JSNavigationScheme;
+
 type ErrorEvent = {
   domain: any;
   code: any;
@@ -75,6 +77,7 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 
 var WebView = React.createClass({
   statics: {
+    JSNavigationScheme: JSNavigationScheme,
     NavigationType: NavigationType,
   },
 
@@ -86,7 +89,6 @@ var WebView = React.createClass({
     bounces: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
-    shouldInjectAJAXHandler: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
@@ -95,6 +97,16 @@ var WebView = React.createClass({
      * Used for android only, JS is enabled by default for WebView on iOS
      */
     javaScriptEnabledAndroid: PropTypes.bool,
+    /**
+     * Sets the JS to be injected when the webpage loads.
+     */
+    injectedJavaScript: PropTypes.string,
+
+    /**
+     * Used for iOS only, sets whether the webpage scales to fit the view and the
+     * user can change the scale
+     */
+    scalesPageToFit: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -147,14 +159,15 @@ var WebView = React.createClass({
         style={webViewStyles}
         url={this.props.url}
         html={this.props.html}
+        injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
-        shouldInjectAJAXHandler={this.props.shouldInjectAJAXHandler}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        scalesPageToFit={this.props.scalesPageToFit}
       />;
 
     return (
@@ -166,15 +179,15 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTWebViewManager.goForward(this.getWebWiewHandle());
+    RCTWebViewManager.goForward(this.getWebViewHandle());
   },
 
   goBack: function() {
-    RCTWebViewManager.goBack(this.getWebWiewHandle());
+    RCTWebViewManager.goBack(this.getWebViewHandle());
   },
 
   reload: function() {
-    RCTWebViewManager.reload(this.getWebWiewHandle());
+    RCTWebViewManager.reload(this.getWebViewHandle());
   },
 
   /**
@@ -187,7 +200,7 @@ var WebView = React.createClass({
     }
   },
 
-  getWebWiewHandle: function(): any {
+  getWebViewHandle: function(): any {
     return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
@@ -197,7 +210,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
-    console.error('Encountered an error loading page', event.nativeEvent);
+    console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
@@ -213,7 +226,13 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView);
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
+  nativeOnly: {
+    onLoadingStart: true,
+    onLoadingError: true,
+    onLoadingFinish: true,
+  },
+});
 
 var styles = StyleSheet.create({
   container: {

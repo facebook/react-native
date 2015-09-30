@@ -1,28 +1,25 @@
 language: objective-c
 
-osx_image: beta-xcode6.3
+osx_image: xcode7
 
 cache:
     directories:
         - node_modules
         - .nvm
 
-before_install:
-  - brew update
 install:
-  - brew reinstall flow xctool nvm
+  - brew reinstall nvm
   - mkdir -p .nvm
-  - cp $(brew --prefix nvm)/nvm-exec .nvm/
-  - export NVM_DIR=.nvm
+  - export NVM_DIR="$PWD/.nvm"
   - source $(brew --prefix nvm)/nvm.sh
-  - nvm install v0.10
+  - nvm install 4
+  - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
+  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm install
 
 script:
 - |
-  nvm use v0.10
-
   if [ "$TEST_TYPE" = objc ]
   then
 
@@ -31,13 +28,23 @@ script:
   elif [ "$TEST_TYPE" = js ]
   then
 
-    flow check && npm test
+    flow check && npm test -- '\/Libraries\/'
+
+  elif [ "$TEST_TYPE" = packager ]
+  then
+
+    npm test -- '\/packager\/'
+
+  elif [ "$TEST_TYPE" = cli ]
+  then
+
+    npm test -- '\/(local|private|react-native)-cli\/'
 
   elif [ "$TEST_TYPE" = build_website ]
   then
 
     cd website
-    npm install
+    $(which npm) install
     ./setup.sh
     if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
       # Automatically publish the website
@@ -60,6 +67,8 @@ env:
   matrix:
     - TEST_TYPE=objc
     - TEST_TYPE=js
+    - TEST_TYPE=packager
+    - TEST_TYPE=cli
     - TEST_TYPE=build_website
     - TEST_TYPE=e2e
   global:

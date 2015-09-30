@@ -152,4 +152,6 @@ var styles = StyleSheet.create({
   },
 });
 
+TimersTest.displayName = 'TimersTest';
+
 module.exports = TimersTest;

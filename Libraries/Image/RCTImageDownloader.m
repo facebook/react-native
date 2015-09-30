@@ -9,259 +9,188 @@
 
 #import "RCTImageDownloader.h"
 
-#import "RCTCache.h"
+#import "RCTImageLoader.h"
+#import "RCTImageUtils.h"
 #import "RCTLog.h"
+#import "RCTNetworking.h"
 #import "RCTUtils.h"
-
-typedef void (^RCTCachedDataDownloadBlock)(BOOL cached, NSData *data, NSError *error);
 
 @implementation RCTImageDownloader
 {
-  RCTCache *_cache;
+  NSURLCache *_cache;
   dispatch_queue_t _processingQueue;
-  NSMutableDictionary *_pendingBlocks;
 }
 
-+ (instancetype)sharedInstance
-{
-  static RCTImageDownloader *sharedInstance;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
-  });
-  return sharedInstance;
-}
+@synthesize bridge = _bridge;
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _cache = [[RCTCache alloc] initWithName:@"RCTImageDownloader"];
+    _cache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 diskCapacity:200 * 1024 * 1024 diskPath:@"React/RCTImageDownloader"];
     _processingQueue = dispatch_queue_create("com.facebook.React.DownloadProcessingQueue", DISPATCH_QUEUE_SERIAL);
-    _pendingBlocks = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
 
-static NSString *RCTCacheKeyForURL(NSURL *url)
+- (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return url.absoluteString;
+  // Have to exclude 'file://' from the main bundle, otherwise this would conflict with RCTAssetBundleImageLoader
+  return
+    [requestURL.scheme compare:@"http" options:NSCaseInsensitiveSearch range:NSMakeRange(0, 4)] == NSOrderedSame ||
+    ([requestURL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame &&
+     ![requestURL.path hasPrefix:[NSBundle bundleForClass:[self class]].resourcePath]) ||
+    [requestURL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame;
 }
 
-- (id)_downloadDataForURL:(NSURL *)url block:(RCTCachedDataDownloadBlock)block
+/**
+ * Downloads a block of raw data and returns it. Note that the callback block
+ * will not be executed on the same thread you called the method from, nor on
+ * the main thread. Returns a token that can be used to cancel the download.
+ */
+- (RCTImageLoaderCancellationBlock)downloadDataForURL:(NSURL *)url
+                                      progressHandler:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionHandler:(void (^)(NSError *error, NSData *data))completionBlock
 {
-  NSString *cacheKey = RCTCacheKeyForURL(url);
+  if (![_bridge respondsToSelector:NSSelectorFromString(@"networking")]) {
+    RCTLogError(@"You need to import the RCTNetworking library in order to download remote images.");
+    return ^{};
+  }
 
-  __block BOOL cancelled = NO;
-  __block NSURLSessionDataTask *task = nil;
+  __weak RCTImageDownloader *weakSelf = self;
+  RCTURLRequestCompletionBlock runBlocks = ^(NSURLResponse *response, NSData *data, NSError *error) {
 
-  dispatch_block_t cancel = ^{
-
-    cancelled = YES;
+    if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      if (httpResponse.statusCode != 200) {
+        data = nil;
+        error = [[NSError alloc] initWithDomain:NSURLErrorDomain
+                                           code:httpResponse.statusCode
+                                       userInfo:nil];
+      }
+    }
 
     dispatch_async(_processingQueue, ^{
-      NSMutableArray *pendingBlocks = self->_pendingBlocks[cacheKey];
-      [pendingBlocks removeObject:block];
+      completionBlock(error, data);
     });
-
-    if (task) {
-      [task cancel];
-      task = nil;
-    }
   };
 
-  dispatch_async(_processingQueue, ^{
-    NSMutableArray *pendingBlocks = _pendingBlocks[cacheKey];
-    if (pendingBlocks) {
-      [pendingBlocks addObject:block];
-    } else {
-      _pendingBlocks[cacheKey] = [NSMutableArray arrayWithObject:block];
-
-      __weak RCTImageDownloader *weakSelf = self;
-      RCTCachedDataDownloadBlock runBlocks = ^(BOOL cached, NSData *data, NSError *error) {
-        dispatch_async(_processingQueue, ^{
-          RCTImageDownloader *strongSelf = weakSelf;
-          NSArray *blocks = strongSelf->_pendingBlocks[cacheKey];
-          [strongSelf->_pendingBlocks removeObjectForKey:cacheKey];
-          for (RCTCachedDataDownloadBlock downloadBlock in blocks) {
-            downloadBlock(cached, data, error);
-          }
-        });
-      };
-
-      if ([_cache hasDataForKey:cacheKey]) {
-        [_cache fetchDataForKey:cacheKey completionHandler:^(NSData *data) {
-          if (!cancelled) {
-            runBlocks(YES, data, nil);
-          }
-        }];
-      } else {
-        task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-          if (!cancelled) {
-            runBlocks(NO, data, error);
-          }
-        }];
-
-        [task resume];
-      }
+  NSURLRequest *request = [NSURLRequest requestWithURL:url];
+  {
+    NSCachedURLResponse *cachedResponse = [_cache cachedResponseForRequest:request];
+    if (cachedResponse) {
+      runBlocks(cachedResponse.response, cachedResponse.data, nil);
+      return ^{};
     }
-  });
+  }
 
-  return [cancel copy];
-}
-
-- (id)downloadDataForURL:(NSURL *)url block:(RCTDataDownloadBlock)block
-{
-  NSString *cacheKey = RCTCacheKeyForURL(url);
-  __weak RCTImageDownloader *weakSelf = self;
-  return [self _downloadDataForURL:url block:^(BOOL cached, NSData *data, NSError *error) {
-    if (!cached) {
+  RCTDownloadTask *task = [_bridge.networking downloadTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+    if (response && !error) {
       RCTImageDownloader *strongSelf = weakSelf;
-      [strongSelf->_cache setData:data forKey:cacheKey];
+      NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
+      [strongSelf->_cache storeCachedResponse:cachedResponse forRequest:request];
     }
-    block(data, error);
+    runBlocks(response, data, error);
   }];
-}
-
-/**
- * Returns the optimal context size for an image drawn using the clip rect
- * returned by RCTClipRect.
- */
-CGSize RCTTargetSizeForClipRect(CGRect);
-CGSize RCTTargetSizeForClipRect(CGRect clipRect)
-{
-  return (CGSize){
-    clipRect.size.width + clipRect.origin.x * 2,
-    clipRect.size.height + clipRect.origin.y * 2
-  };
-}
-
-/**
- * This function takes an input content size & scale (typically from an image),
- * a target size & scale that it will be drawn into (typically a CGContext) and
- * then calculates the optimal rectangle to draw the image into so that it will
- * be sized and positioned correctly if drawn using the specified content mode.
- */
-CGRect RCTClipRect(CGSize, CGFloat, CGSize, CGFloat, UIViewContentMode);
-CGRect RCTClipRect(CGSize sourceSize, CGFloat sourceScale,
-                   CGSize destSize, CGFloat destScale,
-                   UIViewContentMode resizeMode)
-{
-  // Precompensate for scale
-  CGFloat scale = sourceScale / destScale;
-  sourceSize.width *= scale;
-  sourceSize.height *= scale;
-
-  // Calculate aspect ratios if needed (don't bother is resizeMode == stretch)
-  CGFloat aspect = 0.0, targetAspect = 0.0;
-  if (resizeMode != UIViewContentModeScaleToFill) {
-    aspect = sourceSize.width / sourceSize.height;
-    targetAspect = destSize.width / destSize.height;
-    if (aspect == targetAspect) {
-      resizeMode = UIViewContentModeScaleToFill;
-    }
+  if (progressBlock) {
+    task.downloadProgressBlock = progressBlock;
   }
+  return ^{ [task cancel]; };
+}
 
-  switch (resizeMode) {
-    case UIViewContentModeScaleToFill: // stretch
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(UIViewContentMode)resizeMode
+                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+{
+  if ([imageURL.scheme.lowercaseString hasPrefix:@"http"]) {
+    __block RCTImageLoaderCancellationBlock decodeCancel = nil;
 
-      sourceSize.width = MIN(destSize.width, sourceSize.width);
-      sourceSize.height = MIN(destSize.height, sourceSize.height);
-      return (CGRect){CGPointZero, sourceSize};
-
-    case UIViewContentModeScaleAspectFit: // contain
-
-      if (targetAspect <= aspect) { // target is taller than content
-        sourceSize.width = destSize.width = MIN(sourceSize.width, destSize.width);
-        sourceSize.height = sourceSize.width / aspect;
-      } else { // target is wider than content
-        sourceSize.height = destSize.height = MIN(sourceSize.height, destSize.height);
-        sourceSize.width = sourceSize.height * aspect;
+    __weak RCTImageDownloader *weakSelf = self;
+    RCTImageLoaderCancellationBlock downloadCancel = [self downloadDataForURL:imageURL progressHandler:progressHandler completionHandler:^(NSError *error, NSData *imageData) {
+      if (error) {
+        completionHandler(error, nil);
+      } else {
+        decodeCancel = [weakSelf.bridge.imageLoader decodeImageData:imageData size:size scale:scale resizeMode:resizeMode completionBlock:completionHandler];
       }
-      return (CGRect){CGPointZero, sourceSize};
+    }];
 
-    case UIViewContentModeScaleAspectFill: // cover
+    return ^{
+      downloadCancel();
 
-      if (targetAspect <= aspect) { // target is taller than content
-
-        sourceSize.height = destSize.height = MIN(sourceSize.height, destSize.height);
-        sourceSize.width = sourceSize.height * aspect;
-        destSize.width = destSize.height * targetAspect;
-        return (CGRect){{(destSize.width - sourceSize.width) / 2, 0}, sourceSize};
-
-      } else { // target is wider than content
-
-        sourceSize.width = destSize.width = MIN(sourceSize.width, destSize.width);
-        sourceSize.height = sourceSize.width / aspect;
-        destSize.height = destSize.width / targetAspect;
-        return (CGRect){{0, (destSize.height - sourceSize.height) / 2}, sourceSize};
+      if (decodeCancel) {
+        decodeCancel();
+      }
+    };
+  } else if ([imageURL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame) {
+    __block BOOL cancelled = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      if (cancelled) {
+        return;
       }
 
-    default:
+      // Normally -dataWithContentsOfURL: would be bad but this is a data URL.
+      NSData *data = [NSData dataWithContentsOfURL:imageURL];
 
-      RCTLogError(@"A resizeMode value of %zd is not supported", resizeMode);
-      return (CGRect){CGPointZero, destSize};
-  }
-}
-
-- (id)downloadImageForURL:(NSURL *)url
-                     size:(CGSize)size
-                    scale:(CGFloat)scale
-               resizeMode:(UIViewContentMode)resizeMode
-          backgroundColor:(UIColor *)backgroundColor
-                    block:(RCTImageDownloadBlock)block
-{
-  return [self downloadDataForURL:url block:^(NSData *data, NSError *error) {
-
-    if (!data || error) {
-      block(nil, error);
-      return;
-    }
-
-    if (CGSizeEqualToSize(size, CGSizeZero)) {
-      // Target size wasn't available yet, so abort image drawing
-      block(nil, nil);
-      return;
-    }
-
-    UIImage *image = [UIImage imageWithData:data scale:scale];
-    if (image) {
-
-      // Get scale and size
-      CGFloat destScale = scale ?: RCTScreenScale();
-      CGRect imageRect = RCTClipRect(image.size, image.scale, size, destScale, resizeMode);
-      CGSize destSize = RCTTargetSizeForClipRect(imageRect);
-
-      // Opacity optimizations
-      UIColor *blendColor = nil;
-      BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-      if (!opaque && backgroundColor) {
-        CGFloat alpha;
-        [backgroundColor getRed:NULL green:NULL blue:NULL alpha:&alpha];
-        if (alpha > 0.999) { // no benefit to blending if background is translucent
-          opaque = YES;
-          blendColor = backgroundColor;
+      UIImage *image = [UIImage imageWithData:data];
+      if (image) {
+        if (progressHandler) {
+          progressHandler(1, 1);
+        }
+        if (completionHandler) {
+          completionHandler(nil, image);
+        }
+      } else {
+        if (completionHandler) {
+          NSString *message = [NSString stringWithFormat:@"Invalid image data for URL: %@", imageURL];
+          completionHandler(RCTErrorWithMessage(message), nil);
         }
       }
-
-      // Decompress image at required size
-      UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
-      if (blendColor) {
-        [blendColor setFill];
-        UIRectFill((CGRect){CGPointZero, destSize});
+    });
+    return ^{
+      cancelled = YES;
+    };
+  } else if ([imageURL.scheme isEqualToString:@"file"]) {
+    __block BOOL cancelled = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      if (cancelled) {
+        return;
       }
-      [image drawInRect:imageRect];
-      image = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
-    }
-    block(image, nil);
-  }];
+
+      UIImage *image = [UIImage imageWithContentsOfFile:imageURL.resourceSpecifier];
+      if (image) {
+        if (progressHandler) {
+          progressHandler(1, 1);
+        }
+        if (completionHandler) {
+          completionHandler(nil, image);
+        }
+      } else {
+        if (completionHandler) {
+          NSString *message = [NSString stringWithFormat:@"Could not find image at path: %@", imageURL.absoluteString];
+          completionHandler(RCTErrorWithMessage(message), nil);
+        }
+      }
+    });
+    return ^{
+      cancelled = YES;
+    };
+  } else {
+    RCTLogError(@"Unexpected image schema %@", imageURL.scheme);
+    return ^{};
+  }
 }
 
-- (void)cancelDownload:(id)downloadToken
+@end
+
+@implementation RCTBridge (RCTImageDownloader)
+
+- (RCTImageDownloader *)imageDownloader
 {
-  if (downloadToken) {
-    ((dispatch_block_t)downloadToken)();
-  }
+  return self.modules[RCTBridgeModuleNameForClass([RCTImageDownloader class])];
 }
 
 @end

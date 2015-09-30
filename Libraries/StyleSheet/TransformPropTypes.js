@@ -16,27 +16,21 @@ var ReactPropTypes = require('ReactPropTypes');
 var TransformPropTypes = {
   transform: ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
+      ReactPropTypes.shape({perspective: ReactPropTypes.number}),
       ReactPropTypes.shape({rotate: ReactPropTypes.string}),
+      ReactPropTypes.shape({rotateX: ReactPropTypes.string}),
+      ReactPropTypes.shape({rotateY: ReactPropTypes.string}),
+      ReactPropTypes.shape({rotateZ: ReactPropTypes.string}),
+      ReactPropTypes.shape({scale: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
       ReactPropTypes.shape({translateX: ReactPropTypes.number}),
-      ReactPropTypes.shape({translateY: ReactPropTypes.number})
+      ReactPropTypes.shape({translateY: ReactPropTypes.number}),
+      ReactPropTypes.shape({skewX: ReactPropTypes.string}),
+      ReactPropTypes.shape({skewY: ReactPropTypes.string})
     ])
   ),
-
-  /*
-   * `transformMatrix` accepts a 4x4 matrix expressed as a row-major ordered
-   * array. This property is DEPRECATED and cannot be used simultaneously with
-   * the `transform` property.
-   */
   transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
-
-  // DEPRECATED
-  rotation: ReactPropTypes.number,
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
 };
 
 module.exports = TransformPropTypes;

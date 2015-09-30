@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 
 NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
@@ -36,17 +37,12 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_queue_create("com.facebook.React.LinkingManager", DISPATCH_QUEUE_SERIAL);
-}
-
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary *payload = @{@"url": [URL absoluteString]};
+  NSDictionary *payload = @{@"url": URL.absoluteString};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
                                                       object:self
                                                     userInfo:payload];
@@ -56,27 +52,33 @@ RCT_EXPORT_MODULE()
 - (void)handleOpenURLNotification:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"openURL"
-                                              body:[notification userInfo]];
+                                              body:notification.userInfo];
 }
 
 RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 {
   // Doesn't really matter what thread we call this on since it exits the app
-  [[UIApplication sharedApplication] openURL:URL];
+  [RCTSharedApplication() openURL:URL];
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
                   callback:(RCTResponseSenderBlock)callback)
 {
+  if (RCTRunningInAppExtension()) {
+    // Technically Today widgets can open urls, but supporting that would require
+    // a reference to the NSExtensionContext
+    callback(@[@(NO)]);
+  }
+
   // This can be expensive, so we deliberately don't call on main thread
-  BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
+  BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
   callback(@[@(canOpen)]);
 }
 
 - (NSDictionary *)constantsToExport
 {
   NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  return @{@"initialURL": [initialURL absoluteString] ?: [NSNull null]};
+  return @{@"initialURL": RCTNullIfNil(initialURL.absoluteString)};
 }
 
 @end

@@ -27,12 +27,15 @@ var warning = require('warning');
 
 var registrationNames = ReactNativeEventEmitter.registrationNames;
 var putListener = ReactNativeEventEmitter.putListener;
+var deleteListener = ReactNativeEventEmitter.deleteListener;
 var deleteAllListeners = ReactNativeEventEmitter.deleteAllListeners;
 
 type ReactNativeBaseComponentViewConfig = {
   validAttributes: Object;
   uiViewClassName: string;
 }
+
+// require('UIManagerStatTracker').install(); // uncomment to enable
 
 /**
  * @constructor ReactNativeBaseComponent
@@ -155,13 +158,23 @@ ReactNativeBaseComponent.Mixin = {
       validAttributes
     );
 
+    for (var key in updatePayload) {
+      var process = validAttributes[key] && validAttributes[key].process;
+      if (process) {
+        updatePayload[key] = process(updatePayload[key]);
+      }
+    }
+
     // The style property is a deeply nested element which includes numbers
     // to represent static objects. Most of the time, it doesn't change across
     // renders, so it's faster to spend the time checking if it is different
     // before actually doing the expensive flattening operation in order to
     // compute the diff.
     if (styleDiffer(nextProps.style, prevProps.style)) {
-      var nextFlattenedStyle = precomputeStyle(flattenStyle(nextProps.style));
+      var nextFlattenedStyle = precomputeStyle(
+        flattenStyle(nextProps.style),
+        this.viewConfig.validAttributes
+      );
       updatePayload = diffRawProperties(
         updatePayload,
         this.previousFlattenedStyle,
@@ -230,7 +243,11 @@ ReactNativeBaseComponent.Mixin = {
   _reconcileListenersUponUpdate: function(prevProps, nextProps) {
     for (var key in nextProps) {
       if (registrationNames[key] && (nextProps[key] !== prevProps[key])) {
-        putListener(this._rootNodeID, key, nextProps[key]);
+        if (nextProps[key]) {
+          putListener(this._rootNodeID, key, nextProps[key]);
+        } else {
+          deleteListener(this._rootNodeID, key);
+        }
       }
     }
   },
@@ -251,7 +268,14 @@ ReactNativeBaseComponent.Mixin = {
       this._currentElement.props, // next props
       this.viewConfig.validAttributes
     );
-    RCTUIManager.createView(tag, this.viewConfig.uiViewClassName, updatePayload);
+
+    var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
+    RCTUIManager.createView(
+      tag,
+      this.viewConfig.uiViewClassName,
+      nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,
+      updatePayload
+    );
 
     this._registerListenersUponCreation(this._currentElement.props);
     this.initializeChildren(

@@ -13,6 +13,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTSRWebSocket.h"
 #import "RCTSparseArray.h"
+#import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
 
@@ -44,7 +45,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _sockets = [[RCTSparseArray alloc] init];
+    _sockets = [RCTSparseArray new];
   }
   return self;
 }
@@ -57,7 +58,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
 {
   RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL];
   webSocket.delegate = self;
@@ -66,12 +67,12 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(NSNumber *)socketID)
   [webSocket open];
 }
 
-RCT_EXPORT_METHOD(send:(NSString *)message socketID:(NSNumber *)socketID)
+RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] send:message];
 }
 
-RCT_EXPORT_METHOD(close:(NSNumber *)socketID)
+RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] close];
   _sockets[socketID] = nil;
@@ -97,7 +98,7 @@ RCT_EXPORT_METHOD(close:(NSNumber *)socketID)
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketFailed" body:@{
-    @"message":[error localizedDescription],
+    @"message":error.localizedDescription,
     @"id": webSocket.reactTag
   }];
 }
@@ -107,7 +108,7 @@ RCT_EXPORT_METHOD(close:(NSNumber *)socketID)
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketClosed" body:@{
     @"code": @(code),
-    @"reason": reason,
+    @"reason": RCTNullIfNil(reason),
     @"clean": @(wasClean),
     @"id": webSocket.reactTag
   }];

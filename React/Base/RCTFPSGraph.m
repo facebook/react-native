@@ -9,6 +9,7 @@
 
 #import "RCTFPSGraph.h"
 
+#import "RCTAssert.h"
 #import "RCTDefines.h"
 
 #if RCT_DEV
@@ -32,7 +33,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame graphPosition:(RCTFPSGraphPosition)position name:(NSString *)name color:(UIColor *)color
 {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     _margin = 2;
     _prevTime = -1;
     _maxFPS = 0;
@@ -42,8 +43,10 @@
     _frames = malloc(sizeof(float) * _length);
     memset(_frames, 0, sizeof(float) * _length);
 
-    _name = name;
-    _position = position;
+    _name = name ?: @"FPS";
+    _position = position ?: RCTFPSGraphPositionLeft;
+
+    color = color ?: [UIColor greenColor];
     _graph = [self createGraph:color];
     _label = [self createLabel:color];
 
@@ -52,6 +55,9 @@
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dealloc
 {
@@ -66,10 +72,10 @@
 - (CAShapeLayer *)createGraph:(UIColor *)color
 {
   CGFloat left = _position & RCTFPSGraphPositionLeft ? 0 : _length;
-  CAShapeLayer *graph = [[CAShapeLayer alloc] init];
+  CAShapeLayer *graph = [CAShapeLayer new];
   graph.frame = CGRectMake(left, 0, 2 * _margin + _length, self.frame.size.height);
-  graph.backgroundColor = [[color colorWithAlphaComponent:.2] CGColor];
-  graph.fillColor = [color CGColor];
+  graph.backgroundColor = [color colorWithAlphaComponent:0.2].CGColor;
+  graph.fillColor = color.CGColor;
   return graph;
 }
 
@@ -87,7 +93,7 @@
   return label;
 }
 
-- (void)tick:(NSTimeInterval)timestamp
+- (void)onTick:(NSTimeInterval)timestamp
 {
   _frameCount++;
   if (_prevTime == -1) {

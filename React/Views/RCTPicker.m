@@ -9,46 +9,40 @@
 
 #import "RCTPicker.h"
 
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-const NSInteger UNINITIALIZED_INDEX = -1;
-
 @interface RCTPicker() <UIPickerViewDataSource, UIPickerViewDelegate>
+
+@property (nonatomic, copy) NSArray *items;
+@property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
 
 @implementation RCTPicker
-{
-  RCTEventDispatcher *_eventDispatcher;
-  NSArray *_items;
-  NSInteger _selectedIndex;
-}
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  if (self = [super initWithFrame:CGRectZero]) {
-    _eventDispatcher = eventDispatcher;
-    _selectedIndex = UNINITIALIZED_INDEX;
+  if ((self = [super initWithFrame:frame])) {
+    _selectedIndex = NSNotFound;
     self.delegate = self;
   }
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
 - (void)setItems:(NSArray *)items
 {
-  if (_items != items) {
-    _items = [items copy];
-    [self setNeedsLayout];
-  }
+  _items = [items copy];
+  [self setNeedsLayout];
 }
 
 - (void)setSelectedIndex:(NSInteger)selectedIndex
 {
   if (_selectedIndex != selectedIndex) {
-    BOOL animated = _selectedIndex != UNINITIALIZED_INDEX; // Don't animate the initial value
+    BOOL animated = _selectedIndex != NSNotFound; // Don't animate the initial value
     _selectedIndex = selectedIndex;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self selectRow:selectedIndex inComponent:0 animated:animated];
@@ -58,12 +52,13 @@ const NSInteger UNINITIALIZED_INDEX = -1;
 
 #pragma mark - UIPickerViewDataSource protocol
 
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+- (NSInteger)numberOfComponentsInPickerView:(__unused UIPickerView *)pickerView
 {
   return 1;
 }
 
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+- (NSInteger)pickerView:(__unused UIPickerView *)pickerView
+numberOfRowsInComponent:(__unused NSInteger)component
 {
   return _items.count;
 }
@@ -80,20 +75,22 @@ const NSInteger UNINITIALIZED_INDEX = -1;
   return [self itemForRow:row][@"value"];
 }
 
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+- (NSString *)pickerView:(__unused UIPickerView *)pickerView
+             titleForRow:(NSInteger)row forComponent:(__unused NSInteger)component
 {
   return [self itemForRow:row][@"label"];
 }
 
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+- (void)pickerView:(__unused UIPickerView *)pickerView
+      didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
 {
   _selectedIndex = row;
-  NSDictionary *event = @{
-    @"target": self.reactTag,
-    @"newIndex": @(row),
-    @"newValue": [self valueForRow:row]
-  };
-
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  if (_onChange) {
+    _onChange(@{
+      @"newIndex": @(row),
+      @"newValue": [self valueForRow:row]
+    });
+  }
 }
+
 @end

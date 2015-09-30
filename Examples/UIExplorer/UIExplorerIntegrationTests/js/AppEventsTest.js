@@ -19,7 +19,7 @@ var {
   Text,
   View,
 } = React;
-var TestModule = NativeModules.TestModule || NativeModules.SnapshotTestManager;
+var TestModule = NativeModules.TestModule;
 
 var deepDiffer = require('deepDiffer');
 
@@ -52,6 +52,8 @@ var AppEventsTest = React.createClass({
     );
   }
 });
+
+AppEventsTest.displayName = 'AppEventsTest';
 
 var styles = StyleSheet.create({
   container: {

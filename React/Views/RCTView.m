@@ -49,7 +49,7 @@ static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
   // we do support clipsToBounds, so if that's enabled
   // we'll update the clipping
 
-  if (self.clipsToBounds && [self.subviews count] > 0) {
+  if (self.clipsToBounds && self.subviews.count > 0) {
     clipRect = [clipView convertRect:clipRect toView:self];
     clipRect = CGRectIntersection(clipRect, self.bounds);
     clipView = self;
@@ -93,7 +93,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
-    NSString *label = [subview accessibilityLabel];
+    NSString *label = subview.accessibilityLabel;
     if (label) {
       [str appendString:@" "];
       [str appendString:label];
@@ -123,11 +123,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomLeftRadius = -1;
     _borderBottomRightRadius = -1;
 
-    _backgroundColor = [super backgroundColor];
+    _backgroundColor = super.backgroundColor;
   }
 
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityLabel
 {
@@ -165,8 +167,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (BOOL)accessibilityActivate
 {
-  if (self.accessibilityTapHandler) {
-    self.accessibilityTapHandler(self);
+  if (_onAccessibilityTap) {
+    _onAccessibilityTap(nil);
     return YES;
   } else {
     return NO;
@@ -175,12 +177,20 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (BOOL)accessibilityPerformMagicTap
 {
-  if (self.magicTapHandler) {
-    self.magicTapHandler(self);
+  if (_onMagicTap) {
+    _onMagicTap(nil);
     return YES;
   } else {
     return NO;
   }
+}
+
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  NSRange semicolonRange = [superDescription rangeOfString:@";"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
+  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
 }
 
 #pragma mark - Statics for dealing with layoutGuides
@@ -200,8 +210,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     baseInset.left += autoInset.left;
     baseInset.right += autoInset.right;
   }
-  [scrollView setContentInset:baseInset];
-  [scrollView setScrollIndicatorInsets:baseInset];
+  scrollView.contentInset = baseInset;
+  scrollView.scrollIndicatorInsets = baseInset;
 
   if (updateOffset) {
     // If we're adjusting the top inset, then let's also adjust the contentOffset so that the view
@@ -219,7 +229,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 + (UIEdgeInsets)contentInsetsForView:(UIView *)view
 {
   while (view) {
-    UIViewController *controller = view.backingViewController;
+    UIViewController *controller = view.reactViewController;
     if (controller) {
       return (UIEdgeInsets){
         controller.topLayoutGuide.length, 0,
@@ -236,10 +246,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (void)react_remountAllSubviews
 {
   if (_reactSubviews) {
-    NSInteger index = 0;
+    NSUInteger index = 0;
     for (UIView *view in _reactSubviews) {
       if (view.superview != self) {
-        if (index < [self subviews].count) {
+        if (index < self.subviews.count) {
           [self insertSubview:view atIndex:index];
         } else {
           [self addSubview:view];
@@ -323,7 +333,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return [super react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
   }
 
-  if ([_reactSubviews count] == 0) {
+  if (_reactSubviews.count == 0) {
     // Do nothing if we have no subviews
     return;
   }
@@ -395,7 +405,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   // offscreen views. If _reactSubviews is nil, we can assume
   // that [self reactSubviews] and [self subviews] are the same
 
-  return _reactSubviews ?: [self subviews];
+  return _reactSubviews ?: self.subviews;
 }
 
 - (void)updateClippedSubviews
@@ -470,7 +480,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderTopColor ?: _borderColor,
     _borderLeftColor ?: _borderColor,
     _borderBottomColor ?: _borderColor,
-    _borderRightColor ?: _borderColor
+    _borderRightColor ?: _borderColor,
   };
 }
 
@@ -484,12 +494,17 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   !RCTRunningInTestEnvironment() &&
   RCTCornerRadiiAreEqual(cornerRadii) &&
   RCTBorderInsetsAreEqual(borderInsets) &&
-  RCTBorderColorsAreEqual(borderColors);
+  RCTBorderColorsAreEqual(borderColors) &&
 
-  // TODO: A problem with this is that iOS draws borders in front of the content
-  // whereas CSS draws them behind the content. Also iOS clips to the outside of
-  // the border, but CSS clips to the inside. To solve this, we'll need to add
-  // a container view inside the main view to correctly clip the subviews.
+  // iOS draws borders in front of the content whereas CSS draws them behind
+  // the content. For this reason, only use iOS border drawing when clipping
+  // or when the border is hidden.
+
+  (borderInsets.top == 0 || CGColorGetAlpha(borderColors.top) == 0 || self.clipsToBounds);
+
+  // iOS clips to the outside of the border, but CSS clips to the inside. To
+  // solve this, we'll need to add a container view inside the main view to
+  // correctly clip the subviews.
 
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;
@@ -508,7 +523,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
                                      _backgroundColor.CGColor,
                                      self.clipsToBounds);
 
-  const CGRect contentsCenter = ({
+  CGRect contentsCenter = ({
     CGSize size = image.size;
     UIEdgeInsets insets = image.capInsets;
     CGRectMake(
@@ -525,6 +540,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     [image drawInRect:(CGRect){CGPointZero, size}];
     image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
   layer.backgroundColor = NULL;
@@ -565,14 +581,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 #pragma mark Border Color
 
-#define setBorderColor(side)                                              \
-  - (void)setBorder##side##Color:(CGColorRef)border##side##Color          \
-  {                                                                       \
-    if (CGColorEqualToColor(_border##side##Color, border##side##Color)) { \
-      return;                                                             \
-    }                                                                     \
-    _border##side##Color = border##side##Color;                           \
-    [self.layer setNeedsDisplay];                                         \
+#define setBorderColor(side)                                \
+  - (void)setBorder##side##Color:(CGColorRef)color          \
+  {                                                         \
+    if (CGColorEqualToColor(_border##side##Color, color)) { \
+      return;                                               \
+    }                                                       \
+    CGColorRelease(_border##side##Color);                   \
+    _border##side##Color = CGColorRetain(color);            \
+    [self.layer setNeedsDisplay];                           \
   }
 
 setBorderColor()
@@ -583,14 +600,14 @@ setBorderColor(Left)
 
 #pragma mark - Border Width
 
-#define setBorderWidth(side)                                  \
-  - (void)setBorder##side##Width:(CGFloat)border##side##Width \
-  {                                                           \
-    if (_border##side##Width == border##side##Width) {        \
-      return;                                                 \
-    }                                                         \
-    _border##side##Width = border##side##Width;               \
-    [self.layer setNeedsDisplay];                             \
+#define setBorderWidth(side)                    \
+  - (void)setBorder##side##Width:(CGFloat)width \
+  {                                             \
+    if (_border##side##Width == width) {        \
+      return;                                   \
+    }                                           \
+    _border##side##Width = width;               \
+    [self.layer setNeedsDisplay];               \
   }
 
 setBorderWidth()
@@ -599,14 +616,14 @@ setBorderWidth(Right)
 setBorderWidth(Bottom)
 setBorderWidth(Left)
 
-#define setBorderRadius(side) \
-  - (void)setBorder##side##Radius:(CGFloat)border##side##Radius \
-  {                                                             \
-    if (_border##side##Radius == border##side##Radius) {        \
-      return;                                                   \
-    }                                                           \
-    _border##side##Radius = border##side##Radius;               \
-    [self.layer setNeedsDisplay];                               \
+#define setBorderRadius(side)                     \
+  - (void)setBorder##side##Radius:(CGFloat)radius \
+  {                                               \
+    if (_border##side##Radius == radius) {        \
+      return;                                     \
+    }                                             \
+    _border##side##Radius = radius;               \
+    [self.layer setNeedsDisplay];                 \
   }
 
 setBorderRadius()
@@ -614,5 +631,14 @@ setBorderRadius(TopLeft)
 setBorderRadius(TopRight)
 setBorderRadius(BottomLeft)
 setBorderRadius(BottomRight)
+
+- (void)dealloc
+{
+  CGColorRelease(_borderColor);
+  CGColorRelease(_borderTopColor);
+  CGColorRelease(_borderRightColor);
+  CGColorRelease(_borderBottomColor);
+  CGColorRelease(_borderLeftColor);
+}
 
 @end

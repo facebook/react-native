@@ -29,7 +29,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[UIActivityIndicatorView alloc] init];
+  return [UIActivityIndicatorView new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)

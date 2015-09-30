@@ -40,7 +40,7 @@ var invariant = require('invariant');
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');
 require('RCTLog');
-require('RCTJSTimers');
+require('JSTimersExecution');
 
 function inject() {
   /**
@@ -90,7 +90,7 @@ function inject() {
   ReactNativeComponent.injection.injectTextComponentClass(
     ReactNativeTextComponent
   );
-  ReactNativeComponent.injection.injectAutoWrapper(function(tag) {
+  ReactNativeComponent.injection.injectGenericComponentClass(function(tag) {
     // Show a nicer error message for non-function tags
     var info = '';
     if (typeof tag === 'string' && /^[a-z]/.test(tag)) {

@@ -11,6 +11,8 @@
  */
 'use strict';
 
+var deepDiffer = require('deepDiffer');
+
 /**
  * diffRawProperties takes two sets of props and a set of valid attributes
  * and write to updatePayload the values that changed or were deleted
@@ -33,6 +35,7 @@ function diffRawProperties(
   var prevProp;
   var isScalar;
   var shouldUpdate;
+  var differ;
 
   if (nextProps) {
     for (var propKey in nextProps) {
@@ -53,16 +56,11 @@ function diffRawProperties(
       }
 
       if (prevProp !== nextProp) {
-        // If you want a property's diff to be detected, you must configure it
-        // to be so - *or* it must be a scalar property. For now, we'll allow
-        // creation with any attribute that is not scalar, but we should
-        // eventually even reject those unless they are properly configured.
+        // Scalars and new props are always updated.  Objects use deepDiffer by
+        // default, but can be optimized with custom differs.
+        differ = validAttributeConfig.diff || deepDiffer;
         isScalar = typeof nextProp !== 'object' || nextProp === null;
-        shouldUpdate = isScalar ||
-          !prevProp ||
-          validAttributeConfig.diff &&
-          validAttributeConfig.diff(prevProp, nextProp);
-
+        shouldUpdate = isScalar || !prevProp || differ(prevProp, nextProp);
         if (shouldUpdate) {
           updatePayload = updatePayload || {};
           updatePayload[propKey] = nextProp;
@@ -99,14 +97,14 @@ function diffRawProperties(
         if (nextProp === undefined) {
           nextProp = null; // null is a sentinel we explicitly send to native
         }
-        // If you want a property's diff to be detected, you must configure it
-        // to be so - *or* it must be a scalar property. For now, we'll allow
-        // creation with any attribute that is not scalar, but we should
-        // eventually even reject those unless they are properly configured.
+        // Scalars and new props are always updated.  Objects use deepDiffer by
+        // default, but can be optimized with custom differs.
+        differ = validAttributeConfig.diff || deepDiffer;
         isScalar = typeof nextProp !== 'object' || nextProp === null;
-        shouldUpdate = isScalar && prevProp !== nextProp ||
-          validAttributeConfig.diff &&
-          validAttributeConfig.diff(prevProp, nextProp);
+        shouldUpdate =
+          isScalar &&
+          prevProp !== nextProp ||
+          differ(prevProp, nextProp);
         if (shouldUpdate) {
           updatePayload = updatePayload || {};
           updatePayload[propKey] = nextProp;

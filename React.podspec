@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.4.4"
+  s.version             = "0.8.0"
   s.summary             = "Build high quality mobile apps using React."
   s.description         = <<-DESC
                             React Native apps are built using the React JS
@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.default_subspec     = 'Core'
   s.requires_arc        = true
   s.platform            = :ios, "7.0"
-  s.prepare_command     = 'npm install'
+  s.prepare_command     = 'npm install --production'
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
   s.header_mappings_dir = "."
 
@@ -50,12 +50,6 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/AdSupport/*.js"
   end
 
-  s.subspec 'RCTAnimationExperimental' do |ss|
-    ss.dependency         'React/Core'
-    ss.source_files     = "Libraries/Animation/RCTAnimationExperimental*.{h,m}"
-    ss.preserve_paths   = "Libraries/Animation/*.js"
-  end
-
   s.subspec 'RCTGeolocation' do |ss|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Geolocation/*.{h,m}"
@@ -64,6 +58,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTImage' do |ss|
     ss.dependency         'React/Core'
+    ss.dependency         'React/RCTNetwork'
     ss.source_files     = "Libraries/Image/*.{h,m}"
     ss.preserve_paths   = "Libraries/Image/*.js"
   end
@@ -103,4 +98,11 @@ Pod::Spec.new do |s|
     ss.source_files     = "Libraries/WebSocket/*.{h,m}"
     ss.preserve_paths   = "Libraries/WebSocket/*.js"
   end
+
+  s.subspec 'RCTLinkingIOS' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/LinkingIOS/*.{h,m}"
+    ss.preserve_paths   = "Libraries/LinkingIOS/*.js"
+  end
+  
 end

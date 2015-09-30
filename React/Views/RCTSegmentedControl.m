@@ -1,10 +1,11 @@
-//
-//  RCTSegmentedControl.m
-//  React
-//
-//  Created by Clay Allsopp on 3/31/15.
-//  Copyright (c) 2015 Facebook. All rights reserved.
-//
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTSegmentedControl.h"
 
@@ -13,17 +14,13 @@
 #import "UIView+React.h"
 
 @implementation RCTSegmentedControl
-{
-  RCTEventDispatcher *_eventDispatcher;
-}
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:CGRectZero])) {
-    _eventDispatcher = eventDispatcher;
+  if ((self = [super initWithFrame:frame])) {
     _selectedIndex = self.selectedSegmentIndex;
-    [self addTarget:self action:@selector(onChange:)
-   forControlEvents:UIControlEventValueChanged];
+    [self addTarget:self action:@selector(didChange)
+               forControlEvents:UIControlEventValueChanged];
   }
   return self;
 }
@@ -44,14 +41,15 @@
   super.selectedSegmentIndex = selectedIndex;
 }
 
-- (void)onChange:(UISegmentedControl *)sender
+- (void)didChange
 {
-  NSDictionary *event = @{
-    @"target": self.reactTag,
-    @"value": [self titleForSegmentAtIndex:sender.selectedSegmentIndex],
-    @"selectedSegmentIndex": @(sender.selectedSegmentIndex)
-  };
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  _selectedIndex = self.selectedSegmentIndex;
+  if (_onChange) {
+    _onChange(@{
+      @"value": [self titleForSegmentAtIndex:_selectedIndex],
+      @"selectedSegmentIndex": @(_selectedIndex)
+    });
+  }
 }
 
 @end

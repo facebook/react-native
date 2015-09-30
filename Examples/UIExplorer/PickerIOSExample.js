@@ -112,6 +112,7 @@ var PickerExample = React.createClass({
   },
 });
 
+exports.displayName = (undefined: ?string);
 exports.title = '<PickerIOS>';
 exports.description = 'Render lists of selectable options with UIPickerView.';
 exports.examples = [

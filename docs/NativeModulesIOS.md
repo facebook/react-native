@@ -1,10 +1,10 @@
 ---
-id: nativemodulesios
-title: Native Modules (iOS)
+id: native-modules-ios
+title: Native Modules
 layout: docs
-category: Guides
-permalink: docs/nativemodulesios.html
-next: nativecomponentsios
+category: Guides (iOS)
+permalink: docs/native-modules-ios.html
+next: native-components-ios
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -50,7 +50,7 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 Now, from your JavaScript file you can call the method like this:
 
 ```javascript
-var CalendarManager = require('NativeModules').CalendarManager;
+var CalendarManager = require('react-native').NativeModules.CalendarManager;
 CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 ```
 
@@ -103,13 +103,13 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(
 You would then call this from JavaScript by using either:
 
 ```javascript
-CalendarManager.addEvent('Birthday Party', date.toTime()); // passing date as number of seconds since Unix epoch
+CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey', date.toTime()); // passing date as number of seconds since Unix epoch
 ```
 
 or
 
 ```javascript
-CalendarManager.addEvent('Birthday Party', date.toISOString()); // passing date as ISO-8601 string
+CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey', date.toISOString()); // passing date as ISO-8601 string
 ```
 
 And both values would get converted correctly to the native `NSDate`.  A bad value, like an `Array`, would generate a helpful "RedBox" error message.
@@ -230,6 +230,47 @@ console.log(CalendarManager.firstDayOfTheWeek);
 
 Note that the constants are exported only at initialization time, so if you change `constantsToExport` values at runtime it won't affect the JavaScript environment.
 
+### Enum Constants
+
+Enums that are defined via `NS_ENUM` cannot be used as method arguments without first extending RCTConvert.
+
+In order to export the following `NS_ENUM` definition:
+
+```objc
+typedef NS_ENUM(NSInteger, UIStatusBarAnimation) {
+    UIStatusBarAnimationNone,
+    UIStatusBarAnimationFade,
+    UIStatusBarAnimationSlide,
+};
+```
+
+You must create a class extension of RCTConvert like so:
+
+```objc
+@implementation RCTConvert (StatusBarAnimation)
+  RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
+                                               @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
+                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide),
+                      UIStatusBarAnimationNone, integerValue)
+@end
+```
+
+You can then define methods and export your enum constants like this:
+
+```objc
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
+            @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
+            @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide) }
+};
+
+RCT_EXPORT_METHOD(updateStatusBarAnimation:(UIStatusBarAnimation)animation
+                                completion:(RCTResponseSenderBlock)callback)
+```
+
+Your enum will then be automatically unwrapped using the selector provided (`integerValue` in the above example) before being passed to your exported method.
+
 
 ## Sending Events to JavaScript
 
@@ -256,9 +297,9 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
-var { DeviceEventEmitter } = require('react-native');
+var { NativeAppEventEmitter } = require('react-native');
 
-var subscription = DeviceEventEmitter.addListener(
+var subscription = NativeAppEventEmitter.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
 );

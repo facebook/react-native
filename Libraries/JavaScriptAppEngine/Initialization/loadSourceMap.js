@@ -18,7 +18,7 @@ var SourceMapConsumer = require('SourceMap').SourceMapConsumer;
 var SourceMapURL = require('./source-map-url');
 
 var RCTSourceCode = NativeModules.SourceCode;
-var RCTDataManager = NativeModules.DataManager;
+var RCTNetworking = NativeModules.Networking;
 
 function loadSourceMap(): Promise {
   return fetchSourceMap()
@@ -34,9 +34,9 @@ function fetchSourceMap(): Promise {
     return Promise.reject(new Error('RCTSourceCode module is not available'));
   }
 
-  if (!RCTDataManager) {
+  if (!RCTNetworking) {
     // Used internally by fetch
-    return Promise.reject(new Error('RCTDataManager module is not available'));
+    return Promise.reject(new Error('RCTNetworking module is not available'));
   }
 
   return new Promise(RCTSourceCode.getScriptText)

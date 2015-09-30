@@ -11,6 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @interface RCTAlertManager() <UIAlertViewDelegate>
 
@@ -28,9 +29,9 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _alerts = [[NSMutableArray alloc] init];
-    _alertCallbacks = [[NSMutableArray alloc] init];
-    _alertButtonKeys = [[NSMutableArray alloc] init];
+    _alerts = [NSMutableArray new];
+    _alertCallbacks = [NSMutableArray new];
+    _alertButtonKeys = [NSMutableArray new];
   }
   return self;
 }
@@ -38,6 +39,13 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
+}
+
+- (void)invalidate
+{
+    for (UIAlertView *alert in _alerts) {
+        [alert dismissWithClickedButtonIndex:0 animated:YES];
+    }
 }
 
 /**
@@ -69,13 +77,12 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     RCTLogError(@"Must have at least one button.");
     return;
   }
-
-  UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                      message:nil
-                                                     delegate:self
-                                            cancelButtonTitle:nil
-                                            otherButtonTitles:nil];
-
+  
+  if (RCTRunningInAppExtension()) {
+    return;
+  }
+  
+  UIAlertView *alertView = RCTAlertView(title, nil, self, nil, nil);
   NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
 
   if ([type isEqualToString:@"plain-text"]) {
@@ -90,7 +97,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     if (button.count != 1) {
       RCTLogError(@"Button definitions should have exactly one key.");
     }
-    NSString *buttonKey = [button.allKeys firstObject];
+    NSString *buttonKey = button.allKeys.firstObject;
     NSString *buttonTitle = [button[buttonKey] description];
     [alertView addButtonWithTitle:buttonTitle];
     if ([buttonKey isEqualToString: @"cancel"]) {
@@ -101,7 +108,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
 
   [_alerts addObject:alertView];
-  [_alertCallbacks addObject:callback ?: ^(id unused) {}];
+  [_alertCallbacks addObject:callback ?: ^(__unused id unused) {}];
   [_alertButtonKeys addObject:buttonKeys];
 
   [alertView show];

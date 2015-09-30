@@ -45,7 +45,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *
  * ```
  *   componentWillMount: function() {
- *     this._panGesture = PanResponder.create({
+ *     this._panResponder = PanResponder.create({
  *       // Ask to be the responder:
  *       onStartShouldSetPanResponder: (evt, gestureState) => true,
  *       onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
@@ -73,6 +73,11 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *         // Another component has become the responder, so this gesture
  *         // should be cancelled
  *       },
+ *       onShouldBlockNativeResponder: (evt, gestureState) => {
+ *         // Returns whether this component should block native components from becoming the JS
+ *         // responder. Returns true by default. Is currently only supported on android.
+ *         return true;
+ *       },
  *     });
  *   },
  *
@@ -87,7 +92,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/ResponderExample.js)
+ * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/PanResponderExample.js)
  */
 
 var PanResponder = {
@@ -241,6 +246,7 @@ var PanResponder = {
    *  - `onPanResponderMove: (e, gestureState) => {...}`
    *  - `onPanResponderTerminate: (e, gestureState) => {...}`
    *  - `onPanResponderTerminationRequest: (e, gestureState) => {...}`
+   *  - 'onShouldBlockNativeResponder: (e, gestureState) => {...}'
    *
    *  In general, for events that have capture equivalents, we update the
    *  gestureState once in the capture phase and can use it in the bubble phase
@@ -288,7 +294,7 @@ var PanResponder = {
           return false;
         }
         PanResponder._updateGestureStateOnMove(gestureState, touchHistory);
-        return config.onMoveShouldSetResponderCapture ?
+        return config.onMoveShouldSetPanResponderCapture ?
           config.onMoveShouldSetPanResponderCapture(e, gestureState) : false;
       },
 
@@ -298,6 +304,9 @@ var PanResponder = {
         gestureState.dx = 0;
         gestureState.dy = 0;
         config.onPanResponderGrant && config.onPanResponderGrant(e, gestureState);
+        // TODO: t7467124 investigate if this can be removed
+        return config.onShouldBlockNativeResponder === undefined ? true :
+          config.onShouldBlockNativeResponder();
       },
 
       onResponderReject: function(e) {

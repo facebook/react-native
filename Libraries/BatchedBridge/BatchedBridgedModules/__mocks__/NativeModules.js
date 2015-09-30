@@ -30,6 +30,12 @@ var NativeModules = {
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
     Dimensions: {},
+    RCTModalFullscreenView: {
+      Constants: {},
+    },
+    RCTScrollView: {
+      Constants: {},
+    },
   },
   AsyncLocalStorage: {
     getItem: jest.genMockFunction(),
@@ -39,6 +45,17 @@ var NativeModules = {
   },
   SourceCode: {
     scriptURL: null,
+  },
+  BuildInfo: {
+    appVersion: '0',
+    buildVersion: '0',
+  },
+  ModalFullscreenViewManager: {},
+  AlertManager: {
+    alertWithArgs: jest.genMockFunction(),
+  },
+  Pasteboard: {
+    setPasteboardString: jest.genMockFunction(),
   },
 };
 

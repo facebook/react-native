@@ -143,7 +143,7 @@ class XMLHttpRequestBase {
       return;
     }
     this.status = status;
-    this.setResponseHeaders(responseHeaders);
+    this.setResponseHeaders(responseHeaders || {});
     this.responseText = responseText;
     this.setReadyState(this.DONE);
   }
@@ -154,7 +154,7 @@ class XMLHttpRequestBase {
     this._lowerCaseResponseHeaders =
       Object.keys(headers).reduce((lcaseHeaders, headerName) => {
         lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
-        return headers;
+        return lcaseHeaders;
       }, {});
   }
 

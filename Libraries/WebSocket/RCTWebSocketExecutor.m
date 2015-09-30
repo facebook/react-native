@@ -13,6 +13,7 @@
 
 #import "RCTWebSocketExecutor.h"
 
+#import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
@@ -38,12 +39,14 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  return [self initWithURL:[NSURL URLWithString:@"http://localhost:8081/debugger-proxy"]];
+  return [self initWithURL:[RCTConvert NSURL:@"http://localhost:8081/debugger-proxy"]];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
-  if (self = [super init]) {
+  RCTAssertParam(URL);
+
+  if ((self = [super init])) {
     _url = URL;
   }
   return self;
@@ -54,8 +57,8 @@ RCT_EXPORT_MODULE()
   _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
-  _callbacks = [[RCTSparseArray alloc] init];
-  _injectedObjects = [[NSMutableDictionary alloc] init];
+  _callbacks = [RCTSparseArray new];
+  _injectedObjects = [NSMutableDictionary new];
   [_socket setDelegateDispatchQueue:_jsQueue];
 
   NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:_url];
@@ -95,7 +98,7 @@ RCT_EXPORT_MODULE()
 {
   __block NSError *initError;
   dispatch_semaphore_t s = dispatch_semaphore_create(0);
-  [self sendMessage:@{@"method": @"prepareJSRuntime"} context:nil waitForReply:^(NSError *error, NSDictionary *reply) {
+  [self sendMessage:@{@"method": @"prepareJSRuntime"} waitForReply:^(NSError *error, NSDictionary *reply) {
     initError = error;
     dispatch_semaphore_signal(s);
   }];
@@ -124,7 +127,7 @@ RCT_EXPORT_MODULE()
   RCTLogError(@"WebSocket connection failed with error %@", error);
 }
 
-- (void)sendMessage:(NSDictionary *)message context:(NSNumber *)executorID waitForReply:(RCTWSMessageCallback)callback
+- (void)sendMessage:(NSDictionary *)message waitForReply:(RCTWSMessageCallback)callback
 {
   static NSUInteger lastID = 10000;
 
@@ -134,8 +137,6 @@ RCT_EXPORT_MODULE()
         NSLocalizedDescriptionKey: @"socket closed"
       }];
       callback(error, nil);
-      return;
-    } else if (executorID && ![RCTGetExecutorID(self) isEqualToNumber:executorID]) {
       return;
     }
 
@@ -149,13 +150,17 @@ RCT_EXPORT_MODULE()
 
 - (void)executeApplicationScript:(NSString *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  NSDictionary *message = @{@"method": @"executeApplicationScript", @"url": [URL absoluteString], @"inject": _injectedObjects};
-  [self sendMessage:message context:nil waitForReply:^(NSError *error, NSDictionary *reply) {
+  NSDictionary *message = @{
+    @"method": @"executeApplicationScript",
+    @"url": RCTNullIfNil(URL.absoluteString),
+    @"inject": _injectedObjects,
+  };
+  [self sendMessage:message waitForReply:^(NSError *error, NSDictionary *reply) {
     onComplete(error);
   }];
 }
 
-- (void)executeJSCall:(NSString *)name method:(NSString *)method arguments:(NSArray *)arguments context:(NSNumber *)executorID callback:(RCTJavaScriptCallback)onComplete
+- (void)executeJSCall:(NSString *)name method:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
   NSDictionary *message = @{
@@ -164,7 +169,7 @@ RCT_EXPORT_MODULE()
     @"moduleMethod": method,
     @"arguments": arguments
   };
-  [self sendMessage:message context:executorID waitForReply:^(NSError *socketError, NSDictionary *reply) {
+  [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary *reply) {
     if (socketError) {
       onComplete(nil, socketError);
       return;
@@ -185,6 +190,15 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_async(dispatch_get_main_queue(), block);
+  }
+}
+
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
   dispatch_async(dispatch_get_main_queue(), block);
 }

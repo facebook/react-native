@@ -11,17 +11,13 @@
  */
 'use strict';
 
+var Map = require('Map');
 var NativeModules = require('NativeModules');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var RCTNetInfo = NativeModules.NetInfo;
 
-if (Platform.OS === 'ios') {
-  var RCTNetInfo = NativeModules.Reachability;
-} else if (Platform.OS === 'android') {
-  var RCTNetInfo = NativeModules.NetInfo;
-}
-
-var DEVICE_REACHABILITY_EVENT = 'reachabilityDidChange';
+var DEVICE_REACHABILITY_EVENT = 'networkDidChange';
 
 type ChangeEventName = $Enum<{
   change: string;
@@ -140,47 +136,7 @@ type ConnectivityStateAndroid = $Enum<{
  * ```
  */
 
-var _subscriptions = {};
-
-var NetInfo = {
-  addEventListener: function (
-    eventName: ChangeEventName,
-    handler: Function
-  ): void {
-    _subscriptions[handler] = RCTDeviceEventEmitter.addListener(
-      DEVICE_REACHABILITY_EVENT,
-      (appStateData) => {
-        handler(appStateData.network_reachability);
-      }
-    );
-  },
-
-  removeEventListener: function(
-    eventName: ChangeEventName,
-    handler: Function
-  ): void {
-    if (!_subscriptions[handler]) {
-      return;
-    }
-    _subscriptions[handler].remove();
-    _subscriptions[handler] = null;
-  },
-
-  fetch: function(): Promise {
-    return new Promise((resolve, reject) => {
-      RCTNetInfo.getCurrentReachability(
-        function(resp) {
-          resolve(resp.network_reachability);
-        },
-        reject
-      );
-    });
-  },
-
-  isConnected: {},
-
-  isConnectionMetered: {},
-};
+var _subscriptions = new Map();
 
 if (Platform.OS === 'ios') {
   var _isConnected = function(
@@ -197,37 +153,80 @@ if (Platform.OS === 'ios') {
   };
 }
 
-var _isConnectedSubscriptions = {};
+var _isConnectedSubscriptions = new Map();
 
-NetInfo.isConnected = {
+var NetInfo = {
   addEventListener: function (
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    _isConnectedSubscriptions[handler] = (connection) => {
-      handler(_isConnected(connection));
-    };
-    NetInfo.addEventListener(
-      eventName,
-      _isConnectedSubscriptions[handler]
+    var listener = RCTDeviceEventEmitter.addListener(
+      DEVICE_REACHABILITY_EVENT,
+      (appStateData) => {
+        handler(appStateData.network_info);
+      }
     );
+    _subscriptions.set(handler, listener);
   },
 
   removeEventListener: function(
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    NetInfo.removeEventListener(
-      eventName,
-      _isConnectedSubscriptions[handler]
-    );
+    var listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
   },
 
   fetch: function(): Promise {
-    return NetInfo.fetch().then(
-      (connection) => _isConnected(connection)
-    );
+    return new Promise((resolve, reject) => {
+      RCTNetInfo.getCurrentReachability(
+        function(resp) {
+          resolve(resp.network_reachability);
+        },
+        reject
+      );
+    });
   },
+
+  isConnected: {
+    addEventListener: function (
+      eventName: ChangeEventName,
+      handler: Function
+    ): void {
+      var listener = (connection) => {
+        handler(_isConnected(connection));
+      };
+      _isConnectedSubscriptions.set(handler, listener);
+      NetInfo.addEventListener(
+        eventName,
+        listener
+      );
+    },
+
+    removeEventListener: function(
+      eventName: ChangeEventName,
+      handler: Function
+    ): void {
+      var listener = _isConnectedSubscriptions.get(handler);
+      NetInfo.removeEventListener(
+        eventName,
+        listener
+      );
+      _isConnectedSubscriptions.delete(handler);
+    },
+
+    fetch: function(): Promise {
+      return NetInfo.fetch().then(
+        (connection) => _isConnected(connection)
+      );
+    },
+  },
+
+  isConnectionMetered: ({}: {} | (callback:Function) => void),
 };
 
 if (Platform.OS === 'android') {

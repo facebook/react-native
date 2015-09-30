@@ -11,11 +11,12 @@
  */
 'use strict';
 
+var Map = require('Map');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
 var invariant = require('invariant');
 
-var _notifHandlers = {};
+var _notifHandlers = new Map();
 var _initialNotification = RCTPushNotificationManager &&
   RCTPushNotificationManager.initialNotification;
 
@@ -34,6 +35,31 @@ class PushNotificationIOS {
   _alert: string | Object;
   _sound: string;
   _badgeCount: number;
+
+  /**
+   * Schedules the localNotification for immediate presentation.
+   *
+   * details is an object containing:
+   *
+   * - `alertBody` : The message displayed in the notification alert.
+   *
+   */
+  static presentLocalNotification(details: Object) {
+    RCTPushNotificationManager.presentLocalNotification(details);
+  }
+
+  /**
+   * Schedules the localNotification for future presentation.
+   *
+   * details is an object containing:
+   *
+   * - `fireDate` : The date and time when the system should deliver the notification.
+   * - `alertBody` : The message displayed in the notification alert.
+   *
+   */
+  static scheduleLocalNotification(details: Object) {
+    RCTPushNotificationManager.scheduleLocalNotification(details);
+  }
 
   /**
    * Sets the badge number for the app icon on the home screen
@@ -65,21 +91,23 @@ class PushNotificationIOS {
       type === 'notification' || type === 'register',
       'PushNotificationIOS only supports `notification` and `register` events'
     );
+    var listener;
     if (type === 'notification') {
-      _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
+      listener =  RCTDeviceEventEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
       );
     } else if (type === 'register') {
-      _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
+      listener = RCTDeviceEventEmitter.addListener(
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
         }
       );
     }
+    _notifHandlers.set(handler, listener);
   }
 
   /**
@@ -119,6 +147,18 @@ class PushNotificationIOS {
   }
 
   /**
+   * Unregister for all remote notifications received via Apple Push Notification service.
+   *
+   * You should call this method in rare circumstances only, such as when a new version of
+   * the app removes support for all types of remote notifications. Users can temporarily
+   * prevent apps from receiving remote notifications through the Notifications section of
+   * the Settings app. Apps unregistered through this method can always re-register.
+   */
+  static abandonPermissions() {
+    RCTPushNotificationManager.abandonPermissions();
+  }
+
+  /**
    * See what push permissions are currently enabled. `callback` will be
    * invoked with a `permissions` object:
    *
@@ -143,11 +183,12 @@ class PushNotificationIOS {
       type === 'notification' || type === 'register',
       'PushNotificationIOS only supports `notification` and `register` events'
     );
-    if (!_notifHandlers[handler]) {
+    var listener = _notifHandlers.get(handler);
+    if (!listener) {
       return;
     }
-    _notifHandlers[handler].remove();
-    _notifHandlers[handler] = null;
+    listener.remove();
+    _notifHandlers.delete(handler);
   }
 
 
@@ -170,7 +211,7 @@ class PushNotificationIOS {
    * Listening to the `notification` event and invoking
    * `popInitialNotification` is sufficient
    */
-  constructor(nativeNotif) {
+  constructor(nativeNotif: Object) {
     this._data = {};
 
     // Extract data from Apple's `aps` dict as defined:

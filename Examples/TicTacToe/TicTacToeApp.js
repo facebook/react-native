@@ -19,7 +19,6 @@
 var React = require('react-native');
 var {
   AppRegistry,
-  Image,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -129,17 +128,6 @@ var Cell = React.createClass({
     }
   },
 
-  imageContents() {
-    switch (this.props.player) {
-      case 1:
-        return 'http://www.picgifs.com/alphabets/alphabets/children-5/alphabets-children-5-277623.gif';
-      case 2:
-        return 'http://www.picgifs.com/alphabets/alphabets/children-5/alphabets-children-5-730492.gif';
-      default:
-        return '';
-    }
-  },
-
   render() {
     return (
       <TouchableHighlight
@@ -147,7 +135,9 @@ var Cell = React.createClass({
         underlayColor="transparent"
         activeOpacity={0.5}>
         <View style={[styles.cell, this.cellStyle()]}>
-          <Image source={{uri: this.imageContents()}} />
+          <Text style={[styles.cellText, this.textStyle()]}>
+            {this.textContents()}
+          </Text>
         </View>
       </TouchableHighlight>
     );

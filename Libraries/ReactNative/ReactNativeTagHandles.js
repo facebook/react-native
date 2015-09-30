@@ -28,6 +28,7 @@ var warning = require('warning');
  * unmount a component with a `rootNodeID`, then mount a new one in its place,
  */
 var INITIAL_TAG_COUNT = 1;
+var NATIVE_TOP_ROOT_ID_SEPARATOR = '{TOP_LEVEL}';
 var ReactNativeTagHandles = {
   tagsStartAt: INITIAL_TAG_COUNT,
   tagCount: INITIAL_TAG_COUNT,
@@ -67,12 +68,23 @@ var ReactNativeTagHandles = {
       this.reactTagIsNativeTopRootID(tag),
       'Expect a native root tag, instead got ', tag
     );
-    return '.r[' + tag + ']{TOP_LEVEL}';
+    return '.r[' + tag + ']' + NATIVE_TOP_ROOT_ID_SEPARATOR;
   },
 
   reactTagIsNativeTopRootID: function(reactTag: number): bool {
     // We reserve all tags that are 1 mod 10 for native root views
     return reactTag % 10 === 1;
+  },
+
+  getNativeTopRootIDFromNodeID: function(nodeID: ?string): ?string {
+    if (!nodeID) {
+      return null;
+    }
+    var index = nodeID.indexOf(NATIVE_TOP_ROOT_ID_SEPARATOR);
+    if (index === -1) {
+      return null;
+    }
+    return nodeID.substr(0, index + NATIVE_TOP_ROOT_ID_SEPARATOR.length);
   },
 
   /**

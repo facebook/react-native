@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (id)init
+- (instancetype)init
 {
   return [self initWithWebView:nil];
 }
@@ -66,13 +66,15 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_webView) {
-    _webView = [[UIWebView alloc] init];
+    [self executeBlockOnJavaScriptQueue:^{
+      _webView = [UIWebView new];
+      _webView.delegate = self;
+    }];
   }
 
-  _objectsToInject = [[NSMutableDictionary alloc] init];
-  _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL],
-  _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL],
-  _webView.delegate = self;
+  _objectsToInject = [NSMutableDictionary new];
+  _commentsRegex = [NSRegularExpression regularExpressionWithPattern:@"(^ *?\\/\\/.*?$|\\/\\*\\*[\\s\\S]*?\\*\\/)" options:NSRegularExpressionAnchorsMatchLines error:NULL];
+  _scriptTagsRegex = [NSRegularExpression regularExpressionWithPattern:@"<(\\/?script[^>]*?)>" options:0 error:NULL];
 }
 
 - (void)invalidate
@@ -92,12 +94,11 @@ RCT_EXPORT_MODULE()
 - (void)executeJSCall:(NSString *)name
                method:(NSString *)method
             arguments:(NSArray *)arguments
-              context:(NSNumber *)executorID
              callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"");
   [self executeBlockOnJavaScriptQueue:^{
-    if (!self.isValid || ![RCTGetExecutorID(self) isEqualToNumber:executorID]) {
+    if (!self.isValid) {
       return;
     }
 
@@ -153,7 +154,8 @@ RCT_EXPORT_MODULE()
 
   if (_objectsToInject.count > 0) {
     NSMutableString *scriptWithInjections = [[NSMutableString alloc] initWithString:@"/* BEGIN NATIVELY INJECTED OBJECTS */\n"];
-    [_objectsToInject enumerateKeysAndObjectsUsingBlock:^(NSString *objectName, NSString *blockScript, BOOL *stop) {
+    [_objectsToInject enumerateKeysAndObjectsUsingBlock:
+     ^(NSString *objectName, NSString *blockScript, __unused BOOL *stop) {
       [scriptWithInjections appendString:objectName];
       [scriptWithInjections appendString:@" = ("];
       [scriptWithInjections appendString:blockScript];
@@ -182,31 +184,25 @@ RCT_EXPORT_MODULE()
   [_webView loadHTMLString:runScript baseURL:url];
 }
 
-/**
- * In order to avoid `UIWebView` thread locks, all JS executions should be
- * performed outside of the event loop that notifies the `UIWebViewDelegate`
- * that the page has loaded. This is only an issue with the remote debug mode of
- * `UIWebView`. For a production `UIWebView` deployment, this delay is
- * unnecessary and possibly harmful (or helpful?)
- *
- * The delay might not be needed as soon as the following change lands into
- * iOS7. (Review the patch linked here and search for "crash"
- * https://bugs.webkit.org/show_bug.cgi?id=125746).
- */
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC);
 
-  dispatch_after(when, dispatch_get_main_queue(), ^{
-    RCTAssertMainThread();
+  if ([NSThread isMainThread]) {
     block();
-  });
+  } else {
+    dispatch_async(dispatch_get_main_queue(), block);
+  }
+}
+
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  dispatch_async(dispatch_get_main_queue(), block);
 }
 
 /**
  * `UIWebViewDelegate` methods. Handle application script load.
  */
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(__unused UIWebView *)webView
 {
   RCTAssertMainThread();
   if (_onApplicationScriptLoaded) {

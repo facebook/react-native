@@ -21,6 +21,7 @@ var TransformPropTypes = require('TransformPropTypes');
 var ViewStylePropTypes = {
   ...LayoutPropTypes,
   ...TransformPropTypes,
+  backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
   backgroundColor: ReactPropTypes.string,
   borderColor: ReactPropTypes.string,
   borderTopColor: ReactPropTypes.string,
@@ -32,6 +33,7 @@ var ViewStylePropTypes = {
   borderTopRightRadius: ReactPropTypes.number,
   borderBottomLeftRadius: ReactPropTypes.number,
   borderBottomRightRadius: ReactPropTypes.number,
+  borderStyle: ReactPropTypes.oneOf(['solid', 'dotted', 'dashed']),
   opacity: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
   shadowColor: ReactPropTypes.string,

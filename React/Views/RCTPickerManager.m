@@ -19,15 +19,16 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTPicker alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [RCTPicker new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(items, NSDictionaryArray)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
 - (NSDictionary *)constantsToExport
 {
-  RCTPicker *view = [[RCTPicker alloc] init];
+  UIPickerView *view = [UIPickerView new];
   return @{
     @"ComponentHeight": @(view.intrinsicContentSize.height),
     @"ComponentWidth": @(view.intrinsicContentSize.width)

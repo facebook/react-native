@@ -14,13 +14,13 @@
 /**
  * The default error domain to be used for React errors.
  */
-extern NSString *const RCTErrorDomain;
+RCT_EXTERN NSString *const RCTErrorDomain;
 
 /**
  * A block signature to be used for custom assertion handling.
  */
 typedef void (^RCTAssertFunction)(
-  BOOL condition,
+  NSString *condition,
   NSString *fileName,
   NSNumber *lineNumber,
   NSString *function,
@@ -28,25 +28,32 @@ typedef void (^RCTAssertFunction)(
 );
 
 /**
- * Private logging function - ignore this.
- */
-RCT_EXTERN void _RCTAssertFormat(
-  BOOL, const char *, int, const char *, NSString *, ...) NS_FORMAT_FUNCTION(5,6);
-
-/**
  * This is the main assert macro that you should use.
  */
-#define RCTAssert(condition, ...) do { BOOL pass = ((condition) != 0); \
-if (RCT_NSASSERT && !pass) { [[NSAssertionHandler currentHandler] handleFailureInFunction:@(__func__) \
-file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; } \
-_RCTAssertFormat(pass, __FILE__, __LINE__, __func__, __VA_ARGS__); \
+#define RCTAssert(condition, ...) do { \
+  if ((condition) == 0) { \
+    _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__); \
+    if (RCT_NSASSERT) { \
+      [[NSAssertionHandler currentHandler] handleFailureInFunction:@(__func__) \
+        file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
+    } \
+  } \
 } while (false)
+RCT_EXTERN void _RCTAssertFormat(
+  const char *, const char *, int, const char *, NSString *, ...
+) NS_FORMAT_FUNCTION(5,6);
+
+/**
+ * Convenience macro for asserting that a parameter is non-nil/non-zero.
+ */
+#define RCTAssertParam(name) RCTAssert(name, \
+@"'%s' is a required parameter", #name)
 
 /**
  * Convenience macro for asserting that we're running on main thread.
  */
 #define RCTAssertMainThread() RCTAssert([NSThread isMainThread], \
-@"This function must be called on the main thread");
+@"This function must be called on the main thread")
 
 /**
  * These methods get and set the current assert function called by the RCTAssert
@@ -62,6 +69,13 @@ RCT_EXTERN RCTAssertFunction RCTGetAssertFunction(void);
  * assert info to an extra service without changing the default behavior.
  */
 RCT_EXTERN void RCTAddAssertFunction(RCTAssertFunction assertFunction);
+
+/**
+ * This method temporarily overrides the assert function while performing the
+ * specified block. This is useful for testing purposes (to detect if a given
+ * function asserts something) or to suppress or override assertions temporarily.
+ */
+RCT_EXTERN void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction assertFunction);
 
 /**
  * Get the current thread's name (or the current queue, if in debug mode)

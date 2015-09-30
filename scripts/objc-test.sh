@@ -24,9 +24,9 @@ function cleanup {
 }
 trap cleanup EXIT
 
-node ./packager/packager.js -- --nonPersistent &
+node ./packager/packager.js --nonPersistent &
 SERVER_PID=$!
 xctool \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
-  -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.3' \
+  -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=8.4' \
   test

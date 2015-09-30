@@ -11,17 +11,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTComponent.h"
 #import "RCTPointerEvents.h"
 
 @protocol RCTAutoInsetsProtocol;
 
 @class RCTView;
-typedef void (^RCTViewEventHandler)(RCTView *view);
 
 @interface RCTView : UIView
 
-@property (nonatomic, copy) RCTViewEventHandler accessibilityTapHandler;
-@property (nonatomic, copy) RCTViewEventHandler magicTapHandler;
+/**
+ * Accessibility event handlers
+ */
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
+@property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
 
 /**
  * Used to control how touch events are processed.
@@ -64,7 +67,7 @@ typedef void (^RCTViewEventHandler)(RCTView *view);
 @property (nonatomic, assign) CGFloat borderBottomRightRadius;
 
 /**
- * Border colors.
+ * Border colors (actually retained).
  */
 @property (nonatomic, assign) CGColorRef borderTopColor;
 @property (nonatomic, assign) CGColorRef borderRightColor;

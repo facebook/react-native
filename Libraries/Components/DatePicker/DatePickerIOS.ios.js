@@ -145,6 +145,8 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', DatePickerIOS);
+var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', DatePickerIOS, {
+  nativeOnly: { onChange: true },
+});
 
 module.exports = DatePickerIOS;

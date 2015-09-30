@@ -32,7 +32,11 @@ var TabBarIOS = React.createClass({
     /**
      * Background color of the tab bar
      */
-    barTintColor: React.PropTypes.string
+    barTintColor: React.PropTypes.string,
+    /**
+     * A Boolean value that indicates whether the tab bar is translucent
+     */
+    translucent: React.PropTypes.bool,
   },
 
   render: function() {
@@ -40,7 +44,8 @@ var TabBarIOS = React.createClass({
       <RCTTabBar
         style={[styles.tabGroup, this.props.style]}
         tintColor={this.props.tintColor}
-        barTintColor={this.props.barTintColor}>
+        barTintColor={this.props.barTintColor}
+        translucent={this.props.translucent !== false}>
         {this.props.children}
       </RCTTabBar>
     );

@@ -19,27 +19,24 @@ var stringifySafe = require('stringifySafe');
 
 var sourceMapPromise;
 
-type Exception = {
-  sourceURL: string;
-  line: number;
-  message: string;
-}
+var exceptionID = 0;
 
-function reportException(e: Exception, isFatal: bool, stack?: any) {
+function reportException(e: Error, isFatal: bool, stack?: any) {
+  var currentExceptionID = ++exceptionID;
   if (RCTExceptionsManager) {
     if (!stack) {
       stack = parseErrorStack(e);
     }
     if (isFatal) {
-      RCTExceptionsManager.reportFatalException(e.message, stack);
+      RCTExceptionsManager.reportFatalException(e.message, stack, currentExceptionID);
     } else {
-      RCTExceptionsManager.reportSoftException(e.message, stack);
+      RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack);
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
         })
         .catch(error => {
           // This can happen in a variety of normal situations, such as
@@ -50,13 +47,20 @@ function reportException(e: Exception, isFatal: bool, stack?: any) {
   }
 }
 
-function handleException(e: Exception, isFatal: boolean) {
+function handleException(e: Error, isFatal: boolean) {
+  // Workaround for reporting errors caused by `throw 'some string'`
+  // Unfortunately there is no way to figure out the stacktrace in this
+  // case, so if you ended up here trying to trace an error, look for
+  // `throw '<error message>'` somewhere in your codebase.
+  if (!e.message) {
+    e = new Error(e);
+  }
   var stack = parseErrorStack(e);
   var msg =
     'Error: ' + e.message +
     '\n stack: \n' + stackToString(stack) +
-    '\n URL: ' + e.sourceURL +
-    '\n line: ' + e.line +
+    '\n URL: ' + (e: any).sourceURL +
+    '\n line: ' + (e: any).line +
     '\n message: ' + e.message;
   if (console.errorOriginal) {
     console.errorOriginal(msg);
@@ -77,11 +81,20 @@ function installConsoleErrorReporter() {
   console.reportException = reportException;
   console.errorOriginal = console.error.bind(console);
   console.error = function reactConsoleError() {
+    // Note that when using the built-in context executor on iOS (i.e., not
+    // Chrome debugging), console.error is already stubbed out to cause a
+    // redbox via RCTNativeLoggingHook.
     console.errorOriginal.apply(null, arguments);
     if (!console.reportErrorsAsExceptions) {
       return;
     }
     var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+    if (str.slice(0, 10) === '"Warning: ') {
+      // React warnings use console.error so that a stack trace is shown, but
+      // we don't (currently) want these to show a redbox
+      // (Note: Logic duplicated in polyfills/console.js.)
+      return;
+    }
     var error: any = new Error('console.error: ' + str);
     error.framesToPop = 1;
     reportException(error, /* isFatal */ false);

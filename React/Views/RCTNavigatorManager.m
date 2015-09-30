@@ -25,22 +25,16 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)
-
-- (NSDictionary *)customDirectEventTypes
-{
-  return @{
-    @"topNavigationProgress": @{
-      @"registrationName": @"onNavigationProgress"
-    },
-  };
-}
+RCT_EXPORT_VIEW_PROPERTY(onNavigationProgress, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onNavigationComplete, RCTBubblingEventBlock)
 
 // TODO: remove error callbacks
-RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(NSNumber *)reactTag
-                  errorCallback:(RCTResponseSenderBlock)errorCallback
-                  callback:(__unused RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reactTag
+                  errorCallback:(__unused RCTResponseSenderBlock)errorCallback
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry){
     RCTNavigator *navigator = viewRegistry[reactTag];
     if ([navigator isKindOfClass:[RCTNavigator class]]) {
       BOOL wasAcquired = [navigator requestSchedulingJavaScriptNavigation];

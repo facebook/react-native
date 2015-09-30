@@ -19,14 +19,14 @@ var RCTAsyncRocksDBStorage = NativeModules.AsyncRocksDBStorage;
 var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncLocalStorage;
 
 /**
- * AsyncStorage is a simple, asynchronous, persistent, global, key-value storage
- * system.  It should be used instead of LocalStorage.
+ * AsyncStorage is a simple, asynchronous, persistent, key-value storage
+ * system that is global to the app.  It should be used instead of LocalStorage.
  *
  * It is recommended that you use an abstraction on top of AsyncStorage instead
  * of AsyncStorage directly for anything more than light usage since it
  * operates globally.
  *
- * This JS code is a simple facad over the native iOS implementation to provide
+ * This JS code is a simple facade over the native iOS implementation to provide
  * a clear JS API, real Error objects, and simple non-multi functions. Each
  * method returns a `Promise` object.
  */
@@ -133,7 +133,7 @@ var AsyncStorage = {
   },
 
   /**
-   * Gets *all* keys known to the system, for all callers, libraries, etc. Returns a `Promise` object.
+   * Gets *all* keys known to the app, for all callers, libraries, etc. Returns a `Promise` object.
    */
   getAllKeys: function(callback?: ?(error: ?Error, keys: ?Array<string>) => void): Promise {
     return new Promise((resolve, reject) => {

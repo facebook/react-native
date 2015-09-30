@@ -18,7 +18,6 @@ var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
-var verifyPropTypes = require('verifyPropTypes');
 
 var GRAY = '#999999';
 
@@ -88,24 +87,19 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sizeSmall: {
+    width: 20,
     height: 20,
   },
   sizeLarge: {
+    width: 36,
     height: 36,
   }
 });
 
 var RCTActivityIndicatorView = requireNativeComponent(
   'RCTActivityIndicatorView',
-  null
+  ActivityIndicatorIOS,
+  {nativeOnly: {activityIndicatorViewStyle: true}},
 );
-if (__DEV__) {
-  var nativeOnlyProps = {activityIndicatorViewStyle: true};
-  verifyPropTypes(
-    ActivityIndicatorIOS,
-    RCTActivityIndicatorView.viewConfig,
-    nativeOnlyProps
-  );
-}
 
 module.exports = ActivityIndicatorIOS;

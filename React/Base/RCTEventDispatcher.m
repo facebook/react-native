@@ -11,11 +11,25 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTUtils.h"
+
+const NSInteger RCTTextUpdateLagWarningThreshold = 3;
+
+NSString *RCTNormalizeInputEventName(NSString *eventName)
+{
+  if ([eventName hasPrefix:@"on"]) {
+    eventName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 2} withString:@"top"];
+  } else if (![eventName hasPrefix:@"top"]) {
+    eventName = [[@"top" stringByAppendingString:[eventName substringToIndex:1].uppercaseString]
+                 stringByAppendingString:[eventName substringFromIndex:1]];
+  }
+  return eventName;
+}
 
 static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
-    [event.viewTag intValue] |
+    event.viewTag.intValue |
     (((uint64_t)event.eventName.hash & 0xFFFF) << 32)  |
     (((uint64_t)event.coalescingKey) << 48)
   );
@@ -31,6 +45,10 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
                       eventName:(NSString *)eventName
                            body:(NSDictionary *)body
 {
+  if (RCT_DEBUG) {
+    RCTAssertParam(eventName);
+  }
+
   if ((self = [super init])) {
     _viewTag = viewTag;
     _eventName = eventName;
@@ -38,6 +56,8 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (uint16_t)coalescingKey
 {
@@ -61,7 +81,7 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
 
 @end
 
-@interface RCTEventDispatcher() <RCTBridgeModule, RCTFrameUpdateObserver>
+@interface RCTEventDispatcher() <RCTFrameUpdateObserver>
 
 @end
 
@@ -73,21 +93,29 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
 
 @synthesize bridge = _bridge;
 @synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _eventQueue = [[NSMutableDictionary alloc] init];
-    _eventQueueLock = [[NSLock alloc] init];
+    _paused = YES;
+    _eventQueue = [NSMutableDictionary new];
+    _eventQueueLock = [NSLock new];
   }
   return self;
 }
 
-RCT_IMPORT_METHOD(RCTNativeAppEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTDeviceEventEmitter, emit);
-RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
+  }
+}
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
@@ -103,9 +131,12 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
 
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
 {
-  RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-    @"Event body dictionary must include a 'target' property containing a React tag");
+  if (RCT_DEBUG) {
+    RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
+      @"Event body dictionary must include a 'target' property containing a React tag");
+  }
 
+  name = RCTNormalizeInputEventName(name);
   [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
                     args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]];
 }
@@ -113,19 +144,22 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
+                   eventCount:(NSInteger)eventCount
 {
   static NSString *events[] = {
-    @"topFocus",
-    @"topBlur",
-    @"topChange",
-    @"topSubmitEditing",
-    @"topEndEditing",
+    @"focus",
+    @"blur",
+    @"change",
+    @"submitEditing",
+    @"endEditing",
   };
 
   [self sendInputEventWithName:events[type] body:text ? @{
     @"text": text,
+    @"eventCount": @(eventCount),
     @"target": reactTag
   } : @{
+    @"eventCount": @(eventCount),
     @"target": reactTag
   }];
 }
@@ -147,20 +181,20 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
   }
 
   _eventQueue[eventID] = event;
-  _paused = NO;
+  self.paused = NO;
 
   [_eventQueueLock unlock];
 }
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSMutableArray *arguments = [[NSMutableArray alloc] init];
+  NSMutableArray *arguments = [NSMutableArray new];
 
   if (event.viewTag) {
     [arguments addObject:event.viewTag];
   }
 
-  [arguments addObject:event.eventName];
+  [arguments addObject:RCTNormalizeInputEventName(event.eventName)];
 
   if (event.body) {
     [arguments addObject:event.body];
@@ -175,28 +209,17 @@ RCT_IMPORT_METHOD(RCTEventEmitter, receiveEvent);
   return RCTJSThread;
 }
 
-- (void)didUpdateFrame:(RCTFrameUpdate *)update
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSDictionary *eventQueue;
-
   [_eventQueueLock lock];
-  eventQueue = _eventQueue;
-  _eventQueue = [[NSMutableDictionary alloc] init];
-  _paused = YES;
+   NSDictionary *eventQueue = _eventQueue;
+  _eventQueue = [NSMutableDictionary new];
+  self.paused = YES;
   [_eventQueueLock unlock];
 
   for (id<RCTEvent> event in eventQueue.allValues) {
     [self dispatchEvent:event];
   }
-}
-
-@end
-
-@implementation RCTBridge (RCTEventDispatcher)
-
-- (RCTEventDispatcher *)eventDispatcher
-{
-  return self.modules[RCTBridgeModuleNameForClass([RCTEventDispatcher class])];
 }
 
 @end

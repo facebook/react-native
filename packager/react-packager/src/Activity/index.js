@@ -8,76 +8,49 @@
  */
 'use strict';
 
-var chalk = require('chalk');
+const chalk = require('chalk');
+const events = require('events');
 
-var COLLECTION_PERIOD = 1000;
+const _eventStarts = Object.create(null);
+const _eventEmitter = new events.EventEmitter();
 
-var _endedEvents = Object.create(null);
-var _eventStarts = Object.create(null);
-var _queuedActions = [];
-var _scheduledCollectionTimer = null;
-var _uuid = 1;
-var _enabled = true;
+let _uuid = 1;
+let _enabled = true;
 
 function endEvent(eventId) {
-  var eventEndTime = Date.now();
-
+  const eventEndTime = Date.now();
   if (!_eventStarts[eventId]) {
-    _throw('event(' + eventId + ') is not a valid event id!');
+    throw new Error('event(' + eventId + ') either ended or never started');
   }
 
-  if (_endedEvents[eventId]) {
-    _throw('event(' + eventId + ') has already ended!');
-  }
-
-  _scheduleAction({
+  _writeAction({
     action: 'endEvent',
     eventId: eventId,
     tstamp: eventEndTime
   });
-  _endedEvents[eventId] = true;
-}
-
-function signal(eventName, data) {
-  var signalTime = Date.now();
-
-  if (eventName == null) {
-    _throw('No event name specified');
-  }
-
-  if (data == null) {
-    data = null;
-  }
-
-  _scheduleAction({
-    action: 'signal',
-    data: data,
-    eventName: eventName,
-    tstamp: signalTime
-  });
 }
 
 function startEvent(eventName, data) {
-  var eventStartTime = Date.now();
+  const eventStartTime = Date.now();
 
   if (eventName == null) {
-    _throw('No event name specified');
+    throw new Error('No event name specified');
   }
 
   if (data == null) {
     data = null;
   }
 
-  var eventId = _uuid++;
-  var action = {
+  const eventId = _uuid++;
+  const action = {
     action: 'startEvent',
     data: data,
     eventId: eventId,
     eventName: eventName,
     tstamp: eventStartTime,
   };
-  _scheduleAction(action);
   _eventStarts[eventId] = action;
+  _writeAction(action);
 
   return eventId;
 }
@@ -86,51 +59,15 @@ function disable() {
   _enabled = false;
 }
 
-function _runCollection() {
-  /* jshint -W084 */
-  var action;
-  while ((action = _queuedActions.shift())) {
-    _writeAction(action);
-  }
-
-  _scheduledCollectionTimer = null;
-}
-
-function _scheduleAction(action) {
-  _queuedActions.push(action);
-
-  if (_scheduledCollectionTimer === null) {
-    _scheduledCollectionTimer = setTimeout(_runCollection, COLLECTION_PERIOD);
-  }
-}
-
-/**
- * This a utility function that throws an error message.
- *
- * The only purpose of this utility is to make APIs like
- * startEvent/endEvent/signal inlineable in the JIT.
- *
- * (V8 can't inline functions that statically contain a `throw`, and probably
- *  won't be adding such a non-trivial optimization anytime soon)
- */
-function _throw(msg) {
-  var err = new Error(msg);
-
-  // Strip off the call to _throw()
-  var stack = err.stack.split('\n');
-  stack.splice(1, 1);
-  err.stack = stack.join('\n');
-
-  throw err;
-}
-
 function _writeAction(action) {
+  _eventEmitter.emit(action.action, action);
+
   if (!_enabled) {
     return;
   }
 
-  var data = action.data ? ': ' + JSON.stringify(action.data) : '';
-  var fmtTime = new Date(action.tstamp).toLocaleTimeString();
+  const data = action.data ? ': ' + JSON.stringify(action.data) : '';
+  const fmtTime = new Date(action.tstamp).toLocaleTimeString();
 
   switch (action.action) {
     case 'startEvent':
@@ -142,8 +79,8 @@ function _writeAction(action) {
       break;
 
     case 'endEvent':
-      var startAction = _eventStarts[action.eventId];
-      var startData = startAction.data ? ': ' + JSON.stringify(startAction.data) : '';
+      const startAction = _eventStarts[action.eventId];
+      const startData = startAction.data ? ': ' + JSON.stringify(startAction.data) : '';
       console.log(chalk.dim(
         '[' + fmtTime + '] ' +
         '<END>   ' + startAction.eventName +
@@ -153,21 +90,13 @@ function _writeAction(action) {
       delete _eventStarts[action.eventId];
       break;
 
-    case 'signal':
-      console.log(
-        '[' + fmtTime + '] ' +
-        '        ' + action.eventName + '' +
-        data
-      );
-      break;
-
     default:
-      _throw('Unexpected scheduled action type: ' + action.action);
+      throw new Error('Unexpected scheduled action type: ' + action.action);
   }
 }
 
 
 exports.endEvent = endEvent;
-exports.signal = signal;
 exports.startEvent = startEvent;
 exports.disable = disable;
+exports.eventEmitter = _eventEmitter;

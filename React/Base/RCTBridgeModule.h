@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTDefines.h"
+
 @class RCTBridge;
 
 /**
@@ -16,6 +18,12 @@
  * operation. Use this for returning callback methods to JS.
  */
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
+
+/**
+ * The type of a block that is capable of sending an error response to a
+ * bridged operation. Use this for returning error information to JS.
+ */
+typedef void (^RCTResponseErrorBlock)(NSError *error);
 
 /**
  * Block that bridge modules use to resolve the JS promise waiting for a result.
@@ -30,7 +38,6 @@ typedef void (^RCTPromiseResolveBlock)(id result);
  */
 typedef void (^RCTPromiseRejectBlock)(NSError *error);
 
-
 /**
  * This constant can be returned from +methodQueue to force module
  * methods to be called on the JavaScript thread. This can have serious
@@ -39,21 +46,12 @@ typedef void (^RCTPromiseRejectBlock)(NSError *error);
  *
  * NOTE: RCTJSThread is not a real libdispatch queue
  */
-extern const dispatch_queue_t RCTJSThread;
+extern dispatch_queue_t RCTJSThread;
 
 /**
  * Provides the interface needed to register a bridge module.
  */
 @protocol RCTBridgeModule <NSObject>
-@optional
-
-/**
- * A reference to the RCTBridge. Useful for modules that require access
- * to bridge features, such as sending events or making JS calls. This
- * will be set automatically by the bridge when it initializes the module.
- * To implement this in your module, just add @synthesize bridge = _bridge;
- */
-@property (nonatomic, weak) RCTBridge *bridge;
 
 /**
  * Place this macro in your class implementation to automatically register
@@ -62,8 +60,45 @@ extern const dispatch_queue_t RCTJSThread;
  * match the Objective-C class name.
  */
 #define RCT_EXPORT_MODULE(js_name) \
-  + (NSString *)moduleName { __attribute__((used, section("__DATA,RCTExportModule" \
-  ))) static const char *__rct_export_entry__ = { __func__ }; return @#js_name; }
+RCT_EXTERN void RCTRegisterModule(Class); \
++ (NSString *)moduleName { return @#js_name; } \
++ (void)load { RCTRegisterModule(self); }
+
+// Implemented by RCT_EXPORT_MODULE
++ (NSString *)moduleName;
+
+@optional
+
+/**
+ * A reference to the RCTBridge. Useful for modules that require access
+ * to bridge features, such as sending events or making JS calls. This
+ * will be set automatically by the bridge when it initializes the module.
+ * To implement this in your module, just add `@synthesize bridge = _bridge;`
+ */
+@property (nonatomic, weak) RCTBridge *bridge;
+
+/**
+ * The queue that will be used to call all exported methods. If omitted, this
+ * will call on a default background queue, which is avoids blocking the main
+ * thread.
+ *
+ * If the methods in your module need to interact with UIKit methods, they will
+ * probably need to call those on the main thread, as most of UIKit is main-
+ * thread-only. You can tell React Native to call your module methods on the
+ * main thread by returning a reference to the main queue, like this:
+ *
+ * - (dispatch_queue_t)methodQueue
+ * {
+ *   return dispatch_get_main_queue();
+ * }
+ *
+ * If you don't want to specify the queue yourself, but you need to use it
+ * inside your class (e.g. if you have internal methods that need to disaptch
+ * onto that queue), you can just add `@synthesize methodQueue = _methodQueue;`
+ * and the bridge will populate the methodQueue property for you automatically
+ * when it initializes the module.
+ */
+@property (nonatomic, strong, readonly) dispatch_queue_t methodQueue;
 
 /**
  * Wrap the parameter line of your method implementation with this macro to
@@ -173,50 +208,23 @@ extern const dispatch_queue_t RCTJSThread;
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  - (void)__rct_export__##method { \
-    __attribute__((used, section("__DATA,RCTExport"))) \
-    __attribute__((__aligned__(1))) \
-    static const char *__rct_export_entry__[] = { __func__, #method, #js_name }; \
+  + (NSArray *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+    return @[@#js_name, @#method]; \
   }
 
 /**
- * The queue that will be used to call all exported methods. If omitted, this
- * will call on the default background queue, which is avoids blocking the main
- * thread.
- *
- * If the methods in your module need to interact with UIKit methods, they will
- * probably need to call those on the main thread, as most of UIKit is main-
- * thread-only. You can tell React Native to call your module methods on the
- * main thread by returning a reference to the main queue, like this:
- *
- * - (dispatch_queue_t)methodQueue
- * {
- *   return dispatch_get_main_queue();
- * }
- *
- * If your methods perform heavy work such as synchronous filesystem or network
- * access, you probably don't want to block the default background queue, as
- * this will stall other methods. Instead, you should return a custom serial
- * queue, like this:
- *
- * - (dispatch_queue_t)methodQueue
- * {
- *   return dispatch_queue_create("com.mydomain.FileQueue", DISPATCH_QUEUE_SERIAL);
- * }
- *
- * Alternatively, if only some methods of the module should be executed on a
- * particular queue you can leave this method unimplemented, and simply
- * dispatch_async() to the required queue within the method itself.
+ * Injects methods into JS.  Entries in this array are used in addition to any
+ * methods defined using the macros above.  This method is called only once,
+ * before registration.
  */
-- (dispatch_queue_t)methodQueue;
+- (NSArray *)methodsToExport;
 
 /**
  * Injects constants into JS. These constants are made accessible via
- * NativeModules.ModuleName.X. This method is called when the module is
- * registered by the bridge. It is only called once for the lifetime of the
- * bridge, so it is not suitable for returning dynamic values, but may be
- * used for long-lived values such as session keys, that are regenerated only
- * as part of a reload of the entire React application.
+ * NativeModules.ModuleName.X.  It is only called once for the lifetime of the
+ * bridge, so it is not suitable for returning dynamic values, but may be used
+ * for long-lived values such as session keys, that are regenerated only as
+ * part of a reload of the entire React application.
  */
 - (NSDictionary *)constantsToExport;
 

@@ -10,44 +10,112 @@
 #import "RCTUtils.h"
 
 #import <mach/mach_time.h>
-#import <objc/runtime.h>
+#import <objc/message.h>
 
 #import <UIKit/UIKit.h>
 
 #import <CommonCrypto/CommonCrypto.h>
 
+#import <zlib.h>
+#import <dlfcn.h>
+
 #import "RCTLog.h"
 
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObject options:(NSJSONWritingOptions)NSJSONReadingAllowFragments error:error];
+  static SEL JSONKitSelector = NULL;
+  static NSSet *collectionTypes;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    SEL selector = NSSelectorFromString(@"JSONStringWithOptions:error:");
+    if ([NSDictionary instancesRespondToSelector:selector]) {
+      JSONKitSelector = selector;
+      collectionTypes = [NSSet setWithObjects:
+                         [NSArray class], [NSMutableArray class],
+                         [NSDictionary class], [NSMutableDictionary class], nil];
+    }
+  });
+
+  // Use JSONKit if available and object is not a fragment
+  if (JSONKitSelector && [collectionTypes containsObject:[jsonObject classForCoder]]) {
+    return ((NSString *(*)(id, SEL, int, NSError **))objc_msgSend)(jsonObject, JSONKitSelector, 0, error);
+  }
+
+  // Use Foundation JSON method
+  NSData *jsonData = [NSJSONSerialization
+                      dataWithJSONObject:jsonObject
+                      options:(NSJSONWritingOptions)NSJSONReadingAllowFragments
+                      error:error];
   return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : nil;
 }
 
-id RCTJSONParseWithOptions(NSString *jsonString, NSError **error, NSJSONReadingOptions options)
+static id _RCTJSONParse(NSString *jsonString, BOOL mutable, NSError **error)
 {
-  if (!jsonString) {
-    return nil;
-  }
-  NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
-  if (!jsonData) {
-    jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-    if (jsonData) {
-      RCTLogWarn(@"RCTJSONParse received the following string, which could not be losslessly converted to UTF8 data: '%@'", jsonString);
-    } else {
-      RCTLogError(@"RCTJSONParse received invalid UTF8 data");
-      return nil;
+  static SEL JSONKitSelector = NULL;
+  static SEL JSONKitMutableSelector = NULL;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    SEL selector = NSSelectorFromString(@"objectFromJSONStringWithParseOptions:error:");
+    if ([NSString instancesRespondToSelector:selector]) {
+      JSONKitSelector = selector;
+      JSONKitMutableSelector = NSSelectorFromString(@"mutableObjectFromJSONStringWithParseOptions:error:");
     }
+  });
+
+  if (jsonString) {
+
+    // Use JSONKit if available and string is not a fragment
+    if (JSONKitSelector) {
+      NSInteger length = jsonString.length;
+      for (NSInteger i = 0; i < length; i++) {
+        unichar c = [jsonString characterAtIndex:i];
+        if (strchr("{[", c)) {
+          static const int options = (1 << 2); // loose unicode
+          SEL selector = mutable ? JSONKitMutableSelector : JSONKitSelector;
+          return ((id (*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
+        }
+        if (!strchr(" \r\n\t", c)) {
+          break;
+        }
+      }
+    }
+
+    // Use Foundation JSON method
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    if (!jsonData) {
+      jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+      if (jsonData) {
+        RCTLogWarn(@"RCTJSONParse received the following string, which could "
+                   "not be losslessly converted to UTF8 data: '%@'", jsonString);
+      } else {
+        NSString *errorMessage = @"RCTJSONParse received invalid UTF8 data";
+        if (error) {
+          *error = RCTErrorWithMessage(errorMessage);
+        } else {
+          RCTLogError(@"%@", errorMessage);
+        }
+        return nil;
+      }
+    }
+    NSJSONReadingOptions options = NSJSONReadingAllowFragments;
+    if (mutable) {
+      options |= NSJSONReadingMutableContainers;
+    }
+    return [NSJSONSerialization JSONObjectWithData:jsonData
+                                           options:options
+                                             error:error];
   }
-  return [NSJSONSerialization JSONObjectWithData:jsonData options:options error:error];
+  return nil;
 }
 
-id RCTJSONParse(NSString *jsonString, NSError **error) {
-  return RCTJSONParseWithOptions(jsonString, error, NSJSONReadingAllowFragments);
+id RCTJSONParse(NSString *jsonString, NSError **error)
+{
+  return _RCTJSONParse(jsonString, NO, error);
 }
 
-id RCTJSONParseMutable(NSString *jsonString, NSError **error) {
-  return RCTJSONParseWithOptions(jsonString, error, NSJSONReadingMutableContainers|NSJSONReadingMutableLeaves);
+id RCTJSONParseMutable(NSString *jsonString, NSError **error)
+{
+  return _RCTJSONParse(jsonString, YES, error);
 }
 
 id RCTJSONClean(id object)
@@ -70,7 +138,7 @@ id RCTJSONClean(id object)
   if ([object isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
     NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
-    [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, BOOL *stop) {
+    [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, __unused BOOL *stop) {
       id value = RCTJSONClean(item);
       values[key] = value;
       copy |= value != item;
@@ -81,14 +149,14 @@ id RCTJSONClean(id object)
   if ([object isKindOfClass:[NSArray class]]) {
     __block BOOL copy = NO;
     __block NSArray *values = object;
-    [object enumerateObjectsUsingBlock:^(id item, NSUInteger idx, BOOL *stop) {
+    [object enumerateObjectsUsingBlock:^(id item, NSUInteger idx, __unused BOOL *stop) {
       id value = RCTJSONClean(item);
       if (copy) {
         [(NSMutableArray *)values addObject:value];
       } else if (value != item) {
         // Converted value is different, so we'll need to copy the array
         values = [[NSMutableArray alloc] initWithCapacity:values.count];
-        for (NSInteger i = 0; i < idx; i++) {
+        for (NSUInteger i = 0; i < idx; i++) {
           [(NSMutableArray *)values addObject:object[i]];
         }
         [(NSMutableArray *)values addObject:value];
@@ -103,7 +171,7 @@ id RCTJSONClean(id object)
 
 NSString *RCTMD5Hash(NSString *string)
 {
-  const char *str = [string UTF8String];
+  const char *str = string.UTF8String;
   unsigned char result[CC_MD5_DIGEST_LENGTH];
   CC_MD5(str, (CC_LONG)strlen(str), result);
 
@@ -167,19 +235,6 @@ CGFloat RCTFloorPixelValue(CGFloat value)
   return floor(value * scale) / scale;
 }
 
-NSTimeInterval RCTTGetAbsoluteTime(void)
-{
-  static struct mach_timebase_info tb_info = {0};
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    int ret = mach_timebase_info(&tb_info);
-    assert(0 == ret);
-  });
-
-  uint64_t timeInNanoseconds = (mach_absolute_time() * tb_info.numer) / tb_info.denom;
-  return ((NSTimeInterval)timeInNanoseconds) / 1000000;
-}
-
 void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)
 {
   Method originalMethod = class_getClassMethod(cls, original);
@@ -190,12 +245,9 @@ void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
 
-  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
-  {
+  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
-  }
-  else
-  {
+  } else {
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
 }
@@ -210,12 +262,9 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement)
   IMP replacementImplementation = method_getImplementation(replacementMethod);
   const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
 
-  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes))
-  {
+  if (class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
     class_replaceMethod(cls, replacement, originalImplementation, originalArgTypes);
-  }
-  else
-  {
+  } else {
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
 }
@@ -229,10 +278,8 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
 {
   unsigned int numberOfMethods;
   Method *methods = class_copyMethodList(cls, &numberOfMethods);
-  for (unsigned int i = 0; i < numberOfMethods; i++)
-  {
-    if (method_getName(methods[i]) == selector)
-    {
+  for (unsigned int i = 0; i < numberOfMethods; i++) {
+    if (method_getName(methods[i]) == selector) {
       free(methods);
       return YES;
     }
@@ -244,12 +291,11 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
 NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
 {
   if (toStringify) {
-    message = [NSString stringWithFormat:@"%@%@", message, toStringify];
+    message = [message stringByAppendingString:[toStringify description]];
   }
-  NSMutableDictionary *error = [@{@"message": message} mutableCopy];
-  if (extraData) {
-    [error addEntriesFromDictionary:extraData];
-  }
+
+  NSMutableDictionary *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
+  error[@"message"] = message;
   return error;
 }
 
@@ -260,14 +306,71 @@ NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary
   return error;
 }
 
+// TODO: Can we just replace RCTMakeError with this function instead?
+NSDictionary *RCTJSErrorFromNSError(NSError *error)
+{
+  NSString *errorMessage;
+  NSArray *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary *errorInfo =
+  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+
+  if (error) {
+    errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
+    errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    errorInfo[@"code"] = @(error.code);
+  } else {
+    errorMessage = @"Unknown error from a native module";
+    errorInfo[@"domain"] = RCTErrorDomain;
+    errorInfo[@"code"] = @-1;
+  }
+
+  return RCTMakeError(errorMessage, nil, errorInfo);
+}
+
 BOOL RCTRunningInTestEnvironment(void)
 {
-  static BOOL _isTestEnvironment = NO;
+  static BOOL isTestEnvironment = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    _isTestEnvironment = (NSClassFromString(@"SenTestCase") != nil || NSClassFromString(@"XCTest") != nil);
+    isTestEnvironment = NSClassFromString(@"SenTestCase") || NSClassFromString(@"XCTest");
   });
-  return _isTestEnvironment;
+  return isTestEnvironment;
+}
+
+BOOL RCTRunningInAppExtension(void)
+{
+  return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+}
+
+id RCTSharedApplication(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+  
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles)
+{
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
+    return nil;
+  }
+  
+  UIAlertView *alertView = [[UIAlertView alloc] init];
+  alertView.title = title;
+  alertView.message = message;
+  alertView.delegate = delegate;
+  if (cancelButtonTitle != nil) {
+    [alertView addButtonWithTitle:cancelButtonTitle];
+    alertView.cancelButtonIndex = 0;
+  }
+  for (NSString *buttonTitle in otherButtonTitles)
+  {
+    [alertView addButtonWithTitle:buttonTitle];
+  }
+  return alertView;
 }
 
 BOOL RCTImageHasAlpha(CGImageRef image)
@@ -297,4 +400,61 @@ id RCTNullIfNil(id value)
 id RCTNilIfNull(id value)
 {
   return value == (id)kCFNull ? nil : value;
+}
+
+NSURL *RCTDataURL(NSString *mimeType, NSData *data)
+{
+  return [NSURL URLWithString:
+          [NSString stringWithFormat:@"data:%@;base64,%@", mimeType,
+           [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
+}
+
+BOOL RCTIsGzippedData(NSData *); // exposed for unit testing purposes
+BOOL RCTIsGzippedData(NSData *data)
+{
+  UInt8 *bytes = (UInt8 *)data.bytes;
+  return (data.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
+}
+
+NSData *RCTGzipData(NSData *input, float level)
+{
+  if (input.length == 0 || RCTIsGzippedData(input)) {
+    return input;
+  }
+
+  void *libz = dlopen("/usr/lib/libz.dylib", RTLD_LAZY);
+  int (*deflateInit2_)(z_streamp, int, int, int, int, int, const char *, int) = dlsym(libz, "deflateInit2_");
+  int (*deflate)(z_streamp, int) = dlsym(libz, "deflate");
+  int (*deflateEnd)(z_streamp) = dlsym(libz, "deflateEnd");
+
+  z_stream stream;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  stream.opaque = Z_NULL;
+  stream.avail_in = (uint)input.length;
+  stream.next_in = (Bytef *)input.bytes;
+  stream.total_out = 0;
+  stream.avail_out = 0;
+
+  static const NSUInteger RCTGZipChunkSize = 16384;
+
+  NSMutableData *output = nil;
+  int compression = (level < 0.0f)? Z_DEFAULT_COMPRESSION: (int)(roundf(level * 9));
+  if (deflateInit2(&stream, compression, Z_DEFLATED, 31, 8, Z_DEFAULT_STRATEGY) == Z_OK) {
+    output = [NSMutableData dataWithLength:RCTGZipChunkSize];
+    while (stream.avail_out == 0) {
+      if (stream.total_out >= output.length) {
+        output.length += RCTGZipChunkSize;
+      }
+      stream.next_out = (uint8_t *)output.mutableBytes + stream.total_out;
+      stream.avail_out = (uInt)(output.length - stream.total_out);
+      deflate(&stream, Z_FINISH);
+    }
+    deflateEnd(&stream);
+    output.length = stream.total_out;
+  }
+
+  dlclose(libz);
+
+  return output;
 }

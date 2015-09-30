@@ -11,20 +11,20 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
 #import "RCTDefines.h"
 
-// Utility functions for JSON object <-> string serialization/deserialization
+// JSON serialization/deserialization
 RCT_EXTERN NSString *RCTJSONStringify(id jsonObject, NSError **error);
 RCT_EXTERN id RCTJSONParse(NSString *jsonString, NSError **error);
 RCT_EXTERN id RCTJSONParseMutable(NSString *jsonString, NSError **error);
-RCT_EXTERN id RCTJSONParseWithOptions(NSString *jsonString, NSError **error, NSJSONReadingOptions options);
 
 // Strip non JSON-safe values from an object graph
 RCT_EXTERN id RCTJSONClean(id object);
 
-// Get MD5 hash of a string (TODO: currently unused. Remove?)
+// Get MD5 hash of a string
 RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 
 // Get screen metrics in a thread-safe way
@@ -36,9 +36,6 @@ RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
 
-// Get current time, for precise performance metrics
-RCT_EXTERN NSTimeInterval RCTTGetAbsoluteTime(void);
-
 // Method swizzling
 RCT_EXTERN void RCTSwapClassMethods(Class cls, SEL original, SEL replacement);
 RCT_EXTERN void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);
@@ -48,19 +45,35 @@ RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 
 // Creates a standardized error object
-// TODO(#6472857): create NSErrors and automatically convert them over the bridge.
 RCT_EXTERN NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
 RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
+RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 
+// Returns YES if React is running in an iOS App Extension
+RCT_EXTERN BOOL RCTRunningInAppExtension(void);
+
+// Returns the shared UIApplication instance, or nil if running in an App Extension
+RCT_EXTERN UIApplication *RCTSharedApplication(void);
+
+// Return a UIAlertView initialized with the given values
+// or nil if running in an app extension
+RCT_EXTERN UIAlertView *RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles);
+
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 
-// Create an NSError in the NCTErrorDomain
+// Create an NSError in the RCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
-RCT_EXTERN id RCTNullIfNil(id value);
 RCT_EXTERN id RCTNilIfNull(id value);
+RCT_EXTERN id RCTNullIfNil(id value);
+
+// Convert data to a Base64-encoded data URL
+RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);
+
+// Gzip functionality - compression level in range 0 - 1 (-1 for default)
+RCT_EXTERN NSData *RCTGzipData(NSData *data, float level);

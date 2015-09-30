@@ -22,9 +22,11 @@ if (__DEV__) {
 
 var runnables = {};
 
+type ComponentProvider = () => ReactClass<any, any, any>;
+
 type AppConfig = {
   appKey: string;
-  component: ReactClass<any, any, any>;
+  component?: ComponentProvider;
   run?: Function;
 };
 
@@ -46,12 +48,13 @@ var AppRegistry = {
       if (appConfig.run) {
         AppRegistry.registerRunnable(appConfig.appKey, appConfig.run);
       } else {
+        invariant(appConfig.component, 'No component provider passed in');
         AppRegistry.registerComponent(appConfig.appKey, appConfig.component);
       }
     }
   },
 
-  registerComponent: function(appKey: string, getComponentFunc: Function): string {
+  registerComponent: function(appKey: string, getComponentFunc: ComponentProvider): string {
     runnables[appKey] = {
       run: (appParameters) =>
         renderApplication(getComponentFunc(), appParameters.initialProps, appParameters.rootTag)
@@ -64,11 +67,15 @@ var AppRegistry = {
     return appKey;
   },
 
+  getAppKeys: function(): Array<string> {
+    return Object.keys(runnables);
+  },
+
   runApplication: function(appKey: string, appParameters: any): void {
     console.log(
       'Running application "' + appKey + '" with appParams: ' +
       JSON.stringify(appParameters) + '. ' +
-      '__DEV__ === ' + __DEV__ +
+      '__DEV__ === ' + String(__DEV__) +
       ', development-level warning are ' + (__DEV__ ? 'ON' : 'OFF') +
       ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON')
     );

@@ -16,38 +16,41 @@
 #import "RCTUtils.h"
 #import "RCTViewControllerProtocol.h"
 #import "UIView+React.h"
+#import "RCTAutoInsetsProtocol.h"
 
 @implementation RCTWrapperViewController
 {
   UIView *_wrapperView;
   UIView *_contentView;
   RCTEventDispatcher *_eventDispatcher;
-  CGFloat _previousTopLayout;
-  CGFloat _previousBottomLayout;
+  CGFloat _previousTopLayoutLength;
+  CGFloat _previousBottomLayoutLength;
 }
 
 @synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
 @synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
 
 - (instancetype)initWithContentView:(UIView *)contentView
-                    eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  RCTAssertParam(contentView);
+
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     _contentView = contentView;
-    _eventDispatcher = eventDispatcher;
     self.automaticallyAdjustsScrollViewInsets = NO;
   }
   return self;
 }
 
 - (instancetype)initWithNavItem:(RCTNavItem *)navItem
-                eventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
-  if (self = [self initWithContentView:navItem eventDispatcher:eventDispatcher]) {
+  if ((self = [self initWithContentView:navItem])) {
     _navItem = navItem;
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithNibName:(NSString *)nn bundle:(NSBundle *)nb)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)viewWillLayoutSubviews
 {
@@ -55,6 +58,46 @@
 
   _currentTopLayoutGuide = self.topLayoutGuide;
   _currentBottomLayoutGuide = self.bottomLayoutGuide;
+}
+
+static BOOL RCTFindScrollViewAndRefreshContentInsetInView(UIView *view)
+{
+  if ([view conformsToProtocol:@protocol(RCTAutoInsetsProtocol)]) {
+    [(id <RCTAutoInsetsProtocol>) view refreshContentInset];
+    return YES;
+  }
+  for (UIView *subview in view.subviews) {
+    if (RCTFindScrollViewAndRefreshContentInsetInView(subview)) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+
+  if (_previousTopLayoutLength != _currentTopLayoutGuide.length ||
+      _previousBottomLayoutLength != _currentBottomLayoutGuide.length) {
+    RCTFindScrollViewAndRefreshContentInsetInView(_contentView);
+    _previousTopLayoutLength = _currentTopLayoutGuide.length;
+    _previousBottomLayoutLength = _currentBottomLayoutGuide.length;
+  }
+}
+
+static UIView *RCTFindNavBarShadowViewInView(UIView *view)
+{
+  if ([view isKindOfClass:[UIImageView class]] && view.bounds.size.height <= 1) {
+    return view;
+  }
+  for (UIView *subview in view.subviews) {
+    UIView *shadowView = RCTFindNavBarShadowViewInView(subview);
+    if (shadowView) {
+      return shadowView;
+    }
+  }
+  return nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -65,31 +108,24 @@
   if ([self.parentViewController isKindOfClass:[UINavigationController class]])
   {
     [self.navigationController
-      setNavigationBarHidden:_navItem.navigationBarHidden
-      animated:animated];
-
-    if (!_navItem) {
-      return;
-    }
+     setNavigationBarHidden:_navItem.navigationBarHidden
+     animated:animated];
 
     UINavigationBar *bar = self.navigationController.navigationBar;
     bar.barTintColor = _navItem.barTintColor;
     bar.tintColor = _navItem.tintColor;
-    if (_navItem.titleTextColor) {
-      [bar setTitleTextAttributes:@{NSForegroundColorAttributeName : _navItem.titleTextColor}];
-    }
+    bar.translucent = _navItem.translucent;
+    bar.titleTextAttributes = _navItem.titleTextColor ? @{
+      NSForegroundColorAttributeName: _navItem.titleTextColor
+    } : nil;
+
+    RCTFindNavBarShadowViewInView(bar).hidden = _navItem.shadowHidden;
 
     UINavigationItem *item = self.navigationItem;
     item.title = _navItem.title;
     item.backBarButtonItem = _navItem.backButtonItem;
-    if ((item.leftBarButtonItem = _navItem.leftButtonItem)) {
-      item.leftBarButtonItem.target = self;
-      item.leftBarButtonItem.action = @selector(handleNavLeftButtonTapped);
-    }
-    if ((item.rightBarButtonItem = _navItem.rightButtonItem)) {
-      item.rightBarButtonItem.target = self;
-      item.rightBarButtonItem.action = @selector(handleNavRightButtonTapped);
-    }
+    item.leftBarButtonItem = _navItem.leftButtonItem;
+    item.rightBarButtonItem = _navItem.rightButtonItem;
   }
 }
 
@@ -103,18 +139,6 @@
   self.view = _wrapperView;
 }
 
-- (void)handleNavLeftButtonTapped
-{
-  [_eventDispatcher sendInputEventWithName:@"topNavLeftButtonTap"
-                                      body:@{@"target":_navItem.reactTag}];
-}
-
-- (void)handleNavRightButtonTapped
-{
-  [_eventDispatcher sendInputEventWithName:@"topNavRightButtonTap"
-                                      body:@{@"target":_navItem.reactTag}];
-}
-
 - (void)didMoveToParentViewController:(UIViewController *)parent
 {
   // There's no clear setter for navigation controllers, but did move to parent
@@ -122,7 +146,8 @@
   // finishes, be it a swipe to go back or a standard tap on the back button
   [super didMoveToParentViewController:parent];
   if (parent == nil || [parent isKindOfClass:[UINavigationController class]]) {
-    [self.navigationListener wrapperViewController:self didMoveToNavigationController:(UINavigationController *)parent];
+    [self.navigationListener wrapperViewController:self
+                     didMoveToNavigationController:(UINavigationController *)parent];
   }
 }
 

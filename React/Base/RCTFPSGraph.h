@@ -18,6 +18,6 @@ typedef NS_ENUM(NSUInteger, RCTFPSGraphPosition) {
 
 - (instancetype)initWithFrame:(CGRect)frame graphPosition:(RCTFPSGraphPosition)position name:(NSString *)name color:(UIColor *)color NS_DESIGNATED_INITIALIZER;
 
-- (void)tick:(NSTimeInterval)timestamp;
+- (void)onTick:(NSTimeInterval)timestamp;
 
 @end

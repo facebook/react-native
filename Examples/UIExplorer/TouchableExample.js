@@ -26,6 +26,8 @@ var {
   View,
 } = React;
 
+exports.displayName = (undefined: ?string);
+exports.description = 'Touchable and onPress examples.';
 exports.title = '<Touchable*> and onPress';
 exports.examples = [
 {
@@ -129,10 +131,11 @@ var TouchableFeedbackEvents = React.createClass({
   },
   render: function() {
     return (
-      <View>
+      <View testID="touchable_feedback_events">
         <View style={[styles.row, {justifyContent: 'center'}]}>
         <TouchableOpacity
           style={styles.wrapper}
+          testID="touchable_feedback_events_button"
           onPress={() => this._appendEvent('press')}
           onPressIn={() => this._appendEvent('pressIn')}
           onPressOut={() => this._appendEvent('pressOut')}
@@ -142,7 +145,7 @@ var TouchableFeedbackEvents = React.createClass({
           </Text>
         </TouchableOpacity>
       </View>
-        <View style={styles.eventLogBox}>
+        <View testID="touchable_feedback_events_console" style={styles.eventLogBox}>
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
       </View>
@@ -164,10 +167,11 @@ var TouchableDelayEvents = React.createClass({
   },
   render: function() {
     return (
-      <View>
+      <View testID="touchable_delay_events">
         <View style={[styles.row, {justifyContent: 'center'}]}>
         <TouchableOpacity
           style={styles.wrapper}
+          testID="touchable_delay_events_button"
           onPress={() => this._appendEvent('press')}
           delayPressIn={400}
           onPressIn={() => this._appendEvent('pressIn - 400ms delay')}
@@ -180,7 +184,7 @@ var TouchableDelayEvents = React.createClass({
           </Text>
         </TouchableOpacity>
       </View>
-        <View style={styles.eventLogBox}>
+        <View style={styles.eventLogBox} testID="touchable_delay_events_console">
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
       </View>

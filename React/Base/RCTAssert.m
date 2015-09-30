@@ -11,26 +11,17 @@
 
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
 
+static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
+
 RCTAssertFunction RCTCurrentAssertFunction = nil;
 
-void _RCTAssertFormat(
-  BOOL condition,
-  const char *fileName,
-  int lineNumber,
-  const char *function,
-  NSString *format, ...)
+NSException *_RCTNotImplementedException(SEL, Class);
+NSException *_RCTNotImplementedException(SEL cmd, Class cls)
 {
-  if (RCTCurrentAssertFunction) {
-
-    va_list args;
-    va_start(args, format);
-    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-    va_end(args);
-
-    RCTCurrentAssertFunction(
-      condition, @(fileName), @(lineNumber), @(function), message
-    );
-  }
+  NSString *msg = [NSString stringWithFormat:@"%s is not implemented "
+                   "for the class %@", sel_getName(cmd), cls];
+  return [NSException exceptionWithName:@"RCTNotDesignatedInitializerException"
+                                 reason:msg userInfo:nil];
 }
 
 void RCTSetAssertFunction(RCTAssertFunction assertFunction)
@@ -47,7 +38,7 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
 {
   RCTAssertFunction existing = RCTCurrentAssertFunction;
   if (existing) {
-    RCTCurrentAssertFunction = ^(BOOL condition,
+    RCTCurrentAssertFunction = ^(NSString *condition,
                                  NSString *fileName,
                                  NSNumber *lineNumber,
                                  NSString *function,
@@ -61,19 +52,64 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
   }
 }
 
+/**
+ * returns the topmost stacked assert function for the current thread, which
+ * may not be the same as the current value of RCTCurrentAssertFunction.
+ */
+static RCTAssertFunction RCTGetLocalAssertFunction()
+{
+  NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+  NSArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  RCTAssertFunction assertFunction = functionStack.lastObject;
+  if (assertFunction) {
+    return assertFunction;
+  }
+  return RCTCurrentAssertFunction;
+}
+
+void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction assertFunction)
+{
+  NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+  NSMutableArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  if (!functionStack) {
+    functionStack = [NSMutableArray new];
+    threadDictionary[RCTAssertFunctionStack] = functionStack;
+  }
+  [functionStack addObject:assertFunction];
+  block();
+  [functionStack removeLastObject];
+}
+
 NSString *RCTCurrentThreadName(void)
 {
   NSThread *thread = [NSThread currentThread];
-  NSString *threadName = [thread isMainThread] ? @"main" : thread.name;
+  NSString *threadName = thread.isMainThread ? @"main" : thread.name;
   if (threadName.length == 0) {
-#if DEBUG // This is DEBUG not RCT_DEBUG because it *really* must not ship in RC
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    threadName = @(dispatch_queue_get_label(dispatch_get_current_queue()));
-#pragma clang diagnostic pop
-#else
-    threadName = [NSString stringWithFormat:@"%p", thread];
-#endif
+    const char *label = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
+    if (label && strlen(label) > 0) {
+      threadName = @(label);
+    } else {
+      threadName = [NSString stringWithFormat:@"%p", thread];
+    }
   }
   return threadName;
+}
+
+void _RCTAssertFormat(
+  const char *condition,
+  const char *fileName,
+  int lineNumber,
+  const char *function,
+  NSString *format, ...)
+{
+  RCTAssertFunction assertFunction = RCTGetLocalAssertFunction();
+  if (assertFunction) {
+
+    va_list args;
+    va_start(args, format);
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+
+    assertFunction(@(condition), @(fileName), @(lineNumber), @(function), message);
+  }
 }

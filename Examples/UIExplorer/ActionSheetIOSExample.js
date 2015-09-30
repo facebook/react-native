@@ -17,11 +17,12 @@
 
 var React = require('react-native');
 var {
+  ActionSheetIOS,
   StyleSheet,
   Text,
   View,
 } = React;
-var ActionSheetIOS = require('ActionSheetIOS');
+
 var BUTTONS = [
   'Button Index: 0',
   'Button Index: 1',

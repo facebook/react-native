@@ -17,7 +17,7 @@
 'use strict';
 
 var React = require('react-native');
-var UIExplorerList = require('./UIExplorerList');
+var UIExplorerList = require('./UIExplorerList.ios');
 var {
   AppRegistry,
   NavigatorIOS,
@@ -43,22 +43,23 @@ var UIExplorerApp = React.createClass({
         />
       );
     }
-      return (
-        <NavigatorIOS
-          style={styles.container}
-          initialRoute={{
-            title: 'UIExplorer',
-            component: UIExplorerList,
-            passProps: {
-              onExternalExampleRequested: (example) => {
-                this.setState({ openExternalExample: example, });
-              },
-            }
-          }}
-          itemWrapperStyle={styles.itemWrapper}
-          tintColor="#008888"
-        />
-      );
+
+    return (
+      <NavigatorIOS
+        style={styles.container}
+        initialRoute={{
+          title: 'UIExplorer',
+          component: UIExplorerList,
+          passProps: {
+            onExternalExampleRequested: (example) => {
+              this.setState({ openExternalExample: example, });
+            },
+          }
+        }}
+        itemWrapperStyle={styles.itemWrapper}
+        tintColor="#008888"
+      />
+    );
   }
 });
 

@@ -65,7 +65,7 @@
                                                     (CGBitmapInfo)kCGImageAlphaPremultipliedLast
                                                     );
     
-  CGFloat scaleFactor = [[UIScreen mainScreen] scale];
+  CGFloat scaleFactor = [UIScreen mainScreen].scale;
   CGContextScaleCTM(referenceImageContext, scaleFactor, scaleFactor);
   CGContextScaleCTM(imageContext, scaleFactor, scaleFactor);
     

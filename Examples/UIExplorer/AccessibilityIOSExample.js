@@ -55,7 +55,7 @@ var AccessibilityIOSExample = React.createClass({
   },
 });
 
-exports.title = 'AcccessibilityIOS';
+exports.title = 'AccessibilityIOS';
 exports.description = 'Interface to show iOS\' accessibility samples';
 exports.examples = [
   {

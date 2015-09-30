@@ -15,12 +15,14 @@
  */
 'use strict';
 
+var Platform = require('Platform');
 var React = require('react-native');
 var {
   StyleSheet,
   Text,
   View,
 } = React;
+var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var styles = StyleSheet.create({
   box: {
@@ -30,8 +32,62 @@ var styles = StyleSheet.create({
   }
 });
 
+var ViewBorderStyleExample = React.createClass({
+  getInitialState() {
+    return {
+      showBorder: true
+    };
+  },
+
+  render() {
+    if (Platform.OS !== 'android') {
+      return (
+        <View style={{backgroundColor: 'red'}}>
+          <Text style={{color: 'white'}}>
+            borderStyle is only supported on android for now.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress}>
+        <View>
+          <View style={{
+            borderWidth: 1,
+            borderRadius: 5,
+            borderStyle: this.state.showBorder ? 'dashed' : null,
+            padding: 5
+          }}>
+            <Text style={{fontSize: 11}}>
+              Dashed border style
+            </Text>
+          </View>
+          <View style={{
+            marginTop: 5,
+            borderWidth: 1,
+            borderRadius: 5,
+            borderStyle: this.state.showBorder ? 'dotted' : null,
+            padding: 5
+          }}>
+            <Text style={{fontSize: 11}}>
+              Dotted border style
+            </Text>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  },
+
+  _handlePress() {
+    this.setState({showBorder: !this.state.showBorder});
+  }
+});
+
 exports.title = '<View>';
-exports.description = 'Basic building block of all UI.';
+exports.description = 'Basic building block of all UI, examples that ' +
+  'demonstrate some of the many styles available.';
+
 exports.displayName = 'ViewExample';
 exports.examples = [
   {
@@ -88,6 +144,11 @@ exports.examples = [
           </Text>
         </View>
       );
+    },
+  }, {
+    title: 'Border Style',
+    render: function() {
+      return <ViewBorderStyleExample />;
     },
   }, {
     title: 'Circle with Border Radius',
