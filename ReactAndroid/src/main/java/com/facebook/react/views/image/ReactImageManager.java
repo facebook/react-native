@@ -13,9 +13,12 @@ import javax.annotation.Nullable;
 
 import android.graphics.Color;
 
+import com.facebook.csslayout.CSSConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.ReactPropGroup;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
@@ -73,9 +76,37 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setBorderWidth(borderWidth);
   }
 
-  @ReactProp(name = "borderRadius")
-  public void setBorderRadius(ReactImageView view, float borderRadius) {
-    view.setBorderRadius(borderRadius);
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_VERTICAL_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_VERTICAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_VERTICAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_HORIZONTAL_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_VERTICAL_RADIUS
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactImageView view, int index, float radius) {
+    if (!CSSConstants.isUndefined(radius)) {
+      radius = PixelUtil.toPixelFromDIP(radius);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(0, 8, radius);
+      return;
+    }
+
+    if (index < 5) {
+      view.setBorderRadius((index-1)*2, 2, radius);
+      return;
+    }
+
+    view.setBorderRadius(index-5, 1, radius);
   }
 
   @ReactProp(name = ViewProps.RESIZE_MODE)

@@ -21,7 +21,8 @@ var {
   StyleSheet,
   Text,
   View,
-  ActivityIndicatorIOS
+  ActivityIndicatorIOS,
+  Platform
 } = React;
 
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
@@ -145,16 +146,66 @@ exports.examples = [
   {
     title: 'Border Radius',
     render: function() {
+
+      var cornerRadii;
+
+      if (Platform.OS === 'android') {
+        cornerRadii = (
+          <View>
+            <Text style={styles.sectionText}>
+              Corner Radii
+            </Text>
+            <View style={styles.horizontal}>
+              <Image
+                style={[styles.base, {borderTopLeftRadius: 9}]}
+                source={fullImage}
+              />
+              <Image
+                style={[styles.base, styles.leftMargin, {borderTopRightRadius: 9}]}
+                source={fullImage}
+              />
+              <Image
+                style={[styles.base, styles.leftMargin, {borderBottomRightRadius: 9}]}
+                source={fullImage}
+              />
+              <Image
+                style={[styles.base, styles.leftMargin, {borderBottomLeftRadius: 9}]}
+                source={fullImage}
+              />
+              <Image
+                style={[styles.base, styles.leftMargin, {borderTopLeftHorizontalRadius: 19, borderTopLeftVerticalRadius: 9}]}
+                source={fullImage}
+              />
+              <Image
+                style={[styles.base, styles.leftMargin, {borderTopRightHorizontalRadius: 19, borderTopRightVerticalRadius: 9}]}
+                source={fullImage}
+              />
+              <Image
+                style={[styles.base, styles.leftMargin, {borderBottomRightHorizontalRadius: 19, borderBottomRightVerticalRadius: 9}]}
+                source={fullImage}
+              />
+              <Image
+                style={[styles.base, styles.leftMargin, {borderBottomLeftHorizontalRadius: 19, borderBottomLeftVerticalRadius: 9}]}
+                source={fullImage}
+              />
+            </View>
+          </View>
+        );
+      }
+
       return (
-        <View style={styles.horizontal}>
-          <Image
-            style={[styles.base, {borderRadius: 5}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
-            source={fullImage}
-          />
+        <View>
+          <View style={styles.horizontal}>
+            <Image
+              style={[styles.base, {borderRadius: 5}]}
+              source={fullImage}
+            />
+            <Image
+              style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
+              source={fullImage}
+            />
+          </View>
+          {cornerRadii}
         </View>
       );
     },
