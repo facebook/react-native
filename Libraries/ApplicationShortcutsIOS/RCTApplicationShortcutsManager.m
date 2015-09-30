@@ -9,10 +9,13 @@
 
 #import "RCTApplicationShortcutsManager.h"
 
+#import "RCTBridge.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
 @implementation RCTApplicationShortcutsManager
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -35,6 +38,13 @@ RCT_EXPORT_METHOD(setApplicationShortcutsWithList: (NSArray *)list)
     [shortcutItems addObject: shortcutItem];
   }
   [[UIApplication sharedApplication] setShortcutItems: shortcutItems];
+}
+
+- (NSDictionary *)constantsToExport
+{
+  UIApplicationShortcutItem *shortcut =
+    _bridge.launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+  return @{@"initialShortcutType": RCTNullIfNil(shortcut.type)};
 }
 
 @end

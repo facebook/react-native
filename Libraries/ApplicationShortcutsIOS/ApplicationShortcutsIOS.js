@@ -23,6 +23,9 @@ type Shortcut = {
   // icon: string // TODO
 };
 
+var _initialShortcutType = RCTApplicationShortcutsManager &&
+  RCTApplicationShortcutsManager.initialShortcutType;
+
 var ApplicationShortcutsIOS = {
   /**
    * Setups dynamic iOS Application Shortcuts (Triggered via 3d touch)
@@ -43,6 +46,16 @@ var ApplicationShortcutsIOS = {
       'The list must have each item with a type and a title key'
     );
     RCTApplicationShortcutsManager.setApplicationShortcutsWithList(list);
+  },
+
+  /**
+   * If the app launch was triggered by a shortcut, it will pop the shortcut,
+   * and return its type otherwise it will return `null`
+   */
+  popShortcutType(): ?string {
+    var initialShortcutType= _initialShortcutType;
+    _initialShortcutType = null;
+    return initialShortcutType;
   }
 };
 

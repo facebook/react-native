@@ -43,8 +43,13 @@ var ApplicationShortcutsExample = React.createClass({
     return (
       <View>
         <Text>
-          Return to your home screen and force on your app icon (6s only).
+          Return to your home screen and hard press on the app icon (6s only).
         </Text>
+        {this.state.shortcutType ?
+          <Text>
+            You opened the app with a shorcut of the {this.state.shortcutType}
+            type.
+          </Text> : null}
       </View>
     );
   }
