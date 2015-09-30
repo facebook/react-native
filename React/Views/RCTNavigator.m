@@ -517,8 +517,25 @@ BOOL jsGettingtooSlow =
   }
   if (jsGettingAhead) {
     if (reactPushOne) {
-      UIView *lastView = _currentViews.lastObject;
-      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
+      RCTNavItem *lastNavItem = (RCTNavItem *)_currentViews.lastObject;
+      
+      RCTWrapperViewController *vc;
+      if (lastNavItem.viewControllerStoryboard) {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:lastNavItem.viewControllerStoryboard bundle:nil];
+        if (lastNavItem.viewControllerIdentifier) {
+          vc = [storyboard instantiateViewControllerWithIdentifier:lastNavItem.viewControllerIdentifier];
+        } else {
+          vc = [storyboard instantiateInitialViewController];
+        }
+        
+        for (NSString *propertyKey in lastNavItem.viewControllerProperties) {
+          [vc setValue:lastNavItem.viewControllerProperties[propertyKey] forKey:propertyKey];
+        }
+        vc.navItem = lastNavItem;
+        vc.eventDispatcher = _bridge.eventDispatcher;
+      } else {
+        vc = [[RCTWrapperViewController alloc] initWithNavItem:lastNavItem eventDispatcher:_bridge.eventDispatcher];
+      }
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
       [_navigationController pushViewController:vc animated:(currentReactCount > 1)];

@@ -42,4 +42,8 @@ RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onNavLeftButtonTap, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onNavRightButtonTap, RCTBubblingEventBlock)
 
+RCT_EXPORT_VIEW_PROPERTY(viewControllerStoryboard, NSString)
+RCT_EXPORT_VIEW_PROPERTY(viewControllerIdentifier, NSString)
+RCT_EXPORT_VIEW_PROPERTY(viewControllerProperties, NSDictionary)
+
 @end

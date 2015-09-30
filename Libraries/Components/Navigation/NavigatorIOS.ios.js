@@ -603,6 +603,10 @@ var NavigatorIOS = React.createClass({
             this.props.itemWrapperStyle,
             route.wrapperStyle
           ]}
+          viewControllerStoryboard={route.viewControllerStoryboard}
+          viewControllerIdentifier={route.viewControllerIdentifier}
+          viewControllerProperties={route.viewControllerProperties}
+          onViewControllerEvent={route.onViewControllerEvent}
           backButtonIcon={this._imageNameFromSource(route.backButtonIcon)}
           backButtonTitle={route.backButtonTitle}
           leftButtonIcon={this._imageNameFromSource(route.leftButtonIcon)}
@@ -617,11 +621,11 @@ var NavigatorIOS = React.createClass({
           barTintColor={this.props.barTintColor}
           translucent={this.props.translucent !== false}
           titleTextColor={this.props.titleTextColor}>
-          <Component
-            navigator={this.navigator}
-            route={route}
-            {...route.passProps}
-          />
+          {Component ? <Component
+              navigator={this.navigator}
+              route={route}
+              {...route.passProps}
+            /> : null}
         </RCTNavigatorItem>
       </StaticContainer>
     );
