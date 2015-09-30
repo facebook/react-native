@@ -267,6 +267,26 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
 {
   [super touchesEnded:touches withEvent:event];
 
+  UITouch *touch = [touches anyObject];
+  if (touch) {
+    BOOL otherGestureTriggered = NO;
+    for (UIGestureRecognizer *gestureRecognizer in touch.gestureRecognizers) {
+      if ([gestureRecognizer isKindOfClass:self.class]) {
+        continue;
+      }
+      if (gestureRecognizer.state == UIGestureRecognizerStateBegan ||
+        gestureRecognizer.state == UIGestureRecognizerStateChanged ||
+        gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        otherGestureTriggered = YES;
+        break;
+      }
+    }
+    if (otherGestureTriggered) {
+      [self touchesCancelled:touches withEvent:event];
+      return;
+    }
+  }
+  
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchEnd" originatingTime:event.timestamp];
 
