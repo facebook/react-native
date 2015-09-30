@@ -17,15 +17,15 @@
 
 var React = require('react-native');
 var {
+  ApplicationShortcutsIOS,
   Text,
   View,
 } = React;
-var QuickActionsIOS = require("QuickActionsIOS");
 
-var QUICK_ACTIONS = [
+var SHORTCUTS = [
   {
-    type: 'QuickActionsExample',
-    title: 'Quick Actions Example'
+    type: 'ApplicationShortcutsExample',
+    title: 'Application Shortcuts Example'
   },
   {
     type: 'ActionSheetExample',
@@ -34,9 +34,9 @@ var QUICK_ACTIONS = [
   }
 ]
 
-var QuickActionsExample = React.createClass({
+var ApplicationShortcutsExample = React.createClass({
   componentWillMount() {
-    QuickActionsIOS.setQuickActionsWithActionList(QUICK_ACTIONS);
+    ApplicationShortcutsIOS.setApplicationShortcutsWithList(SHORTCUTS);
   },
 
   render() {
@@ -50,11 +50,11 @@ var QuickActionsExample = React.createClass({
   }
 });
 
-exports.title = 'QuickActionsIOS';
-exports.description = 'Dynamic 3d touch Quick Actions';
+exports.title = 'ApplicationShortcutsIOS';
+exports.description = 'Dynamic 3d touch App Shortcuts';
 exports.examples = [
   {
     title: 'Quick Actions',
-    render(): ReactElement { return <QuickActionsExample />; }
+    render(): ReactElement { return <ApplicationShortcutsExample />; }
   }
 ];

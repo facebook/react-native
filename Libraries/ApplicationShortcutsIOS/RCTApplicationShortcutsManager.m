@@ -7,30 +7,30 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTQuickActionsManager.h"
+#import "RCTApplicationShortcutsManager.h"
 
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-@implementation RCTQuickActionsManager
+@implementation RCTApplicationShortcutsManager
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(setQuickActionsWithActionList: (NSArray *)actionList)
+RCT_EXPORT_METHOD(setApplicationShortcutsWithList: (NSArray *)list)
 {
   if (RCTRunningInAppExtension()) {
-    RCTLogError(@"Unable to set quick actions from app extension");
+    RCTLogError(@"Unable to set application shortcuts from app extension");
     return;
   }
   NSMutableArray <UIApplicationShortcutItem *> *shortcutItems =
     [[NSMutableArray alloc] init];
-  for (NSDictionary *action in actionList) {
+  for (NSDictionary *shortcutDefinition in list) {
     UIMutableApplicationShortcutItem *shortcutItem =
       [[UIMutableApplicationShortcutItem alloc]
-        initWithType: action[@"type"]
-        localizedTitle: action[@"title"]];
-    if ([action objectForKey:@"subtitle"]) {
-      [shortcutItem setLocalizedSubtitle: action[@"subtitle"]];
+        initWithType: shortcutDefinition[@"type"]
+        localizedTitle: shortcutDefinition[@"title"]];
+    if ([shortcutDefinition objectForKey:@"subtitle"]) {
+      [shortcutItem setLocalizedSubtitle: shortcutDefinition[@"subtitle"]];
     }
     [shortcutItems addObject: shortcutItem];
   }

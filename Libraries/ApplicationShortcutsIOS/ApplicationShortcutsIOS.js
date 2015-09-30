@@ -6,25 +6,26 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule QuickActionsIOS
+ * @providesModule ApplicationShortcutsIOS
  * @flow
  */
 'use strict';
 
-var RCTQuickActionsManager = require('NativeModules').QuickActionsManager;
+var RCTApplicationShortcutsManager =
+  require('NativeModules').ApplicationShortcutsManager;
 
 var invariant = require('invariant');
 
-type Action = {
+type Shortcut = {
   type: String,
   title: String,
   subtitle?: String
   // icon: String // TODO
 };
 
-var QuickActionsIOS = {
+var ApplicationShortcutsIOS = {
   /**
-   * Setups dynamic iOS Quick Actions (Triggered via 3d touch)
+   * Setups dynamic iOS Application Shortcuts (Triggered via 3d touch)
    *
    * You must pass a list of Actions that will be set on IOS Home Screen. Pass
    * an empty list if you want to unset the actions.
@@ -32,18 +33,17 @@ var QuickActionsIOS = {
    * Each action must have a title key and a type key used when opening the app.
    * An optional subtitle key can be added.
    */
-  setQuickActionsWithActionList(actionList: Array<Action>) {
+  setApplicationShortcutsWithList(list: Array<Shortcut>) {
     invariant(
-      actionList instanceof Array && actionList !== null,
-      'The action list must be a valid array'
+      list instanceof Array && list !== null,
+      'The list must be a valid array'
     );
     invariant(
-      actionList.filter(action => action.type && action.title).length
-        === actionList.length,
-      'The action list must have each item with a type and a title key'
+      list.filter(sh => sh.type && sh.title).length  === list.length,
+      'The list must have each item with a type and a title key'
     );
-    RCTQuickActionsManager.setQuickActionsWithActionList(actionList);
+    RCTApplicationShortcutsManager.setApplicationShortcutsWithList(list);
   }
 };
 
-module.exports = QuickActionsIOS;
+module.exports = ApplicationShortcutsIOS;

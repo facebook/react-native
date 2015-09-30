@@ -11,6 +11,6 @@
 
 #import "RCTBridgeModule.h"
 
-@interface RCTQuickActionsManager : NSObject <RCTBridgeModule>
+@interface RCTApplicationShortcutsManager : NSObject <RCTBridgeModule>
 
 @end

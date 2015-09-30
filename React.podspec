@@ -50,6 +50,12 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/AdSupport/*.js"
   end
 
+  s.subspec 'ApplicationShortcutsIOS' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/ApplicationShortcutsIOS/*.{h,m}"
+    ss.preserve_paths   = "Libraries/ApplicationShortcutsIOS/*.js"
+  end
+
   s.subspec 'RCTGeolocation' do |ss|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Geolocation/*.{h,m}"
@@ -73,12 +79,6 @@ Pod::Spec.new do |s|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/PushNotificationIOS/*.{h,m}"
     ss.preserve_paths   = "Libraries/PushNotificationIOS/*.js"
-  end
-
-  s.subspec 'QuickActionsIOS' do |ss|
-    ss.dependency         'React/Core'
-    ss.source_files     = "Libraries/QuickActionsIOS/*.{h,m}"
-    ss.preserve_paths   = "Libraries/QuickActionsIOS/*.js"
   end
 
   s.subspec 'RCTSettings' do |ss|

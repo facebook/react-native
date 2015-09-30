@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F0C658121BBB3D190075A3CC /* RCTQuickActionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F0C658111BBB3D190075A3CC /* RCTQuickActionsManager.m */; settings = {ASSET_TAGS = (); }; };
+		F0F7B36C1BBBEC9500961C30 /* RCTApplicationShortcutsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F7B36B1BBBEC9500961C30 /* RCTApplicationShortcutsManager.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,9 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		134814201AA4EA6300B7C361 /* libRCTQuickActions.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTQuickActions.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0C658101BBB3D190075A3CC /* RCTQuickActionsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTQuickActionsManager.h; sourceTree = "<group>"; };
-		F0C658111BBB3D190075A3CC /* RCTQuickActionsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTQuickActionsManager.m; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libRCTApplicationShortcuts.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTApplicationShortcuts.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0F7B36A1BBBEC9500961C30 /* RCTApplicationShortcutsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTApplicationShortcutsManager.h; sourceTree = "<group>"; };
+		F0F7B36B1BBBEC9500961C30 /* RCTApplicationShortcutsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTApplicationShortcutsManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,7 +42,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libRCTQuickActions.a */,
+				134814201AA4EA6300B7C361 /* libRCTApplicationShortcuts.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -50,8 +50,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				F0C658101BBB3D190075A3CC /* RCTQuickActionsManager.h */,
-				F0C658111BBB3D190075A3CC /* RCTQuickActionsManager.m */,
+				F0F7B36A1BBBEC9500961C30 /* RCTApplicationShortcutsManager.h */,
+				F0F7B36B1BBBEC9500961C30 /* RCTApplicationShortcutsManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,9 +59,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* RCTQuickActions */ = {
+		58B511DA1A9E6C8500147676 /* RCTApplicationShortcuts */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTQuickActions" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTApplicationShortcuts" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -71,9 +71,9 @@
 			);
 			dependencies = (
 			);
-			name = RCTQuickActions;
+			name = RCTApplicationShortcuts;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libRCTQuickActions.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libRCTApplicationShortcuts.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -90,7 +90,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTQuickActions" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTApplicationShortcuts" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -102,7 +102,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* RCTQuickActions */,
+				58B511DA1A9E6C8500147676 /* RCTApplicationShortcuts */,
 			);
 		};
 /* End PBXProject section */
@@ -112,7 +112,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0C658121BBB3D190075A3CC /* RCTQuickActionsManager.m in Sources */,
+				F0F7B36C1BBBEC9500961C30 /* RCTApplicationShortcutsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,7 +204,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RCTQuickActions;
+				PRODUCT_NAME = RCTApplicationShortcuts;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -219,7 +219,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RCTQuickActions;
+				PRODUCT_NAME = RCTApplicationShortcuts;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -227,7 +227,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTQuickActions" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTApplicationShortcuts" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -236,7 +236,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTQuickActions" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTApplicationShortcuts" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
