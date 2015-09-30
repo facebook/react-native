@@ -17,10 +17,10 @@ var RCTApplicationShortcutsManager =
 var invariant = require('invariant');
 
 type Shortcut = {
-  type: String,
-  title: String,
-  subtitle?: String
-  // icon: String // TODO
+  type: string,
+  title: string,
+  subtitle?: string
+  // icon: string // TODO
 };
 
 var ApplicationShortcutsIOS = {
