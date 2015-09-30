@@ -19,7 +19,7 @@ function checkNodeVersion() {
     var message = 'You are currently running ' + engine + ' ' +
       process.version + '.\n' +
       '\n' +
-      'React Native is moving to io.js 2.x. There are several ways to upgrade' +
+      'React Native is moving to io.js 2.x. There are several ways to upgrade ' +
       'to io.js depending on your preference.\n' +
       '\n' +
       'nvm:       nvm install iojs && nvm alias default iojs\n' +
