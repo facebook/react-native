@@ -2071,6 +2071,11 @@
       "from": "eslint-plugin-react@3.3.1",
       "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-3.3.1.tgz"
     },
+    "event-target-shim": {
+      "version": "1.0.5",
+      "from": "event-target-shim@*",
+      "resolved": "https://registry.npmjs.org/event-target-shim/-/event-target-shim-1.0.5.tgz"
+    },
     "fbjs-scripts": {
       "version": "0.2.1",
       "from": "fbjs-scripts@>=0.2.1 <0.3.0",
