@@ -41,8 +41,8 @@ class WebSocket extends WebSocketBase {
      * Reason is empty string by to match browser behaviour
      * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
      */
-    let statusCode = typeof code === 'number' ? code : CLOSE_NORMAL,
-        closeReason = typeof reason === 'string' ? reason : '';
+    var statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
+    var closeReason = typeof reason === 'string' ? reason : '';
 
     RCTWebSocketManager.close(statusCode, closeReason, this._socketId);
   }
