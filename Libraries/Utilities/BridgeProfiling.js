@@ -14,9 +14,24 @@
 var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
 
+var _enabled = false;
+var _ReactPerf = null;
+function ReactPerf() {
+  if (!_ReactPerf) {
+    _ReactPerf = require('ReactPerf');
+  }
+  return _ReactPerf;
+}
+
 var BridgeProfiling = {
+  setEnabled(enabled: boolean) {
+    _enabled = enabled;
+
+    ReactPerf().enableMeasure = enabled;
+  },
+
   profile(profileName?: any) {
-    if (GLOBAL.__BridgeProfilingIsProfiling) {
+    if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
       console.profile(TRACE_TAG_REACT_APPS, profileName);
@@ -24,28 +39,27 @@ var BridgeProfiling = {
   },
 
   profileEnd() {
-    if (GLOBAL.__BridgeProfilingIsProfiling) {
+    if (_enabled) {
       console.profileEnd(TRACE_TAG_REACT_APPS);
     }
   },
 
-  swizzleReactPerf() {
-    var ReactPerf = require('ReactPerf');
-    var originalMeasure = ReactPerf.measure;
-    ReactPerf.measure = function (objName, fnName, func) {
-      func = originalMeasure.apply(ReactPerf, arguments);
-      return function (component) {
-        if (GLOBAL.__BridgeProfilingIsProfiling) {
-          var name = this._instance && this._instance.constructor &&
-            (this._instance.constructor.displayName ||
-             this._instance.constructor.name);
-          BridgeProfiling.profile(`${objName}.${fnName}(${name})`);
-        }
-        var ret = func.apply(this, arguments);
-        BridgeProfiling.profileEnd();
-        return ret;
-      };
+  reactPerfMeasure(objName: string, fnName: string, func: any): any {
+    return function (component) {
+      if (!_enabled) {
+        return func.apply(this, arguments);
+      }
+
+      var name = objName === 'ReactCompositeComponent' && this.getName() || '';
+      BridgeProfiling.profile(`${objName}.${fnName}(${name})`);
+      var ret = func.apply(this, arguments);
+      BridgeProfiling.profileEnd();
+      return ret;
     };
+  },
+
+  swizzleReactPerf() {
+    ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
 };
 
