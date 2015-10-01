@@ -1,6 +1,7 @@
 HEADER_PATHS := `find download/JavaScriptCore -name '*.h' | xargs -I{} dirname {} | uniq | xargs -I{} echo "-I {}"`
 
-SDK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/$1.platform/Developer/SDKs/$1.sdk
+XCODE_PATH ?= $(shell xcode-select -p)
+SDK_PATH = $(XCODE_PATH)/Platforms/$1.platform/Developer/SDKs/$1.sdk
 
 SDK_VERSION = $(shell plutil -convert json -o - $(call SDK_PATH,iPhoneOS)/SDKSettings.plist | awk -f parseSDKVersion.awk)
 
@@ -19,12 +20,13 @@ SYSROOT = -isysroot $(call SDK_PATH,$${PLATFORM})
 
 IOS8_LIBS = download/WebCore/WebCore-7600.1.25 download/WTF/WTF-7600.1.24 download/JavaScriptCore/JavaScriptCore-7600.1.17 download/JavaScriptCore/JavaScriptCore-7600.1.17/Bytecodes.h
 
-ios8: RCTJSCProfiler.ios8.dylib /tmp/RCTJSCProfiler
 ifneq ($(SDK_VERSION), 8)
+all:
 	$(error "Expected to be compiled with iOS SDK version 8, found $(SDK_VERSION)")
-else
-	cp $^
 endif
+
+ios8: RCTJSCProfiler.ios8.dylib /tmp/RCTJSCProfiler
+	cp $^
 
 /tmp/RCTJSCProfiler:
 	mkdir -p $@

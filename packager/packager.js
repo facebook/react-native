@@ -233,14 +233,14 @@ function systraceProfileMiddleware(req, res, next) {
   childProcess.exec(cmd, function(error) {
     if (error) {
       if (error.code === 127) {
-        res.end(
-          '\n** Failed executing `' + cmd + '` **\n\n' +
+        var response = '\n** Failed executing `' + cmd + '` **\n\n' +
           'Google trace-viewer is required to visualize the data, You can install it with `brew install trace2html`\n\n' +
           'NOTE: Your profile data was kept at:\n' + dumpName
-        );
+        console.log(response);
+        res.end(response);
       } else {
         console.error(error);
-        res.end('Unknown error %s', error.message);
+        res.end('Unknown error: ' + error.message);
       }
       return;
     } else {
@@ -267,16 +267,16 @@ function cpuProfileMiddleware(req, res, next) {
   var dumpName = '/tmp/cpu-profile_' + Date.now();
   fs.writeFileSync(dumpName + '.json', req.rawBody);
 
-  var cmd = path.join(__dirname, '..', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
+  var cmd = path.join(__dirname, '..', 'react-native-github', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
   childProcess.exec(cmd, function(error) {
     if (error) {
       console.error(error);
-      res.end('Unknown error: %s', error.message);
+      res.end('Unknown error: ' + error.message);
     } else {
-      res.end(
-        'Your profile was generated at\n\n' + dumpName + '.cpuprofile\n\n' +
-        'Open `Chrome Dev Tools > Profiles > Load` and select the profile to visualize it.'
-      );
+      var response = 'Your profile was generated at\n\n' + dumpName + '.cpuprofile\n\n' +
+        'Open `Chrome Dev Tools > Profiles > Load` and select the profile to visualize it.';
+      console.log(response);
+      res.end(response);
     }
   });
 }
