@@ -18,9 +18,9 @@ module.exports = function(newWindow) {
   } else {
     if (/^win/.test(process.platform)) {
       child_process.spawn('node', [
-        path.resolve(__dirname, '..', 'packager', 'packager.js'),
-        '--projectRoots',
-        process.cwd(),
+          path.resolve(__dirname, '..', 'packager', 'packager.js'),
+          '--projectRoots',
+          process.cwd(),
         ], {stdio: 'inherit'});
     } else {
       child_process.spawn('sh', [
