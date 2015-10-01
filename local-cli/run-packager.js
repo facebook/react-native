@@ -16,10 +16,18 @@ module.exports = function(newWindow) {
         {detached: true});
     }
   } else {
-    child_process.spawn('sh', [
-        path.resolve(__dirname, '..', 'packager', 'packager.sh'),
+    if (/^win/.test(process.platform)) {
+      child_process.spawn('node', [
+        path.resolve(__dirname, '..', 'packager', 'packager.js'),
         '--projectRoots',
         process.cwd(),
-      ], {stdio: 'inherit'});
+        ], {stdio: 'inherit'});
+    } else {
+      child_process.spawn('sh', [
+          path.resolve(__dirname, '..', 'packager', 'packager.sh'),
+          '--projectRoots',
+          process.cwd(),
+        ], {stdio: 'inherit'});
+    }
   }
 };
