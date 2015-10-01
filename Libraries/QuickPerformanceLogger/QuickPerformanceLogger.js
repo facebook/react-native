@@ -28,7 +28,7 @@ var QuickPerformanceLogger = {
   MarkerId: {},
 
   markerStart(markerId, opts) {
-    if (markerId === undefined) {
+    if (typeof markerId !== 'number') {
       return;
     }
     if (global.nativeQPLMarkerStart) {
@@ -38,7 +38,7 @@ var QuickPerformanceLogger = {
   },
 
   markerEnd(markerId, actionId, opts) {
-    if (markerId === undefined || actionId === undefined) {
+    if (typeof markerId !== 'number' || typeof actionId !== 'number') {
       return;
     }
     if (global.nativeQPLMarkerEnd) {
@@ -48,7 +48,7 @@ var QuickPerformanceLogger = {
   },
 
   markerNote(markerId, actionId, opts) {
-    if (markerId === undefined || actionId === undefined) {
+    if (typeof markerId !== 'number' || typeof actionId !== 'number') {
       return;
     }
     if (global.nativeQPLMarkerNote) {
@@ -58,7 +58,7 @@ var QuickPerformanceLogger = {
   },
 
   markerCancel(markerId, opts) {
-    if (markerId === undefined) {
+    if (typeof markerId !== 'number') {
       return;
     }
     if (global.nativeQPLMarkerCancel) {

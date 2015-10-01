@@ -66,7 +66,7 @@ var NavigatorIOSColors = React.createClass({
         tintColor="#FFFFFF"
         barTintColor="#183E63"
         titleTextColor="#FFFFFF"
-        translucent="true"
+        translucent={true}
       />
     );
   },

@@ -25,7 +25,6 @@
   "files": [
     "React",
     "React.podspec",
-    "Examples/SampleApp",
     "Libraries",
     "packager",
     "cli.js",
@@ -39,7 +38,7 @@
   ],
   "scripts": {
     "test": "NODE_ENV=test jest",
-    "lint": "node linter.js Examples/ Libraries/",
+    "lint": "eslint Examples/ Libraries/",
     "start": "./packager/packager.sh || true"
   },
   "bin": {
