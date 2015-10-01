@@ -336,17 +336,13 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
 - (void)toggleProfilingFlag:(NSNotification *)notification
 {
-  JSObjectRef globalObject = JSContextGetGlobalObject(_context.ctx);
-
-  bool enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
-  JSStringRef JSName = JSStringCreateWithUTF8CString("__BridgeProfilingIsProfiling");
-  JSObjectSetProperty(_context.ctx,
-                      globalObject,
-                      JSName,
-                      JSValueMakeBoolean(_context.ctx, enabled),
-                      kJSPropertyAttributeNone,
-                      NULL);
-  JSStringRelease(JSName);
+  [self executeBlockOnJavaScriptQueue:^{
+    BOOL enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
+    NSString *script = [NSString stringWithFormat:@"var p = require('BridgeProfiling') || {}; p.setEnabled && p.setEnabled(%@)", enabled ? @"true" : @"false"];
+    JSStringRef scriptJSRef = JSStringCreateWithUTF8CString(script.UTF8String);
+    JSEvaluateScript(_context.ctx, scriptJSRef, NULL, NULL, 0, NULL);
+    JSStringRelease(scriptJSRef);
+  }];
 }
 
 - (void)_addNativeHook:(JSObjectCallAsFunctionCallback)hook withName:(const char *)name
