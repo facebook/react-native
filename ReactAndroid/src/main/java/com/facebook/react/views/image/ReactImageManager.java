@@ -58,6 +58,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public void setSource(ReactImageView view, @Nullable String source) {
     view.setSource(source);
   }
+  
+  @ReactProp(name = "borderColor", customType = "Color")
+  public void setBorderColor(ReactImageView view, @Nullable Integer borderColor) {
+    if (borderColor == null) {
+      view.setBorderColor(Color.TRANSPARENT);
+    } else {
+      view.setBorderColor(borderColor);
+    }
+  }
+  
+  @ReactProp(name = "borderWidth")
+  public void setBorderWidth(ReactImageView view, float borderWidth) {
+    view.setBorderWidth(borderWidth);
+  }
 
   @ReactProp(name = "borderRadius")
   public void setBorderRadius(ReactImageView view, float borderRadius) {
