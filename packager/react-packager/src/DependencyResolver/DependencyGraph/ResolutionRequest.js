@@ -13,6 +13,7 @@ const util = require('util');
 const path = require('path');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../../lib/getAssetDataFromName');
+const Promise = require('promise');
 
 class ResolutionRequest {
   constructor({
