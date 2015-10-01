@@ -73,7 +73,11 @@ class DependencyGraph {
     this._opts = validateOpts(options);
     this._cache = this._opts.cache;
     this._helpers = new Helpers(this._opts);
-    this.load();
+    this.load().catch((err) => {
+      // This only happens at initialization. Live errors are easier to recover from.
+      console.error('Error building DepdendencyGraph:\n', err.stack);
+      process.exit(1);
+    });
   }
 
   load() {
@@ -198,9 +202,25 @@ class DependencyGraph {
       return;
     }
 
-    this._loading = this._loading.then(
-      () => this._hasteMap.processFileChange(type, absPath)
-    );
+    // Ok, this is some tricky promise code. Our requirements are:
+    // * we need to report back failures
+    // * failures shouldn't block recovery
+    // * Errors can leave `hasteMap` in an incorrect state, and we need to rebuild
+    // After we process a file change we record any errors which will also be
+    // reported via the next request. On the next file change, we'll see that
+    // we are in an error state and we should decide to do a full rebuild.
+    this._loading = this._loading.finally(() => {
+      if (this._hasteMapError) {
+        this._hasteMapError = null;
+        // Rebuild the entire map if last change resulted in an error.
+        console.warn('Rebuilding haste map to recover from error');
+        this._loading = this._hasteMap.build();
+      } else {
+        this._loading = this._hasteMap.processFileChange(type, absPath);
+        this._loading.catch((e) => this._hasteMapError = e);
+      }
+      return this._loading;
+    });
   }
 }
 
