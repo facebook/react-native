@@ -92,20 +92,20 @@ class WebSocket extends WebSocketBase {
         this.dispatchEvent(event);
       }),
       RCTDeviceEventEmitter.addListener('websocketClosed', ev => {
-          if (ev.id !== id) {
-            return;
-          }
+        if (ev.id !== id) {
+          return;
+        }
 
-          this.readyState = this.CLOSED;
+        this.readyState = this.CLOSED;
 
-          var event = new Event('close');
+        var event = new Event('close');
 
-          this.onclose && this.onclose(event);
-          this.dispatchEvent(event);
+        this.onclose && this.onclose(event);
+        this.dispatchEvent(event);
 
-          this._unregisterEvents();
+        this._unregisterEvents();
 
-          RCTWebSocketManager.close(CLOSE_NORMAL, '', id);
+        RCTWebSocketManager.close(CLOSE_NORMAL, '', id);
       }),
       RCTDeviceEventEmitter.addListener('websocketFailed', ev => {
         if (ev.id !== id) {
