@@ -37,6 +37,7 @@ function transform(src, filename, options) {
       'es6.classes',
       'es6.constants',
       'es6.destructuring',
+      'es6.modules',
       'es6.parameters',
       'es6.properties.computed',
       'es6.properties.shorthand',
