@@ -124,6 +124,14 @@ Given an entry point module. Recursively collect all the dependent
 modules and return it as an array. `options` is the same options that
 is passed to `ReactPackager.middleware`
 
+## Debugging
+
+To get verbose output when running the packager, define an environment variable:
+
+    export DEBUG=ReactNativePackager
+    
+The `/debug` endpoint discussed above is also useful.
+
 ## FAQ
 
 ### Can I use this in my own non-React Native project?
