@@ -45,7 +45,7 @@ function buildAndRun() {
   }
 }
 
-module.exports = function() {
+module.exports = function(args) {
   if (!checkAndroid()) {
     console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
     return;
@@ -70,7 +70,7 @@ module.exports = function() {
   statusReq.on('error', function() {
     // start packager first so it warms up
     console.log(chalk.bold('Starting JS server...'));
-    runPackager(true);
+    runPackager(true, args);
     buildAndRun();
   });
 };

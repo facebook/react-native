@@ -45,7 +45,7 @@ function run() {
 
   switch (args[0]) {
   case 'start':
-    runPackager();
+    runPackager(false, args.slice(1));
     break;
   case 'install':
     install.init();
@@ -66,7 +66,7 @@ function run() {
     );
     break;
   case 'run-android':
-    runAndroid();
+    runAndroid(args.slice(1));
     break;
   default:
     console.error('Command `%s` unrecognized', args[0]);
