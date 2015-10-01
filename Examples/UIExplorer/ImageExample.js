@@ -124,7 +124,6 @@ exports.examples = [
         </View>
       );
     },
-    platform: 'ios',
   },
   {
     title: 'Border Width',
@@ -142,7 +141,6 @@ exports.examples = [
         </View>
       );
     },
-    platform: 'ios',
   },
   {
     title: 'Border Radius',
