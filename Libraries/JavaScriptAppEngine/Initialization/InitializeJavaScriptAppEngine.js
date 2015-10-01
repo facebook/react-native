@@ -19,7 +19,7 @@
  * @providesModule InitializeJavaScriptAppEngine
  */
 
-/* eslint global-strict: 0 */
+/* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
 // Just to make sure the JS gets packaged up.
@@ -59,7 +59,7 @@ function setUpRedBoxConsoleErrorHandler() {
   }
 }
 
-function setupFlowChecker() {
+function setUpFlowChecker() {
   if (__DEV__) {
     var checkFlowAtRuntime = require('checkFlowAtRuntime');
     checkFlowAtRuntime();
@@ -130,7 +130,7 @@ function setUpWebSockets() {
   GLOBAL.WebSocket = require('WebSocket');
 }
 
-function setupProfile() {
+function setUpProfile() {
   console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
   console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
   if (__DEV__) {
@@ -146,6 +146,12 @@ function setUpProcessEnv() {
   }
 }
 
+function setUpNumber() {
+  Number.EPSILON = Number.EPSILON || Math.pow(2, -52);
+  Number.MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || Math.pow(2, 53) - 1;
+  Number.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -(Math.pow(2, 53) - 1);
+}
+
 setUpRedBoxErrorHandler();
 setUpTimers();
 setUpAlert();
@@ -154,6 +160,7 @@ setUpXHR();
 setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
-setupProfile();
+setUpProfile();
 setUpProcessEnv();
-setupFlowChecker();
+setUpFlowChecker();
+setUpNumber();
