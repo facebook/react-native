@@ -130,6 +130,8 @@ To get verbose output when running the packager, define an environment variable:
 
     export DEBUG=ReactNativePackager
     
+You can combine this with other values, e.g. `DEBUG=babel,ReactNativePackager`.
+    
 The `/debug` endpoint discussed above is also useful.
 
 ## FAQ
