@@ -4,7 +4,7 @@ title: Known Issues
 layout: docs
 category: Guides
 permalink: docs/known-issues.html
-next: native-modules-ios
+next: performance
 ---
 
 ### Missing Modules and Native Views

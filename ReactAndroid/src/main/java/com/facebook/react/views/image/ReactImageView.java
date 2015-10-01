@@ -22,12 +22,9 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.net.Uri;
 
+import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
-import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.common.util.UriUtil;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -39,6 +36,7 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
+import com.facebook.react.uimanager.PixelUtil;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -99,6 +97,8 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   private @Nullable Uri mUri;
+  private int mBorderColor;
+  private float mBorderWidth;
   private float mBorderRadius;
   private ScalingUtils.ScaleType mScaleType;
   private boolean mIsDirty;
@@ -125,6 +125,16 @@ public class ReactImageView extends GenericDraweeView {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
     mCallerContext = callerContext;
+  }
+
+  public void setBorderColor(int borderColor) {
+    mBorderColor = borderColor;
+    mIsDirty = true;
+  }
+
+  public void setBorderWidth(float borderWidth) {
+    mBorderWidth = PixelUtil.toPixelFromDIP(borderWidth);
+    mIsDirty = true;
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -180,6 +190,7 @@ public class ReactImageView extends GenericDraweeView {
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
     roundingParams.setCornersRadius(hierarchyRadius);
+    roundingParams.setBorder(mBorderColor, mBorderWidth);
     hierarchy.setRoundingParams(roundingParams);
     hierarchy.setFadeDuration(mImageFadeDuration >= 0
             ? mImageFadeDuration

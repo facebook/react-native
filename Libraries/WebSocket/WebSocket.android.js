@@ -104,7 +104,6 @@ class WebSocket extends WebSocketBase {
         this.dispatchEvent(event);
 
         this._unregisterEvents();
-
         RCTWebSocketManager.close(CLOSE_NORMAL, '', id);
       }),
       RCTDeviceEventEmitter.addListener('websocketFailed', ev => {
