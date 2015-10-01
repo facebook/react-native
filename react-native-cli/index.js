@@ -20,6 +20,8 @@ var CLI_MODULE_PATH = function() {
   );
 };
 
+var REACT_NATIVE_PACKAGE_ID = process.env.REACT_NATIVE_PACKAGE_ID || 'react-native';
+
 checkForVersionArgument();
 
 var cli;
@@ -136,12 +138,12 @@ function createProject(name) {
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
   process.chdir(root);
 
-  console.log('Installing react-native package from npm...');
-  exec('npm install --save react-native', function(e, stdout, stderr) {
+  console.log('Installing ' + REACT_NATIVE_PACKAGE_ID + ' package from npm...');
+  exec('npm install --save ' + REACT_NATIVE_PACKAGE_ID, function(e, stdout, stderr) {
     if (e) {
       console.log(stdout);
       console.error(stderr);
-      console.error('`npm install --save react-native` failed');
+      console.error('`npm install --save ' + REACT_NATIVE_PACKAGE_ID + '` failed');
       process.exit(1);
     }
 
