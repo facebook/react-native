@@ -48,6 +48,16 @@ class UIExplorerListBase extends React.Component {
     this.search(this.state.searchText);
   }
 
+  componentDidUpdate() {
+    if (this.props.route !== null) {
+      var route = decodeURI(this.props.route);
+      var component = this.props.components.concat(this.props.apis).find((component) => component.title === route);
+      if (component) {
+        setTimeout(() => this.onPressRow(component), 80);
+      }
+    }
+  }
+
   render() {
     var topView = this.props.renderAdditionalView &&
       this.props.renderAdditionalView(this.renderRow.bind(this), this.renderTextInput.bind(this));

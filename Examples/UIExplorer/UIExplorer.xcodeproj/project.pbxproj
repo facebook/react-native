@@ -52,6 +52,8 @@
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
+		422D0C161BC9687000EC9FC0 /* RNUserDefaultsIOS.h in Sources */ = {isa = PBXBuildFile; fileRef = 422D0C141BC9687000EC9FC0 /* RNUserDefaultsIOS.h */; };
+		422D0C171BC9687000EC9FC0 /* RNUserDefaultsIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 422D0C151BC9687000EC9FC0 /* RNUserDefaultsIOS.m */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
@@ -223,6 +225,8 @@
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
+		422D0C141BC9687000EC9FC0 /* RNUserDefaultsIOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNUserDefaultsIOS.h; path = UIExplorer/RNUserDefaultsIOS.h; sourceTree = "<group>"; };
+		422D0C151BC9687000EC9FC0 /* RNUserDefaultsIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNUserDefaultsIOS.m; path = UIExplorer/RNUserDefaultsIOS.m; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
@@ -363,6 +367,8 @@
 		13B07FAE1A68108700A75B9A /* UIExplorer */ = {
 			isa = PBXGroup;
 			children = (
+				422D0C141BC9687000EC9FC0 /* RNUserDefaultsIOS.h */,
+				422D0C151BC9687000EC9FC0 /* RNUserDefaultsIOS.m */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -850,6 +856,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				422D0C161BC9687000EC9FC0 /* RNUserDefaultsIOS.h in Sources */,
+				422D0C171BC9687000EC9FC0 /* RNUserDefaultsIOS.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
