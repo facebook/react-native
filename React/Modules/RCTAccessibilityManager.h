@@ -21,6 +21,8 @@ extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; /
 /// map from UIKit categories to multipliers
 @property (nonatomic, copy) NSDictionary *multipliers;
 
+@property (nonatomic, assign) BOOL isVoiceOverEnabled;
+
 @end
 
 @interface RCTBridge (RCTAccessibilityManager)
