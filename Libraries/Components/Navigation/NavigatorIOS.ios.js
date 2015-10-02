@@ -14,15 +14,16 @@
 var EventEmitter = require('EventEmitter');
 var Image = require('Image');
 var NavigationContext = require('NavigationContext');
-var React = require('React');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
-var StyleSheet = require('StyleSheet');
+var React = require('React');
 var StaticContainer = require('StaticContainer.react');
+var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
 var invariant = require('invariant');
 var logError = require('logError');
+var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 var TRANSITIONER_REF = 'transitionerRef';
 
@@ -603,12 +604,12 @@ var NavigatorIOS = React.createClass({
             this.props.itemWrapperStyle,
             route.wrapperStyle
           ]}
-          backButtonIcon={this._imageNameFromSource(route.backButtonIcon)}
+          backButtonIcon={resolveAssetSource(route.backButtonIcon)}
           backButtonTitle={route.backButtonTitle}
-          leftButtonIcon={this._imageNameFromSource(route.leftButtonIcon)}
+          leftButtonIcon={resolveAssetSource(route.leftButtonIcon)}
           leftButtonTitle={route.leftButtonTitle}
           onNavLeftButtonTap={route.onLeftButtonPress}
-          rightButtonIcon={this._imageNameFromSource(route.rightButtonIcon)}
+          rightButtonIcon={resolveAssetSource(route.rightButtonIcon)}
           rightButtonTitle={route.rightButtonTitle}
           onNavRightButtonTap={route.onRightButtonPress}
           navigationBarHidden={this.props.navigationBarHidden}
@@ -625,10 +626,6 @@ var NavigatorIOS = React.createClass({
         </RCTNavigatorItem>
       </StaticContainer>
     );
-  },
-
-  _imageNameFromSource: function(source: ?Object) {
-    return source ? source.uri : undefined;
   },
 
   renderNavigationStackItems: function() {
