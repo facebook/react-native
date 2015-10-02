@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.JSBundleLoader;
 import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
 import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
@@ -47,6 +48,7 @@ public class CatalystInstance {
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
 
   // Access from any thread
+  private final ReactContext mReactContext;
   private final CatalystQueueConfiguration mCatalystQueueConfiguration;
   private final CopyOnWriteArrayList<NotThreadSafeBridgeIdleDebugListener> mBridgeIdleListeners;
   private final AtomicInteger mPendingJSCalls = new AtomicInteger(0);
@@ -67,12 +69,14 @@ public class CatalystInstance {
   private boolean mJSBundleHasLoaded;
 
   private CatalystInstance(
+      final ReactContext reactContext,
       final CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry registry,
       final JavaScriptModulesConfig jsModulesConfig,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
+    mReactContext = reactContext;
     mCatalystQueueConfiguration = CatalystQueueConfiguration.create(
         catalystQueueConfigurationSpec,
         new NativeExceptionHandler());
@@ -445,6 +449,7 @@ public class CatalystInstance {
 
   public static class Builder {
 
+    private @Nullable ReactContext mReactContext;
     private @Nullable CatalystQueueConfigurationSpec mCatalystQueueConfigurationSpec;
     private @Nullable JSBundleLoader mJSBundleLoader;
     private @Nullable NativeModuleRegistry mRegistry;
@@ -460,6 +465,11 @@ public class CatalystInstance {
 
     public Builder setRegistry(NativeModuleRegistry registry) {
       mRegistry = registry;
+      return this;
+    }
+
+    public Builder setReactContext(ReactContext reactContext) {
+      mReactContext = reactContext;
       return this;
     }
 
@@ -486,6 +496,7 @@ public class CatalystInstance {
 
     public CatalystInstance build() {
       return new CatalystInstance(
+          Assertions.assertNotNull(mReactContext),
           Assertions.assertNotNull(mCatalystQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),

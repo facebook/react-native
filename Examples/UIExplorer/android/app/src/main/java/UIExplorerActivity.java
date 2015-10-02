@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import com.facebook.react.LifecycleState;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.JSBundleLoader;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -35,7 +36,7 @@ public class UIExplorerActivity extends Activity implements DefaultHardwareBackB
 
     mReactInstanceManager = ReactInstanceManager.builder()
         .setApplication(getApplication())
-        .setBundleAssetName("UIExplorerApp.android.bundle")
+        .setJSBundleLoader(JSBundleLoader.createAssetLoader("UIExplorerApp.android.bundle"))
         .setJSMainModuleName("Examples/UIExplorer/UIExplorerApp.android")
         .addPackage(new MainReactPackage())
         .setUseDeveloperSupport(true)

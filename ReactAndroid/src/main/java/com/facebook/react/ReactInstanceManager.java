@@ -24,7 +24,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -77,8 +76,8 @@ public class ReactInstanceManager {
   private @Nullable ReactContextInitParams mPendingReactContextInitParams;
 
   /* accessed from any thread */
-  private final @Nullable String mBundleAssetName; /* name of JS bundle file in assets folder */
   private final @Nullable String mJSMainModuleName; /* path to JS bundle root on packager server */
+  private final @Nullable JSBundleLoader mJSBundleLoader;
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
@@ -176,8 +175,8 @@ public class ReactInstanceManager {
 
   private ReactInstanceManager(
       Context applicationContext,
-      @Nullable String bundleAssetName,
       @Nullable String jsMainModuleName,
+      @Nullable JSBundleLoader jsBundleLoader,
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
@@ -185,8 +184,8 @@ public class ReactInstanceManager {
     initializeSoLoaderIfNecessary(applicationContext);
 
     mApplicationContext = applicationContext;
-    mBundleAssetName = bundleAssetName;
     mJSMainModuleName = jsMainModuleName;
+    mJSBundleLoader = jsBundleLoader;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
     // We need to instantiate DevSupportManager regardless to the useDeveloperSupport option,
@@ -230,24 +229,19 @@ public class ReactInstanceManager {
    * {@link ReactRootView} is available and measured.
    */
   public void createReactContextInBackground() {
-    if (mUseDeveloperSupport) {
+    if (mUseDeveloperSupport && mJSMainModuleName != null) {
       if (mDevSupportManager.hasUpToDateJSBundleInCache()) {
         // If there is a up-to-date bundle downloaded from server, always use that
         onJSBundleLoadedFromServer();
-        return;
-      } else if (mBundleAssetName == null ||
-          !mDevSupportManager.hasBundleInAssets(mBundleAssetName)) {
-        // Bundle not available in assets, fetch from the server
+      } else {
         mDevSupportManager.handleReloadJS();
-        return;
       }
+      return;
     }
-    // Use JS file from assets
+
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor(),
-        JSBundleLoader.createAssetLoader(
-            mApplicationContext.getAssets(),
-            mBundleAssetName));
+            mJSBundleLoader);
   }
 
   /**
@@ -520,6 +514,7 @@ public class ReactInstanceManager {
     }
 
     CatalystInstance.Builder catalystInstanceBuilder = new CatalystInstance.Builder()
+        .setReactContext(reactContext)
         .setCatalystQueueConfigurationSpec(CatalystQueueConfigurationSpec.createDefault())
         .setJSExecutor(jsExecutor)
         .setRegistry(nativeRegistryBuilder.build())
@@ -566,6 +561,7 @@ public class ReactInstanceManager {
 
     private @Nullable String mBundleAssetName;
     private @Nullable String mJSMainModuleName;
+    private @Nullable JSBundleLoader mJSBundleLoader;
     private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
     private @Nullable Application mApplication;
     private boolean mUseDeveloperSupport;
@@ -575,9 +571,14 @@ public class ReactInstanceManager {
     }
 
     /**
-     * Name of the JS budle file to be loaded from application's raw assets.
+     * Name of the JS bundle file to be loaded from application's raw assets.
+     *
+     * @deprecated Use setJsBundleLoader(JSBundleLoader.createAssetLoader()) instead.
+     * {@link #setJSBundleLoader}
+     *
      * Example: {@code "index.android.js"}
      */
+    @Deprecated
     public Builder setBundleAssetName(String bundleAssetName) {
       mBundleAssetName = bundleAssetName;
       return this;
@@ -593,6 +594,11 @@ public class ReactInstanceManager {
      */
     public Builder setJSMainModuleName(String jsMainModuleName) {
       mJSMainModuleName = jsMainModuleName;
+      return this;
+    }
+
+    public Builder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
+      mJSBundleLoader = jsBundleLoader;
       return this;
     }
 
@@ -639,22 +645,31 @@ public class ReactInstanceManager {
      * Before calling {@code build}, the following must be called:
      * <ul>
      * <li> {@link #setApplication}
-     * <li> {@link #setBundleAssetName} or {@link #setJSMainModuleName}
+     * <li> {@link #setJSBundleLoader} or {@link #setJSMainModuleName}
      * </ul>
      */
     public ReactInstanceManager build() {
+
+      Application application = Assertions.assertNotNull(
+          mApplication,
+          "Application property has not been set with this builder");
+
       Assertions.assertCondition(
-          mUseDeveloperSupport || mBundleAssetName != null,
-          "JS Bundle has to be provided in app assets when dev support is disabled");
+          mUseDeveloperSupport || mJSBundleLoader != null || mBundleAssetName != null,
+          "JS Loader has to be provided when dev support is disabled");
+
       Assertions.assertCondition(
-          mBundleAssetName != null || mJSMainModuleName != null,
-          "Either BundleAssetName or MainModuleName needs to be provided");
+           mJSMainModuleName != null || mJSBundleLoader != null || mBundleAssetName != null,
+          "Either MainModuleName or JS Loader needs to be provided");
+
+      if (mBundleAssetName != null && mJSBundleLoader == null) {
+        mJSBundleLoader = JSBundleLoader.createAssetLoader(mBundleAssetName);
+      }
+
       return new ReactInstanceManager(
-          Assertions.assertNotNull(
-              mApplication,
-              "Application property has not been set with this builder"),
-          mBundleAssetName,
+          application,
           mJSMainModuleName,
+          mJSBundleLoader,
           mPackages,
           mUseDeveloperSupport,
           mBridgeIdleDebugListener,

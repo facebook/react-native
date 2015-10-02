@@ -7,9 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react;
 
 import android.content.res.AssetManager;
+import android.net.Uri;
+
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.ReactBridge;
 
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
@@ -23,12 +27,11 @@ public abstract class JSBundleLoader {
    * large strings from java to native memory.
    */
   public static JSBundleLoader createAssetLoader(
-      final AssetManager assetManager,
       final String assetFileName) {
     return new JSBundleLoader() {
       @Override
-      public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromAssets(assetManager, assetFileName);
+      public String getScriptUrl() {
+        return "assets://" + assetFileName;
       }
 
       @Override
@@ -50,8 +53,8 @@ public abstract class JSBundleLoader {
       final String cachedFileLocation) {
     return new JSBundleLoader() {
       @Override
-      public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromNetworkCached(sourceURL, cachedFileLocation);
+      public String getScriptUrl() {
+        return cachedFileLocation;
       }
 
       @Override
@@ -69,8 +72,8 @@ public abstract class JSBundleLoader {
       final String sourceURL) {
     return new JSBundleLoader() {
       @Override
-      public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromNetworkCached(sourceURL, null);
+      public String getScriptUrl() {
+        return null;
       }
 
       @Override
@@ -80,6 +83,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  public abstract void loadScript(ReactBridge bridge);
+  public abstract String getScriptUrl();
   public abstract String getSourceUrl();
 }
