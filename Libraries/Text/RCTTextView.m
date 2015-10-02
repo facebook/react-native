@@ -78,6 +78,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
     _placeholderView.backgroundColor = [UIColor clearColor];
     _placeholderView.scrollEnabled = false;
+    _placeholderView.scrollsToTop = NO;
     _placeholderView.attributedText =
     [[NSAttributedString alloc] initWithString:_placeholder attributes:@{
       NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),
