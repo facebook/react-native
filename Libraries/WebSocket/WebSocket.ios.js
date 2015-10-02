@@ -92,6 +92,7 @@ class WebSocket extends WebSocketBase {
             return;
           }
           this.onerror && this.onerror(new Error(ev.message));
+          this.onclose && this.onclose(ev);
           this._unregisterEvents();
           RCTWebSocketManager.close(id);
         }.bind(this)
