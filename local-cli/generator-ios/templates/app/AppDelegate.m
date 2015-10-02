@@ -35,7 +35,7 @@
      - If using the babel-plugin-react-transform hot-loader and see a red-box error on boot-up, click 'Dimiss (ESC)'
      
      2. DEBUG ON DEVICE:
-     - Open Network Utility from Spotlight and change computersWifiIP (below) your computer's WIFI IP address.
+     - Open Network Utility from Spotlight and change hostWifiIP (below) your computer's WIFI IP address.
      - Leave useBundle NO (below) and optionally start the server (above) and run on your device.
      - Note that this may not work on all networks. Be sure your phone is on the same WIFI network as your computer.
      
@@ -52,7 +52,7 @@
     
     BOOL useBundle = NO;
     
-    __unused NSString *computersWifiIP = @"10.0.2.46";
+    __unused NSString *hostWifiIP = @"0.0.0.0";
     
     
     // You shouldn't need to modify anything else below, except perhaps your app's main js moduleName.
@@ -61,7 +61,7 @@
 #if TARGET_IPHONE_SIMULATOR
         jsCodeLocation = [NSURL URLWithString:@"http://localhost:8080/index.ios.bundle"];
 #else
-        jsCodeLocation = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8080/index.ios.bundle", computersWifiIP]];
+        jsCodeLocation = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8080/index.ios.bundle", hostWifiIP]];
 #endif
     }
 #endif
