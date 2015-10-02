@@ -422,6 +422,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     isPackagerAsset = [self BOOL:json[@"__packager_asset"]];
   } else {
     RCTLogConvertError(json, @"an image");
+    return nil;
   }
 
   NSURL *URL = [self NSURL:path];
