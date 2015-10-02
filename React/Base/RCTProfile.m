@@ -166,9 +166,27 @@ static SEL RCTProfileProxySelector(SEL selector)
   return NSSelectorFromString([RCTProfilePrefix stringByAppendingString:selectorName]);
 }
 
+
+static dispatch_group_t RCTProfileGetUnhookGroup(void);
+static dispatch_group_t RCTProfileGetUnhookGroup(void)
+{
+  static dispatch_group_t unhookGroup;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    unhookGroup = dispatch_group_create();
+  });
+
+  return unhookGroup;
+}
+
 static void RCTProfileForwardInvocation(NSObject *, SEL, NSInvocation *);
 static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvocation *invocation)
 {
+  /**
+   * This is still not thread safe, but should reduce reasonably the number of crashes
+   */
+  dispatch_group_wait(RCTProfileGetUnhookGroup(), DISPATCH_TIME_FOREVER);
+
   NSString *name = [NSString stringWithFormat:@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(invocation.selector)];
   SEL newSel = RCTProfileProxySelector(invocation.selector);
 
@@ -244,13 +262,17 @@ void RCTProfileHookModules(RCTBridge *bridge)
 
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
+  dispatch_group_enter(RCTProfileGetUnhookGroup());
+
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     Class proxyClass = object_getClass(moduleData.instance);
     if (moduleData.moduleClass != proxyClass) {
       object_setClass(moduleData.instance, moduleData.moduleClass);
       objc_disposeClassPair(proxyClass);
     }
-  };
+  }
+
+  dispatch_group_leave(RCTProfileGetUnhookGroup());
 }
 
 
@@ -465,12 +487,14 @@ NSNumber *_RCTProfileBeginFlowEvent(void)
     return @0;
   }
 
-  RCTProfileAddEvent(RCTProfileTraceEvents,
-    @"name": @"flow",
-    @"id": @(++flowID),
-    @"cat": @"flow",
-    @"ph": @"s",
-    @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+  RCTProfileLock(
+    RCTProfileAddEvent(RCTProfileTraceEvents,
+      @"name": @"flow",
+      @"id": @(++flowID),
+      @"cat": @"flow",
+      @"ph": @"s",
+      @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+    );
   );
 
   return @(flowID);
@@ -484,12 +508,14 @@ void _RCTProfileEndFlowEvent(NSNumber *flowID)
     return;
   }
 
-  RCTProfileAddEvent(RCTProfileTraceEvents,
-    @"name": @"flow",
-    @"id": flowID,
-    @"cat": @"flow",
-    @"ph": @"f",
-    @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+  RCTProfileLock(
+    RCTProfileAddEvent(RCTProfileTraceEvents,
+      @"name": @"flow",
+      @"id": flowID,
+      @"cat": @"flow",
+      @"ph": @"f",
+      @"ts": RCTProfileTimestamp(CACurrentMediaTime()),
+    );
   );
 }
 
