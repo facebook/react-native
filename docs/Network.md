@@ -7,7 +7,7 @@ permalink: docs/network.html
 next: timers
 ---
 
-One of React Native's goals is to be a playground where we can experiment with different architectures and crazy ideas. Since browsers are not flexible enough, we had no choice but to reimplement the entire stack. In the places that we did not intend to change anything, we tried to be as faithful as possible to the browser APIs. The networking stack is a great example.
+One of React Native's goals is to be a playground where we can experiment with different architectures and crazy ideas. Since browsers are not flexible enough, we had no choice but to re-implement the entire stack. In the places that we did not intend to change anything, we tried to be as faithful as possible to the browser APIs. The networking stack is a great example.
 
 ## XMLHttpRequest
 
@@ -48,4 +48,33 @@ fetch('https://mywebsite.com/endpoint.php')
   .catch((error) => {
     console.warn(error);
   });
+```
+
+
+## WebSocket
+
+WebSocket is a protocol providing full-duplex communication channels over a single TCP connection.
+
+```javascript
+var ws = new WebSocket('ws://host.com/path');
+
+ws.on('open', function() {
+  // connection opened
+  ws.send('something');
+});
+
+ws.on('message', function(e) {
+  // a message was received
+  console.log(e.data);
+});
+
+ws.on('error', function(e) {
+  // an error occurred
+  console.log(e.message);
+});
+
+ws.on('close', function(e) {
+  // connection closed
+  console.log(e.code, e.reason);
+});
 ```
