@@ -102,6 +102,8 @@ class WebSocket extends WebSocketBase {
         }
         this.readyState = this.CLOSED;
         var event = new Event('close');
+        event.code = ev.code;
+        event.reason = ev.reason;
         this.onclose && this.onclose(event);
         this.dispatchEvent(event);
         this._unregisterEvents();
