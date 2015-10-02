@@ -11,10 +11,12 @@
  */
 'use strict';
 
+var EventTarget = require('event-target-shim');
+
 /**
  * Shared base for platform-specific WebSocket implementations.
  */
-class WebSocketBase {
+class WebSocketBase extends EventTarget {
   CONNECTING: number;
   OPEN: number;
   CLOSING: number;
@@ -33,6 +35,7 @@ class WebSocketBase {
   url: ?string;
 
   constructor(url: string, protocols: ?any) {
+    super();
     this.CONNECTING = 0;
     this.OPEN = 1;
     this.CLOSING = 2;
