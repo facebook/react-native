@@ -26,6 +26,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
+import android.os.Debug;
 import android.os.Environment;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -77,6 +78,9 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
+
+  private static final int JAVA_SAMPLING_PROFILE_MEMORY_BYTES = 8 * 1024 * 1024;
+  private static final int JAVA_SAMPLING_PROFILE_DELTA_US = 100;
 
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
@@ -280,11 +284,12 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
             @Override
             public void onOptionSelected() {
               if (mCurrentContext != null && mCurrentContext.hasActiveCatalystInstance()) {
+                String profileName = (Environment.getExternalStorageDirectory().getPath() +
+                    "/profile_" + mProfileIndex + ".json");
                 if (mIsCurrentlyProfiling) {
                   mIsCurrentlyProfiling = false;
-                  String profileName = (Environment.getExternalStorageDirectory().getPath() +
-                      "/profile_" + mProfileIndex + ".json");
                   mProfileIndex++;
+                  Debug.stopMethodTracing();
                   mCurrentContext.getCatalystInstance()
                       .getBridge()
                       .stopProfiler("profile", profileName);
@@ -295,6 +300,10 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                 } else {
                   mIsCurrentlyProfiling = true;
                   mCurrentContext.getCatalystInstance().getBridge().startProfiler("profile");
+                  Debug.startMethodTracingSampling(
+                      profileName,
+                      JAVA_SAMPLING_PROFILE_MEMORY_BYTES,
+                      JAVA_SAMPLING_PROFILE_DELTA_US);
                 }
               }
             }
@@ -435,6 +444,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
       String profileName = (Environment.getExternalStorageDirectory().getPath() +
           "/profile_" + mProfileIndex + ".json");
       mProfileIndex++;
+      Debug.stopMethodTracing();
       mCurrentContext.getCatalystInstance().getBridge().stopProfiler("profile", profileName);
     }
 
