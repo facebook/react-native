@@ -317,7 +317,7 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
       for (NSString *alias in aliases) {
         NSString *key = aliases[alias];
         NSNumber *number = json[alias];
-        if (number) {
+        if (number != nil) {
           RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, type, key);
           ((NSMutableDictionary *)json)[key] = number;
         }
