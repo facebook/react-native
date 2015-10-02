@@ -85,6 +85,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
 
+  // See http://facebook.github.io/react/docs/addons.html
   addons: {
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,
