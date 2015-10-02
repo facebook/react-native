@@ -1,6 +1,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "JSCHelpers.h"
+#include <fb/log.h>
 #include <jni/fbjni.h>
 
 using namespace facebook::jni;
@@ -77,6 +78,12 @@ class JObjectWrapper<jqplProvider> : public JObject {
     return theQpl;
   }
 
+  static bool check() {
+    static auto getQPLInstMethod = qplProviderClass()->getStaticMethod<jqpl()>("getQPLInstance");
+    auto theQpl = getQPLInstMethod(qplProviderClass().get());
+    return (theQpl.get() != nullptr);
+  }
+
  private:
 
   static alias_ref<jclass> qplProviderClass() {
@@ -87,6 +94,26 @@ class JObjectWrapper<jqplProvider> : public JObject {
 using JQuickPerformanceLoggerProvider = JObjectWrapper<jqplProvider>;
 
 }}
+
+static bool isReady() {
+  static bool ready = false;
+  if (!ready) {
+    try {
+      findClassStatic("com/facebook/quicklog/QuickPerformanceLoggerProvider");
+    } catch(...) {
+      // Swallow this exception - we don't want to crash the app, an error is enough.
+      FBLOGE("Calling QPL from JS before class has been loaded in Java. Ignored.");
+      return false;
+    }
+    if (JQuickPerformanceLoggerProvider::check()) {
+      ready = true;
+    } else {
+      FBLOGE("Calling QPL from JS before it has been initialized in Java. Ignored.");
+      return false;
+    }
+  }
+  return ready;
+}
 
 // After having read the implementation of PNaN that is returned from JSValueToNumber, and some
 // more material on how NaNs are constructed, I think this is the most consistent way to verify
@@ -125,7 +152,7 @@ static JSValueRef nativeQPLMarkerStart(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   double targets[3];
-  if (grabDoubles(3, targets, ctx, argumentCount, arguments, exception)) {
+  if (isReady() && grabDoubles(3, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
     int64_t timestamp = (int64_t) targets[2];
@@ -142,7 +169,7 @@ static JSValueRef nativeQPLMarkerEnd(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   double targets[4];
-  if (grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
+  if (isReady() && grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
     int16_t actionId = (int16_t) targets[2];
@@ -160,7 +187,7 @@ static JSValueRef nativeQPLMarkerNote(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   double targets[4];
-  if (grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
+  if (isReady() && grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
     int16_t actionId = (int16_t) targets[2];
@@ -178,7 +205,7 @@ static JSValueRef nativeQPLMarkerCancel(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   double targets[2];
-  if (grabDoubles(2, targets, ctx, argumentCount, arguments, exception)) {
+  if (isReady() && grabDoubles(2, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
     JQuickPerformanceLoggerProvider::get()->markerCancel(markerId, instanceKey);
@@ -193,6 +220,9 @@ static JSValueRef nativeQPLTimestamp(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
+  if (!isReady()) {
+    return JSValueMakeNumber(ctx, 0);
+  }
   int64_t timestamp = JQuickPerformanceLoggerProvider::get()->currentMonotonicTimestamp();
   // Since this is monotonic time, I assume the 52 bits of mantissa are enough in the double value.
   return JSValueMakeNumber(ctx, timestamp);
