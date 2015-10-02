@@ -355,13 +355,6 @@ public class CatalystInstance {
       // framework/native code, it was triggered by JS and theoretically since we were able
       // to set up the bridge, JS could change its logic, reload, and not trigger that crash.
       mNativeModuleCallExceptionHandler.handleException(e);
-      mCatalystQueueConfiguration.getUIQueueThread().runOnQueue(
-          new Runnable() {
-            @Override
-            public void run() {
-              destroy();
-            }
-          });
     }
   }
 
