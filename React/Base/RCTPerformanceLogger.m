@@ -33,8 +33,6 @@ NSArray *RCTPerformanceLoggerOutput(void)
     @(RCTPLData[RCTPLScriptExecution][1]),
     @(RCTPLData[RCTPLNativeModuleInit][0]),
     @(RCTPLData[RCTPLNativeModuleInit][1]),
-    @(RCTPLData[RCTPLNativeModuleInjectConfig][0]),
-    @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
     @(RCTPLData[RCTPLTTI][0]),
     @(RCTPLData[RCTPLTTI][1]),
   ];
@@ -76,7 +74,6 @@ RCT_EXPORT_MODULE()
       @"ScriptDownload",
       @"ScriptExecution",
       @"NativeModuleInit",
-      @"NativeModuleInjectConfig",
       @"TTI",
     ],
   ]];
