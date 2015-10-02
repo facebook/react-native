@@ -14,6 +14,8 @@
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTWebSocketModule = require('NativeModules').WebSocketModule;
 
+var Platform = require('Platform');
+
 var WebSocketBase = require('WebSocketBase');
 
 var Event = require('Event');
@@ -36,20 +38,11 @@ class WebSocket extends WebSocketBase {
   }
 
   closeConnectionImpl(code?: number, reason?: string): void {
-    /*
-     * The status code 1000 means 'CLOSE_NORMAL'
-     * Reason is empty string by to match browser behaviour
-     * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-     * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-     */
-    var statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
-    var closeReason = typeof reason === 'string' ? reason : '';
-
-    RCTWebSocketModule.close(statusCode, closeReason, this._socketId);
+    this._closeWebSocket(this._socketId, code, reason);
   }
 
   cancelConnectionImpl(): void {
-    RCTWebSocketModule.close(CLOSE_NORMAL, '', this._socketId);
+    this._closeWebSocket(this._socketId);
   }
 
   sendStringImpl(message: string): void {
@@ -59,6 +52,22 @@ class WebSocket extends WebSocketBase {
   sendArrayBufferImpl(): void {
     // TODO
     console.warn('Sending ArrayBuffers is not yet supported');
+  }
+
+  _closeWebSocket(id: number, code?: number, reason?: string): void {
+    if (Platform.OS === 'android') {
+      /*
+       * The status code 1000 means 'CLOSE_NORMAL'
+       * Reason is empty string by to match browser behaviour
+       * More info: https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+       */
+      var statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
+      var closeReason = typeof reason === 'string' ? reason : '';
+
+      RCTWebSocketModule.close(statusCode, closeReason, id);
+    } else {
+      RCTWebSocketModule.close(id);
+    }
   }
 
   _unregisterEvents(): void {
@@ -72,11 +81,9 @@ class WebSocket extends WebSocketBase {
         if (ev.id !== id) {
           return;
         }
-
         var event = new MessageEvent('message', {
           data: ev.data
         });
-
         this.onmessage && this.onmessage(event);
         this.dispatchEvent(event);
       }),
@@ -84,11 +91,8 @@ class WebSocket extends WebSocketBase {
         if (ev.id !== id) {
           return;
         }
-
         this.readyState = this.OPEN;
-
         var event = new Event('open');
-
         this.onopen && this.onopen(event);
         this.dispatchEvent(event);
       }),
@@ -96,43 +100,23 @@ class WebSocket extends WebSocketBase {
         if (ev.id !== id) {
           return;
         }
-
         this.readyState = this.CLOSED;
-
         var event = new Event('close');
-
         this.onclose && this.onclose(event);
         this.dispatchEvent(event);
         this._unregisterEvents();
-
-        RCTWebSocketModule.close(CLOSE_NORMAL, '', id);
+        this._closeWebSocket(id);
       }),
       RCTDeviceEventEmitter.addListener('websocketFailed', ev => {
         if (ev.id !== id) {
           return;
         }
-
         var event = new Event('error');
-
         event.message = ev.message;
-
         this.onerror && this.onerror(event);
         this.dispatchEvent(event);
         this._unregisterEvents();
-
-        RCTWebSocketModule.close(CLOSE_NORMAL, '', id);
-      }),
-      RCTDeviceEventEmitter.addListener('websocketErrored', ev => {
-        if (ev.id !== id) {
-          return;
-        }
-
-        var event = new Event('error');
-
-        event.message = ev.message;
-
-        this.onerror && this.onerror(event);
-        this.dispatchEvent(event);
+        this._closeWebSocket(id);
       })
     ];
   }

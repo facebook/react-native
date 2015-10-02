@@ -96,7 +96,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
           message = bufferedSource.readUtf8();
         } catch (IOException e) {
           params.putString("message", e.getMessage());
-          sendEvent("websocketErrored", params);
+          sendEvent("websocketFailed", params);
 
           return;
         }
@@ -170,13 +170,12 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     try {
       client.sendMessage(
         WebSocket.PayloadType.TEXT,
-        new Buffer().writeUtf8(message)
-      );
+        new Buffer().writeUtf8(message));
     } catch (IOException e) {
       WritableMap params = Arguments.createMap();
       params.putInt("id", id);
       params.putString("message", e.getMessage());
-      sendEvent("websocketErrored", params);
+      sendEvent("websocketFailed", params);
     }
   }
 }
