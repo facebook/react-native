@@ -304,6 +304,15 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
  */
 var TouchableMixin = {
   /**
+   * Clear all timeouts on unmount
+   */
+  componentWillUnmount: function() {
+    this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
+    this.longPressDelayTimeout && clearTimeout(this.longPressDelayTimeout);
+    this.pressOutDelayTimeout && clearTimeout(this.pressOutDelayTimeout);
+  },
+
+  /**
    * It's prefer that mixins determine state in this way, having the class
    * explicitly mix the state in the one and only `getInitialState` method.
    *
