@@ -14,20 +14,20 @@ var semver = require('semver');
 var formatBanner = require('./formatBanner');
 
 function checkNodeVersion() {
-  if (!semver.satisfies(process.version, '>=2.0.0')) {
-    var engine = semver.lt(process.version, '1.0.0') ? 'Node' : 'io.js';
+  if (!semver.satisfies(process.version, '>=4')) {
+    var engine = semver.satisfies(process.version, '<1 >=4') ? 'Node' : 'io.js';
     var message = 'You are currently running ' + engine + ' ' +
       process.version + '.\n' +
       '\n' +
-      'React Native is moving to io.js 2.x. There are several ways to upgrade' +
-      'to io.js depending on your preference.\n' +
+      'React Native runs on Node 4.0 or newer. There are several ways to ' +
+      'upgrade Node.js depending on your preference.\n' +
       '\n' +
-      'nvm:       nvm install iojs && nvm alias default iojs\n' +
-      'Homebrew:  brew unlink node; brew install iojs && brew ln iojs --force\n' +
-      'Installer: download the Mac .pkg from https://iojs.org/\n' +
+      'nvm:       nvm install node && nvm alias default node\n' +
+      'Homebrew:  brew unlink iojs; brew install node\n' +
+      'Installer: download the Mac .pkg from https://nodejs.org/\n' +
       '\n' +
-      'About io.js:     https://iojs.org\n' +
-      'Follow along at: https://github.com/facebook/react-native/issues/1737';
+      'About Node.js:   https://nodejs.org\n' +
+      'Follow along at: https://github.com/facebook/react-native/issues/2545';
     console.log(formatBanner(message, {
       chalkFunction: chalk.green,
       marginLeft: 1,
