@@ -19,6 +19,12 @@ var apps = [
     author: 'Alex Duckmanton',
   },
   {
+    name: 'Company name search',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
+    author: 'The Formations Factory Ltd',
+  },
+  {
     name: 'Discord',
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
