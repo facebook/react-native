@@ -227,6 +227,55 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should get package json as a dep', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'package.json': JSON.stringify({
+            name: 'package'
+          }),
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./package.json")',
+          ].join('\n'),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(deps => {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['./package.json'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'package/package.json',
+              isJSON: true,
+              path: '/root/package.json',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
+
     pit('should get dependencies with deprecated assets', function() {
       var root = '/root';
       fs.__setMockFilesystem({
@@ -2616,6 +2665,89 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
+          ]);
+      });
+    });
+
+    pit('should require package.json', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("foo/package.json");',
+            'require("bar");',
+          ].join('\n'),
+          'node_modules': {
+            'foo': {
+              'package.json': JSON.stringify({
+                name: 'foo',
+                main: 'main.js',
+              }),
+            },
+            'bar': {
+              'package.json': JSON.stringify({
+                name: 'bar',
+                main: 'main.js',
+              }),
+              'main.js': 'require("./package.json")',
+            },
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(deps => {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['foo/package.json', 'bar'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'foo/package.json',
+              path: '/root/node_modules/foo/package.json',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: true,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'bar/main.js',
+              path: '/root/node_modules/bar/main.js',
+              dependencies: ['./package.json'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'bar/package.json',
+              path: '/root/node_modules/bar/package.json',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: true,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+
           ]);
       });
     });
