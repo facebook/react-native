@@ -34,13 +34,13 @@ class Package {
   }
 
   isHaste() {
-    return this._cache.get(this.path, 'haste', () =>
+    return this._cache.get(this.path, 'package-haste', () =>
       this._read().then(json => !!json.name)
     );
   }
 
   getName() {
-    return this._cache.get(this.path, 'name', () =>
+    return this._cache.get(this.path, 'package-name', () =>
       this._read().then(json => json.name)
     );
   }
