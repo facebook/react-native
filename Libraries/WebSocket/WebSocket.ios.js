@@ -16,16 +16,12 @@ var RCTWebSocketManager = require('NativeModules').WebSocketManager;
 
 var WebSocketBase = require('WebSocketBase');
 
-class Event {
-  constructor(type) {
-    this.type = type.toString();
-  }
-}
-
-class MessageEvent extends Event {
+class WebsocketEvent {
   constructor(type, eventInitDict) {
-    super(type);
-    Object.assign(this, eventInitDict);
+    this.type = type.toString();
+    if (typeof eventInitDict === 'object') {
+      Object.assign(this, eventInitDict);
+    }
   }
 }
 
@@ -67,56 +63,60 @@ class WebSocket extends WebSocketBase {
     this._subs = [
       RCTDeviceEventEmitter.addListener(
         'websocketMessage',
-        function(ev) {
+        ev => {
           if (ev.id !== id) {
             return;
           }
-          var event = new MessageEvent('message', {
-            data: ev.data
+          var event = new WebsocketEvent('message', {
+            data: ev.data,
           });
-          this.onmessage && this.onmessage(event);
           this.dispatchEvent(event);
-        }.bind(this)
+        },
       ),
       RCTDeviceEventEmitter.addListener(
         'websocketOpen',
-        function(ev) {
+        ev => {
           if (ev.id !== id) {
             return;
           }
           this.readyState = this.OPEN;
-          var event = new Event('open');
-          this.onopen && this.onopen(event);
+          var event = new WebsocketEvent('open');
           this.dispatchEvent(event);
-        }.bind(this)
+        }
       ),
       RCTDeviceEventEmitter.addListener(
         'websocketClosed',
-        function(ev) {
+        (ev) => {
           if (ev.id !== id) {
             return;
           }
           this.readyState = this.CLOSED;
-          var event = new Event('close');
-          this.onclose && this.onclose(event);
+          var event = new WebsocketEvent('close');
           this.dispatchEvent(event);
+
           this._unregisterEvents();
           RCTWebSocketManager.close(id);
-        }.bind(this)
+        }
       ),
       RCTDeviceEventEmitter.addListener(
         'websocketFailed',
-        function(ev) {
+        (ev) => {
           if (ev.id !== id) {
             return;
           }
-          var event = new Event('error');
-          event.message = ev.message;
-          this.onerror && this.onerror(event);
-          this.dispatchEvent(event);
+          this.readyState = this.CLOSED;
+
+          var closeEvent = new WebsocketEvent('close');
+          this.dispatchEvent(closeEvent);
+
+          var errorEvent = new WebsocketEvent('error', {
+            message: ev.message,
+          });
+          this.dispatchEvent(errorEvent);
+
           this._unregisterEvents();
           RCTWebSocketManager.close(id);
-        }.bind(this)
+        }
       )
     ];
   }
