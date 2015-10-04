@@ -317,7 +317,7 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
       for (NSString *alias in aliases) {
         NSString *key = aliases[alias];
         NSNumber *number = json[alias];
-        if (number) {
+        if (number != nil) {
           RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, type, key);
           ((NSMutableDictionary *)json)[key] = number;
         }
@@ -422,6 +422,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     isPackagerAsset = [self BOOL:json[@"__packager_asset"]];
   } else {
     RCTLogConvertError(json, @"an image");
+    return nil;
   }
 
   NSURL *URL = [self NSURL:path];
