@@ -34,9 +34,6 @@ function tinycolor (color, opts) {
 }
 
 tinycolor.prototype = {
-    toHex8: function() {
-        return rgbaToHex(this._r, this._g, this._b, this._a);
-    },
     toRgb: function() {
         return { r: mathRound(this._r), g: mathRound(this._g), b: mathRound(this._b), a: this._a };
     },
@@ -163,7 +160,6 @@ function hslToRgb(h, s, l) {
 // *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
 // *Returns:* { r, g, b } in the set [0, 255]
  function hsvToRgb(h, s, v) {
-
     h = bound01(h, 360) * 6;
     s = bound01(s, 100);
     v = bound01(v, 100);
@@ -179,21 +175,6 @@ function hslToRgb(h, s, l) {
         b = [p, p, t, v, v, q][mod];
 
     return { r: r * 255, g: g * 255, b: b * 255 };
-}
-
-// `rgbaToHex`
-// Converts an RGBA color plus alpha transparency to hex
-// Assumes r, g, b and a are contained in the set [0, 255]
-// Returns an 8 character hex
-function rgbaToHex(r, g, b, a) {
-    var hex = [
-        pad2(convertDecimalToHex(a)),
-        pad2(mathRound(r).toString(16)),
-        pad2(mathRound(g).toString(16)),
-        pad2(mathRound(b).toString(16))
-    ];
-
-    return hex.join("");
 }
 
 // Big List of Colors
@@ -399,11 +380,6 @@ function isPercentage(n) {
     return typeof n === "string" && n.indexOf('%') != -1;
 }
 
-// Force a hex value to have 2 characters
-function pad2(c) {
-    return c.length == 1 ? '0' + c : '' + c;
-}
-
 // Replace a decimal with it's percentage value
 function convertToPercentage(n) {
     if (n <= 1) {
@@ -411,11 +387,6 @@ function convertToPercentage(n) {
     }
 
     return n;
-}
-
-// Converts a decimal to a hex value
-function convertDecimalToHex(d) {
-    return Math.round(parseFloat(d) * 255).toString(16);
 }
 
 var matchers = (function() {
