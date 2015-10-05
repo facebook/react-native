@@ -57,6 +57,8 @@ function attachToServer(server, path) {
       });
     });
   });
+
+  return wss;
 }
 
 module.exports = {
