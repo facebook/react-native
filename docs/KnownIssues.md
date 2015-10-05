@@ -46,6 +46,11 @@ There are properties that work on one platform only, either because they can inh
 There are known cases where the API between iOS and Android could be made more consistent:
 
 - `<SwitchAndroid>` and `<SwitchIOS>` are very similar and should be unified to a single `<Switch>` component
+- `<AndroidViewPager>` (to be open sourced soon) and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
+- `alert()` needs Android support (once the Dialogs module is open sourced)
+- It might be possible to bring `LinkingIOS` and `IntentAndroid` (to be open sourced) closer together
+- `ActivityIndicator` could render a native spinning indicator on both platforms (currenty this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android)
+- `ProgressBar` could render a horizontal progress bar on both platforms (currently only supported on iOS via `ProgressViewIOS`)
 
 ### Publishing modules on Android
 
