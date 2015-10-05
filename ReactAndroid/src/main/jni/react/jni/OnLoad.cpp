@@ -17,6 +17,11 @@
 #include "NativeArray.h"
 #include "ProxyExecutor.h"
 
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+using fbsystrace::FbSystraceSection;
+#endif
+
 using namespace facebook::jni;
 
 namespace facebook {
@@ -583,6 +588,11 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   auto bridge = extractRefPtr<Bridge>(env, obj);
   auto assetNameStr = fromJString(env, assetName);
   auto script = react::loadScriptFromAssets(env, assetManager, assetNameStr);
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
+    "executeApplicationScript",
+    "assetName", assetNameStr);
+  #endif
   bridge->executeApplicationScript(script, assetNameStr);
 }
 
@@ -593,6 +603,12 @@ static void loadScriptFromNetworkCached(JNIEnv* env, jobject obj, jstring source
   if (tempFileName != NULL) {
     script = react::loadScriptFromFile(jni::fromJString(env, tempFileName));
   }
+  #ifdef WITH_FBSYSTRACE
+  auto sourceURLStr = fromJString(env, sourceURL);
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
+    "executeApplicationScript",
+    "sourceURL", sourceURLStr);
+  #endif
   bridge->executeApplicationScript(script, jni::fromJString(env, sourceURL));
 }
 
