@@ -37,8 +37,38 @@ type MeasureLayoutOnSuccessCallback = (
   height: number
 ) => void
 
+/**
+ * NativeMethodsMixin provides methods that bypass the React rendering process
+ * and are passed through directly to the underlying native component. This
+ * allows side effects to be performed and actions to be taken that don't fit
+ * into the React model directly.
+ *
+ * The methods described here are available on most of the default components
+ * provided by React Native, and components that extend them. Note however that
+ * they are *not* available on composite components that aren't directly backed
+ * by a native view. This will generally include most components that you define
+ * in your own app. For more information, see [Direct
+ * Manipulation](/react-native/docs/direct-manipulation.html).
+ */
 
 var NativeMethodsMixin = {
+  /**
+   * Determines the location on screen, width, and height of the given view and
+   * returns the values via an async callback. If successful, the callback will
+   * be called with the following arguments:
+   *
+   *  - x
+   *  - y
+   *  - width
+   *  - height
+   *  - pageX
+   *  - pageY
+   *
+   * Note that these measurements are currently not available until after the
+   * first rendering has been completed. If you need the measurements as soon as
+   * possible, consider instead using the [`onLayout`
+   * prop](/react-native/docs/view.html#onlayout).
+   */
   measure: function(callback: MeasureOnSuccessCallback) {
     RCTUIManager.measure(
       findNodeHandle(this),
@@ -46,6 +76,11 @@ var NativeMethodsMixin = {
     );
   },
 
+  /**
+   * Like [`measure()`](#measure), but measures the view specified by tag
+   * relative to the given `relativeToNativeNode`. This means that the returned
+   * x, y are relative to the origin x, y of the ancestor view.
+   */
   measureLayout: function(
     relativeToNativeNode: number,
     onSuccess: MeasureLayoutOnSuccessCallback,
@@ -60,9 +95,10 @@ var NativeMethodsMixin = {
   },
 
   /**
-   * This function sends props straight to native. They will not participate
-   * in future diff process, this means that if you do not include them in the
-   * next render, they will remain active.
+   * This function sends props straight to native. They will not participate in
+   * future diff process -- this means that if you do not include them in the
+   * next render, they will remain active (see [Direct
+   * Manipulation](/react-native/docs/direct-manipulation.html)).
    */
   setNativeProps: function(nativeProps: Object) {
     // nativeProps contains a style attribute that's going to be flattened
@@ -114,10 +150,17 @@ var NativeMethodsMixin = {
     );
   },
 
+  /**
+   * Requests focus for the given input or view. The exact behavior triggered
+   * will depend on the platform and type of view.
+   */
   focus: function() {
     TextInputState.focusTextInput(findNodeHandle(this));
   },
 
+  /**
+   * Blurs the given input or view. This is the opposite of `focus()`.
+   */
   blur: function() {
     TextInputState.blurTextInput(findNodeHandle(this));
   }
