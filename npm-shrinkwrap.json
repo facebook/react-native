@@ -4212,11 +4212,6 @@
         }
       }
     },
-    "tinycolor2": {
-      "version": "1.1.2",
-      "from": "tinycolor2@*",
-      "resolved": "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.1.2.tgz"
-    },
     "uglify-js": {
       "version": "2.4.24",
       "from": "uglify-js@2.4.24",
