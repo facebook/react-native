@@ -9,6 +9,8 @@
 
 package com.facebook.react.modules.fresco;
 
+import java.util.HashSet;
+
 import android.content.Context;
 
 import com.facebook.cache.common.CacheKey;
@@ -18,6 +20,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
+import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
@@ -38,6 +41,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     super(reactContext);
   }
 
+
   @Override
   public void initialize() {
     super.initialize();
@@ -50,11 +54,16 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
             SoLoader.loadLibrary(libraryName);
           }
         });
+
+    HashSet<RequestListener> requestListeners = new HashSet<>();
+    requestListeners.add(new SystraceRequestListener());
+
     Context context = this.getReactApplicationContext().getApplicationContext();
     OkHttpClient okHttpClient = OkHttpClientProvider.getOkHttpClient();
     ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
         .newBuilder(context, okHttpClient)
         .setDownsampleEnabled(false)
+        .setRequestListeners(requestListeners)
         .build();
     Fresco.initialize(context, config);
   }
