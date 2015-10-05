@@ -19,6 +19,7 @@ var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var View = require('View');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
@@ -164,6 +165,11 @@ var Image = React.createClass({
 
     var {width, height} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+
+    if (source.uri === '') {
+      console.warn('source.uri should not be an empty string');
+      return <View {...this.props} style={style} />;
+    }
 
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;

@@ -113,6 +113,14 @@ var Image = React.createClass({
 
   render: function() {
     var source = resolveAssetSource(this.props.source);
+
+    // As opposed to the ios version, here it render `null`
+    // when no source or source.uri... so let's not break that.
+
+    if (source && source.uri === '') {
+      console.warn('source.uri should not be an empty string');
+    }
+
     if (source && source.uri) {
       var isNetwork = source.uri.match(/^https?:/);
       invariant(
