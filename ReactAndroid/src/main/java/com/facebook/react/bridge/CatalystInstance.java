@@ -111,7 +111,14 @@ public class CatalystInstance {
     mBridge.setGlobalVariable(
         "__fbBatchedBridgeConfig",
         buildModulesConfigJSONProperty(registry, jsModulesConfig));
-    jsBundleLoader.loadScript(mBridge);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "CatalystInstance_initializeBridge");
+    try {
+      jsBundleLoader.loadScript(mBridge);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   /* package */ void callFunction(
