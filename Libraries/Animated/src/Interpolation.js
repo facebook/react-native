@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var tinycolor = require('tinycolor2');
+var tinycolor = require('tinycolor');
 
 // TODO(#7644673): fix this hack once github jest actually checks invariants
 var invariant = function(condition, message) {
