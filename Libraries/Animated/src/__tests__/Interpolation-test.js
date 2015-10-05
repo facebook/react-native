@@ -11,7 +11,7 @@
 jest
   .dontMock('Interpolation')
   .dontMock('Easing')
-  .dontMock('tinycolor2');
+  .dontMock('tinycolor');
 
 var Interpolation = require('Interpolation');
 var Easing = require('Easing');

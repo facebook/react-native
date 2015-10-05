@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var tinycolor = require('tinycolor2');
+var tinycolor = require('tinycolor');
 var Platform = require('Platform');
 
 function processColor(color) {
