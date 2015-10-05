@@ -274,6 +274,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
     if (mCurrentContext != null &&
       mCurrentContext.getCatalystInstance() != null &&
+      !mCurrentContext.getCatalystInstance().isDestroyed() &&
       mCurrentContext.getCatalystInstance().getBridge() != null &&
       mCurrentContext.getCatalystInstance().getBridge().supportsProfiling()) {
       options.put(
