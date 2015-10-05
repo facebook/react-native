@@ -70,6 +70,10 @@ void JSCExecutor::executeApplicationScript(
     const std::string& sourceURL) {
   String jsScript(script.c_str());
   String jsSourceURL(sourceURL.c_str());
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
+    "sourceURL", sourceURL);
+  #endif
   evaluateScriptWithJSC(m_context, jsScript, jsSourceURL);
 }
 

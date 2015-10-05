@@ -10,6 +10,11 @@
 #include <string>
 #include <fb/log.h>
 
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+using fbsystrace::FbSystraceSection;
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -17,6 +22,11 @@ std::string loadScriptFromAssets(
     JNIEnv *env,
     jobject assetManager,
     std::string assetName) {
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_loadScriptFromAssets",
+    "assetName", assetName);
+  #endif
+
   auto manager = AAssetManager_fromJava(env, assetManager);
   if (manager) {
     auto asset = AAssetManager_open(
@@ -41,6 +51,10 @@ std::string loadScriptFromAssets(
 }
 
 std::string loadScriptFromFile(std::string fileName) {
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_loadScriptFromFile",
+    "fileName", fileName);
+  #endif
   std::ifstream jsfile(fileName);
   if (jsfile) {
     std::string output;
