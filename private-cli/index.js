@@ -8,11 +8,8 @@
  */
 'use strict';
 
-require('babel-core/register')({
-  only: [
-    /react-native-github\/private-cli\/src/
-  ],
-});
+// trigger babel-core/register
+require('../packager/react-packager');
 
 var cli = require('./src/cli');
 var fs = require('fs');

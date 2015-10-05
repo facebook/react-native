@@ -18,13 +18,13 @@ const ReactPackager = require('../../../packager/react-packager');
 /**
  * Returns the dependencies an entry path has.
  */
-function dependencies(argv, conf) {
+function dependencies(argv, config) {
   return new Promise((resolve, reject) => {
-    _dependencies(argv, conf, resolve, reject);
+    _dependencies(argv, config, resolve, reject);
   });
 }
 
-function _dependencies(argv, conf, resolve, reject) {
+function _dependencies(argv, config, resolve, reject) {
   const args = parseCommandLine([
     {
       command: 'entry-file',
@@ -47,14 +47,14 @@ function _dependencies(argv, conf, resolve, reject) {
     reject(`File ${rootModuleAbsolutePath} does not exist`);
   }
 
-  const config = {
-    projectRoots: conf.getProjectRoots(),
-    assetRoots: conf.getAssetRoots(),
-    blacklistRE: conf.getBlacklistRE(),
-    transformModulePath: conf.getTransformModulePath(),
+  const packageOpts = {
+    projectRoots: config.getProjectRoots(),
+    assetRoots: config.getAssetRoots(),
+    blacklistRE: config.getBlacklistRE(),
+    transformModulePath: config.getTransformModulePath(),
   };
 
-  const relativePath = config.projectRoots.map(root =>
+  const relativePath = packageOpts.projectRoots.map(root =>
     path.relative(
       root,
       rootModuleAbsolutePath
@@ -73,7 +73,7 @@ function _dependencies(argv, conf, resolve, reject) {
 
   log('Running ReactPackager');
   log('Waiting for the packager.');
-  resolve(ReactPackager.createClientFor(config).then(client => {
+  resolve(ReactPackager.createClientFor(packageOpts).then(client => {
     log('Packager client was created');
     return client.getOrderedDependencyPaths(options)
       .then(deps => {
@@ -85,8 +85,8 @@ function _dependencies(argv, conf, resolve, reject) {
           // Long term, we need either
           // (a) JS code to not depend on anything outside this directory, or
           // (b) Come up with a way to declare this dependency in Buck.
-          const isInsideProjectRoots = config.projectRoots.filter(root =>
-            modulePath.startsWith(root)
+          const isInsideProjectRoots = packageOpts.projectRoots.filter(
+            root => modulePath.startsWith(root)
           ).length > 0;
 
           if (isInsideProjectRoots) {
