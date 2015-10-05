@@ -8,11 +8,13 @@
  */
 'use strict';
 
+const bundle = require('./bundle/bundle');
 const Config = require('./util/Config');
 const dependencies = require('./dependencies/dependencies');
 const Promise = require('promise');
 
 const documentedCommands = {
+  bundle: bundle,
   dependencies: dependencies,
 };
 
