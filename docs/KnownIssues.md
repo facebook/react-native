@@ -38,7 +38,14 @@ Alert
 ```
 
 ### Some props are only supported on one platform
+
 There are properties that work on one platform only, either because they can inherently only be supported on that platform or because they haven't been implemented on the other platforms yet. All of these are annotated with `@platform` in JS docs and have a small badge next to them on the website. See e.g. [Image](https://facebook.github.io/react-native/docs/image.html).
+
+### Platform parity
+
+There are known cases where the API between iOS and Android could be made more consistent:
+
+- `<SwitchAndroid>` and `<SwitchIOS>` are very similar and should be unified to a single `<Switch>` component
 
 ### Publishing modules on Android
 
