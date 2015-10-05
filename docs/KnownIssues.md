@@ -8,6 +8,7 @@ next: performance
 ---
 
 ### Missing Modules and Native Views
+
 This is an initial release of React Native Android and therefore not all of the views present on iOS are released on Android. We are very much interested in the communities' feedback on the next set of modules and views for Open Source. Not all native views between iOS and Android have a 100% equivalent representation, here it will be necessary to use a counterpart eg using ProgressBar on Android in place of ActivityIndicator on iOS.
 
 Our provisional plan for common views and modules includes:
@@ -43,7 +44,7 @@ There are properties that work on one platform only, either because they can inh
 
 ### Platform parity
 
-There are known cases where the API between iOS and Android could be made more consistent:
+There are known cases where the APIs could be made more consistent across iOS and Android:
 
 - `<SwitchAndroid>` and `<SwitchIOS>` are very similar and should be unified to a single `<Switch>` component.
 - `<AndroidViewPager>` (to be open sourced soon) and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
