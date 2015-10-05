@@ -91,13 +91,13 @@ describe('processColor', () => {
 
   describe('HSL strings', () => {
 
-    it('should convert hsl(x, y%, z%)', () => {
+    it('should convert hsla(x, y%, z%, a)', () => {
       var colorFromString = processColor('hsla(318, 69%, 55%, 0.25)');
       var expectedInt = 0x40DB3DAC;
       expect(colorFromString).toEqual(expectedInt);
     });
 
-    it('should convert hsl x, y%, z%', () => {
+    it('should convert hsla x, y%, z%, a', () => {
       var colorFromString = processColor('hsla 318, 69%, 55%, 0.25');
       var expectedInt = 0x40DB3DAC;
       expect(colorFromString).toEqual(expectedInt);
