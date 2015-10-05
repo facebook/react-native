@@ -156,8 +156,9 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
       // We're not waiting for this complete to leave the dispatch group, since
       // injectJSONConfiguration and executeSourceCode will schedule operations on the
       // same queue anyway.
+      RCTPerformanceLoggerStart(RCTPLNativeModuleInjectConfig);
       [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
-        RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
+        RCTPerformanceLoggerEnd(RCTPLNativeModuleInjectConfig);
         if (error) {
           dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf stopLoadingWithError:error];
@@ -295,6 +296,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules
                                                       object:self];
+  RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
 }
 
 - (void)setupExecutor
