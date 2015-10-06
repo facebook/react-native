@@ -632,8 +632,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       final Callback callback) {
     mOperationsQueue.enqueueFindTargetForTouch(
         reactTag,
-        point.getInt(0),
-        point.getInt(1),
+        Math.round(PixelUtil.toPixelFromDIP(point.getDouble(0))),
+        Math.round(PixelUtil.toPixelFromDIP(point.getDouble(1))),
         callback);
   }
 
