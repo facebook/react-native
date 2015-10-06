@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var merge = require('merge');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 
 var ReactNativeViewAttributes = {};
 
@@ -31,10 +31,11 @@ ReactNativeViewAttributes.UIView = {
   onMagicTap: true,
   collapsable: true,
   needsOffscreenAlphaCompositing: true,
+  style: ReactNativeStyleAttributes,
 };
 
-ReactNativeViewAttributes.RCTView = merge(
-  ReactNativeViewAttributes.UIView, {
+ReactNativeViewAttributes.RCTView = {
+  ...ReactNativeViewAttributes.UIView,
 
   // This is a special performance property exposed by RCTView and useful for
   // scrolling content when there are many subviews, most of which are offscreen.
@@ -42,6 +43,6 @@ ReactNativeViewAttributes.RCTView = merge(
   // many subviews that extend outside its bound. The subviews must also have
   // overflow: hidden, as should the containing view (or one of its superviews).
   removeClippedSubviews: true,
-});
+};
 
 module.exports = ReactNativeViewAttributes;
