@@ -58,12 +58,13 @@
   expectErrorRegex:@"because shouldThrow"];
 }
 
-RCT_TEST(TimersTest)
+// This list should be kept in sync with IntegrationTestsApp.js
 RCT_TEST(IntegrationTestHarnessTest)
+RCT_TEST(TimersTest)
 RCT_TEST(AsyncStorageTest)
-// RCT_TEST(LayoutEventsTest) -- Disabled: #8153468
+RCT_TEST(LayoutEventsTest)
 RCT_TEST(AppEventsTest)
+RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(PromiseTest)
-// RCT_TEST(SimpleSnapshotTest) -- Disabled: #8153475
 
 @end
