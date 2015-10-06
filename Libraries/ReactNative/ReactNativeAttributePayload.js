@@ -11,180 +11,277 @@
  */
 'use strict';
 
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-
 var deepDiffer = require('deepDiffer');
 var styleDiffer = require('styleDiffer');
-var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var flattenStyle = require('flattenStyle');
 var precomputeStyle = require('precomputeStyle');
 
+type AttributeDiffer = (prevProp : mixed, nextProp : mixed) => boolean;
+type AttributePreprocessor = (nextProp: mixed) => mixed;
+
+type CustomAttributeConfiguration =
+  { diff : AttributeDiffer, process : AttributePreprocessor } |
+  { diff : AttributeDiffer } |
+  { process : AttributePreprocessor };
+
+type AttributeConfiguration =
+  { [key : string]: (
+    CustomAttributeConfiguration | AttributeConfiguration /*| boolean*/
+  ) };
+
+function defaultDiffer(prevProp: mixed, nextProp: mixed) : boolean {
+  if (typeof nextProp !== 'object' || nextProp === null) {
+    // Scalars have already been checked for equality
+    return true;
+  } else {
+    // For objects and arrays, the default diffing algorithm is a deep compare
+    return deepDiffer(prevProp, nextProp);
+  }
+}
+
+function diffNestedProperty(
+  updatePayload :? Object,
+  prevProp, // inferred
+  nextProp, // inferred
+  validAttributes : AttributeConfiguration
+) : ?Object {
+  // The style property is a deeply nested element which includes numbers
+  // to represent static objects. Most of the time, it doesn't change across
+  // renders, so it's faster to spend the time checking if it is different
+  // before actually doing the expensive flattening operation in order to
+  // compute the diff.
+  if (!styleDiffer(prevProp, nextProp)) {
+    return updatePayload;
+  }
+
+  // TODO: Walk both props in parallel instead of flattening.
+  // TODO: Move precomputeStyle to .process for each attribute.
+
+  var previousFlattenedStyle = precomputeStyle(
+    flattenStyle(prevProp),
+    validAttributes
+  );
+
+  var nextFlattenedStyle = precomputeStyle(
+    flattenStyle(nextProp),
+    validAttributes
+  );
+
+  if (!previousFlattenedStyle || !nextFlattenedStyle) {
+    if (nextFlattenedStyle) {
+      return addProperties(
+        updatePayload,
+        nextFlattenedStyle,
+        validAttributes
+      );
+    }
+    if (previousFlattenedStyle) {
+      return clearProperties(
+        updatePayload,
+        previousFlattenedStyle,
+        validAttributes
+      );
+    }
+    return updatePayload;
+  }
+
+  // recurse
+  return diffProperties(
+    updatePayload,
+    previousFlattenedStyle,
+    nextFlattenedStyle,
+    validAttributes
+  );
+}
+
 /**
- * diffRawProperties takes two sets of props and a set of valid attributes
- * and write to updatePayload the values that changed or were deleted
- *
- * @param {?object} updatePayload Overriden with the props that changed.
- * @param {!object} prevProps Previous properties to diff against current
- * properties. These properties are as supplied to component construction.
- * @param {!object} prevProps Next "current" properties to diff against
- * previous. These properties are as supplied to component construction.
- * @return {?object}
+ * addNestedProperty takes a single set of props and valid attribute
+ * attribute configurations. It processes each prop and adds it to the
+ * updatePayload.
  */
-function diffRawProperties(
-  updatePayload: ?Object,
-  prevProps: ?Object,
-  nextProps: ?Object,
-  validAttributes: Object
+/*
+function addNestedProperty(
+  updatePayload :? Object,
+  nextProp : Object,
+  validAttributes : AttributeConfiguration
+) {
+  // TODO: Fast path
+  return diffNestedProperty(updatePayload, {}, nextProp, validAttributes);
+}
+*/
+
+/**
+ * clearNestedProperty takes a single set of props and valid attributes. It
+ * adds a null sentinel to the updatePayload, for each prop key.
+ */
+function clearNestedProperty(
+  updatePayload :? Object,
+  prevProp : Object,
+  validAttributes : AttributeConfiguration
+) : ?Object {
+  // TODO: Fast path
+  return diffNestedProperty(updatePayload, prevProp, {}, validAttributes);
+}
+
+/**
+ * diffProperties takes two sets of props and a set of valid attributes
+ * and write to updatePayload the values that changed or were deleted.
+ * If no updatePayload is provided, a new one is created and returned if
+ * anything changed.
+ */
+function diffProperties(
+  updatePayload : ?Object,
+  prevProps : Object,
+  nextProps : Object,
+  validAttributes : AttributeConfiguration
 ): ?Object {
-  var validAttributeConfig;
+  var attributeConfig : ?AttributeConfiguration;
   var nextProp;
   var prevProp;
-  var isScalar;
-  var shouldUpdate;
-  var differ;
 
-  if (nextProps) {
-    for (var propKey in nextProps) {
-      validAttributeConfig = validAttributes[propKey];
-      if (!validAttributeConfig) {
-        continue; // not a valid native prop
-      }
-      prevProp = prevProps && prevProps[propKey];
-      nextProp = nextProps[propKey];
+  for (var propKey in nextProps) {
+    attributeConfig = validAttributes[propKey];
+    if (!attributeConfig) {
+      continue; // not a valid native prop
+    }
+    if (updatePayload && updatePayload[propKey] !== undefined) {
+      // If we're in a nested attribute set, we may have set this property
+      // already. If so, bail out. The previous update is what counts.
+      continue;
+    }
+    prevProp = prevProps[propKey];
+    nextProp = nextProps[propKey];
 
-      // functions are converted to booleans as markers that the associated
-      // events should be sent from native.
+    // functions are converted to booleans as markers that the associated
+    // events should be sent from native.
+    if (typeof nextProp === 'function') {
+      nextProp = true;
+      // If nextProp is not a function, then don't bother changing prevProp
+      // since nextProp will win and go into the updatePayload regardless.
       if (typeof prevProp === 'function') {
         prevProp = true;
       }
-      if (typeof nextProp === 'function') {
-        nextProp = true;
-      }
+    }
 
-      if (prevProp !== nextProp) {
-        // Scalars and new props are always updated.  Objects use deepDiffer by
-        // default, but can be optimized with custom differs.
-        differ = validAttributeConfig.diff || deepDiffer;
-        isScalar = typeof nextProp !== 'object' || nextProp === null;
-        shouldUpdate = isScalar || !prevProp || differ(prevProp, nextProp);
-        if (shouldUpdate) {
-          updatePayload = updatePayload || {};
-          updatePayload[propKey] = nextProp;
-        }
+    if (prevProp === nextProp) {
+      continue; // nothing changed
+    }
+
+    // Pattern match on: attributeConfig
+    if (typeof attributeConfig !== 'object') {
+      // case: !Object is the default case
+      if (defaultDiffer(prevProp, nextProp)) {
+        // a normal leaf has changed
+        (updatePayload || (updatePayload = {}))[propKey] = nextProp;
       }
+    } else if (typeof attributeConfig.diff === 'function' ||
+               typeof attributeConfig.process === 'function') {
+      // case: CustomAttributeConfiguration
+      var shouldUpdate = prevProp === undefined || (
+        typeof attributeConfig.diff === 'function' ?
+        attributeConfig.diff(prevProp, nextProp) :
+        defaultDiffer(prevProp, nextProp)
+      );
+      if (shouldUpdate) {
+        var nextValue = typeof attributeConfig.process === 'function' ?
+                        attributeConfig.process(nextProp) :
+                        nextProp;
+        (updatePayload || (updatePayload = {}))[propKey] = nextValue;
+      }
+    } else {
+      // default: fallthrough case when nested properties are defined
+      updatePayload = diffNestedProperty(
+        updatePayload,
+        prevProp,
+        nextProp,
+        attributeConfig
+      );
     }
   }
 
   // Also iterate through all the previous props to catch any that have been
   // removed and make sure native gets the signal so it can reset them to the
   // default.
-  if (prevProps) {
-    for (var propKey in prevProps) {
-      validAttributeConfig = validAttributes[propKey];
-      if (!validAttributeConfig) {
-        continue; // not a valid native prop
-      }
-      if (updatePayload && updatePayload[propKey] !== undefined) {
-        continue; // Prop already specified
-      }
-      prevProp = prevProps[propKey];
-      nextProp = nextProps && nextProps[propKey];
-
-      // functions are converted to booleans as markers that the associated
-      // events should be sent from native.
-      if (typeof prevProp === 'function') {
-        prevProp = true;
-      }
-      if (typeof nextProp === 'function') {
-        nextProp = true;
-      }
-
-      if (prevProp !== nextProp) {
-        if (nextProp === undefined) {
-          nextProp = null; // null is a sentinel we explicitly send to native
-        }
-        // Scalars and new props are always updated.  Objects use deepDiffer by
-        // default, but can be optimized with custom differs.
-        differ = validAttributeConfig.diff || deepDiffer;
-        isScalar = typeof nextProp !== 'object' || nextProp === null;
-        shouldUpdate =
-          isScalar &&
-          prevProp !== nextProp ||
-          differ(prevProp, nextProp);
-        if (shouldUpdate) {
-          updatePayload = updatePayload || {};
-          updatePayload[propKey] = nextProp;
-        }
-      }
+  for (var propKey in prevProps) {
+    if (nextProps[propKey] !== undefined) {
+      continue; // we've already covered this key in the previous pass
+    }
+    attributeConfig = validAttributes[propKey];
+    if (!attributeConfig) {
+      continue; // not a valid native prop
+    }
+    prevProp = prevProps[propKey];
+    if (prevProp === undefined) {
+      continue; // was already empty anyway
+    }
+    // Pattern match on: attributeConfig
+    if (typeof attributeConfig !== 'object' ||
+        typeof attributeConfig.diff === 'function' ||
+        typeof attributeConfig.process === 'function') {
+      // case: CustomAttributeConfiguration | !Object
+      // Flag the leaf property for removal by sending a sentinel.
+      (updatePayload || (updatePayload = {}))[propKey] = null;
+    } else {
+      // default:
+      // This is a nested attribute configuration where all the properties
+      // were removed so we need to go through and clear out all of them.
+      updatePayload = clearNestedProperty(
+        updatePayload,
+        prevProp,
+        attributeConfig
+      );
     }
   }
   return updatePayload;
+}
+
+/**
+ * addProperties adds all the valid props to the payload after being processed.
+ */
+function addProperties(
+  updatePayload : ?Object,
+  props : Object,
+  validAttributes : AttributeConfiguration
+) : ?Object {
+  return diffProperties(updatePayload, {}, props, validAttributes);
+}
+
+/**
+ * clearProperties clears all the previous props by adding a null sentinel
+ * to the payload for each valid key.
+ */
+function clearProperties(
+  updatePayload : ?Object,
+  prevProps : Object,
+  validAttributes : AttributeConfiguration
+) :? Object {
+  return diffProperties(updatePayload, prevProps, {}, validAttributes);
 }
 
 var ReactNativeAttributePayload = {
 
   create: function(
     props : Object,
-    validAttributes : Object
+    validAttributes : AttributeConfiguration
   ) : ?Object {
-    return ReactNativeAttributePayload.diff({}, props, validAttributes);
+    return addProperties(
+      null, // updatePayload
+      props,
+      validAttributes
+    );
   },
 
   diff: function(
     prevProps : Object,
     nextProps : Object,
-    validAttributes : Object
+    validAttributes : AttributeConfiguration
   ) : ?Object {
-
-    if (__DEV__) {
-      for (var key in nextProps) {
-        if (nextProps.hasOwnProperty(key) &&
-            nextProps[key] &&
-            validAttributes[key]) {
-          deepFreezeAndThrowOnMutationInDev(nextProps[key]);
-        }
-      }
-    }
-
-    var updatePayload = diffRawProperties(
+    return diffProperties(
       null, // updatePayload
       prevProps,
       nextProps,
       validAttributes
     );
-
-    for (var key in updatePayload) {
-      var process = validAttributes[key] && validAttributes[key].process;
-      if (process) {
-        updatePayload[key] = process(updatePayload[key]);
-      }
-    }
-
-    // The style property is a deeply nested element which includes numbers
-    // to represent static objects. Most of the time, it doesn't change across
-    // renders, so it's faster to spend the time checking if it is different
-    // before actually doing the expensive flattening operation in order to
-    // compute the diff.
-    if (styleDiffer(nextProps.style, prevProps.style)) {
-      // TODO: Use a cached copy of previousFlattenedStyle, or walk both
-      // props in parallel.
-      var previousFlattenedStyle = precomputeStyle(
-        flattenStyle(prevProps.style),
-        validAttributes
-      );
-      var nextFlattenedStyle = precomputeStyle(
-        flattenStyle(nextProps.style),
-        validAttributes
-      );
-      updatePayload = diffRawProperties(
-        updatePayload,
-        previousFlattenedStyle,
-        nextFlattenedStyle,
-        ReactNativeStyleAttributes
-      );
-    }
-
-    return updatePayload;
   }
 
 };
