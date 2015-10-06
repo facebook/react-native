@@ -242,13 +242,7 @@ var variants = {
 
 var validAttributes = require('ReactNativeViewAttributes').UIView;
 
-var ReactNativeBaseComponent = require('ReactNativeBaseComponent');
-ReactNativeBaseComponent.prototype.diff =
-  ReactNativeBaseComponent.prototype.computeUpdatedProperties;
-var Differ = new ReactNativeBaseComponent({
-  validAttributes: validAttributes,
-  uiViewClassName: 'Differ'
-});
+var Differ = require('ReactNativeAttributePayload');
 
 // Runner
 
