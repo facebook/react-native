@@ -38,6 +38,14 @@ describe('ReactNativeAttributePayload', function() {
     )).toEqual({a: null});
   });
 
+  it('should remove fields that are set to undefined', () => {
+    expect(diff(
+      {a: 1},
+      {a: undefined},
+      {a: true}
+    )).toEqual({a: null});
+  });
+
   it('should ignore invalid fields', () => {
     expect(diff(
       {a: 1},
@@ -80,19 +88,19 @@ describe('ReactNativeAttributePayload', function() {
 
   it('should work with undefined styles', () => {
     expect(diff(
-      { style: { a: '#ffffff', opacity: 1 } },
+      { style: { a: '#ffffff', b: 1 } },
       { style: undefined },
-      { }
-    )).toEqual({ opacity: null });
+      { style: { b: true } }
+    )).toEqual({ b: null });
     expect(diff(
       { style: undefined },
-      { style: { a: '#ffffff', opacity: 1 } },
-      { }
-    )).toEqual({ opacity: 1 });
+      { style: { a: '#ffffff', b: 1 } },
+      { style: { b: true } }
+    )).toEqual({ b: 1 });
     expect(diff(
       { style: undefined },
       { style: undefined },
-      { }
+      { style: { b: true } }
     )).toEqual(null);
   });
 

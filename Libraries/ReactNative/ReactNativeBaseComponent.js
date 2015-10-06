@@ -19,6 +19,7 @@ var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
 var RCTUIManager = require('NativeModules').UIManager;
 
+var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var warning = require('warning');
 
 var registrationNames = ReactNativeEventEmitter.registrationNames;
@@ -139,6 +140,10 @@ ReactNativeBaseComponent.Mixin = {
     var prevElement = this._currentElement;
     this._currentElement = nextElement;
 
+    if (__DEV__) {
+      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+    }
+
     var updatePayload = ReactNativeAttributePayload.diff(
       prevElement.props,
       nextElement.props,
@@ -200,6 +205,10 @@ ReactNativeBaseComponent.Mixin = {
     this._rootNodeID = rootID;
 
     var tag = ReactNativeTagHandles.allocateTag();
+
+    if (__DEV__) {
+      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+    }
 
     var updatePayload = ReactNativeAttributePayload.create(
       this._currentElement.props,
