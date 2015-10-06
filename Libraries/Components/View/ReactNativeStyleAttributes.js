@@ -19,6 +19,7 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 var keyMirror = require('keyMirror');
 var matricesDiffer = require('matricesDiffer');
 var processColor = require('processColor');
+var processTransform = require('processTransform');
 var sizesDiffer = require('sizesDiffer');
 
 var ReactNativeStyleAttributes = {
@@ -27,6 +28,7 @@ var ReactNativeStyleAttributes = {
   ...keyMirror(ImageStylePropTypes),
 };
 
+ReactNativeStyleAttributes.transform = { process: processTransform };
 ReactNativeStyleAttributes.transformMatrix = { diff: matricesDiffer };
 ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
 

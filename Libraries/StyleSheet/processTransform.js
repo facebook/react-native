@@ -6,73 +6,16 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule precomputeStyle
+ * @providesModule processTransform
  * @flow
  */
 'use strict';
 
 var MatrixMath = require('MatrixMath');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var Platform = require('Platform');
 
-var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var invariant = require('invariant');
 var stringifySafe = require('stringifySafe');
-
-/**
- * This method provides a hook where flattened styles may be precomputed or
- * otherwise prepared to become better input data for native code.
- */
-function precomputeStyle(style: ?Object, validAttributes: Object): ?Object {
-  if (!style) {
-    return style;
-  }
-
-  var hasPreprocessKeys = false;
-  for (var i = 0, keys = Object.keys(style); i < keys.length; i++) {
-    var key = keys[i];
-    if (_processor(key, validAttributes)) {
-      hasPreprocessKeys = true;
-      break;
-    }
-  }
-
-  if (!hasPreprocessKeys && !style.transform) {
-    return style;
-  }
-
-  var newStyle = {...style};
-  for (var i = 0, keys = Object.keys(style); i < keys.length; i++) {
-    var key = keys[i];
-    var process = _processor(key, validAttributes);
-    if (process) {
-      newStyle[key] = process(newStyle[key]);
-    }
-  }
-
-  if (style.transform) {
-    invariant(
-      !style.transformMatrix,
-      'transformMatrix and transform styles cannot be used on the same component'
-    );
-
-    newStyle = _precomputeTransforms(newStyle);
-  }
-
-  deepFreezeAndThrowOnMutationInDev(newStyle);
-  return newStyle;
-}
-
-function _processor(key: string, validAttributes: Object) {
-  var process = validAttributes[key] && validAttributes[key].process;
-  if (!process) {
-    process =
-      ReactNativeStyleAttributes[key] &&
-      ReactNativeStyleAttributes[key].process;
-  }
-
-  return process;
-}
 
 /**
  * Generate a transform matrix based on the provided transforms, and use that
@@ -82,8 +25,7 @@ function _processor(key: string, validAttributes: Object) {
  * be applied in an arbitrary order, and yet have a universal, singular
  * interface to native code.
  */
-function _precomputeTransforms(style: Object): Object {
-  var {transform} = style;
+function processTransform(transform: Object): Object {
   var result = MatrixMath.createIdentityMatrix();
 
   transform.forEach(transformation => {
@@ -144,16 +86,9 @@ function _precomputeTransforms(style: Object): Object {
   // get applied in the specific order of (1) translate (2) scale (3) rotate.
   // Once we can directly apply a matrix, we can remove this decomposition.
   if (Platform.OS === 'android') {
-    return {
-      ...style,
-      transformMatrix: result,
-      decomposedMatrix: MatrixMath.decomposeMatrix(result),
-    };
+    return MatrixMath.decomposeMatrix(result);
   }
-  return {
-    ...style,
-    transformMatrix: result,
-  };
+  return result;
 }
 
 /**
@@ -240,4 +175,4 @@ function _validateTransform(key, value, transformation) {
   }
 }
 
-module.exports = precomputeStyle;
+module.exports = processTransform;
