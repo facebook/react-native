@@ -21,6 +21,7 @@ import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
+import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
@@ -46,7 +47,9 @@ public class MainReactPackage implements ReactPackage {
       new AsyncStorageModule(reactContext),
       new FrescoModule(reactContext),
       new NetworkingModule(reactContext),
-      new ToastModule(reactContext));
+      new ToastModule(reactContext),
+      new IntentModule(reactContext)
+    );
   }
 
   @Override
