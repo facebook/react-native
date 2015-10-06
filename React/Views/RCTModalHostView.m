@@ -19,7 +19,7 @@
 @implementation RCTModalHostView
 {
   RCTBridge *_bridge;
-  BOOL _isValid;
+  BOOL _isPresented;
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
 }
@@ -33,7 +33,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     _bridge = bridge;
     _modalViewController = [RCTModalHostViewController new];
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
-    _isValid = YES;
+    _isPresented = NO;
 
     __weak typeof(self) weakSelf = self;
     _modalViewController.boundsDidChangeBlock = ^(CGRect newBounds) {
@@ -46,7 +46,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)notifyForBoundsChange:(CGRect)newBounds
 {
-  if (_modalViewController.view && _isValid) {
+  if (_modalViewController.view && _isPresented) {
     [_bridge.uiManager setFrame:newBounds forView:_modalViewController.view];
   }
 }
@@ -68,6 +68,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   _modalViewController.view = nil;
 }
 
+- (void)dismissModalViewController
+{
+  if (_isPresented) {
+    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+    _isPresented = NO;
+  }
+}
+
 - (void)didMoveToSuperview
 {
   [super didMoveToSuperview];
@@ -75,16 +83,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   if (self.superview) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
     [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:nil];
+    _isPresented = YES;
   } else {
-    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+    [self dismissModalViewController];
   }
 }
 
 - (void)invalidate
 {
-  _isValid = NO;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+    [self dismissModalViewController];
   });
 }
 
