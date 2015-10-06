@@ -60,6 +60,10 @@ public class ReactBridge extends Countable {
       JavaScriptExecutor jsExecutor,
       ReactCallback callback,
       MessageQueueThread nativeModulesQueueThread);
+
+  /**
+   * All native functions are not thread safe and appropriate queues should be used
+   */
   public native void loadScriptFromAssets(AssetManager assetManager, String assetName);
   public native void loadScriptFromNetworkCached(String sourceURL, @Nullable String tempFileName);
   public native void callFunction(int moduleId, int methodId, NativeArray arguments);
