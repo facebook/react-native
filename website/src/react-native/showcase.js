@@ -175,6 +175,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'WPV',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/f1/ae/51/f1ae516b-d8e9-1b6d-acfe-755623a88327/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
+    author: 'Yamill Vallecillo (@yamill3)',
+  },
+  {
     name: 'Yoloci',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/fa/e5/26/fae52635-b97c-bd53-2ade-89e2a4326745/icon175x175.jpeg',
     link: 'https://itunes.apple.com/de/app/yoloci/id991323225?mt=8',
