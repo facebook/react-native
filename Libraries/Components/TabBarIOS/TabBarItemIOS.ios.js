@@ -67,10 +67,6 @@ var TabBarItemIOS = React.createClass({
      */
     selected: React.PropTypes.bool,
     /**
-     * React style object.
-     */
-    style: View.propTypes.style,
-    /**
      * Text that appears under the icon. It is ignored when a system icon
      * is defined.
      */
