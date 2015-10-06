@@ -28,6 +28,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
+import com.facebook.systrace.TraceListener;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -60,6 +61,7 @@ public class CatalystInstance {
   // Access from JS thread
   private @Nullable ReactBridge mBridge;
   private @Nullable JavaScriptModuleRegistry mJSModuleRegistry;
+  private @Nullable TraceListener mTraceListener;
 
   private CatalystInstance(
       final CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
@@ -119,6 +121,45 @@ public class CatalystInstance {
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+
+    mTraceListener = new TraceListener() {
+      @Override
+      public void onTraceStarted() {
+        mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
+            new Runnable() {
+              @Override
+              public void run() {
+                mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
+
+                if (mDestroyed) {
+                  return;
+                }
+                Assertions.assertNotNull(mBridge).setGlobalVariable(
+                    "__BridgeProfilingIsProfiling",
+                    "true");
+              }
+            });
+      }
+
+      @Override
+      public void onTraceStopped() {
+        mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
+            new Runnable() {
+              @Override
+              public void run() {
+                mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
+
+                if (mDestroyed) {
+                  return;
+                }
+                Assertions.assertNotNull(mBridge).setGlobalVariable(
+                    "__BridgeProfilingIsProfiling",
+                    "false");
+              }
+            });
+      }
+    };
+    Systrace.registerListener(mTraceListener);
   }
 
   /* package */ void callFunction(
@@ -205,6 +246,10 @@ public class CatalystInstance {
       for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
         listener.onTransitionToBridgeIdle();
       }
+    }
+
+    if (mTraceListener != null) {
+      Systrace.unregisterListener(mTraceListener);
     }
 
     // We can access the Bridge from any thread now because we know either we are on the JS thread
