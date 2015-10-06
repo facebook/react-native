@@ -39,6 +39,18 @@ type MeasureLayoutOnSuccessCallback = (
 ) => void
 
 
+function warnForStyleProps(props, validAttributes) {
+  for (var key in validAttributes.style) {
+    if (!(validAttributes[key] || props[key] === undefined)) {
+      console.error(
+        'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
+        'should nest it in a style object. ' +
+        'E.g. `{ style: { ' + key + ': ... } }`'
+      );
+    }
+  }
+}
+
 var NativeMethodsMixin = {
   measure: function(callback: MeasureOnSuccessCallback) {
     RCTUIManager.measure(
@@ -66,6 +78,10 @@ var NativeMethodsMixin = {
    * next render, they will remain active.
    */
   setNativeProps: function(nativeProps: Object) {
+    if (__DEV__) {
+      warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
+    }
+
     var updatePayload = ReactNativeAttributePayload.create(
       nativeProps,
       this.viewConfig.validAttributes
