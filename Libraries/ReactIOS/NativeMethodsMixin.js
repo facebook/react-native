@@ -17,7 +17,10 @@ var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
 
 var findNodeHandle = require('findNodeHandle');
+var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
+var mergeFast = require('mergeFast');
+var precomputeStyle = require('precomputeStyle');
 
 type MeasureOnSuccessCallback = (
   x: number,
