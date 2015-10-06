@@ -141,19 +141,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)hideLoadingView
 {
   if (_loadingView.superview == self && _contentView.contentHasAppeared) {
+    if (_loadingViewFadeDuration > 0) {
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_loadingViewFadeDelay * NSEC_PER_SEC)),
+                     dispatch_get_main_queue(), ^{
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_loadingViewFadeDelay * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-
-      [UIView transitionWithView:self
-                        duration:_loadingViewFadeDuration
-                         options:UIViewAnimationOptionTransitionCrossDissolve
-                      animations:^{
-                        _loadingView.hidden = YES;
-                      } completion:^(__unused BOOL finished) {
-                        [_loadingView removeFromSuperview];
-                      }];
-    });
+                       [UIView transitionWithView:self
+                                         duration:_loadingViewFadeDuration
+                                          options:UIViewAnimationOptionTransitionCrossDissolve
+                                       animations:^{
+                                         _loadingView.hidden = YES;
+                                       } completion:^(__unused BOOL finished) {
+                                         [_loadingView removeFromSuperview];
+                                       }];
+                     });
+    } else {
+      _loadingView.hidden = YES;
+      [_loadingView removeFromSuperview];
+    }
   }
 }
 
