@@ -4,13 +4,11 @@
 'use strict';
 
 jest.dontMock('ReactNativeAttributePayload');
-jest.dontMock('StyleSheetRegistry');
 jest.dontMock('deepDiffer');
-jest.dontMock('flattenStyle');
 jest.dontMock('styleDiffer');
-
+jest.dontMock('precomputeStyle');
+jest.dontMock('flattenStyle');
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
-var StyleSheetRegistry = require('StyleSheetRegistry');
 
 var diff = ReactNativeAttributePayload.diff;
 
@@ -122,94 +120,6 @@ describe('ReactNativeAttributePayload', function() {
       {},
       {a: true, b: true}
     )).toEqual(null);
-  });
-
-  it('should flatten nested styles and predefined styles', () => {
-    var validStyleAttribute = { someStyle: { foo: true, bar: true } };
-
-    expect(diff(
-      {},
-      { someStyle: [{ foo: 1 }, { bar: 2 }]},
-      validStyleAttribute
-    )).toEqual({ foo: 1, bar: 2 });
-
-    expect(diff(
-      { someStyle: [{ foo: 1 }, { bar: 2 }]},
-      {},
-      validStyleAttribute
-    )).toEqual({ foo: null, bar: null });
-
-    var barStyle = StyleSheetRegistry.registerStyle({
-      bar: 3,
-    });
-
-    expect(diff(
-      {},
-      { someStyle: [[{ foo: 1 }, { foo: 2 }], barStyle]},
-      validStyleAttribute
-    )).toEqual({ foo: 2, bar: 3 });
-  });
-
-  it('should reset a value to a previous if it is removed', () => {
-    var validStyleAttribute = { someStyle: { foo: true, bar: true } };
-
-    expect(diff(
-      { someStyle: [{ foo: 1 }, { foo: 3 }]},
-      { someStyle: [{ foo: 1 }, { bar: 2 }]},
-      validStyleAttribute
-    )).toEqual({ foo: 1, bar: 2 });
-  });
-
-  it('should not clear removed props if they are still in another slot', () => {
-    var validStyleAttribute = { someStyle: { foo: true, bar: true } };
-
-    expect(diff(
-      { someStyle: [{}, { foo: 3, bar: 2 }]},
-      { someStyle: [{ foo: 3 }, { bar: 2 }]},
-      validStyleAttribute
-    )).toEqual(null);
-
-    expect(diff(
-      { someStyle: [{}, { foo: 3, bar: 2 }]},
-      { someStyle: [{ foo: 1, bar: 1 }, { bar: 2 }]},
-      validStyleAttribute
-    )).toEqual({ foo: 1 });
-  });
-
-  it('should clear a prop if a later style is explicit null/undefined', () => {
-    var validStyleAttribute = { someStyle: { foo: true, bar: true } };
-    expect(diff(
-      { someStyle: [{}, { foo: 3, bar: 2 }]},
-      { someStyle: [{ foo: 1 }, { bar: 2, foo: null }]},
-      validStyleAttribute
-    )).toEqual({ foo: null });
-
-    expect(diff(
-      { someStyle: [{ foo: 3 }, { foo: null, bar: 2 }]},
-      { someStyle: [{ foo: null }, { bar: 2 }]},
-      validStyleAttribute
-    )).toEqual(null);
-
-    expect(diff(
-      { someStyle: [{ foo: 1 }, { foo: null }]},
-      { someStyle: [{ foo: 2 }, { foo: null }]},
-      validStyleAttribute
-    )).toEqual(null);
-
-    // Test the same case with object equality because an early bailout doesn't
-    // work in this case.
-    var fooObj = { foo: 3 };
-    expect(diff(
-      { someStyle: [{ foo: 1 }, fooObj]},
-      { someStyle: [{ foo: 2 }, fooObj]},
-      validStyleAttribute
-    )).toEqual(null);
-
-    expect(diff(
-      { someStyle: [{ foo: 1 }, { foo: 3 }]},
-      { someStyle: [{ foo: 2 }, { foo: undefined }]},
-      validStyleAttribute
-    )).toEqual({ foo: null });
   });
 
   // Function properties are just markers to native that events should be sent.
