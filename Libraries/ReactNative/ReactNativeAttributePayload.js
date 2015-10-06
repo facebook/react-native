@@ -11,10 +11,11 @@
  */
 'use strict';
 
+var Platform = require('Platform');
+
 var deepDiffer = require('deepDiffer');
 var styleDiffer = require('styleDiffer');
 var flattenStyle = require('flattenStyle');
-var precomputeStyle = require('precomputeStyle');
 
 type AttributeDiffer = (prevProp : mixed, nextProp : mixed) => boolean;
 type AttributePreprocessor = (nextProp: mixed) => mixed;
@@ -28,6 +29,21 @@ type AttributeConfiguration =
   { [key : string]: (
     CustomAttributeConfiguration | AttributeConfiguration /*| boolean*/
   ) };
+
+function translateKey(propKey : string) : string {
+  if (propKey === 'transform') {
+    // We currently special case the key for `transform`. iOS uses the
+    // transformMatrix name and Android uses the decomposedMatrix name.
+    // TODO: We could unify these names and just use the name `transform`
+    // all the time. Just need to update the native side.
+    if (Platform.OS === 'android') {
+      return 'decomposedMatrix';
+    } else {
+      return 'transformMatrix';
+    }
+  }
+  return propKey;
+}
 
 function defaultDiffer(prevProp: mixed, nextProp: mixed) : boolean {
   if (typeof nextProp !== 'object' || nextProp === null) {
@@ -55,17 +71,9 @@ function diffNestedProperty(
   }
 
   // TODO: Walk both props in parallel instead of flattening.
-  // TODO: Move precomputeStyle to .process for each attribute.
 
-  var previousFlattenedStyle = precomputeStyle(
-    flattenStyle(prevProp),
-    validAttributes
-  );
-
-  var nextFlattenedStyle = precomputeStyle(
-    flattenStyle(nextProp),
-    validAttributes
-  );
+  var previousFlattenedStyle = flattenStyle(prevProp);
+  var nextFlattenedStyle = flattenStyle(nextProp);
 
   if (!previousFlattenedStyle || !nextFlattenedStyle) {
     if (nextFlattenedStyle) {
@@ -144,7 +152,14 @@ function diffProperties(
     if (!attributeConfig) {
       continue; // not a valid native prop
     }
-    if (updatePayload && updatePayload[propKey] !== undefined) {
+
+    var altKey = translateKey(propKey);
+    if (!attributeConfig[altKey]) {
+      // If there is no config for the alternative, bail out. Helps ART.
+      altKey = propKey;
+    }
+
+    if (updatePayload && updatePayload[altKey] !== undefined) {
       // If we're in a nested attribute set, we may have set this property
       // already. If so, bail out. The previous update is what counts.
       continue;
@@ -172,7 +187,7 @@ function diffProperties(
       // case: !Object is the default case
       if (defaultDiffer(prevProp, nextProp)) {
         // a normal leaf has changed
-        (updatePayload || (updatePayload = {}))[propKey] = nextProp;
+        (updatePayload || (updatePayload = {}))[altKey] = nextProp;
       }
     } else if (typeof attributeConfig.diff === 'function' ||
                typeof attributeConfig.process === 'function') {
@@ -186,7 +201,7 @@ function diffProperties(
         var nextValue = typeof attributeConfig.process === 'function' ?
                         attributeConfig.process(nextProp) :
                         nextProp;
-        (updatePayload || (updatePayload = {}))[propKey] = nextValue;
+        (updatePayload || (updatePayload = {}))[altKey] = nextValue;
       }
     } else {
       // default: fallthrough case when nested properties are defined
@@ -210,6 +225,7 @@ function diffProperties(
     if (!attributeConfig) {
       continue; // not a valid native prop
     }
+
     prevProp = prevProps[propKey];
     if (prevProp === undefined) {
       continue; // was already empty anyway
@@ -218,9 +234,10 @@ function diffProperties(
     if (typeof attributeConfig !== 'object' ||
         typeof attributeConfig.diff === 'function' ||
         typeof attributeConfig.process === 'function') {
+
       // case: CustomAttributeConfiguration | !Object
       // Flag the leaf property for removal by sending a sentinel.
-      (updatePayload || (updatePayload = {}))[propKey] = null;
+      (updatePayload || (updatePayload = {}))[translateKey(propKey)] = null;
     } else {
       // default:
       // This is a nested attribute configuration where all the properties
