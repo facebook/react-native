@@ -13,8 +13,6 @@
 
 var RCTUIManager = require('NativeModules').UIManager;
 
-var performanceNow = require('performanceNow');
-
 var installed = false;
 var UIManagerStatTracker = {
   install: function() {
@@ -23,24 +21,15 @@ var UIManagerStatTracker = {
     }
     installed = true;
     var statLogHandle;
-    var startTime = 0;
-    var allTimeStats = {};
-    var perFrameStats = {};
+    var stats = {};
     function printStats() {
-      console.log({UIManagerStatTracker: {
-        allTime: allTimeStats,
-        lastFrame: perFrameStats,
-        elapsedMilliseconds: performanceNow() - startTime,
-      }});
+      console.log({UIManagerStatTracker: stats});
       statLogHandle = null;
-      perFrameStats = {};
     }
     function incStat(key: string, increment: number) {
-      allTimeStats[key] = (allTimeStats[key] || 0) + increment;
-      perFrameStats[key] = (perFrameStats[key] || 0) + increment;
+      stats[key] = (stats[key] || 0) + increment;
       if (!statLogHandle) {
-        startTime = performanceNow();
-        statLogHandle = window.requestAnimationFrame(printStats);
+        statLogHandle = setImmediate(printStats);
       }
     }
     var createViewOrig = RCTUIManager.createView;
