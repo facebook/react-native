@@ -6,12 +6,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule diffRawProperties
+ * @providesModule ReactNativeAttributePayload
  * @flow
  */
 'use strict';
 
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+
 var deepDiffer = require('deepDiffer');
+var styleDiffer = require('styleDiffer');
+var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+var flattenStyle = require('flattenStyle');
+var precomputeStyle = require('precomputeStyle');
 
 /**
  * diffRawProperties takes two sets of props and a set of valid attributes
@@ -115,4 +121,72 @@ function diffRawProperties(
   return updatePayload;
 }
 
-module.exports = diffRawProperties;
+var ReactNativeAttributePayload = {
+
+  create: function(
+    props : Object,
+    validAttributes : Object
+  ) : ?Object {
+    return ReactNativeAttributePayload.diff({}, props, validAttributes);
+  },
+
+  diff: function(
+    prevProps : Object,
+    nextProps : Object,
+    validAttributes : Object
+  ) : ?Object {
+
+    if (__DEV__) {
+      for (var key in nextProps) {
+        if (nextProps.hasOwnProperty(key) &&
+            nextProps[key] &&
+            validAttributes[key]) {
+          deepFreezeAndThrowOnMutationInDev(nextProps[key]);
+        }
+      }
+    }
+
+    var updatePayload = diffRawProperties(
+      null, // updatePayload
+      prevProps,
+      nextProps,
+      validAttributes
+    );
+
+    for (var key in updatePayload) {
+      var process = validAttributes[key] && validAttributes[key].process;
+      if (process) {
+        updatePayload[key] = process(updatePayload[key]);
+      }
+    }
+
+    // The style property is a deeply nested element which includes numbers
+    // to represent static objects. Most of the time, it doesn't change across
+    // renders, so it's faster to spend the time checking if it is different
+    // before actually doing the expensive flattening operation in order to
+    // compute the diff.
+    if (styleDiffer(nextProps.style, prevProps.style)) {
+      // TODO: Use a cached copy of previousFlattenedStyle, or walk both
+      // props in parallel.
+      var previousFlattenedStyle = precomputeStyle(
+        flattenStyle(prevProps.style),
+        validAttributes
+      );
+      var nextFlattenedStyle = precomputeStyle(
+        flattenStyle(nextProps.style),
+        validAttributes
+      );
+      updatePayload = diffRawProperties(
+        updatePayload,
+        previousFlattenedStyle,
+        nextFlattenedStyle,
+        ReactNativeStyleAttributes
+      );
+    }
+
+    return updatePayload;
+  }
+
+};
+
+module.exports = ReactNativeAttributePayload;
