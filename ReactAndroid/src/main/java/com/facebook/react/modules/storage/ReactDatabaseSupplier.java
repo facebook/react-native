@@ -21,8 +21,10 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
   // VisibleForTesting
   public static final String DATABASE_NAME = "RKStorage";
-  static final int DATABASE_VERSION = 1;
+
+  private static final int DATABASE_VERSION = 1;
   private static final int SLEEP_TIME_MS = 30;
+  private static final long DEFAULT_MAX_DB_SIZE = 6L * 1024L * 1024L; // 6 MB in bytes
 
   static final String TABLE_CATALYST = "catalystLocalStorage";
   static final String KEY_COLUMN = "key";
@@ -85,6 +87,10 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
     if (mDb == null) {
       throw lastSQLiteException;
     }
+    // This is a sane limit to protect the user from the app storing too much data in the database.
+    // This also protects the database from filling up the disk cache and becoming malformed
+    // (endTransaction() calls will throw an exception, not rollback, and leave the db malformed).
+    mDb.setMaximumSize(DEFAULT_MAX_DB_SIZE);
     return true;
   }
 
