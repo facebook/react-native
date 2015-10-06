@@ -14,7 +14,8 @@ var childProcess = require('child_process');
 var http = require('http');
 var isAbsolutePath = require('absolute-path');
 
-var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
+// Temporarily disable flow check until it's more stable
+// var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
 
 var chalk = require('chalk');
 var connect = require('connect');
