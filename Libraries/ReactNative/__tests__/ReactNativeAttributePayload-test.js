@@ -3,15 +3,19 @@
  */
 'use strict';
 
-jest.dontMock('diffRawProperties');
+jest.dontMock('ReactNativeAttributePayload');
 jest.dontMock('deepDiffer');
-var diffRawProperties = require('diffRawProperties');
+jest.dontMock('styleDiffer');
+jest.dontMock('precomputeStyle');
+jest.dontMock('flattenStyle');
+var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 
-describe('diffRawProperties', function() {
+var diff = ReactNativeAttributePayload.diff;
+
+describe('ReactNativeAttributePayload', function() {
 
   it('should work with simple example', () => {
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: 1, c: 3},
       {b: 2, c: 3},
       {a: true, b: true}
@@ -19,8 +23,7 @@ describe('diffRawProperties', function() {
   });
 
   it('should skip fields that are equal', () => {
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: 1, b: 'two', c: true, d: false, e: undefined, f: 0},
       {a: 1, b: 'two', c: true, d: false, e: undefined, f: 0},
       {a: true, b: true, c: true, d: true, e: true, f: true}
@@ -28,8 +31,7 @@ describe('diffRawProperties', function() {
   });
 
   it('should remove fields', () => {
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: 1},
       {},
       {a: true}
@@ -37,32 +39,17 @@ describe('diffRawProperties', function() {
   });
 
   it('should ignore invalid fields', () => {
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: 1},
       {b: 2},
       {}
     )).toEqual(null);
   });
 
-  it('should override the updatePayload argument', () => {
-    var updatePayload = {a: 1};
-    var result = diffRawProperties(
-      updatePayload,
-      {},
-      {b: 2},
-      {b: true}
-    );
-
-    expect(result).toBe(updatePayload);
-    expect(result).toEqual({a: 1, b: 2});
-  });
-
   it('should use the diff attribute', () => {
     var diffA = jest.genMockFunction().mockImpl((a, b) => true);
     var diffB = jest.genMockFunction().mockImpl((a, b) => false);
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: [1], b: [3]},
       {a: [2], b: [4]},
       {a: {diff: diffA}, b: {diff: diffB}}
@@ -74,8 +61,7 @@ describe('diffRawProperties', function() {
   it('should not use the diff attribute on addition/removal', () => {
     var diffA = jest.genMockFunction();
     var diffB = jest.genMockFunction();
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: [1]},
       {b: [2]},
       {a: {diff: diffA}, b: {diff: diffB}}
@@ -85,8 +71,7 @@ describe('diffRawProperties', function() {
   });
 
   it('should do deep diffs of Objects by default', () => {
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: [1], b: {k: [3,4]}, c: {k: [4,4]} },
       {a: [2], b: {k: [3,4]}, c: {k: [4,5]} },
       {a: true, b: true, c: true}
@@ -94,41 +79,35 @@ describe('diffRawProperties', function() {
   });
 
   it('should work with undefined styles', () => {
-    expect(diffRawProperties(
-      null,
-      {a: 1, c: 3},
-      undefined,
-      {a: true, b: true}
-    )).toEqual({a: null});
-    expect(diffRawProperties(
-      null,
-      undefined,
-      {a: 1, c: 3},
-      {a: true, b: true}
-    )).toEqual({a: 1});
-    expect(diffRawProperties(
-      null,
-      undefined,
-      undefined,
-      {a: true, b: true}
+    expect(diff(
+      { style: { a: '#ffffff', opacity: 1 } },
+      { style: undefined },
+      { }
+    )).toEqual({ opacity: null });
+    expect(diff(
+      { style: undefined },
+      { style: { a: '#ffffff', opacity: 1 } },
+      { }
+    )).toEqual({ opacity: 1 });
+    expect(diff(
+      { style: undefined },
+      { style: undefined },
+      { }
     )).toEqual(null);
   });
 
   it('should work with empty styles', () => {
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: 1, c: 3},
       {},
       {a: true, b: true}
     )).toEqual({a: null});
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {},
       {a: 1, c: 3},
       {a: true, b: true}
     )).toEqual({a: 1});
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {},
       {},
       {a: true, b: true}
@@ -139,8 +118,7 @@ describe('diffRawProperties', function() {
   it('should convert functions to booleans', () => {
     // Note that if the property changes from one function to another, we don't
     // need to send an update.
-    expect(diffRawProperties(
-      null,
+    expect(diff(
       {a: function() { return 1; }, b: function() { return 2; }, c: 3},
       {b: function() { return 9; }, c: function() { return 3; }, },
       {a: true, b: true, c: true}
