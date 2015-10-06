@@ -13,6 +13,7 @@
 
 var NativeModules = require('NativeModules');
 var RCTUIManager = NativeModules.UIManager;
+var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
 
 var findNodeHandle = require('findNodeHandle');
@@ -65,52 +66,15 @@ var NativeMethodsMixin = {
    * next render, they will remain active.
    */
   setNativeProps: function(nativeProps: Object) {
-    // nativeProps contains a style attribute that's going to be flattened
-    // and all the attributes expanded in place. In order to make this
-    // process do as few allocations and copies as possible, we return
-    // one if the other is empty. Only if both have values then we create
-    // a new object and merge.
-    var hasOnlyStyle = true;
-    for (var key in nativeProps) {
-      if (key !== 'style') {
-        hasOnlyStyle = false;
-        break;
-      }
-    }
-
-    var validAttributes = this.viewConfig.validAttributes;
-    var hasProcessedProps = false;
-    var processedProps = {};
-    for (var key in nativeProps) {
-      var process = validAttributes[key] && validAttributes[key].process;
-      if (process) {
-        hasProcessedProps = true;
-        processedProps[key] = process(nativeProps[key]);
-      }
-    }
-
-    var style = precomputeStyle(
-      flattenStyle(processedProps.style || nativeProps.style),
+    var updatePayload = ReactNativeAttributePayload.create(
+      nativeProps,
       this.viewConfig.validAttributes
     );
-
-    var props = null;
-    if (hasOnlyStyle) {
-      props = style;
-    } else {
-      props = nativeProps;
-      if (hasProcessedProps) {
-        props = mergeFast(props, processedProps);
-      }
-      if (style) {
-        props = mergeFast(props, style);
-      }
-    }
 
     RCTUIManager.updateView(
       findNodeHandle(this),
       this.viewConfig.uiViewClassName,
-      props
+      updatePayload
     );
   },
 
