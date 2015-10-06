@@ -43,6 +43,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WebsocketJavaScriptExecutor;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
+import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
 /**
@@ -154,8 +155,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      CharSequence details = ExceptionFormatterHelper.javaStackTraceToHtml(e.getStackTrace());
-      showNewError(e.getMessage(), details, JAVA_ERROR_COOKIE);
+      showNewError(e.getMessage(), StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE);
     } else {
       if (e instanceof RuntimeException) {
         // Because we are rethrowing the original exception, the original stacktrace will be
@@ -179,7 +179,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   }
 
   public void showNewJSError(String message, ReadableArray details, int errorCookie) {
-    showNewError(message, ExceptionFormatterHelper.jsStackTraceToHtml(details), errorCookie);
+    showNewError(message, StackTraceHelper.convertJsStackTrace(details), errorCookie);
   }
 
   public void updateJSError(
@@ -198,8 +198,9 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                 errorCookie != mRedBoxDialog.getErrorCookie()) {
               return;
             }
-            mRedBoxDialog.setTitle(message);
-            mRedBoxDialog.setDetails(ExceptionFormatterHelper.jsStackTraceToHtml(details));
+            mRedBoxDialog.setExceptionDetails(
+                message,
+                StackTraceHelper.convertJsStackTrace(details));
             mRedBoxDialog.show();
           }
         });
@@ -207,7 +208,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
   private void showNewError(
       final String message,
-      final CharSequence details,
+      final StackFrame[] stack,
       final int errorCookie) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
@@ -222,8 +223,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
               // show the first and most actionable one.
               return;
             }
-            mRedBoxDialog.setTitle(message);
-            mRedBoxDialog.setDetails(details);
+            mRedBoxDialog.setExceptionDetails(message, stack);
             mRedBoxDialog.setErrorCookie(errorCookie);
             mRedBoxDialog.show();
           }
@@ -520,7 +520,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                   public void run() {
                     showNewError(
                         mApplicationContext.getString(R.string.catalyst_remotedbg_error),
-                        ExceptionFormatterHelper.javaStackTraceToHtml(cause.getStackTrace()),
+                        StackTraceHelper.convertJavaStackTrace(cause),
                         JAVA_ERROR_COOKIE);
                   }
                 });
@@ -555,13 +555,12 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                       DebugServerException debugServerException = (DebugServerException) cause;
                       showNewError(
                           debugServerException.description,
-                          ExceptionFormatterHelper.debugServerExcStackTraceToHtml(
-                              (DebugServerException) cause),
+                          StackTraceHelper.convertJavaStackTrace(cause),
                           JAVA_ERROR_COOKIE);
                     } else {
                       showNewError(
                           mApplicationContext.getString(R.string.catalyst_jsload_error),
-                          ExceptionFormatterHelper.javaStackTraceToHtml(cause.getStackTrace()),
+                          StackTraceHelper.convertJavaStackTrace(cause),
                           JAVA_ERROR_COOKIE);
                     }
                   }
