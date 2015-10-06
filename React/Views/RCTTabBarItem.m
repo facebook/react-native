@@ -54,8 +54,8 @@
   UIImage *image = [RCTConvert UIImage:_icon];
   UITabBarItem *oldItem = _barItem;
   if (image) {
-    
-    // Recreate barItem if previous item was a system icon
+    // Recreate barItem if previous item was a system icon. Calling self.barItem
+    // creates a new instance if it wasn't set yet.
     if (wasSystemIcon) {
       _barItem = nil;
       self.barItem.image = image;
@@ -63,9 +63,7 @@
       self.barItem.image = image;
       return;
     }
-
-  } else {
-
+  } else if ([icon isKindOfClass:[NSString class]] && [icon length] > 0) {
     // Not a custom image, may be a system item?
     NSNumber *systemIcon = systemIcons[icon];
     if (!systemIcon) {
@@ -73,6 +71,8 @@
       return;
     }
     _barItem = [[UITabBarItem alloc] initWithTabBarSystemItem:systemIcon.integerValue tag:oldItem.tag];
+  } else {
+    self.barItem.image = nil;
   }
 
   // Reapply previous properties
