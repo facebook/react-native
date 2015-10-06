@@ -13,6 +13,7 @@
 
 var StyleSheetRegistry = require('StyleSheetRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
+var flattenStyle = require('flattenStyle');
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -68,5 +69,8 @@ class StyleSheet {
     return result;
   }
 }
+
+/* TODO(brentvatne) docs are needed for this */
+StyleSheet.flatten = flattenStyle;
 
 module.exports = StyleSheet;
