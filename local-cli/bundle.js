@@ -1,4 +1,5 @@
-var http = require('http');
+'use strict';
+
 var fs = require('fs');
 var path = require('path');
 var chalk = require('chalk');
@@ -19,17 +20,18 @@ function getBundle(flags) {
   var outPath = flags.out ? flags.out : OUT_PATH[platform];
 
   var projectRoots = [path.resolve(__dirname, '../../..')];
-  if (flags.root) {
-    projectRoots.push(path.resolve(flags.root));
-  }
-
-  var assetRoots = [path.resolve(__dirname, '../../..')];
-  if (flags.assetRoots) {
-    assetRoots = assetRoots.concat(flags.assetRoots.split(",").map(function(root) {
+  if (flags.roots) {
+    projectRoots = projectRoots.concat(flags.roots.split(',').map(function(root) {
       return path.resolve(root);
     }));
   }
 
+  var assetRoots = [path.resolve(__dirname, '../../..')];
+  if (flags.assetRoots) {
+    assetRoots = assetRoots.concat(flags.assetRoots.split(',').map(function(root) {
+      return path.resolve(root);
+    }));
+  }
 
   var options = {
     projectRoots: projectRoots,
@@ -39,7 +41,7 @@ function getBundle(flags) {
     blacklistRE: blacklist(platform),
   };
 
-  var url = flags.url ? flags.url.replace(/\.js$/i, '.bundle?dev=') : URL_PATH[platform];
+  var url = flags.appModule ? flags.appModule.replace(/\.js$/i, '.bundle?dev=') : URL_PATH[platform];
   url = url.match(/^\//) ? url : '/' + url;
   url += flags.dev;
 
@@ -68,27 +70,41 @@ function showHelp() {
     'Options:',
     '  --dev\t\tsets DEV flag to true',
     '  --minify\tminify js bundle',
-    '  --root\t\tadd another root(s) to be used in bundling in this project',
-    '  --assetRoots\t\tspecify the root directories of app assets',
-    '  --out\t\tspecify the output file',
-    '  --url\t\tspecify the bundle file url',
+    '  --roots\t\tadditional root paths (comma-separated) for locating JavaScript files',
+    '  --assetRoots\t\tadditional root paths (comma-separated) for locating app assets',
+    '  --out\t\trelative path (with filename and extension) where output file will be found',
+    '  --appModule\t\tfilename containing root app component',
     '  --platform\t\tspecify the platform(android/ios)',
   ].join('\n'));
   process.exit(1);
 }
 
+function handleDeprecations(args) {
+  if (args.indexOf('--root') !== -1) {
+    console.log('--root is a deprecated argument. Use --roots instead');
+    showHelp();
+  }
+  if (args.indexOf('--url') !== -1) {
+    console.log('--url is a deprecated argument. Use --appModule instead');
+    showHelp();
+  }
+}
+
 module.exports = {
   init: function(args) {
+
+    handleDeprecations(args);
+
     var flags = {
       help: args.indexOf('--help') !== -1,
       dev: args.indexOf('--dev') !== -1,
       minify: args.indexOf('--minify') !== -1,
-      root: args.indexOf('--root') !== -1 ? args[args.indexOf('--root') + 1] : false,
       platform: args.indexOf('--platform') !== -1 ? args[args.indexOf('--platform') + 1] : false,
+      roots: args.indexOf('--roots') !== -1 ? args[args.indexOf('--roots') + 1] : false,
       assetRoots: args.indexOf('--assetRoots') !== -1 ? args[args.indexOf('--assetRoots') + 1] : false,
       out: args.indexOf('--out') !== -1 ? args[args.indexOf('--out') + 1] : false,
-      url: args.indexOf('--url') !== -1 ? args[args.indexOf('--url') + 1] : false,
-    }
+      appModule: args.indexOf('--appModule') !== -1 ? args[args.indexOf('--appModule') + 1] : false,
+    };
 
     if (flags.help) {
       showHelp();
@@ -96,4 +112,4 @@ module.exports = {
       getBundle(flags);
     }
   }
-}
+};
