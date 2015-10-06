@@ -17,9 +17,10 @@ var Interpolation = require('Interpolation');
 var React = require('React');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
-var invariant = require('invariant');
+var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var flattenStyle = require('flattenStyle');
+var invariant = require('invariant');
 var requestAnimationFrame = require('requestAnimationFrame');
 
 import type InterpolationConfigType from 'Interpolation';
@@ -1078,6 +1079,19 @@ function createAnimatedComponent(Component: any): any {
       );
     }
   }
+  AnimatedComponent.propTypes = {
+    style: function(props, propName, componentName) {
+      for (var key in ViewStylePropTypes) {
+        if (!Component.propTypes[key] && props[key] !== undefined) {
+          console.error(
+            'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
+            'should nest it in a style object. ' +
+            'E.g. `{ style: { ' + key + ': ... } }`'
+          );
+        }
+      }
+    }
+  };
 
   return AnimatedComponent;
 }
