@@ -48,6 +48,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   TouchableOpacity: require('TouchableOpacity'),
   TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
   View: require('View'),
+  ViewPagerAndroid: require('ViewPagerAndroid'),
   WebView: require('WebView'),
 
   // APIs
