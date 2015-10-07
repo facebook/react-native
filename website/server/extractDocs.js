@@ -228,6 +228,7 @@ var apis = [
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
+  '../Libraries/ReactIOS/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
