@@ -72,7 +72,7 @@ out of the box than `Navigator`. The reason for this is that the
 animations for the transitions are done entirely on the main thread, and
 so they are not interrupted by frame drops on the JavaScript thread.
 ([Read about why you should probably use Navigator
-anyways.](/docs/navigator-comparison.html))
+anyways.](/react-native/docs/navigator-comparison.html))
 
 Similarly, you can happily scroll up and down through a ScrollView when
 the JavaScript thread is locked up because the ScrollView lives on the
@@ -137,7 +137,7 @@ class ExpensiveScene extends React.Component {
     if (this.state.renderPlaceholderOnly) {
       return this._renderPlaceholderView();
     }
-    
+
     return (
       <View>
         <Text>Your full view goes here</Text>
