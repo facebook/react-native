@@ -9,6 +9,7 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
@@ -21,6 +22,10 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   static {
     SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
+  }
+
+  protected ReadableNativeArray(HybridData hybridData) {
+    super(hybridData);
   }
 
   @Override

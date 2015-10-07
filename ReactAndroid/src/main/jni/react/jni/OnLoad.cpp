@@ -14,7 +14,7 @@
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
 #include "JSLoader.h"
-#include "NativeArray.h"
+#include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 
 #ifdef WITH_FBSYSTRACE
@@ -131,83 +131,105 @@ static jobject getType(folly::dynamic::Type type) {
 
 }
 
-struct ReadableNativeArray : public NativeArray {
-  static void mapException(const std::exception& ex) {
-    if (dynamic_cast<const folly::TypeError*>(&ex) != 0) {
-      throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
-    }
+// This attribute exports the ctor symbol, so ReadableNativeArray to be
+// constructed from other DSOs.
+__attribute__((visibility("default")))
+ReadableNativeArray::ReadableNativeArray(folly::dynamic array)
+    : HybridBase(std::move(array)) {}
+
+void ReadableNativeArray::mapException(const std::exception& ex) {
+  if (dynamic_cast<const folly::TypeError*>(&ex) != nullptr) {
+    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
+  }
+}
+
+jint ReadableNativeArray::getSize() {
+  return array.size();
+}
+
+jboolean ReadableNativeArray::isNull(jint index) {
+  return array.at(index).isNull() ? JNI_TRUE : JNI_FALSE;
+}
+
+jboolean ReadableNativeArray::getBoolean(jint index) {
+  return array.at(index).getBool() ? JNI_TRUE : JNI_FALSE;
+}
+
+jdouble ReadableNativeArray::getDouble(jint index) {
+  const folly::dynamic& val = array.at(index);
+  if (val.isInt()) {
+    return val.getInt();
+  }
+  return val.getDouble();
+}
+
+jint ReadableNativeArray::getInt(jint index) {
+  auto integer = array.at(index).getInt();
+  static_assert(std::is_same<decltype(integer), int64_t>::value,
+                "folly::dynamic int is not int64_t");
+  jint javaint = static_cast<jint>(integer);
+  if (integer != javaint) {
+    throwNewJavaException(
+      exceptions::gUnexpectedNativeTypeExceptionClass,
+      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
+  }
+  return javaint;
+}
+
+const char* ReadableNativeArray::getString(jint index) {
+  const folly::dynamic& dyn = array.at(index);
+  if (dyn.isNull()) {
+    return nullptr;
+  }
+  return dyn.getString().c_str();
+}
+
+jni::local_ref<ReadableNativeArray::jhybridobject> ReadableNativeArray::getArray(jint index) {
+  auto& elem = array.at(index);
+  if (elem.isNull()) {
+    return jni::local_ref<ReadableNativeArray::jhybridobject>(nullptr);
+  } else {
+    return ReadableNativeArray::newObjectCxxArgs(elem);
+  }
+}
+
+jobject ReadableNativeArray::getMap(jint index) {
+  return createReadableNativeMapWithContents(Environment::current(), array.at(index));
+}
+
+jobject ReadableNativeArray::getType(jint index) {
+  return type::getType(array.at(index).type());
+}
+
+void ReadableNativeArray::registerNatives() {
+  jni::registerNatives("com/facebook/react/bridge/ReadableNativeArray", {
+    makeNativeMethod("size", ReadableNativeArray::getSize),
+    makeNativeMethod("isNull", ReadableNativeArray::isNull),
+    makeNativeMethod("getBoolean", ReadableNativeArray::getBoolean),
+    makeNativeMethod("getDouble", ReadableNativeArray::getDouble),
+    makeNativeMethod("getInt", ReadableNativeArray::getInt),
+    makeNativeMethod("getString", ReadableNativeArray::getString),
+    makeNativeMethod("getArray", ReadableNativeArray::getArray),
+    makeNativeMethod("getMap", "(I)Lcom/facebook/react/bridge/ReadableNativeMap;",
+                     ReadableNativeArray::getMap),
+    makeNativeMethod("getType", "(I)Lcom/facebook/react/bridge/ReadableType;",
+                     ReadableNativeArray::getType),
+  });
+}
+
+namespace {
+
+struct WritableNativeArray
+    : public jni::HybridClass<WritableNativeArray, ReadableNativeArray> {
+  static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/WritableNativeArray;";
+
+  WritableNativeArray()
+      : HybridBase(folly::dynamic({})) {}
+
+  static local_ref<jhybriddata> initHybrid(alias_ref<jclass>) {
+    return makeCxxInstance();
   }
 
-  jint getSize() {
-    return array.size();
-  }
-
-  jboolean isNull(jint index) {
-    return array.at(index).isNull() ? JNI_TRUE : JNI_FALSE;
-  }
-
-  jboolean getBoolean(jint index) {
-    return array.at(index).getBool() ? JNI_TRUE : JNI_FALSE;
-  }
-
-  jdouble getDouble(jint index) {
-    const folly::dynamic& val = array.at(index);
-    if (val.isInt()) {
-      return val.getInt();
-    }
-    return val.getDouble();
-  }
-
-  jint getInt(jint index) {
-    auto integer = array.at(index).getInt();
-    jint javaint = static_cast<jint>(integer);
-    if (integer != javaint) {
-      throwNewJavaException(
-        exceptions::gUnexpectedNativeTypeExceptionClass,
-        "Value '%lld' doesn't fit into a 32 bit signed int", integer);
-    }
-    return javaint;
-  }
-
-  jstring getString(jint index) {
-    const folly::dynamic& dyn = array.at(index);
-    if (dyn.isNull()) {
-      return nullptr;
-    }
-    return make_jstring(dyn.getString().c_str()).release();
-  }
-
-  jobject getArray(jint index) {
-    return createReadableNativeArrayWithContents(array.at(index)).release();
-  }
-
-  jobject getMap(jint index) {
-    return createReadableNativeMapWithContents(Environment::current(), array.at(index));
-  }
-
-  jobject getType(jint index) {
-    return type::getType(array.at(index).type());
-  }
-
-  static void registerNatives() {
-    jni::registerNatives("com/facebook/react/bridge/ReadableNativeArray", {
-        makeNativeMethod("size", ReadableNativeArray::getSize),
-        makeNativeMethod("isNull", ReadableNativeArray::isNull),
-        makeNativeMethod("getBoolean", ReadableNativeArray::getBoolean),
-        makeNativeMethod("getDouble", ReadableNativeArray::getDouble),
-        makeNativeMethod("getInt", ReadableNativeArray::getInt),
-        makeNativeMethod("getString", ReadableNativeArray::getString),
-        makeNativeMethod("getArray", "(I)Lcom/facebook/react/bridge/ReadableNativeArray;",
-                         ReadableNativeArray::getArray),
-        makeNativeMethod("getMap", "(I)Lcom/facebook/react/bridge/ReadableNativeMap;",
-                         ReadableNativeArray::getMap),
-        makeNativeMethod("getType", "(I)Lcom/facebook/react/bridge/ReadableType;",
-                         ReadableNativeArray::getType),
-    });
-  }
-};
-
-struct WritableNativeArray : public ReadableNativeArray {
   void pushNull() {
     exceptions::throwIfObjectAlreadyConsumed(this, "Array already consumed");
     array.push_back(nullptr);
@@ -237,7 +259,7 @@ struct WritableNativeArray : public ReadableNativeArray {
     array.push_back(wrap_alias(value)->toStdString());
   }
 
-  void pushArray(NativeArray* otherArray) {
+  void pushNativeArray(WritableNativeArray* otherArray) {
     if (otherArray == NULL) {
       pushNull();
       return;
@@ -248,7 +270,7 @@ struct WritableNativeArray : public ReadableNativeArray {
     otherArray->isConsumed = true;
   }
 
-  void pushMap(jobject jmap) {
+  void pushNativeMap(jobject jmap) {
     if (jmap == NULL) {
       pushNull();
       return;
@@ -262,18 +284,20 @@ struct WritableNativeArray : public ReadableNativeArray {
 
   static void registerNatives() {
     jni::registerNatives("com/facebook/react/bridge/WritableNativeArray", {
+        makeNativeMethod("initHybrid", WritableNativeArray::initHybrid),
         makeNativeMethod("pushNull", WritableNativeArray::pushNull),
         makeNativeMethod("pushBoolean", WritableNativeArray::pushBoolean),
         makeNativeMethod("pushDouble", WritableNativeArray::pushDouble),
         makeNativeMethod("pushInt", WritableNativeArray::pushInt),
         makeNativeMethod("pushString", WritableNativeArray::pushString),
-        makeNativeMethod("pushNativeArray", "(Lcom/facebook/react/bridge/WritableNativeArray;)V",
-                         WritableNativeArray::pushArray),
+        makeNativeMethod("pushNativeArray", WritableNativeArray::pushNativeArray),
         makeNativeMethod("pushNativeMap", "(Lcom/facebook/react/bridge/WritableNativeMap;)V",
-                         WritableNativeArray::pushMap),
+                         WritableNativeArray::pushNativeMap),
     });
   }
 };
+
+}
 
 namespace map {
 
@@ -326,7 +350,8 @@ static void putString(JNIEnv* env, jobject obj, jstring key, jstring value) {
   map->map.insert(fromJString(env, key), fromJString(env, value));
 }
 
-static void putArray(JNIEnv* env, jobject obj, jstring key, NativeArray::jhybridobject value) {
+static void putArray(JNIEnv* env, jobject obj, jstring key,
+                     WritableNativeArray::jhybridobject value) {
   if (value == NULL) {
     putNull(env, obj, key);
     return;
@@ -441,8 +466,14 @@ static jstring getStringKey(JNIEnv* env, jobject obj, jstring keyName) {
   }
 }
 
-static jobject getArrayKey(JNIEnv* env, jobject obj, jstring keyName) {
-  return createReadableNativeArrayWithContents(getMapValue(env, obj, keyName)).release();
+static jni::local_ref<ReadableNativeArray::jhybridobject> getArrayKey(
+    jni::alias_ref<jobject> obj, jstring keyName) {
+  auto& value = getMapValue(Environment::current(), obj.get(), keyName);
+  if (value.isNull()) {
+    return jni::local_ref<ReadableNativeArray::jhybridobject>(nullptr);
+  } else {
+    return ReadableNativeArray::newObjectCxxArgs(value);
+  }
 }
 
 static jobject getMapKey(JNIEnv* env, jobject obj, jstring keyName) {
@@ -526,7 +557,7 @@ static void makeJavaCall(JNIEnv* env, jobject callback, MethodCall&& call) {
   if (call.arguments.isNull()) {
     return;
   }
-  auto newArray = createReadableNativeArrayWithContents(std::move(call.arguments));
+  auto newArray = ReadableNativeArray::newObjectCxxArgs(std::move(call.arguments));
   env->CallVoidMethod(callback, gCallbackMethod, call.moduleId, call.methodId, newArray.get());
 }
 
@@ -708,9 +739,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("getDouble", map::readable::getDoubleKey),
         makeNativeMethod("getInt", map::readable::getIntKey),
         makeNativeMethod("getString", map::readable::getStringKey),
-        makeNativeMethod(
-          "getArray", "(Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableNativeArray;",
-          map::readable::getArrayKey),
+        makeNativeMethod("getArray", map::readable::getArrayKey),
         makeNativeMethod(
           "getMap", "(Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableNativeMap;",
           map::readable::getMapKey),
@@ -725,9 +754,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("putDouble", map::writable::putDouble),
         makeNativeMethod("putInt", map::writable::putInt),
         makeNativeMethod("putString", map::writable::putString),
-        makeNativeMethod(
-          "putNativeArray", "(Ljava/lang/String;Lcom/facebook/react/bridge/WritableNativeArray;)V",
-          map::writable::putArray),
+        makeNativeMethod("putNativeArray", map::writable::putArray),
         makeNativeMethod(
           "putNativeMap", "(Ljava/lang/String;Lcom/facebook/react/bridge/WritableNativeMap;)V",
           map::writable::putMap),
