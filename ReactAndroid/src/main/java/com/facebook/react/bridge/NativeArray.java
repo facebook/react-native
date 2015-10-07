@@ -22,14 +22,12 @@ public abstract class NativeArray {
     SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
   }
 
-  public NativeArray() {
-    mHybridData = initHybrid();
+  protected NativeArray(HybridData hybridData) {
+    mHybridData = hybridData;
   }
 
   @Override
   public native String toString();
-
-  private native HybridData initHybrid();
 
   @DoNotStrip
   private HybridData mHybridData;
