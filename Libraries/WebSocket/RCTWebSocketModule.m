@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTWebSocketManager.h"
+#import "RCTWebSocketModule.h"
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
@@ -29,11 +29,11 @@
 
 @end
 
-@interface RCTWebSocketManager () <RCTSRWebSocketDelegate>
+@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
 
 @end
 
-@implementation RCTWebSocketManager
+@implementation RCTWebSocketModule
 {
     RCTSparseArray *_sockets;
 }
