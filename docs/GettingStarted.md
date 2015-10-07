@@ -31,6 +31,8 @@ To write React Native apps for Android, you will need to install the Android SDK
 
     $ npm install -g react-native-cli
     $ react-native init AwesomeProject
+    **OR if you prefer to use Swift**
+    $ react-native init AwesomeProject --swift
 
 **To run the iOS app:**
 
