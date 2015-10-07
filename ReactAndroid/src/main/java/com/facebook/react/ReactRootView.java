@@ -142,7 +142,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       // {@link #findTargetTagForTouch} to find react view ID that will be responsible for handling
       // this gesture
       mChildIsHandlingNativeGesture = false;
-      mTargetTag = TouchTargetHelper.findTargetTagForTouch(ev.getRawY(), ev.getRawX(), this);
+      mTargetTag = TouchTargetHelper.findTargetTagForTouch(ev.getY(), ev.getX(), this);
       eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.START, ev));
     } else if (mChildIsHandlingNativeGesture) {
       // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
