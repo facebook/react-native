@@ -24,7 +24,6 @@ var invariant = function(condition, message) {
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
-// $FlowFixMe D2163827
 export type InterpolationConfigType = {
   inputRange: Array<number>;
   outputRange: (Array<number> | Array<string>);
