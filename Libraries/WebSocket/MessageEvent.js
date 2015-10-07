@@ -5,10 +5,21 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule MessageEvent
+ *
  */
 
-#import "RCTBridgeModule.h"
+'use strict';
 
-@interface RCTWebSocketManager : NSObject <RCTBridgeModule>
+var Event = require('Event');
 
-@end
+class MessageEvent extends Event {
+  constructor(type, eventInitDict) {
+    super(type);
+
+    Object.assign(this, eventInitDict);
+  }
+}
+
+module.exports = MessageEvent;
