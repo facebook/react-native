@@ -79,17 +79,27 @@ public class TouchTargetHelper {
       // parent, therefore `getGlobalVisibleRect` call will return bogus result as it treat view
       // with no parent as a root of the view hierarchy. To prevent this from happening we check
       // that view has a parent before visiting it.
-      if (child.getParent() != null && child.getGlobalVisibleRect(mVisibleRect)) {
-        if (eventX >= mVisibleRect.left && eventX <= mVisibleRect.right
-            && eventY >= mVisibleRect.top && eventY <= mVisibleRect.bottom) {
-          View targetView = findTouchTargetViewWithPointerEvents(eventX, eventY, child);
-          if (targetView != null) {
-            return targetView;
-          }
+      if (child.getParent() != null && isTouchPointInView(eventX, eventY, viewGroup, child)) {
+        // Apply offset to event coordinates to transform them into the coordinate space of the
+        // child view, taken from {@link ViewGroup#dispatchTransformedTouchEvent()}.
+        eventX += viewGroup.getScrollX() - child.getLeft();
+        eventY += viewGroup.getScrollY() - child.getTop();
+        View targetView = findTouchTargetViewWithPointerEvents(eventX, eventY, child);
+        if (targetView != null) {
+          return targetView;
         }
       }
     }
     return viewGroup;
+}
+
+  // Taken from {@link ViewGroup#isTransformedTouchPointInView()}
+  private static boolean isTouchPointInView(float x, float y, ViewGroup parent, View child) {
+    float localX = x + parent.getScrollX() - child.getLeft();
+    float localY = y + parent.getScrollY() - child.getTop();
+    // Taken from {@link View#pointInView()}.
+    return localX >= 0 && localX < (child.getRight() - child.getLeft())
+        && localY >= 0 && localY < (child.getBottom() - child.getTop());
   }
 
   /**
