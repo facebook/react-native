@@ -57,6 +57,7 @@ var _navigationEventPool = new NavigationEventPool();
 class NavigationEvent {
   _data: any;
   _defaultPrevented: boolean;
+  _propagationStopped: boolean;
   _disposed: boolean;
   _target: ?Object;
   _type: ?string;
@@ -71,6 +72,7 @@ class NavigationEvent {
     this._data = data;
     this._defaultPrevented = false;
     this._disposed = false;
+    this._propagationStopped = false;
   }
 
   /* $FlowFixMe - get/set properties not yet supported */
@@ -95,6 +97,19 @@ class NavigationEvent {
 
   preventDefault(): void {
     this._defaultPrevented = true;
+  }
+
+  stopPropagation(): void {
+    this._propagationStopped = true;
+  }
+
+  stop(): void {
+    this.preventDefault();
+    this.stopPropagation();
+  }
+
+  isPropagationStopped(): boolean {
+    return this._propagationStopped;
   }
 
   /**

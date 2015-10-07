@@ -23,7 +23,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _textStorage = [[NSTextStorage alloc] init];
+    _textStorage = [NSTextStorage new];
     _reactSubviews = [NSMutableArray array];
 
     self.isAccessibilityElement = YES;
@@ -62,7 +62,7 @@
   [_reactSubviews removeObject:subview];
 }
 
-- (NSMutableArray *)reactSubviews
+- (NSArray *)reactSubviews
 {
   return _reactSubviews;
 }
@@ -75,8 +75,8 @@
 
 - (void)drawRect:(CGRect)rect
 {
-  NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
-  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
+  NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
 
@@ -84,17 +84,20 @@
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
 
   __block UIBezierPath *highlightPath = nil;
-  [layoutManager.textStorage enumerateAttributesInRange:glyphRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, __unused BOOL *stop){
-    if ([attrs[RCTIsHighlightedAttributeName] boolValue]) {
-      [layoutManager enumerateEnclosingRectsForGlyphRange:range withinSelectedGlyphRange:range inTextContainer:textContainer usingBlock:^(CGRect r, __unused BOOL *s){
-        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(r, -2, -2) cornerRadius:2];
-        if (highlightPath) {
-          [highlightPath appendPath:path];
-        } else {
-          highlightPath = path;
-        }
-      }];
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+  [layoutManager.textStorage enumerateAttribute:RCTIsHighlightedAttributeName inRange:characterRange options:0 usingBlock:^(NSNumber *value, NSRange range, BOOL *_) {
+    if (!value.boolValue) {
+      return;
     }
+
+    [layoutManager enumerateEnclosingRectsForGlyphRange:range withinSelectedGlyphRange:range inTextContainer:textContainer usingBlock:^(CGRect enclosingRect, __unused BOOL *__) {
+      UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
+      if (highlightPath) {
+        [highlightPath appendPath:path];
+      } else {
+        highlightPath = path;
+      }
+    }];
   }];
 
   if (highlightPath) {
@@ -116,8 +119,8 @@
   NSNumber *reactTag = self.reactTag;
 
   CGFloat fraction;
-  NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
-  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
+  NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   NSUInteger characterIndex = [layoutManager characterIndexForPoint:point
                                                     inTextContainer:textContainer
                            fractionOfDistanceBetweenInsertionPoints:&fraction];
@@ -128,6 +131,22 @@
     reactTag = [_textStorage attribute:RCTReactTagAttributeName atIndex:characterIndex effectiveRange:NULL];
   }
   return reactTag;
+}
+
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (!self.window) {
+    self.layer.contents = nil;
+    if (_highlightLayer) {
+      [_highlightLayer removeFromSuperlayer];
+      _highlightLayer = nil;
+    }
+  } else if (_textStorage.length) {
+    [self setNeedsDisplay];
+  }
 }
 
 #pragma mark - Accessibility

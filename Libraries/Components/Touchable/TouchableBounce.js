@@ -18,6 +18,7 @@ var Touchable = require('Touchable');
 
 var merge = require('merge');
 
+type Event = Object;
 type State = {
   animationID: ?number;
 };
@@ -41,6 +42,8 @@ var TouchableBounce = React.createClass({
 
   propTypes: {
     onPress: React.PropTypes.func,
+    onPressIn: React.PropTypes.func,
+    onPressOut: React.PropTypes.func,
     // The function passed takes a callback to start the animation which should
     // be run after this onPress handler is done. You can use this (for example)
     // to update UI before starting the animation.
@@ -73,15 +76,17 @@ var TouchableBounce = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function() {
+  touchableHandleActivePressIn: function(e: Event) {
     this.bounceTo(0.93, 0.1, 0);
+    this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function() {
+  touchableHandleActivePressOut: function(e: Event) {
     this.bounceTo(1, 0.4, 0);
+    this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function() {
+  touchableHandlePress: function(e: Event) {
     var onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
@@ -92,7 +97,7 @@ var TouchableBounce = React.createClass({
     }
 
     this.bounceTo(1, 10, 10, this.props.onPressAnimationComplete);
-    this.props.onPress && this.props.onPress();
+    this.props.onPress && this.props.onPress(e);
   },
 
   touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {

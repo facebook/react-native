@@ -10,6 +10,8 @@
  */
 'use strict';
 
+require('regenerator/runtime');
+
 var React = require('react-native');
 
 var {
@@ -21,6 +23,7 @@ var {
   View,
 } = React;
 
+/* Keep this list in sync with UIExplorerIntegrationTests.m */
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),

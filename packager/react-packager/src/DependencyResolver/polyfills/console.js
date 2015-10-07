@@ -367,6 +367,9 @@
   };
 
   function setupConsole(global) {
+
+    var originalConsole = global.console;
+
     if (!global.nativeLoggingHook) {
       return;
     }
@@ -376,6 +379,12 @@
         var str = Array.prototype.map.call(arguments, function(arg) {
           return inspect(arg, {depth: 10});
         }).join(', ');
+        if (str.slice(0, 10) === "'Warning: " && level >= LOG_LEVELS.error) {
+          // React warnings use console.error so that a stack trace is shown,
+          // but we don't (currently) want these to show a redbox
+          // (Note: Logic duplicated in ExceptionsManager.js.)
+          level = LOG_LEVELS.warn;
+        }
         global.nativeLoggingHook(str, level);
       };
     }
@@ -456,6 +465,20 @@
       table: consoleTablePolyfill
     };
 
+    // If available, also call the original `console` method since that is
+    // sometimes useful. Ex: on OS X, this will let you see rich output in
+    // the Safari Web Inspector console.
+    if (__DEV__ && originalConsole) {
+      Object.keys(global.console).forEach(methodName => {
+        var reactNativeMethod = global.console[methodName];
+        if (originalConsole[methodName]) {
+          global.console[methodName] = function() {
+            originalConsole[methodName](...arguments);
+            reactNativeMethod.apply(global.console, arguments);
+          };
+        }
+      });
+    }
   }
 
   if (typeof module !== 'undefined') {

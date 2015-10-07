@@ -12,46 +12,54 @@
 'use strict';
 
 var GLOBAL = GLOBAL || this;
+var TRACE_TAG_REACT_APPS = 1 << 17;
+
+var _enabled = false;
+var _ReactPerf = null;
+function ReactPerf() {
+  if (!_ReactPerf) {
+    _ReactPerf = require('ReactPerf');
+  }
+  return _ReactPerf;
+}
 
 var BridgeProfiling = {
-  profile(profileName?: any, args?: any) {
-    if (GLOBAL.__BridgeProfilingIsProfiling) {
-      if (args) {
-        try {
-          args = JSON.stringify(args);
-        } catch(err) {
-          args = err.message;
-        }
-      }
+  setEnabled(enabled: boolean) {
+    _enabled = enabled;
+
+    ReactPerf().enableMeasure = enabled;
+  },
+
+  profile(profileName?: any) {
+    if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      console.profile(profileName, args);
+      console.profile(TRACE_TAG_REACT_APPS, profileName);
     }
   },
 
-  profileEnd(profileName?: string) {
-    if (GLOBAL.__BridgeProfilingIsProfiling) {
-      console.profileEnd(profileName);
+  profileEnd() {
+    if (_enabled) {
+      console.profileEnd(TRACE_TAG_REACT_APPS);
     }
+  },
+
+  reactPerfMeasure(objName: string, fnName: string, func: any): any {
+    return function (component) {
+      if (!_enabled) {
+        return func.apply(this, arguments);
+      }
+
+      var name = objName === 'ReactCompositeComponent' && this.getName() || '';
+      BridgeProfiling.profile(`${objName}.${fnName}(${name})`);
+      var ret = func.apply(this, arguments);
+      BridgeProfiling.profileEnd();
+      return ret;
+    };
   },
 
   swizzleReactPerf() {
-    var ReactPerf = require('ReactPerf');
-    var originalMeasure = ReactPerf.measure;
-    ReactPerf.measure = function (objName, fnName, func) {
-      func = originalMeasure.call(ReactPerf, objName, fnName, func);
-      return function (component) {
-        BridgeProfiling.profile();
-        var ret = func.apply(this, arguments);
-        if (GLOBAL.__BridgeProfilingIsProfiling) {
-          var name = this._instance && this._instance.constructor &&
-            (this._instance.constructor.displayName ||
-             this._instance.constructor.name);
-          BridgeProfiling.profileEnd(`${objName}.${fnName}(${name})`);
-        }
-        return ret;
-      };
-    };
+    ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
 };
 

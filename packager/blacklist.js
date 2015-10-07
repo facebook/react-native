@@ -13,19 +13,46 @@ var path = require('path');
 // Don't forget to everything listed here to `testConfig.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  'website',
   'node_modules/react-tools/src/React.js',
   'node_modules/react-tools/src/renderers/shared/event/EventPropagators.js',
   'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
-  'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderSyntheticEvent.js',
-  'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderTouchHistoryStore.js',
-  'node_modules/react-tools/src/renderers/shared/reconciler/ReactInstanceHandles.js',
   'node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js',
+
+  // Those conflicts with the ones in react-tools/. We need to blacklist the
+  // internal version otherwise they won't work in open source.
+  'downstream/core/invariant.js',
+  'downstream/key-mirror/keyMirror.js',
+  'downstream/core/emptyFunction.js',
+  'downstream/core/emptyObject.js',
+  'downstream/key-mirror/keyOf.js',
+  'downstream/core/dom/isNode.js',
+  'downstream/core/TouchEventUtils.js',
+  'downstream/core/nativeRequestAnimationFrame.js',
+  'downstream/core/dom/containsNode.js',
+  'downstream/core/dom/isTextNode.js',
+  'downstream/functional/mapObject.js',
+  'downstream/core/camelize.js',
+  'downstream/core/hyphenate.js',
+  'downstream/core/createArrayFromMixed.js',
+  'downstream/core/toArray.js',
+  'downstream/core/dom/getActiveElement.js',
+  'downstream/core/dom/focusNode.js',
+  'downstream/core/dom/getUnboundedScrollPosition.js',
+  'downstream/core/createNodesFromMarkup.js',
+  'downstream/core/CSSCore.js',
+  'downstream/core/getMarkupWrap.js',
+  'downstream/core/hyphenateStyleName.js',
+];
+
+// Raw unescaped patterns in case you need to use wildcards
+var sharedBlacklistWildcards = [
+  'website\/node_modules\/.*',
 ];
 
 var platformBlacklists = {
   web: [
-    '.ios.js'
+    '.ios.js',
+    '.android.js',
   ],
   ios: [
     '.web.js',
@@ -48,6 +75,7 @@ function blacklist(platform, additionalBlacklist) {
     (additionalBlacklist || []).concat(sharedBlacklist)
       .concat(platformBlacklists[platform] || [])
       .map(escapeRegExp)
+      .concat(sharedBlacklistWildcards)
       .join('|') +
     ')$'
   );

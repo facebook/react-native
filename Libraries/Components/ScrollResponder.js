@@ -355,10 +355,30 @@ var ScrollResponderMixin = {
       RCTUIManager.dispatchViewManagerCommand(
         React.findNodeHandle(this),
         RCTUIManager.RCTScrollView.Commands.scrollTo,
-        [offsetX, offsetY],
+        [Math.round(offsetX), Math.round(offsetY)],
       );
     } else {
       RCTUIManager.scrollTo(
+        React.findNodeHandle(this),
+        offsetX,
+        offsetY,
+      );
+    }
+  },
+
+  /**
+   * Like `scrollResponderScrollTo` but immediately scrolls to the given
+   * position
+   */
+  scrollResponderScrollWithouthAnimationTo: function(offsetX: number, offsetY: number) {
+    if (Platform.OS === 'android') {
+      RCTUIManager.dispatchViewManagerCommand(
+        React.findNodeHandle(this),
+        RCTUIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
+        [offsetX, offsetY],
+      );
+    } else {
+      RCTUIManager.scrollWithoutAnimationTo(
         React.findNodeHandle(this),
         offsetX,
         offsetY

@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTShadowView *)shadowView
 {
-  return [[RCTShadowRawText alloc] init];
+  return [RCTShadowRawText new];
 }
 
 RCT_EXPORT_SHADOW_PROPERTY(text, NSString)

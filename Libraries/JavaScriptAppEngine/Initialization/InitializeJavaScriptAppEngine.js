@@ -19,13 +19,14 @@
  * @providesModule InitializeJavaScriptAppEngine
  */
 
-/* eslint global-strict: 0 */
+/* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
 // Just to make sure the JS gets packaged up.
 require('RCTDebugComponentOwnership');
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
+require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;
@@ -55,6 +56,13 @@ function setUpRedBoxConsoleErrorHandler() {
   // TODO (#6925182): Enable console.error redbox on Android
   if (__DEV__ && Platform.OS === 'ios') {
     ExceptionsManager.installConsoleErrorReporter();
+  }
+}
+
+function setUpFlowChecker() {
+  if (__DEV__) {
+    var checkFlowAtRuntime = require('checkFlowAtRuntime');
+    checkFlowAtRuntime();
   }
 }
 
@@ -89,7 +97,7 @@ function setUpAlert() {
         message: '' + text,
         buttons: [{'cancel': 'OK'}],
       };
-      RCTAlertManager.alertWithArgs(alertOpts, null);
+      RCTAlertManager.alertWithArgs(alertOpts, function () {});
     };
   }
 }
@@ -122,10 +130,26 @@ function setUpWebSockets() {
   GLOBAL.WebSocket = require('WebSocket');
 }
 
-function setupProfile() {
-  console.profile = console.profile || GLOBAL.consoleProfile || function () {};
-  console.profileEnd = console.profileEnd || GLOBAL.consoleProfileEnd || function () {};
-  require('BridgeProfiling').swizzleReactPerf();
+function setUpProfile() {
+  console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
+  console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
+  if (__DEV__) {
+    require('BridgeProfiling').swizzleReactPerf();
+  }
+}
+
+function setUpProcessEnv() {
+  GLOBAL.process = GLOBAL.process || {};
+  GLOBAL.process.env = GLOBAL.process.env || {};
+  if (!GLOBAL.process.env.NODE_ENV) {
+    GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
+  }
+}
+
+function setUpNumber() {
+  Number.EPSILON = Number.EPSILON || Math.pow(2, -52);
+  Number.MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || Math.pow(2, 53) - 1;
+  Number.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -(Math.pow(2, 53) - 1);
 }
 
 setUpRedBoxErrorHandler();
@@ -136,4 +160,7 @@ setUpXHR();
 setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
-setupProfile();
+setUpProfile();
+setUpProcessEnv();
+setUpFlowChecker();
+setUpNumber();

@@ -14,8 +14,11 @@
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
+var View = require('View');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
+
+type Event = Object;
 
 /**
  * When the scroll view is disabled, this defines how far your touch may move
@@ -24,8 +27,6 @@ var onlyChild = require('onlyChild');
  * Move it back and forth several times while the scroll view is disabled.
  */
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
-
-type Event = Object;
 
 /**
  * Do not use unless you have a very good reason. All the elements that
@@ -36,15 +37,28 @@ var TouchableWithoutFeedback = React.createClass({
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
+    accessible: React.PropTypes.bool,
+    accessibilityComponentType: React.PropTypes.oneOf(View.AccessibilityComponentType),
+    accessibilityTraits: React.PropTypes.oneOfType([
+      React.PropTypes.oneOf(View.AccessibilityTraits),
+      React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
+    ]),
     /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
      */
-    accessible: React.PropTypes.bool,
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   `{nativeEvent: {layout: {x, y, width, height}}}`
+     */
+    onLayout: React.PropTypes.func,
+
     onLongPress: React.PropTypes.func,
+
     /**
      * Delay in ms, from the start of the touch, before onPressIn is called.
      */
@@ -79,16 +93,16 @@ var TouchableWithoutFeedback = React.createClass({
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleActivePressIn: function() {
-    this.props.onPressIn && this.props.onPressIn();
+  touchableHandleActivePressIn: function(e: Event) {
+    this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function() {
-    this.props.onPressOut && this.props.onPressOut();
+  touchableHandleActivePressOut: function(e: Event) {
+    this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {
@@ -112,7 +126,10 @@ var TouchableWithoutFeedback = React.createClass({
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     return (React: any).cloneElement(onlyChild(this.props.children), {
       accessible: this.props.accessible !== false,
+      accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
+      onLayout: this.props.onLayout,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

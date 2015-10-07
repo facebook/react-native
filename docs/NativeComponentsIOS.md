@@ -1,10 +1,10 @@
 ---
 id: native-components-ios
-title: Native UI Components (iOS)
+title: Native UI Components
 layout: docs
-category: Guides
+category: Guides (iOS)
 permalink: docs/native-components-ios.html
-next: direct-manipulation
+next: linking-libraries-ios
 ---
 
 There are tons of native UI widgets out there ready to be used in the latest apps - some of them are part of the platform, others are available as third-party libraries, and still more might be in use in your very own portfolio.  React Native has several of the most critical platform components already wrapped, like `ScrollView` and `TextInput`, but not all of them, and certainly not ones you might have written yourself for a previous app.  Fortunately, it's quite easy to wrap up these existing components for seamless integration with your React Native application.
@@ -211,6 +211,14 @@ MapView.propTypes = {
 ```
 
 Here you can see that the shape of the region is explicit in the JS documentation - ideally we could codegen some of this stuff, but that's not happening yet.
+
+Sometimes you'll have some special properties that you need to expose for the native component, but don't actually want them as part of the API for the associated React component.  For example, `Switch` has a custom `onChange` handler for the raw native event, and exposes an `onValueChange` handler property that is invoked with just the boolean value rather than the raw event.  Since you don't want these native only properties to be part of the API, you don't want to put them in `propTypes`, but if you don't you'll get an error.  The solution is simply to call them out via the `nativeOnly` option, e.g.
+
+```javascript
+var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
+  nativeOnly: { onChange: true }
+});
+```
 
 ## Events
 

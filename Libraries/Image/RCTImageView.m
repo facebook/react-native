@@ -12,25 +12,47 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTGIFImage.h"
 #import "RCTImageLoader.h"
+#import "RCTImageUtils.h"
 #import "RCTUtils.h"
 
 #import "UIView+React.h"
 
+/**
+ * Determines whether an image of `currentSize` should be reloaded for display
+ * at `idealSize`.
+ */
+static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize) {
+  static const CGFloat upscaleThreshold = 1.2;
+  static const CGFloat downscaleThreshold = 0.5;
+
+  CGFloat widthMultiplier = idealSize.width / currentSize.width;
+  CGFloat heightMultiplier = idealSize.height / currentSize.height;
+
+  return widthMultiplier > upscaleThreshold || widthMultiplier < downscaleThreshold ||
+    heightMultiplier > upscaleThreshold || heightMultiplier < downscaleThreshold;
+}
+
 @interface RCTImageView ()
 
-@property (nonatomic, assign) BOOL onLoadStart;
-@property (nonatomic, assign) BOOL onProgress;
-@property (nonatomic, assign) BOOL onError;
-@property (nonatomic, assign) BOOL onLoad;
-@property (nonatomic, assign) BOOL onLoadEnd;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadStart;
+@property (nonatomic, copy) RCTDirectEventBlock onProgress;
+@property (nonatomic, copy) RCTDirectEventBlock onError;
+@property (nonatomic, copy) RCTDirectEventBlock onLoad;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
 
 @end
 
 @implementation RCTImageView
 {
   RCTBridge *_bridge;
+  CGSize _targetSize;
+
+  /**
+   * A block that can be invoked to cancel the most recent call to -reloadImage,
+   * if any.
+   */
+  RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -41,9 +63,9 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-init)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (void)_updateImage
+- (void)updateImage
 {
   UIImage *image = self.image;
   if (!image) {
@@ -69,9 +91,10 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setImage:(UIImage *)image
 {
+  image = image ?: _defaultImage;
   if (image != super.image) {
-    super.image = image ?: _defaultImage;
-    [self _updateImage];
+    super.image = image;
+    [self updateImage];
   }
 }
 
@@ -79,7 +102,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (!UIEdgeInsetsEqualToEdgeInsets(_capInsets, capInsets)) {
     _capInsets = capInsets;
-    [self _updateImage];
+    [self updateImage];
   }
 }
 
@@ -87,7 +110,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (_renderingMode != renderingMode) {
     _renderingMode = renderingMode;
-    [self _updateImage];
+    [self updateImage];
   }
 }
 
@@ -99,62 +122,87 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 }
 
++ (BOOL)srcNeedsReload:(NSString *)src
+{
+  return
+    [src hasPrefix:@"http://"] ||
+    [src hasPrefix:@"https://"] ||
+    [src hasPrefix:@"assets-library://"] ||
+    [src hasPrefix:@"ph://"];
+}
+
+- (void)setContentMode:(UIViewContentMode)contentMode
+{
+  if (self.contentMode != contentMode) {
+    super.contentMode = contentMode;
+    if ([RCTImageView srcNeedsReload:_src]) {
+      [self reloadImage];
+    }
+  }
+}
+
+- (void)cancelImageLoad
+{
+  RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
+  if (previousCancellationBlock) {
+    previousCancellationBlock();
+    _reloadImageCancellationBlock = nil;
+  }
+}
+
+- (void)clearImage
+{
+  [self cancelImageLoad];
+  [self.layer removeAnimationForKey:@"contents"];
+  self.image = nil;
+}
+
 - (void)reloadImage
 {
-  if (_src && !CGSizeEqualToSize(self.frame.size, CGSizeZero)) {
+  [self cancelImageLoad];
 
+  if (_src && self.frame.size.width > 0 && self.frame.size.height > 0) {
     if (_onLoadStart) {
-      NSDictionary *event = @{ @"target": self.reactTag };
-      [_bridge.eventDispatcher sendInputEventWithName:@"loadStart" body:event];
+      _onLoadStart(nil);
     }
 
     RCTImageLoaderProgressBlock progressHandler = nil;
     if (_onProgress) {
-      progressHandler =  ^(int64_t loaded, int64_t total) {
-        NSDictionary *event = @{
-          @"target": self.reactTag,
-          @"loaded": @(loaded),
-          @"total": @(total),
-        };
-        [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
+      progressHandler = ^(int64_t loaded, int64_t total) {
+        _onProgress(@{
+          @"loaded": @((double)loaded),
+          @"total": @((double)total),
+        });
       };
     }
 
-    [_bridge.imageLoader loadImageWithTag:_src
-                                     size:self.bounds.size
-                                    scale:RCTScreenScale()
-                               resizeMode:self.contentMode
-                            progressBlock:progressHandler
-                          completionBlock:^(NSError *error, id image) {
-
-      if ([image isKindOfClass:[CAAnimation class]]) {
-        [self.layer addAnimation:image forKey:@"contents"];
+    _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithTag:_src
+                                                                     size:self.bounds.size
+                                                                    scale:RCTScreenScale()
+                                                               resizeMode:self.contentMode
+                                                            progressBlock:progressHandler
+                                                          completionBlock:^(NSError *error, UIImage *image) {
+      if (image.reactKeyframeAnimation) {
+        [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
       } else {
         [self.layer removeAnimationForKey:@"contents"];
         self.image = image;
       }
       if (error) {
         if (_onError) {
-          NSDictionary *event = @{
-            @"target": self.reactTag,
-            @"error": error.localizedDescription,
-          };
-          [_bridge.eventDispatcher sendInputEventWithName:@"error" body:event];
+          _onError(@{ @"error": error.localizedDescription });
         }
       } else {
         if (_onLoad) {
-          NSDictionary *event = @{ @"target": self.reactTag };
-          [_bridge.eventDispatcher sendInputEventWithName:@"load" body:event];
+          _onLoad(nil);
         }
       }
       if (_onLoadEnd) {
-        NSDictionary *event = @{ @"target": self.reactTag };
-        [_bridge.eventDispatcher sendInputEventWithName:@"loadEnd" body:event];
+         _onLoadEnd(nil);
       }
     }];
   } else {
-    [self.layer removeAnimationForKey:@"contents"];
-    self.image = nil;
+    [self clearImage];
   }
 }
 
@@ -162,36 +210,50 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   [super reactSetFrame:frame];
   if (self.image == nil) {
+    _targetSize = frame.size;
     [self reloadImage];
-  } else if ([RCTImageLoader isAssetLibraryImage:_src] || [RCTImageLoader isRemoteImage:_src]) {
-    CGSize imageSize = {
-      self.image.size.width / RCTScreenScale(),
-      self.image.size.height / RCTScreenScale()
-    };
-    CGFloat widthChangeFraction = imageSize.width ? ABS(imageSize.width - frame.size.width) / imageSize.width : 1;
-    CGFloat heightChangeFraction = imageSize.height ? ABS(imageSize.height - frame.size.height) / imageSize.height : 1;
-    // If the combined change is more than 20%, reload the asset in case there is a better size.
-    if (widthChangeFraction + heightChangeFraction > 0.2) {
-      [self reloadImage];
+  } else if ([RCTImageView srcNeedsReload:_src]) {
+    CGSize imageSize = self.image.size;
+    CGSize idealSize = RCTTargetSize(imageSize, self.image.scale, frame.size, RCTScreenScale(), self.contentMode, YES);
+
+    if (RCTShouldReloadImageForSizeChange(imageSize, idealSize)) {
+      if (RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) {
+        RCTLogInfo(@"[PERF IMAGEVIEW] Reloading image %@ as size %@", _src, NSStringFromCGSize(idealSize));
+
+        // If the existing image or an image being loaded are not the right size, reload the asset in case there is a
+        // better size available.
+        _targetSize = idealSize;
+        [self reloadImage];
+      }
+    } else {
+      // Our existing image is good enough.
+      [self cancelImageLoad];
+      _targetSize = imageSize;
     }
   }
 }
 
-- (void)willMoveToSuperview:(UIView *)newSuperview
+- (void)didMoveToWindow
 {
-  [super willMoveToSuperview:newSuperview];
+  [super didMoveToWindow];
 
-  if (!newSuperview) {
-    [self.layer removeAnimationForKey:@"contents"];
-    self.image = nil;
-  }
-}
+  if (!self.window) {
+    // Don't keep self alive through the asynchronous dispatch, if the intention was to remove the view so it would
+    // deallocate.
+    __weak typeof(self) weakSelf = self;
 
-- (void)didMoveToSuperview
-{
-  [super didMoveToSuperview];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      __strong typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
 
-  if (self.superview && self.src) {
+      // If we haven't been re-added to a window by this run loop iteration, clear out the image to save memory.
+      if (!strongSelf.window) {
+        [strongSelf clearImage];
+      }
+    });
+  } else if (!self.image && self.src) {
     [self reloadImage];
   }
 }

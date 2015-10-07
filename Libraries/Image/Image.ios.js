@@ -19,6 +19,7 @@ var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var View = require('View');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
@@ -60,9 +61,13 @@ var Image = React.createClass({
      * could be an http address, a local file path, or the name of a static image
      * resource (which should be wrapped in the `require('image!name')` function).
      */
-    source: PropTypes.shape({
-      uri: PropTypes.string,
-    }),
+    source: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]),
     /**
      * A static image to display while downloading the final image off the
      * network.
@@ -161,10 +166,21 @@ var Image = React.createClass({
     var {width, height} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
+    if (source.uri === '') {
+      console.warn('source.uri should not be an empty string');
+      return <View {...this.props} style={style} />;
+    }
+
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
     var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
     var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+
+    // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
+    // TODO: Remove this hack once we have one image implementation #8389274
+    if (isNetwork && tintColor) {
+      RawImage = RCTImageView;
+    }
 
     return (
       <RawImage
@@ -173,7 +189,7 @@ var Image = React.createClass({
         resizeMode={resizeMode}
         tintColor={tintColor}
         src={source.uri}
-        defaultSrc={defaultSource.uri}
+        defaultImageSrc={defaultSource.uri}
       />
     );
   }

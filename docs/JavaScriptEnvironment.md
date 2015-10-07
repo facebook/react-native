@@ -12,7 +12,7 @@ next: navigator-comparison
 When using React Native, you're going to be running your JavaScript code in two environments:
 
 * On iOS simulators and devices, Android emulators and devices React Native uses [JavaScriptCore](http://trac.webkit.org/wiki/JavaScriptCore) which is the JavaScript engine that powers Safari. On iOS JSC doesn't use JIT due to the absence of writable executable memory in iOS apps.
-* When using Chrome debugging, it runs all the JavaScript code within Chrome itself and communicates with Objective-C via WebSocket. So you are using [V8](https://code.google.com/p/v8/).
+* When using Chrome debugging, it runs all the JavaScript code within Chrome itself and communicates with native code via WebSocket. So you are using [V8](https://code.google.com/p/v8/).
 
 While both environments are very similar, you may end up hitting some inconsistencies. We're likely going to experiment with other JS engines in the future, so it's best to avoid relying on specifics of any runtime.
 
@@ -34,6 +34,7 @@ ES6
 * [Call spread](http://babeljs.io/docs/learn-es2015/#default-rest-spread): `Math.max(...array);`
 * [Classes](http://babeljs.io/docs/learn-es2015/#classes): `class C extends React.Component { render() { return <View />; } }`
 * [Destructuring](http://babeljs.io/docs/learn-es2015/#destructuring): `var {isActive, style} = this.props;`
+* [Modules](http://babeljs.io/docs/learn-es2015/#modules): `import React, { Component } from 'react-native';`
 * [Computed Properties](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var key = 'abc'; var obj = {[key]: 10};`
 * Object Consise Method: `var obj = { method() { return 10; } };`
 * [Object Short Notation](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var name = 'vjeux'; var obj = { name };`

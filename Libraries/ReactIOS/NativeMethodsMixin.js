@@ -12,15 +12,12 @@
 'use strict';
 
 var NativeModules = require('NativeModules');
-var RCTPOPAnimationManager = NativeModules.POPAnimationManager;
 var RCTUIManager = NativeModules.UIManager;
+var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
 
 var findNodeHandle = require('findNodeHandle');
-var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
-var mergeFast = require('mergeFast');
-var precomputeStyle = require('precomputeStyle');
 
 type MeasureOnSuccessCallback = (
   x: number,
@@ -38,32 +35,20 @@ type MeasureLayoutOnSuccessCallback = (
   height: number
 ) => void
 
-var animationIDInvariant = function(
-  funcName: string,
-  anim: number
-) {
-  invariant(
-    anim,
-    funcName + ' must be called with a valid animation ID returned from' +
-    ' POPAnimation.createAnimation, received: "' + anim + '"'
-  );
-};
+
+function warnForStyleProps(props, validAttributes) {
+  for (var key in validAttributes.style) {
+    if (!(validAttributes[key] || props[key] === undefined)) {
+      console.error(
+        'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
+        'should nest it in a style object. ' +
+        'E.g. `{ style: { ' + key + ': ... } }`'
+      );
+    }
+  }
+}
 
 var NativeMethodsMixin = {
-  addAnimation: function(anim: number, callback?: (finished: bool) => void) {
-    animationIDInvariant('addAnimation', anim);
-    RCTPOPAnimationManager.addAnimation(
-      findNodeHandle(this),
-      anim,
-      mountSafeCallback(this, callback)
-    );
-  },
-
-  removeAnimation: function(anim: number) {
-    animationIDInvariant('removeAnimation', anim);
-    RCTPOPAnimationManager.removeAnimation(findNodeHandle(this), anim);
-  },
-
   measure: function(callback: MeasureOnSuccessCallback) {
     RCTUIManager.measure(
       findNodeHandle(this),
@@ -90,33 +75,19 @@ var NativeMethodsMixin = {
    * next render, they will remain active.
    */
   setNativeProps: function(nativeProps: Object) {
-    // nativeProps contains a style attribute that's going to be flattened
-    // and all the attributes expanded in place. In order to make this
-    // process do as few allocations and copies as possible, we return
-    // one if the other is empty. Only if both have values then we create
-    // a new object and merge.
-    var hasOnlyStyle = true;
-    for (var key in nativeProps) {
-      if (key !== 'style') {
-        hasOnlyStyle = false;
-        break;
-      }
+    if (__DEV__) {
+      warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
     }
-    var style = precomputeStyle(flattenStyle(nativeProps.style));
 
-    var props = null;
-    if (hasOnlyStyle) {
-      props = style;
-    } else if (!style) {
-      props = nativeProps;
-    } else {
-      props = mergeFast(nativeProps, style);
-    }
+    var updatePayload = ReactNativeAttributePayload.create(
+      nativeProps,
+      this.viewConfig.validAttributes
+    );
 
     RCTUIManager.updateView(
       findNodeHandle(this),
       this.viewConfig.uiViewClassName,
-      props
+      updatePayload
     );
   },
 

@@ -5,12 +5,23 @@ var chalk = require('chalk');
 var blacklist = require('../packager/blacklist.js');
 var ReactPackager = require('../packager/react-packager');
 
-var OUT_PATH = 'iOS/main.jsbundle';
-var URL_PATH = '/index.ios.bundle?dev=';
+var OUT_PATH = {
+  android: 'android/app/src/main/assets/index.android.bundle',
+  ios: 'ios/main.jsbundle'
+};
+var URL_PATH = {
+  android: '/index.android.bundle?platform=android&dev=',
+  ios: '/index.ios.bundle?platform=ios&dev='
+};
+var SOURCEMAP_OUT_PATH = {
+  android: 'android/index.android.map',
+  ios: 'ios/index.ios.map'
+};
 
 function getBundle(flags) {
-
-  var outPath = flags.out ? flags.out : OUT_PATH;
+  var platform = flags.platform ? flags.platform : 'ios';
+  var outPath = flags.out ? flags.out : OUT_PATH[platform];
+  var sourceMapOutPath = SOURCEMAP_OUT_PATH[platform];
 
   var projectRoots = [path.resolve(__dirname, '../../..')];
   if (flags.root) {
@@ -29,11 +40,11 @@ function getBundle(flags) {
     projectRoots: projectRoots,
     transformModulePath: require.resolve('../packager/transformer.js'),
     assetRoots: assetRoots,
-    cacheVersion: '2',
-    blacklistRE: blacklist('ios'),
+    cacheVersion: '3',
+    blacklistRE: blacklist(platform),
   };
 
-  var url = flags.url ? flags.url.replace(/\.js$/i, '.bundle?dev=') : URL_PATH;
+  var url = flags.url ? flags.url.replace(/\.js$/i, '.bundle?dev=') : URL_PATH[platform];
   url = url.match(/^\//) ? url : '/' + url;
   url += flags.dev;
 
@@ -44,12 +55,23 @@ function getBundle(flags) {
       fs.writeFile(outPath, bundle.getSource({
         inlineSourceMap: false,
         minify: flags.minify
-      }), function(err) {
-        if (err) {
+      }), function(bundleWriteErr) {
+        if (bundleWriteErr) {
           console.log(chalk.red('Error saving bundle to disk'));
-          throw err;
-        } else {
-          console.log('Successfully saved bundle to ' + outPath);
+          throw bundleWriteErr;
+        }
+
+        console.log('Successfully saved bundle to ' + outPath);
+
+        if (flags.writeSourcemap) {
+          fs.writeFile(sourceMapOutPath, bundle.getSourceMap(), function(sourceMapWriteErr) {
+            if (sourceMapWriteErr) {
+              console.log(chalk.red('Error saving source map to disk'));
+              throw sourceMapWriteErr;
+            } else {
+              console.log('Successfully saved source map to ' + sourceMapOutPath);
+            }
+          });
         }
       });
     });
@@ -66,6 +88,8 @@ function showHelp() {
     '  --assetRoots\t\tspecify the root directories of app assets',
     '  --out\t\tspecify the output file',
     '  --url\t\tspecify the bundle file url',
+    '  --platform\t\tspecify the platform(android/ios)',
+    '  --write-sourcemap\t\twrite bundle source map to disk'
   ].join('\n'));
   process.exit(1);
 }
@@ -77,9 +101,11 @@ module.exports = {
       dev: args.indexOf('--dev') !== -1,
       minify: args.indexOf('--minify') !== -1,
       root: args.indexOf('--root') !== -1 ? args[args.indexOf('--root') + 1] : false,
+      platform: args.indexOf('--platform') !== -1 ? args[args.indexOf('--platform') + 1] : false,
       assetRoots: args.indexOf('--assetRoots') !== -1 ? args[args.indexOf('--assetRoots') + 1] : false,
       out: args.indexOf('--out') !== -1 ? args[args.indexOf('--out') + 1] : false,
       url: args.indexOf('--url') !== -1 ? args[args.indexOf('--url') + 1] : false,
+      writeSourcemap: args.indexOf('--write-sourcemap') !== -1,
     }
 
     if (flags.help) {

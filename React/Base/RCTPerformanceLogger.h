@@ -10,11 +10,12 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTDefines.h"
-#import "RCTBridgeModule.h"
 
 typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLScriptDownload = 0,
-  RCTPLAppScriptExecution,
+  RCTPLScriptExecution,
+  RCTPLNativeModuleInit,
+  RCTPLNativeModuleInjectConfig,
   RCTPLTTI,
   RCTPLSize
 };

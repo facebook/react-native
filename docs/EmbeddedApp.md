@@ -1,10 +1,10 @@
 ---
 id: embedded-app-ios
-title: Integrating with Existing Apps (iOS)
+title: Integrating with Existing Apps
 layout: docs
-category: Guides
+category: Guides (iOS)
 permalink: docs/embedded-app-ios.html
-next: javascript-environment
+next: native-modules-android
 ---
 
 Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [CocoaPods](http://cocoapods.org/).
@@ -12,9 +12,8 @@ Since React makes no assumptions about the rest of your technology stack – it�
 ## Requirements
 
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
-- [io.js](http://iojs.org)
-  - **With nvm:** Install nvm with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install iojs && nvm alias default iojs`, which installs the latest version of io.js and sets up your terminal so that typing `node` runs io.js.  With nvm you can install multiple versions of Node and io.js and easily switch between them.
-  - **With Homebrew:** Run `brew install iojs && brew link iojs --force`. You may need to run `brew unlink node` if you have previously installed Node.
+- [Node.js](http://nodejs.org)
+  - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
 
 ## Install React Native Using CocoaPods
 

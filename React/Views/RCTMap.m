@@ -80,7 +80,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   if (self.showsUserLocation != showsUserLocation) {
     if (showsUserLocation && !_locationManager) {
-      _locationManager = [[CLLocationManager alloc] init];
+      _locationManager = [CLLocationManager new];
       if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [_locationManager requestWhenInUseAuthorization];
       }
@@ -114,9 +114,9 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
 - (void)setAnnotations:(RCTPointAnnotationArray *)annotations
 {
-  NSMutableArray *newAnnotationIds = [[NSMutableArray alloc] init];
-  NSMutableArray *annotationsToDelete = [[NSMutableArray alloc] init];
-  NSMutableArray *annotationsToAdd = [[NSMutableArray alloc] init];
+  NSMutableArray *newAnnotationIds = [NSMutableArray new];
+  NSMutableArray *annotationsToDelete = [NSMutableArray new];
+  NSMutableArray *annotationsToAdd = [NSMutableArray new];
 
   for (RCTPointAnnotation *annotation in annotations) {
     if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
@@ -150,7 +150,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
     [self addAnnotations:annotationsToAdd];
   }
 
-  NSMutableArray *newIds = [[NSMutableArray alloc] init];
+  NSMutableArray *newIds = [NSMutableArray new];
   for (RCTPointAnnotation *anno in self.annotations) {
     if ([anno isKindOfClass:[MKUserLocation class]]) {
       continue;

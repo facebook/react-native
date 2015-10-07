@@ -304,6 +304,15 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
  */
 var TouchableMixin = {
   /**
+   * Clear all timeouts on unmount
+   */
+  componentWillUnmount: function() {
+    this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
+    this.longPressDelayTimeout && clearTimeout(this.longPressDelayTimeout);
+    this.pressOutDelayTimeout && clearTimeout(this.pressOutDelayTimeout);
+  },
+
+  /**
    * It's prefer that mixins determine state in this way, having the class
    * explicitly mix the state in the one and only `getInitialState` method.
    *
@@ -636,19 +645,19 @@ var TouchableMixin = {
     }
 
     if (IsPressingIn[curState] && signal === Signals.LONG_PRESS_DETECTED) {
-      this.touchableHandleLongPress && this.touchableHandleLongPress();
+      this.touchableHandleLongPress && this.touchableHandleLongPress(e);
     }
 
     if (newIsHighlight && !curIsHighlight) {
       this._savePressInLocation(e);
-      this.touchableHandleActivePressIn && this.touchableHandleActivePressIn();
+      this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
     } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
       if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
         this.pressOutDelayTimeout = this.setTimeout(function() {
-          this.touchableHandleActivePressOut();
+          this.touchableHandleActivePressOut(e);
         }, this.touchableGetPressOutDelayMS());
       } else {
-        this.touchableHandleActivePressOut();
+        this.touchableHandleActivePressOut(e);
       }
     }
 

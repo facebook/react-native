@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See https://www.facebook.com/groups/303159406399348/permalink/410968105618477/ -->
+<!-- @generated SignedSource<<6ec54166bd3719bd707c986dbd249e61>> -->
+<!-- @nolint -->
+<!-- @mobile export_name="fbandroid 2015-07-14 at 04:03:16 GMT" locale="fb_HA" lib_name="java-com-facebook-catalyst-js-react-native-github-ReactAndroid-android_res-com-facebook-react-devsupport" -->
+
+<resources>
+    <string name="catalyst_reloadjs">[Reload JS#cd6b54f9f3c2e4ae7de6fdaf163ef79b:1]</string>
+    <string name="catalyst_debugjs">[Debug JS#2010fa256bd28603b686da2713bb843a:1]</string>
+    <string name="catalyst_settings">[Dev Settings#6b65fc308a2da07fa01ad6fcbaa57002:1]</string>
+    <string name="catalyst_settings_title">[Catalyst Dev Settings#bf44a606175d084d4c8d283938dd041d:1]</string>
+    <string name="catalyst_jsload_title">[Please wait...#71bad104a80f916d3bfb1ffa23a487af:1]</string>
+    <string name="catalyst_jsload_message">[Fetching JS bundle#0de4127d4fc6e7d1e265e07433f26e25:1]</string>
+    <string name="catalyst_jsload_error">[Unable to download JS bundle#51057ecd2555f91873cce4c452e1ea03:1]</string>
+    <string name="catalyst_inspect_element">[Inspect Element#c1b106c92869437ebd88f326d632b973:1]</string>
+</resources>

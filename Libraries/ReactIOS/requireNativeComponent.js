@@ -12,12 +12,14 @@
 'use strict';
 
 var RCTUIManager = require('NativeModules').UIManager;
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var UnimplementedView = require('UnimplementedView');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');
 var matricesDiffer = require('matricesDiffer');
+var processColor = require('processColor');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
@@ -57,9 +59,31 @@ function requireNativeComponent(
   viewConfig.validAttributes = {};
   viewConfig.propTypes = componentInterface && componentInterface.propTypes;
   for (var key in nativeProps) {
+    var useAttribute = false;
+    var attribute = {};
+
     var differ = TypeToDifferMap[nativeProps[key]];
-    viewConfig.validAttributes[key] = differ ? {diff: differ} : true;
+    if (differ) {
+      attribute.diff = differ;
+      useAttribute = true;
+    }
+
+    var processor = TypeToProcessorMap[nativeProps[key]];
+    if (processor) {
+      attribute.process = processor;
+      useAttribute = true;
+    }
+
+    viewConfig.validAttributes[key] = useAttribute ? attribute : true;
   }
+
+  // Unfortunately, the current set up puts the style properties on the top
+  // level props object. We also need to add the nested form for API
+  // compatibility. This allows these props on both the top level and the
+  // nested style level. TODO: Move these to nested declarations on the
+  // native side.
+  viewConfig.validAttributes.style = ReactNativeStyleAttributes;
+
   if (__DEV__) {
     componentInterface && verifyPropTypes(
       componentInterface,
@@ -78,6 +102,16 @@ var TypeToDifferMap = {
   UIEdgeInsets: insetsDiffer,
   // Android Types
   // (not yet implemented)
+};
+
+var TypeToProcessorMap = {
+  // iOS Types
+  CGColor: processColor,
+  CGColorArray: processColor,
+  UIColor: processColor,
+  UIColorArray: processColor,
+  // Android Types
+  Color: processColor,
 };
 
 module.exports = requireNativeComponent;

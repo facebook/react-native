@@ -9,7 +9,9 @@
 
 #import "RCTStatusBarManager.h"
 
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @implementation RCTConvert (UIStatusBar)
 
@@ -42,9 +44,51 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge = _bridge;
+
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+    [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
+}
+
+- (void)emitEvent:(NSString *)eventName forNotification:(NSNotification *)notification
+{
+  CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
+  NSDictionary *event = @{
+    @"frame": @{
+        @"x": @(frame.origin.x),
+        @"y": @(frame.origin.y),
+        @"width": @(frame.size.width),
+        @"height": @(frame.size.height),
+    },
+  };
+  [_bridge.eventDispatcher sendDeviceEventWithName:eventName body:event];
+}
+
+- (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
+{
+  [self emitEvent:@"statusBarFrameDidChange" forNotification:notification];
+}
+
+- (void)applicationWillChangeStatusBarFrame:(NSNotification *)notification
+{
+  [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
 }
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
@@ -54,8 +98,8 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-    [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle
-                                                animated:animated];
+    [RCTSharedApplication() setStatusBarStyle:statusBarStyle
+                                     animated:animated];
   }
 }
 
@@ -66,14 +110,14 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-    [[UIApplication sharedApplication] setStatusBarHidden:hidden
-                                            withAnimation:animation];
+    [RCTSharedApplication() setStatusBarHidden:hidden
+                                 withAnimation:animation];
   }
 }
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
-  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:visible];
+  RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
 @end

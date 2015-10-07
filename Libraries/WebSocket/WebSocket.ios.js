@@ -16,6 +16,19 @@ var RCTWebSocketManager = require('NativeModules').WebSocketManager;
 
 var WebSocketBase = require('WebSocketBase');
 
+class Event {
+  constructor(type) {
+    this.type = type.toString();
+  }
+}
+
+class MessageEvent extends Event {
+  constructor(type, eventInitDict) {
+    super(type);
+    Object.assign(this, eventInitDict);
+  }
+}
+
 var WebSocketId = 0;
 
 class WebSocket extends WebSocketBase {
@@ -58,9 +71,11 @@ class WebSocket extends WebSocketBase {
           if (ev.id !== id) {
             return;
           }
-          this.onmessage && this.onmessage({
+          var event = new MessageEvent('message', {
             data: ev.data
           });
+          this.onmessage && this.onmessage(event);
+          this.dispatchEvent(event);
         }.bind(this)
       ),
       RCTDeviceEventEmitter.addListener(
@@ -70,7 +85,9 @@ class WebSocket extends WebSocketBase {
             return;
           }
           this.readyState = this.OPEN;
-          this.onopen && this.onopen();
+          var event = new Event('open');
+          this.onopen && this.onopen(event);
+          this.dispatchEvent(event);
         }.bind(this)
       ),
       RCTDeviceEventEmitter.addListener(
@@ -80,7 +97,9 @@ class WebSocket extends WebSocketBase {
             return;
           }
           this.readyState = this.CLOSED;
-          this.onclose && this.onclose(ev);
+          var event = new Event('close');
+          this.onclose && this.onclose(event);
+          this.dispatchEvent(event);
           this._unregisterEvents();
           RCTWebSocketManager.close(id);
         }.bind(this)
@@ -91,7 +110,10 @@ class WebSocket extends WebSocketBase {
           if (ev.id !== id) {
             return;
           }
-          this.onerror && this.onerror(new Error(ev.message));
+          var event = new Event('error');
+          event.message = ev.message;
+          this.onerror && this.onerror(event);
+          this.dispatchEvent(event);
           this._unregisterEvents();
           RCTWebSocketManager.close(id);
         }.bind(this)

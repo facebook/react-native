@@ -63,7 +63,8 @@ function getPathInArchive(asset) {
  * from the devserver
  */
 function getPathOnDevserver(devServerUrl, asset) {
-  return devServerUrl + getScaledAssetPath(asset) + '?hash=' + asset.hash;
+  return devServerUrl + getScaledAssetPath(asset) + '?platform=' + Platform.OS +
+    '&hash=' + asset.hash;
 }
 
 /**
@@ -120,13 +121,16 @@ function assetToImageSource(asset) {
   var devServerURL = getDevServerURL();
   if (devServerURL) {
     return {
+      __packager_asset: true,
       width: asset.width,
       height: asset.height,
       uri: getPathOnDevserver(devServerURL, asset),
       isStatic: false,
+      scale: pickScale(asset.scales, PixelRatio.get()),
     };
   } else {
     return {
+      __packager_asset: true,
       width: asset.width,
       height: asset.height,
       uri: getPathInArchive(asset),

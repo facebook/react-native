@@ -65,13 +65,11 @@ class MessageQueue {
     localModules && this._genLookupTables(
       localModules, this._moduleTable, this._methodTable);
 
-    if (__DEV__) {
-      this._debugInfo = {};
-      this._remoteModuleTable = {};
-      this._remoteMethodTable = {};
-      this._genLookupTables(
-        remoteModules, this._remoteModuleTable, this._remoteMethodTable);
-    }
+    this._debugInfo = {};
+    this._remoteModuleTable = {};
+    this._remoteMethodTable = {};
+    this._genLookupTables(
+      remoteModules, this._remoteModuleTable, this._remoteMethodTable);
   }
 
   /**
@@ -85,11 +83,19 @@ class MessageQueue {
             '__callFunction' : '__invokeCallback';
           guard(() => this[method].apply(this, call.args));
         });
-        BridgeProfiling.profile('ReactUpdates.batchedUpdates()');
+
+        this.__callImmediates();
       });
-      BridgeProfiling.profileEnd();
+
+      // batchedUpdates might still trigger setImmediates
+      while (JSTimersExecution.immediates.length) {
+        ReactUpdates.batchedUpdates(() => {
+          this.__callImmediates();
+        });
+      }
     });
-    return this.flushedQueue();
+
+    return this.__flushedQueue();
   }
 
   callFunctionReturnFlushedQueue(module, method, args) {
@@ -103,26 +109,32 @@ class MessageQueue {
   }
 
   flushedQueue() {
-    BridgeProfiling.profile('JSTimersExecution.callImmediates()');
-    guard(() => JSTimersExecution.callImmediates());
-    BridgeProfiling.profileEnd();
-    let queue = this._queue;
-    this._queue = [[],[],[]];
-    return queue[0].length ? queue : null;
+    this.__callImmediates();
+    return this.__flushedQueue();
   }
 
   /**
    * "Private" methods
    */
+
+  __callImmediates() {
+    BridgeProfiling.profile('JSTimersExecution.callImmediates()');
+    guard(() => JSTimersExecution.callImmediates());
+    BridgeProfiling.profileEnd();
+  }
+
+  __flushedQueue() {
+    let queue = this._queue;
+    this._queue = [[],[],[]];
+    return queue[0].length ? queue : null;
+  }
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
-      if (__DEV__) {
-        // eventually delete old debug info
-        (this._callbackID > (1 << 5)) &&
-          (this._debugInfo[this._callbackID >> 5] = null);
+      // eventually delete old debug info
+      (this._callbackID > (1 << 5)) &&
+        (this._debugInfo[this._callbackID >> 5] = null);
 
-        this._debugInfo[this._callbackID >> 1] = [module, method];
-      }
+      this._debugInfo[this._callbackID >> 1] = [module, method];
       onFail && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onFail;
       onSucc && params.push(this._callbackID);
@@ -155,13 +167,15 @@ class MessageQueue {
     BridgeProfiling.profile(
       () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
     let callback = this._callbacks[cbID];
-    if (__DEV__) {
+    if (!callback || __DEV__) {
       let debug = this._debugInfo[cbID >> 1];
       let module = debug && this._remoteModuleTable[debug[0]];
       let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
-      if (!callback) {
-        console.error(`Callback with id ${cbID}: ${module}.${method}() not found`);
-      } else if (SPY_MODE) {
+      invariant(
+        callback,
+        `Callback with id ${cbID}: ${module}.${method}() not found`
+      );
+      if (callback && SPY_MODE) {
         console.log('N->JS : <callback for ' + module + '.' + method + '>(' + JSON.stringify(args) + ')');
       }
     }
@@ -218,9 +232,10 @@ class MessageQueue {
       return null;
     }
 
+    let fn = null;
     let self = this;
     if (type === MethodTypes.remoteAsync) {
-      return function(...args) {
+      fn = function(...args) {
         return new Promise((resolve, reject) => {
           self.__nativeCall(module, method, args, resolve, (errorData) => {
             var error = createErrorFromErrorData(errorData);
@@ -229,7 +244,7 @@ class MessageQueue {
         });
       };
     } else {
-      return function(...args) {
+      fn = function(...args) {
         let lastArg = args.length > 0 ? args[args.length - 1] : null;
         let secondLastArg = args.length > 1 ? args[args.length - 2] : null;
         let hasSuccCB = typeof lastArg === 'function';
@@ -245,6 +260,8 @@ class MessageQueue {
         return self.__nativeCall(module, method, args, onFail, onSucc);
       };
     }
+    fn.type = type;
+    return fn;
   }
 
 }
