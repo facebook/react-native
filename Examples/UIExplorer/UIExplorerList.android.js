@@ -32,6 +32,7 @@ var COMPONENTS = [
   require('./ToolbarAndroidExample'),
   require('./TouchableExample'),
   require('./ViewExample'),
+  require('./ViewPagerAndroidExample.android'),
 ];
 
 var APIS = [
