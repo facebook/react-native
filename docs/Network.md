@@ -49,3 +49,31 @@ fetch('https://mywebsite.com/endpoint.php')
     console.warn(error);
   });
 ```
+
+## WebSocket
+
+WebSocket is a protocol providing full-duplex communication channels over a single TCP connection.
+
+```javascript
+var ws = new WebSocket('ws://host.com/path');
+
+ws.on('open', function() {
+  // connection opened
+  ws.send('something');
+});
+
+ws.on('message', function(e) {
+  // a message was received
+  console.log(e.data);
+});
+
+ws.on('error', function(e) {
+  // an error occurred
+  console.log(e.message);
+});
+
+ws.on('close', function(e) {
+  // connection closed
+  console.log(e.code, e.reason);
+});
+```
