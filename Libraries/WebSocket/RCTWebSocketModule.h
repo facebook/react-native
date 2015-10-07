@@ -9,6 +9,6 @@
 
 #import "RCTBridgeModule.h"
 
-@interface RCTWebSocketManager : NSObject <RCTBridgeModule>
+@interface RCTWebSocketModule : NSObject <RCTBridgeModule>
 
 @end
