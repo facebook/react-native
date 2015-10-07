@@ -16,16 +16,11 @@ var EventTarget = require('event-target-shim');
 /**
  * Shared base for platform-specific WebSocket implementations.
  */
-class WebSocketBase extends EventTarget {
+class WebSocketBase extends EventTarget('close', 'error', 'message', 'open') {
   CONNECTING: number;
   OPEN: number;
   CLOSING: number;
   CLOSED: number;
-
-  onclose: ?Function;
-  onerror: ?Function;
-  onmessage: ?Function;
-  onopen: ?Function;
 
   binaryType: ?string;
   bufferedAmount: number;
@@ -40,6 +35,8 @@ class WebSocketBase extends EventTarget {
     this.OPEN = 1;
     this.CLOSING = 2;
     this.CLOSED = 3;
+
+    this.readyState = this.CONNECTING;
 
     if (!protocols) {
       protocols = [];
