@@ -13,6 +13,12 @@ var center = require('center');
 
 var apps = [
   {
+    name: 'AIGA Design Conference 2015: New Orleans',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
+    author: 'W&Co',
+  },
+  {
     name: 'Beetroot',
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple5/v4/66/fd/dd/66fddd70-f848-4fc5-43ee-4d52197ccab8/pr_source.png',
     link: 'https://itunes.apple.com/us/app/beetroot/id1016159001?ls=1&mt=8',
