@@ -292,7 +292,7 @@ class JObjectWrapper<jtypeArray<T>> : public JObjectWrapper<jobject> {
  public:
   static constexpr const char* kJavaDescriptor = nullptr;
   static std::string get_instantiated_java_descriptor() {
-    return jtype_traits<T>::array_descriptor();
+    return "[" + jtype_traits<T>::descriptor();
   };
 
   using JObjectWrapper<jobject>::JObjectWrapper;
@@ -328,7 +328,6 @@ class JObjectWrapper<jtypeArray<T>> : public JObjectWrapper<jobject> {
 
  private:
   jtypeArray<T> self() const noexcept;
-  static std::string bareClassName();
 };
 
 template <class T>
@@ -366,7 +365,8 @@ class PinnedPrimitiveArray;
 
 #pragma push_macro("DECLARE_PRIMITIVE_ARRAY_UTILS")
 #undef DECLARE_PRIMITIVE_ARRAY_UTILS
-#define DECLARE_PRIMITIVE_ARRAY_UTILS(TYPE, DESC)                      \
+#define DECLARE_PRIMITIVE_ARRAY_UTILS(TYPE, NAME, DESC)                \
+                                                                       \
 local_ref<j ## TYPE ## Array> make_ ## TYPE ## _array(jsize size);     \
                                                                        \
 template<> class JObjectWrapper<j ## TYPE ## Array> : public JArray {  \
@@ -375,25 +375,30 @@ template<> class JObjectWrapper<j ## TYPE ## Array> : public JArray {  \
                                                                        \
   using JArray::JArray;                                                \
                                                                        \
+  static local_ref<j ## TYPE ## Array> newArray(size_t count);         \
+                                                                       \
   j ## TYPE* getRegion(jsize start, jsize length, j ## TYPE* buf);     \
   std::unique_ptr<j ## TYPE[]> getRegion(jsize start, jsize length);   \
-  void setRegion(jsize start, jsize length, j ## TYPE* buf);           \
+  void setRegion(jsize start, jsize length, const j ## TYPE* buf);     \
   PinnedPrimitiveArray<j ## TYPE> pin();                               \
                                                                        \
  private:                                                              \
   j ## TYPE ## Array self() const noexcept {                           \
     return static_cast<j ## TYPE ## Array>(this_);                     \
   }                                                                    \
-}                                                                      \
+};                                                                     \
+                                                                       \
+using JArray ## NAME = JObjectWrapper<j ## TYPE ## Array>              \
 
-DECLARE_PRIMITIVE_ARRAY_UTILS(boolean, "Z");
-DECLARE_PRIMITIVE_ARRAY_UTILS(byte, "B");
-DECLARE_PRIMITIVE_ARRAY_UTILS(char, "C");
-DECLARE_PRIMITIVE_ARRAY_UTILS(short, "S");
-DECLARE_PRIMITIVE_ARRAY_UTILS(int, "I");
-DECLARE_PRIMITIVE_ARRAY_UTILS(long, "J");
-DECLARE_PRIMITIVE_ARRAY_UTILS(float, "F");
-DECLARE_PRIMITIVE_ARRAY_UTILS(double, "D");
+
+DECLARE_PRIMITIVE_ARRAY_UTILS(boolean, Boolean, "Z");
+DECLARE_PRIMITIVE_ARRAY_UTILS(byte, Byte, "B");
+DECLARE_PRIMITIVE_ARRAY_UTILS(char, Char, "C");
+DECLARE_PRIMITIVE_ARRAY_UTILS(short, Short, "S");
+DECLARE_PRIMITIVE_ARRAY_UTILS(int, Int, "I");
+DECLARE_PRIMITIVE_ARRAY_UTILS(long, Long, "J");
+DECLARE_PRIMITIVE_ARRAY_UTILS(float, Float, "F");
+DECLARE_PRIMITIVE_ARRAY_UTILS(double, Double, "D");
 
 #pragma pop_macro("DECLARE_PRIMITIVE_ARRAY_UTILS")
 
@@ -444,6 +449,16 @@ class PinnedPrimitiveArray {
 };
 
 
+namespace detail {
+
+class BaseJavaClass {
+public:
+  typedef _jobject _javaobject;
+  typedef _javaobject* javaobject;
+};
+
+}
+
 // Together, these classes allow convenient use of any class with the fbjni
 // helpers.  To use:
 //
@@ -453,11 +468,11 @@ class PinnedPrimitiveArray {
 //
 // alias_ref<MyClass::javaobject> myClass = foo();
 
-template <typename T>
+template <typename T, typename Base = detail::BaseJavaClass>
 class JavaClass {
 public:
   // JNI pattern for jobject assignable pointer
-  struct _javaobject : public _jobject {
+  struct _javaobject : public Base::_javaobject {
     typedef T javaClass;
   };
   typedef _javaobject* javaobject;
@@ -478,6 +493,13 @@ public:
     std::remove_pointer<T>::type::javaClass::kJavaDescriptor;
 
   using JObjectWrapper<jobject>::JObjectWrapper;
+
+  template<typename U>
+  JObjectWrapper(const JObjectWrapper<U>& w)
+    : JObjectWrapper<jobject>(w) {
+    static_assert(std::is_convertible<U, T>::value,
+                  "U must be convertible to T");
+  }
 };
 
 }}

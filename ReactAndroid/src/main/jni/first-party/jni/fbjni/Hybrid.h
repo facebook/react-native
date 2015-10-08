@@ -17,12 +17,12 @@
 namespace facebook {
 namespace jni {
 
-class BaseHybridClass {
+namespace detail {
+
+class BaseHybridClass : public BaseJavaClass {
 public:
   virtual ~BaseHybridClass() {}
 };
-
-namespace detail {
 
 struct HybridData : public JavaClass<HybridData> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/jni/HybridData;";
@@ -80,6 +80,21 @@ struct Convert<const char*> {
   }
   static local_ref<jstring> toCall(const char* t) {
     return make_jstring(t);
+  }
+};
+
+// jboolean is an unsigned char, not a bool. Allow it to work either way.
+template<>
+struct Convert<bool> {
+  typedef jboolean jniType;
+  static bool fromJni(jniType t) {
+    return t;
+  }
+  static jniType toJniRet(bool t) {
+    return t;
+  }
+  static jniType toCall(bool t) {
+    return t;
   }
 };
 
@@ -145,17 +160,28 @@ struct jstring_holder {
   operator jstring() { return s_.get(); }
 };
 
-}
+template <typename T, typename Enabled = void>
+struct HybridRoot {};
 
 template <typename T>
-class HybridClass : public BaseHybridClass
-                  , public JavaClass<T> {
+struct HybridRoot<T,
+                  typename std::enable_if<!std::is_base_of<BaseHybridClass, T>::value>::type>
+    : public BaseHybridClass {};
+
+}
+
+template <typename T, typename Base = detail::BaseHybridClass>
+class HybridClass : public Base
+                  , public detail::HybridRoot<Base>
+                  , public JavaClass<T, Base> {
 public:
   typedef detail::HybridData::javaobject jhybriddata;
-  typedef typename JavaClass<T>::javaobject jhybridobject;
+  typedef typename JavaClass<T, Base>::javaobject jhybridobject;
 
-  // I'm not sure why I need this, but I get errors without it.
-  using JavaClass<T>::javaClassStatic;
+  using JavaClass<T, Base>::javaClassStatic;
+  using JavaClass<T, Base>::javaClassLocal;
+  using JavaClass<T, Base>::javaobject;
+  typedef typename JavaClass<T, Base>::_javaobject _javaobject;
 
 protected:
   typedef HybridClass HybridBase;
@@ -163,7 +189,7 @@ protected:
   // This ensures that a C++ hybrid part cannot be created on its own
   // by default.  If a hybrid wants to enable this, it can provide its
   // own public ctor, or change the accessibility of this to public.
-  HybridClass() = default;
+  using Base::Base;
 
   static void registerHybrid(std::initializer_list<NativeMethod> methods) {
     javaClassStatic()->registerNatives(methods);

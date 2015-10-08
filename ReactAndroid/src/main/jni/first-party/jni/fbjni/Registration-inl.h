@@ -32,6 +32,8 @@ struct Convert<
   // There is no automatic return conversion for objects.
 };
 
+// registration wrapper for legacy JNI-style functions
+
 template<typename F, F func, typename C, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(JNIEnv*, C, Args... args)) {
   struct funcWrapper {
@@ -40,25 +42,6 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(JNIEnv*, C, Args... 
       // enough to elide the try/catch.
       try {
         (*func)(env, static_cast<C>(obj), args...);
-      } catch (...) {
-        translatePendingCppExceptionToJavaException();
-      }
-    }
-  };
-
-  // This intentionally erases the real type; JNI will do it anyway
-  return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
-}
-
-template<typename F, F func, typename C, typename... Args>
-inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(C, Args... args)) {
-  struct funcWrapper {
-    static void call(JNIEnv* env, jobject obj, Args... args) {
-      // Note that if func was declared noexcept, then both gcc and clang are smart
-      // enough to elide the try/catch.
-      try {
-        (void) env;
-        (*func)(static_cast<C>(obj), args...);
       } catch (...) {
         translatePendingCppExceptionToJavaException();
       }
@@ -85,6 +68,8 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(JNIEnv*, C, Args... arg
   // This intentionally erases the real type; JNI will do it anyway
   return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
 }
+
+// registration wrappers for functions, with autoconversion of arguments.
 
 template<typename F, F func, typename C, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(alias_ref<C>, Args... args)) {
@@ -123,6 +108,8 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(alias_ref<C>, Args... a
   // This intentionally erases the real type; JNI will do it anyway
   return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
 }
+
+// registration wrappers for non-static methods, with autoconvertion of arguments.
 
 template<typename M, M method, typename C, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(void (C::*method0)(Args... args)) {

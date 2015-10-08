@@ -130,6 +130,12 @@ inline base_owned_ref<T, Alloc>::base_owned_ref(
 {}
 
 template<typename T, typename Alloc>
+template<typename U>
+inline base_owned_ref<T, Alloc>::base_owned_ref(const base_owned_ref<U, Alloc>& other)
+  : object_{Alloc{}.newReference(other.getPlainJniReference())}
+{}
+
+template<typename T, typename Alloc>
 inline facebook::jni::base_owned_ref<T, Alloc>::base_owned_ref(
     T reference) noexcept
   : object_{reference} {
@@ -140,6 +146,17 @@ inline facebook::jni::base_owned_ref<T, Alloc>::base_owned_ref(
 template<typename T, typename Alloc>
 inline base_owned_ref<T, Alloc>::base_owned_ref(
     base_owned_ref<T, Alloc>&& other) noexcept
+  : object_{other.object_} {
+  internal::dbglog("New move from ref=%p other=%p", other.getPlainJniReference(), &other);
+  internal::dbglog("New move to ref=%p this=%p", getPlainJniReference(), this);
+  // JObjectWrapper is a simple type and does not support move semantics so we explicitly
+  // clear other
+  other.object_.set(nullptr);
+}
+
+template<typename T, typename Alloc>
+template<typename U>
+base_owned_ref<T, Alloc>::base_owned_ref(base_owned_ref<U, Alloc>&& other) noexcept
   : object_{other.object_} {
   internal::dbglog("New move from ref=%p other=%p", other.getPlainJniReference(), &other);
   internal::dbglog("New move to ref=%p this=%p", getPlainJniReference(), this);

@@ -238,9 +238,13 @@ class base_owned_ref {
 
   /// Copy constructor (note creates a new reference)
   base_owned_ref(const base_owned_ref& other);
+  template<typename U>
+  base_owned_ref(const base_owned_ref<U, Alloc>& other);
 
   /// Transfers ownership of an underlying reference from one unique reference to another
   base_owned_ref(base_owned_ref&& other) noexcept;
+  template<typename U>
+  base_owned_ref(base_owned_ref<U, Alloc>&& other) noexcept;
 
   /// The delete the underlying reference if applicable
   ~base_owned_ref() noexcept;
@@ -259,6 +263,9 @@ class base_owned_ref {
 
 
   friend T jni::getPlainJniReference<>(const base_owned_ref& ref);
+
+  template<typename U, typename UAlloc>
+  friend class base_owned_ref;
 };
 
 
@@ -279,6 +286,8 @@ class weak_ref : public base_owned_ref<T, WeakGlobalReferenceAllocator> {
   using PlainJniType = T;
   using Allocator = WeakGlobalReferenceAllocator;
 
+  // This inherits non-default, non-copy, non-move ctors.
+  using base_owned_ref<T, Allocator>::base_owned_ref;
 
   /// Create a null reference
   constexpr weak_ref() noexcept
@@ -343,9 +352,10 @@ class basic_strong_ref : public base_owned_ref<T, Alloc> {
   using PlainJniType = T;
   using Allocator = Alloc;
 
+  // This inherits non-default, non-copy, non-move ctors.
+  using base_owned_ref<T, Alloc>::base_owned_ref;
   using base_owned_ref<T, Alloc>::release;
   using base_owned_ref<T, Alloc>::reset;
-
 
   /// Create a null reference
   constexpr basic_strong_ref() noexcept
@@ -362,7 +372,6 @@ class basic_strong_ref : public base_owned_ref<T, Alloc> {
   /// Transfers ownership of an underlying reference from one unique reference to another
   basic_strong_ref(basic_strong_ref&& other) noexcept
     : base_owned_ref<T, Alloc>{std::move(other)} {}
-
 
   /// Assignment operator (note creates a new reference)
   basic_strong_ref& operator=(const basic_strong_ref& other);

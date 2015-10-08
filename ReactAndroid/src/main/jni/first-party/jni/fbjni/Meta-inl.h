@@ -153,15 +153,23 @@ inline local_ref<T*> JNonvirtualMethod<T*(Args...)>::operator()(
 /// support for your user defined type.
 template<typename T>
 struct jtype_traits {
+  // The jni type signature (described at
+  // http://docs.oracle.com/javase/1.5.0/docs/guide/jni/spec/types.html).
   static std::string descriptor() {
-    if (JObjectWrapper<T>::kJavaDescriptor != nullptr) {
-      return std::string{JObjectWrapper<T>::kJavaDescriptor};
-    };
-    return JObjectWrapper<T>::get_instantiated_java_descriptor();
+    static const auto descriptor = JObjectWrapper<T>::kJavaDescriptor != nullptr ?
+      std::string{JObjectWrapper<T>::kJavaDescriptor} :
+      JObjectWrapper<T>::get_instantiated_java_descriptor();
+    return descriptor;
   }
 
-  static std::string array_descriptor() {
-    return '[' + std::string{JObjectWrapper<T>::kJavaDescriptor};
+  // The signature used for class lookups. See
+  // http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html#getName().
+  static std::string base_name() {
+    if (JObjectWrapper<T>::kJavaDescriptor != nullptr) {
+      std::string base_name = JObjectWrapper<T>::kJavaDescriptor;
+      return base_name.substr(1, base_name.size() - 2);
+    }
+    return JObjectWrapper<T>::get_instantiated_java_descriptor();
   }
 };
 
@@ -172,10 +180,12 @@ struct jtype_traits {
 template<>                                                          \
 struct jtype_traits<TYPE> {                                         \
   static std::string descriptor() { return std::string{#DSC}; }     \
+  static std::string base_name() { return descriptor(); }           \
 };                                                                  \
 template<>                                                          \
 struct jtype_traits<TYPE ## Array> {                                \
   static std::string descriptor() { return std::string{"[" #DSC}; } \
+  static std::string base_name() { return descriptor(); }           \
 };
 
 // There is no voidArray, handle that without the macro.
