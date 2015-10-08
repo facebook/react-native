@@ -436,13 +436,13 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
       if (!XCAssetMap) {
         XCAssetMap = [NSMutableDictionary new];
       }
-      NSNumber *isAsset = XCAssetMap[path];
+      NSNumber *isAsset = XCAssetMap[URL.path];
       if (!isAsset || isAsset.boolValue) {
         image = [UIImage imageNamed:URL.path];
       }
       if (!isAsset) {
         // Avoid calling `+imageNamed` again in future if it's not needed.
-        XCAssetMap[path] = @(image != nil);
+        XCAssetMap[URL.path] = @(image != nil);
       }
     }
 
