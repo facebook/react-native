@@ -22,9 +22,11 @@ function printUsage() {
     'Commands:',
     '  start: starts the webserver',
     '  install: installs npm react components',
+    '  init <path>: generates a new project at the specified path',
     '  bundle: builds the javascript bundle for offline use',
     '  new-library: generates a native library bridge',
-    '  android: generates an Android project for your app'
+    '  android: generates an Android project for your app',
+    '  run-android: runs the current project in an Android sim or device'
   ].join('\n'));
   process.exit(1);
 }
