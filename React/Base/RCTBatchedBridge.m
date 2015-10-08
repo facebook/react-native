@@ -148,7 +148,9 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
     dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
       if (weakSelf.isValid) {
+        RCTPerformanceLoggerStart(RCTPLNativeModulePrepareConfig);
         config = [weakSelf moduleConfig];
+        RCTPerformanceLoggerEnd(RCTPLNativeModulePrepareConfig);
       }
     });
 
