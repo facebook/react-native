@@ -21,6 +21,7 @@ const cpuProfilerMiddleware = require('./cpuProfilerMiddleware');
 const connect = require('connect');
 const formatBanner = require('./formatBanner');
 const getDevToolsMiddleware = require('./getDevToolsMiddleware');
+const loadRawBodyMiddleware = require('./loadRawBodyMiddleware');
 const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
 const parseCommandLine = require('./parseCommandLine.js');
 const ReactPackager = require('./react-packager');
@@ -157,19 +158,6 @@ var server = runServer(options, function() {
 
 webSocketProxy.attachToServer(server, '/debugger-proxy');
 
-function loadRawBody(req, res, next) {
-  req.rawBody = '';
-  req.setEncoding('utf8');
-
-  req.on('data', function(chunk) {
-    req.rawBody += chunk;
-  });
-
-  req.on('end', function() {
-    next();
-  });
-}
-
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
   if (!isAbsolutePath(transformerPath)) {
@@ -198,7 +186,7 @@ function runServer(
   readyCallback
 ) {
   var app = connect()
-    .use(loadRawBody)
+    .use(loadRawBodyMiddleware)
     .use(getDevToolsMiddleware(options))
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
