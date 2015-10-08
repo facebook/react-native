@@ -53,6 +53,7 @@
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
+		3DCF0A0A1BC568F30078FDA0 /* uie_thumb_big.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DCF0A091BC568F30078FDA0 /* uie_thumb_big.png */; settings = {ASSET_TAGS = (); }; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
@@ -225,6 +226,7 @@
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
+		3DCF0A091BC568F30078FDA0 /* uie_thumb_big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = uie_thumb_big.png; path = UIExplorer/Images.xcassets/uie_thumb_big.imageset/uie_thumb_big.png; sourceTree = SOURCE_ROOT; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
@@ -439,6 +441,7 @@
 		143BC5971B21E3E100462512 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				3DCF0A091BC568F30078FDA0 /* uie_thumb_big.png */,
 				143BC5981B21E3E100462512 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -820,6 +823,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DCF0A0A1BC568F30078FDA0 /* uie_thumb_big.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
