@@ -139,6 +139,12 @@ var apps = [
     author: 'Tian Yuan',
   },
   {
+    name: 'Posyt - Tinder for ideas',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/a5/b3/86/a5b38618-a5e9-6089-7425-7fa51ecd5d30/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/posyt-anonymously-meet-right/id1037842845?mt=8',
+    author: 'Posyt.com',
+  },
+  {
     name: 'ReactTo36',
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple5/v4/e3/c8/79/e3c87934-70c6-4974-f20d-4adcfc68d71d/mzl.wevtbbkq.png',
     link: 'https://itunes.apple.com/us/app/reactto36/id989009293?mt=8',
