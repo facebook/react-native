@@ -305,16 +305,8 @@ inline ElementProxy<T>::ElementProxy::operator local_ref<T> () {
 }
 
 template<typename T>
-inline std::string JObjectWrapper<jtypeArray<T>>::bareClassName() {
-  // Use the initializer to strip off the leading and trailing character.
-  const char* className = JObjectWrapper<T>::kJavaDescriptor;
-  return std::string(className + 1, strlen(className) - 2);
-}
-
-template<typename T>
 local_ref<jtypeArray<T>> JObjectWrapper<jtypeArray<T>>::newArray(size_t size) {
-  static auto elementClass = findClassStatic(
-      JObjectWrapper<jtypeArray<T>>::bareClassName().c_str());
+  static auto elementClass = findClassStatic(jtype_traits<T>::base_name().c_str());
   const auto env = internal::getEnv();
   auto rawArray = env->NewObjectArray(size, elementClass.get(), nullptr);
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!rawArray);
@@ -435,15 +427,15 @@ DECLARE_PRIMITIVE_METHODS(jdouble, Double)
 #pragma pop_macro("DECLARE_PRIMITIVE_METHODS")
 
 
-template<typename T>
-inline alias_ref<jclass> JavaClass<T>::javaClassStatic() {
+template<typename T, typename Base>
+inline alias_ref<jclass> JavaClass<T, Base>::javaClassStatic() {
   static auto cls = findClassStatic(
     std::string(T::kJavaDescriptor + 1, strlen(T::kJavaDescriptor) - 2).c_str());
   return cls;
 }
 
-template<typename T>
-inline local_ref<jclass> JavaClass<T>::javaClassLocal() {
+template<typename T, typename Base>
+inline local_ref<jclass> JavaClass<T, Base>::javaClassLocal() {
   std::string className(T::kJavaDescriptor + 1, strlen(T::kJavaDescriptor) - 2);
   return findClassLocal(className.c_str());
 }
