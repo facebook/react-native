@@ -11,7 +11,6 @@
 
 #import <objc/message.h>
 
-#import "RCTCache.h"
 #import "RCTDefines.h"
 
 @implementation RCTConvert
