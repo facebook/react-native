@@ -27,7 +27,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
 
     // Depend on pre-built React Native
-    compile 'com.facebook.react:react-native:0.11.+'
+    compile 'com.facebook.react:react-native:0.12.+'
 
     // Depend on React Native source.
     // This is useful for testing your changes when working on React Native.
