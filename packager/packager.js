@@ -24,6 +24,7 @@ const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddle
 const parseCommandLine = require('./parseCommandLine.js');
 const ReactPackager = require('./react-packager');
 const statusPageMiddleware = require('./statusPageMiddleware.js');
+const systraceProfileMiddleware = require('./systraceProfileMiddleware.js');
 const webSocketProxy = require('./webSocketProxy.js');
 
 var options = parseCommandLine([{
@@ -165,44 +166,6 @@ function loadRawBody(req, res, next) {
 
   req.on('end', function() {
     next();
-  });
-}
-
-function systraceProfileMiddleware(req, res, next) {
-  if (req.url !== '/systrace') {
-    next();
-    return;
-  }
-
-  console.log('Dumping profile information...');
-  var dumpName = '/tmp/dump_' + Date.now() + '.json';
-  var prefix = process.env.TRACE_VIEWER_PATH || '';
-  var cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
-  fs.writeFileSync(dumpName, req.rawBody);
-  childProcess.exec(cmd, function(error) {
-    if (error) {
-      if (error.code === 127) {
-        var response = '\n** Failed executing `' + cmd + '` **\n\n' +
-          'Google trace-viewer is required to visualize the data, You can install it with `brew install trace2html`\n\n' +
-          'NOTE: Your profile data was kept at:\n' + dumpName
-        console.log(response);
-        res.end(response);
-      } else {
-        console.error(error);
-        res.end('Unknown error: ' + error.message);
-      }
-      return;
-    } else {
-      childProcess.exec('rm ' + dumpName);
-      childProcess.exec('open ' + dumpName.replace(/json$/, 'html'), function(err) {
-        if (err) {
-          console.error(err);
-          res.end(err.message);
-        } else {
-          res.end();
-        }
-      });
-    }
   });
 }
 
