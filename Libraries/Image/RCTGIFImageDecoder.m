@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE()
 
       CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
       if (!image) {
-        image = [UIImage imageWithCGImage:imageRef];
+        image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
       }
 
       NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
@@ -98,7 +98,7 @@ RCT_EXPORT_MODULE()
     // Don't bother creating an animation
     CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
     if (imageRef) {
-      image = [UIImage imageWithCGImage:imageRef];
+      image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
       CFRelease(imageRef);
     }
     CFRelease(imageSource);

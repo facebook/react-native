@@ -135,7 +135,7 @@ RCT_EXPORT_MODULE()
       // Normally -dataWithContentsOfURL: would be bad but this is a data URL.
       NSData *data = [NSData dataWithContentsOfURL:imageURL];
 
-      UIImage *image = [UIImage imageWithData:data];
+      UIImage *image = [UIImage imageWithData:data scale:scale];
       if (image) {
         if (progressHandler) {
           progressHandler(1, 1);
