@@ -26,7 +26,6 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAc
 
 @synthesize bridge = _bridge;
 @synthesize multipliers = _multipliers;
-@synthesize isVoiceOverEnabled = _isVoiceOverEnabled;
 
 RCT_EXPORT_MODULE()
 
