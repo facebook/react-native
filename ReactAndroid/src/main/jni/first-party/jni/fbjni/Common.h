@@ -16,8 +16,8 @@
 
 #include <jni.h>
 
-#include "../Environment.h"
-#include "../ALog.h"
+#include <jni/Environment.h>
+#include <jni/ALog.h>
 
 /// @cond INTERNAL
 

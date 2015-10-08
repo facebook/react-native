@@ -9,7 +9,7 @@
 
 #include "Exceptions.h"
 #include "CoreClasses.h"
-#include "../ALog.h"
+#include <jni/ALog.h>
 
 #include <fb/assert.h>
 
