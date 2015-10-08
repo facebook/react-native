@@ -20,7 +20,7 @@ const checkNodeVersion = require('./checkNodeVersion');
 const connect = require('connect');
 const formatBanner = require('./formatBanner');
 const getDevToolsMiddleware = require('./getDevToolsMiddleware');
-const launchEditor = require('./launchEditor.js');
+const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
 const parseCommandLine = require('./parseCommandLine.js');
 const ReactPackager = require('./react-packager');
 const webSocketProxy = require('./webSocketProxy.js');
@@ -167,16 +167,6 @@ function loadRawBody(req, res, next) {
   });
 }
 
-function openStackFrameInEditor(req, res, next) {
-  if (req.url === '/open-stack-frame') {
-    var frame = JSON.parse(req.rawBody);
-    launchEditor(frame.file, frame.lineNumber);
-    res.end('OK');
-  } else {
-    next();
-  }
-}
-
 // A status page so the React/project.pbxproj build script
 // can verify that packager is running on 8081 and not
 // another program / service.
@@ -279,8 +269,8 @@ function runServer(
 ) {
   var app = connect()
     .use(loadRawBody)
-    .use(openStackFrameInEditor)
     .use(getDevToolsMiddleware(options))
+    .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfileMiddleware)
