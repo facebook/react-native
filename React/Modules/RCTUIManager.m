@@ -229,18 +229,8 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     _rootViewTags = [NSMutableSet new];
 
     _bridgeTransactionListeners = [NSMutableSet new];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveNewContentSizeMultiplier)
-                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                               object:nil];
   }
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveNewContentSizeMultiplier
@@ -276,6 +266,8 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     [_pendingUIBlocksLock lock];
     _pendingUIBlocks = nil;
     [_pendingUIBlocksLock unlock];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
   });
 }
 
@@ -296,6 +288,11 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   }
 
   _componentDataByName = [componentDataByName copy];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(didReceiveNewContentSizeMultiplier)
+                                               name:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                             object:_bridge.accessibilityManager];
 }
 
 - (dispatch_queue_t)methodQueue
