@@ -44,6 +44,16 @@ function handleError(e, isFatal) {
   }
 }
 
+function polyfillGlobal(name, newValue) {
+  var descriptor = Object.getOwnPropertyDescriptor(GLOBAL, name);
+
+  if (typeof GLOBAL[name] !== 'undefined') {
+    var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    Object.defineProperty(GLOBAL, backupName, {...descriptor, value: GLOBAL[name]});
+  }
+  Object.defineProperty(GLOBAL, name, {...descriptor, value: newValue});
+}
+
 function setUpRedBoxErrorHandler() {
   var ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
@@ -111,14 +121,14 @@ function setUpPromise() {
 function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
-  GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
-  GLOBAL.FormData = require('FormData');
+  polyfillGlobal('XMLHttpRequest', require('XMLHttpRequest'));
+  polyfillGlobal('FormData', require('FormData'));
 
   var fetchPolyfill = require('fetch');
-  GLOBAL.fetch = fetchPolyfill.fetch;
-  GLOBAL.Headers = fetchPolyfill.Headers;
-  GLOBAL.Request = fetchPolyfill.Request;
-  GLOBAL.Response = fetchPolyfill.Response;
+  polyfillGlobal('fetch', fetchPolyfill.fetch);
+  polyfillGlobal('Headers', fetchPolyfill.Headers);
+  polyfillGlobal('Request', fetchPolyfill.Request);
+  polyfillGlobal('Response', fetchPolyfill.Response);
 }
 
 function setUpGeolocation() {
