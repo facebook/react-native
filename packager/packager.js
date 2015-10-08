@@ -8,23 +8,22 @@
  */
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var childProcess = require('child_process');
-var http = require('http');
-var isAbsolutePath = require('absolute-path');
+const fs = require('fs');
+const path = require('path');
+const childProcess = require('child_process');
+const http = require('http');
+const isAbsolutePath = require('absolute-path');
 
-var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
-
-var chalk = require('chalk');
-var connect = require('connect');
-var ReactPackager = require('./react-packager');
-var blacklist = require('./blacklist.js');
-var checkNodeVersion = require('./checkNodeVersion');
-var formatBanner = require('./formatBanner');
-var launchEditor = require('./launchEditor.js');
-var parseCommandLine = require('./parseCommandLine.js');
-var webSocketProxy = require('./webSocketProxy.js');
+const blacklist = require('./blacklist.js');
+const chalk = require('chalk');
+const checkNodeVersion = require('./checkNodeVersion');
+const connect = require('connect');
+const formatBanner = require('./formatBanner');
+const getDevToolsMiddleware = require('./getDevToolsMiddleware');
+const launchEditor = require('./launchEditor.js');
+const parseCommandLine = require('./parseCommandLine.js');
+const ReactPackager = require('./react-packager');
+const webSocketProxy = require('./webSocketProxy.js');
 
 var options = parseCommandLine([{
   command: 'port',
@@ -178,36 +177,6 @@ function openStackFrameInEditor(req, res, next) {
   }
 }
 
-function getDevToolsLauncher(options) {
-  return function(req, res, next) {
-    if (req.url === '/debugger-ui') {
-      var debuggerPath = path.join(__dirname, 'debugger.html');
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      fs.createReadStream(debuggerPath).pipe(res);
-
-    } else if (req.url === '/debuggerWorker.js') {
-      var workerPath = path.join(__dirname, 'debuggerWorker.js');
-      res.writeHead(200, {'Content-Type': 'application/javascript'});
-      fs.createReadStream(workerPath).pipe(res);
-
-    } else if (req.url === '/launch-chrome-devtools') {
-      var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
-      var script = 'launchChromeDevTools.applescript';
-      console.log('Launching Dev Tools...');
-      childProcess.execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
-        if (err) {
-          console.log('Failed to run ' + script, err);
-        }
-        console.log(stdout);
-        console.warn(stderr);
-      });
-      res.end('OK');
-    } else {
-      next();
-    }
-  };
-}
-
 // A status page so the React/project.pbxproj build script
 // can verify that packager is running on 8081 and not
 // another program / service.
@@ -311,7 +280,7 @@ function runServer(
   var app = connect()
     .use(loadRawBody)
     .use(openStackFrameInEditor)
-    .use(getDevToolsLauncher(options))
+    .use(getDevToolsMiddleware(options))
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfileMiddleware)
