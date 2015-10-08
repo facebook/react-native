@@ -23,15 +23,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the script URL
   scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];
 
-  if (!scriptURL ||
-      (scriptURL.fileURL && ![[NSFileManager defaultManager] fileExistsAtPath:scriptURL.path])) {
+  if (!scriptURL) {
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
-      NSLocalizedDescriptionKey: scriptURL ? [NSString stringWithFormat:@"Script at '%@' could not be found.", scriptURL] : @"No script URL provided"
+      NSLocalizedDescriptionKey: @"No script URL provided."
     }];
     onComplete(error, nil);
     return;
   }
 
+  // Load local script file
+  if (scriptURL.fileURL) {
+    NSString *filePath = scriptURL.resourceSpecifier;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      NSError *error = nil;
+      NSString *rawText = [NSString stringWithContentsOfFile:filePath usedEncoding:NULL error:&error];
+      onComplete(error, rawText);
+    });
+    return;
+  }
+
+  // Load remote script file
   NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:scriptURL completionHandler:
                                 ^(NSData *data, NSURLResponse *response, NSError *error) {
 
