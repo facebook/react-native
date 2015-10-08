@@ -28,8 +28,10 @@ typedef void (^RCTAssertFunction)(
 );
 
 /**
- * This is the main assert macro that you should use.
+ * This is the main assert macro that you should use. Asserts should be compiled out
+ * in production builds
  */
+#ifndef NS_BLOCK_ASSERTIONS
 #define RCTAssert(condition, ...) do { \
   if ((condition) == 0) { \
     _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__); \
@@ -39,6 +41,9 @@ typedef void (^RCTAssertFunction)(
     } \
   } \
 } while (false)
+#else
+#define RCTAssert(condition, ...) do {} while (false)
+#endif
 RCT_EXTERN void _RCTAssertFormat(
   const char *, const char *, int, const char *, NSString *, ...
 ) NS_FORMAT_FUNCTION(5,6);
