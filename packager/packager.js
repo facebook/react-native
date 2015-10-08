@@ -17,6 +17,7 @@ const isAbsolutePath = require('absolute-path');
 const blacklist = require('./blacklist.js');
 const chalk = require('chalk');
 const checkNodeVersion = require('./checkNodeVersion');
+const cpuProfilerMiddleware = require('./cpuProfilerMiddleware');
 const connect = require('connect');
 const formatBanner = require('./formatBanner');
 const getDevToolsMiddleware = require('./getDevToolsMiddleware');
@@ -169,30 +170,6 @@ function loadRawBody(req, res, next) {
   });
 }
 
-function cpuProfileMiddleware(req, res, next) {
-  if (req.url !== '/cpu-profile') {
-    next();
-    return;
-  }
-
-  console.log('Dumping CPU profile information...');
-  var dumpName = '/tmp/cpu-profile_' + Date.now();
-  fs.writeFileSync(dumpName + '.json', req.rawBody);
-
-  var cmd = path.join(__dirname, '..', 'react-native-github', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
-  childProcess.exec(cmd, function(error) {
-    if (error) {
-      console.error(error);
-      res.end('Unknown error: ' + error.message);
-    } else {
-      var response = 'Your profile was generated at\n\n' + dumpName + '.cpuprofile\n\n' +
-        'Open `Chrome Dev Tools > Profiles > Load` and select the profile to visualize it.';
-      console.log(response);
-      res.end(response);
-    }
-  });
-}
-
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
   if (!isAbsolutePath(transformerPath)) {
@@ -226,7 +203,7 @@ function runServer(
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(cpuProfileMiddleware)
+    .use(cpuProfilerMiddleware)
     // Temporarily disable flow check until it's more stable
     //.use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));
