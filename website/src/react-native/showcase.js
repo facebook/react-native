@@ -52,7 +52,7 @@ var apps = [
     name: 'Exponent',
     icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
     link:  'https://itunes.apple.com/ca/app/exponent/id982107779?mt=8',
-    author: 'Charlie Cheever & James Ide',
+    author: 'Exponent',
   },
   {
     name: 'F8',
