@@ -86,7 +86,7 @@ RCT_EXPORT_MODULE()
   self.contentSizeCategory = note.userInfo[UIContentSizeCategoryNewValueKey];
 }
 
-- (void)didReceiveNewVoiceOverStatus:(NSNotification *)notification
+- (void)didReceiveNewVoiceOverStatus:(__unused NSNotification *)notification
 {
   BOOL newIsVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   if (_isVoiceOverEnabled != newIsVoiceOverEnabled) {
