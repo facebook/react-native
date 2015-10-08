@@ -15,6 +15,7 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLScriptDownload = 0,
   RCTPLScriptExecution,
   RCTPLNativeModuleInit,
+  RCTPLNativeModulePrepareConfig,
   RCTPLNativeModuleInjectConfig,
   RCTPLTTI,
   RCTPLSize
