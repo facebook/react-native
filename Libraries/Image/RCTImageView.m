@@ -22,7 +22,8 @@
  * Determines whether an image of `currentSize` should be reloaded for display
  * at `idealSize`.
  */
-static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize) {
+static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize)
+{
   static const CGFloat upscaleThreshold = 1.2;
   static const CGFloat downscaleThreshold = 0.5;
 

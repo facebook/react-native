@@ -17,6 +17,7 @@
 
 var React = require('react-native');
 var {
+  Image,
   StyleSheet,
   Text,
   View,
@@ -393,6 +394,17 @@ exports.examples = [
         </Text>
         <Text allowFontScaling={false} style={{marginTop: 20}}>
           This text will not scale.
+        </Text>
+      </View>
+    );
+  },
+}, {
+  title: 'Inline images',
+  render: function() {
+    return (
+      <View>
+        <Text>
+          This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
         </Text>
       </View>
     );
