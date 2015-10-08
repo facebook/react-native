@@ -15,6 +15,7 @@
 @implementation RCTImageStoreManager
 {
   NSMutableDictionary *_store;
+  int *_id;
 }
 
 @synthesize methodQueue = _methodQueue;
@@ -27,14 +28,22 @@ RCT_EXPORT_MODULE()
 
     // TODO: need a way to clear this store
     _store = [NSMutableDictionary new];
+    _id = 0;
   }
   return self;
+}
+
+- (void)removeImageForTag:(NSString *)imageTag
+{
+  RCTAssertMainThread();
+  [_store removeObjectForKey:imageTag];
 }
 
 - (NSString *)storeImage:(NSData *)image
 {
   RCTAssertMainThread();
-  NSString *tag = [NSString stringWithFormat:@"rct-image-store://%tu", _store.count];
+  NSString *tag = [NSString stringWithFormat:@"rct-image-store://%tu", _id];
+  _id = _id + 1;
   _store[tag] = image;
   return tag;
 }
@@ -43,6 +52,16 @@ RCT_EXPORT_MODULE()
 {
   RCTAssertMainThread();
   return _store[imageTag];
+}
+
+- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self removeImageForTag:imageTag];
+    if (block) {
+      block();
+    }
+  });
 }
 
 - (void)storeImage:(NSData *)image withBlock:(void (^)(NSString *imageTag))block
