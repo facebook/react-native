@@ -23,6 +23,7 @@ const getDevToolsMiddleware = require('./getDevToolsMiddleware');
 const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
 const parseCommandLine = require('./parseCommandLine.js');
 const ReactPackager = require('./react-packager');
+const statusPageMiddleware = require('./statusPageMiddleware.js');
 const webSocketProxy = require('./webSocketProxy.js');
 
 var options = parseCommandLine([{
@@ -165,17 +166,6 @@ function loadRawBody(req, res, next) {
   req.on('end', function() {
     next();
   });
-}
-
-// A status page so the React/project.pbxproj build script
-// can verify that packager is running on 8081 and not
-// another program / service.
-function statusPageMiddleware(req, res, next) {
-  if (req.url === '/status') {
-    res.end('packager-status:running');
-  } else {
-    next();
-  }
 }
 
 function systraceProfileMiddleware(req, res, next) {
