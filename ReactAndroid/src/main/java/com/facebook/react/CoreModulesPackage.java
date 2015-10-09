@@ -60,7 +60,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
         new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager()),
         new Timing(catalystApplicationContext),
         new SourceCodeModule(
-            mReactInstanceManager.getDevSupportManager().getSourceUrl(),
+            mReactInstanceManager.getSourceUrl(),
             mReactInstanceManager.getDevSupportManager().getSourceMapUrl()),
         new UIManagerModule(
             catalystApplicationContext,

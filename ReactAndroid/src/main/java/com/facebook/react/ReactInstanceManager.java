@@ -86,6 +86,7 @@ public class ReactInstanceManager {
   private @Nullable volatile ReactContext mCurrentReactContext;
   private final Context mApplicationContext;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
+  private String mSourceUrl;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -341,6 +342,13 @@ public class ReactInstanceManager {
   }
 
   /**
+   * Get the URL where the last bundle was loaded from.
+   */
+  public String getSourceUrl() {
+    return Assertions.assertNotNull(mSourceUrl);
+  }
+
+  /**
    * Attach given {@param rootView} to a catalyst instance manager and start JS application using
    * JS module provided by {@link ReactRootView#getJSModuleName}. If the react context is currently
    * being (re)-created, or if react context has not been created yet, the JS application associated
@@ -493,6 +501,7 @@ public class ReactInstanceManager {
       JavaScriptExecutor jsExecutor,
       JSBundleLoader jsBundleLoader) {
     FLog.i(ReactConstants.TAG, "Creating react context.");
+    mSourceUrl = jsBundleLoader.getSourceUrl();
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
     JavaScriptModulesConfig.Builder jsModulesBuilder = new JavaScriptModulesConfig.Builder();
 
