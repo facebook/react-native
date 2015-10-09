@@ -238,6 +238,18 @@ var variants = {
   l5: large5,
 };
 
+var commonCases = [
+  // Reference equality
+  'l1l1',
+  // Equal but not reference equal
+  's3s4',
+  'm3m4',
+  'l4l5',
+  // Complex base style with a small change in the end
+  'l3l4',
+  'l4l3',
+];
+
 // Differ
 
 var validAttributes = require('ReactNativeViewAttributes').UIView;
@@ -248,6 +260,8 @@ var Differ = require('ReactNativeAttributePayload');
 
 var numberOfBenchmarks = 0;
 var totalTimeForAllBenchmarks = 0;
+var numberOfCommonCases = 0;
+var totalTimeForAllCommonCases = 0;
 var results = {};
 
 function runBenchmarkOnce(value1, value2) {
@@ -256,7 +270,7 @@ function runBenchmarkOnce(value1, value2) {
   Differ.diff({}, value1, validAttributes);
   var cache = Differ.previousFlattenedStyle;
   var start = Date.now();
-  for (var i = 0; i < 100; i++) {
+  for (var i = 0; i < 1000; i++) {
     Differ.diff(value1, value2, validAttributes);
     Differ.previousFlattenedStyle = cache;
   }
@@ -265,14 +279,23 @@ function runBenchmarkOnce(value1, value2) {
 }
 
 function runBenchmark(key1, key2, value1, value2) {
+  if (results.hasOwnProperty(key1 + key2)) {
+    // dedupe same test that runs twice. E.g. key1 === key2
+    return;
+  }
   var totalTime = 0;
   var nthRuns = 5;
   for (var i = 0; i < nthRuns; i++) {
     totalTime += runBenchmarkOnce(value1, value2);
   }
-  results[key1 + key2] = totalTime / nthRuns;
-  totalTimeForAllBenchmarks += totalTime / nthRuns;
+  var runTime = totalTime / nthRuns;
+  results[key1 + key2] = runTime;
+  totalTimeForAllBenchmarks += runTime;
   numberOfBenchmarks++;
+  if (commonCases.indexOf(key1 + key2) > -1) {
+    numberOfCommonCases++;
+    totalTimeForAllCommonCases += runTime;
+  }
 }
 
 function runAllCombinations() {
@@ -303,6 +326,10 @@ function formatResult() {
       worstCase = results[key];
     }
   }
+
+  str += 'Common cases: ' +
+          (totalTimeForAllCommonCases / numberOfCommonCases) +
+          ' units\n';
 
   str += 'Worst case: ' + worstCase + ' units\n';
 
