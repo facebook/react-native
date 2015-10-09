@@ -1,8 +1,11 @@
 {
   "name": "react-native-cli",
-  "version": "0.1.4",
-  "description": "The ReactNative cli tools",
+  "version": "0.1.6",
+  "description": "The React Native CLI tools",
   "main": "index.js",
+  "engines": {
+    "node": ">=4"
+  },
   "scripts": {
     "test": "mocha"
   },
