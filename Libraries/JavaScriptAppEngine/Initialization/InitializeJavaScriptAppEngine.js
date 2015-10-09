@@ -50,14 +50,14 @@ function handleError(e, isFatal) {
  * Existing properties are preserved as `originalPropertyName`. Both properties
  * will maintain the same enumerability & configurability.
  */
-function polyfillGlobal(name, newValue) {
-  var descriptor = Object.getOwnPropertyDescriptor(GLOBAL, name);
+function polyfillGlobal(name, newValue, scope=GLOBAL) {
+  var descriptor = Object.getOwnPropertyDescriptor(scope, name);
 
-  if (typeof GLOBAL[name] !== 'undefined') {
+  if (typeof scope[name] !== 'undefined') {
     var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-    Object.defineProperty(GLOBAL, backupName, {...descriptor, value: GLOBAL[name]});
+    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
   }
-  Object.defineProperty(GLOBAL, name, {...descriptor, value: newValue});
+  Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
 function setUpRedBoxErrorHandler() {
@@ -139,11 +139,11 @@ function setUpXHR() {
 
 function setUpGeolocation() {
   GLOBAL.navigator = GLOBAL.navigator || {};
-  GLOBAL.navigator.geolocation = require('Geolocation');
+  polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
 }
 
 function setUpWebSockets() {
-  GLOBAL.WebSocket = require('WebSocket');
+  polyfillGlobal('WebSocket', require('WebSocket'));
 }
 
 function setUpProfile() {
