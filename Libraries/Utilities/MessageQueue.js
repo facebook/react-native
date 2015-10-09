@@ -119,7 +119,9 @@ class MessageQueue {
 
   __callImmediates() {
     BridgeProfiling.profile('JSTimersExecution.callImmediates()');
-    guard(() => JSTimersExecution.callImmediates());
+    guard(() => {
+      ReactUpdates.batchedUpdates(JSTimersExecution.callImmediates);
+    });
     BridgeProfiling.profileEnd();
   }
 
