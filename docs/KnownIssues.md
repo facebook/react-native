@@ -50,7 +50,7 @@ There are known cases where the APIs could be made more consistent across iOS an
 - `<AndroidViewPager>` (to be open sourced soon) and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
 - `alert()` needs Android support (once the Dialogs module is open sourced)
 - It might be possible to bring `LinkingIOS` and `IntentAndroid` (to be open sourced) closer together.
-- `ActivityIndicator` could render a native spinning indicator on both platforms (currenty this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
+- `ActivityIndicator` could render a native spinning indicator on both platforms (currently this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
 - `ProgressBar` could render a horizontal progress bar on both platforms (currently only supported on iOS via `ProgressViewIOS`).
 
 ### Publishing modules on Android
