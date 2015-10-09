@@ -400,6 +400,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   return [self UIColor:json].CGColor;
 }
 
+/* This method is only used when loading images synchronously, e.g. for tabbar icons */
 + (UIImage *)UIImage:(id)json
 {
   // TODO: we might as well cache the result of these checks (and possibly the
@@ -427,30 +428,33 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   NSURL *URL = [self NSURL:path];
   NSString *scheme = URL.scheme.lowercaseString;
   if (URL && [scheme isEqualToString:@"file"]) {
-    RCTAssertMainThread();
-    if ([URL.path hasPrefix:[NSBundle bundleForClass:[self class]].resourcePath]) {
+    if ([URL.path hasPrefix:[NSBundle mainBundle].resourcePath]) {
+      RCTAssertMainThread();
+
       // Image may reside inside a .car file, in which case we have no choice
       // but to use +[UIImage imageNamed] - but this method isn't thread safe
       static NSMutableDictionary *XCAssetMap = nil;
       if (!XCAssetMap) {
         XCAssetMap = [NSMutableDictionary new];
       }
-      NSNumber *isAsset = XCAssetMap[URL.path];
+      NSNumber *isAsset = XCAssetMap[path];
       if (!isAsset || isAsset.boolValue) {
-        image = [UIImage imageNamed:URL.path];
+        image = [UIImage imageNamed:path];
       }
       if (!isAsset) {
         // Avoid calling `+imageNamed` again in future if it's not needed.
-        XCAssetMap[URL.path] = @(image != nil);
+        XCAssetMap[path] = @(image != nil);
       }
     }
 
     if (!image) {
+      NSString *filePath = URL.path;
+
       // Attempt to load from the file system
-      if (path.pathExtension.length == 0) {
-        path = [path stringByAppendingPathExtension:@"png"];
+      if (filePath.pathExtension.length == 0) {
+        filePath = [filePath stringByAppendingPathExtension:@"png"];
       }
-      image = [UIImage imageWithContentsOfFile:path];
+      image = [UIImage imageWithContentsOfFile:filePath];
     }
 
   } else if ([scheme isEqualToString:@"data"]) {
