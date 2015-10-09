@@ -8,29 +8,22 @@
 namespace facebook {
 namespace react {
 
-struct NativeArray : public jni::HybridClass<NativeArray> {
+class NativeArray : public jni::HybridClass<NativeArray> {
+ public:
   static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/NativeArray;";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>) {
-    return makeCxxInstance();
-  }
-
-  // Whether this array has been added to another array or map and no longer has a valid array value
+  // Whether this array has been added to another array or map and no longer
+  // has a valid array value.
   bool isConsumed = false;
-  folly::dynamic array = {};
+  folly::dynamic array;
 
   jstring toString();
 
-  static void registerNatives() {
-    registerHybrid({
-        makeNativeMethod("initHybrid", NativeArray::initHybrid),
-        makeNativeMethod("toString", NativeArray::toString),
-      });
-  }
-};
+  static void registerNatives();
 
-__attribute__((visibility("default")))
-jni::local_ref<NativeArray::jhybridobject>
-createReadableNativeArrayWithContents(folly::dynamic array);
+ protected:
+  friend HybridBase;
+  explicit NativeArray(folly::dynamic array);
+};
 
 }}
