@@ -53,7 +53,7 @@ function handleError(e, isFatal) {
 function polyfillGlobal(name, newValue, scope=GLOBAL) {
   var descriptor = Object.getOwnPropertyDescriptor(scope, name);
 
-  if (typeof scope[name] !== 'undefined') {
+  if (scope[name] !== undefined) {
     var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
   }
