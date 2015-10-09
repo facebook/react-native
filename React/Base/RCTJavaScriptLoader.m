@@ -33,7 +33,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   // Load local script file
   if (scriptURL.fileURL) {
-    NSString *filePath = scriptURL.resourceSpecifier;
+    NSString *filePath = scriptURL.path;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSError *error = nil;
       NSString *rawText = [NSString stringWithContentsOfFile:filePath usedEncoding:NULL error:&error];
