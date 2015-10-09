@@ -225,6 +225,7 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.ios.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
