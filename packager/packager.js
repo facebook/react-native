@@ -8,6 +8,10 @@
  */
 'use strict';
 
+require('../babelRegisterOnly')([
+  /packager\/[^\/]*/
+]);
+
 const fs = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
