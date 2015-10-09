@@ -138,6 +138,7 @@ exports.examples = [
       var examples = autoCapitalizeTypes.map((type) => {
         return (
           <TextInput
+            key={type}
             autoCapitalize={type}
             placeholder={'autoCapitalize: ' + type}
             style={styles.singleLine}
@@ -177,6 +178,7 @@ exports.examples = [
       var examples = keyboardTypes.map((type) => {
         return (
           <TextInput
+            key={type}
             keyboardType={type}
             placeholder={'keyboardType: ' + type}
             style={styles.singleLine}
