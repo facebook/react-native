@@ -64,7 +64,7 @@ android {
 ...
 ```
 
-### Generating the APK
+### Generating the release APK
 
 1. Start the packager by running `npm start` in your project folder
 2. In your project folder, run the following in a Terminal,
@@ -77,9 +77,9 @@ $ cd android && ./gradlew assembleRelease
 
 The generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to be distributed.
 
-### Testing the release build
+### Testing the release build of your app
 
-Before uploading the release build to the Play Store, you should test it thoroughly. Install it on the device using:
+Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
 
 ```sh
 $ cd android && ./gradlew installRelease
