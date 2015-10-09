@@ -44,6 +44,31 @@ function handleError(e, isFatal) {
   }
 }
 
+/**
+ * Assigns a new global property, replacing the existing one if there is one.
+ * 
+ * Existing properties are preserved as `originalPropertyName`. Both properties
+ * will maintain the same enumerability & configurability.
+ * 
+ * This allows you to undo the more aggressive polyfills, should you need to.
+ * For example, if you want to route network requests through DevTools (to trace
+ * them):
+ *
+ *     GLOBAL.XMLHTTPRequest = GLOBAL.originalXMLHTTPRequest;
+ * 
+ * For more info on that particular case, see:
+ * https://github.com/facebook/react-native/issues/934
+ */
+function polyfillGlobal(name, newValue, scope=GLOBAL) {
+  var descriptor = Object.getOwnPropertyDescriptor(scope, name);
+
+  if (scope[name] !== undefined) {
+    var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
+  }
+  Object.defineProperty(scope, name, {...descriptor, value: newValue});
+}
+
 function setUpRedBoxErrorHandler() {
   var ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
@@ -111,23 +136,23 @@ function setUpPromise() {
 function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
-  GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
-  GLOBAL.FormData = require('FormData');
+  polyfillGlobal('XMLHttpRequest', require('XMLHttpRequest'));
+  polyfillGlobal('FormData', require('FormData'));
 
   var fetchPolyfill = require('fetch');
-  GLOBAL.fetch = fetchPolyfill.fetch;
-  GLOBAL.Headers = fetchPolyfill.Headers;
-  GLOBAL.Request = fetchPolyfill.Request;
-  GLOBAL.Response = fetchPolyfill.Response;
+  polyfillGlobal('fetch', fetchPolyfill.fetch);
+  polyfillGlobal('Headers', fetchPolyfill.Headers);
+  polyfillGlobal('Request', fetchPolyfill.Request);
+  polyfillGlobal('Response', fetchPolyfill.Response);
 }
 
 function setUpGeolocation() {
   GLOBAL.navigator = GLOBAL.navigator || {};
-  GLOBAL.navigator.geolocation = require('Geolocation');
+  polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
 }
 
 function setUpWebSockets() {
-  GLOBAL.WebSocket = require('WebSocket');
+  polyfillGlobal('WebSocket', require('WebSocket'));
 }
 
 function setUpProfile() {
