@@ -8,7 +8,7 @@
  */
 'use strict';
 
-require('../babelRegisterOnly')([
+require('./babelRegisterOnly')([
   /packager\/[^\/]*/
 ]);
 
