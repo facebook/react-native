@@ -43,7 +43,8 @@ RCT_EXPORT_MODULE()
     return YES;
   }
 
-  return imageName.pathComponents.count == 1 && !imageName.pathExtension.length;
+  // Assume it's an image in the main asset catalog
+  return imageName.pathComponents.count == 1;
 }
 
  - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
