@@ -11,9 +11,11 @@
  */
 'use strict';
 
+var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var { TestModule } = require('NativeModules');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -49,6 +51,8 @@ var style = StyleSheet.create({
   },
 });
 
-var RCTSnapshot = requireNativeComponent('RCTSnapshot', SnapshotView);
+var RCTSnapshot = Platform.OS === 'ios' ?
+  requireNativeComponent('RCTSnapshot', SnapshotView) :
+  View;
 
 module.exports = SnapshotView;
