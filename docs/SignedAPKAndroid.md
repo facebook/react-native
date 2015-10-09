@@ -13,7 +13,7 @@ To distribute your Android application via [Google Play store](https://play.goog
 
 You can generate a private signing key using `keytool`.
 
-    $ keytool -genkey -v -keystore my-release-key.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000
+    $ keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
 
 This command prompts you for passwords for the keystore and key, and to provide the Distinguished Name fields for your key. It then generates the keystore as a file called `my-release-key.keystore`.
 
@@ -28,8 +28,8 @@ _Note: Remember to keep your keystore file private and never commit it to versio
 
 ```
 MYAPP_RELEASE_STORE_FILE=my-release-key.keystore
+MYAPP_RELEASE_KEY_ALIAS=my-key-alias
 MYAPP_RELEASE_STORE_PASSWORD=*****
-MYAPP_RELEASE_KEY_ALIAS=*****
 MYAPP_RELEASE_KEY_PASSWORD=*****
 ```
 
