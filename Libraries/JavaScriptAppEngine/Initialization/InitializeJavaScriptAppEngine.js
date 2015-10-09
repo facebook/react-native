@@ -54,7 +54,7 @@ function handleError(e, isFatal) {
  * For example, if you want to route network requests through DevTools (to trace
  * them):
  *
- *     GLOBAL.XMLHTTPRequest = GLOBAL.originalXMLHTTPRequest;
+ *     GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest;
  * 
  * For more info on that particular case, see:
  * https://github.com/facebook/react-native/issues/934
