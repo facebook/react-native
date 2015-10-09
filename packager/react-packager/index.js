@@ -8,7 +8,7 @@
  */
 'use strict';
 
-require('babel-core/register')();
+require('../../babelRegisterOnly')([/react-packager\/src/]);
 
 useGracefulFs();
 
