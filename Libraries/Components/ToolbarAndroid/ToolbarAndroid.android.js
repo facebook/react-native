@@ -21,6 +21,13 @@ var ReactPropTypes = require('ReactPropTypes');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
+var optionalImageSource = ReactPropTypes.oneOfType([
+  Image.propTypes.source,
+  // Image.propTypes.source is required but we want it to be optional, so we OR
+  // it with a nullable propType.
+  ReactPropTypes.oneOf([])
+]);
+
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
  * navigation icon (e.g. hamburger menu), a title & subtitle and a list of actions. The title and
@@ -75,18 +82,18 @@ var ToolbarAndroid = React.createClass({
      */
     actions: ReactPropTypes.arrayOf(ReactPropTypes.shape({
       title: ReactPropTypes.string.isRequired,
-      icon: Image.propTypes.source,
+      icon: optionalImageSource,
       show: ReactPropTypes.oneOf(['always', 'ifRoom', 'never']),
       showWithText: ReactPropTypes.bool
     })),
     /**
      * Sets the toolbar logo.
      */
-    logo: Image.propTypes.source,
+    logo: optionalImageSource,
     /**
      * Sets the navigation icon.
      */
-    navIcon: Image.propTypes.source,
+    navIcon: optionalImageSource,
     /**
      * Callback that is called when an action is selected. The only argument that is passeed to the
      * callback is the position of the action in the actions array.
