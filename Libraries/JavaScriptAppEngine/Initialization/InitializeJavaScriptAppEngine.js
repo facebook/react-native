@@ -44,6 +44,12 @@ function handleError(e, isFatal) {
   }
 }
 
+/**
+ * Assigns a new global property, replacing the existing one if there is one.
+ * 
+ * Existing properties are preserved as `originalPropertyName`. Both properties
+ * will maintain the same enumerability & configurability.
+ */
 function polyfillGlobal(name, newValue) {
   var descriptor = Object.getOwnPropertyDescriptor(GLOBAL, name);
 
