@@ -24,7 +24,6 @@ Pod::Spec.new do |s|
   s.platform            = :ios, "7.0"
   s.prepare_command     = 'npm install --production'
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
-  s.header_mappings_dir = "."
 
   s.subspec 'Core' do |ss|
     ss.source_files     = "React/**/*.{c,h,m}"
