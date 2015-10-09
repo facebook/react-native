@@ -7,7 +7,7 @@ permalink: docs/signed-apk-android.html
 next: activityindicatorios
 ---
 
-To distribute your Android application via [Google Play store](https://play.google.com/store), you'll need to generate a signed release APK. The [Signing Your Applications](https://developer.android.com/tools/publishing/app-signing.html) page on Android Developers documentation describe the topic in detail. This guide covers the process in brief, as well as lists the steps required to retrieve and package the JavaScript bundle.
+To distribute your Android application via [Google Play store](https://play.google.com/store), you'll need to generate a signed release APK. The [Signing Your Applications](https://developer.android.com/tools/publishing/app-signing.html) page on Android Developers documentation describes the topic in detail. This guide covers the process in brief, as well as lists the steps required to packaging the JavaScript bundle.
 
 ### Generating a signing key
 
@@ -70,8 +70,9 @@ android {
 2. In your project folder, run the following in a Terminal,
 
 ```sh
+$ mkdir -p android/app/src/main/assets
 $ curl "http://localhost:8081/index.android.bundle?platform=android&dev=false&minify=true" -o "android/app/src/main/assets/index.android.bundle"
 $ cd android && ./gradlew assembleRelease
 ```
 
-The generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to distribute.
+The generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to be distributed.
