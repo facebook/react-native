@@ -93,7 +93,7 @@ You can kill any running packager instances, all your and framework JavaScript c
 
 Proguard is a tool that can slightly reduce the size of the APK. It does this by stripping parts of the React Native Java bytecode (and its dependencies) that your app is not using.
 
-_Note: Make sure to thoroughly test your app if you've enabled Proguard. Proguard often requires configuration specific to each native library you're using. See `app/proguard-rules.pro`._
+_**IMPORTANT**: Make sure to thoroughly test your app if you've enabled Proguard. Proguard often requires configuration specific to each native library you're using. See `app/proguard-rules.pro`._
 
 To enable Proguard, set `minifyEnabled` to `true`:
 
