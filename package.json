@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+  "engines": {
+    "node": ">=4"
+  },
   "jest": {
     "scriptPreprocessor": "jestSupport/preprocessor.js",
     "setupEnvScriptFile": "jestSupport/env.js",
