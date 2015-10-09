@@ -76,3 +76,37 @@ $ cd android && ./gradlew assembleRelease
 ```
 
 The generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to be distributed.
+
+### Testing the release build
+
+Before uploading the release build to the Play Store, you should test it thoroughly. Install it on the device using:
+
+```sh
+$ cd android && ./gradlew installRelease
+```
+
+Note that `installRelease` is only available if you've set up signing as described above.
+
+You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets. 
+
+### Enabling Proguard to reduce the size of the APK (optional)
+
+Proguard is a tool that can reduce the size of the APK by stripping parts of the React Native and its dependencies that your app is not using.
+
+_Note: Make sure to thoroughly test your app if you've enabled Proguard. Proguard often requires configuration specific to each native library you're using. See `app/proguard-rules.pro`._
+
+To enable Proguard, set `minifyEnabled` to `true`:
+
+```
+...
+android {
+    ...
+    buildTypes {
+        release {
+            ...
+            minifyEnabled true
+        }
+    }
+}
+...
+```
