@@ -56,6 +56,8 @@ public class ReactTextInputManager extends
   public static final String PROP_TEXT_INPUT_TEXT = "text";
   @UIProp(UIProp.Type.NUMBER)
   public static final String PROP_TEXT_INPUT_MOST_RECENT_EVENT_COUNT = "mostRecentEventCount";
+  @UIProp(UIProp.Type.COLOR)
+  public static final String PROP_TEXT_INPUT_COLOR = ViewProps.COLOR;
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
@@ -155,16 +157,6 @@ public class ReactTextInputManager extends
     view.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
-  }
-
-  // Prevents flickering color while waiting for JS update.
-  @ReactProp(name = ViewProps.COLOR, customType = "Color")
-  public void setColor(ReactEditText view, @Nullable Integer color) {
-    if (color == null) {
-      view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
-    } else {
-      view.setTextColor(color);
-    }
   }
 
   @ReactProp(name = "placeholder")
