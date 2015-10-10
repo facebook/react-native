@@ -5,9 +5,9 @@
 <!-- @mobile export_name="fbandroid 2015-07-14 at 10:02:32 GMT" locale="zh_CN" lib_name="java-com-facebook-catalyst-js-react-native-github-ReactAndroid-android_res-com-facebook-react-devsupport" -->
 
 <resources>
-    <string name="catalyst_reloadjs">Reload JS</string>
-    <string name="catalyst_debugjs">Debug JS</string>
-    <string name="catalyst_settings">Dev Settings</string>
+    <string name="catalyst_reloadjs">重载 JS</string>
+    <string name="catalyst_debugjs">调试 JS</string>
+    <string name="catalyst_settings">开发者设置</string>
     <string name="catalyst_settings_title">Catalyst Dev Settings</string>
     <string name="catalyst_jsload_title">请稍等...</string>
     <string name="catalyst_jsload_message">Fetching JS bundle</string>
