@@ -73,7 +73,13 @@ public class ReactTextShadowNode extends ReactShadowNode {
       this.what = what;
     }
     public void execute(SpannableStringBuilder sb) {
-      sb.setSpan(what, start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+      // All spans will automatically extend to the right of the text, but not the left - except
+      // for spans that start at the beginning of the text.
+      int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
+      if (start == 0) {
+        spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
+      }
+      sb.setSpan(what, start, end, spanFlags);
     }
   }
 
