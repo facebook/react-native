@@ -42,7 +42,7 @@
   ],
   "scripts": {
     "test": "NODE_ENV=test jest",
-    "lint": "eslint Libraries/",
+    "lint": "eslint Examples/ Libraries/",
     "start": "./packager/packager.sh || true"
   },
   "bin": {
