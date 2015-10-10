@@ -27,7 +27,9 @@
 'use strict';
 
 var React = require('React');
-var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
+var NavigatorNavigationBarStylesAndroid = require('NavigatorNavigationBarStylesAndroid');
+var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
+var Platform = require('Platform');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -35,6 +37,9 @@ var View = require('View');
 var { Map } = require('immutable');
 
 var COMPONENT_NAMES = ['Title', 'LeftButton', 'RightButton'];
+
+var NavigatorNavigationBarStyles = Platform.OS === 'android' ?
+  NavigatorNavigationBarStylesAndroid : NavigatorNavigationBarStylesIOS;
 
 var navStatePresentedIndex = function(navState) {
   if (navState.presentedIndex !== undefined) {
@@ -57,11 +62,20 @@ var NavigatorNavigationBar = React.createClass({
       routeStack: React.PropTypes.arrayOf(React.PropTypes.object),
       presentedIndex: React.PropTypes.number,
     }),
+    navigationStyles: React.PropTypes.object,
     style: View.propTypes.style,
   },
 
   statics: {
     Styles: NavigatorNavigationBarStyles,
+    StylesAndroid: NavigatorNavigationBarStylesAndroid,
+    StylesIOS: NavigatorNavigationBarStylesIOS,
+  },
+
+  getDefaultProps() {
+    return {
+      navigationStyles: NavigatorNavigationBarStyles,
+    };
   },
 
   componentWillMount: function() {
@@ -104,14 +118,14 @@ var NavigatorNavigationBar = React.createClass({
     var interpolate;
     if (oldDistToCenter > 0 && newDistToCenter === 0 ||
         newDistToCenter > 0 && oldDistToCenter === 0) {
-      interpolate = NavigatorNavigationBarStyles.Interpolators.RightToCenter;
+      interpolate = this.props.navigationStyles.Interpolators.RightToCenter;
     } else if (oldDistToCenter < 0 && newDistToCenter === 0 ||
                newDistToCenter < 0 && oldDistToCenter === 0) {
-      interpolate = NavigatorNavigationBarStyles.Interpolators.CenterToLeft;
+      interpolate = this.props.navigationStyles.Interpolators.CenterToLeft;
     } else if (oldDistToCenter === newDistToCenter) {
-      interpolate = NavigatorNavigationBarStyles.Interpolators.RightToCenter;
+      interpolate = this.props.navigationStyles.Interpolators.RightToCenter;
     } else {
-      interpolate = NavigatorNavigationBarStyles.Interpolators.RightToLeft;
+      interpolate = this.props.navigationStyles.Interpolators.RightToLeft;
     }
 
     COMPONENT_NAMES.forEach(function (componentName) {
@@ -136,6 +150,9 @@ var NavigatorNavigationBar = React.createClass({
   },
 
   render: function() {
+    var navBarStyle = {
+      height: this.props.navigationStyles.General.TotalNavHeight,
+    };
     var navState = this.props.navState;
     var components = COMPONENT_NAMES.map(function (componentName) {
       return navState.routeStack.map(
@@ -144,7 +161,7 @@ var NavigatorNavigationBar = React.createClass({
     }, this);
 
     return (
-      <View style={[styles.navBarContainer, this.props.style]}>
+      <View style={[styles.navBarContainer, navBarStyle, this.props.style]}>
         {components}
       </View>
     );
@@ -172,7 +189,8 @@ var NavigatorNavigationBar = React.createClass({
     }
 
     var initialStage = index === navStatePresentedIndex(this.props.navState) ?
-      NavigatorNavigationBarStyles.Stages.Center : NavigatorNavigationBarStyles.Stages.Left;
+      this.props.navigationStyles.Stages.Center :
+      this.props.navigationStyles.Stages.Left;
     rendered = (
       <View
         ref={(ref) => {
@@ -193,7 +211,6 @@ var NavigatorNavigationBar = React.createClass({
 var styles = StyleSheet.create({
   navBarContainer: {
     position: 'absolute',
-    height: NavigatorNavigationBarStyles.General.TotalNavHeight,
     top: 0,
     left: 0,
     right: 0,
