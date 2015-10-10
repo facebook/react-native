@@ -25,7 +25,6 @@ var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
 var requireNativeComponent = require('requireNativeComponent');

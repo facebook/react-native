@@ -113,7 +113,7 @@ var Text = React.createClass({
       isHighlighted: false,
     });
   },
-  
+
   getDefaultProps: function(): Object {
     return {
       allowFontScaling: true,

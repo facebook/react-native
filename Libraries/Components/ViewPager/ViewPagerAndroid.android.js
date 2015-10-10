@@ -5,7 +5,6 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactElement = require('ReactElement');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');

@@ -170,7 +170,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet(keys, function(errors, result) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = (errors && errors.map((err) => convertError(err))) || null;
         callback && callback(error, result);
         if (errors) {
           reject(error);
@@ -193,7 +193,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = (errors && errors.map((err) => convertError(err))) || null;
         callback && callback(error);
         if (errors) {
           reject(error);
@@ -213,7 +213,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove(keys, function(errors) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = (errors && errors.map((err) => convertError(err))) || null;
         callback && callback(error);
         if (errors) {
           reject(error);
@@ -236,7 +236,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = (errors && errors.map((err) => convertError(err))) || null;
         callback && callback(error);
         if (errors) {
           reject(error);
