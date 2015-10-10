@@ -47,4 +47,4 @@ ES7
 
 * [Object Spread](https://github.com/sebmarkbage/ecmascript-rest-spread): `var extended = { ...obj, a: 10 };`
 * [Function Trailing Comma](https://github.com/jeffmo/es-trailing-function-commas): `function f(a, b, c,) { }`
-* [Async Functions](https://github.com/tc39/ecmascript-asyncawait): `async function doStuffAsync(){ }; const foo = await doStuffAsync()`;
+* [Async Functions](https://github.com/tc39/ecmascript-asyncawait): `async function doStuffAsync() { const foo = await doOtherStuffAsync() };`;
