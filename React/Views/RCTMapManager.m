@@ -73,6 +73,66 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
+- (bool)isLocalImage: (NSDictionary *)config
+{
+  if (config[@"image"] != nil) {
+    if ([config[@"image"] isKindOfClass:[NSDictionary class]]) {
+      if ([config[@"image"] objectForKey:@"__packager_asset"] != nil) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+- (UIImageView *)generateCalloutImageAccessory:(NSDictionary *)config
+{
+  // Default width / height is 54
+  int imageWidth = 54;
+  int imageHeight = 54;
+
+  if (config[@"imageSize"] != nil) {
+    if ([config[@"imageSize"] objectForKey:@"height"] != nil) {
+      imageHeight = [RCTConvert int:config[@"imageSize"][@"height"]];
+    }
+
+    if ([config[@"imageSize"] objectForKey:@"width"] != nil) {
+      imageWidth = [RCTConvert int:config[@"imageSize"][@"width"]];
+    }
+  }
+
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(imageWidth, imageHeight), NO, 0.0);
+  UIImage *blank = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:blank];
+
+  if ([self isLocalImage:config]) {
+    // We have a local ressource, no web loading necessary
+    NSString *ressourceName = [RCTConvert NSString:config[@"image"][@"uri"]];
+    calloutImageView.image = [UIImage imageNamed:ressourceName];
+  } else {
+    NSString *uri = [RCTConvert NSString:config[@"image"]];
+
+    if (config[@"defaultImage"] != nil) {
+      NSString *defaultImagePath = [RCTConvert NSString:config[@"defaultImage"][@"uri"]];
+      calloutImageView.image = [UIImage imageNamed:defaultImagePath];
+    }
+
+    // Load the real image async and replace the image with it
+    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:uri]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if (!error) {
+          if ([@[@200, @301, @302, @304] containsObject:@([(NSHTTPURLResponse *)response statusCode])]) {
+            calloutImageView.image = [UIImage imageWithData:data];
+          }
+        }
+    }];
+  }
+
+  return calloutImageView;
+}
+
 - (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
 {
   if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
@@ -84,14 +144,20 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   annotationView.canShowCallout = true;
   annotationView.animatesDrop = annotation.animateDrop;
 
-  annotationView.leftCalloutAccessoryView = nil;
-  if (annotation.hasLeftCallout) {
-    annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-  }
+  for (NSString *side in @[@"left", @"right"]) {
+    NSString *accessoryViewSelector = [NSString stringWithFormat:@"%@CalloutAccessoryView", side];
+    NSString *typeSelector = [NSString stringWithFormat:@"%@CalloutType", side];
+    NSString *hasCheckSelector = [NSString stringWithFormat:@"has%@Callout", [side capitalizedString]];
+    NSString *configSelector = [NSString stringWithFormat:@"%@CalloutConfig", side];
 
-  annotationView.rightCalloutAccessoryView = nil;
-  if (annotation.hasRightCallout) {
-    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    [annotationView setValue:nil forKey:accessoryViewSelector];
+    if ([annotation valueForKey:hasCheckSelector]) {
+      [annotationView setValue:[UIButton buttonWithType:UIButtonTypeDetailDisclosure] forKey:accessoryViewSelector];
+
+      if ([[annotation valueForKey:typeSelector] integerValue] == RCTPointAnnotationTypeImage) {
+        [annotationView setValue:[self generateCalloutImageAccessory:[annotation valueForKey:configSelector]] forKey:accessoryViewSelector];
+      }
+    }
   }
 
   return annotationView;
@@ -157,6 +223,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   mapView.hasStartedRendering = YES;
   [self _emitRegionChangeEvent:mapView continuous:NO];
 }
+
 
 #pragma mark Private
 

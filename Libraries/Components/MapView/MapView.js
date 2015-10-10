@@ -23,6 +23,7 @@ var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 type Event = Object;
 type MapRegion = {
@@ -35,8 +36,7 @@ type MapRegion = {
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
 
-  checkAnnotationIds: function (annotations: Array<Object>) {
-
+  checkAnnotationData: function(annotations: Array<Object>) {
     var newAnnotations = annotations.map(function (annotation) {
       if (!annotation.id) {
         // TODO: add a base64 (or similar) encoder here
@@ -50,16 +50,15 @@ var MapView = React.createClass({
       annotations: newAnnotations
     });
   },
-
   componentWillMount: function() {
     if (this.props.annotations) {
-      this.checkAnnotationIds(this.props.annotations);
+      this.checkAnnotationData(this.props.annotations);
     }
   },
 
   componentWillReceiveProps: function(nextProps: Object) {
     if (nextProps.annotations) {
-      this.checkAnnotationIds(nextProps.annotations);
+      this.checkAnnotationData(nextProps.annotations);
     }
   },
 
@@ -141,7 +140,7 @@ var MapView = React.createClass({
        * to be displayed.
        */
       latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
+      longitudeDelta: React.PropTypes.number.isRequired
     }),
 
     /**
@@ -166,16 +165,106 @@ var MapView = React.createClass({
       subtitle: React.PropTypes.string,
 
       /**
-       * Whether the Annotation has callout buttons.
+       * Right callout
        */
-      hasLeftCallout: React.PropTypes.bool,
-      hasRightCallout: React.PropTypes.bool,
+      rightCallout: React.PropTypes.shape({
+
+        /**
+         * Type of the callout. If image, set src in config
+         */
+        type: React.PropTypes.oneOf([
+          'button',
+          'image'
+        ]),
+
+        /**
+         * Callback for when the accessory is clicked
+         * Currently only works on button and not image
+         */
+        onPress: React.PropTypes.func,
+
+        /**
+         * Additional config parameters to pass to the callout.
+         */
+        config: React.PropTypes.shape({
+
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
+          imageSize: React.PropTypes.shape({
+            /**
+             * Width of the image to be initialized
+             */
+            width: React.PropTypes.number,
+
+            /**
+             * Height of the image to be initialized
+             */
+            height: React.PropTypes.number
+          }),
+
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
+          image: React.PropTypes.string,
+
+          /**
+           * Default Image is being used when the image has to get loaded
+           */
+          defaultImage: React.PropTypes.shape
+        })
+      }),
 
       /**
-       * Event handlers for callout buttons.
+       * Left callout
        */
-      onLeftCalloutPress: React.PropTypes.func,
-      onRightCalloutPress: React.PropTypes.func,
+      leftCallout: React.PropTypes.shape({
+
+        /**
+         * Type of the callout. If image, set src in config
+         */
+        type: React.PropTypes.oneOf([
+          'button',
+          'image'
+        ]),
+
+        /**
+         * Callback for when the accessory is clicked
+         * Currently only works on button and not image
+         */
+        onPress: React.PropTypes.func,
+
+        /**
+         * Additional config parameters to pass to the callout.
+         */
+        config: React.PropTypes.shape({
+
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
+          imageSize: React.PropTypes.shape({
+            /**
+             * Width of the image to be initialized
+             */
+            width: React.PropTypes.number,
+
+            /**
+             * Height of the image to be initialized
+             */
+            height: React.PropTypes.number
+          }),
+
+          /**
+           * Is being used when type == image. use the same input as for Image
+           */
+          image: React.PropTypes.string,
+
+          /**
+           * Default Image is being used when the image has to get loaded
+           */
+          defaultImage: React.PropTypes.shape
+        })
+      }),
 
       /**
        * annotation id
@@ -242,9 +331,9 @@ var MapView = React.createClass({
         if (annotation.id === event.nativeEvent.annotationId) {
           // Pass the right function
           if (event.nativeEvent.side === 'left') {
-            annotation.onLeftCalloutPress && annotation.onLeftCalloutPress(event.nativeEvent);
+            annotation.leftCallout.onPress && annotation.leftCallout.onPress(event.nativeEvent);
           } else if (event.nativeEvent.side === 'right') {
-            annotation.onRightCalloutPress && annotation.onRightCalloutPress(event.nativeEvent);
+            annotation.rightCallout.onPress && annotation.rightCallout.onPress(event.nativeEvent);
           }
         }
       }
