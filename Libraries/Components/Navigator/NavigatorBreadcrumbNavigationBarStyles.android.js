@@ -125,17 +125,13 @@ RIGHT[0].Title = merge(FIRST_TITLE_BASE, {opacity: 0});
 var buildIndexSceneInterpolator = function(startStyles, endStyles) {
   return {
     Crumb: buildStyleInterpolator({
-      translateX: {
+      left: {
         type: 'linear',
-        from: 0,
-        to: endStyles.Crumb.left - startStyles.Crumb.left,
+        from: startStyles.Crumb.left,
+        to: endStyles.Crumb.left,
         min: 0,
         max: 1,
         extrapolate: true,
-      },
-      left: {
-        value: startStyles.Crumb.left,
-        type: 'constant'
       },
     }),
     Icon: buildStyleInterpolator({
@@ -164,17 +160,13 @@ var buildIndexSceneInterpolator = function(startStyles, endStyles) {
         min: 0,
         max: 1,
       },
-      translateX: {
+      left: {
         type: 'linear',
-        from: 0,
-        to: endStyles.Title.left - startStyles.Title.left,
+        from: startStyles.Title.left,
+        to: endStyles.Title.left,
         min: 0,
         max: 1,
         extrapolate: true,
-      },
-      left: {
-        value: startStyles.Title.left,
-        type: 'constant'
       },
     }),
     RightItem: buildStyleInterpolator({
