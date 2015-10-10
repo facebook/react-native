@@ -16,8 +16,6 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var Touchable = require('Touchable');
 
-var merge = require('merge');
-
 type Event = Object;
 type State = {
   animationID: ?number;

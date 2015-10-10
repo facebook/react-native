@@ -16,7 +16,6 @@ var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
 var buildStyleInterpolator = require('buildStyleInterpolator');
 var merge = require('merge');
 
-var SCREEN_WIDTH = Dimensions.get('window').width;
 var NAV_BAR_HEIGHT = NavigatorNavigationBarStyles.General.NavBarHeight;
 
 var SPACING = 8;

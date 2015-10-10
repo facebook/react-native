@@ -28,7 +28,6 @@
 
 var React = require('React');
 var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
-var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 

@@ -21,7 +21,6 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
-var keyOf = require('keyOf');
 
 type Event = Object;
 
