@@ -44,7 +44,7 @@ var AccessibilityIOSExample = React.createClass({
             Accessibility label example
           </Text>
         </View>
-        <View accessibilityTraits={["button", "selected"]}
+        <View accessibilityTraits={['button', 'selected']}
               accessible={true}>
           <Text>
             Accessibility traits example
