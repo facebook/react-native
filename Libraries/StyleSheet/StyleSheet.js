@@ -60,6 +60,8 @@ var flattenStyle = require('flattenStyle');
  * subsequent uses are going to refer an id (not implemented yet).
  */
 class StyleSheet {
+  static flatten:Function;
+
   static create(obj: {[key: string]: any}): {[key: string]: number} {
     var result = {};
     for (var key in obj) {
