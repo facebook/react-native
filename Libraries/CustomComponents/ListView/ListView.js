@@ -36,6 +36,7 @@ var React = require('React');
 var ReactNative = require('ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
+var View = require('View');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
@@ -188,6 +189,18 @@ var ListView = React.createClass({
      */
     renderSectionHeader: PropTypes.func,
     /**
+     * (sectionID) => style object
+     *
+     * If provided, set custom style on the section
+     * It can be a function returning a style or an object
+     * Default : null
+     */
+    sectionStyle: React.PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.object,
+      View.propTypes.style
+    ]),
+    /**
      * (props) => renderable
      *
      * A function that returns the scrollable component in which the list rows
@@ -284,6 +297,7 @@ var ListView = React.createClass({
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
       stickyHeaderIndices: [],
+      sectionStyle: null
     };
   },
 
@@ -395,6 +409,9 @@ var ListView = React.createClass({
         sectionHeaderIndices.push(totalIndex++);
       }
 
+      var sectionRowCount = 0;
+      var sectionComponents = [];
+
       for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         var rowID = rowIDs[rowIdx];
         var comboID = sectionID + '_' + rowID;
@@ -412,8 +429,7 @@ var ListView = React.createClass({
               this._onRowHighlighted
             )}
           />;
-        bodyComponents.push(row);
-        totalIndex++;
+        sectionComponents.push(row);
 
         if (this.props.renderSeparator &&
             (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)) {
@@ -427,16 +443,29 @@ var ListView = React.createClass({
             rowID,
             adjacentRowHighlighted
           );
-          if (separator) {
-            bodyComponents.push(separator);
-            totalIndex++;
+
+          if(separator) {
+            sectionComponents.push(separator);
           }
+
         }
+        sectionRowCount++;
         if (++rowCount === this.state.curRenderedRowsCount) {
           break;
         }
       }
-      if (rowCount >= this.state.curRenderedRowsCount) {
+      var isEarlyBreak = rowCount >= this.state.curRenderedRowsCount;
+      if (isEarlyBreak || sectionRowCount === rowIDs.length) {
+        //early break or end section
+        var style = this.props.sectionStyle;
+        bodyComponents.push(
+          <View key={'section_' + sectionID} style={typeof style == 'function' ? style(sectionID) : style}>
+            {sectionComponents}
+          </View>
+        );
+        totalIndex++;
+      }
+      if (isEarlyBreak) {
         break;
       }
     }
