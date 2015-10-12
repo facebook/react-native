@@ -23,7 +23,6 @@ var {
   ProgressBarAndroid,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } = React;
 var TimerMixin = require('react-timer-mixin');
