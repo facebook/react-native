@@ -77,3 +77,10 @@ RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);
 
 // Gzip functionality - compression level in range 0 - 1 (-1 for default)
 RCT_EXTERN NSData *RCTGzipData(NSData *data, float level);
+
+// Returns the relative path within the main bundle for an absolute URL
+// (or nil, if the URL does not specify a path within the main bundle)
+RCT_EXTERN NSString *RCTBundlePathForURL(NSURL *URL);
+
+// Determines if a given image URL actually refers to an XCAsset
+RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *imageURL);
