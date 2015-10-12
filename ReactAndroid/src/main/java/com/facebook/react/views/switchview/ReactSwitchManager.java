@@ -8,7 +8,7 @@
  */
 
 // switchview because switch is a keyword
-package com.facebook.react.views.switchviewview;
+package com.facebook.react.views.switchview;
 
 import android.os.SystemClock;
 import android.view.View;
