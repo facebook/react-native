@@ -25,7 +25,6 @@ function expectResolvesAsset(input, expectedSource) {
 describe('resolveAssetSource', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
-    __DEV__ = true;
   });
 
   it('returns same source for simple static and network images', () => {
@@ -109,11 +108,10 @@ describe('resolveAssetSource', () => {
 
   });
 
-  describe('bundle was loaded from file (PROD) on iOS', () => {
+  describe('bundle was loaded from file on iOS', () => {
     beforeEach(() => {
       NativeModules.SourceCode.scriptURL =
         'file:///Path/To/Simulator/main.bundle';
-      __DEV__ = false;
       Platform.OS = 'ios';
     });
 
@@ -138,11 +136,10 @@ describe('resolveAssetSource', () => {
     });
   });
 
-  describe('bundle was loaded from file (PROD) on Android', () => {
+  describe('bundle was loaded from file on Android', () => {
     beforeEach(() => {
       NativeModules.SourceCode.scriptURL =
         'file:///Path/To/Simulator/main.bundle';
-      __DEV__ = false;
       Platform.OS = 'android';
     });
 
