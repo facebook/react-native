@@ -20,12 +20,12 @@ let cachedConfig = null;
  * It has to be on any parent directory of the cli.
  */
 const Config = {
-  get() {
+  get(pwd) {
     if (cachedConfig) {
       return cachedConfig;
     }
 
-    const parentDir = findParentDirectory(__dirname, RN_CLI_CONFIG);
+    const parentDir = findParentDirectory(pwd, RN_CLI_CONFIG);
 
     if (!parentDir) {
       throw new Error(
