@@ -28,7 +28,7 @@ import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
-import com.facebook.react.views.switchviewview.ReactSwitchManager;
+import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
