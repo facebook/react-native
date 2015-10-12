@@ -41,6 +41,10 @@ module.exports = yeoman.generators.NamedBase.extend({
     );
 
     this.fs.copy(
+      this.templatePath('rn-cli.config.js'),
+      this.destinationPath('rn-cli.config.js')
+    );
+    this.fs.copy(
       this.templatePath('_gitignore'),
       this.destinationPath('.gitignore')
     );
