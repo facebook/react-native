@@ -4,7 +4,6 @@
 !**/*.xcworkspacedata
 !**/*.xcsettings
 !**/*.xcscheme
-build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -22,10 +21,10 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
-# OS X
-.DS_Store
+# Xcode, Gradle
+build/
 
-# Android/IJ
+# Android
 .idea
 .gradle
 local.properties
@@ -35,3 +34,6 @@ local.properties
 node_modules
 *.log
 .nvm
+
+# OS X
+.DS_Store
