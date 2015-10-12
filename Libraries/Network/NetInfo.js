@@ -185,7 +185,7 @@ var NetInfo = {
     return new Promise((resolve, reject) => {
       RCTNetInfo.getCurrentReachability(
         function(resp) {
-          resolve(resp.network_reachability);
+          resolve(resp.network_info);
         },
         reject
       );
