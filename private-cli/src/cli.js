@@ -29,16 +29,16 @@ const hiddenCommands = {
  */
 function run(command, commandArgs) {
   if (!command) {
-    throw new Error(helpMessage());
+    return Promise.reject(helpMessage());
   }
   commandArgs = commandArgs || [];
 
   const commandToExec = documentedCommands[command] || hiddenCommands[command];
   if (!commandToExec) {
-    throw new Error(helpMessage(command));
+    return Promise.reject(helpMessage(command));
   }
 
-  commandToExec(commandArgs, Config.get()).done();
+  return commandToExec(commandArgs, Config.get());
 }
 
 function helpMessage(command) {
@@ -61,4 +61,7 @@ function help() {
   return Promise.resolve();
 }
 
-module.exports.run = run;
+module.exports = {
+  run: run,
+  commands: documentedCommands,
+};
