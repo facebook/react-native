@@ -12,10 +12,12 @@ const bundle = require('./bundle/bundle');
 const Config = require('./util/Config');
 const dependencies = require('./dependencies/dependencies');
 const Promise = require('promise');
+const server = require('./server/server');
 
 const documentedCommands = {
   bundle: bundle,
   dependencies: dependencies,
+  server: server,
 };
 
 const hiddenCommands = {

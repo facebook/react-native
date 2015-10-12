@@ -8,7 +8,10 @@
  */
 'use strict';
 
-require('../packager/babelRegisterOnly')([/private-cli\/src/]);
+require('../packager/babelRegisterOnly')([
+  /private-cli\/src/,
+  /packager\/[^\/]*/
+]);
 
 var cli = require('./src/cli');
 var fs = require('fs');
