@@ -889,24 +889,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertMainThread();
 
-  if (![self.bundleURL.scheme isEqualToString:@"http"]) {
-    RCTLogError(@"To run the profiler you must be running from the dev server");
-    return;
-  }
-
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     RCTProfileInit(self);
   }];
 }
 
-- (void)stopProfiling
+- (void)stopProfiling:(void (^)(NSData *))callback
 {
   RCTAssertMainThread();
 
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     NSString *log = RCTProfileEnd(self);
     NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
-    RCTProfileSendResult(self, @"systrace", logData);
+    callback(logData);
   }];
 }
 
