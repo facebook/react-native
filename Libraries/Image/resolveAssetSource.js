@@ -20,10 +20,6 @@ var SourceCode = require('NativeModules').SourceCode;
 var _serverURL;
 
 function getDevServerURL() {
-  if (!__DEV__) {
-    // In prod we want assets to be loaded from the archive
-    return null;
-  }
   if (_serverURL === undefined) {
     var scriptURL = SourceCode.scriptURL;
     var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
