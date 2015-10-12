@@ -40,7 +40,7 @@ var AppStateSubscription = React.createClass({
     AppStateIOS.removeEventListener('memoryWarning', this._handleMemoryWarning);
   },
   _handleMemoryWarning: function() {
-    this.setState({memoryWarnings: this.state.memoryWarnings + 1})
+    this.setState({memoryWarnings: this.state.memoryWarnings + 1});
   },
   _handleAppStateChange: function(appState) {
     var previousAppStates = this.state.previousAppStates.slice();
