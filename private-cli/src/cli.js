@@ -61,4 +61,7 @@ function help() {
   return Promise.resolve();
 }
 
-module.exports.run = run;
+module.exports = {
+  commands: documentedCommands,
+  run: run,
+};
