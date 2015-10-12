@@ -21,8 +21,7 @@ var {
   ScrollView,
   Text,
   TouchableHighlight,
-  TouchableOpacity,
-  View,
+  TouchableOpacity
 } = React;
 
 var _getRandomRoute = function() {
