@@ -20,10 +20,10 @@ const isAbsolutePath = require('absolute-path');
 
 const blacklist = require('./blacklist.js');
 const chalk = require('chalk');
-const checkNodeVersion = require('./checkNodeVersion');
+const checkNodeVersion = require('../private-cli/src/server/checkNodeVersion');
 const cpuProfilerMiddleware = require('./cpuProfilerMiddleware');
 const connect = require('connect');
-const formatBanner = require('./formatBanner');
+const formatBanner = require('../private-cli/src/server/formatBanner');
 const getDevToolsMiddleware = require('./getDevToolsMiddleware');
 const loadRawBodyMiddleware = require('./loadRawBodyMiddleware');
 const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
