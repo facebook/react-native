@@ -9,7 +9,7 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const parseBundleCommandLine = require('./parseBundleCommandLine');
+const parseCommandLine = require('../../../packager/parseCommandLine');
 const processBundle = require('./processBundle');
 const Promise = require('promise');
 const ReactPackager = require('../../../packager/react-packager');
@@ -25,7 +25,36 @@ function bundle(argv, config) {
 }
 
 function _bundle(argv, config, resolve, reject) {
-  const args = parseBundleCommandLine(argv);
+  const args = parseCommandLine([
+    {
+      command: 'entry-file',
+      description: 'Path to the root JS file, either absolute or relative to JS root',
+      type: 'string',
+      required: true,
+    }, {
+      command: 'platform',
+      description: 'Either "ios" or "android"',
+      type: 'string',
+      required: true,
+    }, {
+      command: 'dev',
+      description: 'If false, warnings are disabled and the bundle is minified',
+      default: true,
+    }, {
+      command: 'bundle-output',
+      description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
+      type: 'string',
+      required: true,
+    }, {
+      command: 'sourcemap-output',
+      description: 'File name where to store the sourcemap file for resulting bundle, ex. /tmp/groups.map',
+      type: 'string',
+    }, {
+      command: 'assets-dest',
+      description: 'Directory name where to store assets referenced in the bundle',
+      type: 'string',
+    }
+  ], argv);
 
   // This is used by a bazillion of npm modules we don't control so we don't
   // have other choice than defining it as an env variable here.
