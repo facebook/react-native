@@ -59,7 +59,7 @@ var DEFAULT_PROPS = {
  * ```
  * > **NOTE**: TouchableHighlight supports only one child
  * >
- * > If you wish to have to have several child components, wrap them in a View.
+ * > If you wish to have several child components, wrap them in a View.
  */
 
 var TouchableHighlight = React.createClass({
