@@ -47,7 +47,12 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"http", @"https", @"file"] containsObject:request.URL.scheme.lowercaseString];
+  static NSSet *schemes = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    schemes = [[NSSet alloc] initWithObjects:@"http", @"https", @"file", nil];
+  });
+  return [schemes containsObject:request.URL.scheme.lowercaseString];
 }
 
 - (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request

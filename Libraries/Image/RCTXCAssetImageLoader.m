@@ -7,56 +7,33 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTAssetBundleImageLoader.h"
+#import "RCTXCAssetImageLoader.h"
 
 #import "RCTUtils.h"
 
-@implementation RCTAssetBundleImageLoader
+@implementation RCTXCAssetImageLoader
 
 RCT_EXPORT_MODULE()
 
-- (NSString *)imageNameForRequestURL:(NSURL *)requestURL
-{
-  if (!requestURL.fileURL) {
-    return nil;
-  }
-
-  NSString *resourcesPath = [NSBundle bundleForClass:[self class]].resourcePath;
-  NSString *requestPath = requestURL.absoluteURL.path;
-  if (requestPath.length < resourcesPath.length + 1) {
-    return nil;
-  }
-
-  return [requestPath substringFromIndex:resourcesPath.length + 1];
-}
-
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  NSString *imageName = [self imageNameForRequestURL:requestURL];
-  if (!imageName.length) {
-    return NO;
-  }
+  return RCTIsXCAssetURL(requestURL);
+}
 
-  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  if ([bundle URLForResource:imageName withExtension:nil] ||
-      [bundle URLForResource:imageName withExtension:@"png"]) {
-    return YES;
-  }
-
-  // Assume it's an image in the main asset catalog
-  return imageName.pathComponents.count == 1;
+- (float)imageLoaderPriority
+{
+  return 100; // higher priority than any ordinary file loader
 }
 
  - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  NSString *imageName = [self imageNameForRequestURL:imageURL];
-
   __block BOOL cancelled = NO;
   dispatch_async(dispatch_get_main_queue(), ^{
     if (cancelled) {
       return;
     }
 
+    NSString *imageName = RCTBundlePathForURL(imageURL);
     UIImage *image = [UIImage imageNamed:imageName];
     if (image) {
       if (progressHandler) {

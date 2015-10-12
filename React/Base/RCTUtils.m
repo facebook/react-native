@@ -458,3 +458,38 @@ NSData *RCTGzipData(NSData *input, float level)
 
   return output;
 }
+
+NSString *RCTBundlePathForURL(NSURL *URL)
+{
+  if (!URL.fileURL) {
+    // Not a file path
+    return nil;
+  }
+  NSString *path = URL.path;
+  NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
+  if (![path hasPrefix:bundlePath]) {
+    // Not a bundle-relative file
+    return nil;
+  }
+  return [path substringFromIndex:bundlePath.length + 1];
+}
+
+BOOL RCTIsXCAssetURL(NSURL *imageURL)
+{
+  NSString *name = RCTBundlePathForURL(imageURL);
+  if (name.pathComponents.count != 1) {
+    // URL is invalid, or is a file path, not an XCAsset identifier
+    return NO;
+  }
+  NSString *extension = [name pathExtension];
+  if (extension.length && ![extension isEqualToString:@"png"]) {
+    // Not a png
+    return NO;
+  }
+  extension = extension.length ? nil : @"png";
+  if ([[NSBundle mainBundle] pathForResource:name ofType:extension]) {
+    // File actually exists in bundle, so is not an XCAsset
+    return NO;
+  }
+  return YES;
+}
