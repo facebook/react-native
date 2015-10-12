@@ -35,7 +35,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
 
   public final void updateProperties(T viewToUpdate, CatalystStylesDiffMap props) {
     Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
-        ViewManagersPropertyCache.getNativePropSettersForClass(getClass());
+        ViewManagersPropertyCache.getNativePropSettersForViewManagerClass(getClass());
     ReadableMap propMap = props.mBackingMap;
     ReadableMapKeySeyIterator iterator = propMap.keySetIterator();
     // TODO(krzysztof): Remove missingSetters code once all views are migrated to @ReactProp
@@ -44,7 +44,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
       String key = iterator.nextKey();
       ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
       if (setter != null) {
-        setter.updateProp(this, viewToUpdate, props);
+        setter.updateViewProp(this, viewToUpdate, props);
       } else {
         missingSetters = true;
       }
@@ -219,7 +219,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
     // TODO(krzysztof): This method will just delegate to ViewManagersPropertyRegistry once
     // refactoring is finished
     Class cls = getClass();
-    Map<String, String> nativeProps = ViewManagersPropertyCache.getNativePropsForClass(cls);
+    Map<String, String> nativeProps = ViewManagersPropertyCache.getNativePropsForView(cls);
     while (cls.getSuperclass() != null) {
       Map<String, UIProp.Type> props = getNativePropsForClass(cls);
       for (Map.Entry<String, UIProp.Type> entry : props.entrySet()) {
