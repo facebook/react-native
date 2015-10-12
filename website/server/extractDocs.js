@@ -220,6 +220,7 @@ var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/Utilities/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
+  '../Libraries/ApplicationShortcutsIOS/ApplicationShortcutsIOS.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',

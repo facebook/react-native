@@ -49,6 +49,12 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/AdSupport/*.js"
   end
 
+  s.subspec 'ApplicationShortcutsIOS' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/ApplicationShortcutsIOS/*.{h,m}"
+    ss.preserve_paths   = "Libraries/ApplicationShortcutsIOS/*.js"
+  end
+
   s.subspec 'RCTGeolocation' do |ss|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/Geolocation/*.{h,m}"
@@ -103,5 +109,5 @@ Pod::Spec.new do |s|
     ss.source_files     = "Libraries/LinkingIOS/*.{h,m}"
     ss.preserve_paths   = "Libraries/LinkingIOS/*.js"
   end
-  
+
 end
