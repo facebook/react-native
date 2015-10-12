@@ -21,7 +21,7 @@ var {
   StyleSheet,
   Text,
   ToastAndroid,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } = React;
 
 var UIExplorerBlock = require('UIExplorerBlock');
