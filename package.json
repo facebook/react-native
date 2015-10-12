@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.8.0",
+  "version": "0.12.0",
   "description": "A framework for building native apps using React",
   "license": "BSD-3-Clause",
   "repository": {
@@ -33,6 +33,7 @@
     "packager",
     "cli.js",
     "local-cli",
+    "private-cli",
     "init.sh",
     "LICENSE",
     "PATENTS",
