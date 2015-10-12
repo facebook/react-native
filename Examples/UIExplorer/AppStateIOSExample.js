@@ -92,7 +92,7 @@ exports.examples = [
   },
   {
     title: 'Memory Warnings',
-    description: "In the simulator, hit Shift+Command+M to simulate a memory warning.",
+    description: 'In the simulator, hit Shift+Command+M to simulate a memory warning.',
     render(): ReactElement { return <AppStateSubscription showMemoryWarnings={true} />; }
   },
 ];
