@@ -27,7 +27,7 @@ const hiddenCommands = {
  * Programmatic entry point for the cli. This function runs the given
  * command passing it the arguments array.
  */
-function run(command, commandArgs) {
+function run(pwd, command, commandArgs) {
   if (!command) {
     throw new Error(helpMessage());
   }
@@ -38,7 +38,7 @@ function run(command, commandArgs) {
     throw new Error(helpMessage(command));
   }
 
-  commandToExec(commandArgs, Config.get()).done();
+  commandToExec(commandArgs, Config.get(pwd)).done();
 }
 
 function helpMessage(command) {
