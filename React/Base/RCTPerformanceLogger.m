@@ -11,17 +11,23 @@
 
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
+#import "RCTLog.h"
 
 static int64_t RCTPLData[RCTPLSize][2] = {};
 
 void RCTPerformanceLoggerStart(RCTPLTag tag)
 {
   RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
+  RCTPLData[tag][1] = 0;
 }
 
 void RCTPerformanceLoggerEnd(RCTPLTag tag)
 {
-  RCTPLData[tag][1] = CACurrentMediaTime() * 1000;
+  if (RCTPLData[tag][0] != 0 && RCTPLData[tag][1] == 0) {
+    RCTPLData[tag][1] = CACurrentMediaTime() * 1000;
+  } else {
+    RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
+  }
 }
 
 NSArray *RCTPerformanceLoggerOutput(void)
