@@ -99,3 +99,7 @@ An optimization feature of the Android version of React Native is for views whic
 ### Memory issues with PNG images
 
 React Native Android depends on [Fresco](https://github.com/facebook/fresco) for loading and displaying images. Currently we have disabled downsampling because it is experimental, so you may run into memory issues when loading large PNG images.
+
+### react-native init hangs
+
+Try running `react-native init` with `--verbose` and see [#2797](https://github.com/facebook/react-native/issues/2797) for common causes.
