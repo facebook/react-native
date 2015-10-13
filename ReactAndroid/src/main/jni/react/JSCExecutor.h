@@ -11,12 +11,12 @@ namespace react {
 
 class JSCExecutorFactory : public JSExecutorFactory {
 public:
-  virtual std::unique_ptr<JSExecutor> createJSExecutor() override;
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override;
 };
 
 class JSCExecutor : public JSExecutor {
 public:
-  JSCExecutor();
+  explicit JSCExecutor(FlushImmediateCallback flushImmediateCallback);
   ~JSCExecutor() override;
   virtual void executeApplicationScript(
     const std::string& script,
@@ -31,11 +31,13 @@ public:
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
-
+  
+  void flushQueueImmediate(std::string queueJSON);
   void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
 
 private:
   JSGlobalContextRef m_context;
+  FlushImmediateCallback m_flushImmediateCallback;
 };
 
 } }

@@ -18,7 +18,7 @@ class ProxyExecutorOneTimeFactory : public JSExecutorFactory {
 public:
   ProxyExecutorOneTimeFactory(jni::global_ref<jobject>&& executorInstance) :
     m_executor(std::move(executorInstance)) {}
-  virtual std::unique_ptr<JSExecutor> createJSExecutor() override;
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback ignoredCallback) override;
 
 private:
   jni::global_ref<jobject> m_executor;

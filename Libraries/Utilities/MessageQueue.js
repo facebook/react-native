@@ -25,6 +25,7 @@ let stringifySafe = require('stringifySafe');
 let MODULE_IDS = 0;
 let METHOD_IDS = 1;
 let PARAMS = 2;
+let MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
 let SPY_MODE = false;
 
@@ -53,6 +54,7 @@ class MessageQueue {
     this._methodTable = {};
     this._callbacks = [];
     this._callbackID = 0;
+    this._lastFlush = 0;
 
     [
       'invokeCallbackAndReturnFlushedQueue',
@@ -125,6 +127,14 @@ class MessageQueue {
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
     this._queue[PARAMS].push(params);
+
+    var now = new Date().getTime();
+    if (global.nativeFlushQueueImmediate &&
+        now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS) {
+      global.nativeFlushQueueImmediate(this._queue);
+      this._queue = [[],[],[]];
+      this._lastFlush = now;
+    }
     if (__DEV__ && SPY_MODE && isFinite(module)) {
       console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
         this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
@@ -133,6 +143,7 @@ class MessageQueue {
 
   __callFunction(module, method, args) {
     BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
+    this._lastFlush = new Date().getTime();
     if (isFinite(module)) {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
@@ -148,6 +159,7 @@ class MessageQueue {
   __invokeCallback(cbID, args) {
     BridgeProfiling.profile(
       () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
+    this._lastFlush = new Date().getTime();
     let callback = this._callbacks[cbID];
     if (!callback || __DEV__) {
       let debug = this._debugInfo[cbID >> 1];
