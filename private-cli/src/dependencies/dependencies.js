@@ -50,7 +50,7 @@ function _dependencies(argv, config, resolve, reject) {
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
-    blacklistRE: config.getBlacklistRE(),
+    blacklistRE: config.getBlacklistRE(args.platform),
     transformModulePath: config.getTransformModulePath(),
   };
 

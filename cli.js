@@ -1,4 +1,4 @@
- /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -7,5 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
+
+require('./packager/babelRegisterOnly')([
+  /private-cli\/src/
+]);
 
 module.exports = require('./local-cli/cli.js');
