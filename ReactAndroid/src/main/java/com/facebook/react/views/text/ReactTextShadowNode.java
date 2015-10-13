@@ -288,8 +288,8 @@ public class ReactTextShadowNode extends ReactShadowNode {
   }
 
   @Override
-  public void updateProperties(CatalystStylesDiffMap styles) {
-    super.updateProperties(styles);
+  public void updateShadowNode(CatalystStylesDiffMap styles) {
+    super.updateShadowNode(styles);
 
     if (styles.hasKey(PROP_TEXT)) {
       mText = styles.getString(PROP_TEXT);
