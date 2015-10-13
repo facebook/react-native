@@ -974,6 +974,9 @@ div[data-twttr-id] iframe {
   padding: 0 5px;
   font-size: 13px;
   font-weight: normal;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .edit-github {
