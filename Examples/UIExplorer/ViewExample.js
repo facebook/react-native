@@ -84,6 +84,35 @@ var ViewBorderStyleExample = React.createClass({
   }
 });
 
+var ZIndexViewExample = React.createClass({
+  getInitialState() {
+    return {
+      supportzIndex: true
+    };
+  },
+  render() {
+    if (Platform.OS !== 'ios') {
+       return (
+          <View style={{backgroundColor: 'red'}}>
+            <Text style={{color: 'white'}}>
+              zIndex is only supported on iOS for now.
+            </Text>
+          </View>
+        );
+    }
+    return (
+      <View style={{height : 100}}>
+        <View style={{backgroundColor : "#000000",  height : 100, width : 100, zIndex : 1, position : "absolute", top : 0}}>
+          <Text style={{color : "#FFFFFF"}}>foreground</Text>
+        </View>
+        <View style={{backgroundColor : "#FFFFFF",  height : 100, width : 100,  position : "absolute", top : 0}}>
+          <Text style={{color : "#000000"}}>background</Text>
+        </View>
+      </View>
+    )
+  }
+});
+
 exports.title = '<View>';
 exports.description = 'Basic building block of all UI, examples that ' +
   'demonstrate some of the many styles available.';
@@ -198,5 +227,10 @@ exports.examples = [
         </View>
       );
     },
-  },
+  },{
+    title : 'zIndex', 
+    render(){
+      return <ZIndexViewExample />
+    }
+  }
 ];

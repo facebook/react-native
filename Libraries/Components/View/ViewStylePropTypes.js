@@ -47,6 +47,7 @@ var ViewStylePropTypes = {
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
+  zIndex: ReactPropTypes.number,
 };
 
 module.exports = ViewStylePropTypes;
