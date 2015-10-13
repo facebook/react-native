@@ -15,7 +15,11 @@ You can iterate quickly on device using development server. To do that, your lap
 
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Change the IP in the URL from `localhost` to your laptop's IP
-3. In Xcode select your phone as build target and press "Build and run"
+3. In Xcode open `AwesomeApp/Libraries/RCTWebSocket.xcodeproj/RCTWebSocketExecutor.m`
+4. Change `localhost` to your laptop's IP
+5. Select `AwesomeApp` and go to `Build Settings`
+6. Search for `Dead Code Stripping` and set the setting to `No`
+7. In Xcode select your phone as build target and press "Build and run"
 
 > Hint
 >
