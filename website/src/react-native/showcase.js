@@ -127,6 +127,12 @@ var apps = [
     author: 'wei ping woon',
   },
   {
+    name: 'Myntra',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
+    link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
+    author: 'Myntra Designs',
+  },
+  {
     name: 'Ncredible',
     icon: 'http://a3.mzstatic.com/us/r30/Purple2/v4/a9/00/74/a9007400-7ccf-df10-553b-3b6cb67f3f5f/icon350x350.png',
     link: 'https://itunes.apple.com/ca/app/ncredible/id1019662810?mt=8',
