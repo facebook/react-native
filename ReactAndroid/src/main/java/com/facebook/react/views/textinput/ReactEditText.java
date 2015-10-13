@@ -105,6 +105,11 @@ public class ReactEditText extends EditText {
 
   @Override
   public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
+    // Always return true if we are already focused. This is used by android in certain places,
+    // such as text selection.
+    if (isFocused()) {
+      return true;
+    }
     if (!mIsJSSettingFocus) {
       return false;
     }
