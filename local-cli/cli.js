@@ -4,13 +4,13 @@
 
 'use strict';
 
+var bundle = require('../private-cli/src/bundle/bundle');
+var bundle_DEPRECATED = require('./bundle.js');
+var Config = require('../private-cli/src/util/Config');
 var fs = require('fs');
-var spawn = require('child_process').spawn;
-var path = require('path');
 var generateAndroid = require('./generate-android.js');
 var init = require('./init.js');
 var install = require('./install.js');
-var bundle = require('./bundle.js');
 var newLibrary = require('./new-library.js');
 var runAndroid = require('./run-android.js');
 var runPackager = require('./run-packager.js');
@@ -51,7 +51,8 @@ function run() {
     install.init();
     break;
   case 'bundle':
-    bundle.init(args);
+    bundle(args, Config.get(__dirname)).done();
+    // bundle_DEPRECATED.init(args);
     break;
   case 'new-library':
     newLibrary.init(args);

@@ -63,7 +63,7 @@ function _bundle(argv, config, resolve, reject) {
   const options = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
-    blacklistRE: config.getBlacklistRE(),
+    blacklistRE: config.getBlacklistRE(args.platform),
     transformModulePath: config.getTransformModulePath(),
   };
 
