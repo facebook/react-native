@@ -151,7 +151,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"locationY"] = @(touchViewLocation.y);
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
   
-  if([UIDevice currentDevice].systemVersion.floatValue >= 9) {
+  if ([UIDevice currentDevice].systemVersion.floatValue >= 9) {
     reactTouch[@"force"] = @(nativeTouch.force);
     reactTouch[@"maxForce"] =  @(nativeTouch.maximumPossibleForce);
   }
