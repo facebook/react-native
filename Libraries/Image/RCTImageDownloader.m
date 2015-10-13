@@ -86,7 +86,7 @@ RCT_EXPORT_MODULE()
   }
 
   RCTDownloadTask *task = [_bridge.networking downloadTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-    if (response && !error) {
+    if (response && !error && [response.URL.scheme hasPrefix:@"http"]) {
       RCTImageDownloader *strongSelf = weakSelf;
       NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
       [strongSelf->_cache storeCachedResponse:cachedResponse forRequest:request];
@@ -106,8 +106,14 @@ RCT_EXPORT_MODULE()
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  if ([imageURL.scheme.lowercaseString hasPrefix:@"http"]) {
+  if ([imageURL.scheme.lowercaseString hasPrefix:@"http"] ||
+      [imageURL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame) {
     __block RCTImageLoaderCancellationBlock decodeCancel = nil;
+
+    // Add missing png extension
+    if (imageURL.fileURL && imageURL.pathExtension.length == 0) {
+      imageURL = [NSURL fileURLWithPath:[imageURL.path stringByAppendingPathExtension:@"png"]];
+    }
 
     __weak RCTImageDownloader *weakSelf = self;
     RCTImageLoaderCancellationBlock downloadCancel = [self downloadDataForURL:imageURL progressHandler:progressHandler completionHandler:^(NSError *error, NSData *imageData) {
@@ -146,31 +152,6 @@ RCT_EXPORT_MODULE()
       } else {
         if (completionHandler) {
           NSString *message = [NSString stringWithFormat:@"Invalid image data for URL: %@", imageURL];
-          completionHandler(RCTErrorWithMessage(message), nil);
-        }
-      }
-    });
-    return ^{
-      cancelled = YES;
-    };
-  } else if ([imageURL.scheme isEqualToString:@"file"]) {
-    __block BOOL cancelled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      if (cancelled) {
-        return;
-      }
-
-      UIImage *image = [UIImage imageWithContentsOfFile:imageURL.resourceSpecifier];
-      if (image) {
-        if (progressHandler) {
-          progressHandler(1, 1);
-        }
-        if (completionHandler) {
-          completionHandler(nil, image);
-        }
-      } else {
-        if (completionHandler) {
-          NSString *message = [NSString stringWithFormat:@"Could not find image at path: %@", imageURL.absoluteString];
           completionHandler(RCTErrorWithMessage(message), nil);
         }
       }
