@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE()
   static NSSet *schemes = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    schemes = [[NSSet alloc] initWithObjects:@"http", @"https", @"file", nil];
+    schemes = [[NSSet alloc] initWithObjects:@"http", @"https", @"file", @"data", nil];
   });
   return [schemes containsObject:requestURL.scheme.lowercaseString];
 }
