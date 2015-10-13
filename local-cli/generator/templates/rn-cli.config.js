@@ -4,23 +4,20 @@ var blacklist = require('./node_modules/react-native/packager/blacklist');
 
 var config = {
   getProjectRoots() {
-    return this._getRoots();
+    return [__dirname];
   },
 
   getAssetRoots() {
-    return this._getRoots();
+    // speficy where to look for assets
+    return [];
   },
 
-  getBlacklistRE() {
-    return blacklist('');
+  getBlacklistRE(platform) {
+    return blacklist(platform);
   },
 
   getTransformModulePath() {
     return require.resolve('./node_modules/react-native/packager/transformer');
-  },
-
-  _getRoots() {
-    return [__dirname];
   }
 };
 
