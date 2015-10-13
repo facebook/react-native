@@ -62,9 +62,11 @@
 RCT_TEST(IntegrationTestHarnessTest)
 RCT_TEST(TimersTest)
 RCT_TEST(AsyncStorageTest)
-RCT_TEST(LayoutEventsTest)
 RCT_TEST(AppEventsTest)
 RCT_TEST(SimpleSnapshotTest)
-RCT_TEST(PromiseTest)
+
+// Disable due to flakiness: #8686784
+//RCT_TEST(LayoutEventsTest)
+//RCT_TEST(PromiseTest)
 
 @end
