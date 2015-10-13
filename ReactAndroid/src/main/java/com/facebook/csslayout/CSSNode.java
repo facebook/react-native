@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<560f2fd13ec8e1100a71958529146055>>
+// @generated SignedSource<<dea2f20b2f05b18bed5e32b4d048a7b2>>
 
 package com.facebook.csslayout;
 
@@ -118,7 +118,7 @@ public class CSSNode {
   }
 
   public void setMeasureFunction(MeasureFunction measureFunction) {
-    if (!valuesEqual(mMeasureFunction, measureFunction)) {
+    if (mMeasureFunction != measureFunction) {
       mMeasureFunction = measureFunction;
       dirty();
     }
@@ -224,57 +224,50 @@ public class CSSNode {
     return FloatUtil.floatsEqual(f1, f2);
   }
 
-  protected <T> boolean valuesEqual(@Nullable T o1, @Nullable T o2) {
-    if (o1 == null) {
-      return o2 == null;
-    }
-    return o1.equals(o2);
-  }
-
   public void setDirection(CSSDirection direction) {
-    if (!valuesEqual(style.direction, direction)) {
+    if (style.direction != direction) {
       style.direction = direction;
       dirty();
     }
   }
 
   public void setFlexDirection(CSSFlexDirection flexDirection) {
-    if (!valuesEqual(style.flexDirection, flexDirection)) {
+    if (style.flexDirection != flexDirection) {
       style.flexDirection = flexDirection;
       dirty();
     }
   }
 
   public void setJustifyContent(CSSJustify justifyContent) {
-    if (!valuesEqual(style.justifyContent, justifyContent)) {
+    if (style.justifyContent != justifyContent) {
       style.justifyContent = justifyContent;
       dirty();
     }
   }
 
   public void setAlignItems(CSSAlign alignItems) {
-    if (!valuesEqual(style.alignItems, alignItems)) {
+    if (style.alignItems != alignItems) {
       style.alignItems = alignItems;
       dirty();
     }
   }
 
   public void setAlignSelf(CSSAlign alignSelf) {
-    if (!valuesEqual(style.alignSelf, alignSelf)) {
+    if (style.alignSelf != alignSelf) {
       style.alignSelf = alignSelf;
       dirty();
     }
   }
 
   public void setPositionType(CSSPositionType positionType) {
-    if (!valuesEqual(style.positionType, positionType)) {
+    if (style.positionType != positionType) {
       style.positionType = positionType;
       dirty();
     }
   }
 
   public void setWrap(CSSWrap flexWrap) {
-    if (!valuesEqual(style.flexWrap, flexWrap)) {
+    if (style.flexWrap != flexWrap) {
       style.flexWrap = flexWrap;
       dirty();
     }
@@ -402,5 +395,20 @@ public class CSSNode {
     if (style.padding.setDefault(spacingType, padding)) {
       dirty();
     }
+  }
+
+  /**
+   * Resets this instance to its default state. This method is meant to be used when
+   * recycling {@link CSSNode} instances.
+   */
+  public void reset() {
+    if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
+      throw new IllegalStateException("You should not reset an attached CSSNode");
+    }
+
+    style.reset();
+    layout.resetResult();
+    lineIndex = 0;
+    mLayoutState = LayoutState.DIRTY;
   }
 }
