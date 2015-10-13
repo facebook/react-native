@@ -18,9 +18,11 @@ namespace react {
 
 class JSExecutor;
 
+typedef std::function<void(std::string)> FlushImmediateCallback;
+
 class JSExecutorFactory : public Countable {
 public:
-  virtual std::unique_ptr<JSExecutor> createJSExecutor() = 0;
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) = 0;
   virtual ~JSExecutorFactory() {};
 };
 

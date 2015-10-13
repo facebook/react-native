@@ -16,9 +16,12 @@ namespace react {
 class JSThreadState {
 public:
   JSThreadState(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Bridge::Callback&& callback) :
-    m_jsExecutor(jsExecutorFactory->createJSExecutor()),
     m_callback(callback)
-  {}
+  {
+    m_jsExecutor = jsExecutorFactory->createJSExecutor([this, callback] (std::string queueJSON) {
+      m_callback(parseMethodCalls(queueJSON), false /* = isEndOfBatch */);
+    });
+  }
 
   void executeApplicationScript(const std::string& script, const std::string& sourceURL) {
     m_jsExecutor->executeApplicationScript(script, sourceURL);
@@ -29,7 +32,7 @@ public:
       const std::string& methodName,
       const std::vector<folly::dynamic>& arguments) {
     auto returnedJSON = m_jsExecutor->executeJSCall(moduleName, methodName, arguments);
-    m_callback(parseMethodCalls(returnedJSON));
+    m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
   }
 
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
@@ -58,11 +61,11 @@ Bridge::Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback call
   m_destroyed(std::shared_ptr<bool>(new bool(false)))
 {
   auto destroyed = m_destroyed;
-  auto proxyCallback = [this, destroyed] (std::vector<MethodCall> calls) {
+  auto proxyCallback = [this, destroyed] (std::vector<MethodCall> calls, bool isEndOfBatch) {
     if (*destroyed) {
       return;
     }
-    m_callback(std::move(calls));
+    m_callback(std::move(calls), isEndOfBatch);
   };
   m_threadState.reset(new JSThreadState(jsExecutorFactory, std::move(proxyCallback)));
 }
