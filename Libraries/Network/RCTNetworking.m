@@ -314,16 +314,17 @@ RCT_EXPORT_MODULE()
 
   void (^responseBlock)(NSURLResponse *) = ^(NSURLResponse *response) {
     dispatch_async(_methodQueue, ^{
-      NSHTTPURLResponse *httpResponse = nil;
-      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        // Might be a local file request
-        httpResponse = (NSHTTPURLResponse *)response;
+      NSDictionary *headers;
+      NSInteger status;
+      if ([response isKindOfClass:[NSHTTPURLResponse class]]) { // Might be a local file request
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        headers = httpResponse.allHeaderFields ?: @{};
+        status = httpResponse.statusCode;
+      } else {
+        headers = response.MIMEType ? @{@"Content-Type": response.MIMEType} : @{};
+        status = 200;
       }
-      NSArray *responseJSON = @[task.requestID,
-                                @(httpResponse.statusCode ?: 200),
-                                httpResponse.allHeaderFields ?: @{},
-                                ];
-
+      NSArray *responseJSON = @[task.requestID, @(status), headers];
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
                                                   body:responseJSON];
     });
