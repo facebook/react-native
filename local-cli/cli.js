@@ -10,7 +10,6 @@ var Config = require('../private-cli/src/util/Config');
 var fs = require('fs');
 var generateAndroid = require('./generate-android.js');
 var init = require('./init.js');
-var install = require('./install.js');
 var newLibrary = require('./new-library.js');
 var runAndroid = require('./run-android.js');
 var runPackager = require('./run-packager.js');
@@ -21,7 +20,6 @@ function printUsage() {
     '',
     'Commands:',
     '  start: starts the webserver',
-    '  install: installs npm react components',
     '  bundle: builds the javascript bundle for offline use',
     '  new-library: generates a native library bridge',
     '  android: generates an Android project for your app'
@@ -46,9 +44,6 @@ function run() {
   switch (args[0]) {
   case 'start':
     runPackager();
-    break;
-  case 'install':
-    install.init();
     break;
   case 'bundle':
     bundle(args, Config.get(__dirname)).done();
