@@ -190,7 +190,7 @@ NSString *RCTFormatLog(
   return log;
 }
 
-void _RCTLogFormat(
+void _RCTLogInternal(
   RCTLogLevel level,
   const char *fileName,
   int lineNumber,
