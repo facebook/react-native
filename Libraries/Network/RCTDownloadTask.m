@@ -9,7 +9,7 @@
 
 #import "RCTDownloadTask.h"
 
-#import "RCTAssert.h"
+#import "RCTLog.h"
 
 @implementation RCTDownloadTask
 {
@@ -65,8 +65,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if (![requestToken isEqual:_requestToken]) {
     if (RCT_DEBUG) {
-      RCTAssert([requestToken isEqual:_requestToken],
-                @"Unrecognized request token: %@", requestToken);
+      RCTLogError(@"Unrecognized request token: %@ expected: %@", requestToken, _requestToken);
     }
     if (_completionBlock) {
       _completionBlock(_response, _data, [NSError errorWithDomain:RCTErrorDomain code:0
