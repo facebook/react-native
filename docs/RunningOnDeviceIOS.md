@@ -36,6 +36,7 @@ The bundle script supports a couple of flags:
 * `--minify` - pipe the JS code through UglifyJS.
 
 Note that on 0.14 we'll change the API of `react-native bundle`. The major changes are: 
+
 * API is now `entry-file <path>` based instead of url based.
 * Need to specify which platform you're bundling for `--platform <ios|android>`.
 * Option `--out` has been renamed for `--bundle-output`.
