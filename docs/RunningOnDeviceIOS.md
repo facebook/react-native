@@ -35,6 +35,12 @@ The bundle script supports a couple of flags:
 * `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
 * `--minify` - pipe the JS code through UglifyJS.
 
+Note that on 0.14 we'll change the API of `react-native bundle`. The major changes are: 
+* API is now `entry-file <path>` based instead of url based.
+* Need to specify which platform you're bundling for `--platform <ios|android>`.
+* Option `--out` has been renamed for `--bundle-output`.
+* Source maps are no longer automatically generated. Need to specify `--sourcemap-output <path>` 
+
 ## Disabling in-app developer menu
 
 When building your app for production, your app's scheme should be set to `Release` as detailed in [the debugging documentation](/react-native/docs/debugging.html#debugging-react-native-apps) in order to disable the in-app developer menu.
