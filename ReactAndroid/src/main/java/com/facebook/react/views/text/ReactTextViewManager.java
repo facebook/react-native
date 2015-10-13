@@ -88,7 +88,12 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   }
 
   @Override
-  public ReactTextShadowNode createCSSNodeInstance() {
+  public ReactTextShadowNode createShadowNodeInstance() {
     return new ReactTextShadowNode(false);
+  }
+
+  @Override
+  public Class<ReactTextShadowNode> getShadowNodeClass() {
+    return ReactTextShadowNode.class;
   }
 }
