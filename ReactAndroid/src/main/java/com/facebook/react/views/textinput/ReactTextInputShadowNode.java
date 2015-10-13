@@ -21,15 +21,18 @@ import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.text.ReactTextShadowNode;
 
-/* package */ class ReactTextInputShadowNode extends ReactTextShadowNode implements
+@VisibleForTesting
+public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     CSSNode.MeasureFunction {
 
   private static final int MEASURE_SPEC = View.MeasureSpec.makeMeasureSpec(
@@ -96,22 +99,19 @@ import com.facebook.react.views.text.ReactTextShadowNode;
     return;
   }
 
-  @Override
-  public void updateShadowNode(CatalystStylesDiffMap styles) {
-    super.updateShadowNode(styles);
-    if (styles.hasKey(ViewProps.FONT_SIZE)) {
-      float fontSize = styles.getFloat(ViewProps.FONT_SIZE, ViewDefaults.FONT_SIZE_SP);
-      mFontSize = (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
-    }
+  @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
+  public void setFontSize(float fontSize) {
+    mFontSize = (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
+  }
 
-    if (styles.hasKey(ReactTextInputManager.PROP_TEXT_INPUT_MOST_RECENT_EVENT_COUNT)) {
-      mJsEventCount =
-          styles.getInt(ReactTextInputManager.PROP_TEXT_INPUT_MOST_RECENT_EVENT_COUNT, 0);
-    }
+  @ReactProp(name = "mostRecentEventCount")
+  public void setMostRecentEventCount(int mostRecentEventCount) {
+    mJsEventCount = mostRecentEventCount;
+  }
 
-    if (styles.hasKey(ViewProps.NUMBER_OF_LINES)) {
-      mNumLines = styles.getInt(ViewProps.NUMBER_OF_LINES, UNSET);
-    }
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
+  public void setNumberOfLines(int numberOfLines) {
+    mNumLines = numberOfLines;
   }
 
   @Override
