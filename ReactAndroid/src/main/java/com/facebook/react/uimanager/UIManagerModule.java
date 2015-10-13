@@ -241,7 +241,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     ViewManager viewManager = mViewManagers.get(className);
-    ReactShadowNode cssNode = viewManager.createCSSNodeInstance();
+    ReactShadowNode cssNode = viewManager.createShadowNodeInstance();
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
