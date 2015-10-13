@@ -23,8 +23,13 @@ public abstract class SimpleViewManager<T extends View> extends
     BaseViewManager<T, ReactShadowNode> {
 
   @Override
-  public ReactShadowNode createCSSNodeInstance() {
+  public ReactShadowNode createShadowNodeInstance() {
     return new ReactShadowNode();
+  }
+
+  @Override
+  public Class<ReactShadowNode> getShadowNodeClass() {
+    return ReactShadowNode.class;
   }
 
   @Override

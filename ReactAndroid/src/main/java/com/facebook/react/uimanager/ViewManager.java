@@ -17,7 +17,6 @@ import java.util.Map;
 
 import android.view.View;
 
-import com.facebook.csslayout.CSSNode;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySeyIterator;
@@ -76,11 +75,23 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
   public abstract String getName();
 
   /**
-   * This method should return a subclass of {@link CSSNode} which will be then used for measuring
-   * position and size of the view. In mose of the cases this should just return an instance of
-   * {@link CSSNode}
+   * This method should return a subclass of {@link ReactShadowNode} which will be then used for
+   * measuring position and size of the view. In mose of the cases this should just return an
+   * instance of {@link ReactShadowNode}
    */
-  public abstract C createCSSNodeInstance();
+  public abstract C createShadowNodeInstance();
+
+  /**
+   * This method should return {@link Class} instance that represent type of shadow node that this
+   * manager will return from {@link #createShadowNodeInstance}.
+   *
+   * This method will be used in the bridge initialization phase to collect properties exposed using
+   * {@link ReactProp} (or {@link ReactPropGroup}) annotation from the {@link ReactShadowNode}
+   * subclass specific for native view this manager provides.
+   *
+   * @return {@link Class} object that represents type of shadow node used by this view manager.
+   */
+  public abstract Class<? extends C> getShadowNodeClass();
 
   /**
    * Subclasses should return a new View instance of the proper type.
@@ -108,7 +119,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
    * when a certain property is present in {@param props} map but the value is null, this property
    * should be reset to the default value
    *
-   * TODO(krzysztof) This method should be replaced by updateProperties and removed completely after
+   * TODO(krzysztof) This method should be replaced by updateShadowNode and removed completely after
    * all view managers adapt @ReactProp
    */
   @Deprecated
@@ -219,7 +230,8 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
     // TODO(krzysztof): This method will just delegate to ViewManagersPropertyRegistry once
     // refactoring is finished
     Class cls = getClass();
-    Map<String, String> nativeProps = ViewManagersPropertyCache.getNativePropsForView(cls);
+    Map<String, String> nativeProps =
+        ViewManagersPropertyCache.getNativePropsForView(cls);
     while (cls.getSuperclass() != null) {
       Map<String, UIProp.Type> props = getNativePropsForClass(cls);
       for (Map.Entry<String, UIProp.Type> entry : props.entrySet()) {

@@ -21,8 +21,8 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 
 /**
@@ -82,8 +82,13 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   }
 
   @Override
-  public ReactShadowNode createCSSNodeInstance() {
+  public ReactShadowNode createShadowNodeInstance() {
     return new ReactSwitchShadowNode();
+  }
+
+  @Override
+  public Class getShadowNodeClass() {
+    return ReactSwitchShadowNode.class;
   }
 
   @Override
