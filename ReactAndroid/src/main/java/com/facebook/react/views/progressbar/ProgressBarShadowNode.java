@@ -21,9 +21,8 @@ import android.widget.ProgressBar;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.infer.annotation.Assertions;
 
 /**
  * Node responsible for holding the style of the ProgressBar, see under
@@ -32,7 +31,7 @@ import com.facebook.infer.annotation.Assertions;
  */
 public class ProgressBarShadowNode extends ReactShadowNode implements CSSNode.MeasureFunction {
 
-  private @Nullable String style;
+  private String mStyle = ReactProgressBarViewManager.DEFAULT_STYLE;
 
   private final SparseIntArray mHeight = new SparseIntArray();
   private final SparseIntArray mWidth = new SparseIntArray();
@@ -43,11 +42,12 @@ public class ProgressBarShadowNode extends ReactShadowNode implements CSSNode.Me
   }
 
   public @Nullable String getStyle() {
-    return style;
+    return mStyle;
   }
 
-  public void setStyle(String style) {
-    this.style = style;
+  @ReactProp(name = ReactProgressBarViewManager.PROP_STYLE)
+  public void setStyle(@Nullable String style) {
+    mStyle = style == null ? ReactProgressBarViewManager.DEFAULT_STYLE : style;
   }
 
   @Override
@@ -66,21 +66,5 @@ public class ProgressBarShadowNode extends ReactShadowNode implements CSSNode.Me
 
     measureOutput.height = mHeight.get(style);
     measureOutput.width = mWidth.get(style);
-  }
-
-  @Override
-  public void updateShadowNode(CatalystStylesDiffMap styles) {
-    super.updateShadowNode(styles);
-
-    if (styles.hasKey(ReactProgressBarViewManager.PROP_STYLE)) {
-      String style = styles.getString(ReactProgressBarViewManager.PROP_STYLE);
-      Assertions.assertNotNull(
-          style,
-          "style property should always be set for the progress bar component");
-      // TODO(7255944): Validate progressbar style attribute
-      setStyle(style);
-    } else {
-      setStyle(ReactProgressBarViewManager.DEFAULT_STYLE);
-    }
   }
 }
