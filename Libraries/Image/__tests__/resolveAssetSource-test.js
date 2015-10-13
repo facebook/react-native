@@ -31,19 +31,17 @@ describe('resolveAssetSource', () => {
     var source1 = {uri: 'https://www.facebook.com/logo'};
     expect(resolveAssetSource(source1)).toBe(source1);
 
-    var source2 = {isStatic: true, uri: 'logo'};
+    var source2 = {uri: 'logo'};
     expect(resolveAssetSource(source2)).toBe(source2);
   });
 
   it('does not change deprecated assets', () => {
     expect(resolveAssetSource({
-      isStatic: true,
       deprecated: true,
       width: 100,
       height: 200,
       uri: 'logo',
     })).toEqual({
-      isStatic: true,
       deprecated: true,
       width: 100,
       height: 200,
@@ -77,7 +75,6 @@ describe('resolveAssetSource', () => {
         type: 'png',
       }, {
         __packager_asset: true,
-        isStatic: false,
         width: 100,
         height: 200,
         uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
@@ -98,7 +95,6 @@ describe('resolveAssetSource', () => {
         type: 'png',
       }, {
         __packager_asset: true,
-        isStatic: false,
         width: 100,
         height: 200,
         uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
@@ -128,7 +124,6 @@ describe('resolveAssetSource', () => {
         type: 'png',
       }, {
         __packager_asset: true,
-        isStatic: true,
         width: 100,
         height: 200,
         uri: 'assets/module/a/logo.png',
@@ -157,7 +152,6 @@ describe('resolveAssetSource', () => {
         type: 'png',
       }, {
         __packager_asset: true,
-        isStatic: true,
         width: 100,
         height: 200,
         uri: 'awesomemodule_subdir_logo1_',

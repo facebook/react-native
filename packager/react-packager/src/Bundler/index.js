@@ -263,7 +263,6 @@ class Bundler {
     ]).then(([dimensions, id]) => {
       const img = {
         __packager_asset: true,
-        isStatic: true,
         path: module.path,
         uri: id.replace(/^[^!]+!/, ''),
         width: dimensions.width / module.resolution,
