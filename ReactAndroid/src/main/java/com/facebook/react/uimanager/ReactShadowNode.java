@@ -12,9 +12,12 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySeyIterator;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
@@ -23,7 +26,7 @@ import com.facebook.infer.annotation.Assertions;
  * {@link CSSNode} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
- * may use {@link #updateProperties} to persist some of the updated fields in the node instance that
+ * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
  * corresponds to a particular view type.
  *
  * Subclasses of {@link ReactShadowNode} should be created only from {@link ViewManager} that
@@ -159,7 +162,34 @@ public class ReactShadowNode extends CSSNode {
   public void onBeforeLayout() {
   }
 
-  public void updateProperties(CatalystStylesDiffMap styles) {
+  public final void updateProperties(CatalystStylesDiffMap props) {
+    Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
+        ViewManagersPropertyCache.getNativePropSettersForShadowNodeClass(getClass());
+    ReadableMap propMap = props.mBackingMap;
+    ReadableMapKeySeyIterator iterator = propMap.keySetIterator();
+    // TODO(krzysztof): Remove missingSetters code once all views are migrated to @ReactProp
+    boolean missingSetters = false;
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
+      if (setter != null) {
+        setter.updateShadowNodeProp(this, props);
+      } else {
+        missingSetters = true;
+      }
+    }
+    if (missingSetters) {
+      updateShadowNode(props);
+    }
+    onAfterUpdateTransaction();
+  }
+
+  public void onAfterUpdateTransaction() {
+    // no-op
+  }
+
+  @Deprecated
+  public void updateShadowNode(CatalystStylesDiffMap styles) {
     BaseCSSPropertyApplicator.applyCSSProperties(this, styles);
   }
 
@@ -235,7 +265,7 @@ public class ReactShadowNode extends CSSNode {
     mThemedContext = themedContext;
   }
 
-  /* package */ void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
+  public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 

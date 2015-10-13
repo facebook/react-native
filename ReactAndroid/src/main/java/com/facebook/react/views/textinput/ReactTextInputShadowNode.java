@@ -97,8 +97,8 @@ import com.facebook.react.views.text.ReactTextShadowNode;
   }
 
   @Override
-  public void updateProperties(CatalystStylesDiffMap styles) {
-    super.updateProperties(styles);
+  public void updateShadowNode(CatalystStylesDiffMap styles) {
+    super.updateShadowNode(styles);
     if (styles.hasKey(ViewProps.FONT_SIZE)) {
       float fontSize = styles.getFloat(ViewProps.FONT_SIZE, ViewDefaults.FONT_SIZE_SP);
       mFontSize = (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize));

@@ -231,7 +231,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
     // refactoring is finished
     Class cls = getClass();
     Map<String, String> nativeProps =
-        ViewManagersPropertyCache.getNativePropsForView(cls);
+        ViewManagersPropertyCache.getNativePropsForView(cls, getShadowNodeClass());
     while (cls.getSuperclass() != null) {
       Map<String, UIProp.Type> props = getNativePropsForClass(cls);
       for (Map.Entry<String, UIProp.Type> entry : props.entrySet()) {

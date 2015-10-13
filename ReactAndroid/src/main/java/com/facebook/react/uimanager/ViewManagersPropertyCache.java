@@ -36,6 +36,8 @@ import com.facebook.react.bridge.ReadableMap;
     // thread sequentially
     private static final Object[] VIEW_MGR_ARGS = new Object[2];
     private static final Object[] VIEW_MGR_GROUP_ARGS = new Object[3];
+    private static final Object[] SHADOW_ARGS = new Object[1];
+    private static final Object[] SHADOW_GROUP_ARGS = new Object[2];
 
     private PropSetter(ReactProp prop, String defaultType, Method setter) {
       mPropName = prop.name();
@@ -80,6 +82,25 @@ import com.facebook.react.bridge.ReadableMap;
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
         throw new JSApplicationIllegalArgumentException("Error while updating property '" +
             mPropName + "' of a view managed by: " + viewManager.getName(), t);
+      }
+    }
+
+    public void updateShadowNodeProp(
+        ReactShadowNode nodeToUpdate,
+        CatalystStylesDiffMap props) {
+      try {
+        if (mIndex == null) {
+          SHADOW_ARGS[0] = extractProperty(props);
+          mSetter.invoke(nodeToUpdate, SHADOW_ARGS);
+        } else {
+          SHADOW_GROUP_ARGS[0] = mIndex;
+          SHADOW_GROUP_ARGS[1] = extractProperty(props);
+          mSetter.invoke(nodeToUpdate, SHADOW_GROUP_ARGS);
+        }
+      } catch (Throwable t) {
+        FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
+        throw new JSApplicationIllegalArgumentException("Error while updating property '" +
+            mPropName + "' in shadow node of type: " + nodeToUpdate.getViewClass(), t);
       }
     }
 
@@ -227,7 +248,8 @@ import com.facebook.react.bridge.ReadableMap;
   }
 
   /*package*/ static Map<String, String> getNativePropsForView(
-      Class<? extends ViewManager> viewManagerTopClass) {
+      Class<? extends ViewManager> viewManagerTopClass,
+      Class<? extends ReactShadowNode> shadowNodeTopClass) {
     Map<String, String> nativeProps = new HashMap<>();
 
     Map<String, PropSetter> viewManagerProps =
@@ -236,12 +258,18 @@ import com.facebook.react.bridge.ReadableMap;
       nativeProps.put(setter.getPropName(), setter.getPropType());
     }
 
+    Map<String, PropSetter> shadowNodeProps =
+        getNativePropSettersForShadowNodeClass(shadowNodeTopClass);
+    for (PropSetter setter : shadowNodeProps.values()) {
+      nativeProps.put(setter.getPropName(), setter.getPropType());
+    }
+
     return nativeProps;
   }
 
   /**
    * Returns map from property name to setter instances for all the property setters annotated with
-   * {@link ReactProp} in the given {@link ViewManager} plus all the setter declared by it's
+   * {@link ReactProp} in the given {@link ViewManager} class plus all the setter declared by its
    * parent classes.
    */
   /*package*/ static Map<String, PropSetter> getNativePropSettersForViewManagerClass(
@@ -259,6 +287,30 @@ import com.facebook.react.bridge.ReadableMap;
         getNativePropSettersForViewManagerClass(
             (Class<? extends ViewManager>) cls.getSuperclass()));
     extractPropSettersFromViewManagerClassDefinition(cls, props);
+    CLASS_PROPS_CACHE.put(cls, props);
+    return props;
+  }
+
+  /**
+   * Returns map from property name to setter instances for all the property setters annotated with
+   * {@link ReactProp} (or {@link ReactPropGroup} in the given {@link ReactShadowNode} subclass plus
+   * all the setters declared by its parent classes up to {@link ReactShadowNode} which is treated
+   * as a base class.
+   */
+  /*package*/ static Map<String, PropSetter> getNativePropSettersForShadowNodeClass(
+      Class<? extends ReactShadowNode> cls) {
+    if (cls == ReactShadowNode.class) {
+      return EMPTY_PROPS_MAP;
+    }
+    Map<String, PropSetter> props = CLASS_PROPS_CACHE.get(cls);
+    if (props != null) {
+      return props;
+    }
+    // This is to include all the setters from parent classes up to ReactShadowNode class
+    props = new HashMap<>(
+        getNativePropSettersForShadowNodeClass(
+            (Class<? extends ReactShadowNode>) cls.getSuperclass()));
+    extractPropSettersFromShadowNodeClassDefinition(cls, props);
     CLASS_PROPS_CACHE.put(cls, props);
     return props;
   }
@@ -357,6 +409,36 @@ import com.facebook.react.bridge.ReadableMap;
               cls.getName() + "#" + method.getName());
         }
         createPropSetters(groupAnnotation, method, paramTypes[2], props);
+      }
+    }
+  }
+
+  private static void extractPropSettersFromShadowNodeClassDefinition(
+      Class<? extends ReactShadowNode> cls,
+      Map<String, PropSetter> props) {
+    for (Method method : cls.getDeclaredMethods()) {
+      ReactProp annotation = method.getAnnotation(ReactProp.class);
+      if (annotation != null) {
+        Class<?>[] paramTypes = method.getParameterTypes();
+        if (paramTypes.length != 1) {
+          throw new RuntimeException("Wrong number of args for prop setter: " +
+              cls.getName() + "#" + method.getName());
+        }
+        props.put(annotation.name(), createPropSetter(annotation, method, paramTypes[0]));
+      }
+
+      ReactPropGroup groupAnnotation = method.getAnnotation(ReactPropGroup.class);
+      if (groupAnnotation != null) {
+        Class<?> [] paramTypes = method.getParameterTypes();
+        if (paramTypes.length != 2) {
+          throw new RuntimeException("Wrong number of args for group prop setter: " +
+              cls.getName() + "#" + method.getName());
+        }
+        if (paramTypes[0] != int.class) {
+          throw new RuntimeException("Second argument should be property index: " +
+              cls.getName() + "#" + method.getName());
+        }
+        createPropSetters(groupAnnotation, method, paramTypes[1], props);
       }
     }
   }
