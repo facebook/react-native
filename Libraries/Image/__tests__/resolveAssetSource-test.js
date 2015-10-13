@@ -132,6 +132,7 @@ describe('resolveAssetSource', () => {
         width: 100,
         height: 200,
         uri: 'assets/module/a/logo.png',
+        scale: 1,
       });
     });
   });
@@ -160,6 +161,7 @@ describe('resolveAssetSource', () => {
         width: 100,
         height: 200,
         uri: 'awesomemodule_subdir_logo1_',
+        scale: 1,
       });
     });
   });

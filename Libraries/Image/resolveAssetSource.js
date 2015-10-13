@@ -7,10 +7,20 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule resolveAssetSource
+ * @flow
  *
  * Resolves an asset into a `source` for `Image`.
  */
 'use strict';
+
+export type ResolvedAssetSource = {
+  __packager_asset: boolean,
+  width: number,
+  height: number,
+  uri: string,
+  isStatic: boolean,
+  scale: number,
+};
 
 var AssetRegistry = require('AssetRegistry');
 var PixelRatio = require('PixelRatio');
@@ -86,7 +96,7 @@ function getScaledAssetPath(asset) {
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
 
-function pickScale(scales, deviceScale) {
+function pickScale(scales: Array<number>, deviceScale: number): number {
   // Packager guarantees that `scales` array is sorted
   for (var i = 0; i < scales.length; i++) {
     if (scales[i] >= deviceScale) {
@@ -100,7 +110,7 @@ function pickScale(scales, deviceScale) {
   return scales[scales.length - 1] || 1;
 }
 
-function resolveAssetSource(source) {
+function resolveAssetSource(source: any): ?ResolvedAssetSource {
   if (typeof source === 'object') {
     return source;
   }
@@ -113,7 +123,7 @@ function resolveAssetSource(source) {
   return null;
 }
 
-function assetToImageSource(asset) {
+function assetToImageSource(asset): ResolvedAssetSource {
   var devServerURL = getDevServerURL();
   if (devServerURL) {
     return {
@@ -131,6 +141,7 @@ function assetToImageSource(asset) {
       height: asset.height,
       uri: getPathInArchive(asset),
       isStatic: true,
+      scale: pickScale(asset.scales, PixelRatio.get()),
     };
   }
 }
