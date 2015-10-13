@@ -57,8 +57,13 @@ public class ReactProgressBarViewManager extends
   }
 
   @Override
-  public ProgressBarShadowNode createCSSNodeInstance() {
+  public ProgressBarShadowNode createShadowNodeInstance() {
     return new ProgressBarShadowNode();
+  }
+
+  @Override
+  public Class<ProgressBarShadowNode> getShadowNodeClass() {
+    return ProgressBarShadowNode.class;
   }
 
   @Override

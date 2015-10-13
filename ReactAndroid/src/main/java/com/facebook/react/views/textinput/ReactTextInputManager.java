@@ -80,8 +80,13 @@ public class ReactTextInputManager extends
   }
 
   @Override
-  public ReactTextInputShadowNode createCSSNodeInstance() {
+  public ReactTextInputShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
+  }
+
+  @Override
+  public Class<ReactTextInputShadowNode> getShadowNodeClass() {
+    return ReactTextInputShadowNode.class;
   }
 
   @Nullable
