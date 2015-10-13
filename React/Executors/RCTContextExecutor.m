@@ -469,7 +469,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       }
     }
 
-    if (!resultJSRef) {
+    if (errorJSRef) {
       onComplete(nil, RCTNSErrorFromJSError(contextJSRef, errorJSRef));
       return;
     }

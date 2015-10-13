@@ -69,8 +69,6 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   CADisplayLink *_mainDisplayLink;
   CADisplayLink *_jsDisplayLink;
   NSMutableSet *_frameUpdateObservers;
-  NSMutableArray *_scheduledCalls;
-  RCTSparseArray *_scheduledCallbacks;
 }
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
@@ -91,8 +89,6 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
     _loading = YES;
     _moduleDataByID = [NSMutableArray new];
     _frameUpdateObservers = [NSMutableSet new];
-    _scheduledCalls = [NSMutableArray new];
-    _scheduledCallbacks = [RCTSparseArray new];
     _jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)];
 
     if (RCT_DEV) {
@@ -334,14 +330,12 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 {
   RCTAssertJSThread();
 
-  BOOL pauseDisplayLink = ![_scheduledCallbacks count] && ![_scheduledCalls count];
-  if (pauseDisplayLink) {
-    for (RCTModuleData *moduleData in _frameUpdateObservers) {
-      id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-      if (!observer.paused) {
-        pauseDisplayLink = NO;
-        break;
-      }
+  BOOL pauseDisplayLink = YES;
+  for (RCTModuleData *moduleData in _frameUpdateObservers) {
+    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
+    if (!observer.paused) {
+      pauseDisplayLink = NO;
+      break;
     }
   }
   _jsDisplayLink.paused = pauseDisplayLink;
@@ -631,28 +625,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileBeginEvent(0, @"enqueue_call", nil);
 
     RCTBatchedBridge *strongSelf = weakSelf;
-    if (!strongSelf.isValid || !strongSelf->_scheduledCallbacks || !strongSelf->_scheduledCalls) {
-      return;
-    }
 
+    [strongSelf _actuallyInvokeAndProcessModule:module method:method arguments:args];
 
-    RCT_IF_DEV(NSNumber *callID = _RCTProfileBeginFlowEvent();)
-    id call = @{
-      @"js_args": @{
-        @"module": module,
-        @"method": method,
-        @"args": args,
-      },
-      RCT_IF_DEV(@"call_id": callID,)
-    };
-    if ([method isEqualToString:@"invokeCallbackAndReturnFlushedQueue"]) {
-      strongSelf->_scheduledCallbacks[args[0]] = call;
-    } else {
-      [strongSelf->_scheduledCalls addObject:call];
-    }
-    [strongSelf updateJSDisplayLinkState];
-
-    RCTProfileEndEvent(0, @"objc_call", call);
   }];
 }
 
@@ -848,24 +823,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
   }
 
-  NSArray *calls = [_scheduledCallbacks.allObjects arrayByAddingObjectsFromArray:_scheduledCalls];
+  [self updateJSDisplayLinkState];
 
-  RCT_IF_DEV(
-    RCTProfileImmediateEvent(0, @"JS Thread Tick", 'g');
 
-    for (NSDictionary *call in calls) {
-      _RCTProfileEndFlowEvent(call[@"call_id"]);
-    }
-  )
-
-  if (calls.count > 0) {
-    _scheduledCalls = [NSMutableArray new];
-    _scheduledCallbacks = [RCTSparseArray new];
-    [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
-                                   method:@"processBatch"
-                                arguments:@[[calls valueForKey:@"js_args"]]];
-    [self updateJSDisplayLinkState];
-  }
+  RCTProfileImmediateEvent(0, @"JS Thread Tick", 'g');
 
   RCTProfileEndEvent(0, @"objc_call", nil);
 

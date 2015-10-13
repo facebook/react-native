@@ -55,7 +55,6 @@ class MessageQueue {
     this._callbackID = 0;
 
     [
-      'processBatch',
       'invokeCallbackAndReturnFlushedQueue',
       'callFunctionReturnFlushedQueue',
       'flushedQueue',
@@ -75,42 +74,30 @@ class MessageQueue {
   /**
    * Public APIs
    */
-  processBatch(batch) {
+  callFunctionReturnFlushedQueue(module, method, args) {
     guard(() => {
-      ReactUpdates.batchedUpdates(() => {
-        batch.forEach((call) => {
-          let method = call.method === 'callFunctionReturnFlushedQueue' ?
-            '__callFunction' : '__invokeCallback';
-          guard(() => this[method].apply(this, call.args));
-        });
-
-        this.__callImmediates();
-      });
-
-      // batchedUpdates might still trigger setImmediates
-      while (JSTimersExecution.immediates.length) {
-        ReactUpdates.batchedUpdates(() => {
-          this.__callImmediates();
-        });
-      }
+      this.__callFunction(module, method, args);
+      this.__callImmediates();
     });
 
-    return this.__flushedQueue();
-  }
-
-  callFunctionReturnFlushedQueue(module, method, args) {
-    guard(() => this.__callFunction(module, method, args));
     return this.flushedQueue();
   }
 
   invokeCallbackAndReturnFlushedQueue(cbID, args) {
-    guard(() => this.__invokeCallback(cbID, args));
+    guard(() => {
+      this.__invokeCallback(cbID, args);
+      this.__callImmediates();
+    });
+
     return this.flushedQueue();
   }
 
   flushedQueue() {
     this.__callImmediates();
-    return this.__flushedQueue();
+
+    let queue = this._queue;
+    this._queue = [[],[],[]];
+    return queue[0].length ? queue : null;
   }
 
   /**
@@ -123,11 +110,6 @@ class MessageQueue {
     BridgeProfiling.profileEnd();
   }
 
-  __flushedQueue() {
-    let queue = this._queue;
-    this._queue = [[],[],[]];
-    return queue[0].length ? queue : null;
-  }
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       // eventually delete old debug info
