@@ -10,7 +10,6 @@
 #import "RCTShadowView.h"
 #import "RCTTextDecorationLineType.h"
 
-extern NSString *const RCTIsHighlightedAttributeName;
 extern NSString *const RCTReactTagAttributeName;
 
 @interface RCTShadowText : RCTShadowView

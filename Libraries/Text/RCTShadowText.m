@@ -20,7 +20,6 @@
 #import "RCTText.h"
 #import "RCTUtils.h"
 
-NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
 NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 
 @implementation RCTShadowText
@@ -208,12 +207,14 @@ static css_dim_t RCTMeasure(void *context, float width)
     [child setTextComputed];
   }
 
-  if (_color) {
+  if (_color && _isHighlighted) {
+    [self _addAttribute:NSForegroundColorAttributeName withValue:[_color colorWithAlphaComponent:0.2f] toAttributedString:attributedString];
+  } else if (!_color && _isHighlighted) {
+    [self _addAttribute:NSForegroundColorAttributeName withValue:[[UIColor darkTextColor] colorWithAlphaComponent:0.2f] toAttributedString:attributedString];
+  } else if (_color && !_isHighlighted) {
     [self _addAttribute:NSForegroundColorAttributeName withValue:_color toAttributedString:attributedString];
   }
-  if (_isHighlighted) {
-    [self _addAttribute:RCTIsHighlightedAttributeName withValue:@YES toAttributedString:attributedString];
-  }
+
   if (useBackgroundColor && self.backgroundColor) {
     [self _addAttribute:NSBackgroundColorAttributeName withValue:self.backgroundColor toAttributedString:attributedString];
   }
