@@ -18,7 +18,6 @@ export type ResolvedAssetSource = {
   width: number,
   height: number,
   uri: string,
-  isStatic: boolean,
   scale: number,
 };
 
@@ -125,25 +124,13 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
 
 function assetToImageSource(asset): ResolvedAssetSource {
   var devServerURL = getDevServerURL();
-  if (devServerURL) {
-    return {
-      __packager_asset: true,
-      width: asset.width,
-      height: asset.height,
-      uri: getPathOnDevserver(devServerURL, asset),
-      isStatic: false,
-      scale: pickScale(asset.scales, PixelRatio.get()),
-    };
-  } else {
-    return {
-      __packager_asset: true,
-      width: asset.width,
-      height: asset.height,
-      uri: getPathInArchive(asset),
-      isStatic: true,
-      scale: pickScale(asset.scales, PixelRatio.get()),
-    };
-  }
+  return {
+    __packager_asset: true,
+    width: asset.width,
+    height: asset.height,
+    uri: devServerURL ? getPathOnDevserver(devServerURL, asset) : getPathInArchive(asset),
+    scale: pickScale(asset.scales, PixelRatio.get()),
+  };
 }
 
 module.exports = resolveAssetSource;
