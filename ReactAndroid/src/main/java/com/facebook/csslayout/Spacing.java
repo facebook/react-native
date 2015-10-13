@@ -7,11 +7,13 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<fcf3439e46c4c76e42357c348a9ffe99>>
+// @generated SignedSource<<3177826257fea8b5ac1fc9d1d514935a>>
 
 package com.facebook.csslayout;
 
 import javax.annotation.Nullable;
+
+import java.util.Arrays;
 
 /**
  * Class representing CSS spacing (padding, margin, and borders). This is mostly necessary to
@@ -162,6 +164,17 @@ public class Spacing {
    */
   public float getRaw(int spacingType) {
     return mSpacing[spacingType];
+  }
+
+  /**
+   * Resets the spacing instance to its default state. This method is meant to be used when
+   * recycling {@link Spacing} instances.
+   */
+  void reset() {
+    Arrays.fill(mSpacing, CSSConstants.UNDEFINED);
+    mDefaultSpacing = null;
+    mHasAliasesSet = false;
+    mValueFlags = 0;
   }
 
   /**
