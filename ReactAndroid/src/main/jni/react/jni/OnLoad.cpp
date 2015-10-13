@@ -567,7 +567,8 @@ static void signalBatchComplete(JNIEnv* env, jobject callback) {
 
 static void dispatchCallbacksToJava(const RefPtr<WeakReference>& weakCallback,
                                     const RefPtr<WeakReference>& weakCallbackQueueThread,
-                                    std::vector<MethodCall>&& calls) {
+                                    std::vector<MethodCall>&& calls,
+                                    bool isEndOfBatch) {
   auto env = Environment::current();
   if (env->ExceptionCheck()) {
     FBLOGW("Dropped calls because of pending exception");
@@ -580,7 +581,7 @@ static void dispatchCallbacksToJava(const RefPtr<WeakReference>& weakCallback,
     return;
   }
 
-  auto runnableFunction = std::bind([weakCallback] (std::vector<MethodCall>& calls) {
+  auto runnableFunction = std::bind([weakCallback, isEndOfBatch] (std::vector<MethodCall>& calls) {
     auto env = Environment::current();
     if (env->ExceptionCheck()) {
       FBLOGW("Dropped calls because of pending exception");
@@ -594,7 +595,9 @@ static void dispatchCallbacksToJava(const RefPtr<WeakReference>& weakCallback,
           return;
         }
       }
-      signalBatchComplete(env, callback);
+      if (isEndOfBatch) {
+        signalBatchComplete(env, callback);
+      }
     }
   }, std::move(calls));
 
@@ -606,8 +609,8 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
                    jobject callbackQueueThread) {
   auto weakCallback = createNew<WeakReference>(callback);
   auto weakCallbackQueueThread = createNew<WeakReference>(callbackQueueThread);
-  auto bridgeCallback = [weakCallback, weakCallbackQueueThread] (std::vector<MethodCall> calls) {
-    dispatchCallbacksToJava(weakCallback, weakCallbackQueueThread, std::move(calls));
+  auto bridgeCallback = [weakCallback, weakCallbackQueueThread] (std::vector<MethodCall> calls, bool isEndOfBatch) {
+    dispatchCallbacksToJava(weakCallback, weakCallbackQueueThread, std::move(calls), isEndOfBatch);
   };
   auto nativeExecutorFactory = extractRefPtr<JSExecutorFactory>(env, executor);
   auto bridge = createNew<Bridge>(nativeExecutorFactory, bridgeCallback);
