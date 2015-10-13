@@ -126,12 +126,6 @@ var Image = React.createClass({
     }
 
     if (source && source.uri) {
-      var isNetwork = source.uri.match(/^https?:/);
-      invariant(
-        !(isNetwork && source.isStatic),
-        'Static image URIs cannot start with "http": "' + source.uri + '"'
-      );
-
       var {width, height} = source;
       var style = flattenStyle([{width, height}, styles.base, this.props.style]);
 

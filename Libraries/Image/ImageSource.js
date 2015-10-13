@@ -13,5 +13,4 @@
 
 type ImageSource = {
   uri: string;
-  isStatic: boolean;
 };
