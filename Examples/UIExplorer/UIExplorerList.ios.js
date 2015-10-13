@@ -19,7 +19,7 @@ var React = require('react-native');
 var {
   AppRegistry,
   Settings,
-  SnapshotView,
+  SnapshotViewIOS,
   StyleSheet,
 } = React;
 
@@ -85,9 +85,9 @@ COMPONENTS.concat(APIS).forEach((Example) => {
       render: function() {
         var Renderable = UIExplorerListBase.makeRenderable(Example);
         return (
-          <SnapshotView>
+          <SnapshotViewIOS>
             <Renderable />
-          </SnapshotView>
+          </SnapshotViewIOS>
         );
       },
     });

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule SnapshotView
+ * @providesModule SnapshotViewIOS
  * @flow
  */
 'use strict';
@@ -19,7 +19,7 @@ var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-var SnapshotView = React.createClass({
+var SnapshotViewIOS = React.createClass({
   onDefaultAction: function(event: Object) {
     TestModule.verifySnapshot(TestModule.markTestPassed);
   },
@@ -52,7 +52,7 @@ var style = StyleSheet.create({
 });
 
 var RCTSnapshot = Platform.OS === 'ios' ?
-  requireNativeComponent('RCTSnapshot', SnapshotView) :
+  requireNativeComponent('RCTSnapshot', SnapshotViewIOS) :
   View;
 
-module.exports = SnapshotView;
+module.exports = SnapshotViewIOS;
