@@ -104,4 +104,10 @@ Pod::Spec.new do |s|
     ss.preserve_paths   = "Libraries/LinkingIOS/*.js"
   end
   
+  s.subspec 'RCTTest' do |ss|
+    ss.source_files     = "Libraries/RCTTest/**/*.{h,m}"
+    ss.preserve_paths   = "Libraries/RCTTest/**/*.js"
+    ss.frameworks       = "XCTest"
+  end
+  
 end
