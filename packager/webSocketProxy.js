@@ -57,7 +57,13 @@ function attachToServer(server, path) {
     });
   });
 
-  return wss;
+  return {
+    server: wss,
+    getClientUserAgents: () =>
+      clients
+        .map(ws => ws.upgradeReq.headers['user-agent'])
+        .filter(Boolean)
+  };
 }
 
 module.exports = {

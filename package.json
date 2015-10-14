@@ -65,6 +65,7 @@
     "joi": "^6.6.1",
     "jstransform": "^11.0.3",
     "module-deps": "^3.9.1",
+    "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "progress": "^1.1.8",
     "promise": "^7.0.4",
