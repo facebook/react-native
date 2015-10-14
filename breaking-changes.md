@@ -8,3 +8,4 @@
   - Need to specify which platform you're bundling for `--platform <ios|android>`.
   - Option `--out` has been renamed for `--bundle-output`.
   - Source maps are no longer automatically generated. Need to specify `--sourcemap-output <path>` option to indicate where to put the source maps.
+  - `removeClippedSubviews` now defaults to `true` on `ListView`. This is generally the behavior people expect from `ListView` so we're making it default to `true`. If you see any issues please report them.
