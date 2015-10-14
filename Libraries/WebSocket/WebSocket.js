@@ -115,7 +115,7 @@ class WebSocket extends WebSocketBase {
         this.onerror && this.onerror(event);
         this.dispatchEvent(event);
         this._unregisterEvents();
-        this._closeWebSocket(id);
+        this.readyState === this.OPEN && this._closeWebSocket(id);
       })
     ];
   }
