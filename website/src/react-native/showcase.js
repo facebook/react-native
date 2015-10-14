@@ -13,12 +13,6 @@ var center = require('center');
 
 var apps = [
   {
-    name: 'Kakapo',
-    icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
-    author: 'Daniel Levitt',
-  },
-  {
     name: 'AIGA Design Conference 2015: New Orleans',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
@@ -101,6 +95,12 @@ var apps = [
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple1/v4/b2/4f/3a/b24f3ae3-2597-cc70-1040-731b425a5904/mzl.amxdcktl.jpg',
     link: 'https://itunes.apple.com/us/app/hsk-level-1-chinese-flashcards/id936639994',
     author: 'HS Schaaf',
+  },
+  {
+    name: 'Kakapo',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
+    link: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    author: 'Daniel Levitt',
   },
   {
     name: 'Leanpub',
