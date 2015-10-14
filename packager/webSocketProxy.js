@@ -57,7 +57,12 @@ function attachToServer(server, path) {
     });
   });
 
-  return wss;
+  return {
+    server: wss,
+    clientsCount: function() {
+      return clients.length;
+    }
+  };
 }
 
 module.exports = {
