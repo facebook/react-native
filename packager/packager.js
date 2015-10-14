@@ -160,7 +160,11 @@ var server = runServer(options, function() {
   console.log('\nReact packager ready.\n');
 });
 
-webSocketProxy.attachToServer(server, '/debugger-proxy');
+var wsProxy = webSocketProxy.attachToServer(server, '/debugger-proxy');
+
+function isDebuggerConnected() {
+  return wsProxy.getClientUserAgents().some(userAgent => userAgent.includes('Chrome'));
+}
 
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
@@ -191,7 +195,7 @@ function runServer(
 ) {
   var app = connect()
     .use(loadRawBodyMiddleware)
-    .use(getDevToolsMiddleware(options))
+    .use(getDevToolsMiddleware(options, isDebuggerConnected))
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
