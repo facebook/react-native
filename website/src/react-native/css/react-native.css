@@ -880,7 +880,7 @@ small code, li code, p code {
   height: 95%;
   left: 0;
   margin: auto;
-  max-height: 620px;
+  max-height: 648px;
   max-width: 460px;
   overflow: auto;
   position: fixed;
@@ -890,22 +890,24 @@ small code, li code, p code {
   z-index: 9999;
 }
 
-.modal-open {
-  display: block;
-}
+.modal-open { display: block; }
 
 .modal-content {
-  padding: 40px 24px 24px 24px;
+  padding: 40px 24px 8px 24px;
   position: relative;
 }
 
-.modal-content iframe {
-  margin: 0 auto;
-}
+.modal-content iframe { margin: 0 auto; }
 
 .modal-button-open {
+  cursor: pointer;
   text-align: center;
 }
+  .modal-button-open-img {
+    background: #05A5D1;
+    height: 358px;
+  }
+  .modal-button-open-img:hover img { opacity: 0.90; }
 
 .modal-button-close {
   background: transparent;
