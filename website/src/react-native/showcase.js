@@ -97,6 +97,12 @@ var apps = [
     author: 'HS Schaaf',
   },
   {
+    name: 'Kakapo',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
+    link: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    author: 'Daniel Levitt',
+  },
+  {
     name: 'Leanpub',
     icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/9f/4a/6f/9f4a6f8c-8951-ed89-4083-74ace23df9ef/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/leanpub/id913517110?ls=1&mt=8',
