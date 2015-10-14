@@ -157,6 +157,12 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'RepairShopr',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/fa/96/ee/fa96ee57-c5f0-0c6f-1a34-64c9d3266b86/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/repairshopr-payments-lite/id1023262888?mt=8',
+    author: 'Jed Tiotuico',
+  },
+  {
     name: 'RN Playground',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
     link: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
