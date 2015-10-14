@@ -152,7 +152,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
   
   if ([nativeTouch.view respondsToSelector:@selector(traitCollection)] &&
-      [[[nativeTouch view] traitCollection] respondsToSelector:@selector(forceTouchCapability)] {
+      [nativeTouch.view.traitCollection respondsToSelector:@selector(forceTouchCapability)] {
 
     reactTouch[@"force"] = @(nativeTouch.force);
     reactTouch[@"maxForce"] =  @(nativeTouch.maximumPossibleForce);
