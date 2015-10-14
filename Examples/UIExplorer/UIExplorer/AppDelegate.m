@@ -71,13 +71,11 @@
      * then add the `main.jsbundle` file to your project and uncomment this line:
      */
 
-  //  sourceURL = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    #if RUNNING_ON_CI
+       sourceURL = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    #endif
 
-  #if RUNNING_ON_CI
-     sourceURL = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-  #endif
-
-  return sourceURL;
+    return sourceURL;
 }
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge

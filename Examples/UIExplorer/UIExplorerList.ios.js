@@ -21,6 +21,8 @@ var {
   Settings,
   SnapshotViewIOS,
   StyleSheet,
+  NativeModules,
+  LinkingIOS
 } = React;
 
 import type { NavigationContext } from 'NavigationContext';
@@ -106,11 +108,32 @@ type Props = {
 class UIExplorerList extends React.Component {
   props: Props;
 
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      route: null
+    };
+  }
+
+  componentWillMount() {
+    LinkingIOS.addEventListener('url', function(e) {
+      var url = e.url.replace('uiexplorer://', '').split('?');
+      var example = url[1];
+      var component = COMPONENTS.concat(APIS).find((component) => component.title === example);
+      this._openExample(component);
+    });
+
+    NativeModules.RNUserDefaultsIOS.stringForKey('route', (error, string) => {
+     this.setState({route: string});
+    });
+  }
+
   render() {
     return (
       <UIExplorerListBase
         components={COMPONENTS}
         apis={APIS}
+        route={this.state.route}
         searchText={Settings.get('searchText')}
         renderAdditionalView={this.renderAdditionalView.bind(this)}
         search={this.search.bind(this)}

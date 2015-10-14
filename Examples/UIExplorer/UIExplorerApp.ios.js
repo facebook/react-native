@@ -28,7 +28,7 @@ var UIExplorerApp = React.createClass({
 
   getInitialState: function() {
     return {
-      openExternalExample: (null: ?React.Component),
+      openExternalExample: (null: ?React.Component)
     };
   },
 
