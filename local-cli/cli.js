@@ -13,6 +13,7 @@ var init = require('./init.js');
 var newLibrary = require('./new-library.js');
 var runAndroid = require('./run-android.js');
 var runPackager = require('./run-packager.js');
+var swiftBridge = require('./swift-bridge.js');
 
 function printUsage() {
   console.log([
@@ -22,7 +23,8 @@ function printUsage() {
     '  start: starts the webserver',
     '  bundle: builds the javascript bundle for offline use',
     '  new-library: generates a native library bridge',
-    '  android: generates an Android project for your app'
+    '  android: generates an Android project for your app',
+    '  swift-bridge: generates import statements for swift bridging header',
   ].join('\n'));
   process.exit(1);
 }
@@ -51,6 +53,9 @@ function run() {
     break;
   case 'new-library':
     newLibrary.init(args);
+    break;
+  case 'swift-bridge':
+    swiftBridge.init(args);
     break;
   case 'init':
     printInitWarning();
