@@ -64,6 +64,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   BOOL _loading;
   BOOL _valid;
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
+  NSMutableArray *_pendingCalls;
   NSMutableArray *_moduleDataByID;
   RCTModuleMap *_modulesByName;
   CADisplayLink *_mainDisplayLink;
@@ -87,6 +88,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
      */
     _valid = YES;
     _loading = YES;
+    _pendingCalls = [NSMutableArray new];
     _moduleDataByID = [NSMutableArray new];
     _frameUpdateObservers = [NSMutableSet new];
     _jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)];
@@ -212,7 +214,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   } else {
     // Allow testing without a script
     dispatch_async(dispatch_get_main_queue(), ^{
-      _loading = NO;
+      [self didFinishLoading];
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                           object:_parentBridge
                                                         userInfo:@{ @"bridge": self }];
@@ -382,11 +384,23 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
     // Perform the state update and notification on the main thread, so we can't run into
     // timing issues with RCTRootView
     dispatch_async(dispatch_get_main_queue(), ^{
-      _loading = NO;
+      [self didFinishLoading];
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                           object:_parentBridge
                                                         userInfo:@{ @"bridge": self }];
     });
+  }];
+}
+
+- (void)didFinishLoading
+{
+  _loading = NO;
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+    for (NSArray *call in _pendingCalls) {
+      [self _actuallyInvokeAndProcessModule:call[0]
+                                     method:call[1]
+                                  arguments:call[2]];
+    }
   }];
 }
 
@@ -625,9 +639,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileBeginEvent(0, @"enqueue_call", nil);
 
     RCTBatchedBridge *strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf.valid) {
+      return;
+    }
 
-    [strongSelf _actuallyInvokeAndProcessModule:module method:method arguments:args];
-
+    if (strongSelf.loading) {
+      [strongSelf->_pendingCalls addObject:@[module, method, args]];
+    } else {
+      [strongSelf _actuallyInvokeAndProcessModule:module method:method arguments:args];
+    }
   }];
 }
 
