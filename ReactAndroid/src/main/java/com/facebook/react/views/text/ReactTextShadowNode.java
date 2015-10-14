@@ -237,12 +237,14 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   }
 
   private int mLineHeight = UNSET;
-  private int mNumberOfLines = UNSET;
   private boolean mIsColorSet = false;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
   private int mBackgroundColor;
-  private int mFontSize = UNSET;
+
+  protected int mNumberOfLines = UNSET;
+  protected int mFontSize = UNSET;
+
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
    * mFontWeight can be {@link Typeface#NORMAL} or {@link Typeface#BOLD}.

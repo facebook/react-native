@@ -22,13 +22,11 @@ import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.text.ReactTextShadowNode;
 
 @VisibleForTesting
@@ -40,14 +38,11 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       View.MeasureSpec.UNSPECIFIED);
 
   private @Nullable EditText mEditText;
-  private int mFontSize;
   private @Nullable float[] mComputedPadding;
   private int mJsEventCount = UNSET;
-  private int mNumLines = UNSET;
 
   public ReactTextInputShadowNode() {
     super(false);
-    mFontSize = (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP));
     setMeasureFunction(this);
   }
 
@@ -77,7 +72,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     EditText editText = Assertions.assertNotNull(mEditText);
 
     measureOutput.width = width;
-    editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mFontSize);
+    editText.setTextSize(
+        TypedValue.COMPLEX_UNIT_PX,
+        mFontSize == UNSET ?
+            (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
     mComputedPadding = spacingToFloatArray(getStylePadding());
     editText.setPadding(
         (int) Math.ceil(getStylePadding().get(Spacing.LEFT)),
@@ -85,8 +83,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         (int) Math.ceil(getStylePadding().get(Spacing.RIGHT)),
         (int) Math.ceil(getStylePadding().get(Spacing.BOTTOM)));
 
-    if (mNumLines != UNSET) {
-      editText.setLines(mNumLines);
+    if (mNumberOfLines != UNSET) {
+      editText.setLines(mNumberOfLines);
     }
 
     editText.measure(MEASURE_SPEC, MEASURE_SPEC);
@@ -99,19 +97,9 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     return;
   }
 
-  @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
-  public void setFontSize(float fontSize) {
-    mFontSize = (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
-  }
-
   @ReactProp(name = "mostRecentEventCount")
   public void setMostRecentEventCount(int mostRecentEventCount) {
     mJsEventCount = mostRecentEventCount;
-  }
-
-  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
-  public void setNumberOfLines(int numberOfLines) {
-    mNumLines = numberOfLines;
   }
 
   @Override
