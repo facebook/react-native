@@ -33,6 +33,7 @@ import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -53,7 +54,7 @@ import com.facebook.react.uimanager.ViewProps;
  * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used
  * solely for layouting
  */
-public class ReactTextShadowNode extends ReactShadowNode {
+public class ReactTextShadowNode extends LayoutShadowNode {
 
   public static final int UNSET = -1;
 
