@@ -28,7 +28,7 @@ error as soon as you try to use the library._
 
 If the library has native code, there must be a `.xcodeproj` file inside it's
 folder.
-Drag this file to your project on Xcode (usually under the `Libaries` group
+Drag this file to your project on Xcode (usually under the `Libraries` group
 on Xcode);
 
 ![](/react-native/img/AddToLibraries.png)
