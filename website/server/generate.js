@@ -22,11 +22,11 @@ server.noconvert = true;
 // requests.
 var queue = Promise.resolve();
 
-glob('src/**/*.*', { ignore: 'src/react-native/js/**/*' }, function(er, files) {
+glob('src/**/*.*', function(er, files) {
   files.forEach(function(file) {
     var targetFile = file.replace(/^src/, 'build');
 
-    if (file.match(/\.js$/)) {
+    if (file.match(/\.js$/) && !file.match(/src\/react-native\/js/)) {
       targetFile = targetFile.replace(/\.js$/, '.html');
       queue = queue.then(function() {
         return new Promise(function(resolve, reject) {
