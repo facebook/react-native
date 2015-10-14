@@ -66,7 +66,9 @@ class JavaScriptModuleRegistration {
 
   public int getMethodId(Method method) {
     final Integer id = mMethodsToIds.get(method);
-    Assertions.assertNotNull(id, "Unknown method: " + method.getName());
+    if (id == null) {
+      Assertions.assertUnreachable("Unknown method: " + method.getName());
+    }
     return id.intValue();
   }
 
