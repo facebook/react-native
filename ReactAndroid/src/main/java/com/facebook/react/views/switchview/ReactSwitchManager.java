@@ -18,11 +18,12 @@ import android.widget.CompoundButton;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
 
 /**
@@ -32,7 +33,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
   private static final String REACT_CLASS = "AndroidSwitch";
 
-  private static class ReactSwitchShadowNode extends ReactShadowNode implements
+  private static class ReactSwitchShadowNode extends LayoutShadowNode implements
       CSSNode.MeasureFunction {
 
     private int mWidth;
@@ -82,7 +83,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   }
 
   @Override
-  public ReactShadowNode createShadowNodeInstance() {
+  public LayoutShadowNode createShadowNodeInstance() {
     return new ReactSwitchShadowNode();
   }
 

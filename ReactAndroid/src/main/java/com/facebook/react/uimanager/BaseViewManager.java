@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReadableMap;
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
  * It provides support for base view properties such as backgroundColor, opacity, etc.
  */
-public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
+public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
     extends ViewManager<T, C> {
 
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;

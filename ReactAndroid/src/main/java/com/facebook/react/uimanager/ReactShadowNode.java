@@ -167,30 +167,18 @@ public class ReactShadowNode extends CSSNode {
         ViewManagersPropertyCache.getNativePropSettersForShadowNodeClass(getClass());
     ReadableMap propMap = props.mBackingMap;
     ReadableMapKeySeyIterator iterator = propMap.keySetIterator();
-    // TODO(krzysztof): Remove missingSetters code once all views are migrated to @ReactProp
-    boolean missingSetters = false;
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
       if (setter != null) {
         setter.updateShadowNodeProp(this, props);
-      } else {
-        missingSetters = true;
       }
-    }
-    if (missingSetters) {
-      updateShadowNode(props);
     }
     onAfterUpdateTransaction();
   }
 
   public void onAfterUpdateTransaction() {
     // no-op
-  }
-
-  @Deprecated
-  public void updateShadowNode(CatalystStylesDiffMap styles) {
-    BaseCSSPropertyApplicator.applyCSSProperties(this, styles);
   }
 
   /**

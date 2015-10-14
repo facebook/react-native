@@ -21,15 +21,15 @@ import android.widget.ProgressBar;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactProp;
-import com.facebook.react.uimanager.ReactShadowNode;
 
 /**
  * Node responsible for holding the style of the ProgressBar, see under
  * {@link android.R.attr.progressBarStyle} for possible styles. ReactProgressBarViewManager
  * manages how this style is applied to the ProgressBar.
  */
-public class ProgressBarShadowNode extends ReactShadowNode implements CSSNode.MeasureFunction {
+public class ProgressBarShadowNode extends LayoutShadowNode implements CSSNode.MeasureFunction {
 
   private String mStyle = ReactProgressBarViewManager.DEFAULT_STYLE;
 

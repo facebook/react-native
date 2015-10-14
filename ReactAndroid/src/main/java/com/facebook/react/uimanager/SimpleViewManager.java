@@ -20,16 +20,16 @@ import android.view.View;
  * @param <T> the view handled by this manager
  */
 public abstract class SimpleViewManager<T extends View> extends
-    BaseViewManager<T, ReactShadowNode> {
+    BaseViewManager<T, LayoutShadowNode> {
 
   @Override
-  public ReactShadowNode createShadowNodeInstance() {
-    return new ReactShadowNode();
+  public LayoutShadowNode createShadowNodeInstance() {
+    return new LayoutShadowNode();
   }
 
   @Override
-  public Class<ReactShadowNode> getShadowNodeClass() {
-    return ReactShadowNode.class;
+  public Class<LayoutShadowNode> getShadowNodeClass() {
+    return LayoutShadowNode.class;
   }
 
   @Override
