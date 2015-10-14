@@ -64,6 +64,9 @@ var options = parseCommandLine([{
   command: 'reset-cache',
   description: 'Removes cached files',
   default: false,
+}, {
+  command: 'dangerouslyDisableChromeDebuggerWebSecurity',
+  description: 'Disable the Chrome debugger\'s same-origin policy'
 }]);
 
 if (options.projectRoots) {
@@ -160,7 +163,13 @@ var server = runServer(options, function() {
   console.log('\nReact packager ready.\n');
 });
 
-webSocketProxy.attachToServer(server, '/debugger-proxy');
+var proxy = webSocketProxy.attachToServer(server, '/debugger-proxy');
+
+function isDebuggerConnected() {
+  // Debugger is connected if the app and at least one browser are connected
+  // to the websocket proxy.
+  return proxy.clientsCount() >= 2;
+}
 
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
@@ -191,7 +200,7 @@ function runServer(
 ) {
   var app = connect()
     .use(loadRawBodyMiddleware)
-    .use(getDevToolsMiddleware(options))
+    .use(getDevToolsMiddleware(options, isDebuggerConnected))
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
