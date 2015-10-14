@@ -51,7 +51,7 @@ var Site = React.createClass({
             {this.props.children}
 
             <footer className="wrap">
-              <div className="right">© 2015 Facebook Inc.</div>
+              <div className="center">© 2015 Facebook Inc.</div>
             </footer>
           </div>
 
@@ -68,6 +68,7 @@ var Site = React.createClass({
             ){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";
             fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
           `}} />
+          <script src="/react-native/js/scripts.js" />
         </body>
       </html>
     );
