@@ -38,8 +38,8 @@
         />
     <EditTextPreference
         android:key="debug_http_host"
-        android:title="Debug server host for device"
-        android:summary="Debug server host for downloading JS bundle or communicating with JS debugger. With this setting empty launcher should work fine when running on emulator (or genymotion) and connection to debug server running on emulator's host"
+        android:title="Debug server host &amp; port for device"
+        android:summary="Debug server host &amp; port for downloading JS bundle or communicating with JS debugger. With this setting empty launcher should work fine when running on emulator (or genymotion) and connection to debug server running on emulator's host."
         android:defaultValue=""
         />
   </PreferenceCategory>
