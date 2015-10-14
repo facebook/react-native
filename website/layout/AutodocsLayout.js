@@ -451,8 +451,53 @@ var Autodocs = React.createClass({
               {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
           </div>
+
+          <EmbeddedSimulator shouldRender={metadata.runnable} metadata={metadata} />
+
         </section>
       </Site>
+    );
+  }
+});
+
+var EmbeddedSimulator = React.createClass({
+  render: function() {
+    if (!this.props.shouldRender) {
+      return null;
+    }
+
+    var metadata = this.props.metadata;
+
+    return (
+      <div className="column-left">
+        <p><strong>Run this example</strong></p>
+        <div className="modal-button-open">
+          <img src="/react-native/img/alertIOS.png" />
+        </div>
+        <Modal />
+      </div>
+    );
+  }
+});
+
+var Modal = React.createClass({
+  render: function() {
+    var appParams = {route: 'AlertIOS'};
+    var encodedParams = encodeURIComponent(JSON.stringify(appParams));
+    var url = `https://appetize.io/embed/bypdk4jnjra5uwyj2kzd2aenv4?device=iphone5s&scale=70&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
+
+    return (
+      <div>
+        <div className="modal">
+          <div className="modal-content">
+            <button className="modal-button-close">&times;</button>
+            <div className="center">
+              <iframe className="simulator" src={url} width="274" height="550" frameborder="0" scrolling="no"></iframe>
+            </div>
+          </div>
+        </div>
+        <div className="modal-backdrop" />
+      </div>
     );
   }
 });
