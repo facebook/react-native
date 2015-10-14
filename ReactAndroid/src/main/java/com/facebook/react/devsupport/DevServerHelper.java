@@ -49,19 +49,19 @@ import okio.Sink;
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
-  private static final String EMULATOR_LOCALHOST = "10.0.2.2";
-  private static final String GENYMOTION_LOCALHOST = "10.0.3.2";
-  private static final String DEVICE_LOCALHOST = "localhost";
+  private static final String EMULATOR_LOCALHOST = "10.0.2.2:8081";
+  private static final String GENYMOTION_LOCALHOST = "10.0.3.2:8081";
+  private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s:8081/%s.bundle?platform=android&dev=%s";
+      "http://%s/%s.bundle?platform=android&dev=%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT =
-      "http://%s:8081/launch-chrome-devtools";
+      "http://%s/launch-chrome-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
-      "http://%s:8081/onchange";
-  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s:8081/debugger-proxy";
+      "http://%s/onchange";
+  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy";
 
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
