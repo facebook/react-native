@@ -420,16 +420,18 @@ var TouchableMixin = {
     var positionOnActivate = this.state.touchable.positionOnActivate;
     var dimensionsOnActivate = this.state.touchable.dimensionsOnActivate;
     var pressRectOffset = this.touchableGetPressRectOffset ?
-      this.touchableGetPressRectOffset() : null;
-    var pressExpandLeft =
-      pressRectOffset.left != null ? pressRectOffset.left : PRESS_EXPAND_PX;
-    var pressExpandTop =
-      pressRectOffset.top != null ? pressRectOffset.top : PRESS_EXPAND_PX;
-    var pressExpandRight =
-      pressRectOffset.right != null ? pressRectOffset.right : PRESS_EXPAND_PX;
-    var pressExpandBottom =
-      pressRectOffset.bottom != null ? pressRectOffset.bottom : PRESS_EXPAND_PX;
-
+      this.touchableGetPressRectOffset() : {
+        left: PRESS_EXPAND_PX,
+        right: PRESS_EXPAND_PX,
+        top: PRESS_EXPAND_PX,
+        bottom: PRESS_EXPAND_PX
+      };
+      
+    var pressExpandLeft = pressRectOffset.left;
+    var pressExpandTop = pressRectOffset.top;
+    var pressExpandRight = pressRectOffset.right;
+    var pressExpandBottom = pressRectOffset.bottom;
+    
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
     var pageY = touch && touch.pageY;
