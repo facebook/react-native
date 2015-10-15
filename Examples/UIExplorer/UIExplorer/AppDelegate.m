@@ -66,7 +66,7 @@
      * Load from pre-bundled file on disk. To re-generate the static bundle, `cd`
      * to your Xcode project folder and run
      *
-     * $ curl 'http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle' -o main.jsbundle
+     * $ curl 'http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle?platform=ios' -o main.jsbundle
      *
      * then add the `main.jsbundle` file to your project and uncomment this line:
      */
