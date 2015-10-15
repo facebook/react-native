@@ -18,7 +18,7 @@ This guide will use the [Toast](http://developer.android.com/reference/android/w
 We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastAndroid.show('Awesome', ToastAndroid.SHORT);` from JavaScript to display a short toast on the screen.
 
 ```java
-package com.facebook.react.modules.toast;
+package com.example.modules.toast;
 
 import android.widget.Toast;
 
@@ -89,12 +89,13 @@ ReadableArray -> Array
 ### Register the Module
 
 The last step within Java is to register the Module; this happens in the `createNativeModules` of your apps package. If a module is not registered it will not be available from JavaScript.
-In the Module registry class it is important you override three methods `createNativeModules`, `createJSModules` and `createViewManagers`.
+In the package class it is important you override three methods: `createNativeModules`, `createJSModules` and `createViewManagers`.
 ```java
 //AnExampleReactPackage.java
-package com.facebook.react.modules.toast;
+package com.example.modules.toast;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.ReactPackage;
@@ -108,22 +109,18 @@ public class AnExampleReactPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
-    
     //Registering the module.
-    modules.add(new ToastModule(reactContext));
-
-    return modules;
+    return Arrays.asList(new ToastModule(reactContext));
   }
 
   @Override
   public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return new ArrayList();
+    return Collections.emptyList();
   }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return new ArrayList();
+    return Collections.emptyList();
   }
 }
 ```
