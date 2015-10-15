@@ -552,6 +552,7 @@ namespace bridge {
 
 static jmethodID gCallbackMethod;
 static jmethodID gOnBatchCompleteMethod;
+static jmethodID gLogMarkerMethod;
 
 static void makeJavaCall(JNIEnv* env, jobject callback, MethodCall&& call) {
   if (call.arguments.isNull()) {
@@ -619,21 +620,31 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
 
 static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
                                  jstring assetName) {
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+
   auto bridge = extractRefPtr<Bridge>(env, obj);
   auto assetNameStr = fromJString(env, assetName);
+
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_start"));
   auto script = react::loadScriptFromAssets(env, assetManager, assetNameStr);
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
     "executeApplicationScript",
     "assetName", assetNameStr);
   #endif
+
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
   bridge->executeApplicationScript(script, assetNameStr);
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_done"));
 }
 
 static void loadScriptFromNetworkCached(JNIEnv* env, jobject obj, jstring sourceURL,
                                    jstring tempFileName) {
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+
   auto bridge = jni::extractRefPtr<Bridge>(env, obj);
   std::string script = "";
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_start"));
   if (tempFileName != NULL) {
     script = react::loadScriptFromFile(jni::fromJString(env, tempFileName));
   }
@@ -643,7 +654,9 @@ static void loadScriptFromNetworkCached(JNIEnv* env, jobject obj, jstring source
     "executeApplicationScript",
     "sourceURL", sourceURLStr);
   #endif
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
   bridge->executeApplicationScript(script, jni::fromJString(env, sourceURL));
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_exec"));
 }
 
 static void callFunction(JNIEnv* env, jobject obj, jint moduleId, jint methodId,
@@ -786,6 +799,9 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     jclass callbackClass = env->FindClass("com/facebook/react/bridge/ReactCallback");
     bridge::gCallbackMethod = env->GetMethodID(callbackClass, "call", "(IILcom/facebook/react/bridge/ReadableNativeArray;)V");
     bridge::gOnBatchCompleteMethod = env->GetMethodID(callbackClass, "onBatchComplete", "()V");
+
+    jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+    bridge::gLogMarkerMethod = env->GetStaticMethodID(markerClass, "logMarker", "(Ljava/lang/String;)V");
 
     registerNatives("com/facebook/react/bridge/ReactBridge", {
         makeNativeMethod("initialize", "(Lcom/facebook/react/bridge/JavaScriptExecutor;Lcom/facebook/react/bridge/ReactCallback;Lcom/facebook/react/bridge/queue/MessageQueueThread;)V", bridge::create),
