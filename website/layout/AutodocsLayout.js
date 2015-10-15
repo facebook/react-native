@@ -493,7 +493,7 @@ var Modal = React.createClass({
             <button className="modal-button-close">&times;</button>
             <div className="center">
               <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no"></iframe>
-              <p>Powered by <a href="https://appetize.io">appetize.io</a></p>
+              <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
             </div>
           </div>
         </div>
