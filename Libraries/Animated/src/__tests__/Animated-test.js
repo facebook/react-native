@@ -18,6 +18,7 @@ jest
 var Animated = require('Animated');
 
 describe('Animated', () => {
+
   it('works end to end', () => {
     var anim = new Animated.Value(0);
 
@@ -349,6 +350,54 @@ describe('Animated Events', () => {
     expect(value.__getValue()).toBe(42);
     expect(listener.mock.calls.length).toBe(1);
     expect(listener).toBeCalledWith({foo: 42});
+  });
+});
+
+describe('Animated Interactions', () => {
+  /*eslint-disable no-shadow*/
+  var Animated;
+  /*eslint-enable*/
+  var InteractionManager;
+
+  beforeEach(() => {
+    jest.mock('InteractionManager');
+    Animated = require('Animated');
+    InteractionManager = require('InteractionManager');
+  });
+
+  afterEach(()=> {
+    jest.dontMock('InteractionManager');
+  });
+
+  it('registers an interaction by default', () => {
+    InteractionManager.createInteractionHandle.mockReturnValue(777);
+
+    var value = new Animated.Value(0);
+    var callback = jest.genMockFunction();
+    Animated.timing(value, {
+      toValue: 100,
+      duration: 100,
+    }).start(callback);
+    jest.runAllTimers();
+
+    expect(InteractionManager.createInteractionHandle).toBeCalled();
+    expect(InteractionManager.clearInteractionHandle).toBeCalledWith(777);
+    expect(callback).toBeCalledWith({finished: true});
+  });
+
+  it('does not register an interaction when specified', () => {
+    var value = new Animated.Value(0);
+    var callback = jest.genMockFunction();
+    Animated.timing(value, {
+      toValue: 100,
+      duration: 100,
+      isInteraction: false,
+    }).start(callback);
+    jest.runAllTimers();
+
+    expect(InteractionManager.createInteractionHandle).not.toBeCalled();
+    expect(InteractionManager.clearInteractionHandle).not.toBeCalled();
+    expect(callback).toBeCalledWith({finished: true});
   });
 });
 
