@@ -5,14 +5,17 @@
 'use strict';
 
 var bundle = require('../private-cli/src/bundle/bundle');
-var bundle_DEPRECATED = require('./bundle.js');
 var Config = require('../private-cli/src/util/Config');
 var fs = require('fs');
-var generateAndroid = require('./generate-android.js');
+var generate = require('../private-cli/src/generate/generate');
 var init = require('./init.js');
 var newLibrary = require('./new-library.js');
 var runAndroid = require('./run-android.js');
 var runPackager = require('./run-packager.js');
+
+// TODO: remove once we fully roll out the `private-cli` based cli
+// var bundle_DEPRECATED = require('./bundle.js');
+// var generateAndroid_DEPRECATED = require('./generate-android.js');
 
 function printUsage() {
   console.log([
@@ -41,12 +44,14 @@ function run() {
     printUsage();
   }
 
+  var config = Config.get(__dirname);
+
   switch (args[0]) {
   case 'start':
     runPackager();
     break;
   case 'bundle':
-    bundle(args, Config.get(__dirname)).done();
+    bundle(args, config).done();
     // bundle_DEPRECATED.init(args);
     break;
   case 'new-library':
@@ -56,10 +61,20 @@ function run() {
     printInitWarning();
     break;
   case 'android':
-    generateAndroid(
-      process.cwd(),
-      JSON.parse(fs.readFileSync('package.json', 'utf8')).name
-    );
+    generate(
+      [
+        '--platform', 'android',
+        '--project-path', process.cwd(),
+        '--project-name', JSON.parse(
+          fs.readFileSync('package.json', 'utf8')
+        ).name
+      ],
+      config
+    ).done();
+    // generateAndroid(
+    //   process.cwd(),
+    //   JSON.parse(fs.readFileSync('package.json', 'utf8')).name
+    // );
     break;
   case 'run-android':
     runAndroid();
