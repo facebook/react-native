@@ -103,3 +103,7 @@ React Native Android depends on [Fresco](https://github.com/facebook/fresco) for
 ### react-native init hangs
 
 Try running `react-native init` with `--verbose` and see [#2797](https://github.com/facebook/react-native/issues/2797) for common causes.
+
+### Text Input Border
+
+The text input has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting underlineColor to transparent.
