@@ -11,7 +11,7 @@
 const Promise = require('promise');
 const Server = require('../Server');
 const bser = require('bser');
-const debug = require('debug')('ReactPackager:SocketServer');
+const debug = require('debug')('ReactNativePackager:SocketServer');
 const fs = require('fs');
 const net = require('net');
 
@@ -117,6 +117,14 @@ class SocketServer {
         this._jobs++;
         this._packagerServer.buildBundle(m.data).then(
           (result) => this._reply(sock, m.id, 'result', result),
+          handleError,
+        );
+        break;
+
+      case 'getOrderedDependencyPaths':
+        this._jobs++;
+        this._packagerServer.getOrderedDependencyPaths(m.data).then(
+          (dependencies) => this._reply(sock, m.id, 'result', dependencies),
           handleError,
         );
         break;

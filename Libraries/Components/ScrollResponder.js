@@ -181,7 +181,7 @@ var ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponderCapture: function(e: Event): boolean {
     // First see if we want to eat taps while the keyboard is up
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (this.props.keyboardShouldPersistTaps === false &&
+    if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput) {
       return true;
@@ -242,7 +242,7 @@ var ScrollResponderMixin = {
     // By default scroll views will unfocus a textField
     // if another touch occurs outside of it
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (this.props.keyboardShouldPersistTaps === false &&
+    if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput  &&
       !this.state.observedScrollSinceBecomingResponder &&

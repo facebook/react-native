@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -385,8 +385,8 @@ public class UIViewOperationQueue {
 
       final int touchTargetReactTag = mNativeViewHierarchyManager.findTargetTagForTouch(
           mReactTag,
-          PixelUtil.toPixelFromDIP(mTargetX) + containerX,
-          PixelUtil.toPixelFromDIP(mTargetY) + containerY);
+          mTargetX,
+          mTargetY);
 
       try {
         mNativeViewHierarchyManager.measure(

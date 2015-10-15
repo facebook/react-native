@@ -8,23 +8,30 @@
  */
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var childProcess = require('child_process');
-var http = require('http');
-var isAbsolutePath = require('absolute-path');
+require('./babelRegisterOnly')([
+  /packager\/[^\/]*/
+]);
 
-var getFlowTypeCheckMiddleware = require('./getFlowTypeCheckMiddleware');
+const fs = require('fs');
+const path = require('path');
+const childProcess = require('child_process');
+const http = require('http');
+const isAbsolutePath = require('absolute-path');
 
-var chalk = require('chalk');
-var connect = require('connect');
-var ReactPackager = require('./react-packager');
-var blacklist = require('./blacklist.js');
-var checkNodeVersion = require('./checkNodeVersion');
-var formatBanner = require('./formatBanner');
-var launchEditor = require('./launchEditor.js');
-var parseCommandLine = require('./parseCommandLine.js');
-var webSocketProxy = require('./webSocketProxy.js');
+const blacklist = require('./blacklist.js');
+const chalk = require('chalk');
+const checkNodeVersion = require('../private-cli/src/server/checkNodeVersion');
+const cpuProfilerMiddleware = require('./cpuProfilerMiddleware');
+const connect = require('connect');
+const formatBanner = require('../private-cli/src/server/formatBanner');
+const getDevToolsMiddleware = require('./getDevToolsMiddleware');
+const loadRawBodyMiddleware = require('./loadRawBodyMiddleware');
+const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
+const parseCommandLine = require('./parseCommandLine.js');
+const ReactPackager = require('./react-packager');
+const statusPageMiddleware = require('./statusPageMiddleware.js');
+const systraceProfileMiddleware = require('./systraceProfileMiddleware.js');
+const webSocketProxy = require('./webSocketProxy.js');
 
 var options = parseCommandLine([{
   command: 'port',
@@ -161,132 +168,6 @@ var server = runServer(options, function() {
 
 webSocketProxy.attachToServer(server, '/debugger-proxy');
 
-function loadRawBody(req, res, next) {
-  req.rawBody = '';
-  req.setEncoding('utf8');
-
-  req.on('data', function(chunk) {
-    req.rawBody += chunk;
-  });
-
-  req.on('end', function() {
-    next();
-  });
-}
-
-function openStackFrameInEditor(req, res, next) {
-  if (req.url === '/open-stack-frame') {
-    var frame = JSON.parse(req.rawBody);
-    launchEditor(frame.file, frame.lineNumber);
-    res.end('OK');
-  } else {
-    next();
-  }
-}
-
-function getDevToolsLauncher(options) {
-  return function(req, res, next) {
-    if (req.url === '/debugger-ui') {
-      var debuggerPath = path.join(__dirname, 'debugger.html');
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      fs.createReadStream(debuggerPath).pipe(res);
-
-    } else if (req.url === '/debuggerWorker.js') {
-      var workerPath = path.join(__dirname, 'debuggerWorker.js');
-      res.writeHead(200, {'Content-Type': 'application/javascript'});
-      fs.createReadStream(workerPath).pipe(res);
-
-    } else if (req.url === '/launch-chrome-devtools') {
-      var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
-      var script = 'launchChromeDevTools.applescript';
-      console.log('Launching Dev Tools...');
-      childProcess.execFile(path.join(__dirname, script), [debuggerURL], function(err, stdout, stderr) {
-        if (err) {
-          console.log('Failed to run ' + script, err);
-        }
-        console.log(stdout);
-        console.warn(stderr);
-      });
-      res.end('OK');
-    } else {
-      next();
-    }
-  };
-}
-
-// A status page so the React/project.pbxproj build script
-// can verify that packager is running on 8081 and not
-// another program / service.
-function statusPageMiddleware(req, res, next) {
-  if (req.url === '/status') {
-    res.end('packager-status:running');
-  } else {
-    next();
-  }
-}
-
-function systraceProfileMiddleware(req, res, next) {
-  if (req.url !== '/systrace') {
-    next();
-    return;
-  }
-
-  console.log('Dumping profile information...');
-  var dumpName = '/tmp/dump_' + Date.now() + '.json';
-  var prefix = process.env.TRACE_VIEWER_PATH || '';
-  var cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
-  fs.writeFileSync(dumpName, req.rawBody);
-  childProcess.exec(cmd, function(error) {
-    if (error) {
-      if (error.code === 127) {
-        res.end(
-          '\n** Failed executing `' + cmd + '` **\n\n' +
-          'Google trace-viewer is required to visualize the data, You can install it with `brew install trace2html`\n\n' +
-          'NOTE: Your profile data was kept at:\n' + dumpName
-        );
-      } else {
-        console.error(error);
-        res.end('Unknown error %s', error.message);
-      }
-      return;
-    } else {
-      childProcess.exec('rm ' + dumpName);
-      childProcess.exec('open ' + dumpName.replace(/json$/, 'html'), function(err) {
-        if (err) {
-          console.error(err);
-          res.end(err.message);
-        } else {
-          res.end();
-        }
-      });
-    }
-  });
-}
-
-function cpuProfileMiddleware(req, res, next) {
-  if (req.url !== '/cpu-profile') {
-    next();
-    return;
-  }
-
-  console.log('Dumping CPU profile information...');
-  var dumpName = '/tmp/cpu-profile_' + Date.now();
-  fs.writeFileSync(dumpName + '.json', req.rawBody);
-
-  var cmd = path.join(__dirname, '..', 'JSCLegacyProfiler', 'json2trace') + ' -cpuprofiler ' + dumpName + '.cpuprofile ' + dumpName + '.json';
-  childProcess.exec(cmd, function(error) {
-    if (error) {
-      console.error(error);
-      res.end('Unknown error: %s', error.message);
-    } else {
-      res.end(
-        'Your profile was generated at\n\n' + dumpName + '.cpuprofile\n\n' +
-        'Open `Chrome Dev Tools > Profiles > Load` and select the profile to visualize it.'
-      );
-    }
-  });
-}
-
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
   if (!isAbsolutePath(transformerPath)) {
@@ -324,12 +205,12 @@ function runServer(
   readyCallback
 ) {
   var app = connect()
-    .use(loadRawBody)
-    .use(openStackFrameInEditor)
-    .use(getDevToolsLauncher(options))
+    .use(loadRawBodyMiddleware)
+    .use(getDevToolsMiddleware(options))
+    .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(cpuProfileMiddleware)
+    .use(cpuProfilerMiddleware)
     // Temporarily disable flow check until it's more stable
     //.use(getFlowTypeCheckMiddleware(options))
     .use(getAppMiddleware(options));

@@ -24,7 +24,6 @@ Pod::Spec.new do |s|
   s.platform            = :ios, "7.0"
   s.prepare_command     = 'npm install --production'
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
-  s.header_mappings_dir = "."
 
   s.subspec 'Core' do |ss|
     ss.source_files     = "React/**/*.{c,h,m}"
@@ -103,6 +102,12 @@ Pod::Spec.new do |s|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/LinkingIOS/*.{h,m}"
     ss.preserve_paths   = "Libraries/LinkingIOS/*.js"
+  end
+  
+  s.subspec 'RCTTest' do |ss|
+    ss.source_files     = "Libraries/RCTTest/**/*.{h,m}"
+    ss.preserve_paths   = "Libraries/RCTTest/**/*.js"
+    ss.frameworks       = "XCTest"
   end
   
 end

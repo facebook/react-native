@@ -31,9 +31,12 @@ ES5
 ES6
 
 * [Arrow functions](http://babeljs.io/docs/learn-es2015/#arrows): `<C onPress={() => this.setState({pressed: true})}`
+* [Block scoping](https://babeljs.io/docs/learn-es2015/#let-const): `let greeting = 'hi';`
 * [Call spread](http://babeljs.io/docs/learn-es2015/#default-rest-spread): `Math.max(...array);`
 * [Classes](http://babeljs.io/docs/learn-es2015/#classes): `class C extends React.Component { render() { return <View />; } }`
+* [Constants](https://babeljs.io/docs/learn-es2015/#let-const): `const answer = 42;`
 * [Destructuring](http://babeljs.io/docs/learn-es2015/#destructuring): `var {isActive, style} = this.props;`
+* [Modules](http://babeljs.io/docs/learn-es2015/#modules): `import React, { Component } from 'react-native';`
 * [Computed Properties](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var key = 'abc'; var obj = {[key]: 10};`
 * Object Consise Method: `var obj = { method() { return 10; } };`
 * [Object Short Notation](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var name = 'vjeux'; var obj = { name };`
@@ -44,3 +47,4 @@ ES7
 
 * [Object Spread](https://github.com/sebmarkbage/ecmascript-rest-spread): `var extended = { ...obj, a: 10 };`
 * [Function Trailing Comma](https://github.com/jeffmo/es-trailing-function-commas): `function f(a, b, c,) { }`
+* [Async Functions](https://github.com/tc39/ecmascript-asyncawait): `async function doStuffAsync() { const foo = await doOtherStuffAsync(); }`;

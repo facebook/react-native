@@ -12,6 +12,7 @@
 'use strict';
 
 var RCTUIManager = require('NativeModules').UIManager;
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var UnimplementedView = require('UnimplementedView');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
@@ -75,6 +76,14 @@ function requireNativeComponent(
 
     viewConfig.validAttributes[key] = useAttribute ? attribute : true;
   }
+
+  // Unfortunately, the current set up puts the style properties on the top
+  // level props object. We also need to add the nested form for API
+  // compatibility. This allows these props on both the top level and the
+  // nested style level. TODO: Move these to nested declarations on the
+  // native side.
+  viewConfig.validAttributes.style = ReactNativeStyleAttributes;
+
   if (__DEV__) {
     componentInterface && verifyPropTypes(
       componentInterface,

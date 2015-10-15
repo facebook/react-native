@@ -1,14 +1,44 @@
 #!/usr/bin/env node
 
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// /!\ DO NOT MODIFY THIS FILE /!\
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// react-native-cli is installed globally on people's computers. This means
+// that it is extremely difficult to have them upgrade the version and
+// because there's only one global version installed, it is very prone to
+// breaking changes.
+//
+// The only job of react-native-cli is to init the repository and then
+// forward all the commands to the local version of react-native.
+//
+// If you need to add a new command, please add it to local-cli/.
+//
+// The only reason to modify this file is to add more warnings and
+// troubleshooting information for the `react-native init` command.
+//
+// Do not make breaking changes! We absolutely don't want to have to
+// tell people to update their global version of react-native-cli.
+//
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// /!\ DO NOT MODIFY THIS FILE /!\
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 'use strict';
 
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 var prompt = require('prompt');
 
 var CLI_MODULE_PATH = function() {
@@ -42,10 +72,11 @@ if (cli) {
   switch (args[0]) {
   case 'init':
     if (args[1]) {
-      init(args[1]);
+      var verbose = process.argv.indexOf('--verbose') >= 0;
+      init(args[1], verbose);
     } else {
       console.error(
-        'Usage: react-native init <ProjectName>'
+        'Usage: react-native init <ProjectName> [--verbose]'
       );
       process.exit(1);
     }
@@ -81,17 +112,17 @@ function validatePackageName(name) {
   }
 }
 
-function init(name) {
+function init(name, verbose) {
   validatePackageName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name);
+    createAfterConfirmation(name, verbose);
   } else {
-    createProject(name);
+    createProject(name, verbose);
   }
 }
 
-function createAfterConfirmation(name) {
+function createAfterConfirmation(name, verbose) {
   prompt.start();
 
   var property = {
@@ -104,7 +135,7 @@ function createAfterConfirmation(name) {
 
   prompt.get(property, function (err, result) {
     if (result.yesno[0] === 'y') {
-      createProject(name);
+      createProject(name, verbose);
     } else {
       console.log('Project initialization canceled');
       process.exit();
@@ -112,7 +143,7 @@ function createAfterConfirmation(name) {
   });
 }
 
-function createProject(name) {
+function createProject(name, verbose) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
@@ -137,12 +168,34 @@ function createProject(name) {
   process.chdir(root);
 
   console.log('Installing react-native package from npm...');
+
+  if (verbose) {
+    runVerbose(root, projectName);
+  } else {
+    run(root, projectName);
+  }
+}
+
+function run(root, projectName) {
   exec('npm install --save react-native', function(e, stdout, stderr) {
     if (e) {
       console.log(stdout);
       console.error(stderr);
       console.error('`npm install --save react-native` failed');
       process.exit(1);
+    }
+
+    var cli = require(CLI_MODULE_PATH());
+    cli.init(root, projectName);
+  });
+}
+
+function runVerbose(root, projectName) {
+  var proc = spawn('npm', ['install', '--verbose', '--save', 'react-native'], {stdio: 'inherit'});
+  proc.on('close', function (code) {
+    if (code !== 0) {
+      console.error('`npm install --save react-native` failed');
+      return;
     }
 
     cli = require(CLI_MODULE_PATH());

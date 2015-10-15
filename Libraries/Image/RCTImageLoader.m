@@ -14,6 +14,7 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTImageDownloader.h"
+#import "RCTImageUtils.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -95,10 +96,16 @@ RCT_EXPORT_MODULE()
                                       progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
+  if (imageTag.length == 0) {
+    RCTLogWarn(@"source.uri should not be an empty string <Native>");
+    return ^{};
+  }
+
   NSURL *requestURL = [RCTConvert NSURL:imageTag];
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForRequest:requestURL];
   if (!loadHandler) {
     RCTLogError(@"No suitable image URL loader found for %@", imageTag);
+    return ^{};
   }
 
   return [loadHandler loadImageForURL:requestURL size:size scale:scale resizeMode:resizeMode progressHandler:^(int64_t progress, int64_t total) {
@@ -115,7 +122,7 @@ RCT_EXPORT_MODULE()
     }
   } completionHandler:^(NSError *error, UIImage *image) {
     RCTDispatchCallbackOnMainQueue(completionBlock, error, image);
-  }] ?: ^{};
+  }];
 }
 
 - (id<RCTImageDecoder>)imageDecoderForRequest:(NSData *)imageData
@@ -161,7 +168,7 @@ RCT_EXPORT_MODULE()
     }];
   } else {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      UIImage *image = [UIImage imageWithData:data];
+      UIImage *image = [UIImage imageWithData:data scale:scale];
       if (image) {
         RCTDispatchCallbackOnMainQueue(completionBlock, nil, image);
       } else {

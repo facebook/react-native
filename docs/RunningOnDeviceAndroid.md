@@ -4,7 +4,7 @@ title: Running On Device
 layout: docs
 category: Guides (Android)
 permalink: docs/running-on-device-android.html
-next: activityindicatorios
+next: embedded-app-android
 ---
 
 ## USB Debugging
@@ -17,7 +17,7 @@ You can also iterate quickly on device using the development server. Follow one 
 
 > Hint
 >
-> Most modern android devices don't have a hardware menu button, which we use to trigger developer menu. In that case you can shake the device to open dev menu (reload, debug, etc.)
+> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (reload, debug, etc.)
 
 ### Using adb reverse
 
@@ -32,7 +32,7 @@ Have your device connected via USB with debugging enabled (see paragraph above o
 
 To do that, your laptop and your phone have to be on the same wifi network.
 
-1. Open rage shake menu (shake the device)
+1. Open rage shake menu (shake the device) or run `adb shell input keyevent 82`
 2. Go to `Dev Settings`
 3. Go to `Debug server host for device`
-4. Type in your machine's IP and `Reload JS`
+4. Type in your machine's IP address and the port of the packager and `Reload JS`

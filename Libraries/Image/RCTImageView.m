@@ -22,7 +22,8 @@
  * Determines whether an image of `currentSize` should be reloaded for display
  * at `idealSize`.
  */
-static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize) {
+static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize)
+{
   static const CGFloat upscaleThreshold = 1.2;
   static const CGFloat downscaleThreshold = 0.5;
 
@@ -238,8 +239,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [super didMoveToWindow];
 
   if (!self.window) {
-    [self clearImage];
-  } else if (self.src) {
+    // Don't keep self alive through the asynchronous dispatch, if the intention was to remove the view so it would
+    // deallocate.
+    __weak typeof(self) weakSelf = self;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+      __strong typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+
+      // If we haven't been re-added to a window by this run loop iteration, clear out the image to save memory.
+      if (!strongSelf.window) {
+        [strongSelf clearImage];
+      }
+    });
+  } else if (!self.image && self.src) {
     [self reloadImage];
   }
 }

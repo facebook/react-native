@@ -33,9 +33,9 @@ exports.examples = [
   render: function() {
     return (
       <ScrollView
+        automaticallyAdjustContentInsets={false}
         onScroll={() => { console.log('onScroll!'); }}
         scrollEventThrottle={200}
-        contentInset={{top: -50}}
         style={styles.scrollView}>
         {THUMBS.map(createThumbRow)}
       </ScrollView>
@@ -47,8 +47,8 @@ exports.examples = [
   render: function() {
     return (
       <ScrollView
+        automaticallyAdjustContentInsets={false}
         horizontal={true}
-        contentInset={{top: -50}}
         style={[styles.scrollView, styles.horizontalScrollView]}>
         {THUMBS.map(createThumbRow)}
       </ScrollView>

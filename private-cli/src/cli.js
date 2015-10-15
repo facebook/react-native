@@ -8,12 +8,16 @@
  */
 'use strict';
 
+const bundle = require('./bundle/bundle');
 const Config = require('./util/Config');
 const dependencies = require('./dependencies/dependencies');
 const Promise = require('promise');
+const server = require('./server/server');
 
 const documentedCommands = {
+  bundle: bundle,
   dependencies: dependencies,
+  server: server,
 };
 
 const hiddenCommands = {
@@ -25,7 +29,7 @@ const hiddenCommands = {
  * Programmatic entry point for the cli. This function runs the given
  * command passing it the arguments array.
  */
-function run(command, commandArgs) {
+function run(pwd, command, commandArgs) {
   if (!command) {
     throw new Error(helpMessage());
   }
@@ -36,7 +40,7 @@ function run(command, commandArgs) {
     throw new Error(helpMessage(command));
   }
 
-  commandToExec(commandArgs, Config.get()).done();
+  commandToExec(commandArgs, Config.get(pwd)).done();
 }
 
 function helpMessage(command) {
@@ -59,4 +63,7 @@ function help() {
   return Promise.resolve();
 }
 
-module.exports.run = run;
+module.exports = {
+  commands: documentedCommands,
+  run: run,
+};

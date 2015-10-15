@@ -26,6 +26,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
+import android.os.Debug;
 import android.os.Environment;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WebsocketJavaScriptExecutor;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
+import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
 /**
@@ -77,6 +79,9 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
+
+  private static final int JAVA_SAMPLING_PROFILE_MEMORY_BYTES = 8 * 1024 * 1024;
+  private static final int JAVA_SAMPLING_PROFILE_DELTA_US = 100;
 
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
@@ -150,8 +155,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      CharSequence details = ExceptionFormatterHelper.javaStackTraceToHtml(e.getStackTrace());
-      showNewError(e.getMessage(), details, JAVA_ERROR_COOKIE);
+      showNewError(e.getMessage(), StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE);
     } else {
       if (e instanceof RuntimeException) {
         // Because we are rethrowing the original exception, the original stacktrace will be
@@ -175,7 +179,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   }
 
   public void showNewJSError(String message, ReadableArray details, int errorCookie) {
-    showNewError(message, ExceptionFormatterHelper.jsStackTraceToHtml(details), errorCookie);
+    showNewError(message, StackTraceHelper.convertJsStackTrace(details), errorCookie);
   }
 
   public void updateJSError(
@@ -194,8 +198,9 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                 errorCookie != mRedBoxDialog.getErrorCookie()) {
               return;
             }
-            mRedBoxDialog.setTitle(message);
-            mRedBoxDialog.setDetails(ExceptionFormatterHelper.jsStackTraceToHtml(details));
+            mRedBoxDialog.setExceptionDetails(
+                message,
+                StackTraceHelper.convertJsStackTrace(details));
             mRedBoxDialog.show();
           }
         });
@@ -203,7 +208,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
   private void showNewError(
       final String message,
-      final CharSequence details,
+      final StackFrame[] stack,
       final int errorCookie) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
@@ -218,8 +223,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
               // show the first and most actionable one.
               return;
             }
-            mRedBoxDialog.setTitle(message);
-            mRedBoxDialog.setDetails(details);
+            mRedBoxDialog.setExceptionDetails(message, stack);
             mRedBoxDialog.setErrorCookie(errorCookie);
             mRedBoxDialog.show();
           }
@@ -270,6 +274,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
     if (mCurrentContext != null &&
       mCurrentContext.getCatalystInstance() != null &&
+      !mCurrentContext.getCatalystInstance().isDestroyed() &&
       mCurrentContext.getCatalystInstance().getBridge() != null &&
       mCurrentContext.getCatalystInstance().getBridge().supportsProfiling()) {
       options.put(
@@ -280,11 +285,12 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
             @Override
             public void onOptionSelected() {
               if (mCurrentContext != null && mCurrentContext.hasActiveCatalystInstance()) {
+                String profileName = (Environment.getExternalStorageDirectory().getPath() +
+                    "/profile_" + mProfileIndex + ".json");
                 if (mIsCurrentlyProfiling) {
                   mIsCurrentlyProfiling = false;
-                  String profileName = (Environment.getExternalStorageDirectory().getPath() +
-                      "/profile_" + mProfileIndex + ".json");
                   mProfileIndex++;
+                  Debug.stopMethodTracing();
                   mCurrentContext.getCatalystInstance()
                       .getBridge()
                       .stopProfiler("profile", profileName);
@@ -295,6 +301,10 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                 } else {
                   mIsCurrentlyProfiling = true;
                   mCurrentContext.getCatalystInstance().getBridge().startProfiler("profile");
+                  Debug.startMethodTracingSampling(
+                      profileName,
+                      JAVA_SAMPLING_PROFILE_MEMORY_BYTES,
+                      JAVA_SAMPLING_PROFILE_DELTA_US);
                 }
               }
             }
@@ -435,6 +445,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
       String profileName = (Environment.getExternalStorageDirectory().getPath() +
           "/profile_" + mProfileIndex + ".json");
       mProfileIndex++;
+      Debug.stopMethodTracing();
       mCurrentContext.getCatalystInstance().getBridge().stopProfiler("profile", profileName);
     }
 
@@ -509,7 +520,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                   public void run() {
                     showNewError(
                         mApplicationContext.getString(R.string.catalyst_remotedbg_error),
-                        ExceptionFormatterHelper.javaStackTraceToHtml(cause.getStackTrace()),
+                        StackTraceHelper.convertJavaStackTrace(cause),
                         JAVA_ERROR_COOKIE);
                   }
                 });
@@ -544,13 +555,12 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                       DebugServerException debugServerException = (DebugServerException) cause;
                       showNewError(
                           debugServerException.description,
-                          ExceptionFormatterHelper.debugServerExcStackTraceToHtml(
-                              (DebugServerException) cause),
+                          StackTraceHelper.convertJavaStackTrace(cause),
                           JAVA_ERROR_COOKIE);
                     } else {
                       showNewError(
                           mApplicationContext.getString(R.string.catalyst_jsload_error),
-                          ExceptionFormatterHelper.javaStackTraceToHtml(cause.getStackTrace()),
+                          StackTraceHelper.convertJavaStackTrace(cause),
                           JAVA_ERROR_COOKIE);
                     }
                   }

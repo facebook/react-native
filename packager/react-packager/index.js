@@ -8,9 +8,7 @@
  */
 'use strict';
 
-require('babel-core/register')({
-  only: /react-packager\/src/
-});
+require('../babelRegisterOnly')([/react-packager\/src/]);
 
 useGracefulFs();
 
@@ -47,9 +45,9 @@ exports.buildBundleFromUrl = function(options, reqUrl) {
     });
 };
 
-exports.getDependencies = function(options, main) {
+exports.getDependencies = function(options, bundleOptions) {
   var server = createServer(options);
-  return server.getDependencies(main)
+  return server.getDependencies(bundleOptions)
     .then(function(r) {
       server.end();
       return r.dependencies;

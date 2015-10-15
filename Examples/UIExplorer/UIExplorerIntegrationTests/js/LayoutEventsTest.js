@@ -25,7 +25,7 @@ var TestModule = NativeModules.TestModule;
 var deepDiffer = require('deepDiffer');
 
 function debug() {
-  //console.log.apply(null, arguments);
+  // console.log.apply(null, arguments);
 }
 
 type LayoutEvent = {
@@ -46,22 +46,25 @@ var LayoutEventsTest = React.createClass({
     };
   },
   animateViewLayout: function() {
+    debug('animateViewLayout invoked');
     LayoutAnimation.configureNext(
       LayoutAnimation.Presets.spring,
       () => {
-        debug('layout animation done.');
+        debug('animateViewLayout done');
         this.checkLayout(this.addWrapText);
       }
     );
     this.setState({viewStyle: {margin: 60}});
   },
   addWrapText: function() {
+    debug('addWrapText invoked');
     this.setState(
       {extraText: '  And a bunch more text to wrap around a few lines.'},
       () => this.checkLayout(this.changeContainer)
     );
   },
   changeContainer: function() {
+    debug('changeContainer invoked');
     this.setState(
       {containerStyle: {width: 280}},
       () => this.checkLayout(TestModule.markTestCompleted)
@@ -113,6 +116,7 @@ var LayoutEventsTest = React.createClass({
     var viewStyle = [styles.view, this.state.viewStyle];
     var textLayout = this.state.textLayout || {width: '?', height: '?'};
     var imageLayout = this.state.imageLayout || {x: '?', y: '?'};
+    debug('viewLayout', this.state.viewLayout);
     return (
       <View style={[styles.container, this.state.containerStyle]}>
         <View ref="view" onLayout={this.onViewLayout} style={viewStyle}>
@@ -122,9 +126,6 @@ var LayoutEventsTest = React.createClass({
             style={styles.image}
             source={{uri: 'uie_thumb_big.png'}}
           />
-          <Text>
-            ViewLayout: {JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}
-          </Text>
           <Text ref="txt" onLayout={this.onTextLayout} style={styles.text}>
             A simple piece of text.{this.state.extraText}
           </Text>

@@ -36,11 +36,12 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  // Have to exclude 'file://' from the main bundle, otherwise this would conflict with RCTAssetBundleImageLoader
-  return
-    [requestURL.scheme compare:@"http" options:NSCaseInsensitiveSearch range:NSMakeRange(0, 4)] == NSOrderedSame ||
-    ([requestURL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame && ![requestURL.path hasPrefix:[NSBundle mainBundle].resourcePath]) ||
-    [requestURL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame;
+  static NSSet *schemes = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    schemes = [[NSSet alloc] initWithObjects:@"http", @"https", @"file", @"data", nil];
+  });
+  return [schemes containsObject:requestURL.scheme.lowercaseString];
 }
 
 /**
@@ -85,7 +86,7 @@ RCT_EXPORT_MODULE()
   }
 
   RCTDownloadTask *task = [_bridge.networking downloadTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-    if (response && !error) {
+    if (response && !error && [response.URL.scheme hasPrefix:@"http"]) {
       RCTImageDownloader *strongSelf = weakSelf;
       NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data userInfo:nil storagePolicy:NSURLCacheStorageAllowed];
       [strongSelf->_cache storeCachedResponse:cachedResponse forRequest:request];
@@ -105,8 +106,14 @@ RCT_EXPORT_MODULE()
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  if ([imageURL.scheme.lowercaseString hasPrefix:@"http"]) {
+  if ([imageURL.scheme.lowercaseString hasPrefix:@"http"] ||
+      [imageURL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame) {
     __block RCTImageLoaderCancellationBlock decodeCancel = nil;
+
+    // Add missing png extension
+    if (imageURL.fileURL && imageURL.pathExtension.length == 0) {
+      imageURL = [NSURL fileURLWithPath:[imageURL.path stringByAppendingPathExtension:@"png"]];
+    }
 
     __weak RCTImageDownloader *weakSelf = self;
     RCTImageLoaderCancellationBlock downloadCancel = [self downloadDataForURL:imageURL progressHandler:progressHandler completionHandler:^(NSError *error, NSData *imageData) {
@@ -134,7 +141,7 @@ RCT_EXPORT_MODULE()
       // Normally -dataWithContentsOfURL: would be bad but this is a data URL.
       NSData *data = [NSData dataWithContentsOfURL:imageURL];
 
-      UIImage *image = [UIImage imageWithData:data];
+      UIImage *image = [UIImage imageWithData:data scale:scale];
       if (image) {
         if (progressHandler) {
           progressHandler(1, 1);
@@ -145,31 +152,6 @@ RCT_EXPORT_MODULE()
       } else {
         if (completionHandler) {
           NSString *message = [NSString stringWithFormat:@"Invalid image data for URL: %@", imageURL];
-          completionHandler(RCTErrorWithMessage(message), nil);
-        }
-      }
-    });
-    return ^{
-      cancelled = YES;
-    };
-  } else if ([imageURL.scheme isEqualToString:@"file"]) {
-    __block BOOL cancelled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      if (cancelled) {
-        return;
-      }
-
-      UIImage *image = [UIImage imageWithContentsOfFile:imageURL.resourceSpecifier];
-      if (image) {
-        if (progressHandler) {
-          progressHandler(1, 1);
-        }
-        if (completionHandler) {
-          completionHandler(nil, image);
-        }
-      } else {
-        if (completionHandler) {
-          NSString *message = [NSString stringWithFormat:@"Could not find image at path: %@", imageURL.absoluteString];
           completionHandler(RCTErrorWithMessage(message), nil);
         }
       }

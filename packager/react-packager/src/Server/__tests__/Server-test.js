@@ -96,7 +96,7 @@ describe('processRequest', () => {
       requestHandler,
       'mybundle.map?runModule=true'
     ).then(response =>
-      expect(response).toEqual('"this is the source map"')
+      expect(response).toEqual('this is the source map')
     );
   });
 

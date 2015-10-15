@@ -11,6 +11,8 @@
  */
 'use strict';
 
+var tinycolor = require('tinycolor');
+
 // TODO(#7644673): fix this hack once github jest actually checks invariants
 var invariant = function(condition, message) {
   if (!condition) {
@@ -22,7 +24,6 @@ var invariant = function(condition, message) {
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
-// $FlowFixMe D2163827
 export type InterpolationConfigType = {
   inputRange: Array<number>;
   outputRange: (Array<number> | Array<string>);
@@ -163,6 +164,18 @@ function interpolate(
   return result;
 }
 
+function colorToRgba(
+  input: string
+): string {
+  var color = tinycolor(input);
+  if (color.isValid()) {
+    var {r, g, b, a} = color.toRgb();
+    return `rgba(${r}, ${g}, ${b}, ${a === undefined ? 1 : a})`;
+  } else {
+    return input;
+  }
+}
+
 var stringShapeRegex = /[0-9\.-]+/g;
 
 /**
@@ -178,6 +191,7 @@ function createInterpolationFromStringOutputRange(
 ): (input: number) => string {
   var outputRange: Array<string> = (config.outputRange: any);
   invariant(outputRange.length >= 2, 'Bad output range');
+  outputRange = outputRange.map(colorToRgba);
   checkPattern(outputRange);
 
   // ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.5)']

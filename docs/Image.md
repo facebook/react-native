@@ -27,6 +27,10 @@ When your entire codebase respects this convention, you're able to do interestin
 
 *This process is currently being improved, a much better workflow will be available shortly.*
 
+> **NOTE**: PNG images are required when loading with `require('image!my-icon')`
+>
+> At this time, only PNG images are supported in iOS. There is an [issue](https://github.com/facebook/react-native/issues/646) that is currently addressing this bug. In the meantime a quick fix is to rename your files to my-icon.png or to use the `uri` property like: `source={{ uri: 'my-icon' }}` instead of `require()`.
+
 ### Adding Static Resources to your Android app
 
 Add your images as [bitmap drawables](http://developer.android.com/guide/topics/resources/drawable-resource.html#Bitmap) to the android project (`<yourapp>/android/app/src/main/res`). To provide different resolutions of your assets, check out [using configuration qualifiers](http://developer.android.com/guide/practices/screens_support.html#qualifiers). Normally, you will want to put your assets in the following directories (create them under `res` if they don't exist):
