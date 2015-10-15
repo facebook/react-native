@@ -239,6 +239,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.6.1'
     compile 'com.facebook.fresco:imagepipeline-okhttp:0.6.1'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
