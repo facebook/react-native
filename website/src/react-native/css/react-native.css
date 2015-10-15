@@ -903,11 +903,13 @@ small code, li code, p code {
   cursor: pointer;
   text-align: center;
 }
-  .modal-button-open-img {
-    background: #05A5D1;
-    height: 358px;
-  }
-  .modal-button-open-img:hover img { opacity: 0.90; }
+
+.modal-button-open-img {
+  background: #05A5D1;
+  height: 358px;
+}
+
+.modal-button-open-img:hover img { opacity: 0.9; }
 
 .modal-button-close {
   background: transparent;
@@ -923,12 +925,13 @@ small code, li code, p code {
   right: 0;
   top: 0;
 }
-  .modal-button-close:active,
-  .modal-button-close:focus,
-  .modal-button-close:hover {
-    background: #EAF8FD;
-    outline: none;
-  }
+
+.modal-button-close:active,
+.modal-button-close:focus,
+.modal-button-close:hover {
+  background: #EAF8FD;
+  outline: none;
+}
 
 @media screen and (max-width: 960px) {
   .nav-main {
