@@ -84,6 +84,8 @@ public class NativeModuleRegistry {
 
   /* package */ void notifyCatalystInstanceInitialized() {
     UiThreadUtil.assertOnUiThread();
+
+    ReactMarker.logMarker("NativeModule_start");
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "NativeModuleRegistry_notifyCatalystInstanceInitialized");
@@ -93,6 +95,7 @@ public class NativeModuleRegistry {
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker("NativeModule_end");
     }
   }
 
