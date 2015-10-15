@@ -8,12 +8,16 @@
 
   function init() {
     var backdrop = document.querySelector('.modal-backdrop');
-    var modalButtonOpen = document.querySelector('.modal-button-open');
+    var modalButtonOpenList = document.querySelectorAll('.modal-button-open');
     var modalButtonClose = document.querySelector('.modal-button-close');
 
     backdrop.addEventListener('click', hideModal);
-    modalButtonOpen.addEventListener('click', showModal);
     modalButtonClose.addEventListener('click', hideModal);
+
+    // Bind event to NodeList items
+    for (var i = 0; i < modalButtonOpenList.length; ++i) {
+      modalButtonOpenList[i].addEventListener('click', showModal);
+    }
   }
 
   function showModal(e) {

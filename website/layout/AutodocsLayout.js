@@ -470,9 +470,9 @@ var EmbeddedSimulator = React.createClass({
 
     return (
       <div className="column-left">
-        <p><strong>Run this example</strong></p>
-        <div className="modal-button-open">
-          <img src="/react-native/img/alertIOS.png" />
+        <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
+        <div className="modal-button-open modal-button-open-img">
+          <img alt="Run example in simulator" width="170" height="358" src="/react-native/img/alertIOS.png" />
         </div>
         <Modal />
       </div>
@@ -492,7 +492,8 @@ var Modal = React.createClass({
           <div className="modal-content">
             <button className="modal-button-close">&times;</button>
             <div className="center">
-              <iframe className="simulator" src={url} width="274" height="550" frameborder="0" scrolling="no"></iframe>
+              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no"></iframe>
+              <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
             </div>
           </div>
         </div>
