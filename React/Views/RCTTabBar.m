@@ -138,6 +138,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _tabController.tabBar.isTranslucent;
 }
 
+- (void)setBarOpacityLevel:(NSString *)opacityLevel
+{
+  if ([opacityLevel isEqualToString:@"opaque"]) {
+    _tabController.tabBar.translucent = NO;
+    [self resetBarBackgroundImage];
+  } else if ([opacityLevel isEqualToString:@"translucent"]) {
+    _tabController.tabBar.translucent = YES;
+    [self resetBarBackgroundImage];
+  } else if ([opacityLevel isEqualToString:@"transparent"]) {
+    _tabController.tabBar.backgroundImage = [UIImage new];
+  }
+}
+
+- (void)resetBarBackgroundImage
+{
+  if (_tabController.tabBar.backgroundImage) {
+    _tabController.tabBar.backgroundImage = nil;
+  }
+}
+
+
 - (void)setTranslucent:(BOOL)translucent {
   _tabController.tabBar.translucent = translucent;
 }
