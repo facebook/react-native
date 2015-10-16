@@ -626,7 +626,7 @@ describe('HasteDependencyResolver', function() {
         code
       ).then(processedCode => {
         expect(processedCode).toEqual([
-          '__d(\'test module\',["changed","Y"],function(global, require,' +
+          '__d(\'test module\',function(global, require,' +
             ' module, exports) {  ' +
             // single line import
             "import'x';",
