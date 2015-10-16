@@ -29,6 +29,9 @@ class WebSocket extends WebSocketBase {
   _socketId: number;
   _subs: any;
 
+  constructor(url: string, protocols: ?any) {
+    super(url, protocols);
+  }
   connectToSocketImpl(url: string): void {
     this._socketId = WebSocketId++;
 
