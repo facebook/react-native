@@ -149,6 +149,7 @@ HasteDependencyResolver.prototype.wrapModule = function(resolutionResponse, modu
       return module.getName().then(
         name => defineModuleCode({
           code: code.replace(replacePatterns.IMPORT_RE, relativizeCode)
+                    .replace(replacePatterns.EXPORT_RE, relativizeCode)
                     .replace(replacePatterns.REQUIRE_RE, relativizeCode),
           moduleName: name,
         })
