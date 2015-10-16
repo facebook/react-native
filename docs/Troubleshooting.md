@@ -51,6 +51,13 @@ brew uninstall watchman
 brew install --HEAD watchman
 ```
 
+Another workaround is to initiate a source control repository. Watchman is looking for one of .git, .hg, .svn files, so initiating a Git, Mercurial, or Subversion repository does the job.
+
+```
+// Initiate a Git repository
+git init
+```
+
 ## NPM locking error
 
 If in the `react-native init <project>` phase you saw npm fail with "npm WARN locking Error: EACCES" then try the following:
