@@ -40,7 +40,7 @@
    *
    * $ react-native bundle --minify
    *
-   * see http://facebook.github.io/react-native/docs/runningondevice.html
+   * see http://facebook.github.io/react-native/docs/running-on-device-ios.html
    */
 
 //   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];

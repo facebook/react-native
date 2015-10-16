@@ -3,6 +3,6 @@
 //
 // $ react-native bundle --minify
 //
-// See http://facebook.github.io/react-native/docs/runningondevice.html for more details.
+// See http://facebook.github.io/react-native/docs/running-on-device-ios.html for more details.
 
 throw new Error('Offline JS file is empty. See iOS/main.jsbundle for instructions');
