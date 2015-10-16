@@ -8,6 +8,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * Static class that allows markers to be placed in React code and responded to in a
  * configurable way
  */
+@DoNotStrip
 public class ReactMarker {
 
   public interface MarkerListener {
