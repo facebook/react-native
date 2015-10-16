@@ -55,7 +55,7 @@ var RecyclerViewBackedScrollView = React.createClass({
     ...ScrollView.propTypes,
   },
 
-  mixins: [ScrollResponder.Mixin, NativeMethodsMixin],
+  mixins: [ScrollResponder.Mixin],
 
   getInitialState: function() {
     return this.scrollResponderMixinGetInitialState();
@@ -67,6 +67,10 @@ var RecyclerViewBackedScrollView = React.createClass({
 
   getInnerViewNode: function(): any {
     return React.findNodeHandle(this.refs[INNERVIEW]);
+  },
+
+  setNativeProps: function(props: Object) {
+    this.refs[INNERVIEW].setNativeProps(props);
   },
 
   render: function() {
