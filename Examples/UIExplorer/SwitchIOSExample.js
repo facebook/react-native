@@ -107,7 +107,7 @@ var EventSwitchExample = React.createClass({
             onValueChange={(value) => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn} />
-            <Text>{this.state.eventSwitchIsOn ? "On" : "Off"}</Text>
+            <Text>{this.state.eventSwitchIsOn ? 'On' : 'Off'}</Text>
         </View>
         <View>
           <SwitchIOS
@@ -118,7 +118,7 @@ var EventSwitchExample = React.createClass({
             onValueChange={(value) => this.setState({eventSwitchRegressionIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchRegressionIsOn} />
-          <Text>{this.state.eventSwitchRegressionIsOn ? "On" : "Off"}</Text>
+          <Text>{this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}</Text>
         </View>
       </View>
     );
