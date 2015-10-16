@@ -46,7 +46,7 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 /**
  * Runs an application script, and notifies of the script load being complete via `onComplete`.
  */
-- (void)executeApplicationScript:(NSString *)script
+- (void)executeApplicationScript:(NSData *)script
                        sourceURL:(NSURL *)sourceURL
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete;
 

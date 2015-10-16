@@ -36,8 +36,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     NSString *filePath = scriptURL.path;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSError *error = nil;
-      NSString *rawText = [NSString stringWithContentsOfFile:filePath usedEncoding:NULL error:&error];
-      onComplete(error, rawText);
+      NSData *source = [NSData dataWithContentsOfFile:filePath
+                                              options:NSDataReadingMappedIfSafe
+                                                error:&error];
+      onComplete(error, source);
     });
     return;
   }
@@ -71,10 +73,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
       }
     }
-    NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
 
     // Handle HTTP errors
     if ([response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode != 200) {
+      NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
       NSDictionary *userInfo;
       NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
       if ([errorDetails isKindOfClass:[NSDictionary class]] &&
@@ -101,7 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       onComplete(error, nil);
       return;
     }
-    onComplete(nil, rawText);
+    onComplete(nil, data);
   }];
 
   [task resume];
