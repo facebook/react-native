@@ -111,21 +111,8 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
      setNavigationBarHidden:_navItem.navigationBarHidden
      animated:animated];
 
-    UINavigationBar *bar = self.navigationController.navigationBar;
-    bar.barTintColor = _navItem.barTintColor;
-    bar.tintColor = _navItem.tintColor;
-    bar.translucent = _navItem.translucent;
-    bar.titleTextAttributes = _navItem.titleTextColor ? @{
-      NSForegroundColorAttributeName: _navItem.titleTextColor
-    } : nil;
-
-    RCTFindNavBarShadowViewInView(bar).hidden = _navItem.shadowHidden;
-
-    UINavigationItem *item = self.navigationItem;
-    item.title = _navItem.title;
-    item.backBarButtonItem = _navItem.backButtonItem;
-    item.leftBarButtonItem = _navItem.leftButtonItem;
-    item.rightBarButtonItem = _navItem.rightButtonItem;
+    _navItem.navigationItem = self.navigationItem;
+    _navItem.navigationBar = self.navigationController.navigationBar;
   }
 }
 
