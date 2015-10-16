@@ -12,6 +12,8 @@ var ScrollView = require('ScrollView');
 
 var requireNativeComponent = require('requireNativeComponent');
 
+var INNERVIEW = 'InnerView';
+
 /**
  * Wrapper around android native recycler view.
  *
@@ -63,6 +65,10 @@ var RecyclerViewBackedScrollView = React.createClass({
     return this;
   },
 
+  getInnerViewNode: function(): any {
+    return React.findNodeHandle(this.refs[INNERVIEW]);
+  },
+
   render: function() {
     var props = {
       ...this.props,
@@ -81,6 +87,7 @@ var RecyclerViewBackedScrollView = React.createClass({
       onResponderReject: this.scrollResponderHandleResponderReject,
       onScroll: this.scrollResponderHandleScroll,
       style: ([{flex: 1}, this.props.style]: ?Array<any>),
+      ref: INNERVIEW,
     };
     return (
       <NativeAndroidRecyclerView {...props}/>
