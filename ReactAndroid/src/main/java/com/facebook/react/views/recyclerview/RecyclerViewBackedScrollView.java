@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ScrollEvent;
@@ -31,7 +32,8 @@ import com.facebook.react.views.scroll.ScrollEvent;
  * It works by storing all child views in an array within adapter and binding appropriate views to
  * rows when requested.
  */
-/*package*/ class RecyclerViewBackedScrollView extends RecyclerView {
+@VisibleForTesting
+public class RecyclerViewBackedScrollView extends RecyclerView {
 
   /**
    * Simple implementation of {@link ViewHolder} as it's an abstract class. The only thing we need
