@@ -14,10 +14,6 @@ var config = {
 
   getBlacklistRE(platform) {
     return blacklist(platform);
-  },
-
-  getTransformModulePath() {
-    return require.resolve('./node_modules/react-native/packager/transformer');
   }
 };
 
