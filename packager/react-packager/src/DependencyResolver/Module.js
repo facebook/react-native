@@ -159,10 +159,14 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
       deps.sync.push(dep);
       return match;
     })
+    .replace(replacePatterns.EXPORT_RE, (match, pre, quot, dep, post) => {
+      deps.sync.push(dep);
+      return match;
+    })
     // Parse the sync dependencies this module has. When the module is
     // required, all it's sync dependencies will be loaded into memory.
     // Sync dependencies can be defined either using `require` or the ES6
-    // `import` syntax:
+    // `import` or `export` syntaxes:
     //   var dep1 = require('dep1');
     .replace(replacePatterns.REQUIRE_RE, (match, pre, quot, dep, post) => {
       deps.sync.push(dep);
