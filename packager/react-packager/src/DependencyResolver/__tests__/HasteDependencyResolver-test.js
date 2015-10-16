@@ -628,8 +628,8 @@ describe('HasteDependencyResolver', function() {
         expect(processedCode).toEqual([
           '__d(\'test module\',["changed","Y"],function(global, require,' +
             ' module, exports) {  ' +
-          // single line import
-          "import'x';",
+            // single line import
+            "import'x';",
           "import 'changed';",
           "import 'changed' ;",
           "import Default from 'changed';",
