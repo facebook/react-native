@@ -9,13 +9,14 @@ var Config = require('../private-cli/src/util/Config');
 var fs = require('fs');
 var generate = require('../private-cli/src/generate/generate');
 var init = require('./init.js');
-var newLibrary = require('./new-library.js');
+var library = require('../private-cli/src/library/library');
 var runAndroid = require('./run-android.js');
 var runPackager = require('./run-packager.js');
 
 // TODO: remove once we fully roll out the `private-cli` based cli
 // var bundle_DEPRECATED = require('./bundle.js');
 // var generateAndroid_DEPRECATED = require('./generate-android.js');
+// var newLibrary_DEPRECATED = require('./new-library.js');
 
 function printUsage() {
   console.log([
@@ -55,7 +56,8 @@ function run() {
     // bundle_DEPRECATED.init(args);
     break;
   case 'new-library':
-    newLibrary.init(args);
+    library(args, config).done();
+    // newLibrary_DEPRECATED.init(args);
     break;
   case 'init':
     printInitWarning();
