@@ -39,6 +39,11 @@ function _dependencies(argv, config, resolve, reject) {
       command: 'platform',
       description: 'The platform extension used for selecting modules',
       type: 'string',
+    }, {
+      command: 'transformer',
+      type: 'string',
+      default: require.resolve('../../../packager/transformer'),
+      description: 'Specify a custom transformer to be used (absolute path)'
     }
   ], argv);
 
@@ -51,7 +56,7 @@ function _dependencies(argv, config, resolve, reject) {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
-    transformModulePath: config.getTransformModulePath(),
+    transformModulePath: args.transformer,
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>
