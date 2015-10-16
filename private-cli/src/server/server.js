@@ -139,6 +139,7 @@ function startServer(args, config) {
   );
 
   webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
+  webSocketProxy.attachToServer(serverInstance, '/devtools');
 }
 
 function argToArray(arg) {
