@@ -48,7 +48,7 @@ function _server(argv, config, resolve, reject) {
   }, {
     command: 'transformer',
     type: 'string',
-    default: config.getTransformModulePath(),
+    default: require.resolve('../../../packager/transformer'),
     description: 'Specify a custom transformer to be used (absolute path)'
   }, {
     command: 'resetCache',

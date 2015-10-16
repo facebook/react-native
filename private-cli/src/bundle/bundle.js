@@ -37,6 +37,11 @@ function _bundle(argv, config, resolve, reject) {
       type: 'string',
       required: true,
     }, {
+      command: 'transformer',
+      description: 'Specify a custom transformer to be used (absolute path)',
+      type: 'string',
+      default: require.resolve('../../../packager/transformer'),
+    }, {
       command: 'dev',
       description: 'If false, warnings are disabled and the bundle is minified',
       default: true,
@@ -64,7 +69,7 @@ function _bundle(argv, config, resolve, reject) {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
-    transformModulePath: config.getTransformModulePath(),
+    transformModulePath: args.transformer,
   };
 
   const requestOpts = {
