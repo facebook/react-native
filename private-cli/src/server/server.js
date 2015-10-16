@@ -130,7 +130,7 @@ function _server(argv, config, resolve, reject) {
     );
   }
 
-  resolve(startServer(args, config));
+  startServer(args, config);
 }
 
 function startServer(args, config) {
