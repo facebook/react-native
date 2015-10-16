@@ -11,12 +11,13 @@ var generate = require('../private-cli/src/generate/generate');
 var init = require('./init.js');
 var library = require('../private-cli/src/library/library');
 var runAndroid = require('./run-android.js');
-var runPackager = require('./run-packager.js');
+var server = require('../private-cli/src/server/server');
 
 // TODO: remove once we fully roll out the `private-cli` based cli
 // var bundle_DEPRECATED = require('./bundle.js');
 // var generateAndroid_DEPRECATED = require('./generate-android.js');
 // var newLibrary_DEPRECATED = require('./new-library.js');
+// var runPackager_DEPRECATED = require('./run-packager.js');
 
 function printUsage() {
   console.log([
@@ -46,10 +47,10 @@ function run() {
   }
 
   var config = Config.get(__dirname);
-
   switch (args[0]) {
   case 'start':
-    runPackager();
+    server(args, config).done();
+    // runPackager_DEPRECATED();
     break;
   case 'bundle':
     bundle(args, config).done();
