@@ -50,12 +50,16 @@
     }
 
     try {
+      // We must optimistically mark mod as initialized before running the factory to keep any
+      // require cycles inside the factory from causing an infinite require loop.
+      mod.isInitialized = true;
+
       // keep args in sync with with defineModuleCode in
       // packager/react-packager/src/DependencyResolver/index.js
       mod.factory.call(global, global, require, mod.module, mod.module.exports);
-      mod.isInitialized = true;
     } catch (e) {
       mod.hasError = true;
+      mod.isInitialized = false;
       throw e;
     }
 
