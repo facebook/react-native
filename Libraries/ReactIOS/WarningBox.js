@@ -135,12 +135,12 @@ var WarningRow = React.createClass({
     });
     this.panGesture = PanResponder.create({
       onStartShouldSetPanResponder: () => {
-        return !! this.dismissalSpring.getCurrentValue();
+        return !!this.dismissalSpring.getCurrentValue();
       },
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
         this.isResponderOnlyToBlockTouches =
-          !! this.dismissalSpring.getCurrentValue();
+          !!this.dismissalSpring.getCurrentValue();
       },
       onPanResponderMove: (e, gestureState) => {
         if (this.isResponderOnlyToBlockTouches) {

@@ -56,7 +56,7 @@ var SwitchAndroidExample = React.createClass({
             onValueChange={(value) => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn} />
-          <Text>{this.state.eventSwitchIsOn ? "On" : "Off"}</Text>
+          <Text>{this.state.eventSwitchIsOn ? 'On' : 'Off'}</Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="Switches are controlled components">
           <SwitchAndroid />

@@ -23,7 +23,6 @@ var {
   ProgressBarAndroid,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } = React;
 var TimerMixin = require('react-timer-mixin');
@@ -271,7 +270,7 @@ var SearchScreen = React.createClass({
         style = [style, styles.rowSeparatorHide];
     }
     return (
-      <View key={"SEP_" + sectionID + "_" + rowID}  style={style}/>
+      <View key={'SEP_' + sectionID + '_' + rowID}  style={style}/>
     );
   },
 
