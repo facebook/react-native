@@ -27,6 +27,7 @@
 'use strict';
 
 var NavigationEventEmitter = require('NavigationEventEmitter');
+var NavigationTreeNode = require('NavigationTreeNode');
 
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
@@ -38,20 +39,34 @@ import type * as EventSubscription from 'EventSubscription';
  * Class that contains the info and methods for app navigation.
  */
 class NavigationContext {
+  __node: NavigationTreeNode;
   _eventEmitter: ?NavigationEventEmitter;
   _currentRoute: any;
 
   constructor() {
     this._eventEmitter = new NavigationEventEmitter(this);
     this._currentRoute = null;
+
+    // Sets the protected property `__node`.
+    this.__node = new NavigationTreeNode(this);
+
     this.addListener('willfocus', this._onFocus, this);
     this.addListener('didfocus', this._onFocus, this);
   }
 
-  // TODO: @flow does not like this getter. Will add @flow check back once
-  // getter/setter is supported.
+  /* $FlowFixMe - get/set properties not yet supported */
+  get parent(): ?NavigationContext {
+    var parent = this.__node.getParent();
+    return parent ? parent.getValue() : null;
+  }
+
+  /* $FlowFixMe - get/set properties not yet supported */
   get currentRoute(): any {
     return this._currentRoute;
+  }
+
+  appendChild(childContext: NavigationContext): void {
+    this.__node.appendChild(childContext.__node);
   }
 
   addListener(

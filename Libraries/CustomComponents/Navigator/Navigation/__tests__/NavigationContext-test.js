@@ -25,14 +25,8 @@
 'use strict';
 
 jest
-  .dontMock('EmitterSubscription')
-  .dontMock('EventSubscription')
-  .dontMock('EventEmitter')
-  .dontMock('EventSubscriptionVendor')
-  .dontMock('NavigationContext')
-  .dontMock('NavigationEvent')
-  .dontMock('NavigationEventEmitter')
-  .dontMock('invariant');
+  .autoMockOff()
+  .mock('ErrorUtils');
 
 var NavigationContext = require('NavigationContext');
 
@@ -47,6 +41,11 @@ describe('NavigationContext', () => {
     context.emit('didfocus', {route: {name: 'a'}});
     expect(context.currentRoute.name).toEqual('a');
   });
+
+  it('has parent', () => {
+    var parent = new NavigationContext();
+    var child = new NavigationContext();
+    parent.appendChild(child);
+    expect(child.parent).toBe(parent);
+  });
 });
-
-
