@@ -213,6 +213,7 @@ var components = [
   '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
+  '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
   '../Libraries/Components/WebView/WebView.ios.js',
 ];
 
