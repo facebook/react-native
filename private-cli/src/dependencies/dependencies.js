@@ -39,11 +39,6 @@ function _dependencies(argv, config, resolve, reject) {
       command: 'platform',
       description: 'The platform extension used for selecting modules',
       type: 'string',
-    }, {
-      command: 'transformer',
-      type: 'string',
-      default: require.resolve('../../../packager/transformer'),
-      description: 'Specify a custom transformer to be used (absolute path)'
     }
   ], argv);
 
@@ -56,7 +51,7 @@ function _dependencies(argv, config, resolve, reject) {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
-    transformModulePath: args.transformer,
+    transformModulePath: config.getTransformModulePath(),
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>
@@ -76,14 +71,13 @@ function _dependencies(argv, config, resolve, reject) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
-  // TODO: allow to configure which logging namespaces should get logged
-  // log('Running ReactPackager');
-  // log('Waiting for the packager.');
+  log('Running ReactPackager');
+  log('Waiting for the packager.');
   resolve(ReactPackager.createClientFor(packageOpts).then(client => {
-    // log('Packager client was created');
+    log('Packager client was created');
     return client.getOrderedDependencyPaths(options)
       .then(deps => {
-        // log('Packager returned dependencies');
+        log('Packager returned dependencies');
         client.close();
 
         deps.forEach(modulePath => {
@@ -100,7 +94,7 @@ function _dependencies(argv, config, resolve, reject) {
           }
         });
         writeToFile && outStream.end();
-        // log('Wrote dependencies to output file');
+        log('Wrote dependencies to output file');
       });
   }));
 }

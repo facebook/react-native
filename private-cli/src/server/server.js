@@ -48,7 +48,7 @@ function _server(argv, config, resolve, reject) {
   }, {
     command: 'transformer',
     type: 'string',
-    default: require.resolve('../../../packager/transformer'),
+    default: config.getTransformModulePath(),
     description: 'Specify a custom transformer to be used (absolute path)'
   }, {
     command: 'resetCache',
@@ -130,7 +130,7 @@ function _server(argv, config, resolve, reject) {
     );
   }
 
-  startServer(args, config);
+  resolve(startServer(args, config));
 }
 
 function startServer(args, config) {
@@ -139,7 +139,6 @@ function startServer(args, config) {
   );
 
   webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
-  webSocketProxy.attachToServer(serverInstance, '/devtools');
 }
 
 function argToArray(arg) {

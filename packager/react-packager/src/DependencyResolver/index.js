@@ -149,8 +149,8 @@ HasteDependencyResolver.prototype.wrapModule = function(resolutionResponse, modu
       return module.getName().then(
         name => defineModuleCode({
           code: code.replace(replacePatterns.IMPORT_RE, relativizeCode)
-                    .replace(replacePatterns.EXPORT_RE, relativizeCode)
                     .replace(replacePatterns.REQUIRE_RE, relativizeCode),
+          deps: JSON.stringify(resolvedDepsArr),
           moduleName: name,
         })
       );
@@ -162,10 +162,11 @@ HasteDependencyResolver.prototype.getDebugInfo = function() {
   return this._depGraph.getDebugInfo();
 };
 
-function defineModuleCode({moduleName, code}) {
+function defineModuleCode({moduleName, code, deps}) {
   return [
     `__d(`,
     `'${moduleName}',`,
+    `${deps},`,
     'function(global, require, module, exports) {',
     `  ${code}`,
     '\n});',

@@ -21,6 +21,10 @@ module.exports = {
     return blacklist('');
   },
 
+  getTransformModulePath() {
+    return require.resolve('./transformer');
+  },
+
   _getRoots() {
     // match on either path separator
     if (__dirname.match(/node_modules[\/\\]react-native[\/\\]packager$/)) {

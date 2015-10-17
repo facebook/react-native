@@ -47,13 +47,6 @@ var TransformPropTypes = {
     ])
   ),
   transformMatrix: TransformMatrixPropType,
-
-  /* Deprecated transform props used on Android only */
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  rotation: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
 };
 
 module.exports = TransformPropTypes;
