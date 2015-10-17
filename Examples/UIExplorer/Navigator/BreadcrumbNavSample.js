@@ -21,8 +21,7 @@ var {
   ScrollView,
   Text,
   TouchableHighlight,
-  TouchableOpacity,
-  View,
+  TouchableOpacity
 } = React;
 
 var _getRandomRoute = function() {
@@ -82,19 +81,19 @@ var BreadcrumbNavSample = React.createClass({
     return (
       <ScrollView style={styles.scene}>
         <NavButton
-          onPress={() => { navigator.push(_getRandomRoute()) }}
+          onPress={() => { navigator.push(_getRandomRoute()); }}
           text="Push"
         />
         <NavButton
-          onPress={() => { navigator.immediatelyResetRouteStack([_getRandomRoute(), _getRandomRoute()]) }}
+          onPress={() => { navigator.immediatelyResetRouteStack([_getRandomRoute(), _getRandomRoute()]); }}
           text="Reset w/ 2 scenes"
         />
         <NavButton
-          onPress={() => { navigator.popToTop() }}
+          onPress={() => { navigator.popToTop(); }}
           text="Pop to top"
         />
         <NavButton
-          onPress={() => { navigator.replace(_getRandomRoute()) }}
+          onPress={() => { navigator.replace(_getRandomRoute()); }}
           text="Replace"
         />
         <NavButton

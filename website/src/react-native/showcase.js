@@ -157,6 +157,12 @@ var apps = [
     author: 'Posyt.com',
   },
   {
+    name: 'Raindrop.io',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/f0/a4/57/f0a4574e-4a59-033f-05ff-5c421f0a0b00/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/raindrop.io-keep-your-favorites/id1021913807',
+    author: 'Mussabekov Rustem',
+  },
+  {
     name: 'ReactTo36',
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple5/v4/e3/c8/79/e3c87934-70c6-4974-f20d-4adcfc68d71d/mzl.wevtbbkq.png',
     link: 'https://itunes.apple.com/us/app/reactto36/id989009293?mt=8',

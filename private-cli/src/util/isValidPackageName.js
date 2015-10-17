@@ -6,14 +6,10 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
-#import <Foundation/Foundation.h>
+function isValidPackageName(name) {
+  return name.match(/^[$A-Z_][0-9A-Z_$]*$/i);
+}
 
-#import "RCTBridgeModule.h"
-
-@interface RCTSourceCode : NSObject <RCTBridgeModule>
-
-@property (nonatomic, copy) NSData *scriptData;
-@property (nonatomic, copy) NSURL *scriptURL;
-
-@end
+module.exports = isValidPackageName;
