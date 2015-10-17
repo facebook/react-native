@@ -238,6 +238,8 @@ RCT_EXPORT_MODULE()
       cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
     }];
 
+    [task start];
+
     __weak RCTDownloadTask *weakTask = task;
     return ^{
       [weakTask cancel];
@@ -362,6 +364,8 @@ RCT_EXPORT_MODULE()
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[task.requestID]);
   }
+
+  [task start];
 }
 
 #pragma mark - Public API
