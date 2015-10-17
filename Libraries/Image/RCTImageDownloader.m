@@ -96,6 +96,7 @@ RCT_EXPORT_MODULE()
   if (progressBlock) {
     task.downloadProgressBlock = progressBlock;
   }
+  [task start];
   return ^{ [task cancel]; };
 }
 

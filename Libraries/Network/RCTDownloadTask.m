@@ -29,17 +29,15 @@
   static NSUInteger requestID = 0;
 
   if ((self = [super init])) {
-    if (!(_requestToken = [handler sendRequest:request withDelegate:self])) {
-      return nil;
-    }
     _requestID = @(requestID++);
     _request = request;
     _handler = handler;
     _completionBlock = completionBlock;
-    _selfReference = self;
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)invalidate
 {
@@ -51,7 +49,15 @@
   _uploadProgressBlock = nil;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+- (void)start
+{
+  if (_requestToken == nil) {
+    if ([self validateRequestToken:[_handler sendRequest:_request
+                                            withDelegate:self]]) {
+      _selfReference = self;
+    }
+  }
+}
 
 - (void)cancel
 {
@@ -63,6 +69,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (BOOL)validateRequestToken:(id)requestToken
 {
+  if (_requestToken == nil) {
+    if (requestToken == nil) {
+      return NO;
+    }
+    _requestToken = requestToken;
+  }
   if (![requestToken isEqual:_requestToken]) {
     if (RCT_DEBUG) {
       RCTLogError(@"Unrecognized request token: %@ expected: %@", requestToken, _requestToken);

@@ -35,6 +35,7 @@ typedef void (^RCTURLRequestResponseBlock)(NSURLResponse *response);
                         handler:(id<RCTURLRequestHandler>)handler
                 completionBlock:(RCTURLRequestCompletionBlock)completionBlock NS_DESIGNATED_INITIALIZER;
 
+- (void)start;
 - (void)cancel;
 
 @end
