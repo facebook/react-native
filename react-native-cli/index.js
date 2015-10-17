@@ -161,7 +161,7 @@ function createProject(name, verbose) {
     version: '0.0.1',
     private: true,
     scripts: {
-      start: 'node_modules/react-native/packager/packager.sh'
+      start: process.platform.startsWith('win') ? 'node_modules\\react-native\\packager\\packager.bat' : 'node_modules/react-native/packager/packager.sh'
     }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
