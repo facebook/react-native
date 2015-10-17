@@ -86,20 +86,6 @@ static BOOL RCTFindScrollViewAndRefreshContentInsetInView(UIView *view)
   }
 }
 
-static UIView *RCTFindNavBarShadowViewInView(UIView *view)
-{
-  if ([view isKindOfClass:[UIImageView class]] && view.bounds.size.height <= 1) {
-    return view;
-  }
-  for (UIView *subview in view.subviews) {
-    UIView *shadowView = RCTFindNavBarShadowViewInView(subview);
-    if (shadowView) {
-      return shadowView;
-    }
-  }
-  return nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
