@@ -157,12 +157,11 @@ function createProject(name, verbose) {
   }
 
   var startScript;
-      if (/^win/.test(process.platform)) {
-		startScript = 'node_modules\\react-native\\packager\\packager.bat';
-	  }
-	  else {
-		  startScript = 'node_modules/react-native/packager/packager.sh';
-	  }
+  if (/^win/.test(process.platform)) {
+    startScript = 'node_modules\\react-native\\packager\\packager.bat';
+  } else {
+    startScript = 'node_modules/react-native/packager/packager.sh';
+  }
   var packageJson = {
     name: projectName,
     version: '0.0.1',
