@@ -83,7 +83,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [_webView loadHTMLString:@"" baseURL:nil];
     return;
   }
-  [_webView loadRequest:[NSURLRequest requestWithURL:URL]];
+  if (_cacheEnabled == YES) {
+    [_webView loadRequest:[NSURLRequest requestWithURL:URL cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:15.0]];
+  }
+  else {
+    [_webView loadRequest:[NSURLRequest requestWithURL:URL]];
+  }
+}
+
+- (void) setCacheEnabled:(BOOL)cacheEnabled {
+  _cacheEnabled = cacheEnabled;
 }
 
 - (void)setHTML:(NSString *)HTML
