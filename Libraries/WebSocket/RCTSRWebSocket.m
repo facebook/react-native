@@ -1381,20 +1381,22 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
         if (aStream.streamError) {
           [self _failWithError:aStream.streamError];
         } else {
-          if (self.readyState != RCTSR_CLOSED) {
-            self.readyState = RCTSR_CLOSED;
-            _selfRetain = nil;
-          }
+          dispatch_async(_workQueue, ^{
+            if (self.readyState != RCTSR_CLOSED) {
+              self.readyState = RCTSR_CLOSED;
+              _selfRetain = nil;
+            }
 
-          if (!_sentClose && !_failed) {
-            _sentClose = YES;
-            // If we get closed in this state it's probably not clean because we should be sending this when we send messages
-            [self _performDelegateBlock:^{
-              if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
-                [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
-              }
-            }];
-          }
+            if (!_sentClose && !_failed) {
+              _sentClose = YES;
+              // If we get closed in this state it's probably not clean because we should be sending this when we send messages
+              [self _performDelegateBlock:^{
+                if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
+                  [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
+                }
+              }];
+            }
+          });
         }
 
         break;
