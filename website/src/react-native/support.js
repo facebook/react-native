@@ -31,8 +31,8 @@ var support = React.createClass({
             <H2>Stack Overflow</H2>
             <p>Many members of the community use Stack Overflow to ask questions. Read through the <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with <strong>react-native</strong> or <a href="http://stackoverflow.com/questions/ask">ask your own</a>!</p>
 
-            <H2>IRC</H2>
-            <p>Many developers and users idle on Freenode.net&#39;s IRC network in <strong><a href="irc://chat.freenode.net/reactnative">#reactnative on freenode</a></strong>.</p>
+            <H2>Chat</H2>
+            <p>Join us in <strong><a href="irc://chat.freenode.net/reactnative">#reactnative on Reactiflux</a></strong>.</p>
 
             <H2>Twitter</H2>
             <p><a href="https://twitter.com/search?q=%23reactnative"><strong>#reactnative</strong> hash tag on Twitter</a> is used to keep up with the latest React Native news.</p>
