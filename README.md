@@ -30,7 +30,7 @@ See the official [React Native website](https://facebook.github.io/react-native/
 - Ask a question on [StackOverflow](http://stackoverflow.com/) and tag it with `react-native`
 - Start a thread on the [React Discussion Board](https://discuss.reactjs.org/)
 - Join #reactnative on IRC: chat.freenode.net
-- Slack: Sign up for [Reactiflux](http://reactiflux.com/) and join #react-native
+- Chat with us on [Reactiflux](https://discord.gg/0ZcbPKXt5bWJVmUY) in #react-native
 - If it turns out that you may have found a bug, please [open an issue](#opening-issues)
 
 ## Documentation
