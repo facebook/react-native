@@ -55,6 +55,18 @@ public class TouchTargetHelper {
     return targetTag;
   }
 
+  public static View findTargetViewForTouch(
+      float eventY,
+      float eventX,
+      ViewGroup viewGroup) {
+    UiThreadUtil.assertOnUiThread();
+    View nativeTargetView = findTouchTargetView(eventX, eventY, viewGroup);
+    if (nativeTargetView != null) {
+      return findClosestReactAncestor(nativeTargetView);
+    }
+    return viewGroup;
+  }
+
   private static View findClosestReactAncestor(View view) {
     while (view != null && view.getId() <= 0) {
       view = (View) view.getParent();

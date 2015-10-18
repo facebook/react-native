@@ -60,6 +60,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
   private int mTargetTag = -1;
+  private @Nullable View mTargetView = null;
   private boolean mChildIsHandlingNativeGesture = false;
   private boolean mWasMeasured = false;
   private boolean mAttachScheduled = false;
@@ -127,6 +128,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
           "Unable to handle touch in JS as the catalyst instance has not been attached");
       return;
     }
+
+    MotionEvent localEvent = ev;
+    if (mTargetView != null) {
+      localEvent = convertEventToLocal(ev, mTargetView);
+    }
+
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
@@ -143,7 +150,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       // this gesture
       mChildIsHandlingNativeGesture = false;
       mTargetTag = TouchTargetHelper.findTargetTagForTouch(ev.getY(), ev.getX(), this);
-      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.START, ev));
+      mTargetView = TouchTargetHelper.findTargetViewForTouch(ev.getY(), ev.getX(), this);
+      localEvent = convertEventToLocal(ev, mTargetView);
+      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.START, localEvent));
     } else if (mChildIsHandlingNativeGesture) {
       // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
       // gesture, so we shouldn't send any more touches related to it.
@@ -158,25 +167,51 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     } else if (action == MotionEvent.ACTION_UP) {
       // End of the gesture. We reset target tag to -1 and expect no further event associated with
       // this gesture.
-      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.END, ev));
+      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.END, localEvent));
       mTargetTag = -1;
+      mTargetView = null;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
-      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.MOVE, ev));
+      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.MOVE, localEvent));
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
-      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.START, ev));
+      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.START, localEvent));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
       // Exactly onw of the pointers goes up
-      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.END, ev));
+      eventDispatcher.dispatchEvent(new TouchEvent(mTargetTag, TouchEventType.END, localEvent));
     } else if (action == MotionEvent.ACTION_CANCEL) {
       dispatchCancelEvent(ev);
       mTargetTag = -1;
+      mTargetView = null;
     } else {
       FLog.w(
           ReactConstants.TAG,
           "Warning : touch event was ignored. Action=" + action + " Target=" + mTargetTag);
     }
+  }
+
+  /**
+   * Calculate view offset relative to this root view. This offset can be used to convert raw event
+   * coordinates to local coordinates with respect to the target view.
+   */
+  private void getOffsetOfView(View view, int[] outputOffset) {
+    int[] rootViewLocationInScreen = {0, 0};
+    getLocationOnScreen(rootViewLocationInScreen);
+    view.getLocationOnScreen(outputOffset);
+    outputOffset[0] -= rootViewLocationInScreen[0];
+    outputOffset[1] -= rootViewLocationInScreen[1];
+  }
+
+  /**
+   * Convert an event to local coordinates relative to the target view. A modified copy of the
+   * original event is returned.
+   */
+  private MotionEvent convertEventToLocal(MotionEvent event, View targetView) {
+    MotionEvent evCopy = MotionEvent.obtain(event);
+    int[] viewOffset = {0, 0};
+    getOffsetOfView(targetView, viewOffset);
+    evCopy.offsetLocation(-viewOffset[0], -viewOffset[1]);
+    return evCopy;
   }
 
   @Override
@@ -191,6 +226,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     dispatchCancelEvent(androidEvent);
     mChildIsHandlingNativeGesture = true;
     mTargetTag = -1;
+    mTargetView = null;
   }
 
   private void dispatchCancelEvent(MotionEvent androidEvent) {
