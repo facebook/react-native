@@ -42,9 +42,10 @@ static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabl
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
+@property (nonatomic, strong, readonly) JSContext *context;
 @property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
 
-- (instancetype)initWithJSContext:(JSGlobalContextRef)context NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithJSContext:(JSContext *)context NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -53,10 +54,10 @@ static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabl
   RCTJavaScriptContext *_self;
 }
 
-- (instancetype)initWithJSContext:(JSGlobalContextRef)context
+- (instancetype)initWithJSContext:(JSContext *)context
 {
   if ((self = [super init])) {
-    _ctx = context;
+    _context = context;
     _self = self;
   }
   return self;
@@ -64,16 +65,20 @@ static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabl
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
+- (JSGlobalContextRef)ctx
+{
+  return _context.JSGlobalContextRef;
+}
+
 - (BOOL)isValid
 {
-  return _ctx != NULL;
+  return _context != nil;
 }
 
 - (void)invalidate
 {
   if (self.isValid) {
-    JSGlobalContextRelease(_ctx);
-    _ctx = NULL;
+    _context = nil;
     _self = nil;
   }
 }
@@ -282,11 +287,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
   [javaScriptThread start];
 
-  return [self initWithJavaScriptThread:javaScriptThread globalContextRef:NULL];
+  return [self initWithJavaScriptThread:javaScriptThread context:nil];
 }
 
 - (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                        globalContextRef:(JSGlobalContextRef)context
+                                 context:(JSContext *)context
 {
   RCTAssert(javaScriptThread != nil,
             @"Can't initialize RCTContextExecutor without a javaScriptThread");
@@ -301,15 +306,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
         return;
       }
       // Assumes that no other JS tasks are scheduled before.
-      JSGlobalContextRef ctx;
       if (context) {
-        ctx = JSGlobalContextRetain(context);
-        strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
+        strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
       }
     }];
   }
 
   return self;
+}
+
+- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
+                        globalContextRef:(JSGlobalContextRef)contextRef
+{
+  JSContext *context = contextRef ? [JSContext contextWithJSGlobalContextRef:contextRef] : nil;
+  return [self initWithJavaScriptThread:javaScriptThread context:context];
 }
 
 - (void)setUp
@@ -321,8 +331,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
     if (!strongSelf->_context) {
-      JSGlobalContextRef ctx = JSGlobalContextCreate(NULL);
-      strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
+      JSContext *context = [[JSContext alloc] init];
+      strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
     }
     [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
     [strongSelf _addNativeHook:RCTNoop withName:"noop"];
