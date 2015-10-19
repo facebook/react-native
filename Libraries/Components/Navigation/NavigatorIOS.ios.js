@@ -63,6 +63,7 @@ type Route = {
   rightButtonIcon?: Object;
   onRightButtonPress?: Function;
   wrapperStyle?: any;
+  skipUpdate?: boolean;
 };
 
 type State = {
