@@ -25,8 +25,12 @@ public class TouchEvent extends Event<TouchEvent> {
   private final TouchEventType mTouchEventType;
   private final short mCoalescingKey;
 
-  public TouchEvent(int viewTag, TouchEventType touchEventType, MotionEvent motionEventToCopy) {
-    super(viewTag, motionEventToCopy.getEventTime());
+  public TouchEvent(
+      int viewTag,
+      long timestampMs,
+      TouchEventType touchEventType,
+      MotionEvent motionEventToCopy) {
+    super(viewTag, timestampMs);
     mTouchEventType = touchEventType;
     mMotionEvent = MotionEvent.obtain(motionEventToCopy);
 
