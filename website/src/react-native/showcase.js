@@ -73,6 +73,12 @@ var apps = [
     author: 'Liubomyr Mykhalchenko (@liubko)',
   },
   {
+    name: 'Foodstand',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/33/c1/3b/33c13b88-8ec2-23c1-56bb-712ad9938290/icon350x350.jpeg',
+    link: 'https://www.thefoodstand.com/download',
+    author: 'Foodstand, Inc.',
+  },
+  {
     name: 'Hashley',
     icon: 'http://a2.mzstatic.com/us/r30/Purple4/v4/5f/19/fc/5f19fc13-e7af-cd6b-6749-cedabdaeee7d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/hashtag-by-hashley-ironic/id1022724462?mt=8',
