@@ -19,7 +19,9 @@ var React = require('react-native');
 var {
   AlertIOS,
   Platform,
+  Text,
   ToastAndroid,
+  TouchableHighlight,
   View,
 } = React;
 var TimerMixin = require('react-timer-mixin');

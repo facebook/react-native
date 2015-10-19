@@ -25,7 +25,7 @@ var processColor = require('processColor');
 
 var rippleBackgroundPropType = createStrictShapeTypeChecker({
   type: React.PropTypes.oneOf(['RippleAndroid']),
-  color: PropTypes.number,
+  color: PropTypes.string,
   borderless: PropTypes.bool,
 });
 

@@ -130,7 +130,7 @@ RCT_EXPORT_MODULE()
  * debugger. So we have to use this (essentially) async API - and register
  * ourselves as the webview delegate to be notified when load is complete.
  */
-- (void)executeApplicationScript:(NSData *)script
+- (void)executeApplicationScript:(NSString *)script
                        sourceURL:(NSURL *)url
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
@@ -142,7 +142,6 @@ RCT_EXPORT_MODULE()
   }
 
   RCTAssert(onComplete != nil, @"");
-  NSString *scriptString = [[NSString alloc] initWithData:script encoding:NSUTF8StringEncoding];
   __weak RCTWebViewExecutor *weakSelf = self;
   _onApplicationScriptLoaded = ^(NSError *error){
     RCTWebViewExecutor *strongSelf = weakSelf;
@@ -164,23 +163,23 @@ RCT_EXPORT_MODULE()
     }];
     [_objectsToInject removeAllObjects];
     [scriptWithInjections appendString:@"/* END NATIVELY INJECTED OBJECTS */\n"];
-    [scriptWithInjections appendString:scriptString];
-    scriptString = scriptWithInjections;
+    [scriptWithInjections appendString:script];
+    script = scriptWithInjections;
   }
 
-  scriptString = [_commentsRegex stringByReplacingMatchesInString:scriptString
-                                                          options:0
-                                                            range:NSMakeRange(0, script.length)
-                                                     withTemplate:@""];
-  scriptString = [_scriptTagsRegex stringByReplacingMatchesInString:scriptString
-                                                            options:0
-                                                              range:NSMakeRange(0, script.length)
-                                                       withTemplate:@"\\\\<$1\\\\>"];
+  script = [_commentsRegex stringByReplacingMatchesInString:script
+                                                    options:0
+                                                      range:NSMakeRange(0, script.length)
+                                               withTemplate:@""];
+  script = [_scriptTagsRegex stringByReplacingMatchesInString:script
+                                                      options:0
+                                                        range:NSMakeRange(0, script.length)
+                                                 withTemplate:@"\\\\<$1\\\\>"];
 
   NSString *runScript =
     [NSString
       stringWithFormat:@"<html><head></head><body><script type='text/javascript'>%@</script></body></html>",
-      scriptString
+      script
     ];
   [_webView loadHTMLString:runScript baseURL:url];
 }

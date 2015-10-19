@@ -161,7 +161,6 @@ var server = runServer(options, function() {
 });
 
 webSocketProxy.attachToServer(server, '/debugger-proxy');
-webSocketProxy.attachToServer(server, '/devtools');
 
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;

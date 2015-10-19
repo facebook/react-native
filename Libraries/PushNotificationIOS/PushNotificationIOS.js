@@ -83,13 +83,6 @@ class PushNotificationIOS {
   }
 
   /**
-   * Cancels all scheduled localNotifications
-   */
-  static cancelAllLocalNotifications() {
-    RCTPushNotificationManager.cancelAllLocalNotifications();
-  }
-
-  /**
    * Sets the badge number for the app icon on the home screen
    */
   static setApplicationIconBadgeNumber(number: number) {

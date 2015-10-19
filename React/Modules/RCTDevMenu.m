@@ -623,11 +623,7 @@ RCT_EXPORT_METHOD(reload)
 
 - (RCTDevMenu *)devMenu
 {
-#if RCT_DEV
   return self.modules[RCTBridgeModuleNameForClass([RCTDevMenu class])];
-#else
-  return nil;
-#endif
 }
 
 @end

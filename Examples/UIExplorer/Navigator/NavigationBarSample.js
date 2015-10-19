@@ -23,6 +23,7 @@ var {
   Text,
   TouchableHighlight,
   TouchableOpacity,
+  View,
 } = React;
 
 var cssVar = require('cssVar');
