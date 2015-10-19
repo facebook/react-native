@@ -14,7 +14,7 @@
 var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var { TestModule } = require('NativeModules');
+var { TestModule, UIManager } = require('NativeModules');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
@@ -51,7 +51,10 @@ var style = StyleSheet.create({
   },
 });
 
-var RCTSnapshot = Platform.OS === 'ios' ?
+// Verify that RCTSnapshot is part of the UIManager since it is only loaded
+// if you have linked against RCTTest like in tests, otherwise we will have
+// a warning printed out
+var RCTSnapshot = UIManager.RCTSnapshot ?
   requireNativeComponent('RCTSnapshot', SnapshotViewIOS) :
   View;
 
