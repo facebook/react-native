@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 
 /**
  * Takes common view properties from JS and applies them to a given {@link View}.
@@ -26,9 +27,11 @@ import com.facebook.react.bridge.ReadableMap;
 public class BaseViewPropertyApplicator {
 
   private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
-  private static final String PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
+  private static final String PROP_DECOMPOSED_MATRIX_PERSPECTIVE_Z = "perspectiveZ";
+  private static final String PROP_DECOMPOSED_MATRIX_ROTATION = "rotationDegrees";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
+  private static final String PROP_DECOMPOSED_MATRIX_SKEW = "skew";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
   private static final String PROP_OPACITY = "opacity";
@@ -39,7 +42,10 @@ public class BaseViewPropertyApplicator {
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED
+  private static final String PROP_PERSPECTIVE = "perspective";
   private static final String PROP_ROTATION = "rotation";
+  private static final String PROP_ROTATION_X = "rotationX";
+  private static final String PROP_ROTATION_Y = "rotationY";
   private static final String PROP_SCALE_X = "scaleX";
   private static final String PROP_SCALE_Y = "scaleY";
   private static final String PROP_TRANSLATE_X = "translateX";
@@ -59,7 +65,10 @@ public class BaseViewPropertyApplicator {
     props.put(ViewProps.BACKGROUND_COLOR, UIProp.Type.STRING);
     props.put(PROP_IMPORTANT_FOR_ACCESSIBILITY, UIProp.Type.STRING);
     props.put(PROP_OPACITY, UIProp.Type.NUMBER);
+    props.put(PROP_PERSPECTIVE, UIProp.Type.NUMBER);
     props.put(PROP_ROTATION, UIProp.Type.NUMBER);
+    props.put(PROP_ROTATION_X, UIProp.Type.NUMBER);
+    props.put(PROP_ROTATION_Y, UIProp.Type.NUMBER);
     props.put(PROP_SCALE_X, UIProp.Type.NUMBER);
     props.put(PROP_SCALE_Y, UIProp.Type.NUMBER);
     props.put(PROP_TRANSLATE_X, UIProp.Type.NUMBER);
@@ -132,8 +141,17 @@ public class BaseViewPropertyApplicator {
     }
 
     // DEPRECATED
+    if (props.hasKey(PROP_PERSPECTIVE)) {
+      view.setCameraDistance(props.getFloat(PROP_PERSPECTIVE, 1280));
+    }
     if (props.hasKey(PROP_ROTATION)) {
       view.setRotation(props.getFloat(PROP_ROTATION, 0));
+    }
+    if (props.hasKey(PROP_ROTATION_X)) {
+      view.setRotationX(props.getFloat(PROP_ROTATION_X, 0));
+    }
+    if (props.hasKey(PROP_ROTATION_Y)) {
+      view.setRotationY(props.getFloat(PROP_ROTATION_Y, 0));
     }
     if (props.hasKey(PROP_SCALE_X)) {
       view.setScaleX(props.getFloat(PROP_SCALE_X, 1.f));
@@ -154,19 +172,36 @@ public class BaseViewPropertyApplicator {
       (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_TRANSLATE_X)));
     view.setTranslationY(PixelUtil.toPixelFromDIP(
       (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y)));
-    view.setRotation(
-      (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE));
     view.setScaleX(
       (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_X));
     view.setScaleY(
       (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_Y));
+    view.setCameraDistance(
+      (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_PERSPECTIVE_Z));
+
+    ReadableArray skewArray = matrix.getArray(PROP_DECOMPOSED_MATRIX_SKEW);
+    view.getMatrix().setSkew(
+      (float) skewArray.getDouble(0), (float) skewArray.getDouble(1)
+    );
+
+    ReadableArray rotationArray = matrix.getArray(PROP_DECOMPOSED_MATRIX_ROTATION);
+    view.setRotationX(
+        (float) rotationArray.getDouble(0));
+    view.setRotationY(
+        (float) rotationArray.getDouble(1));
+    view.setRotation(
+        (float) rotationArray.getDouble(2));
   }
 
   private static void resetTransformMatrix(View view) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(0));
     view.setTranslationY(PixelUtil.toPixelFromDIP(0));
     view.setRotation(0);
+    view.setRotationX(0);
+    view.setRotationY(0);
     view.setScaleX(1);
     view.setScaleY(1);
+    view.setCameraDistance(1280);
+    view.getMatrix().setSkew(0, 0);
   }
 }
