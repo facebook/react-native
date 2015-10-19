@@ -53,6 +53,7 @@ var NavigatorTransitionerIOS = React.createClass({
 type Route = {
   component: Function;
   title: string;
+  titleIcon?: Object,
   passProps?: Object;
   backButtonTitle?: string;
   backButtonIcon?: Object;
@@ -187,6 +188,13 @@ var NavigatorIOS = React.createClass({
        * The title displayed in the nav bar and back button for this route
        */
       title: PropTypes.string.isRequired,
+
+      /**
+       * If set, the title image will appear with this source. Note
+       * that this doesn't apply for the header of the current view, but the
+       * ones of the views that are pushed afterward.
+       */
+      titleIcon: Image.propTypes.source,
 
       /**
        * Specify additional props passed to the component. NavigatorIOS will
