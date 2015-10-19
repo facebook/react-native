@@ -48,6 +48,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 * IRC - [#reactnative on freenode](http://webchat.freenode.net/?channels=reactnative)
 * [Facebook group](https://www.facebook.com/groups/react.native.community/)
+* Reactiflux — [#react-native](http://join.reactiflux.com/)
 
 ## Style Guide
 
