@@ -53,6 +53,7 @@ var NavigatorTransitionerIOS = React.createClass({
 type Route = {
   component: Function;
   title: string;
+  titleIcon?: Object,
   passProps?: Object;
   backButtonTitle?: string;
   backButtonIcon?: Object;
@@ -146,6 +147,7 @@ type Event = Object;
  *  - `replacePrevious(route)` - Replace the route/view for the previous page
  *  - `replacePreviousAndPop(route)` - Replaces the previous route/view and
  *    transitions back to it
+ *  - `update(route)` - Update the route for the current page with the provided fields
  *  - `resetTo(route)` - Replaces the top item and popToTop
  *  - `popToRoute(route)` - Go back to the item for a particular route object
  *  - `popToTop()` - Go back to the top item
@@ -186,6 +188,13 @@ var NavigatorIOS = React.createClass({
        * The title displayed in the nav bar and back button for this route
        */
       title: PropTypes.string.isRequired,
+
+      /**
+       * If set, the title image will appear with this source. Note
+       * that this doesn't apply for the header of the current view, but the
+       * ones of the views that are pushed afterward.
+       */
+      titleIcon: Image.propTypes.source,
 
       /**
        * Specify additional props passed to the component. NavigatorIOS will
@@ -295,6 +304,7 @@ var NavigatorIOS = React.createClass({
       replace: this.replace,
       replacePrevious: this.replacePrevious,
       replacePreviousAndPop: this.replacePreviousAndPop,
+      update: this.update,
       resetTo: this.resetTo,
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
@@ -540,6 +550,14 @@ var NavigatorIOS = React.createClass({
   replacePrevious: function(route: Route) {
     this.replaceAtIndex(route, -2);
   },
+  
+  /**
+   * Update the current route in the navigation stack.
+   */
+  update: function(route: Route) {
+    var routeStack = this.state.routeStack;
+    this.replace(Object.assign(routeStack[routeStack.length - 1], route));
+  },
 
   popToTop: function() {
     this.popToRoute(this.state.routeStack[0]);
@@ -599,6 +617,7 @@ var NavigatorIOS = React.createClass({
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
           title={route.title}
+          titleIcon={resolveAssetSource(route.titleIcon)}
           style={[
             styles.stackItem,
             this.props.itemWrapperStyle,
