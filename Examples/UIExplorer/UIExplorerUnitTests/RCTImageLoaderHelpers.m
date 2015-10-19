@@ -52,7 +52,7 @@
   return _loadImageURLHandler(imageURL, size, scale, resizeMode, progressHandler, completionHandler);
 }
 
-- (float)imageLoaderPriority
+- (float)loaderPriority
 {
   return _priority;
 }
@@ -61,8 +61,8 @@
 
 @implementation RCTConcreteImageDecoder
 {
-  RCTImageDecoderCanDecodeImageDataHandler _canDecodeImageDataHandler;
-  RCTImageDecoderDecodeImageDataHandler _decodeImageDataHandler;
+  RCTImageDataDecoderCanDecodeImageDataHandler _canDecodeImageDataHandler;
+  RCTImageDataDecoderDecodeImageDataHandler _decodeImageDataHandler;
   float _priority;
 }
 
@@ -76,7 +76,7 @@
   return nil;
 }
 
-- (instancetype)initWithPriority:(float)priority canDecodeImageDataHandler:(RCTImageDecoderCanDecodeImageDataHandler)canDecodeImageDataHandler decodeImageDataHandler:(RCTImageDecoderDecodeImageDataHandler)decodeImageDataHandler
+- (instancetype)initWithPriority:(float)priority canDecodeImageDataHandler:(RCTImageDataDecoderCanDecodeImageDataHandler)canDecodeImageDataHandler decodeImageDataHandler:(RCTImageDataDecoderDecodeImageDataHandler)decodeImageDataHandler
 {
   if ((self = [super init])) {
     _canDecodeImageDataHandler = [canDecodeImageDataHandler copy];
@@ -97,7 +97,7 @@
   return _decodeImageDataHandler(imageData, size, scale, resizeMode, completionHandler);
 }
 
-- (float)imageDecoderPriority
+- (float)decoderPriority
 {
   return _priority;
 }
