@@ -36,15 +36,6 @@
   _navigationItem.backBarButtonItem = self.backButtonItem;
   _navigationItem.leftBarButtonItem = self.leftButtonItem;
   _navigationItem.rightBarButtonItem = self.rightButtonItem;
-  
-  if (self.titleIcon) {
-    if ([_navigationItem.titleView isKindOfClass:[UIImageView class]]) {
-      UIImageView *titleView = (UIImageView *)_navigationItem.titleView;
-      if (titleView.image != self.titleIcon) {
-        _navigationItem.titleView = [[UIImageView alloc] initWithImage:self.titleIcon];
-      }
-    }
-  }
 }
 
 - (void)setTitle:(NSString *)title

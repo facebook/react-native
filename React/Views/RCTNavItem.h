@@ -17,7 +17,6 @@
 @property (nonatomic, assign) UINavigationItem *navigationItem;
 
 @property (nonatomic, copy) NSString *title;
-@property (nonatomic, strong) UIImage *titleIcon;
 @property (nonatomic, strong) UIImage *leftButtonIcon;
 @property (nonatomic, copy) NSString *leftButtonTitle;
 @property (nonatomic, strong) UIImage *rightButtonIcon;
