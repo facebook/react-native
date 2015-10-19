@@ -17,7 +17,6 @@
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
 		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
-		58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -54,8 +53,6 @@
 		354631661B69857700AA0B86 /* RCTImageEditingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageEditingManager.h; sourceTree = "<group>"; };
 		354631671B69857700AA0B86 /* RCTImageEditingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageEditingManager.m; sourceTree = "<group>"; };
 		58B5115D1A9E6B3D00147676 /* libRCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		58B511891A9E6BD600147676 /* RCTImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageDownloader.h; sourceTree = "<group>"; };
-		58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageDownloader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +73,6 @@
 				13EF7F7E1BC825B1003F47DD /* RCTXCAssetImageLoader.m */,
 				1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */,
 				1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */,
-				58B511891A9E6BD600147676 /* RCTImageDownloader.h */,
-				58B5118A1A9E6BD600147676 /* RCTImageDownloader.m */,
 				354631661B69857700AA0B86 /* RCTImageEditingManager.h */,
 				354631671B69857700AA0B86 /* RCTImageEditingManager.m */,
 				143879361AAD32A300F088A5 /* RCTImageLoader.h */,
@@ -166,7 +161,6 @@
 			files = (
 				13EF7F0C1BC42D4E003F47DD /* RCTVirtualImageManager.m in Sources */,
 				35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */,
-				58B5118F1A9E6BD600147676 /* RCTImageDownloader.m in Sources */,
 				1304D5AC1AA8C4A30002E2BE /* RCTImageViewManager.m in Sources */,
 				1304D5B21AA8C50D0002E2BE /* RCTGIFImageDecoder.m in Sources */,
 				143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */,

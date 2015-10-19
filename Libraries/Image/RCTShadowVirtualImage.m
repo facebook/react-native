@@ -11,6 +11,7 @@
 #import "RCTImageLoader.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTUIManager.h"
 
 @implementation RCTShadowVirtualImage
 {
@@ -38,9 +39,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
     __weak RCTShadowVirtualImage *weakSelf = self;
     [_bridge.imageLoader loadImageWithTag:imageTag size:CGSizeZero scale:scale resizeMode:UIViewContentModeScaleToFill progressBlock:nil completionBlock:^(NSError *error, UIImage *image) {
-      RCTShadowVirtualImage *strongSelf = weakSelf;
-      strongSelf->_image = image;
-      [strongSelf dirtyText];
+      dispatch_async(_bridge.uiManager.methodQueue, ^{
+        RCTShadowVirtualImage *strongSelf = weakSelf;
+        strongSelf->_image = image;
+        [strongSelf dirtyText];
+      });
     }];
   }
 }
