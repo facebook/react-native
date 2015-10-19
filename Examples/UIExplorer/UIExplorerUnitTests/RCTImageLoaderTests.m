@@ -95,7 +95,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   NSData *data = [NSData dataWithBytesNoCopy:blackGIF length:sizeof(blackGIF) freeWhenDone:NO];
   UIImage *image = [[UIImage alloc] initWithData:data];
 
-  id<RCTImageDecoder> decoder = [[RCTImageLoaderTestsDecoder1 alloc] initWithPriority:1.0 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
+  id<RCTImageDataDecoder> decoder = [[RCTImageLoaderTestsDecoder1 alloc] initWithPriority:1.0 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
     return YES;
   } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
     XCTAssertEqualObjects(imageData, data);
@@ -118,7 +118,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   NSData *data = [NSData dataWithBytesNoCopy:blackGIF length:sizeof(blackGIF) freeWhenDone:NO];
   UIImage *image = [[UIImage alloc] initWithData:data];
 
-  id<RCTImageDecoder> decoder1 = [[RCTImageLoaderTestsDecoder1 alloc] initWithPriority:1.0 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
+  id<RCTImageDataDecoder> decoder1 = [[RCTImageLoaderTestsDecoder1 alloc] initWithPriority:1.0 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
     return YES;
   } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
     XCTAssertEqualObjects(imageData, data);
@@ -126,7 +126,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return nil;
   }];
 
-  id<RCTImageDecoder> decoder2 = [[RCTImageLoaderTestsDecoder2 alloc] initWithPriority:0.5 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
+  id<RCTImageDataDecoder> decoder2 = [[RCTImageLoaderTestsDecoder2 alloc] initWithPriority:0.5 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
     return YES;
   } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(__unused NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, __unused RCTImageLoaderCompletionBlock completionHandler) {
     XCTFail(@"Should not have used decoder2");

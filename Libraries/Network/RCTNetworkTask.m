@@ -7,15 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDownloadTask.h"
+#import "RCTNetworkTask.h"
 
 #import "RCTLog.h"
 
-@implementation RCTDownloadTask
+@implementation RCTNetworkTask
 {
   NSMutableData *_data;
   id<RCTURLRequestHandler> _handler;
-  RCTDownloadTask *_selfReference;
+  RCTNetworkTask *_selfReference;
 }
 
 - (instancetype)initWithRequest:(NSURLRequest *)request

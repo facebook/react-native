@@ -11,12 +11,12 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#import "RCTUtils.h"
+
 @implementation RCTFileRequestHandler
 {
   NSOperationQueue *_fileQueue;
 }
-
-@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
@@ -28,7 +28,9 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [request.URL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame;
+  return
+  [request.URL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame
+  && !RCTIsXCAssetURL(request.URL);
 }
 
 - (NSOperation *)sendRequest:(NSURLRequest *)request

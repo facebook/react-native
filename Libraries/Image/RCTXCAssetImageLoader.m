@@ -20,11 +20,6 @@ RCT_EXPORT_MODULE()
   return RCTIsXCAssetURL(requestURL);
 }
 
-- (float)imageLoaderPriority
-{
-  return 100; // higher priority than any ordinary file loader
-}
-
  - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   __block BOOL cancelled = NO;

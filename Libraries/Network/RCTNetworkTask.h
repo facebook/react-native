@@ -18,7 +18,7 @@ typedef void (^RCTURLRequestIncrementalDataBlock)(NSData *data);
 typedef void (^RCTURLRequestProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTURLRequestResponseBlock)(NSURLResponse *response);
 
-@interface RCTDownloadTask : NSObject <RCTURLRequestDelegate>
+@interface RCTNetworkTask : NSObject <RCTURLRequestDelegate>
 
 @property (nonatomic, readonly) NSURLRequest *request;
 @property (nonatomic, readonly) NSNumber *requestID;

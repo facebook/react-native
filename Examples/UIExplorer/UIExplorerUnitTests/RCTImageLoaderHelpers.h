@@ -25,14 +25,14 @@ typedef RCTImageLoaderCancellationBlock (^RCTImageURLLoaderLoadImageURLHandler)(
 
 @end
 
-typedef BOOL (^RCTImageDecoderCanDecodeImageDataHandler)(NSData *imageData);
-typedef RCTImageLoaderCancellationBlock (^RCTImageDecoderDecodeImageDataHandler)(NSData *imageData, CGSize size, CGFloat scale, UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler);
+typedef BOOL (^RCTImageDataDecoderCanDecodeImageDataHandler)(NSData *imageData);
+typedef RCTImageLoaderCancellationBlock (^RCTImageDataDecoderDecodeImageDataHandler)(NSData *imageData, CGSize size, CGFloat scale, UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler);
 
-@interface RCTConcreteImageDecoder : NSObject <RCTImageDecoder>
+@interface RCTConcreteImageDecoder : NSObject <RCTImageDataDecoder>
 
 - (instancetype)initWithPriority:(float)priority
-       canDecodeImageDataHandler:(RCTImageDecoderCanDecodeImageDataHandler)canDecodeImageDataHandler
-          decodeImageDataHandler:(RCTImageDecoderDecodeImageDataHandler)decodeImageDataHandler;
+       canDecodeImageDataHandler:(RCTImageDataDecoderCanDecodeImageDataHandler)canDecodeImageDataHandler
+          decodeImageDataHandler:(RCTImageDataDecoderDecodeImageDataHandler)decodeImageDataHandler;
 
 @end
 
