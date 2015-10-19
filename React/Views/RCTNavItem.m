@@ -11,16 +11,6 @@
 
 @implementation RCTNavItem
 
-//- (void)forwardInvocation:(NSInvocation *)invocation
-//{
-//  if ([_navigationItem respondsToSelector:invocation.selector]) {
-//    [invocation invokeWithTarget:_navigationItem];
-//  }
-//  else {
-//    [super forwardInvocation:invocation];
-//  }
-//}
-
 - (void)setOnNavLeftButtonTap:(RCTBubblingEventBlock)onNavLeftButtonTap
 {
   _onNavLeftButtonTap = onNavLeftButtonTap;
