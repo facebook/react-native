@@ -19,10 +19,16 @@
 @interface RCTContextExecutor : NSObject <RCTJavaScriptExecutor>
 
 /**
- * Configures the executor to run JavaScript on a custom performer.
+ * Configures the executor to run JavaScript on a specific thread with a given JS context.
  * You probably don't want to use this; use -init instead.
  */
 - (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                        globalContextRef:(JSGlobalContextRef)context NS_DESIGNATED_INITIALIZER;
+                                 context:(JSContext *)context NS_DESIGNATED_INITIALIZER;
+
+/**
+ * Like -[initWithJavaScriptThread:context:] but uses JSGlobalContextRef from JavaScriptCore's C API.
+ */
+- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
+                        globalContextRef:(JSGlobalContextRef)contextRef;
 
 @end
