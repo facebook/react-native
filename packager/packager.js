@@ -38,6 +38,10 @@ var options = parseCommandLine([{
   default: 8081,
   type: 'string',
 }, {
+  command: 'projectRoots',
+  type: 'string',
+  description: 'specify the project root directories for the project'
+}, {
   command: 'root',
   type: 'string',
   description: 'add another root(s) to be used by the packager in this project',
