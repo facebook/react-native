@@ -556,6 +556,7 @@ var NavigatorIOS = React.createClass({
    */
   update: function(route: Route) {
     var routeStack = this.state.routeStack;
+    route.component || route.passProps || (route.skipUpdate = true);
     this.replace(Object.assign(routeStack[routeStack.length - 1], route));
   },
 
@@ -610,8 +611,10 @@ var NavigatorIOS = React.createClass({
 
   _routeToStackItem: function(route: Route, i: number) {
     var Component = route.component;
-    var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
-      this.state.updatingAllIndicesAtOrBeyond >= i;
+    var shouldUpdateChild = (
+      this.state.updatingAllIndicesAtOrBeyond !== null &&
+      this.state.updatingAllIndicesAtOrBeyond >= i
+    );
 
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
@@ -637,11 +640,13 @@ var NavigatorIOS = React.createClass({
           barTintColor={this.props.barTintColor}
           translucent={this.props.translucent !== false}
           titleTextColor={this.props.titleTextColor}>
-          <Component
-            navigator={this.navigator}
-            route={route}
-            {...route.passProps}
-          />
+          <StaticContainer shouldUpdate={!route.skipUpdate}>
+            <Component
+              navigator={this.navigator}
+              route={route}
+              {...route.passProps}
+            />
+          </StaticContainer>
         </RCTNavigatorItem>
       </StaticContainer>
     );
