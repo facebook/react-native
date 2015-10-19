@@ -7,15 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridge.h"
-#import "RCTImageLoader.h"
+#import "RCTURLRequestHandler.h"
+#import "RCTInvalidating.h"
 
-@interface RCTImageDownloader : NSObject <RCTImageURLLoader>
-
-@end
-
-@interface RCTBridge (RCTImageDownloader)
-
-@property (nonatomic, readonly) RCTImageDownloader *imageDownloader;
+/**
+ * This is the default RCTURLRequestHandler implementation for data URL requests.
+ */
+@interface RCTDataRequestHandler : NSObject <RCTURLRequestHandler, RCTInvalidating>
 
 @end
