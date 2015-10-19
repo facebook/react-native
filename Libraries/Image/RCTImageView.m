@@ -210,7 +210,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)reactSetFrame:(CGRect)frame
 {
   [super reactSetFrame:frame];
-  if (self.image == nil) {
+
+  if (!self.image || self.image == _defaultImage) {
     _targetSize = frame.size;
     [self reloadImage];
   } else if ([RCTImageView srcNeedsReload:_src]) {
@@ -254,7 +255,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         [strongSelf clearImage];
       }
     });
-  } else if (!self.image && self.src) {
+  } else if (!self.image || self.image == _defaultImage) {
     [self reloadImage];
   }
 }

@@ -31,6 +31,7 @@ var TESTS = [
   require('./LayoutEventsTest'),
   require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),
+  require('./ImageSnapshotTest'),
   require('./PromiseTest'),
 ];
 
