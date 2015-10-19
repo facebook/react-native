@@ -109,6 +109,12 @@ var apps = [
     author: 'Leanpub',
   },
   {
+    name: 'LoadDocs',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/b5/ca/78/b5ca78ca-392d-6874-48bf-762293482d42/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
+    author: 'LoadDocs',
+  },
+  {
     name: 'Lrn',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
     link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
