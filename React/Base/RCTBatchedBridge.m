@@ -63,6 +63,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 {
   BOOL _loading;
   BOOL _valid;
+  BOOL _wasBatchActive;
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
   NSMutableArray *_pendingCalls;
   NSMutableArray *_moduleDataByID;
@@ -386,6 +387,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
     // timing issues with RCTRootView
     dispatch_async(dispatch_get_main_queue(), ^{
       [self didFinishLoading];
+
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
                                                           object:_parentBridge
                                                         userInfo:@{ @"bridge": self }];
@@ -613,7 +615,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
          @"error": RCTNullIfNil(error),
        });
 
-       [self _handleBuffer:json];
+       [self handleBuffer:json batchEnded:YES];
 
        onComplete(error);
      }];
@@ -669,7 +671,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       return;
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
-    [self _handleBuffer:json];
+    [self handleBuffer:json batchEnded:YES];
   };
 
   [_javaScriptExecutor executeJSCall:module
@@ -680,14 +682,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 #pragma mark - Payload Processing
 
-- (void)_handleBuffer:(id)buffer
+- (void)handleBuffer:(id)buffer batchEnded:(BOOL)batchEnded
 {
   RCTAssertJSThread();
 
-  if (buffer == nil || buffer == (id)kCFNull) {
-    return;
+  if (buffer != nil && buffer != (id)kCFNull) {
+    _wasBatchActive = YES;
+    [self handleBuffer:buffer];
   }
 
+  if (batchEnded) {
+    if (_wasBatchActive) {
+      [self batchDidComplete];
+    }
+
+    _wasBatchActive = NO;
+  }
+}
+
+- (void)handleBuffer:(id)buffer
+{
   NSArray *requestsArray = [RCTConvert NSArray:buffer];
 
 #if RCT_DEBUG
@@ -765,7 +779,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       dispatch_async(queue, block);
     }
   }
+}
 
+- (void)batchDidComplete
+{
   // TODO: batchDidComplete is only used by RCTUIManager - can we eliminate this special case?
   for (RCTModuleData *moduleData in _moduleDataByID) {
     if ([moduleData.instance respondsToSelector:@selector(batchDidComplete)]) {

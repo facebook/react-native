@@ -24,7 +24,7 @@
 
 @property (nonatomic, strong, readonly) RCTBridge *batchedBridge;
 
-- (void)_handleBuffer:(id)buffer;
+- (void)handleBuffer:(id)buffer;
 - (void)setUp;
 
 @end
@@ -169,7 +169,7 @@ _Pragma("clang diagnostic pop")
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args], @[], @1234567];
 
-  [_bridge.batchedBridge _handleBuffer:buffer];
+  [_bridge.batchedBridge handleBuffer:buffer];
 
   dispatch_sync(_methodQueue, ^{
     // clear the queue
@@ -180,7 +180,7 @@ _Pragma("clang diagnostic pop")
 - (void)DISABLED_testBadArgumentsCount
 {
   //NSArray *bufferWithMissingArgument = @[@[@1], @[@0], @[@[@1234, @5678, @"stringy", @{@"a": @1}/*, @42*/]], @[], @1234567];
-  //[_bridge _handleBuffer:bufferWithMissingArgument];
+  //[_bridge handleBuffer:bufferWithMissingArgument];
   NSLog(@"WARNING: testBadArgumentsCount is temporarily disabled until we have a better way to test cases that we expect to trigger redbox errors");
 }
 
