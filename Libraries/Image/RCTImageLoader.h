@@ -28,7 +28,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 
 /**
  * Loads the specified image at the highest available resolution.
- * Can be called from any thread, will always call callback on main thread.
+ * Can be called from any thread, will call back on an unspecified thread.
  */
 - (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                            callback:(RCTImageLoaderCompletionBlock)callback;

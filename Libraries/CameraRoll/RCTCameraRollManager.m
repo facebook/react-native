@@ -35,14 +35,17 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
       errorCallback(loadError);
       return;
     }
-    [_bridge.assetsLibrary writeImageToSavedPhotosAlbum:loadedImage.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
-      if (saveError) {
-        RCTLogWarn(@"Error saving cropped image: %@", saveError);
-        errorCallback(saveError);
-      } else {
-        successCallback(@[assetURL.absoluteString]);
-      }
-    }];
+    // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [_bridge.assetsLibrary writeImageToSavedPhotosAlbum:loadedImage.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
+        if (saveError) {
+          RCTLogWarn(@"Error saving cropped image: %@", saveError);
+          errorCallback(saveError);
+        } else {
+          successCallback(@[assetURL.absoluteString]);
+        }
+      }];
+    });
   }];
 }
 
