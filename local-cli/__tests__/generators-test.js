@@ -1,6 +1,7 @@
 'use strict';
 
 jest.autoMockOff();
+jest.mock('child_process');
 
 var path = require('path');
 var fs = require('fs');
@@ -8,6 +9,8 @@ var fs = require('fs');
 describe('React Yeoman Generators', function() {
   describe('react:react', function() {
     var assert;
+    var helpers;
+    var generated;
 
     beforeEach(function() {
       // A deep dependency of yeoman spams console.log with giant json objects.
@@ -19,67 +22,94 @@ describe('React Yeoman Generators', function() {
       var log = console.log;
       console.log = function() {};
       assert = require('yeoman-generator').assert;
-      var helpers = require('yeoman-generator').test;
+      helpers = require('yeoman-generator').test;
       console.log = log;
+    });
 
-      var generated = false;
+    describe('with name argument', function() {
+      beforeEach(function() {
+        generated = false;
 
-      runs(function() {
-        helpers.run(path.resolve(__dirname, '../generator'))
-          .withArguments(['TestApp'])
-          .on('end', function() {
-            generated = true;
-          });
+        runs(function() {
+          helpers.run(path.resolve(__dirname, '../generator'))
+            .withArguments(['TestApp'])
+            .on('end', function() {
+              generated = true;
+            });
+        });
+
+        waitsFor(function() {
+          jest.runAllTicks();
+          jest.runOnlyPendingTimers();
+          return generated;
+        }, 'generation', 750);
+
       });
 
-      waitsFor(function() {
-        jest.runAllTicks();
-        jest.runOnlyPendingTimers();
-        return generated;
-      }, "generation", 750);
+      it('creates files', function() {
+          assert.file([
+            '.flowconfig',
+            '.gitignore',
+            '.watchmanconfig',
+            'index.ios.js',
+            'index.android.js'
+          ]);
+        });
+
+      it('replaces vars in index.ios.js', function() {
+        assert.fileContent('index.ios.js', 'var TestApp = React.createClass({');
+        assert.fileContent(
+          'index.ios.js',
+          'AppRegistry.registerComponent(\'TestApp\', () => TestApp);'
+        );
+
+        assert.noFileContent('index.ios.js', '<%= name %>');
+      });
+
+      it('replaces vars in index.android.js', function() {
+        assert.fileContent('index.android.js', 'var TestApp = React.createClass({');
+        assert.fileContent(
+          'index.android.js',
+          'AppRegistry.registerComponent(\'TestApp\', () => TestApp);'
+        );
+
+        assert.noFileContent('index.ios.js', '<%= name %>');
+      });
+
+      it('composes with ios generator', function() {
+        assert.file(['ios/TestApp/AppDelegate.m']);
+      });
+
+      it('composes with android generator', function() {
+        var stat = fs.statSync('android');
+        expect(stat.isDirectory()).toBe(true);
+      });
     });
 
-    it('creates files', function() {
-      assert.file([
-        '.flowconfig',
-        '.gitignore',
-        '.watchmanconfig',
-        'index.ios.js',
-        'index.android.js'
-      ]);
+    describe('with name and swift arguments', function() {
+      beforeEach(function() {
+        generated = false;
+
+        runs(function() {
+          helpers.run(path.resolve(__dirname, '../generator'))
+            .withArguments(['--swift','TestApp2'])
+            .on('end', function() {
+              generated = true;
+            });
+        });
+
+        waitsFor(function() {
+          jest.runAllTicks();
+          jest.runOnlyPendingTimers();
+          return generated;
+        }, 'generation', 750);
+
+      });
+
+      it('composes with swift generator', function() {
+        assert.file(['ios/TestApp2/AppDelegate.swift']);
+      });
     });
-
-    it('replaces vars in index.ios.js', function() {
-      assert.fileContent('index.ios.js', 'var TestApp = React.createClass({');
-      assert.fileContent(
-        'index.ios.js',
-        'AppRegistry.registerComponent(\'TestApp\', () => TestApp);'
-      );
-
-      assert.noFileContent('index.ios.js', '<%= name %>');
-    });
-
-    it('replaces vars in index.android.js', function() {
-      assert.fileContent('index.android.js', 'var TestApp = React.createClass({');
-      assert.fileContent(
-        'index.android.js',
-        'AppRegistry.registerComponent(\'TestApp\', () => TestApp);'
-      );
-
-      assert.noFileContent('index.ios.js', '<%= name %>');
-    });
-
-    it('composes with ios generator', function() {
-      var stat = fs.statSync('ios');
-
-      expect(stat.isDirectory()).toBe(true);
-    });
-
-    it('composes with android generator', function() {
-      var stat = fs.statSync('android');
-
-      expect(stat.isDirectory()).toBe(true);
-    })
   });
 
   describe('react:android', function () {
@@ -115,7 +145,7 @@ describe('React Yeoman Generators', function() {
         jest.runAllTicks();
         jest.runOnlyPendingTimers();
         return generated;
-      }, "generation", 750);
+      }, 'generation', 750);
     });
 
     it('creates files', function () {
@@ -184,7 +214,7 @@ describe('React Yeoman Generators', function() {
       var generated = false;
 
       runs(function() {
-        helpers.run(path.resolve(__dirname, '../generator-ios'))
+        helpers.run(path.resolve(__dirname, '../generator-ios-objc'))
           .withArguments(['TestAppIOS'])
           .on('end', function() {
             generated = true;
@@ -195,7 +225,7 @@ describe('React Yeoman Generators', function() {
         jest.runAllTicks();
         jest.runOnlyPendingTimers();
         return generated;
-      }, "generation", 750);
+      }, 'generation', 750);
     });
 
     it('creates files', function() {
@@ -255,6 +285,88 @@ describe('React Yeoman Generators', function() {
       assert.fileContent(xcscheme, '"TestAppIOSTests"');
 
       assert.noFileContent(xcscheme, '<%= name %>');
+    });
+  });
+
+  describe('react:swift', function() {
+    var assert;
+
+    beforeEach(function() {
+      // A deep dependency of yeoman spams console.log with giant json objects.
+      // yeoman-generator/node_modules/
+      //   download/node_modules/
+      //     caw/node_modules/
+      //       get-proxy/node_modules/
+      //         rc/index.js
+      var log = console.log;
+      console.log = function() {};
+      assert = require('yeoman-generator').assert;
+      var helpers = require('yeoman-generator').test;
+      console.log = log;
+
+      var generated = false;
+
+      runs(function() {
+        helpers.run(path.resolve(__dirname, '../generator-ios-swift'))
+          .withArguments(['TestAppSwift'])
+          .on('end', function() {
+            generated = true;
+          });
+      });
+
+      waitsFor(function() {
+        jest.runAllTicks();
+        jest.runOnlyPendingTimers();
+        return generated;
+      }, 'generation', 750);
+    });
+
+    it('creates files', function() {
+      assert.file([
+        'ios/main.jsbundle',
+        'ios/TestAppSwift/AppDelegate.swift',
+        'ios/TestAppSwift/Base.lproj/LaunchScreen.xib',
+        'ios/TestAppSwift/Images.xcassets/AppIcon.appiconset/Contents.json',
+        'ios/TestAppSwift/Info.plist',
+        'ios/TestAppSwift/ViewController.swift',
+        'ios/TestAppSwift/TestAppSwift-Bridging-Header.h',
+        'ios/TestAppSwift.xcodeproj/project.pbxproj',
+        'ios/TestAppSwift.xcodeproj/xcshareddata/xcschemes/TestAppSwift.xcscheme',
+        'ios/TestAppSwiftTests/TestAppSwiftTests.swift',
+        'ios/TestAppSwiftTests/Info.plist'
+      ]);
+    });
+
+    it('replaces vars in AppDelegate.swift', function() {
+      var appDelegate = 'ios/TestAppSwift/AppDelegate.swift';
+      assert.fileContent(appDelegate, 'moduleName: "TestAppSwift"');
+    });
+
+    it('replaces vars in LaunchScreen.xib', function() {
+      var launchScreen = 'ios/TestAppSwift/Base.lproj/LaunchScreen.xib';
+      assert.fileContent(launchScreen, 'text="TestAppSwift"');
+    });
+
+    it('replaces vars in TestAppSwiftTests.swift', function() {
+      var tests = 'ios/TestAppSwiftTests/TestAppSwiftTests.swift';
+      assert.fileContent(tests, 'class TestAppSwiftTests: XCTestCase');
+    });
+
+    it('replaces vars in project.pbxproj', function() {
+      var pbxproj = 'ios/TestAppSwift.xcodeproj/project.pbxproj';
+      assert.fileContent(pbxproj, '"TestAppSwift"');
+      assert.fileContent(pbxproj, '"TestAppSwiftTests"');
+      assert.fileContent(pbxproj, 'TestAppSwift.app');
+      assert.fileContent(pbxproj, 'TestAppSwiftTests.xctest');
+    });
+
+    it('replaces vars in xcscheme', function() {
+      var xcscheme = 'ios/TestAppSwift.xcodeproj/xcshareddata/xcschemes/TestAppSwift.xcscheme';
+      assert.fileContent(xcscheme, '"TestAppSwift"');
+      assert.fileContent(xcscheme, '"TestAppSwift.app"');
+      assert.fileContent(xcscheme, 'TestAppSwift.xcodeproj');
+      assert.fileContent(xcscheme, '"TestAppSwiftTests.xctest"');
+      assert.fileContent(xcscheme, '"TestAppSwiftTests"');
     });
   });
 });

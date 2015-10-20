@@ -7,7 +7,11 @@ var utils = require('../generator-utils');
 module.exports = yeoman.generators.NamedBase.extend({
   constructor: function() {
     yeoman.generators.NamedBase.apply(this, arguments);
-
+    this.option('swift', {
+      desc: 'Create iOS project using Swift',
+      type: Boolean,
+      defaults: false
+    });
     this.option('skip-ios', {
       desc: 'Skip generating iOS files',
       type: Boolean,
@@ -18,16 +22,18 @@ module.exports = yeoman.generators.NamedBase.extend({
       type: Boolean,
       defaults: false
     });
+    this.arguments = arguments[0];
+  },
 
-    // this passes command line arguments down to the composed generators
-    var args = arguments[0];
+  composing: function() {
     if (!this.options['skip-ios']) {
-      this.composeWith('react:ios', {args: args}, {
-        local: require.resolve(path.resolve(__dirname, '..', 'generator-ios'))
+      var generator = this.options.swift ? 'generator-ios-swift' : 'generator-ios-objc';
+      this.composeWith('react:ios', {args: this.arguments}, {
+        local: require.resolve(path.resolve(__dirname, '..', generator))
       });
     }
     if (!this.options['skip-android']) {
-      this.composeWith('react:android', {args: args}, {
+      this.composeWith('react:android', {args: this.arguments}, {
         local: require.resolve(path.resolve(__dirname, '..', 'generator-android'))
       });
     }
