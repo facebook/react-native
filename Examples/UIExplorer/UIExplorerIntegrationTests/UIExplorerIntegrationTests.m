@@ -20,6 +20,8 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
+#define MIN_VERSION 8.3
+
 @interface UIExplorerIntegrationTests : XCTestCase
 
 @end
@@ -36,7 +38,8 @@
 #endif
 
   NSOperatingSystemVersion version = [NSProcessInfo processInfo].operatingSystemVersion;
-  RCTAssert(version.majorVersion == 8 || version.minorVersion >= 3, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
+  float versionToCompare = [[NSNumber numberWithFloat:version.majorVersion + version.minorVersion / 10.0] floatValue];
+  RCTAssert(versionToCompare >= MIN_VERSION, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp", nil);
 }
 
