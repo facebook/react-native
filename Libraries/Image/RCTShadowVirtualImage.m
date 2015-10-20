@@ -38,7 +38,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     CGFloat scale = [RCTConvert CGFloat:_source[@"scale"]] ?: 1;
 
     __weak RCTShadowVirtualImage *weakSelf = self;
-    [_bridge.imageLoader loadImageWithTag:imageTag size:CGSizeZero scale:scale resizeMode:UIViewContentModeScaleToFill progressBlock:nil completionBlock:^(NSError *error, UIImage *image) {
+    [_bridge.imageLoader loadImageWithTag:imageTag
+                                     size:CGSizeZero
+                                    scale:scale
+                               resizeMode:UIViewContentModeScaleToFill
+                            progressBlock:nil
+                          completionBlock:^(NSError *error, UIImage *image) {
+
       dispatch_async(_bridge.uiManager.methodQueue, ^{
         RCTShadowVirtualImage *strongSelf = weakSelf;
         strongSelf->_image = image;
