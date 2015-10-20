@@ -94,10 +94,10 @@ clarity: we used the <a href="https://facebook.github.io/react/docs/more-about-r
 view using <code>{...this.props}</code>. The reason for this is that
 <code>TouchableOpacity</code> is actually a composite component, and so in addition
 to depending on <code>setNativeProps</code> on its child, it also requires that the
-child perform touch handling. To dot this, it passes on <a href="https://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder" target="_blank">various
+child perform touch handling. To do this, it passes on <a href="https://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder" target="_blank">various
 props</a>
 that call back to the <code>TouchableOpacity</code> component.
-<code>TouchableHighlight</code>, in contrast, is backed by a native view only
+<code>TouchableHighlight</code>, in contrast, is backed by a native view and only
 requires that we implement <code>setNativeProps</code>.</p><h2><a class="anchor" name="precomputing-style"></a>Precomputing style <a class="hash-link" href="#precomputing-style">#</a></h2><p>We learned above that <code>setNativeProps</code> is a wrapper around
 <code>RCTUIManager.updateView</code>, which is also used internally by React to
 perform updates on re-render. One important difference is that
