@@ -31,7 +31,6 @@ const validateOpts = declareOpts({
   },
   ignoreFilePath: {
     type: 'function',
-
     default: function(){}
   },
   fileWatcher: {
@@ -48,15 +47,7 @@ const validateOpts = declareOpts({
   },
   providesModuleNodeModules: {
     type: 'array',
-    default: [
-      'react-tools',
-      'react-native',
-      // Parse requires AsyncStorage. They will
-      // change that to require('react-native') which
-      // should work after this release and we can
-      // remove it from here.
-      'parse',
-    ],
+    default: [],
   },
   platforms: {
     type: 'array',

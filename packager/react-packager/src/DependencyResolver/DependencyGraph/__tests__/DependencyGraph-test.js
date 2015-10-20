@@ -2299,6 +2299,7 @@ describe('DependencyGraph', function() {
         fileWatcher: fileWatcher,
         assetExts: ['png', 'jpg'],
         cache: cache,
+        providesModuleNodeModules: ['react-tools'],
       });
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
@@ -2368,6 +2369,7 @@ describe('DependencyGraph', function() {
         fileWatcher: fileWatcher,
         assetExts: ['png', 'jpg'],
         cache: cache,
+        providesModuleNodeModules: ['react-tools'],
       });
       return getOrderedDependenciesAsJSON(dgraph, '/react-tools/index.js').then(function(deps) {
         expect(deps)

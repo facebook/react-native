@@ -47,6 +47,9 @@ var validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  providesModuleNodeModules: {
+    type: 'array',
+  },
 });
 
 function HasteDependencyResolver(options) {
@@ -62,6 +65,7 @@ function HasteDependencyResolver(options) {
     },
     fileWatcher: opts.fileWatcher,
     cache: opts.cache,
+    providesModuleNodeModules: opts.providesModuleNodeModules,
   });
 
 
