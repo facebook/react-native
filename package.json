@@ -44,7 +44,7 @@
   "scripts": {
     "test": "NODE_ENV=test jest",
     "lint": "eslint Examples/ Libraries/",
-    "start": "./packager/packager.sh || true"
+    "start": "react-native start || true"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
