@@ -16,11 +16,6 @@
 @interface RCTBridge (RCTAssetsLibraryImageLoader)
 
 /**
- * The shared Assets Library image loader
- */
-@property (nonatomic, readonly) RCTAssetsLibraryImageLoader *assetsLibraryImageLoader;
-
-/**
  * The shared asset library instance.
  */
 @property (nonatomic, readonly) ALAssetsLibrary *assetsLibrary;
