@@ -618,6 +618,19 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   setCountableForJava(env, obj, std::move(bridge));
 }
 
+static void executeApplicationScript(
+    const RefPtr<Bridge>& bridge,
+    const std::string script,
+    const std::string sourceUri) {
+  try {
+    // Execute the application script and collect/dispatch any native calls that might have occured
+    bridge->executeApplicationScript(script, sourceUri);
+    bridge->executeJSCall("BatchedBridge", "flushedQueue", std::vector<folly::dynamic>());
+  } catch (...) {
+    translatePendingCppExceptionToJavaException();
+  }
+}
+
 static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
                                  jstring assetName) {
   jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
@@ -634,7 +647,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   #endif
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
-  bridge->executeApplicationScript(script, assetNameStr);
+  executeApplicationScript(bridge, script, assetNameStr);
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_done"));
 }
 
@@ -655,7 +668,7 @@ static void loadScriptFromNetworkCached(JNIEnv* env, jobject obj, jstring source
     "sourceURL", sourceURLStr);
   #endif
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
-  bridge->executeApplicationScript(script, jni::fromJString(env, sourceURL));
+  executeApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_exec"));
 }
 
