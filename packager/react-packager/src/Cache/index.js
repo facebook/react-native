@@ -189,12 +189,21 @@ class Cache {
   }
 
   _getCacheFilePath(options) {
+    let mtime;
+    try {
+      ({mtime} = fs.statSync(options.transformModulePath));
+      mtime = String(mtime.getTime());
+    } catch (error) {
+      mtime = '';
+    }
+
     return getCacheFilePath(
       'react-packager-cache-',
       version,
       options.projectRoots.join(',').split(path.sep).join('-'),
       options.cacheVersion || '0',
       options.transformModulePath,
+      mtime
     );
   }
 }
