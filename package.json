@@ -46,9 +46,6 @@
     "lint": "eslint Examples/ Libraries/",
     "start": "./packager/packager.sh || true"
   },
-  "bin": {
-    "react-native-start": "packager/packager.sh"
-  },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "babel-core": "^5.8.23",
