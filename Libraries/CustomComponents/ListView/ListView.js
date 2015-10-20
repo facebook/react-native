@@ -320,7 +320,7 @@ var ListView = React.createClass({
       }
 
       if (this.props.renderSectionHeader) {
-        var shouldUpdateHeader = rowCount >= this.state.prevRenderedRowsCount &&
+        var shouldUpdateHeader = rowCount >= this.state.prevRenderedRowsCount ||
           dataSource.sectionHeaderShouldUpdate(sectionIdx);
         bodyComponents.push(
           <StaticRenderer
