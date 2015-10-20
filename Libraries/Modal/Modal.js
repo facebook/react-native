@@ -23,7 +23,7 @@ var RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * A Modal component covers the native view (e.g. UIViewController, Activity)
  * that contains the React Native root.
  *
- * Use Modal in existing apps that embed React Native; Modal allows the portion of
+ * Use Modal in hybrid apps that embed React Native; Modal allows the portion of
  * your app written in React Native to present content above the enclosing
  * native view hierarchy.
  *
