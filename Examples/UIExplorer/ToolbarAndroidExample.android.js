@@ -107,6 +107,12 @@ var ToolbarAndroidExample = React.createClass({
             title="Bunny and Hawk"
             style={styles.toolbar} />
         </UIExplorerBlock>
+        <UIExplorerBlock title="Toolbar with remote overflowIcon">
+          <ToolbarAndroid
+            actions={toolbarActions}
+            overflowIcon={require('./bunny.png')}
+            style={styles.toolbar} />
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   },

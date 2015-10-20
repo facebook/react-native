@@ -154,9 +154,7 @@ public class ReactToolbar extends Toolbar {
   @Override
   public void onFinishTemporaryDetach() {
     super.onFinishTemporaryDetach();
-    mLogoHolder.onAttach();
-    mNavIconHolder.onAttach();
-    mOverflowIconHolder.onAttach();
+    attachDraweeHolders();
   }
 
   private void detachDraweeHolders() {
