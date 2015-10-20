@@ -156,12 +156,18 @@ function createProject(name, verbose) {
     fs.mkdirSync(root);
   }
 
+  var startScript;
+  if (/^win/.test(process.platform)) {
+    startScript = 'node_modules\\react-native\\packager\\packager.bat';
+  } else {
+    startScript = 'node_modules/react-native/packager/packager.sh';
+  }
   var packageJson = {
     name: projectName,
     version: '0.0.1',
     private: true,
     scripts: {
-      start: 'node_modules/react-native/packager/packager.sh'
+      start: startScript
     }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
