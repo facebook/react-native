@@ -41,8 +41,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @DoNotStrip
 public class CatalystInstance {
 
-  private static final int BRIDGE_SETUP_TIMEOUT_MS = 15000;
-  private static final int LOAD_JS_BUNDLE_TIMEOUT_MS = 15000;
+  private static final int BRIDGE_SETUP_TIMEOUT_MS = 30000;
+  private static final int LOAD_JS_BUNDLE_TIMEOUT_MS = 30000;
 
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
 
