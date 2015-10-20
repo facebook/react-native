@@ -58,6 +58,10 @@ function _server(argv, config, resolve, reject) {
     command: 'reset-cache',
     description: 'Removes cached files',
     default: false,
+  }, {
+    command: 'verbose',
+    description: 'Enables logging',
+    default: false,
   }]);
 
   args.projectRoots = args.projectRoots

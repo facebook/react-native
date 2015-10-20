@@ -68,6 +68,10 @@ var options = parseCommandLine([{
   command: 'reset-cache',
   description: 'Removes cached files',
   default: false,
+}, {
+  command: 'verbose',
+  description: 'Enables logging',
+  default: false,
 }]);
 
 if (options.projectRoots) {
@@ -187,6 +191,7 @@ function getAppMiddleware(options) {
         '../Libraries/JavaScriptAppEngine/polyfills/document.js'
       ),
     ],
+    verbose: options.verbose,
   });
 }
 

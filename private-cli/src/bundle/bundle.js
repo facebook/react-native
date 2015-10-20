@@ -58,7 +58,11 @@ function _bundle(argv, config, resolve, reject) {
       command: 'assets-dest',
       description: 'Directory name where to store assets referenced in the bundle',
       type: 'string',
-    }
+    }, {
+      command: 'verbose',
+      description: 'Enables logging',
+      default: false,
+    },
   ], argv);
 
   // This is used by a bazillion of npm modules we don't control so we don't
@@ -70,6 +74,7 @@ function _bundle(argv, config, resolve, reject) {
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
     transformModulePath: args.transformer,
+    verbose: args.verbose,
   };
 
   const requestOpts = {
