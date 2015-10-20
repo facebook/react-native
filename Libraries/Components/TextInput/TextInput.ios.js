@@ -503,6 +503,7 @@ var TextInput = React.createClass({
   },
 
   _onFocus: function(event: Event) {
+    TextInputState.focusTextInput(findNodeHandle(this));
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
