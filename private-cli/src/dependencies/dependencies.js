@@ -44,6 +44,10 @@ function _dependencies(argv, config, resolve, reject) {
       type: 'string',
       default: require.resolve('../../../packager/transformer'),
       description: 'Specify a custom transformer to be used (absolute path)'
+    }, {
+      command: 'verbose',
+      description: 'Enables logging',
+      default: false,
     }
   ], argv);
 
@@ -57,6 +61,7 @@ function _dependencies(argv, config, resolve, reject) {
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
     transformModulePath: args.transformer,
+    verbose: config.verbose,
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>
