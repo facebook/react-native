@@ -11,7 +11,7 @@ __NOTE__: This guide needs to be extended for Windows. Can you send us a pull re
 
 This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
 
-### If already have the Android SDK
+### If you already have the Android SDK
 
 1. __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your existing Android SDK
 2. Make sure to update the required packages to the versions mentioned below (see screenshots)
@@ -35,6 +35,20 @@ This guide describes basic steps of the Android development environment setup th
 
 ### Install Genymotion
 
+Genymotion is much easier to set up than stock Google emulators. However, it's only free for personal use. If you want to use the stock Google emulator, see below.
+
 1. Download and install [Genymotion](https://www.genymotion.com/)
 2. Open Genymotion
 3. Create a new emulator and start it
+
+### Alternative: Create a stock Google emulator
+
+1. Start a new shell and run `android`; in the window that appears make sure you check:
+  * Intel x86 Atom System Image (for Android 5.1.1 - API 22)
+  * Intel x86 Emulator Accelerator (HAXM installer)
+2. Click "Install Packages".
+3. [Configure hardware acceleration (HAXM)](http://developer.android.com/tools/devices/emulator.html#vm-mac), otherwise the emulator is going to be slow.
+4. Create an Android Virtual Device (AVD):
+  1. Run `android avd` and click on **Create...**
+  ![Create AVD dialog](/react-native/img/CreateAVD.png)
+  2. With the new AVD selected, click `Start...`
