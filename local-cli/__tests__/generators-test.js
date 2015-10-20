@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 'use strict';
 
 jest.autoMockOff();
@@ -56,7 +64,7 @@ describe('React Yeoman Generators', function() {
         'AppRegistry.registerComponent(\'TestApp\', () => TestApp);'
       );
 
-      assert.noFileContent('index.ios.js', 'SampleApp');
+      assert.noFileContent('index.ios.js', '<%= name %>');
     });
 
     it('replaces vars in index.android.js', function() {
@@ -66,7 +74,7 @@ describe('React Yeoman Generators', function() {
         'AppRegistry.registerComponent(\'TestApp\', () => TestApp);'
       );
 
-      assert.noFileContent('index.ios.js', 'SampleApp');
+      assert.noFileContent('index.ios.js', '<%= name %>');
     });
 
     it('composes with ios generator', function() {
@@ -218,14 +226,14 @@ describe('React Yeoman Generators', function() {
       var appDelegate = 'ios/TestAppIOS/AppDelegate.m';
 
       assert.fileContent(appDelegate, 'moduleName:@"TestAppIOS"');
-      assert.noFileContent(appDelegate, 'SampleApp');
+      assert.noFileContent(appDelegate, '<%= name %>');
     });
 
     it('replaces vars in LaunchScreen.xib', function() {
       var launchScreen = 'ios/TestAppIOS/Base.lproj/LaunchScreen.xib';
 
       assert.fileContent(launchScreen, 'text="TestAppIOS"');
-      assert.noFileContent(launchScreen, 'SampleApp');
+      assert.noFileContent(launchScreen, '<%= name %>');
     });
 
     it('replaces vars in TestAppIOSTests.m', function() {
@@ -233,7 +241,7 @@ describe('React Yeoman Generators', function() {
 
       assert.fileContent(tests, '@interface TestAppIOSTests : XCTestCase');
       assert.fileContent(tests, '@implementation TestAppIOSTests');
-      assert.noFileContent(tests, 'SampleApp');
+      assert.noFileContent(tests, '<%= name %>');
     });
 
     it('replaces vars in project.pbxproj', function() {
@@ -243,7 +251,7 @@ describe('React Yeoman Generators', function() {
       assert.fileContent(pbxproj, 'TestAppIOS.app');
       assert.fileContent(pbxproj, 'TestAppIOSTests.xctest');
 
-      assert.noFileContent(pbxproj, 'SampleApp');
+      assert.noFileContent(pbxproj, '<%= name %>');
     });
 
     it('replaces vars in xcscheme', function() {
@@ -254,7 +262,7 @@ describe('React Yeoman Generators', function() {
       assert.fileContent(xcscheme, '"TestAppIOSTests.xctest"');
       assert.fileContent(xcscheme, '"TestAppIOSTests"');
 
-      assert.noFileContent(xcscheme, 'SampleApp');
+      assert.noFileContent(xcscheme, '<%= name %>');
     });
   });
 });

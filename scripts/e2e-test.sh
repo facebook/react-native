@@ -13,7 +13,7 @@ TEMP=$(mktemp -d /tmp/react-native-XXXXXXXX)
 export REACT_PACKAGER_LOG="$TEMP/server.log"
 
 # To make sure we actually installed the local version
-# of react-native, we will create a temp file inside SampleApp
+# of react-native, we will create a temp file inside the template
 # and check that it exists after `react-native init`
 MARKER=$(mktemp $ROOT/local-cli/generator-ios/templates/main/XXXXXXXX)
 

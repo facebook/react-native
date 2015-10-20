@@ -114,7 +114,7 @@ function stackFrameToString(stackFrame, maxLength) {
   var fileName = fileNameParts[fileNameParts.length - 1];
 
   if (fileName.length > 18) {
-    fileName = fileName.substr(0, 17) + '\u2026' /* ... */;
+    fileName = fileName.substr(0, 17) + '\u2026'; /* ... */
   }
 
   var spaces = fillSpaces(maxLength - stackFrame.methodName.length);

@@ -23,6 +23,7 @@ var {
   View,
 } = React;
 
+/* Keep this list in sync with UIExplorerIntegrationTests.m */
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
@@ -30,6 +31,7 @@ var TESTS = [
   require('./LayoutEventsTest'),
   require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),
+  require('./ImageSnapshotTest'),
   require('./PromiseTest'),
 ];
 

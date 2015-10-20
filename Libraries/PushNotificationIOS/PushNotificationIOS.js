@@ -27,8 +27,29 @@ var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
  *
- * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringPushNotifications/ConfiguringPushNotifications.html)
+ * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
  * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
+ *
+ * To enable support for `notification` and `register` events you need to augment your AppDelegate.
+ *
+ * At the top of your `AppDelegate.m`:
+ *
+ *   `#import "RCTPushNotificationManager.h"`
+ *
+ * And then in your AppDelegate implementation add the following:
+ *
+ *   ```
+ *   // Required for the register event.
+ *    - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+ *    {
+ *     [RCTPushNotificationManager application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+ *    }
+ *    // Required for the notification event.
+ *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+ *    {
+ *     [RCTPushNotificationManager application:application didReceiveRemoteNotification:notification];
+ *    }
+ *   ```
  */
 class PushNotificationIOS {
   _data: Object;
@@ -59,6 +80,13 @@ class PushNotificationIOS {
    */
   static scheduleLocalNotification(details: Object) {
     RCTPushNotificationManager.scheduleLocalNotification(details);
+  }
+
+  /**
+   * Cancels all scheduled localNotifications
+   */
+  static cancelAllLocalNotifications() {
+    RCTPushNotificationManager.cancelAllLocalNotifications();
   }
 
   /**

@@ -17,12 +17,13 @@ var Interpolation = require('Interpolation');
 var React = require('React');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
-var invariant = require('invariant');
+var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var flattenStyle = require('flattenStyle');
+var invariant = require('invariant');
 var requestAnimationFrame = require('requestAnimationFrame');
 
-import type InterpolationConfigType from 'Interpolation';
+import type { InterpolationConfigType } from 'Interpolation';
 
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
@@ -39,11 +40,16 @@ class Animated {
   __getChildren(): Array<Animated> { return []; }
 }
 
+type AnimationConfig = {
+  isInteraction?: bool;
+};
+
 // Important note: start() and stop() will only be called at most once.
 // Once an animation has been stopped or finished its course, it will
 // not be reused.
 class Animation {
   __active: bool;
+  __isInteraction: bool;
   __onEnd: ?EndCallback;
   start(
     fromValue: number,
@@ -127,14 +133,14 @@ function _flush(rootNode: AnimatedValue): void {
   animatedStyles.forEach(animatedStyle => animatedStyle.update());
 }
 
-type TimingAnimationConfig = {
+type TimingAnimationConfig =  AnimationConfig & {
   toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY;
   easing?: (value: number) => number;
   duration?: number;
   delay?: number;
 };
 
-type TimingAnimationConfigSingle = {
+type TimingAnimationConfigSingle = AnimationConfig & {
   toValue: number | AnimatedValue;
   easing?: (value: number) => number;
   duration?: number;
@@ -162,6 +168,7 @@ class TimingAnimation extends Animation {
     this._easing = config.easing || easeInOut;
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay || 0;
+    this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
   }
 
   start(
@@ -222,12 +229,12 @@ class TimingAnimation extends Animation {
   }
 }
 
-type DecayAnimationConfig = {
+type DecayAnimationConfig = AnimationConfig & {
   velocity: number | {x: number, y: number};
   deceleration?: number;
 };
 
-type DecayAnimationConfigSingle = {
+type DecayAnimationConfigSingle = AnimationConfig & {
   velocity: number;
   deceleration?: number;
 };
@@ -247,6 +254,7 @@ class DecayAnimation extends Animation {
     super();
     this._deceleration = config.deceleration || 0.998;
     this._velocity = config.velocity;
+    this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
   }
 
   start(
@@ -290,7 +298,7 @@ class DecayAnimation extends Animation {
   }
 }
 
-type SpringAnimationConfig = {
+type SpringAnimationConfig = AnimationConfig & {
   toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY;
   overshootClamping?: bool;
   restDisplacementThreshold?: number;
@@ -302,7 +310,7 @@ type SpringAnimationConfig = {
   friction?: number;
 };
 
-type SpringAnimationConfigSingle = {
+type SpringAnimationConfigSingle = AnimationConfig & {
   toValue: number | AnimatedValue;
   overshootClamping?: bool;
   restDisplacementThreshold?: number;
@@ -348,6 +356,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
+    this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
 
     var springConfig;
     if (config.bounciness !== undefined || config.speed !== undefined) {
@@ -610,7 +619,10 @@ class AnimatedValue extends AnimatedWithChildren {
    * class.
    */
   animate(animation: Animation, callback: ?EndCallback): void {
-    var handle = InteractionManager.createInteractionHandle();
+    var handle = null;
+    if (animation.__isInteraction) {
+      handle = InteractionManager.createInteractionHandle();
+    }
     var previousAnimation = this._animation;
     this._animation && this._animation.stop();
     this._animation = animation;
@@ -621,7 +633,9 @@ class AnimatedValue extends AnimatedWithChildren {
       },
       (result) => {
         this._animation = null;
-        InteractionManager.clearInteractionHandle(handle);
+        if (handle !== null) {
+          InteractionManager.clearInteractionHandle(handle);
+        }
         callback && callback(result);
       },
       previousAnimation,
@@ -1078,6 +1092,19 @@ function createAnimatedComponent(Component: any): any {
       );
     }
   }
+  AnimatedComponent.propTypes = {
+    style: function(props, propName, componentName) {
+      for (var key in ViewStylePropTypes) {
+        if (!Component.propTypes[key] && props[key] !== undefined) {
+          console.error(
+            'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
+            'should nest it in a style object. ' +
+            'E.g. `{ style: { ' + key + ': ... } }`'
+          );
+        }
+      }
+    }
+  };
 
   return AnimatedComponent;
 }

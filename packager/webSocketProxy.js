@@ -8,9 +8,9 @@
  */
 'use strict';
 
-var WebSocketServer = require('ws').Server;
 
 function attachToServer(server, path) {
+  var WebSocketServer = require('ws').Server;
   var wss = new WebSocketServer({
     server: server,
     path: path
@@ -49,14 +49,15 @@ function attachToServer(server, path) {
     ws.on('message', function(message) {
       allClientsExcept(ws).forEach(function(cn) {
         try {
-          // Sometimes this call throws 'not opened'
           cn.send(message);
         } catch(e) {
-          console.warn('WARN: ' + e.message);
+          // Sometimes this call throws 'not opened'
         }
       });
     });
   });
+
+  return wss;
 }
 
 module.exports = {

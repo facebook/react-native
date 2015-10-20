@@ -8,18 +8,16 @@
  */
 'use strict';
 
-require('babel-core/register')({
-  only: /react-packager\/src/
-});
+require('../babelRegisterOnly')([/react-packager\/src/]);
 
 useGracefulFs();
 
+var debug = require('debug');
+var omit = require('underscore').omit;
 var Activity = require('./src/Activity');
-var Server = require('./src/Server');
-var SocketInterface = require('./src/SocketInterface');
 
 exports.middleware = function(options) {
-  var server = new Server(options);
+  var server = createServer(options);
   return server.processRequest.bind(server);
 };
 
@@ -29,7 +27,7 @@ exports.Activity = Activity;
 // compat.
 exports.buildPackage =
 exports.buildBundle = function(options, bundleOptions) {
-  var server = createServer(options);
+  var server = createNonPersistentServer(options);
   return server.buildBundle(bundleOptions)
     .then(function(p) {
       server.end();
@@ -39,7 +37,7 @@ exports.buildBundle = function(options, bundleOptions) {
 
 exports.buildPackageFromUrl =
 exports.buildBundleFromUrl = function(options, reqUrl) {
-  var server = createServer(options);
+  var server = createNonPersistentServer(options);
   return server.buildBundleFromUrl(reqUrl)
     .then(function(p) {
       server.end();
@@ -47,9 +45,9 @@ exports.buildBundleFromUrl = function(options, reqUrl) {
     });
 };
 
-exports.getDependencies = function(options, main) {
-  var server = createServer(options);
-  return server.getDependencies(main)
+exports.getDependencies = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.getDependencies(bundleOptions)
     .then(function(r) {
       server.end();
       return r.dependencies;
@@ -57,10 +55,15 @@ exports.getDependencies = function(options, main) {
 };
 
 exports.createClientFor = function(options) {
-  return SocketInterface.getOrCreateSocketFor(options);
+  if (options.verbose) {
+    enableDebug();
+  }
+  startSocketInterface();
+  return (
+    require('./src/SocketInterface')
+      .getOrCreateSocketFor(omit(options, ['verbose']))
+  );
 };
-
-SocketInterface.listenOnServerMessages();
 
 function useGracefulFs() {
   var fs = require('fs');
@@ -68,12 +71,54 @@ function useGracefulFs() {
   gracefulFs.gracefulify(fs);
 }
 
+function enableDebug() {
+  // react-packager logs debug messages using the 'debug' npm package, and uses
+  // the following prefix throughout.
+  // To enable debugging, we need to set our pattern or append it to any
+  // existing pre-configured pattern to avoid disabling logging for
+  // other packages
+  var debugPattern = 'ReactNativePackager:*';
+  var existingPattern = debug.load();
+  if (existingPattern) {
+    debugPattern += ',' + existingPattern;
+  }
+  debug.enable(debugPattern);
+}
+
 function createServer(options) {
+  // the debug module is configured globally, we need to enable debugging
+  // *before* requiring any packages that use `debug` for logging
+  if (options.verbose) {
+    enableDebug();
+  }
+
+  startSocketInterface();
+  var Server = require('./src/Server');
+  return new Server(omit(options, ['verbose']));
+}
+
+function createNonPersistentServer(options) {
   Activity.disable();
   // Don't start the filewatcher or the cache.
   if (options.nonPersistent == null) {
     options.nonPersistent = true;
   }
 
-  return new Server(options);
+  return createServer(options);
+}
+
+// we need to listen on a socket as soon as a server is created, but only once.
+// This file also serves as entry point when spawning a socket server; in that
+// case we need to start the server immediately.
+var didStartSocketInterface = false;
+function startSocketInterface() {
+  if (didStartSocketInterface) {
+    return;
+  }
+  didStartSocketInterface = true;
+  require('./src/SocketInterface').listenOnServerMessages();
+}
+
+if (require.main === module) { // used as entry point
+  startSocketInterface();
 }

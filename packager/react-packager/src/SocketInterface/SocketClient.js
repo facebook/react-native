@@ -11,7 +11,7 @@
 const Bundle = require('../Bundler/Bundle');
 const Promise = require('promise');
 const bser = require('bser');
-const debug = require('debug')('ReactPackager:SocketClient');
+const debug = require('debug')('ReactNativePackager:SocketClient');
 const fs = require('fs');
 const net = require('net');
 const path  = require('path');
@@ -82,6 +82,13 @@ class SocketClient {
   getDependencies(main) {
     return this._send({
       type: 'getDependencies',
+      data: main,
+    });
+  }
+
+  getOrderedDependencyPaths(main) {
+    return this._send({
+      type: 'getOrderedDependencyPaths',
       data: main,
     });
   }

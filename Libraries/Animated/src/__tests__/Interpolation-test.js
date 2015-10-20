@@ -10,7 +10,8 @@
 
 jest
   .dontMock('Interpolation')
-  .dontMock('Easing');
+  .dontMock('Easing')
+  .dontMock('tinycolor');
 
 var Interpolation = require('Interpolation');
 var Easing = require('Easing');
@@ -223,6 +224,39 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe('rgba(50, 150, 250, 0.5)');
   });
 
+  it('should work with output ranges as short hex string', () => {
+    var interpolation = Interpolation.create({
+      inputRange: [0, 1],
+      outputRange: ['#024', '#9BF'],
+    });
+
+    expect(interpolation(0)).toBe('rgba(0, 34, 68, 1)');
+    expect(interpolation(0.5)).toBe('rgba(76.5, 110.5, 161.5, 1)');
+    expect(interpolation(1)).toBe('rgba(153, 187, 255, 1)');
+  });
+
+  it('should work with output ranges as long hex string', () => {
+    var interpolation = Interpolation.create({
+      inputRange: [0, 1],
+      outputRange: ['#FF9500', '#87FC70'],
+    });
+
+    expect(interpolation(0)).toBe('rgba(255, 149, 0, 1)');
+    expect(interpolation(0.5)).toBe('rgba(195, 200.5, 56, 1)');
+    expect(interpolation(1)).toBe('rgba(135, 252, 112, 1)');
+  });
+
+  it('should work with output ranges with mixed hex and rgba strings', () => {
+    var interpolation = Interpolation.create({
+      inputRange: [0, 1],
+      outputRange: ['rgba(100, 120, 140, .5)', '#87FC70'],
+    });
+
+    expect(interpolation(0)).toBe('rgba(100, 120, 140, 0.5)');
+    expect(interpolation(0.5)).toBe('rgba(117.5, 186, 126, 0.75)');
+    expect(interpolation(1)).toBe('rgba(135, 252, 112, 1)');
+  });
+
   it('should work with negative and decimal values in string ranges', () => {
     var interpolation = Interpolation.create({
       inputRange: [0, 1],
@@ -242,12 +276,19 @@ describe('Interpolation', () => {
     expect(() => { interpolation('45rad'); }).toThrow();
   });
 
-  it('should crash when defining output range with different pattern', () => {
-    expect(() => Interpolation.create({
-      inputRange: [0, 1],
-      outputRange: ['rgba(0, 100, 200, 0)', 'rgb(50, 150, 250)'],
-    })).toThrow();
+  it('should support a mix of color patterns', () => {
+    var interpolation = Interpolation.create({
+      inputRange: [0, 1, 2],
+      outputRange: ['rgba(0, 100, 200, 0)', 'rgb(50, 150, 250)', 'red'],
+    });
 
+    expect(interpolation(0)).toBe('rgba(0, 100, 200, 0)');
+    expect(interpolation(0.5)).toBe('rgba(25, 125, 225, 0.5)');
+    expect(interpolation(1.5)).toBe('rgba(152.5, 75, 125, 1)');
+    expect(interpolation(2)).toBe('rgba(255, 0, 0, 1)');
+  });
+
+  it('should crash when defining output range with different pattern', () => {
     expect(() => Interpolation.create({
       inputRange: [0, 1],
       outputRange: ['20deg', '30rad'],

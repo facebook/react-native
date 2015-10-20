@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
@@ -13,10 +21,15 @@ var URL_PATH = {
   android: '/index.android.bundle?platform=android&dev=',
   ios: '/index.ios.bundle?platform=ios&dev='
 };
+var SOURCEMAP_OUT_PATH = {
+  android: 'android/index.android.map',
+  ios: 'ios/index.ios.map'
+};
 
 function getBundle(flags) {
   var platform = flags.platform ? flags.platform : 'ios';
   var outPath = flags.out ? flags.out : OUT_PATH[platform];
+  var sourceMapOutPath = SOURCEMAP_OUT_PATH[platform];
 
   var projectRoots = [path.resolve(__dirname, '../..')];
   if (flags.root) {
@@ -51,12 +64,23 @@ function getBundle(flags) {
       fs.writeFile(outPath, bundle.getSource({
         inlineSourceMap: flags.inlineSource,
         minify: flags.minify
-      }), function(err) {
-        if (err) {
+      }), function(bundleWriteErr) {
+        if (bundleWriteErr) {
           console.log(chalk.red('Error saving bundle to disk'));
-          throw err;
-        } else {
-          console.log('Successfully saved bundle to ' + outPath);
+          throw bundleWriteErr;
+        }
+
+        console.log('Successfully saved bundle to ' + outPath);
+
+        if (flags.writeSourcemap) {
+          fs.writeFile(sourceMapOutPath, bundle.getSourceMap(), function(sourceMapWriteErr) {
+            if (sourceMapWriteErr) {
+              console.log(chalk.red('Error saving source map to disk'));
+              throw sourceMapWriteErr;
+            } else {
+              console.log('Successfully saved source map to ' + sourceMapOutPath);
+            }
+          });
         }
       });
     });
@@ -75,6 +99,7 @@ function showHelp() {
     '  --out\t\tspecify the output file',
     '  --url\t\tspecify the bundle file url',
     '  --platform\t\tspecify the platform(android/ios)',
+    '  --write-sourcemap\t\twrite bundle source map to disk'
   ].join('\n'));
   process.exit(1);
 }
@@ -91,6 +116,7 @@ module.exports = {
       assetRoots: args.indexOf('--assetRoots') !== -1 ? args[args.indexOf('--assetRoots') + 1] : false,
       out: args.indexOf('--out') !== -1 ? args[args.indexOf('--out') + 1] : false,
       url: args.indexOf('--url') !== -1 ? args[args.indexOf('--url') + 1] : false,
+      writeSourcemap: args.indexOf('--write-sourcemap') !== -1,
     }
 
     if (flags.help) {

@@ -23,15 +23,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the script URL
   scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];
 
-  if (!scriptURL ||
-      (scriptURL.fileURL && ![[NSFileManager defaultManager] fileExistsAtPath:scriptURL.path])) {
+  if (!scriptURL) {
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
-      NSLocalizedDescriptionKey: scriptURL ? [NSString stringWithFormat:@"Script at '%@' could not be found.", scriptURL] : @"No script URL provided"
+      NSLocalizedDescriptionKey: @"No script URL provided."
     }];
     onComplete(error, nil);
     return;
   }
 
+  // Load local script file
+  if (scriptURL.fileURL) {
+    NSString *filePath = scriptURL.path;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      NSError *error = nil;
+      NSData *source = [NSData dataWithContentsOfFile:filePath
+                                              options:NSDataReadingMappedIfSafe
+                                                error:&error];
+      onComplete(error, source);
+    });
+    return;
+  }
+
+  // Load remote script file
   NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:scriptURL completionHandler:
                                 ^(NSData *data, NSURLResponse *response, NSError *error) {
 
@@ -60,10 +73,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
       }
     }
-    NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
 
     // Handle HTTP errors
     if ([response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode != 200) {
+      NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
       NSDictionary *userInfo;
       NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
       if ([errorDetails isKindOfClass:[NSDictionary class]] &&
@@ -90,7 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       onComplete(error, nil);
       return;
     }
-    onComplete(nil, rawText);
+    onComplete(nil, data);
   }];
 
   [task resume];

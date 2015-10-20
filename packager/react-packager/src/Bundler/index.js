@@ -187,6 +187,38 @@ class Bundler {
     return this._resolver.getDependencies(main, { dev: isDev, platform });
   }
 
+  getOrderedDependencyPaths({ entryFile, dev, platform }) {
+    return this.getDependencies(entryFile, dev, platform).then(
+      ({ dependencies }) => {
+        const ret = [];
+        const promises = [];
+        const placeHolder = {};
+        dependencies.forEach(dep => {
+          if (dep.isAsset()) {
+            const relPath = getPathRelativeToRoot(
+              this._projectRoots,
+              dep.path
+            );
+            promises.push(
+              this._assetServer.getAssetData(relPath, platform)
+            );
+            ret.push(placeHolder);
+          } else {
+            ret.push(dep.path);
+          }
+        });
+
+        return Promise.all(promises).then(assetsData => {
+          assetsData.forEach(({ files }) => {
+            const index = ret.indexOf(placeHolder);
+            ret.splice(index, 1, ...files);
+          });
+          return ret;
+        });
+      }
+    );
+  }
+
   _transformModule(bundle, response, module, platform = null) {
     let transform;
 
@@ -231,7 +263,6 @@ class Bundler {
     ]).then(([dimensions, id]) => {
       const img = {
         __packager_asset: true,
-        isStatic: true,
         path: module.path,
         uri: id.replace(/^[^!]+!/, ''),
         width: dimensions.width / module.resolution,

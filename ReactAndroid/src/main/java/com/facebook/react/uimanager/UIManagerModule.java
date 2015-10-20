@@ -241,7 +241,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     ViewManager viewManager = mViewManagers.get(className);
-    ReactShadowNode cssNode = viewManager.createCSSNodeInstance();
+    ReactShadowNode cssNode = viewManager.createShadowNodeInstance();
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
@@ -632,8 +632,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       final Callback callback) {
     mOperationsQueue.enqueueFindTargetForTouch(
         reactTag,
-        point.getInt(0),
-        point.getInt(1),
+        Math.round(PixelUtil.toPixelFromDIP(point.getDouble(0))),
+        Math.round(PixelUtil.toPixelFromDIP(point.getDouble(1))),
         callback);
   }
 

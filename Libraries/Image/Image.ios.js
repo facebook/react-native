@@ -19,6 +19,7 @@ var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var View = require('View');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
@@ -152,6 +153,10 @@ var Image = React.createClass({
     validAttributes: ReactNativeViewAttributes.UIView
   },
 
+  contextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     for (var prop in cfg.nativeOnly) {
       if (this.props[prop] !== undefined) {
@@ -165,6 +170,11 @@ var Image = React.createClass({
     var {width, height} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
+    if (source.uri === '') {
+      console.warn('source.uri should not be an empty string');
+      return <View {...this.props} style={style} />;
+    }
+
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
     var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
@@ -176,16 +186,20 @@ var Image = React.createClass({
       RawImage = RCTImageView;
     }
 
-    return (
-      <RawImage
-        {...this.props}
-        style={style}
-        resizeMode={resizeMode}
-        tintColor={tintColor}
-        src={source.uri}
-        defaultImageSrc={defaultSource.uri}
-      />
-    );
+    if (this.context.isInAParentText) {
+      return <RCTVirtualImage source={source}/>;
+    } else {
+      return (
+        <RawImage
+          {...this.props}
+          style={style}
+          resizeMode={resizeMode}
+          tintColor={tintColor}
+          src={source.uri}
+          defaultImageSrc={defaultSource.uri}
+        />
+      );
+    }
   }
 });
 
@@ -204,6 +218,7 @@ var cfg = {
   },
 };
 var RCTImageView = requireNativeComponent('RCTImageView', Image, cfg);
-var RCTNetworkImageView = (NativeModules.NetworkImageViewManager) ? requireNativeComponent('RCTNetworkImageView', Image, cfg) : RCTImageView;
+var RCTNetworkImageView = NativeModules.NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image, cfg) : RCTImageView;
+var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
 
 module.exports = Image;

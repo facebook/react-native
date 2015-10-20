@@ -9,6 +9,8 @@
 
 #import "RCTAccessibilityManager.h"
 
+#import "RCTBridge.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 
 NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
@@ -61,7 +63,14 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(didReceiveNewContentSizeCategory:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:[UIApplication sharedApplication]];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveNewVoiceOverStatus:)
+                                                 name:UIAccessibilityVoiceOverStatusChanged
+                                               object:nil];
+
     self.contentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
+    _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
   return self;
 }
@@ -74,6 +83,16 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveNewContentSizeCategory:(NSNotification *)note
 {
   self.contentSizeCategory = note.userInfo[UIContentSizeCategoryNewValueKey];
+}
+
+- (void)didReceiveNewVoiceOverStatus:(__unused NSNotification *)notification
+{
+  BOOL newIsVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
+  if (_isVoiceOverEnabled != newIsVoiceOverEnabled) {
+    _isVoiceOverEnabled = newIsVoiceOverEnabled;
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"voiceOverDidChange"
+                                                body:@(_isVoiceOverEnabled)];
+  }
 }
 
 - (void)setContentSizeCategory:(NSString *)contentSizeCategory
@@ -143,6 +162,12 @@ RCT_EXPORT_METHOD(getMultiplier:(RCTResponseSenderBlock)callback)
   if (callback) {
     callback(@[ @(self.multiplier) ]);
   }
+}
+
+RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)callback
+                  error:(__unused RCTResponseSenderBlock)error)
+{
+  callback(@[@(_isVoiceOverEnabled)]);
 }
 
 @end

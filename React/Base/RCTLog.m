@@ -32,19 +32,22 @@ const char *RCTLogLevels[] = {
   "mustfix"
 };
 
+#if RCT_DEBUG
+static const RCTLogLevel RCTDefaultLogThreshold = RCTLogLevelInfo - 1;
+#else
+static const RCTLogLevel RCTDefaultLogThreshold = RCTLogLevelError;
+#endif
+
 static RCTLogFunction RCTCurrentLogFunction;
-static RCTLogLevel RCTCurrentLogThreshold;
+static RCTLogLevel RCTCurrentLogThreshold = RCTDefaultLogThreshold;
 
 RCTLogLevel RCTGetLogThreshold()
 {
-  if (!RCTCurrentLogThreshold) {
-#if RCT_DEBUG
-    RCTCurrentLogThreshold = RCTLogLevelInfo - 1;
-#else
-    RCTCurrentLogThreshold = RCTLogLevelError;
-#endif
-  }
   return RCTCurrentLogThreshold;
+}
+
+void RCTSetLogThreshold(RCTLogLevel threshold) {
+  RCTCurrentLogThreshold = threshold;
 }
 
 RCTLogFunction RCTDefaultLogFunction = ^(
@@ -187,7 +190,7 @@ NSString *RCTFormatLog(
   return log;
 }
 
-void _RCTLogFormat(
+void _RCTLogInternal(
   RCTLogLevel level,
   const char *fileName,
   int lineNumber,

@@ -13,6 +13,22 @@
 
 var ReactPropTypes = require('ReactPropTypes');
 
+var ArrayOfNumberPropType = ReactPropTypes.arrayOf(ReactPropTypes.number);
+
+var TransformMatrixPropType = function(
+  props : Object,
+  propName : string,
+  componentName : string
+) : ?Error {
+  if (props.transform && props.transformMatrix) {
+    return new Error(
+      'transformMatrix and transform styles cannot be used on the same ' +
+      'component'
+    );
+  }
+  return ArrayOfNumberPropType(props, propName, componentName);
+};
+
 var TransformPropTypes = {
   transform: ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
@@ -30,7 +46,14 @@ var TransformPropTypes = {
       ReactPropTypes.shape({skewY: ReactPropTypes.string})
     ])
   ),
-  transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
+  transformMatrix: TransformMatrixPropType,
+
+  /* Deprecated transform props used on Android only */
+  scaleX: ReactPropTypes.number,
+  scaleY: ReactPropTypes.number,
+  rotation: ReactPropTypes.number,
+  translateX: ReactPropTypes.number,
+  translateY: ReactPropTypes.number,
 };
 
 module.exports = TransformPropTypes;

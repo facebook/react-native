@@ -12,16 +12,16 @@ Assuming you have the [Android SDK](https://developer.android.com/sdk/installing
 
 Make sure you have the following installed:
 
-- Android SDK version 22 (compileSdkVersion in [`build.gradle`](build.gradle))
-- SDK build tools version 22.0.1 (buildToolsVersion in [`build.gradle`](build.gradle))
-- Android Support Repository 17 (for Android Support Library)
+- Android SDK version 23 (compileSdkVersion in [`build.gradle`](build.gradle))
+- SDK build tools version 23.0.1 (buildToolsVersion in [`build.gradle`](build.gradle))
+- Android Support Repository >= 17 (for Android Support Library)
 - Android NDK (download & extraction instructions [here](http://developer.android.com/ndk/downloads/index.html))
- 
+
 Point Gradle to your Android SDK: either have `$ANDROID_SDK` and `$ANDROID_NDK` defined, or create a `local.properties` file in the root of your `react-native` checkout with the following contents:
 
     sdk.dir=absolute_path_to_android_sdk
     ndk.dir=absolute_path_to_android_ndk
-  
+
 Example:
 
     sdk.dir=/Users/your_unix_name/android-sdk-macosx
@@ -53,33 +53,32 @@ To install a snapshot version of the framework code in your local Maven repo:
 
 ## Running the examples
 
-To run the Sample app:
+To run the UIExplorer app:
 
 ```bash
 cd react-native
-./gradlew :Examples:SampleApp:android:app:installDebug
+./gradlew :Examples:UIExplorer:android:app:installDebug
 # Start the packager in a separate shell:
 # Make sure you ran npm install
 ./packager/packager.sh
-# Open SampleApp in your emulator, Menu button -> Reload JS should work
+# Open UIExplorer in your emulator, Menu button -> Reload JS should work
 ```
 
 You can run any other sample app the same way, e.g.:
 
 ```bash
 ./gradlew :Examples:Movies:android:app:installDebug
-./gradlew :Examples:UIExplorer:android:app:installDebug
 ```
 
 ## Building from Android Studio
 
 You'll need to do one additional step until we release the React Native Gradle plugin to Maven central. This is because Android Studio has its own local Maven repo:
-    
+
     mkdir -p /Applications/Android\ Studio.app/Contents/gradle/m2repository/com/facebook/react
     cp -r ~/.m2/repository/com/facebook/react/gradleplugin /Applications/Android\ Studio.app/Contents/gradle/m2repository/com/facebook/react/
 
 Now, open Android Studio, click _Import Non-Android Studio project_ and find your `react-native` repo.
-  
+
 In the configurations dropdown, _app_ should be selected. Click _Run_.
 
 ## Installing the React Native .aar in your local Maven repo

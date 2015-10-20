@@ -22,7 +22,8 @@
  * Determines whether an image of `currentSize` should be reloaded for display
  * at `idealSize`.
  */
-static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize) {
+static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSize)
+{
   static const CGFloat upscaleThreshold = 1.2;
   static const CGFloat downscaleThreshold = 0.5;
 
@@ -182,24 +183,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                resizeMode:self.contentMode
                                                             progressBlock:progressHandler
                                                           completionBlock:^(NSError *error, UIImage *image) {
-      if (image.reactKeyframeAnimation) {
-        [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
-      } else {
-        [self.layer removeAnimationForKey:@"contents"];
-        self.image = image;
-      }
-      if (error) {
-        if (_onError) {
-          _onError(@{ @"error": error.localizedDescription });
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (image.reactKeyframeAnimation) {
+          [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+        } else {
+          [self.layer removeAnimationForKey:@"contents"];
+          self.image = image;
         }
-      } else {
-        if (_onLoad) {
-          _onLoad(nil);
+        if (error) {
+          if (_onError) {
+            _onError(@{ @"error": error.localizedDescription });
+          }
+        } else {
+          if (_onLoad) {
+            _onLoad(nil);
+          }
         }
-      }
-      if (_onLoadEnd) {
-         _onLoadEnd(nil);
-      }
+        if (_onLoadEnd) {
+           _onLoadEnd(nil);
+        }
+      });
     }];
   } else {
     [self clearImage];
@@ -209,7 +212,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)reactSetFrame:(CGRect)frame
 {
   [super reactSetFrame:frame];
-  if (self.image == nil) {
+
+  if (!self.image || self.image == _defaultImage) {
     _targetSize = frame.size;
     [self reloadImage];
   } else if ([RCTImageView srcNeedsReload:_src]) {
@@ -238,8 +242,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [super didMoveToWindow];
 
   if (!self.window) {
-    [self clearImage];
-  } else if (self.src) {
+    // Don't keep self alive through the asynchronous dispatch, if the intention was to remove the view so it would
+    // deallocate.
+    __weak typeof(self) weakSelf = self;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+      __strong typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+
+      // If we haven't been re-added to a window by this run loop iteration, clear out the image to save memory.
+      if (!strongSelf.window) {
+        [strongSelf clearImage];
+      }
+    });
+  } else if (!self.image || self.image == _defaultImage) {
     [self reloadImage];
   }
 }

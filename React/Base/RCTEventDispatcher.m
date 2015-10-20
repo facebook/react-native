@@ -93,16 +93,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @synthesize bridge = _bridge;
 @synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
   if ((self = [super init])) {
+    _paused = YES;
     _eventQueue = [NSMutableDictionary new];
     _eventQueueLock = [NSLock new];
   }
   return self;
+}
+
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
+  }
 }
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
@@ -169,7 +181,7 @@ RCT_EXPORT_MODULE()
   }
 
   _eventQueue[eventID] = event;
-  _paused = NO;
+  self.paused = NO;
 
   [_eventQueueLock unlock];
 }
@@ -202,7 +214,7 @@ RCT_EXPORT_MODULE()
   [_eventQueueLock lock];
    NSDictionary *eventQueue = _eventQueue;
   _eventQueue = [NSMutableDictionary new];
-  _paused = YES;
+  self.paused = YES;
   [_eventQueueLock unlock];
 
   for (id<RCTEvent> event in eventQueue.allValues) {

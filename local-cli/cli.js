@@ -1,19 +1,28 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
-
 'use strict';
 
+var bundle = require('../private-cli/src/bundle/bundle');
+var Config = require('../private-cli/src/util/Config');
 var fs = require('fs');
-var spawn = require('child_process').spawn;
-var path = require('path');
-var generateAndroid = require('./generate-android.js');
+var generate = require('../private-cli/src/generate/generate');
 var init = require('./init.js');
-var install = require('./install.js');
-var bundle = require('./bundle.js');
-var newLibrary = require('./new-library.js');
-var runAndroid = require('./run-android.js');
-var runPackager = require('./run-packager.js');
+var library = require('../private-cli/src/library/library');
+var runAndroid = require('../private-cli/src/runAndroid/runAndroid');
+var server = require('../private-cli/src/server/server');
+
+// TODO: remove once we fully roll out the `private-cli` based cli
+// var bundle_DEPRECATED = require('./bundle.js');
+// var generateAndroid_DEPRECATED = require('./generate-android.js');
+// var newLibrary_DEPRECATED = require('./new-library.js');
+// var runPackager_DEPRECATED = require('./run-packager.js');
+// var runAndroid_DEPRECATED = require('./run-android.js');
 
 function printUsage() {
   console.log([
@@ -21,10 +30,10 @@ function printUsage() {
     '',
     'Commands:',
     '  start: starts the webserver',
-    '  install: installs npm react components',
     '  bundle: builds the javascript bundle for offline use',
     '  new-library: generates a native library bridge',
-    '  android: generates an Android project for your app'
+    '  android: generates an Android project for your app',
+    '  run-android: builds your app and starts it on a connected Android emulator or device'
   ].join('\n'));
   process.exit(1);
 }
@@ -43,30 +52,46 @@ function run() {
     printUsage();
   }
 
+  var config = Config.get(__dirname);
+
   switch (args[0]) {
   case 'start':
-    runPackager();
-    break;
-  case 'install':
-    install.init();
+    server(args, config).done();
+    // runPackager_DEPRECATED();
     break;
   case 'bundle':
-    bundle.init(args);
+    bundle(args, config).done();
+    // bundle_DEPRECATED.init(args);
     break;
   case 'new-library':
-    newLibrary.init(args);
+    library(args, config).done();
+    // newLibrary_DEPRECATED.init(args);
     break;
   case 'init':
     printInitWarning();
     break;
   case 'android':
-    generateAndroid(
-      process.cwd(),
-      JSON.parse(fs.readFileSync('package.json', 'utf8')).name
-    );
+    generate(
+      [
+        '--platform', 'android',
+        '--project-path', process.cwd(),
+        '--project-name', JSON.parse(
+          fs.readFileSync('package.json', 'utf8')
+        ).name
+      ],
+      config
+    ).done();
+    // generateAndroid(
+    //   process.cwd(),
+    //   JSON.parse(fs.readFileSync('package.json', 'utf8')).name
+    // );
     break;
   case 'run-android':
-    runAndroid();
+    runAndroid(args, config).done();
+    // runAndroid_DEPRECATED();  default:
+    break;
+  case 'help':
+    printUsage();
     break;
   default:
     console.error('Command `%s` unrecognized', args[0]);

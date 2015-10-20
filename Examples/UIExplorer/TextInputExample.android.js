@@ -138,6 +138,7 @@ exports.examples = [
       var examples = autoCapitalizeTypes.map((type) => {
         return (
           <TextInput
+            key={type}
             autoCapitalize={type}
             placeholder={'autoCapitalize: ' + type}
             style={styles.singleLine}
@@ -177,6 +178,7 @@ exports.examples = [
       var examples = keyboardTypes.map((type) => {
         return (
           <TextInput
+            key={type}
             keyboardType={type}
             placeholder={'keyboardType: ' + type}
             style={styles.singleLine}
@@ -221,6 +223,13 @@ exports.examples = [
             style={styles.singleLine}
             underlineColorAndroid="blue"
           />
+          <TextInput
+            defaultValue="Same BackgroundColor as View "
+            style={[styles.singleLine, {backgroundColor: 'rgba(100, 100, 100, 0.3)'}]}>
+            <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
+              Darker backgroundColor
+            </Text>
+          </TextInput>
         </View>
       );
     }

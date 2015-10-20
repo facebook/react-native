@@ -16,9 +16,7 @@ const inlineRequires = require('fbjs-scripts/babel/inline-requires');
 function transform(src, filename, options) {
   const plugins = [];
 
-  if (process.env.NODE_ENV === 'production') {
-    plugins.push('node-env-inline', 'dunderscore-dev-inline');
-  } else if (process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === 'test') {
     plugins.push({
       position: 'after',
       transformer: inlineRequires,
@@ -35,7 +33,9 @@ function transform(src, filename, options) {
       'es6.arrowFunctions',
       'es6.blockScoping',
       'es6.classes',
+      'es6.constants',
       'es6.destructuring',
+      'es6.modules',
       'es6.parameters',
       'es6.properties.computed',
       'es6.properties.shorthand',

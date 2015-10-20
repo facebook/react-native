@@ -16,7 +16,6 @@
 
 module.exports = {
   __packager_asset: true,
-  isStatic: true,
   path: '/full/path/to/something.png',
   uri: 'icon',
   width: 100,
