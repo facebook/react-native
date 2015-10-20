@@ -7,13 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react;
+package com.facebook.react.bridge;
 
-import android.content.res.AssetManager;
-import android.net.Uri;
-
-import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ReactBridge;
+import android.content.Context;
 
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
@@ -26,17 +22,22 @@ public abstract class JSBundleLoader {
    * should be used. JS bundle will be read from assets directory in native code to save on passing
    * large strings from java to native memory.
    */
-  public static JSBundleLoader createAssetLoader(
-      final String assetFileName) {
+  public static JSBundleLoader createFileLoader(
+      final Context context,
+      final String fileName) {
     return new JSBundleLoader() {
       @Override
-      public String getScriptUrl() {
-        return "assets://" + assetFileName;
+      public void loadScript(ReactBridge bridge) {
+        if (fileName.startsWith("assets://")) {
+          bridge.loadScriptFromAssets(context.getAssets(), fileName.replaceFirst("assets://", ""));
+        } else {
+          bridge.loadScriptFromFile(fileName, fileName);
+        }
       }
 
       @Override
       public String getSourceUrl() {
-        return "file:///android_asset/" + assetFileName;
+        return fileName;
       }
     };
   }
@@ -53,8 +54,8 @@ public abstract class JSBundleLoader {
       final String cachedFileLocation) {
     return new JSBundleLoader() {
       @Override
-      public String getScriptUrl() {
-        return cachedFileLocation;
+      public void loadScript(ReactBridge bridge) {
+        bridge.loadScriptFromFile(sourceURL, cachedFileLocation);
       }
 
       @Override
@@ -72,8 +73,8 @@ public abstract class JSBundleLoader {
       final String sourceURL) {
     return new JSBundleLoader() {
       @Override
-      public String getScriptUrl() {
-        return null;
+      public void loadScript(ReactBridge bridge) {
+        bridge.loadScriptFromFile(sourceURL, null);
       }
 
       @Override
@@ -83,6 +84,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  public abstract String getScriptUrl();
+  public abstract void loadScript(ReactBridge bridge);
   public abstract String getSourceUrl();
 }

@@ -21,7 +21,6 @@ import android.view.KeyEvent;
 import com.facebook.react.LifecycleState;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.JSBundleLoader;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -36,7 +35,7 @@ public class MoviesActivity extends Activity implements DefaultHardwareBackBtnHa
 
     mReactInstanceManager = ReactInstanceManager.builder()
         .setApplication(getApplication())
-        .setJSBundleLoader(JSBundleLoader.createAssetLoader("MoviesApp.android.bundle"))
+        .setBundleAssetName("MoviesApp.android.bundle")
         .setJSMainModuleName("Examples/Movies/MoviesApp.android")
         .addPackage(new MainReactPackage())
         .setUseDeveloperSupport(true)

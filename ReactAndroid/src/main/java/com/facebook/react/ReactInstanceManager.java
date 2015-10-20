@@ -24,6 +24,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -76,8 +77,8 @@ public class ReactInstanceManager {
   private @Nullable ReactContextInitParams mPendingReactContextInitParams;
 
   /* accessed from any thread */
+  private @Nullable String mJSBundleFile; /* path to JS bundle on file system */
   private final @Nullable String mJSMainModuleName; /* path to JS bundle root on packager server */
-  private final @Nullable JSBundleLoader mJSBundleLoader;
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
@@ -175,8 +176,8 @@ public class ReactInstanceManager {
 
   private ReactInstanceManager(
       Context applicationContext,
+      @Nullable String jsBundleFile,
       @Nullable String jsMainModuleName,
-      @Nullable JSBundleLoader jsBundleLoader,
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
@@ -184,8 +185,8 @@ public class ReactInstanceManager {
     initializeSoLoaderIfNecessary(applicationContext);
 
     mApplicationContext = applicationContext;
+    mJSBundleFile = jsBundleFile;
     mJSMainModuleName = jsMainModuleName;
-    mJSBundleLoader = jsBundleLoader;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
     // We need to instantiate DevSupportManager regardless to the useDeveloperSupport option,
@@ -223,6 +224,10 @@ public class ReactInstanceManager {
     SoLoader.init(applicationContext, /* native exopackage */ false);
   }
 
+  public void setJSBundleFile(String jsBundleFile) {
+    mJSBundleFile = jsBundleFile;
+  }
+
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
@@ -241,7 +246,7 @@ public class ReactInstanceManager {
 
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor(),
-            mJSBundleLoader);
+            JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
   }
 
   /**
@@ -514,7 +519,6 @@ public class ReactInstanceManager {
     }
 
     CatalystInstance.Builder catalystInstanceBuilder = new CatalystInstance.Builder()
-        .setReactContext(reactContext)
         .setCatalystQueueConfigurationSpec(CatalystQueueConfigurationSpec.createDefault())
         .setJSExecutor(jsExecutor)
         .setRegistry(nativeRegistryBuilder.build())
@@ -559,9 +563,8 @@ public class ReactInstanceManager {
 
     private final List<ReactPackage> mPackages = new ArrayList<>();
 
-    private @Nullable String mBundleAssetName;
+    private @Nullable String mJSBundleFile;
     private @Nullable String mJSMainModuleName;
-    private @Nullable JSBundleLoader mJSBundleLoader;
     private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
     private @Nullable Application mApplication;
     private boolean mUseDeveloperSupport;
@@ -573,14 +576,19 @@ public class ReactInstanceManager {
     /**
      * Name of the JS bundle file to be loaded from application's raw assets.
      *
-     * @deprecated Use setJsBundleLoader(JSBundleLoader.createAssetLoader()) instead.
-     * {@link #setJSBundleLoader}
-     *
      * Example: {@code "index.android.js"}
      */
-    @Deprecated
     public Builder setBundleAssetName(String bundleAssetName) {
-      mBundleAssetName = bundleAssetName;
+      return this.setJSBundleFile("assets://" + bundleAssetName);
+    }
+
+    /**
+     * Path to the JS bundle file to be loaded from the file system.
+     *
+     * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle}
+     */
+    public Builder setJSBundleFile(String jsBundleFile) {
+      mJSBundleFile = jsBundleFile;
       return this;
     }
 
@@ -594,11 +602,6 @@ public class ReactInstanceManager {
      */
     public Builder setJSMainModuleName(String jsMainModuleName) {
       mJSMainModuleName = jsMainModuleName;
-      return this;
-    }
-
-    public Builder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
-      mJSBundleLoader = jsBundleLoader;
       return this;
     }
 
@@ -645,31 +648,24 @@ public class ReactInstanceManager {
      * Before calling {@code build}, the following must be called:
      * <ul>
      * <li> {@link #setApplication}
-     * <li> {@link #setJSBundleLoader} or {@link #setJSMainModuleName}
+     * <li> {@link #setJSBundleFile} or {@link #setJSMainModuleName}
      * </ul>
      */
     public ReactInstanceManager build() {
-
-      Application application = Assertions.assertNotNull(
-          mApplication,
-          "Application property has not been set with this builder");
+      Assertions.assertCondition(
+          mUseDeveloperSupport || mJSBundleFile != null,
+          "JS Bundle File has to be provided when dev support is disabled");
 
       Assertions.assertCondition(
-          mUseDeveloperSupport || mJSBundleLoader != null || mBundleAssetName != null,
-          "JS Loader has to be provided when dev support is disabled");
-
-      Assertions.assertCondition(
-           mJSMainModuleName != null || mJSBundleLoader != null || mBundleAssetName != null,
-          "Either MainModuleName or JS Loader needs to be provided");
-
-      if (mBundleAssetName != null && mJSBundleLoader == null) {
-        mJSBundleLoader = JSBundleLoader.createAssetLoader(mBundleAssetName);
-      }
+           mJSMainModuleName != null || mJSBundleFile != null,
+          "Either MainModuleName or JS Bundle File needs to be provided");
 
       return new ReactInstanceManager(
-          application,
+          Assertions.assertNotNull(
+              mApplication,
+              "Application property has not been set with this builder"),
+          mJSBundleFile,
           mJSMainModuleName,
-          mJSBundleLoader,
           mPackages,
           mUseDeveloperSupport,
           mBridgeIdleDebugListener,

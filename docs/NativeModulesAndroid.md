@@ -114,7 +114,7 @@ Refer to the code below and add the `addPackage` statement to your application's
 ```java
 mReactInstanceManager = ReactInstanceManager.builder()
   .setApplication(getApplication())
-  .setJSBundleLoader(JSBundleLoader.createAssetLoader("AnExampleApp.android.bundle"))
+  .setBundleAssetName("AnExampleApp.android.bundle")
   .setJSMainModuleName("Examples/AnExampleApp/AnExampleApp.android")
   .addPackage(new AnExampleReactPackage())  // <-- Add this line with your package name.
   .setUseDeveloperSupport(true)
