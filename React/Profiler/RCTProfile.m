@@ -9,6 +9,8 @@
 
 #import "RCTProfile.h"
 
+#import <dlfcn.h>
+
 #import <mach/mach.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
@@ -153,21 +155,11 @@ static NSDictionary *RCTProfileMergeArgs(NSDictionary *args0, NSDictionary *args
 
 #pragma mark - Module hooks
 
-static const char *RCTProfileProxyClassName(Class);
 static const char *RCTProfileProxyClassName(Class class)
 {
   return [RCTProfilePrefix stringByAppendingString:NSStringFromClass(class)].UTF8String;
 }
 
-static SEL RCTProfileProxySelector(SEL);
-static SEL RCTProfileProxySelector(SEL selector)
-{
-  NSString *selectorName = NSStringFromSelector(selector);
-  return NSSelectorFromString([RCTProfilePrefix stringByAppendingString:selectorName]);
-}
-
-
-static dispatch_group_t RCTProfileGetUnhookGroup(void);
 static dispatch_group_t RCTProfileGetUnhookGroup(void)
 {
   static dispatch_group_t unhookGroup;
@@ -179,45 +171,55 @@ static dispatch_group_t RCTProfileGetUnhookGroup(void)
   return unhookGroup;
 }
 
-static void RCTProfileForwardInvocation(NSObject *, SEL, NSInvocation *);
-static void RCTProfileForwardInvocation(NSObject *self, __unused SEL cmd, NSInvocation *invocation)
+RCT_EXTERN IMP RCTProfileGetImplementation(id obj, SEL cmd);
+IMP RCTProfileGetImplementation(id obj, SEL cmd)
 {
-  /**
-   * This is still not thread safe, but should reduce reasonably the number of crashes
-   */
-  dispatch_group_wait(RCTProfileGetUnhookGroup(), DISPATCH_TIME_FOREVER);
-
-  NSString *name = [NSString stringWithFormat:@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(invocation.selector)];
-  SEL newSel = RCTProfileProxySelector(invocation.selector);
-
-  if ([object_getClass(self) instancesRespondToSelector:newSel]) {
-    invocation.selector = newSel;
-    RCTProfileBeginEvent(0, name, nil);
-    [invocation invoke];
-    RCTProfileEndEvent(0, @"objc_call,modules,auto", nil);
-  } else if ([self respondsToSelector:invocation.selector]) {
-    [invocation invoke];
-  } else {
-    // Use original selector to don't change error message
-    [self doesNotRecognizeSelector:invocation.selector];
-  }
+  return class_getMethodImplementation([obj class], cmd);
 }
 
-static IMP RCTProfileMsgForward(NSObject *, SEL);
-static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
+/**
+ * For the profiling we have to execute some code before and after every
+ * function being profiled, the only way of doing that with pure Objective-C is
+ * by using `-forwardInvocation:`, which is slow and could skew the profile
+ * results.
+ *
+ * The alternative in assembly is much simpler, we just need to store all the
+ * state at the beginning of the function, start the profiler, restore all the
+ * state, call the actual function we want to profile and stop the profiler.
+ *
+ * The implementation can be found in RCTProfileTrampoline-<arch>.s where arch
+ * is one of: x86, x86_64, arm, arm64.
+ */
+static IMP RCTProfileGetTrampoline(void)
 {
-  IMP imp = (IMP)_objc_msgForward;
-#if !defined(__arm64__)
-  NSMethodSignature *signature = [self methodSignatureForSelector:selector];
-  if (signature.methodReturnType[0] == _C_STRUCT_B && signature.methodReturnLength > 8) {
-    imp = (IMP)_objc_msgForward_stret;
-  }
-#endif
-  return imp;
+  static void (*RCTProfileTrampoline)(void);
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    RCTProfileTrampoline = dlsym(RTLD_DEFAULT, "RCTProfileTrampoline");
+  });
+
+  return (IMP)RCTProfileTrampoline;
+}
+
+RCT_EXTERN void RCTProfileTrampolineStart(id, SEL);
+void RCTProfileTrampolineStart(id self, SEL cmd)
+{
+  NSString *name = [NSString stringWithFormat:@"-[%s %s]", class_getName([self class]), sel_getName(cmd)];
+  RCTProfileBeginEvent(0, name, nil);
+}
+
+RCT_EXTERN void RCTProfileTrampolineEnd(void);
+void RCTProfileTrampolineEnd(void)
+{
+  RCTProfileEndEvent(0, @"objc_call,modules,auto", nil);
 }
 
 void RCTProfileHookModules(RCTBridge *bridge)
 {
+  if (RCTProfileGetTrampoline() == NULL) {
+    return;
+  }
+
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     [moduleData dispatchBlock:^{
       Class moduleClass = moduleData.moduleClass;
@@ -235,10 +237,9 @@ void RCTProfileHookModules(RCTBridge *bridge)
         if ([NSStringFromSelector(selector) hasPrefix:@"rct"] || [NSObject instancesRespondToSelector:selector]) {
           continue;
         }
-        IMP originalIMP = method_getImplementation(method);
-        const char *returnType = method_getTypeEncoding(method);
-        class_addMethod(proxyClass, selector, RCTProfileMsgForward(moduleData.instance, selector), returnType);
-        class_addMethod(proxyClass, RCTProfileProxySelector(selector), originalIMP, returnType);
+        const char *types = method_getTypeEncoding(method);
+
+        class_addMethod(proxyClass, selector, RCTProfileGetTrampoline(), types);
       }
       free(methods);
 
@@ -247,11 +248,6 @@ void RCTProfileHookModules(RCTBridge *bridge)
       for (Class cls in @[proxyClass, object_getClass(proxyClass)]) {
         Method oldImp = class_getInstanceMethod(cls, @selector(class));
         class_replaceMethod(cls, @selector(class), imp_implementationWithBlock(^{ return moduleClass; }), method_getTypeEncoding(oldImp));
-      }
-
-      IMP originalFwd = class_replaceMethod(moduleClass, @selector(forwardInvocation:), (IMP)RCTProfileForwardInvocation, "v@:@");
-      if (originalFwd != NULL) {
-        class_addMethod(proxyClass, RCTProfileProxySelector(@selector(forwardInvocation:)), originalFwd, "v@:@");
       }
 
       objc_registerClassPair(proxyClass);
