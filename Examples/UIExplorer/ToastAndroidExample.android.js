@@ -31,7 +31,7 @@ var ToastExample = React.createClass({
 
   statics: {
     title: 'Toast Example',
-    description: 'Example that demostrates the use of an Android Toast to provide feedback.',
+    description: 'Example that demonstrates the use of an Android Toast to provide feedback.',
   },
 
   getInitialState: function() {
