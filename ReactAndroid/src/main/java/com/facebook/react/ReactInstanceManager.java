@@ -533,6 +533,7 @@ public class ReactInstanceManager {
     }
 
     reactContext.initializeWithInstance(catalystInstance);
+    catalystInstance.runJSBundle();
 
     return reactContext;
   }
