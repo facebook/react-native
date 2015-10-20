@@ -11,6 +11,7 @@
 var bundle = require('../private-cli/src/bundle/bundle');
 var childProcess = require('child_process');
 var Config = require('../private-cli/src/util/Config');
+var defaultConfig = require('./default.config');
 var fs = require('fs');
 var generate = require('../private-cli/src/generate/generate');
 var library = require('../private-cli/src/library/library');
@@ -56,7 +57,7 @@ function run() {
     return;
   }
 
-  command[0](args, Config.get(__dirname)).done();
+  command[0](args, Config.get(__dirname, defaultConfig)).done();
 }
 
 function generateWrapper(args, config) {

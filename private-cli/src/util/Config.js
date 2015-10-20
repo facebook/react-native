@@ -16,25 +16,33 @@ let cachedConfig = null;
 
 /**
  * Module capable of getting the configuration that should be used for
- * the `rn-cli`. The configuration file is a JS file named `rn-cli.conf.js`.
+ * the `rn-cli`. The configuration file is a JS file named `rn-cli.config.js`.
  * It has to be on any parent directory of the cli.
+ *
+ * The function will return all the default configuration functions overriden
+ * by those found on `rn-cli.config.js`, if any. If no default config is
+ * provided and no configuration can be found in the directory hierarchy an
+ * error will be thrown.
  */
 const Config = {
-  get(pwd) {
+  get(pwd, defaultConfig) {
     if (cachedConfig) {
       return cachedConfig;
     }
 
     const parentDir = findParentDirectory(pwd, RN_CLI_CONFIG);
-
-    if (!parentDir) {
+    if (!parentDir && !defaultConfig) {
       throw new Error(
         'Can\'t find "rn-cli.config.js" file in any parent folder of "' +
         __dirname + '"'
       );
     }
 
-    cachedConfig = require(path.join(parentDir, RN_CLI_CONFIG));
+    const config = parentDir
+      ? require(path.join(parentDir, RN_CLI_CONFIG))
+      : {};
+
+    cachedConfig = Object.assign({}, defaultConfig, config);
     return cachedConfig;
   }
 };
