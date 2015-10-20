@@ -111,6 +111,12 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
+  public void requestLayout() {
+    // No-op, terminate `requestLayout` here, UIManagerModule handles laying out children and
+    // `layout` is called on all RN-managed views by `NativeViewHierarchyManager`
+  }
+
+  @Override
   public void setBackgroundColor(int color) {
     if (color == Color.TRANSPARENT) {
       Drawable backgroundDrawble = getBackground();
