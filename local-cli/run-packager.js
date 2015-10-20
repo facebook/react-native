@@ -8,9 +8,14 @@
  */
 'use strict';
 
+var chalk = require('chalk');
 var path = require('path');
 var child_process = require('child_process');
 
+/**
+ * Main entry point to starting the packager from JS.
+ * @param {boolean} newWindow If true, will start the packager in a new shell window.
+ */
 module.exports = function(newWindow) {
   if (newWindow) {
     var launchPackagerScript =
@@ -22,6 +27,16 @@ module.exports = function(newWindow) {
         'xterm',
         ['-e', 'sh', launchPackagerScript],
         {detached: true});
+    } else if (/^win/.test(process.platform)) {
+      console.log(chalk.yellow('Starting the packager in a new window ' +
+        'is not supported on Windows yet.\nPlease start it manually using ' +
+        '\'react-native start\'.'));
+      console.log('We believe the best Windows ' +
+        'support will come from a community of people\nusing React Native on ' +
+        'Windows on a daily basis.\n' +
+        'Would you be up for sending a pull request?');
+    } else {
+      console.log('Cannot start the packager. Unknown platform ' + process.platform);
     }
   } else {
     if (/^win/.test(process.platform)) {
