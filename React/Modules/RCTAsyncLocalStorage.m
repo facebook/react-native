@@ -382,6 +382,7 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
       if ( _manifest[key] == (id)kCFNull) {
         NSString *filePath = [self _filePathForKey:key];
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+        [RCTGetCache() removeObjectForKey:key];
       }
       [_manifest removeObjectForKey:key];
     }
