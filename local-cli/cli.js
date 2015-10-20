@@ -9,23 +9,31 @@
 'use strict';
 
 var bundle = require('../private-cli/src/bundle/bundle');
+var childProcess = require('child_process');
 var Config = require('../private-cli/src/util/Config');
 var fs = require('fs');
 var generate = require('../private-cli/src/generate/generate');
 var library = require('../private-cli/src/library/library');
 var path = require('path');
+var Promise = require('promise');
 var runAndroid = require('../private-cli/src/runAndroid/runAndroid');
 var server = require('../private-cli/src/server/server');
 var TerminalAdapter = require('yeoman-environment/lib/adapter.js');
 var yeoman = require('yeoman-environment');
 
-var availableCommands = {
+var documentedCommands = {
   'start': [server, 'starts the webserver'],
   'bundle': [bundle, 'builds the javascript bundle for offline use'],
   'new-library': [library, 'generates a native library bridge'],
-  'android': [generate, 'generates an Android project for your app'],
+  'android': [generateWrapper, 'generates an Android project for your app'],
   'run-android': [runAndroid, 'builds your app and starts it on a connected Android emulator or device']
 };
+
+var undocumentedCommands = {
+  'init': [printInitWarning, ''],
+};
+
+var commands = Object.assign({}, documentedCommands, undocumentedCommands);
 
 /**
  * Parses the command line and runs a command of the CLI.
@@ -36,29 +44,29 @@ function run() {
     printUsage();
   }
 
-  var config = Config.get(__dirname);
-  switch (args[0]) {
-    case 'start': return server(args, config).done();
-    case 'bundle': return bundle(args, config).done();
-    case 'new-library': return library(args, config).done();
-    case 'init': return printInitWarning();
-    case 'run-android': return runAndroid(args, config).done();
-    case 'android':
-      generate(
-        [
-          '--platform', 'android',
-          '--project-path', process.cwd(),
-          '--project-name', JSON.parse(
-            fs.readFileSync('package.json', 'utf8')
-          ).name
-        ],
-        config
-      ).done();
-      break;
-    default:
-      console.error('Command `%s` unrecognized', args[0]);
-      printUsage();
+  const setupEnvScript = /^win/.test(process.platform)
+    ? 'setup_env.bat'
+    : 'setup_env.sh';
+  childProcess.execFileSync(path.join(__dirname, setupEnvScript));
+
+  var command = commands[args[0]];
+  if (!command) {
+    console.error('Command `%s` unrecognized', args[0]);
+    printUsage();
+    return;
   }
+
+  command[0](args, Config.get(__dirname)).done();
+}
+
+function generateWrapper(args, config) {
+  return generate([
+    '--platform', 'android',
+    '--project-path', process.cwd(),
+    '--project-name', JSON.parse(
+      fs.readFileSync('package.json', 'utf8')
+    ).name
+  ], config);
 }
 
 function printUsage() {
@@ -66,22 +74,22 @@ function printUsage() {
     'Usage: react-native <command>',
     '',
     'Commands:'
-  ].concat(
-    Object.keys(availableCommands).map(function(name){
-      return name + ':\t' + availableCommands[name][1];
-    }).join('\n')
-  ));
+  ].concat(Object.keys(documentedCommands).map(function(name) {
+    return '  - ' + name + ': ' + documentedCommands[name][1];
+  })).join('\n'));
   process.exit(1);
 }
 
 // The user should never get here because projects are inited by
 // using `react-native-cli` from outside a project directory.
 function printInitWarning() {
-  console.log([
-    'Looks like React Native project already exists in the current',
-    'folder. Run this command from a different folder or remove node_modules/react-native'
-  ].join('\n'));
-  process.exit(1);
+  return Promise.resolve().then(function() {
+    console.log([
+      'Looks like React Native project already exists in the current',
+      'folder. Run this command from a different folder or remove node_modules/react-native'
+    ].join('\n'));
+    process.exit(1);
+  });
 }
 
 class CreateSuppressingTerminalAdapter extends TerminalAdapter {
