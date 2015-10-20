@@ -26,7 +26,9 @@ var _backPressSubscriptions = new Set();
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   var invokeDefault = true;
   _backPressSubscriptions.forEach((subscription) => {
-    if (subscription()) {
+    if (typeof subscription === 'function'
+        && Object.prototype.toString.call(subscription) === '[object Function]'
+        && subscription()) {
       invokeDefault = false;
     }
   });
