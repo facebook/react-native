@@ -62,6 +62,7 @@ function getAppMiddleware(args, config) {
         '../../../Libraries/JavaScriptAppEngine/polyfills/document.js'
       ),
     ],
+    verbose: args.verbose,
   });
 }
 
