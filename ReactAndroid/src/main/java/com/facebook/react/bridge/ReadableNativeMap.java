@@ -44,20 +44,20 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   public native ReadableType getType(String name);
 
   @Override
-  public ReadableMapKeySeyIterator keySetIterator() {
-    return new ReadableNativeMapKeySeyIterator(this);
+  public ReadableMapKeySetIterator keySetIterator() {
+    return new ReadableNativeMapKeySetIterator(this);
   }
 
   /**
    * Implementation of a {@link ReadableNativeMap} iterator in native memory.
    */
   @DoNotStrip
-  private static class ReadableNativeMapKeySeyIterator extends Countable
-      implements ReadableMapKeySeyIterator {
+  private static class ReadableNativeMapKeySetIterator extends Countable
+      implements ReadableMapKeySetIterator {
 
     private final ReadableNativeMap mReadableNativeMap;
 
-    public ReadableNativeMapKeySeyIterator(ReadableNativeMap readableNativeMap) {
+    public ReadableNativeMapKeySetIterator(ReadableNativeMap readableNativeMap) {
       mReadableNativeMap = readableNativeMap;
       initialize(mReadableNativeMap);
     }
