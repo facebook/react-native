@@ -107,6 +107,7 @@ var WebView = React.createClass({
      * user can change the scale
      */
     scalesPageToFit: PropTypes.bool,
+    externalHTTPEnabled: PropTypes.bool
   },
 
   getInitialState: function() {
@@ -168,6 +169,7 @@ var WebView = React.createClass({
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         scalesPageToFit={this.props.scalesPageToFit}
+        externalHTTPEnabled={this.props.externalHTTPEnabled}
       />;
 
     return (

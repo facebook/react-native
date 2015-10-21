@@ -34,6 +34,7 @@ RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(externalHTTPEnabled, BOOL);
 
 - (NSDictionary *)constantsToExport
 {
