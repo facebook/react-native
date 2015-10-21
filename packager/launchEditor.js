@@ -33,6 +33,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber) {
       return [fileName + ':' + lineNumber];
     case 'joe':
     case 'emacs':
+    case 'emacsclient':
       return ['+' + lineNumber, fileName];
     case 'rmate':
     case 'mate':
