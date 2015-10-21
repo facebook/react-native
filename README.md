@@ -27,6 +27,8 @@ See the official [React Native website](https://facebook.github.io/react-native/
 
 ## Getting Help
 
+Please use these community resources for getting help. We use the GitHub issues for tracking bugs and feature requests and have limited bandwidth to address them.
+
 - Ask a question on [StackOverflow](http://stackoverflow.com/) and tag it with `react-native`
 - Start a thread on the [React Discussion Board](https://discuss.reactjs.org/)
 - Join #reactnative on IRC: chat.freenode.net
