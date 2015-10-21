@@ -17,14 +17,12 @@ module.exports = {
     // Don't transform node_modules, except react-tools which includes the
     // untransformed copy of React
     if (
-      file.match(/node_modules\/(?!react-tools\/)/) ||
-      // (TODO: balpert, cpojer): Remove this once react is updated to 0.14
-      file.endsWith('performanceNow.js')
+      file.match(/node_modules\/(?!react-tools\/)/)
     ) {
       return src;
     }
 
-    return transformer.transform(src, file).code;
+    return transformer.transform(src, file, {inlineRequires: true}).code;
   },
 
   getCacheKey: createCacheKeyFunction([
