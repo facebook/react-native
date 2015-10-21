@@ -19,7 +19,7 @@ import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableMapKeySeyIterator;
 import com.facebook.react.touch.CatalystInterceptingViewGroup;
 import com.facebook.react.touch.JSResponderHandler;
 
@@ -36,7 +36,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
     Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
         ViewManagersPropertyCache.getNativePropSettersForViewManagerClass(getClass());
     ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
+    ReadableMapKeySeyIterator iterator = propMap.keySetIterator();
     // TODO(krzysztof): Remove missingSetters code once all views are migrated to @ReactProp
     boolean missingSetters = false;
     while (iterator.hasNextKey()) {
