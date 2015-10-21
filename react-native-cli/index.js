@@ -159,7 +159,10 @@ function createProject(name, verbose) {
   var packageJson = {
     name: projectName,
     version: '0.0.1',
-    private: true
+    private: true,
+    scripts: {
+      start: 'react-native start'
+    }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
   process.chdir(root);
