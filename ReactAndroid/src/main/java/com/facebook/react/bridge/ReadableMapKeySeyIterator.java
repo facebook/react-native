@@ -15,7 +15,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * Interface of a iterator for a {@link NativeMap}'s key set.
  */
 @DoNotStrip
-public interface ReadableMapKeySetIterator {
+public interface ReadableMapKeySeyIterator {
 
   boolean hasNextKey();
   String nextKey();
