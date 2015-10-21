@@ -4,30 +4,26 @@ title: Android Setup
 layout: docs
 category: Quick Start
 permalink: docs/android-setup.html
-next: tutorial
+next: linux-windows-support
 ---
 
 This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
 
-### If you already have the Android SDK
-
-1. Make sure to update the required packages to the versions mentioned below (see screenshots)
-
-### If you don't have the Android SDK
+### Install the Android SDK (unless you have it)
 
 1. [Install the latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 2. Install the Android SDK:
-     - **On Mac**: `brew install android-sdk`, add `export ANDROID_HOME=/usr/local/opt/android-sdk` to your `~/.bashrc`, `~/.bash_profile` or whatever your shell uses
+     - **On Mac**: `brew install android-sdk`
      - **On Linux and Windows**: [Download from the Android website](https://developer.android.com/sdk/installing/index.html)
 
 ### Define the ANDROID_HOME environment variable
 
 __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your existing Android SDK:
+
   - **On Mac**, add this to your `~/.bashrc`, `~/.bash_profile` or whatever your shell uses:
-        
+
         # If you installed the SDK via Homebrew, otherwise ~/Library/Android/sdk
         export ANDROID_HOME=/usr/local/opt/android-sdk
-
   - **On Linux**, add this to your `~/.bashrc`, `~/.bash_profile` or whatever your shell uses:
         
         export ANDROID_HOME=<path_where_you_unpacked_android_sdk>
