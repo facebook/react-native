@@ -25,6 +25,12 @@ var apps = [
     author: 'Alex Duckmanton',
   },
   {
+    name: 'CANDDi',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
+    link: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
+    author: 'CANDDi LTD.',
+  },
+  {
     name: 'Company name search',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
@@ -245,12 +251,6 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/c6ot13BVlU-xONcQi-llFmKXZCLRGbfrCv1RnctWtOELtPYMc0A52srXAfkU897QIg=w300',
     link: 'https://play.google.com/store/apps/details?id=com.ziliunapp',
     author: 'Sonny Lazuardi',
-  },
-  {
-    name: 'CANDDi',
-    icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
-    author: 'CANDDi LTD.',
   },
 ];
 
