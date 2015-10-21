@@ -8,9 +8,7 @@ var config = {
   },
 
   getAssetRoots() {
-    // Speficy where to look for assets that are referenced using `image!<image_name>`.
-    // Asset directories for images referenced using `./<image.extension>` don't require 
-    // any entry in here.
+    // speficy where to look for assets
     return [];
   },
 
