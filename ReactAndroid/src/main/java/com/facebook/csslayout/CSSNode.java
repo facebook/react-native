@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<dea2f20b2f05b18bed5e32b4d048a7b2>>
+// @generated SignedSource<<4b95f0548441afa1e91e957a93fa6f0b>>
 
 package com.facebook.csslayout;
 
@@ -224,11 +224,25 @@ public class CSSNode {
     return FloatUtil.floatsEqual(f1, f2);
   }
 
+  /**
+   * Get this node's direction, as defined in the style.
+   */
+  public CSSDirection getStyleDirection() {
+    return style.direction;
+  }
+
   public void setDirection(CSSDirection direction) {
     if (style.direction != direction) {
       style.direction = direction;
       dirty();
     }
+  }
+
+  /**
+   * Get this node's flex direction, as defined by style.
+   */
+  public CSSFlexDirection getFlexDirection() {
+    return style.flexDirection;
   }
 
   public void setFlexDirection(CSSFlexDirection flexDirection) {
@@ -238,11 +252,25 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's justify content, as defined by style.
+   */
+  public CSSJustify getJustifyContent() {
+    return style.justifyContent;
+  }
+
   public void setJustifyContent(CSSJustify justifyContent) {
     if (style.justifyContent != justifyContent) {
       style.justifyContent = justifyContent;
       dirty();
     }
+  }
+
+  /**
+   * Get this node's align items, as defined by style.
+   */
+  public CSSAlign getAlignItems() {
+    return style.alignItems;
   }
 
   public void setAlignItems(CSSAlign alignItems) {
@@ -252,11 +280,25 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's align items, as defined by style.
+   */
+  public CSSAlign getAlignSelf() {
+    return style.alignSelf;
+  }
+
   public void setAlignSelf(CSSAlign alignSelf) {
     if (style.alignSelf != alignSelf) {
       style.alignSelf = alignSelf;
       dirty();
     }
+  }
+
+  /**
+   * Get this node's position type, as defined by style.
+   */
+  public CSSPositionType getPositionType() {
+    return style.positionType;
   }
 
   public void setPositionType(CSSPositionType positionType) {
@@ -273,11 +315,25 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's flex, as defined by style.
+   */
+  public float getFlex() {
+    return style.flex;
+  }
+
   public void setFlex(float flex) {
     if (!valuesEqual(style.flex, flex)) {
       style.flex = flex;
       dirty();
     }
+  }
+
+  /**
+   * Get this node's margin, as defined by style + default margin.
+   */
+  public Spacing getMargin() {
+    return style.margin;
   }
 
   public void setMargin(int spacingType, float margin) {
@@ -286,16 +342,37 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's padding, as defined by style + default padding.
+   */
+  public Spacing getPadding() {
+    return style.padding;
+  }
+
   public void setPadding(int spacingType, float padding) {
     if (style.padding.set(spacingType, padding)) {
       dirty();
     }
   }
 
+  /**
+   * Get this node's border, as defined by style.
+   */
+  public Spacing getBorder() {
+    return style.border;
+  }
+
   public void setBorder(int spacingType, float border) {
     if (style.border.set(spacingType, border)) {
       dirty();
     }
+  }
+
+  /**
+   * Get this node's position top, as defined by style.
+   */
+  public float getPositionTop() {
+    return style.position[POSITION_TOP];
   }
 
   public void setPositionTop(float positionTop) {
@@ -305,11 +382,25 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's position bottom, as defined by style.
+   */
+  public float getPositionBottom() {
+    return style.position[POSITION_BOTTOM];
+  }
+
   public void setPositionBottom(float positionBottom) {
     if (!valuesEqual(style.position[POSITION_BOTTOM], positionBottom)) {
       style.position[POSITION_BOTTOM] = positionBottom;
       dirty();
     }
+  }
+
+  /**
+   * Get this node's position left, as defined by style.
+   */
+  public float getPositionLeft() {
+    return style.position[POSITION_LEFT];
   }
 
   public void setPositionLeft(float positionLeft) {
@@ -319,6 +410,13 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's position right, as defined by style.
+   */
+  public float getPositionRight() {
+    return style.position[POSITION_RIGHT];
+  }
+
   public void setPositionRight(float positionRight) {
     if (!valuesEqual(style.position[POSITION_RIGHT], positionRight)) {
       style.position[POSITION_RIGHT] = positionRight;
@@ -326,11 +424,25 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's width, as defined in the style.
+   */
+  public float getStyleWidth() {
+    return style.dimensions[DIMENSION_WIDTH];
+  }
+
   public void setStyleWidth(float width) {
     if (!valuesEqual(style.dimensions[DIMENSION_WIDTH], width)) {
       style.dimensions[DIMENSION_WIDTH] = width;
       dirty();
     }
+  }
+
+  /**
+   * Get this node's height, as defined in the style.
+   */
+  public float getStyleHeight() {
+    return style.dimensions[DIMENSION_HEIGHT];
   }
 
   public void setStyleHeight(float height) {
@@ -358,34 +470,6 @@ public class CSSNode {
 
   public CSSDirection getLayoutDirection() {
     return layout.direction;
-  }
-
-  /**
-   * Get this node's padding, as defined by style + default padding.
-   */
-  public Spacing getStylePadding() {
-    return style.padding;
-  }
-
-  /**
-   * Get this node's width, as defined in the style.
-   */
-  public float getStyleWidth() {
-    return style.dimensions[DIMENSION_WIDTH];
-  }
-
-  /**
-   * Get this node's height, as defined in the style.
-   */
-  public float getStyleHeight() {
-    return style.dimensions[DIMENSION_HEIGHT];
-  }
-
-  /**
-   * Get this node's direction, as defined in the style.
-   */
-  public CSSDirection getStyleDirection() {
-    return style.direction;
   }
 
   /**
