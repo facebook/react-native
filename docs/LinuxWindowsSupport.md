@@ -1,6 +1,6 @@
 ---
 id: linux-windows-support
-title: Linux and Windows Support
+title: Linux and Windows Support (Android development only)
 layout: docs
 category: Quick Start
 permalink: docs/linux-windows-support.html
