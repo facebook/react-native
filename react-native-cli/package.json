@@ -13,6 +13,8 @@
     "react-native": "index.js"
   },
   "dependencies": {
-    "prompt": "^0.2.14"
+    "chalk": "^1.1.1",
+    "prompt": "^0.2.14",
+    "semver": "^5.0.3"
   }
 }
