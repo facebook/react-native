@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import android.util.SparseBooleanArray;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMapKeySeyIterator;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -417,7 +417,7 @@ public class NativeViewHierarchyOptimizer {
       return false;
     }
 
-    ReadableMapKeySeyIterator keyIterator = props.mBackingMap.keySetIterator();
+    ReadableMapKeySetIterator keyIterator = props.mBackingMap.keySetIterator();
     while (keyIterator.hasNextKey()) {
       if (!ViewProps.isLayoutOnly(keyIterator.nextKey())) {
         return false;
