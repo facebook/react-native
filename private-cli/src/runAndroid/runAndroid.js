@@ -17,7 +17,7 @@ const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 
 /**
- * Starts the app on the Android simulator.
+ * Starts the app on a connected Android emulator or device.
  */
 function runAndroid(argv, config) {
   return new Promise((resolve, reject) => {
@@ -47,7 +47,7 @@ function _runAndroid(argv, config, resolve, reject) {
       console.log(chalk.bold('Starting JS server...'));
       startServerInNewWindow();
     }
-    buildAndRun(args);
+    buildAndRun(args, reject);
   }));
 }
 
