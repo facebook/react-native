@@ -17,7 +17,7 @@ import java.util.Map;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySeyIterator;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
@@ -166,7 +166,7 @@ public class ReactShadowNode extends CSSNode {
     Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
         ViewManagersPropertyCache.getNativePropSettersForShadowNodeClass(getClass());
     ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySeyIterator iterator = propMap.keySetIterator();
+    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
