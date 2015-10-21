@@ -658,8 +658,8 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
   auto fileNameStr = fileName == NULL ? "" : fromJString(env, fileName);
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_start"));
   auto script = fileName == NULL ? "" : react::loadScriptFromFile(fileNameStr);
-  auto sourceURLStr = sourceURL == NULL ? fileNameStr : fromJString(env, sourceURL);
   #ifdef WITH_FBSYSTRACE
+  auto sourceURLStr = sourceURL == NULL ? fileNameStr : fromJString(env, sourceURL);
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
     "executeApplicationScript",
     "sourceURL", sourceURLStr);
