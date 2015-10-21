@@ -7,25 +7,36 @@ permalink: docs/android-setup.html
 next: tutorial
 ---
 
-__NOTE__: This guide needs to be extended for Windows. Can you send us a pull request?
-
 This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
 
 ### If you already have the Android SDK
 
-1. __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your existing Android SDK
-2. Make sure to update the required packages to the versions mentioned below (see screenshots)
+1. Make sure to update the required packages to the versions mentioned below (see screenshots)
 
 ### If you don't have the Android SDK
 
 1. [Install the latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-2. Install the Android SDK with `brew install android-sdk`
-3. Add this to your `~/.bashrc`, `~/.zshrc` or whatever your shell uses:
+2. Install the Android SDK:
+     - **On Mac**: `brew install android-sdk`, add `export ANDROID_HOME=/usr/local/opt/android-sdk` to your `~/.bashrc`, `~/.bash_profile` or whatever your shell uses
+     - **On Linux and Windows**: [Download from the Android website](https://developer.android.com/sdk/installing/index.html)
+
+### Define the ANDROID_HOME environment variable
+
+__IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your existing Android SDK:
+  - **On Mac**, add this to your `~/.bashrc`, `~/.bash_profile` or whatever your shell uses:
+        
+        # If you installed the SDK via Homebrew, otherwise ~/Library/Android/sdk
         export ANDROID_HOME=/usr/local/opt/android-sdk
+
+  - **On Linux**, add this to your `~/.bashrc`, `~/.bash_profile` or whatever your shell uses:
+        
+        export ANDROID_HOME=<path_where_you_unpacked_android_sdk>
+
+  - **On Windows**, go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` -> `Advanced` -> `Environment variables` -> `New`
 
 ### Configure your SDK
 
-1. Start a new shell and run `android`; in the window that appears make sure you check:
+1. Open the Android SDK Manager (**on Mac** start a new shell and run `android`); in the window that appears make sure you check:
   * Android SDK Build-tools version 23.0.1
   * Android 6.0 (API 23)
   * Android Support Repository
