@@ -17,7 +17,7 @@ As of **version 0.13** (currently in rc) Android development with React native i
 
 The basic Android development workflow should be working.
 
-Opening the Chrome debugger when you select Menu -> Debug JS is not supported yet.
+Opening the Chrome debugger when you select Menu -> Debug JS is not supported yet. There is a [pull request](https://github.com/facebook/react-native/pull/3394).
 
 ## What's missing on Windows
 
@@ -26,4 +26,4 @@ On Windows the packager won't be started automatically when you run `react-nativ
     cd MyAwesomeApp
     node node_modules/react-native/packager/packager.js
 
-Opening the Chrome debugger when you select Menu -> Debug JS is not supported yet.
+Opening the Chrome debugger when you select Menu -> Debug JS is not supported yet. There is a [pull request](https://github.com/facebook/react-native/pull/3394).
