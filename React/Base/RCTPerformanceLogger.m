@@ -30,6 +30,12 @@ void RCTPerformanceLoggerEnd(RCTPLTag tag)
   }
 }
 
+void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
+{
+  RCTPLData[tag][0] = 0;
+  RCTPLData[tag][1] = value;
+}
+
 NSArray *RCTPerformanceLoggerOutput(void)
 {
   return @[
@@ -45,6 +51,8 @@ NSArray *RCTPerformanceLoggerOutput(void)
     @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
     @(RCTPLData[RCTPLTTI][0]),
     @(RCTPLData[RCTPLTTI][1]),
+    @(RCTPLData[RCTPLBundleSize][0]),
+    @(RCTPLData[RCTPLBundleSize][1]),
   ];
 }
 
@@ -87,6 +95,7 @@ RCT_EXPORT_MODULE()
       @"NativeModulePrepareConfig",
       @"NativeModuleInjectConfig",
       @"TTI",
+      @"BundleSize",
     ],
   ]];
 }
