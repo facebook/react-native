@@ -50,11 +50,11 @@ struct NativeMap : public Countable {
   folly::dynamic map = folly::dynamic::object;
 };
 
-struct ReadableNativeMapKeySeyIterator : public Countable {
+struct ReadableNativeMapKeySetIterator : public Countable {
   folly::dynamic::const_item_iterator iterator;
   RefPtr<NativeMap> mapRef;
 
-  ReadableNativeMapKeySeyIterator(folly::dynamic::const_item_iterator&& it,
+  ReadableNativeMapKeySetIterator(folly::dynamic::const_item_iterator&& it,
                                   const RefPtr<NativeMap>& mapRef_)
     : iterator(std::move(it))
     , mapRef(mapRef_) {}
@@ -490,19 +490,19 @@ namespace iterator {
 
 static void initialize(JNIEnv* env, jobject obj, jobject nativeMapObj) {
   auto nativeMap = extractRefPtr<NativeMap>(env, nativeMapObj);
-  auto mapIterator = createNew<ReadableNativeMapKeySeyIterator>(
+  auto mapIterator = createNew<ReadableNativeMapKeySetIterator>(
     nativeMap->map.items().begin(), nativeMap);
   setCountableForJava(env, obj, std::move(mapIterator));
 }
 
 static jboolean hasNextKey(JNIEnv* env, jobject obj) {
-  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySeyIterator>(env, obj);
+  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySetIterator>(env, obj);
   return ((nativeIterator->iterator != nativeIterator->mapRef.get()->map.items().end())
           ? JNI_TRUE : JNI_FALSE);
 }
 
 static jstring getNextKey(JNIEnv* env, jobject obj) {
-  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySeyIterator>(env, obj);
+  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySetIterator>(env, obj);
   if (JNI_FALSE == hasNextKey(env, obj)) {
     throwNewJavaException("com/facebook/react/bridge/InvalidIteratorException",
                           "No such element exists");
@@ -792,7 +792,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
           map::writable::mergeMap)
     });
 
-    registerNatives("com/facebook/react/bridge/ReadableNativeMap$ReadableNativeMapKeySeyIterator", {
+    registerNatives("com/facebook/react/bridge/ReadableNativeMap$ReadableNativeMapKeySetIterator", {
       makeNativeMethod("initialize", "(Lcom/facebook/react/bridge/ReadableNativeMap;)V",
                        map::iterator::initialize),
       makeNativeMethod("hasNextKey", map::iterator::hasNextKey),
