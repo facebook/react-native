@@ -108,7 +108,7 @@ import okio.Sink;
    * @return the host to use when connecting to the bundle server from the host itself.
    */
   private static String getHostForJSProxy() {
-    return "localhost";
+    return DEVICE_LOCALHOST;
   }
 
   /**
