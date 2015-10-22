@@ -208,7 +208,6 @@ describe('React Yeoman Generators', function() {
 
     it('creates files', function() {
       assert.file([
-        'ios/main.jsbundle',
         'ios/TestAppIOS/AppDelegate.h',
         'ios/TestAppIOS/AppDelegate.m',
         'ios/TestAppIOS/Base.lproj/LaunchScreen.xib',
