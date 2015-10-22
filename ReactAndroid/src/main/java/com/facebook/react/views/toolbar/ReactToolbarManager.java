@@ -59,6 +59,11 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     view.setNavIconSource(navIcon);
   }
 
+  @ReactProp(name = "overflowIcon")
+  public void setOverflowIcon(ReactToolbar view, @Nullable ReadableMap overflowIcon) {
+    view.setOverflowIconSource(overflowIcon);
+  }
+
   @ReactProp(name = "subtitle")
   public void setSubtitle(ReactToolbar view, @Nullable String subtitle) {
     view.setSubtitle(subtitle);

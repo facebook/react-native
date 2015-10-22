@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -36,6 +37,7 @@ public class ReactToolbar extends Toolbar {
 
   private final DraweeHolder mLogoHolder;
   private final DraweeHolder mNavIconHolder;
+  private final DraweeHolder mOverflowIconHolder;
   private final MultiDraweeHolder<GenericDraweeHierarchy> mActionsHolder =
       new MultiDraweeHolder<>();
 
@@ -69,6 +71,21 @@ public class ReactToolbar extends Toolbar {
         }
       };
 
+  private final ControllerListener<ImageInfo> mOverflowIconControllerListener =
+      new BaseControllerListener<ImageInfo>() {
+        @Override
+        public void onFinalImageSet(
+            String id,
+            @Nullable final ImageInfo imageInfo,
+            @Nullable Animatable animatable) {
+          if (imageInfo != null) {
+            final DrawableWithIntrinsicSize overflowIconDrawable =
+                new DrawableWithIntrinsicSize(mOverflowIconHolder.getTopLevelDrawable(), imageInfo);
+            setOverflowIcon(overflowIconDrawable);
+          }
+        }
+      };
+
   private static class ActionIconControllerListener extends BaseControllerListener<ImageInfo> {
     private final MenuItem mItem;
     private final DraweeHolder mHolder;
@@ -94,6 +111,7 @@ public class ReactToolbar extends Toolbar {
 
     mLogoHolder = DraweeHolder.create(createDraweeHierarchy(), context);
     mNavIconHolder = DraweeHolder.create(createDraweeHierarchy(), context);
+    mOverflowIconHolder = DraweeHolder.create(createDraweeHierarchy(), context);
   }
 
   private final Runnable mLayoutRunnable = new Runnable() {
@@ -136,19 +154,20 @@ public class ReactToolbar extends Toolbar {
   @Override
   public void onFinishTemporaryDetach() {
     super.onFinishTemporaryDetach();
-    mLogoHolder.onAttach();
-    mNavIconHolder.onAttach();
+    attachDraweeHolders();
   }
 
   private void detachDraweeHolders() {
     mLogoHolder.onDetach();
     mNavIconHolder.onDetach();
+    mOverflowIconHolder.onDetach();
     mActionsHolder.onDetach();
   }
 
   private void attachDraweeHolders() {
     mLogoHolder.onAttach();
     mNavIconHolder.onAttach();
+    mOverflowIconHolder.onAttach();
     mActionsHolder.onAttach();
   }
 
@@ -181,6 +200,22 @@ public class ReactToolbar extends Toolbar {
       mNavIconHolder.setController(controller);
     } else {
       setNavigationIcon(getDrawableResourceByName(uri));
+    }
+  }
+
+  /* package */ void setOverflowIconSource(@Nullable ReadableMap source) {
+    String uri = source != null ? source.getString("uri") : null;
+    if (uri == null) {
+      setOverflowIcon(null);
+    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
+      DraweeController controller = Fresco.newDraweeControllerBuilder()
+          .setUri(Uri.parse(uri))
+          .setControllerListener(mOverflowIconControllerListener)
+          .setOldController(mOverflowIconHolder.getController())
+          .build();
+      mOverflowIconHolder.setController(controller);
+    } else {
+      setOverflowIcon(getDrawableByName(uri));
     }
   }
 
@@ -245,6 +280,10 @@ public class ReactToolbar extends Toolbar {
         name,
         "drawable",
         getContext().getPackageName());
+  }
+
+  private Drawable getDrawableByName(String name) {
+    return getResources().getDrawable(getDrawableResourceByName(name));
   }
 
 }
