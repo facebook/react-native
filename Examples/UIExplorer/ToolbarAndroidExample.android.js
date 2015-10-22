@@ -81,6 +81,12 @@ var ToolbarAndroidExample = React.createClass({
             navIcon={require('image!ic_menu_black_24dp')}
             style={styles.toolbar} />
         </UIExplorerBlock>
+        <UIExplorerBlock title="Toolbar with custom overflowIcon">
+          <ToolbarAndroid
+            actions={toolbarActions}
+            overflowIcon={require('image!ic_more_vert_black_24dp')}
+            style={styles.toolbar} />
+        </UIExplorerBlock>
         <UIExplorerBlock title="Toolbar with custom title colors">
           <ToolbarAndroid
             navIcon={require('image!ic_menu_black_24dp')}
@@ -99,6 +105,12 @@ var ToolbarAndroidExample = React.createClass({
             logo={require('./hawk.png')}
             navIcon={require('./bunny.png')}
             title="Bunny and Hawk"
+            style={styles.toolbar} />
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toolbar with remote overflowIcon">
+          <ToolbarAndroid
+            actions={toolbarActions}
+            overflowIcon={require('./bunny.png')}
             style={styles.toolbar} />
         </UIExplorerBlock>
       </UIExplorerPage>
