@@ -67,7 +67,7 @@
     "progress": "^1.1.8",
     "promise": "^7.0.4",
     "react-timer-mixin": "^0.13.2",
-    "react-tools": "https://api.github.com/repos/facebook/react/tarball/b4e74e38e43ac53af8acd62c78c9213be0194245",
+    "react-tools": "facebook/react#b4e74e3",
     "rebound": "^0.0.13",
     "regenerator": "^0.8.36",
     "sane": "^1.2.0",
