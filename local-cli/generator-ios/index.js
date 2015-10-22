@@ -15,12 +15,6 @@ var yeoman = require('yeoman-generator');
 module.exports = yeoman.generators.NamedBase.extend({
   writing: function() {
     var templateVars = {name: this.name};
-    // SomeApp/ios
-    this.fs.copyTpl(
-      this.templatePath(path.join('main', '**')),
-      this.destinationPath('ios'),
-      templateVars
-    );
     // SomeApp/ios/SomeApp
     this.fs.copyTpl(
       this.templatePath(path.join('app', '**')),
