@@ -2,14 +2,17 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
-  android:padding="8dp"
+  android:paddingTop="8dp"
+  android:paddingBottom="8dp"
+  android:paddingLeft="16dp"
+  android:paddingRight="16dp"
     >
   <TextView
     android:id="@+id/rn_frame_method"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textColor="@android:color/white"
-    android:textSize="10sp"
+    android:textSize="14sp"
     android:fontFamily="monospace"
     />
   <TextView
@@ -17,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textColor="#E6B8B8"
-    android:textSize="8sp"
+    android:textSize="12sp"
     android:fontFamily="monospace"
     />
 </LinearLayout>
