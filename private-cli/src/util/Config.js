@@ -43,6 +43,7 @@ const Config = {
       : {};
 
     cachedConfig = Object.assign({}, defaultConfig, config);
+    process.chdir(pwd);
     return cachedConfig;
   }
 };

@@ -8,6 +8,11 @@
  */
 'use strict';
 
+require('../packager/babelRegisterOnly')([
+  /private-cli\/src/,
+  /local-cli/
+]);
+
 var bundle = require('../private-cli/src/bundle/bundle');
 var childProcess = require('child_process');
 var Config = require('../private-cli/src/util/Config');
