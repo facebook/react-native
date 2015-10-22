@@ -2,9 +2,9 @@
   android:id="@+id/catalyst_redbox_title"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:padding="8dp"
+  android:padding="16dp"
   android:gravity="center_vertical"
   android:textColor="@android:color/white"
-  android:textSize="14sp"
+  android:textSize="16sp"
   android:textStyle="bold"
   />
