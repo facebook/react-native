@@ -24,7 +24,7 @@ function cleanup {
 }
 trap cleanup EXIT
 
-node ./packager/packager.js --nonPersistent &
+./packager/packager.sh --nonPersistent &
 SERVER_PID=$!
 xctool \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
