@@ -535,13 +535,14 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
+    RCTPerformanceLoggerStart(RCTPLScriptExecution);
+
     // JSStringCreateWithUTF8CString expects a null terminated C string
     NSMutableData *nullTerminatedScript = [NSMutableData dataWithCapacity:script.length + 1];
 
     [nullTerminatedScript appendData:script];
     [nullTerminatedScript appendBytes:"" length:1];
 
-    RCTPerformanceLoggerStart(RCTPLScriptExecution);
     JSValueRef jsError = NULL;
     JSStringRef execJSString = JSStringCreateWithUTF8CString(nullTerminatedScript.bytes);
     JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);
