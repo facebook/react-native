@@ -4,7 +4,7 @@ title: Performance
 layout: docs
 category: Guides
 permalink: docs/performance.html
-next: native-modules-ios
+next: upgrading
 ---
 
 A compelling reason for using React Native instead of WebView-based
