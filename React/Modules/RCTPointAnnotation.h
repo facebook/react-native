@@ -15,5 +15,6 @@
 @property (nonatomic, assign) BOOL hasLeftCallout;
 @property (nonatomic, assign) BOOL hasRightCallout;
 @property (nonatomic, assign) BOOL animateDrop;
+@property (nonatomic, assign) BOOL draggable;
 
 @end

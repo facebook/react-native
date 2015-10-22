@@ -32,6 +32,14 @@ type MapRegion = {
   longitudeDelta: number;
 };
 
+var ANNOTATION_DRAG_STATE = [
+  'Idle',
+  'Starting',
+  'Dragging',
+  'Canceling',
+  'Ending'
+];
+
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
 
@@ -165,6 +173,10 @@ var MapView = React.createClass({
        * Whether the pin drop should be animated or not
        */
       animateDrop: React.PropTypes.bool,
+      /**
+       * Whether the pin should be draggable or not
+       */
+      draggable: React.PropTypes.bool,
 
       /**
        * Annotation title/subtile.
@@ -221,6 +233,10 @@ var MapView = React.createClass({
      * Callback that is called once, when the user taps an annotation.
      */
     onAnnotationPress: React.PropTypes.func,
+    /**
+     * Callback that is called when the state of of annotations drag changes
+     */
+    onAnnotationDragChange: React.PropTypes.func,
   },
 
   _onChange: function(event: Event) {
@@ -259,8 +275,22 @@ var MapView = React.createClass({
     }
   },
 
+  _onAnnotationDragChange: function(event: Event) {
+    if (this.props.onAnnotationDragChange) {
+      event.nativeEvent.state = ANNOTATION_DRAG_STATE[event.nativeEvent.state];
+      this.props.onAnnotationDragChange(event);
+    }
+  },
+
   render: function() {
-    return <RCTMap {...this.props} onPress={this._onPress} onChange={this._onChange} />;
+    return (
+      <RCTMap
+        {...this.props}
+        onPress={this._onPress}
+        onChange={this._onChange}
+        onAnnotationDragChange={this._onAnnotationDragChange}
+      />
+    );
   },
 });
 

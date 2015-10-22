@@ -29,6 +29,7 @@ extern const CGFloat RCTMapZoomBoundBuffer;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;
+@property (nonatomic, copy) RCTBubblingEventBlock onAnnotationDragChange;
 
 - (void)setAnnotations:(RCTPointAnnotationArray *)annotations;
 
