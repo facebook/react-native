@@ -47,11 +47,6 @@ public class ReactScrollViewManager
     view.setVerticalScrollBarEnabled(value);
   }
 
-  @ReactProp(name = "showsHorizontalScrollIndicator")
-  public void setShowsHorizontalScrollIndicator(ReactScrollView view, boolean value) {
-    view.setHorizontalScrollBarEnabled(value);
-  }
-
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
