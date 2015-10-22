@@ -41,10 +41,15 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return [requestURL.scheme.lowercaseString isEqualToString:@"assets-library"];
+  return [requestURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame;
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(UIViewContentMode)resizeMode
+                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   __block volatile uint32_t cancelled = 0;
 
@@ -69,7 +74,8 @@ RCT_EXPORT_MODULE()
           BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
           ALAssetRepresentation *representation = [asset defaultRepresentation];
 
-          #if RCT_DEV
+#if RCT_DEV
+
           CGSize sizeBeingLoaded = size;
           if (useMaximumSize) {
             CGSize pointSize = representation.dimensions;
@@ -78,7 +84,7 @@ RCT_EXPORT_MODULE()
 
           CGSize screenSize;
           if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedDescending) {
-            screenSize = UIScreen.mainScreen.nativeBounds.size;
+            screenSize = [UIScreen mainScreen].nativeBounds.size;
           } else {
             CGSize mainScreenSize = [UIScreen mainScreen].bounds.size;
             CGFloat mainScreenScale = [[UIScreen mainScreen] scale];
@@ -87,9 +93,11 @@ RCT_EXPORT_MODULE()
           CGFloat maximumPixelDimension = fmax(screenSize.width, screenSize.height);
 
           if (sizeBeingLoaded.width > maximumPixelDimension || sizeBeingLoaded.height > maximumPixelDimension) {
-            RCTLogInfo(@"[PERF ASSETS] Loading %@ at size %@, which is larger than screen size %@", representation.filename, NSStringFromCGSize(sizeBeingLoaded), NSStringFromCGSize(screenSize));
+            RCTLogInfo(@"[PERF ASSETS] Loading %@ at size %@, which is larger than screen size %@",
+                       representation.filename, NSStringFromCGSize(sizeBeingLoaded), NSStringFromCGSize(screenSize));
           }
-          #endif
+
+#endif
 
           UIImage *image;
           NSError *error = nil;
@@ -106,8 +114,7 @@ RCT_EXPORT_MODULE()
       });
     } else {
       NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@ with no error message.", imageURL];
-      NSError *error = RCTErrorWithMessage(errorText);
-      completionHandler(error, nil);
+      completionHandler(RCTErrorWithMessage(errorText), nil);
     }
   } failureBlock:^(NSError *loadError) {
     if (cancelled) {
@@ -115,8 +122,7 @@ RCT_EXPORT_MODULE()
     }
 
     NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@.\niOS Error: %@", imageURL, loadError];
-    NSError *error = RCTErrorWithMessage(errorText);
-    completionHandler(error, nil);
+    completionHandler(RCTErrorWithMessage(errorText), nil);
   }];
 
   return ^{
@@ -128,14 +134,9 @@ RCT_EXPORT_MODULE()
 
 @implementation RCTBridge (RCTAssetsLibraryImageLoader)
 
-- (RCTAssetsLibraryImageLoader *)assetsLibraryImageLoader
-{
-  return self.modules[RCTBridgeModuleNameForClass([RCTAssetsLibraryImageLoader class])];
-}
-
 - (ALAssetsLibrary *)assetsLibrary
 {
-  return [self.assetsLibraryImageLoader assetsLibrary];
+  return [self.modules[RCTBridgeModuleNameForClass([RCTAssetsLibraryImageLoader class])] assetsLibrary];
 }
 
 @end
@@ -154,7 +155,11 @@ static dispatch_queue_t RCTAssetsLibraryImageLoaderQueue(void)
 // Why use a custom scaling method? Greater efficiency, reduced memory overhead:
 // http://www.mindsea.com/2012/12/downscaling-huge-alassets-without-fear-of-sigkill
 
-static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation, CGSize size, CGFloat scale, UIViewContentMode resizeMode, NSError **error)
+static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
+                                       CGSize size,
+                                       CGFloat scale,
+                                       UIViewContentMode resizeMode,
+                                       NSError **error)
 {
   NSUInteger length = (NSUInteger)representation.size;
   NSMutableData *data = [NSMutableData dataWithLength:length];

@@ -50,11 +50,11 @@ struct NativeMap : public Countable {
   folly::dynamic map = folly::dynamic::object;
 };
 
-struct ReadableNativeMapKeySeyIterator : public Countable {
+struct ReadableNativeMapKeySetIterator : public Countable {
   folly::dynamic::const_item_iterator iterator;
   RefPtr<NativeMap> mapRef;
 
-  ReadableNativeMapKeySeyIterator(folly::dynamic::const_item_iterator&& it,
+  ReadableNativeMapKeySetIterator(folly::dynamic::const_item_iterator&& it,
                                   const RefPtr<NativeMap>& mapRef_)
     : iterator(std::move(it))
     , mapRef(mapRef_) {}
@@ -490,19 +490,19 @@ namespace iterator {
 
 static void initialize(JNIEnv* env, jobject obj, jobject nativeMapObj) {
   auto nativeMap = extractRefPtr<NativeMap>(env, nativeMapObj);
-  auto mapIterator = createNew<ReadableNativeMapKeySeyIterator>(
+  auto mapIterator = createNew<ReadableNativeMapKeySetIterator>(
     nativeMap->map.items().begin(), nativeMap);
   setCountableForJava(env, obj, std::move(mapIterator));
 }
 
 static jboolean hasNextKey(JNIEnv* env, jobject obj) {
-  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySeyIterator>(env, obj);
+  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySetIterator>(env, obj);
   return ((nativeIterator->iterator != nativeIterator->mapRef.get()->map.items().end())
           ? JNI_TRUE : JNI_FALSE);
 }
 
 static jstring getNextKey(JNIEnv* env, jobject obj) {
-  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySeyIterator>(env, obj);
+  auto nativeIterator = extractRefPtr<ReadableNativeMapKeySetIterator>(env, obj);
   if (JNI_FALSE == hasNextKey(env, obj)) {
     throwNewJavaException("com/facebook/react/bridge/InvalidIteratorException",
                           "No such element exists");
@@ -618,6 +618,19 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   setCountableForJava(env, obj, std::move(bridge));
 }
 
+static void executeApplicationScript(
+    const RefPtr<Bridge>& bridge,
+    const std::string script,
+    const std::string sourceUri) {
+  try {
+    // Execute the application script and collect/dispatch any native calls that might have occured
+    bridge->executeApplicationScript(script, sourceUri);
+    bridge->executeJSCall("BatchedBridge", "flushedQueue", std::vector<folly::dynamic>());
+  } catch (...) {
+    translatePendingCppExceptionToJavaException();
+  }
+}
+
 static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
                                  jstring assetName) {
   jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
@@ -634,7 +647,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   #endif
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
-  bridge->executeApplicationScript(script, assetNameStr);
+  executeApplicationScript(bridge, script, assetNameStr);
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_done"));
 }
 
@@ -655,7 +668,7 @@ static void loadScriptFromNetworkCached(JNIEnv* env, jobject obj, jstring source
     "sourceURL", sourceURLStr);
   #endif
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
-  bridge->executeApplicationScript(script, jni::fromJString(env, sourceURL));
+  executeApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_exec"));
 }
 
@@ -779,7 +792,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
           map::writable::mergeMap)
     });
 
-    registerNatives("com/facebook/react/bridge/ReadableNativeMap$ReadableNativeMapKeySeyIterator", {
+    registerNatives("com/facebook/react/bridge/ReadableNativeMap$ReadableNativeMapKeySetIterator", {
       makeNativeMethod("initialize", "(Lcom/facebook/react/bridge/ReadableNativeMap;)V",
                        map::iterator::initialize),
       makeNativeMethod("hasNextKey", map::iterator::hasNextKey),

@@ -25,6 +25,12 @@ var apps = [
     author: 'Alex Duckmanton',
   },
   {
+    name: 'CANDDi',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
+    link: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
+    author: 'CANDDi LTD.',
+  },
+  {
     name: 'Company name search',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
@@ -161,6 +167,12 @@ var apps = [
     icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
     link: 'https://itunes.apple.com/gb/app/night-light-feeding-light/id1016843582?mt=8',
     author: 'Tian Yuan',
+  },
+  {
+    name: 'Okanagan News',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/aa/93/17/aa93171e-d0ed-7e07-54a1-be27490e210c/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/okanagan-news-reader-for-viewing/id1049147148?mt=8',
+    author: 'Levi Cabral',
   },
   {
     name: 'Posyt - Tinder for ideas',

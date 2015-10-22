@@ -6,17 +6,3 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-package com.facebook.react.bridge;
-
-import com.facebook.proguard.annotations.DoNotStrip;
-
-/**
- * Interface of a iterator for a {@link NativeMap}'s key set.
- */
-@DoNotStrip
-public interface ReadableMapKeySeyIterator {
-
-  boolean hasNextKey();
-  String nextKey();
-}

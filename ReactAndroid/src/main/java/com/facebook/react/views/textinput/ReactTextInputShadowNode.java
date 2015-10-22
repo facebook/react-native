@@ -63,7 +63,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
     setDefaultPadding(Spacing.RIGHT, mEditText.getPaddingRight());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
-    mComputedPadding = spacingToFloatArray(getStylePadding());
+    mComputedPadding = spacingToFloatArray(getPadding());
   }
 
   @Override
@@ -76,12 +76,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
-    mComputedPadding = spacingToFloatArray(getStylePadding());
+    mComputedPadding = spacingToFloatArray(getPadding());
     editText.setPadding(
-        (int) Math.ceil(getStylePadding().get(Spacing.LEFT)),
-        (int) Math.ceil(getStylePadding().get(Spacing.TOP)),
-        (int) Math.ceil(getStylePadding().get(Spacing.RIGHT)),
-        (int) Math.ceil(getStylePadding().get(Spacing.BOTTOM)));
+        (int) Math.ceil(getPadding().get(Spacing.LEFT)),
+        (int) Math.ceil(getPadding().get(Spacing.TOP)),
+        (int) Math.ceil(getPadding().get(Spacing.RIGHT)),
+        (int) Math.ceil(getPadding().get(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
@@ -120,7 +120,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   @Override
   public void setPadding(int spacingType, float padding) {
     super.setPadding(spacingType, padding);
-    mComputedPadding = spacingToFloatArray(getStylePadding());
+    mComputedPadding = spacingToFloatArray(getPadding());
     markUpdated();
   }
 
