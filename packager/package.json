@@ -24,7 +24,7 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
-    "start": "react-native start"
+    "start": "./packager.sh"
   },
   "dependencies": {
     "wordwrap": "^1.0.0"
