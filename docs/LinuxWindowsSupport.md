@@ -1,11 +1,13 @@
 ---
 id: linux-windows-support
-title: Linux and Windows Support (Android development only)
+title: Linux and Windows Support
 layout: docs
 category: Quick Start
 permalink: docs/linux-windows-support.html
 next: tutorial
 ---
+
+__NOTE: This guide focuses on Android development. You'll need a Mac to build iOS apps.__
 
 As React Native on iOS requires a Mac and most of the engineers at Facebook and contributors use Macs, support for OS X is a top priority. However, we would like to support developers using Linux and Windows too. We believe we'll get the best Linux and Windows support from people using these operating systems on a daily basis. 
 
