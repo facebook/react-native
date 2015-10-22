@@ -186,7 +186,7 @@ class MessageQueue {
     let moduleNames = Object.keys(localModules);
     for (var i = 0, l = moduleNames.length; i < l; i++) {
       let moduleName = moduleNames[i];
-      let methods = localModules[moduleName].methods;
+      let methods = localModules[moduleName].methods || {};
       let moduleID = localModules[moduleName].moduleID;
       moduleTable[moduleID] = moduleName;
       methodTable[moduleID] = {};
@@ -210,12 +210,16 @@ class MessageQueue {
   }
 
   _genModule(module, moduleConfig) {
-    let methodNames = Object.keys(moduleConfig.methods);
+    let methods = moduleConfig.methods || {};
+    let methodNames = Object.keys(methods);
     for (var i = 0, l = methodNames.length; i < l; i++) {
       let methodName = methodNames[i];
-      let methodConfig = moduleConfig.methods[methodName];
+      let methodConfig = methods[methodName];
       module[methodName] = this._genMethod(
-        moduleConfig.moduleID, methodConfig.methodID, methodConfig.type);
+        moduleConfig.moduleID,
+        methodConfig.methodID,
+        methodConfig.type || MethodTypes.remote
+      );
     }
     Object.assign(module, moduleConfig.constants);
     return module;
@@ -260,7 +264,7 @@ class MessageQueue {
 
 }
 
-function createErrorFromErrorData(errorData: ErrorData): Error {
+function createErrorFromErrorData(errorData: {message: string}): Error {
   var {
     message,
     ...extraErrorInfo,
