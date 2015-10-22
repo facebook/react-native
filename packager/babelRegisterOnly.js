@@ -12,5 +12,5 @@ var _only = [];
 
 module.exports = function(onlyList) {
   _only = _only.concat(onlyList);
-  require('babel-core/register')({only: _only});
+  require('babel/register')({only: _only});
 };
