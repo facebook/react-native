@@ -77,41 +77,82 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     RCTLogError(@"Must have at least one button.");
     return;
   }
-  
+
   if (RCTRunningInAppExtension()) {
     return;
   }
-  
-  UIAlertView *alertView = RCTAlertView(title, nil, self, nil, nil);
-  NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
 
-  if ([type isEqualToString:@"plain-text"]) {
-    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    [alertView textFieldAtIndex:0].text = message;
+  if ([UIAlertController class] && ![type isEqualToString:@"plain-text"]) {
+    UIViewController *controller = RCTSharedApplication().delegate.window.rootViewController;
+
+    if (controller == nil) {
+      RCTLogError(@"Tried to display view controller but there is no application window. args: %@", args);
+      return;
+    }
+
+    UIAlertController *alertController =
+    [UIAlertController alertControllerWithTitle:title
+                                        message:message
+                                 preferredStyle:UIAlertControllerStyleAlert];
+
+    NSInteger index = 0;
+
+    for (NSDictionary *button in buttons) {
+      if (button.count != 1) {
+        RCTLogError(@"Button definitions should have exactly one key.");
+      }
+
+      UIAlertActionStyle style = UIAlertActionStyleDefault;
+      NSString *buttonKey = button.allKeys.firstObject;
+      NSString *buttonTitle = [button[buttonKey] description];
+
+      if ([buttonKey isEqualToString: @"cancel"]) {
+        style = UIAlertActionStyleCancel;
+      }
+
+      [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
+                                                          style:style
+                                                        handler:^(__unused UIAlertAction *action) {
+                                                          [_alerts removeObjectAtIndex:index];
+                                                        }]];
+      index++;
+    }
+
+    [_alerts addObject:alertController];
+
+    [controller presentViewController:alertController animated:YES completion:nil];
   } else {
-    alertView.message = message;
-  }
+    UIAlertView *alertView = RCTAlertView(title, nil, self, nil, nil);
+    NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
 
-  NSInteger index = 0;
-  for (NSDictionary *button in buttons) {
-    if (button.count != 1) {
-      RCTLogError(@"Button definitions should have exactly one key.");
+    if ([type isEqualToString:@"plain-text"]) {
+      alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+      [alertView textFieldAtIndex:0].text = message;
+    } else {
+      alertView.message = message;
     }
-    NSString *buttonKey = button.allKeys.firstObject;
-    NSString *buttonTitle = [button[buttonKey] description];
-    [alertView addButtonWithTitle:buttonTitle];
-    if ([buttonKey isEqualToString: @"cancel"]) {
-      alertView.cancelButtonIndex = index;
+
+    NSInteger index = 0;
+    for (NSDictionary *button in buttons) {
+      if (button.count != 1) {
+        RCTLogError(@"Button definitions should have exactly one key.");
+      }
+      NSString *buttonKey = button.allKeys.firstObject;
+      NSString *buttonTitle = [button[buttonKey] description];
+      [alertView addButtonWithTitle:buttonTitle];
+      if ([buttonKey isEqualToString: @"cancel"]) {
+        alertView.cancelButtonIndex = index;
+      }
+      [buttonKeys addObject:buttonKey];
+      index ++;
     }
-    [buttonKeys addObject:buttonKey];
-    index ++;
+
+    [_alerts addObject:alertView];
+    [_alertCallbacks addObject:callback ?: ^(__unused id unused) {}];
+    [_alertButtonKeys addObject:buttonKeys];
+
+    [alertView show];
   }
-
-  [_alerts addObject:alertView];
-  [_alertCallbacks addObject:callback ?: ^(__unused id unused) {}];
-  [_alertButtonKeys addObject:buttonKeys];
-
-  [alertView show];
 }
 
 #pragma mark - UIAlertViewDelegate
