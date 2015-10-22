@@ -132,13 +132,17 @@ function startServerInNewWindow() {
       ['-e', 'sh', launchPackagerScript],
       {detached: true}
     );
+  } else if (/^win/.test(process.platform)) {
+    console.log(chalk.yellow('Starting the packager in a new window ' +
+      'is not supported on Windows yet.\nPlease start it manually using ' +
+      '\'react-native start\'.'));
+    console.log('We believe the best Windows ' +
+      'support will come from a community of people\nusing React Native on ' +
+      'Windows on a daily basis.\n' +
+      'Would you be up for sending a pull request?');
   } else {
-    console.error(chalk.yellow(
-      'Starting packager in new window is not supported on Windows yet. ' +
-      'See https://github.com/facebook/react-native/issues/3469 on how to ' +
-      'start it manually.'
-    ));
-    throw new Error('Windows is not yet supported');
+    console.log(chalk.red('Cannot start the packager. Unknown platform ' +
+      process.platform));
   }
 }
 
