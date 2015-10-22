@@ -22,10 +22,6 @@
 /* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
-// Just to make sure the JS gets packaged up.
-require('RCTDebugComponentOwnership');
-require('RCTDeviceEventEmitter');
-require('PerformanceLogger');
 require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
@@ -184,6 +180,7 @@ function setUpNumber() {
   Number.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -(Math.pow(2, 53) - 1);
 }
 
+setUpProcessEnv();
 setUpRedBoxErrorHandler();
 setUpTimers();
 setUpAlert();
@@ -193,6 +190,11 @@ setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
 setUpProfile();
-setUpProcessEnv();
 setUpFlowChecker();
 setUpNumber();
+
+// Just to make sure the JS gets packaged up. Wait until the JS environment has
+// been initialized before requiring them.
+require('RCTDebugComponentOwnership');
+require('RCTDeviceEventEmitter');
+require('PerformanceLogger');
