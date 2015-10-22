@@ -35,6 +35,10 @@ function _server(argv, config, resolve, reject) {
     type: 'string',
     description: 'add another root(s) to be used by the packager in this project',
   }, {
+    command: 'projectRoots',
+    type: 'string',
+    description: 'override the root(s) to be used by the packager',
+  },{
     command: 'assetRoots',
     type: 'string',
     description: 'specify the root directories of app assets'
