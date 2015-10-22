@@ -81,6 +81,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (NSDictionary *)config
 {
+  if (_constants.count == 0 && self.methods.count == 0) {
+    return nil; // Nothing to export
+  }
+
   NSMutableDictionary *config = [NSMutableDictionary new];
   config[@"moduleID"] = _moduleID;
 
@@ -90,12 +94,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
   NSMutableDictionary *methodconfig = [NSMutableDictionary new];
   [self.methods enumerateObjectsUsingBlock:^(id<RCTBridgeMethod> method, NSUInteger idx, __unused BOOL *stop) {
-    methodconfig[method.JSMethodName] = @{
-      @"methodID": @(idx),
-      @"type": method.functionType == RCTFunctionTypePromise ? @"remoteAsync" : @"remote",
-    };
+    if (method.functionType == RCTFunctionTypePromise) {
+      methodconfig[method.JSMethodName] = @{
+        @"methodID": @(idx),
+        @"type": @"remoteAsync",
+      };
+    } else {
+      methodconfig[method.JSMethodName] = @{
+        @"methodID": @(idx),
+      };
+    }
   }];
-  config[@"methods"] = [methodconfig copy];
+  if (methodconfig.count) {
+    config[@"methods"] = [methodconfig copy];
+  }
 
   return [config copy];
 }
