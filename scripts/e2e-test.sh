@@ -68,6 +68,6 @@ ls EndToEndTest/`basename $MARKER` > /dev/null
 
 flow --retries 10
 
-../node_modules/react-native/packager/packager.sh --nonPersistent &
+node ../node_modules/react-native/packager/packager.js --nonPersistent &
 SERVER_PID=$!
 xctool -scheme EndToEndTest -sdk iphonesimulator test
