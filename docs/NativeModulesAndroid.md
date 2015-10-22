@@ -90,6 +90,9 @@ ReadableArray -> Array
 
 The last step within Java is to register the Module; this happens in the `createNativeModules` of your apps package. If a module is not registered it will not be available from JavaScript.
 In the package class it is important you override three methods: `createNativeModules`, `createJSModules` and `createViewManagers`.
+
+Note : It is necessary to have same package name of `MainActivity.java` in your packaging class and module class. Only then your module will be accessible across classes. 
+
 ```java
 //AnExampleReactPackage.java
 package com.example.modules.toast;
