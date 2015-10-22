@@ -2,7 +2,7 @@
 <resources>
   <style name="Theme"/>
   <style name="Theme.Catalyst"/>
-  <style name="Theme.Catalyst.RedBox">
+  <style name="Theme.Catalyst.RedBox" parent="@style/Theme.AppCompat.DialogWhenLarge">
     <item name="android:windowBackground">@color/catalyst_redbox_background</item>
     <item name="android:windowAnimationStyle">@style/Animation.Catalyst.RedBox</item>
     <item name="android:inAnimation">@android:anim/fade_in</item>
