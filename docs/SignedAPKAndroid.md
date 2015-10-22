@@ -66,16 +66,29 @@ android {
 
 ### Generating the release APK
 
-1. Start the packager by running `npm start` in your project folder
-2. In your project folder, run the following in a Terminal,
+#### If you have a `react.gradle` file in `android/app`
+
+Simply run the following in a terminal:
 
 ```sh
-$ mkdir -p android/app/src/main/assets
-$ curl "http://localhost:8081/index.android.bundle?platform=android&dev=false&minify=true" -o "android/app/src/main/assets/index.android.bundle"
 $ cd android && ./gradlew assembleRelease
 ```
 
-The generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to be distributed.
+If you need to change the way the JavaScript bundle and/or drawable resources are bundled (e.g. if you changed the default file/folder names or the general structure of the project), have a look at `android/app/build.gradle` to see how you can update it to reflect these changes.
+
+#### If you *don't* have a `react.gradle` file:
+
+You can [upgrade](/react-native/docs/upgrading.html) to the latest version of React Native to get this file. Alternatively, you can bundle the JavaScript package and drawable resources manually by doing the following in a terminal:
+
+```sh
+$ mkdir -p android/app/src/main/assets
+$ react-native bundle --platform android --dev false --entry-file index.android.js \
+  --bundle-output android/app/src/main/assets/index.android.bundle \
+  --assets-dest android/app/src/main/res/
+$ cd android && ./gradlew assembleRelease
+```
+
+In both cases the generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to be distributed.
 
 ### Testing the release build of your app
 
@@ -87,7 +100,7 @@ $ cd android && ./gradlew installRelease
 
 Note that `installRelease` is only available if you've set up signing as described above.
 
-You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets. 
+You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets.
 
 ### Enabling Proguard to reduce the size of the APK (optional)
 
