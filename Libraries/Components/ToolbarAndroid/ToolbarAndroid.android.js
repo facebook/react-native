@@ -104,6 +104,10 @@ var ToolbarAndroid = React.createClass({
      */
     onIconClicked: ReactPropTypes.func,
     /**
+     * Sets the overflow icon.
+     */
+    overflowIcon: optionalImageSource,
+    /**
      * Sets the toolbar subtitle.
      */
     subtitle: ReactPropTypes.string,
@@ -134,6 +138,9 @@ var ToolbarAndroid = React.createClass({
     }
     if (this.props.navIcon) {
       nativeProps.navIcon = resolveAssetSource(this.props.navIcon);
+    }
+    if (this.props.overflowIcon) {
+      nativeProps.overflowIcon = resolveAssetSource(this.props.overflowIcon);
     }
     if (this.props.actions) {
       nativeProps.actions = [];
@@ -169,6 +176,7 @@ var toolbarAttributes = {
   actions: true,
   logo: true,
   navIcon: true,
+  overflowIcon: true,
   subtitle: true,
   subtitleColor: true,
   title: true,
