@@ -27,7 +27,7 @@ import com.facebook.react.bridge.ReadableArray;
 public class BaseViewPropertyApplicator {
 
   private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
-  private static final String PROP_DECOMPOSED_MATRIX_PERSPECTIVE_Z = "perspectiveZ";
+  private static final String PROP_DECOMPOSED_MATRIX_PERSPECTIVE = "perspective";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATION = "rotationDegrees";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
@@ -139,32 +139,6 @@ public class BaseViewPropertyApplicator {
         view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
       }
     }
-
-    // DEPRECATED
-    if (props.hasKey(PROP_PERSPECTIVE)) {
-      view.setCameraDistance(props.getFloat(PROP_PERSPECTIVE, 1280));
-    }
-    if (props.hasKey(PROP_ROTATION)) {
-      view.setRotation(props.getFloat(PROP_ROTATION, 0));
-    }
-    if (props.hasKey(PROP_ROTATION_X)) {
-      view.setRotationX(props.getFloat(PROP_ROTATION_X, 0));
-    }
-    if (props.hasKey(PROP_ROTATION_Y)) {
-      view.setRotationY(props.getFloat(PROP_ROTATION_Y, 0));
-    }
-    if (props.hasKey(PROP_SCALE_X)) {
-      view.setScaleX(props.getFloat(PROP_SCALE_X, 1.f));
-    }
-    if (props.hasKey(PROP_SCALE_Y)) {
-      view.setScaleY(props.getFloat(PROP_SCALE_Y, 1.f));
-    }
-    if (props.hasKey(PROP_TRANSLATE_X)) {
-      view.setTranslationX(PixelUtil.toPixelFromDIP(props.getFloat(PROP_TRANSLATE_X, 0)));
-    }
-    if (props.hasKey(PROP_TRANSLATE_Y)) {
-      view.setTranslationY(PixelUtil.toPixelFromDIP(props.getFloat(PROP_TRANSLATE_Y, 0)));
-    }
   }
 
   private static void setTransformMatrix(View view, ReadableMap matrix) {
@@ -176,8 +150,10 @@ public class BaseViewPropertyApplicator {
       (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_X));
     view.setScaleY(
       (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_Y));
+
+    float scale = DisplayMetricsHolder.getDisplayMetrics().density;
     view.setCameraDistance(
-      (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_PERSPECTIVE_Z));
+      (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_PERSPECTIVE) * scale);
 
     ReadableArray skewArray = matrix.getArray(PROP_DECOMPOSED_MATRIX_SKEW);
     view.getMatrix().setSkew(
@@ -201,7 +177,8 @@ public class BaseViewPropertyApplicator {
     view.setRotationY(0);
     view.setScaleX(1);
     view.setScaleY(1);
-    view.setCameraDistance(1280);
+    float scale = DisplayMetricsHolder.getDisplayMetrics().density;
+    view.setCameraDistance(1280 * scale);
     view.getMatrix().setSkew(0, 0);
   }
 }

@@ -575,13 +575,12 @@ var MatrixMath = {
     // expose both base data and convenience names
     return {
       rotationDegrees,
-      perspective,
       quaternion,
       scale,
       skew,
       translation,
 
-      perspectiveZ: perspective[2] != 0 ? -1/perspective[2] : 1280,
+      perspective: perspective[2] != 0 ? -1/perspective[2] : 1280,
       scaleX: scale[0],
       scaleY: scale[1],
       translateX: translation[0],

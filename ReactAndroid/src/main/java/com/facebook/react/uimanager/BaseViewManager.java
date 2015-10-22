@@ -13,12 +13,12 @@ import com.facebook.react.bridge.ReadableArray;
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
  * It provides support for base view properties such as backgroundColor, opacity, etc.
  */
-public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
+public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
     extends ViewManager<T, C> {
 
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
   private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
-  private static final String PROP_DECOMPOSED_MATRIX_PERSPECTIVE_Z = "perspectiveZ";
+  private static final String PROP_DECOMPOSED_MATRIX_PERSPECTIVE = "perspective";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATION = "rotationDegrees";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
@@ -171,8 +171,10 @@ public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
         (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_X));
     view.setScaleY(
         (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_Y));
+
+    float scale = DisplayMetricsHolder.getDisplayMetrics().density;
     view.setCameraDistance(
-      (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_PERSPECTIVE_Z));
+      (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_PERSPECTIVE) * scale);
 
     ReadableArray skewArray = matrix.getArray(PROP_DECOMPOSED_MATRIX_SKEW);
     view.getMatrix().setSkew(
@@ -196,7 +198,8 @@ public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
     view.setRotationY(0);
     view.setScaleX(1);
     view.setScaleY(1);
-    view.setCameraDistance(1280);
+    float scale = DisplayMetricsHolder.getDisplayMetrics().density;
+    view.setCameraDistance(1280 * scale);
     view.getMatrix().setSkew(0, 0);
   }
 }
