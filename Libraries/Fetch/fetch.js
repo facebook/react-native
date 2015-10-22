@@ -278,6 +278,10 @@ var self = {};
     }
     this._initBody(body)
   }
+  
+  Request.prototype.clone = function() {
+    return new Request(this)
+  }
 
   function decode(body) {
     var form = new FormData()
