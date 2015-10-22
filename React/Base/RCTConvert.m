@@ -11,8 +11,8 @@
 
 #import <objc/message.h>
 
-#import "RCTCache.h"
 #import "RCTDefines.h"
+#import "RCTUtils.h"
 
 @implementation RCTConvert
 
@@ -103,7 +103,10 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
       // Assume it's a resource path
       path = [[NSBundle bundleForClass:[self class]].resourcePath stringByAppendingPathComponent:path];
     }
-    return [NSURL fileURLWithPath:path];
+    if (!(URL = [NSURL fileURLWithPath:path])) {
+      RCTLogConvertError(json, @"a valid URL");
+    }
+    return URL;
   }
   @catch (__unused NSException *e) {
     RCTLogConvertError(json, @"a valid URL");
@@ -401,6 +404,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   return [self UIColor:json].CGColor;
 }
 
+/* This method is only used when loading images synchronously, e.g. for tabbar icons */
 + (UIImage *)UIImage:(id)json
 {
   // TODO: we might as well cache the result of these checks (and possibly the
@@ -417,7 +421,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   if ([json isKindOfClass:[NSString class]]) {
     path = json;
   } else if ([json isKindOfClass:[NSDictionary class]]) {
-    path = [self NSString:json[@"uri"]];
+    if (!(path = [self NSString:json[@"uri"]])) {
+      return nil;
+    }
     scale = [self CGFloat:json[@"scale"]];
     isPackagerAsset = [self BOOL:json[@"__packager_asset"]];
   } else {
@@ -427,33 +433,21 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   NSURL *URL = [self NSURL:path];
   NSString *scheme = URL.scheme.lowercaseString;
-  if (URL && [scheme isEqualToString:@"file"]) {
-    RCTAssertMainThread();
-    if ([URL.path hasPrefix:[NSBundle bundleForClass:[self class]].resourcePath]) {
+  if ([scheme isEqualToString:@"file"]) {
+    if (RCTIsXCAssetURL(URL)) {
       // Image may reside inside a .car file, in which case we have no choice
       // but to use +[UIImage imageNamed] - but this method isn't thread safe
-      static NSMutableDictionary *XCAssetMap = nil;
-      if (!XCAssetMap) {
-        XCAssetMap = [NSMutableDictionary new];
-      }
-      NSNumber *isAsset = XCAssetMap[path];
-      if (!isAsset || isAsset.boolValue) {
-        image = [UIImage imageNamed:URL.path];
-      }
-      if (!isAsset) {
-        // Avoid calling `+imageNamed` again in future if it's not needed.
-        XCAssetMap[path] = @(image != nil);
-      }
-    }
-
-    if (!image) {
+      RCTAssertMainThread();
+      NSString *assetName = RCTBundlePathForURL(URL);
+      image = [UIImage imageNamed:assetName];
+    } else {
       // Attempt to load from the file system
-      if (path.pathExtension.length == 0) {
-        path = [path stringByAppendingPathExtension:@"png"];
+      NSString *filePath = URL.path;
+      if (filePath.pathExtension.length == 0) {
+        filePath = [filePath stringByAppendingPathExtension:@"png"];
       }
-      image = [UIImage imageWithContentsOfFile:path];
+      image = [UIImage imageWithContentsOfFile:filePath];
     }
-
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else if ([scheme isEqualToString:@"http"] && isPackagerAsset) {

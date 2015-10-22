@@ -8,8 +8,10 @@
  */
 'use strict';
 
-// trigger babel-core/register
-require('../packager/react-packager');
+require('../packager/babelRegisterOnly')([
+  /private-cli\/src/,
+  /packager\/[^\/]*/
+]);
 
 var cli = require('./src/cli');
 var fs = require('fs');

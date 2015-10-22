@@ -25,6 +25,7 @@ let stringifySafe = require('stringifySafe');
 let MODULE_IDS = 0;
 let METHOD_IDS = 1;
 let PARAMS = 2;
+let MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
 let SPY_MODE = false;
 
@@ -53,9 +54,9 @@ class MessageQueue {
     this._methodTable = {};
     this._callbacks = [];
     this._callbackID = 0;
+    this._lastFlush = 0;
 
     [
-      'processBatch',
       'invokeCallbackAndReturnFlushedQueue',
       'callFunctionReturnFlushedQueue',
       'flushedQueue',
@@ -75,42 +76,30 @@ class MessageQueue {
   /**
    * Public APIs
    */
-  processBatch(batch) {
+  callFunctionReturnFlushedQueue(module, method, args) {
     guard(() => {
-      ReactUpdates.batchedUpdates(() => {
-        batch.forEach((call) => {
-          let method = call.method === 'callFunctionReturnFlushedQueue' ?
-            '__callFunction' : '__invokeCallback';
-          guard(() => this[method].apply(this, call.args));
-        });
-
-        this.__callImmediates();
-      });
-
-      // batchedUpdates might still trigger setImmediates
-      while (JSTimersExecution.immediates.length) {
-        ReactUpdates.batchedUpdates(() => {
-          this.__callImmediates();
-        });
-      }
+      this.__callFunction(module, method, args);
+      this.__callImmediates();
     });
 
-    return this.__flushedQueue();
-  }
-
-  callFunctionReturnFlushedQueue(module, method, args) {
-    guard(() => this.__callFunction(module, method, args));
     return this.flushedQueue();
   }
 
   invokeCallbackAndReturnFlushedQueue(cbID, args) {
-    guard(() => this.__invokeCallback(cbID, args));
+    guard(() => {
+      this.__invokeCallback(cbID, args);
+      this.__callImmediates();
+    });
+
     return this.flushedQueue();
   }
 
   flushedQueue() {
     this.__callImmediates();
-    return this.__flushedQueue();
+
+    let queue = this._queue;
+    this._queue = [[],[],[]];
+    return queue[0].length ? queue : null;
   }
 
   /**
@@ -123,11 +112,6 @@ class MessageQueue {
     BridgeProfiling.profileEnd();
   }
 
-  __flushedQueue() {
-    let queue = this._queue;
-    this._queue = [[],[],[]];
-    return queue[0].length ? queue : null;
-  }
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       // eventually delete old debug info
@@ -143,6 +127,14 @@ class MessageQueue {
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
     this._queue[PARAMS].push(params);
+
+    var now = new Date().getTime();
+    if (global.nativeFlushQueueImmediate &&
+        now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS) {
+      global.nativeFlushQueueImmediate(this._queue);
+      this._queue = [[],[],[]];
+      this._lastFlush = now;
+    }
     if (__DEV__ && SPY_MODE && isFinite(module)) {
       console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
         this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
@@ -151,6 +143,7 @@ class MessageQueue {
 
   __callFunction(module, method, args) {
     BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
+    this._lastFlush = new Date().getTime();
     if (isFinite(module)) {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
@@ -166,6 +159,7 @@ class MessageQueue {
   __invokeCallback(cbID, args) {
     BridgeProfiling.profile(
       () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
+    this._lastFlush = new Date().getTime();
     let callback = this._callbacks[cbID];
     if (!callback || __DEV__) {
       let debug = this._debugInfo[cbID >> 1];

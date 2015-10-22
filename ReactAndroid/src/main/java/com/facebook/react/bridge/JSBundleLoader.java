@@ -30,6 +30,11 @@ public abstract class JSBundleLoader {
       public void loadScript(ReactBridge bridge) {
         bridge.loadScriptFromAssets(assetManager, assetFileName);
       }
+
+      @Override
+      public String getSourceUrl() {
+        return "file:///android_asset/" + assetFileName;
+      }
     };
   }
 
@@ -48,6 +53,11 @@ public abstract class JSBundleLoader {
       public void loadScript(ReactBridge bridge) {
         bridge.loadScriptFromNetworkCached(sourceURL, cachedFileLocation);
       }
+
+      @Override
+      public String getSourceUrl() {
+        return sourceURL;
+      }
     };
   }
 
@@ -62,8 +72,14 @@ public abstract class JSBundleLoader {
       public void loadScript(ReactBridge bridge) {
         bridge.loadScriptFromNetworkCached(sourceURL, null);
       }
+
+      @Override
+      public String getSourceUrl() {
+        return sourceURL;
+      }
     };
   }
 
   public abstract void loadScript(ReactBridge bridge);
+  public abstract String getSourceUrl();
 }

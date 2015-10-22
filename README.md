@@ -22,20 +22,22 @@ See the official [React Native website](https://facebook.github.io/react-native/
 - Follow the [Getting Started guide](http://facebook.github.io/react-native/docs/getting-started.html) to install React Native and its dependencies.
 - Check out this [tutorial](https://facebook.github.io/react-native/docs/tutorial.html) to walk through your first project that fetches real data and displays it in a list.
 - [Open the UIExplorer example project](#examples) to see a list of components that ship with React Native.
-- Install the [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) for Chrome or Firefox for better debugging [(read more)](http://facebook.github.io/react-native/docs/debugging.html).
+- Install the React Developer Tools for [Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) or [Firefox](https://addons.mozilla.org/en-US/firefox/addon/react-devtools/) for better debugging [(read more)](http://facebook.github.io/react-native/docs/debugging.html).
 - Try out apps from the [Showcase](https://facebook.github.io/react-native/showcase.html) to see what React Native is capable of!
 
 ## Getting Help
 
+Please use these community resources for getting help. We use the GitHub issues for tracking bugs and feature requests and have limited bandwidth to address them.
+
 - Ask a question on [StackOverflow](http://stackoverflow.com/) and tag it with `react-native`
 - Start a thread on the [React Discussion Board](https://discuss.reactjs.org/)
 - Join #reactnative on IRC: chat.freenode.net
-- Slack: Sign up for [Reactiflux](http://reactiflux.com/) and join #react-native
+- Chat with us on [Reactiflux](https://discord.gg/0ZcbPKXt5bWJVmUY) in #react-native
 - If it turns out that you may have found a bug, please [open an issue](#opening-issues)
 
 ## Documentation
 
-[The website’s documentation](https://facebook.github.io/react-native/docs/) divided into multiple sections.
+[The website’s documentation](https://facebook.github.io/react-native/docs/) is divided into multiple sections.
 - There are **Guides** that discuss topics like [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrating with existing apps](https://facebook.github.io/react-native/docs/embedded-app-ios.html), and [the gesture responder system](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
 - The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Navigator`](https://facebook.github.io/react-native/docs/navigator.html).
 - The **APIs** section covers other libraries like [Animated](https://facebook.github.io/react-native/docs/animated.html) and [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) that aren’t React components themselves.
@@ -91,4 +93,3 @@ React is [BSD licensed](./LICENSE). We also provide an additional [patent grant]
 React documentation is [Creative Commons licensed](./LICENSE-docs).
 
 Examples provided in this repository and in the documentation are [separately licensed](./LICENSE-examples), as are some of the [custom components](./LICENSE-CustomComponents).
-

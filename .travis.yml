@@ -72,7 +72,12 @@ env:
     - TEST_TYPE=build_website
     - TEST_TYPE=e2e
   global:
+    # $GITHUB_TOKEN
     - secure: "HlmG8M2DmBUSBh6KH1yVIe/8gR4iibg4WfcHq1x/xYQxGbvleq7NOo04V6eFHnl9cvZCu+PKH0841WLnGR7c4BBf47GVu/o16nXzggPumHKy++lDzxFPlJ1faMDfjg/5vjbAxRUe7D3y98hQSeGHH4tedc8LvTaFLVu7iiGqvjU="
+    # $APPETIZE_TOKEN
+    - secure: "egsvVSpszTzrNd6bN62DsVAzMiSZI/OHgdizfPryqvqWBf655ztE6XFQSEFNpuIAzSKDDF25ioT8iPfVsbC1iK6HDWHfmqYxML0L+OoU0gi+hV2oKUBFZDZ1fwSnFoWuBdNdMDpLlUxvJp6N1WyfNOB2dxuZUt8eTt48Hi3+Hpc="
+    # $S3_TOKEN
+    - secure: "lY8JZPA0A7zT7L5KF9BBg34XYWIeR/RJiEvE7l7oVr88KnEPtyd//79eHhhVKnUnav7zsk5QJwkcX0MxKTp/dp4G0Am+zOX+sfA8kQrJ+2/+FzFW7AEsW/kHByfaIEIly9DQvUFt4I4oMm8nQZysJLahDgNWglyI3RTuJp//hcY="
 
 branches:
   only:

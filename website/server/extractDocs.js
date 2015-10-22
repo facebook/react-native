@@ -213,6 +213,7 @@ var components = [
   '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
+  '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
   '../Libraries/Components/WebView/WebView.ios.js',
 ];
 
@@ -225,6 +226,7 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.ios.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',

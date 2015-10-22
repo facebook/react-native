@@ -30,12 +30,6 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     int x = (int) touchX;
     int y = (int) touchY;
 
-    x -= getTotalPaddingLeft();
-    y -= getTotalPaddingTop();
-
-    x += getScrollX();
-    y += getScrollY();
-
     Layout layout = getLayout();
     int line = layout.getLineForVertical(y);
 

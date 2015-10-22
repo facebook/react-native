@@ -13,6 +13,7 @@
 #import "RCTUIManager.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTImageComponent.h"
 #import "RCTLog.h"
 #import "RCTShadowRawText.h"
 #import "RCTSparseArray.h"
@@ -85,7 +86,10 @@ static css_dim_t RCTMeasure(void *context, float width)
   parentProperties = [super processUpdatedProperties:applierBlocks
                                     parentProperties:parentProperties];
 
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width];
+  UIEdgeInsets padding = self.paddingAsInsets;
+  CGFloat width = self.frame.size.width - (padding.left + padding.right);
+  
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:width];
   [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
     RCTText *view = viewRegistry[self.reactTag];
     view.textStorage = textStorage;
@@ -104,9 +108,6 @@ static css_dim_t RCTMeasure(void *context, float width)
 
 - (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width
 {
-  UIEdgeInsets padding = self.paddingAsInsets;
-  width -= (padding.left + padding.right);
-
   if (_cachedTextStorage && width == _cachedTextStorageWidth) {
     return _cachedTextStorage;
   }
@@ -191,8 +192,17 @@ static css_dim_t RCTMeasure(void *context, float width)
     } else if ([child isKindOfClass:[RCTShadowRawText class]]) {
       RCTShadowRawText *shadowRawText = (RCTShadowRawText *)child;
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
+    } else if ([child conformsToProtocol:@protocol(RCTImageComponent)]) {
+      UIImage *image = ((id<RCTImageComponent>)child).image;
+      if (image) {
+        NSTextAttachment *imageAttachment = [NSTextAttachment new];
+        imageAttachment.image = image;
+        [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:imageAttachment]];
+      } else {
+        //TODO: add placeholder image?
+      }
     } else {
-      RCTLogError(@"<Text> can't have any children except <Text> or raw strings");
+      RCTLogError(@"<Text> can't have any children except <Text>, <Image> or raw strings");
     }
 
     [child setTextComputed];

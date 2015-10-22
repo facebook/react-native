@@ -36,7 +36,7 @@
 #endif
 
   NSOperatingSystemVersion version = [NSProcessInfo processInfo].operatingSystemVersion;
-  RCTAssert(version.majorVersion == 8 || version.minorVersion >= 3, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
+  RCTAssert((version.majorVersion == 8 && version.minorVersion >= 3) || version.majorVersion >= 9, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp", nil);
 }
 
@@ -62,9 +62,12 @@
 RCT_TEST(IntegrationTestHarnessTest)
 RCT_TEST(TimersTest)
 RCT_TEST(AsyncStorageTest)
-RCT_TEST(LayoutEventsTest)
 RCT_TEST(AppEventsTest)
+RCT_TEST(ImageSnapshotTest)
 RCT_TEST(SimpleSnapshotTest)
-RCT_TEST(PromiseTest)
+
+// Disable due to flakiness: #8686784
+//RCT_TEST(LayoutEventsTest)
+//RCT_TEST(PromiseTest)
 
 @end

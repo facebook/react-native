@@ -26,7 +26,7 @@
 @interface RCTBridge (Profiling)
 
 - (void)startProfiling;
-- (void)stopProfiling;
+- (void)stopProfiling:(void (^)(NSData *))callback;
 
 @end
 
@@ -520,7 +520,9 @@ RCT_EXPORT_METHOD(reload)
     if (enabled) {
       [_bridge startProfiling];
     } else {
-      [_bridge stopProfiling];
+      [_bridge stopProfiling:^(NSData *logData) {
+        RCTProfileSendResult(_bridge, @"systrace", logData);
+      }];
     }
   }
 }
@@ -621,7 +623,11 @@ RCT_EXPORT_METHOD(reload)
 
 - (RCTDevMenu *)devMenu
 {
+#if RCT_DEV
   return self.modules[RCTBridgeModuleNameForClass([RCTDevMenu class])];
+#else
+  return nil;
+#endif
 }
 
 @end

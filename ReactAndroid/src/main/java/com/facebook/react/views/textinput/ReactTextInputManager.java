@@ -52,11 +52,6 @@ public class ReactTextInputManager extends
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_TEXT_INPUT_TEXT = "text";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_TEXT_INPUT_MOST_RECENT_EVENT_COUNT = "mostRecentEventCount";
-
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
 
@@ -78,8 +73,13 @@ public class ReactTextInputManager extends
   }
 
   @Override
-  public ReactTextInputShadowNode createCSSNodeInstance() {
+  public ReactTextInputShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
+  }
+
+  @Override
+  public Class<ReactTextInputShadowNode> getShadowNodeClass() {
+    return ReactTextInputShadowNode.class;
   }
 
   @Nullable
@@ -155,16 +155,6 @@ public class ReactTextInputManager extends
     view.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
-  }
-
-  // Prevents flickering color while waiting for JS update.
-  @ReactProp(name = ViewProps.COLOR, customType = "Color")
-  public void setColor(ReactEditText view, @Nullable Integer color) {
-    if (color == null) {
-      view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
-    } else {
-      view.setTextColor(color);
-    }
   }
 
   @ReactProp(name = "placeholder")

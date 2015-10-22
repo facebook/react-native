@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import android.util.SparseBooleanArray;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMapKeySeyIterator;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -42,7 +42,7 @@ import com.facebook.react.bridge.ReadableMapKeySeyIterator;
  * - Create a view with only layout props: a description of that view is created as a
  *   {@link ReactShadowNode} in UIManagerModule, but this class will not output any commands to
  *   create the view in the native view hierarchy.
- * - Update a layout-only view to have non-layout props: before issuing the updateProperties call
+ * - Update a layout-only view to have non-layout props: before issuing the updateShadowNode call
  *   to the native view hierarchy, issue commands to create the view we optimized away move it into
  *   the view hierarchy
  * - Manage the children of a view: multiple manageChildren calls for various parent views may be
@@ -417,7 +417,7 @@ public class NativeViewHierarchyOptimizer {
       return false;
     }
 
-    ReadableMapKeySeyIterator keyIterator = props.mBackingMap.keySetIterator();
+    ReadableMapKeySetIterator keyIterator = props.mBackingMap.keySetIterator();
     while (keyIterator.hasNextKey()) {
       if (!ViewProps.isLayoutOnly(keyIterator.nextKey())) {
         return false;

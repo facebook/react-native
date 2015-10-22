@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.catalyst.uimanager.debug;
+package com.facebook.react.uimanager.debug;
 
 import javax.annotation.Nullable;
 

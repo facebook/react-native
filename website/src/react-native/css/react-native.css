@@ -185,15 +185,13 @@ html * {
 
 .container {
   padding-top: 50px;
-  min-width: 960px;
+  min-width: 1160px;
 }
 
 .wrap {
-  width: 960px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .skinnyWrap {
@@ -363,7 +361,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   font-size: 14px;
   float: left;
   width: 210px;
-  margin-top: 5px;
+  margin: 5px 48px 0 0;
 }
 
 .nav-docs ul {
@@ -550,7 +548,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   float: right;
 }
 
-footer {
+footer.wrap {
   font-size: 13px;
   font-weight: 600;
   padding-top: 36px;
@@ -699,7 +697,7 @@ figure {
 }
 
 .inner-content {
-  float: right;
+  float: left;
   width: 650px;
 }
 
@@ -845,6 +843,96 @@ small code, li code, p code {
   text-decoration: none !important;
 }
 
+.column-left, .column-left * {
+  box-sizing: border-box;
+}
+
+.column-left p {
+  text-align: center;
+  color: #999;
+}
+
+.column-left {
+  float: left;
+  padding: 20px;
+  width: 210px;
+}
+
+/* Modal */
+.modal-backdrop {
+  background: rgba(0,0,0,.4);
+  display: none;
+  height: 100%;
+  left: 0;
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9900;
+}
+
+.modal {
+  background: #F6F6F6;
+  bottom: 0;
+  box-shadow: 2px 2px 4px 0 rgba(0,0,0,.11);
+  display: none;
+  border-radius: 10px;
+  height: 95%;
+  left: 0;
+  margin: auto;
+  max-height: 648px;
+  max-width: 460px;
+  overflow: auto;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 80%;
+  z-index: 9999;
+}
+
+.modal-open { display: block; }
+
+.modal-content {
+  padding: 40px 24px 8px 24px;
+  position: relative;
+}
+
+.modal-content iframe { margin: 0 auto; }
+
+.modal-button-open {
+  cursor: pointer;
+  text-align: center;
+}
+
+.modal-button-open-img {
+  background: #05A5D1;
+  height: 358px;
+}
+
+.modal-button-open-img:hover img { opacity: 0.9; }
+
+.modal-button-close {
+  background: transparent;
+  border-radius: 0 0 0 4px;
+  border: 0;
+  color: #555;
+  font-size: 1.2em;
+  font-weight: bolder;
+  line-height: 32px;
+  margin: 0;
+  padding: 0 12px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.modal-button-close:active,
+.modal-button-close:focus,
+.modal-button-close:hover {
+  background: #EAF8FD;
+  outline: none;
+}
+
 @media screen and (max-width: 960px) {
   .nav-main {
     position: static;
@@ -974,6 +1062,9 @@ div[data-twttr-id] iframe {
   padding: 0 5px;
   font-size: 13px;
   font-weight: normal;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .edit-github {

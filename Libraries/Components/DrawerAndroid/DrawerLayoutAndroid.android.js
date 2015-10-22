@@ -50,15 +50,19 @@ var DRAWER_STATES = [
  * ```
  * render: function() {
  *   var navigationView = (
- *     <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I'm in the Drawer!</Text>
+ *     <View style={{flex: 1, backgroundColor: '#fff'}}>
+ *       <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I'm in the Drawer!</Text>
+ *     </View>
  *   );
  *   return (
  *     <DrawerLayoutAndroid
  *       drawerWidth={300}
  *       drawerPosition={DrawerLayoutAndroid.positions.Left}
  *       renderNavigationView={() => navigationView}>
- *       <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
- *       <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>
+ *       <View style={{flex: 1, alignItems: 'center'}}>
+ *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
+ *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>
+ *       </View>
  *     </DrawerLayoutAndroid>
  *   );
  * },

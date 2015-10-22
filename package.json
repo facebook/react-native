@@ -1,11 +1,14 @@
 {
   "name": "react-native",
-  "version": "0.8.0",
+  "version": "0.12.0",
   "description": "A framework for building native apps using React",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
+  },
+  "engines": {
+    "node": ">=4"
   },
   "jest": {
     "scriptPreprocessor": "jestSupport/preprocessor.js",
@@ -30,6 +33,7 @@
     "packager",
     "cli.js",
     "local-cli",
+    "private-cli",
     "init.sh",
     "LICENSE",
     "PATENTS",
@@ -40,10 +44,7 @@
   "scripts": {
     "test": "NODE_ENV=test jest",
     "lint": "eslint Examples/ Libraries/",
-    "start": "./packager/packager.sh || true"
-  },
-  "bin": {
-    "react-native-start": "packager/packager.sh"
+    "start": "react-native start || true"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -61,11 +62,12 @@
     "joi": "^6.6.1",
     "jstransform": "^11.0.3",
     "module-deps": "^3.9.1",
+    "node-fetch": "^1.3.3",
     "optimist": "^0.6.1",
     "progress": "^1.1.8",
     "promise": "^7.0.4",
     "react-timer-mixin": "^0.13.2",
-    "react-tools": "git://github.com/facebook/react#b4e74e38e43ac53af8acd62c78c9213be0194245",
+    "react-tools": "https://api.github.com/repos/facebook/react/tarball/b4e74e38e43ac53af8acd62c78c9213be0194245",
     "rebound": "^0.0.13",
     "regenerator": "^0.8.36",
     "sane": "^1.2.0",
