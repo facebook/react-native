@@ -21,7 +21,7 @@ Swipe Refresh
 Spinner
 ART
 Maps
-Webview
+Webview (not yet implemented for Android)
 ```
 
 #### Modules
