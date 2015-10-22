@@ -158,7 +158,6 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
   RCTAssert(methodSignature, @"%@ is not a recognized Objective-C method.", objCMethodName);
   NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
   invocation.selector = _selector;
-  [invocation retainArguments];
   _invocation = invocation;
 
   // Process arguments
@@ -172,6 +171,13 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
   return YES; \
 }];
 
+/**
+ * Explicitly copy the block and retain it, since NSInvocation doesn't retain them.
+ */
+#define RCT_BLOCK_ARGUMENT(block...) \
+  id value = json ? [block copy] : (id)^(__unused NSArray *_){}; \
+  CFBridgingRetain(value)
+
   __weak RCTModuleMethod *weakSelf = self;
   void (^addBlockArgument)(void) = ^{
     RCT_ARG_BLOCK(
@@ -181,12 +187,11 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
         return NO;
       }
 
-      // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-      __autoreleasing id value = (json ? ^(NSArray *args) {
+      RCT_BLOCK_ARGUMENT(^(NSArray *args) {
         [bridge _invokeAndProcessModule:@"BatchedBridge"
                                  method:@"invokeCallbackAndReturnFlushedQueue"
                               arguments:@[json, args]];
-      } : ^(__unused NSArray *unused) {});
+      });
     )
   };
 
@@ -231,7 +236,16 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
         RCT_NULLABLE_CASE(_C_SEL, SEL)
         RCT_NULLABLE_CASE(_C_CHARPTR, const char *)
         RCT_NULLABLE_CASE(_C_PTR, void *)
-        RCT_NULLABLE_CASE(_C_ID, id)
+
+        case _C_ID: {
+          isNullableType = YES;
+          id (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;
+          RCT_ARG_BLOCK(
+            id value = convert([RCTConvert class], selector, json);
+            CFBridgingRetain(value);
+          )
+          break;
+        }
 
         case _C_STRUCT_B: {
 
@@ -272,12 +286,11 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
           return NO;
         }
 
-        // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-        __autoreleasing id value = (json ? ^(NSError *error) {
+        RCT_BLOCK_ARGUMENT(^(NSError *error) {
           [bridge _invokeAndProcessModule:@"BatchedBridge"
                                      method:@"invokeCallbackAndReturnFlushedQueue"
                                 arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
-        } : ^(__unused NSError *error) {});
+        });
       )
     } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
       RCTAssert(i == numberOfArguments - 2,
@@ -289,8 +302,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
           return NO;
         }
 
-        // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-        __autoreleasing RCTPromiseResolveBlock value = (^(id result) {
+        RCT_BLOCK_ARGUMENT(^(id result) {
           [bridge _invokeAndProcessModule:@"BatchedBridge"
                                    method:@"invokeCallbackAndReturnFlushedQueue"
                                 arguments:@[json, result ? @[result] : @[]]];
@@ -306,8 +318,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
           return NO;
         }
 
-        // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-        __autoreleasing RCTPromiseRejectBlock value = (^(NSError *error) {
+        RCT_BLOCK_ARGUMENT(^(NSError *error) {
           NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
           [bridge _invokeAndProcessModule:@"BatchedBridge"
                                    method:@"invokeCallbackAndReturnFlushedQueue"
@@ -433,6 +444,25 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
   // Invoke method
   [_invocation invokeWithTarget:module];
+
+  RCTAssert(
+    @encode(RCTArgumentBlock)[0] == _C_ID,
+    @"Block type encoding has changed, it won't be released. A check for the block"
+     "type encoding (%s) has to be added below.",
+    @encode(RCTArgumentBlock)
+  );
+
+  index = 2;
+  for (NSUInteger length = _invocation.methodSignature.numberOfArguments; index < length; index++) {
+    if ([_invocation.methodSignature getArgumentTypeAtIndex:index][0] == _C_ID) {
+      __unsafe_unretained id value;
+      [_invocation getArgument:&value atIndex:index];
+
+      if (value) {
+        CFRelease((__bridge CFTypeRef)value);
+      }
+    }
+  }
 }
 
 - (NSString *)methodName
