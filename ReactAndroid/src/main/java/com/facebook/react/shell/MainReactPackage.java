@@ -9,6 +9,9 @@
 
 package com.facebook.react.shell;
 
+import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,10 +47,21 @@ public class MainReactPackage implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    Context context = reactContext.getApplicationContext();
+    String version = "Unknown", name = getApplicationName(context);
+
+    try {
+      version = getApplicationVersion(context);
+    } catch (NameNotFoundException e) {
+      e.printStackTrace();
+    }
+
+    String defaultUserAgent = String.format("%s/%s", name, version);
+
     return Arrays.<NativeModule>asList(
       new AsyncStorageModule(reactContext),
       new FrescoModule(reactContext),
-      new NetworkingModule(reactContext),
+      new NetworkingModule(reactContext, defaultUserAgent),
       new WebSocketModule(reactContext),
       new ToastModule(reactContext));
   }
@@ -60,18 +74,26 @@ public class MainReactPackage implements ReactPackage {
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Arrays.<ViewManager>asList(
-      new ReactDrawerLayoutManager(),
-      new ReactHorizontalScrollViewManager(),
-      new ReactImageManager(),
-      new ReactProgressBarViewManager(),
-      new ReactRawTextManager(),
-      new ReactScrollViewManager(),
-      new ReactSwitchManager(),
-      new ReactTextInputManager(),
-      new ReactTextViewManager(),
-      new ReactToolbarManager(),
-      new ReactViewManager(),
-      new ReactViewPagerManager(),
-      new ReactVirtualTextViewManager());
+            new ReactDrawerLayoutManager(),
+            new ReactHorizontalScrollViewManager(),
+            new ReactImageManager(),
+            new ReactProgressBarViewManager(),
+            new ReactRawTextManager(),
+            new ReactScrollViewManager(),
+            new ReactSwitchManager(),
+            new ReactTextInputManager(),
+            new ReactTextViewManager(),
+            new ReactToolbarManager(),
+            new ReactViewManager(),
+            new ReactViewPagerManager(),
+            new ReactVirtualTextViewManager());
+  }
+
+  private String getApplicationName(Context context) {
+    return context.getString(context.getApplicationInfo().labelRes);
+  }
+
+  private String getApplicationVersion(Context context) throws NameNotFoundException {
+    return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
   }
 }
