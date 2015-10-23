@@ -25,12 +25,12 @@ let cachedConfig = null;
  * error will be thrown.
  */
 const Config = {
-  get(pwd, defaultConfig) {
+  get(cwd, defaultConfig) {
     if (cachedConfig) {
       return cachedConfig;
     }
 
-    const parentDir = findParentDirectory(pwd, RN_CLI_CONFIG);
+    const parentDir = findParentDirectory(cwd, RN_CLI_CONFIG);
     if (!parentDir && !defaultConfig) {
       throw new Error(
         'Can\'t find "rn-cli.config.js" file in any parent folder of "' +
@@ -43,7 +43,7 @@ const Config = {
       : {};
 
     cachedConfig = Object.assign({}, defaultConfig, config);
-    process.chdir(pwd);
+    cachedConfig.cwd = cwd;
     return cachedConfig;
   }
 };
