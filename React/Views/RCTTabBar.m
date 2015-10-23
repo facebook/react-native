@@ -80,6 +80,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self reactAddControllerToClosestParent:_tabController];
   _tabController.view.frame = self.bounds;
 }
 
