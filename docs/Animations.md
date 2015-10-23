@@ -458,7 +458,7 @@ use this.
 
 ![](/react-native/img/Rebound.gif) Screenshot from
 [react-native-scrollable-tab-view](https://github.com/brentvatne/react-native-scrollable-tab-view).
-You can run a simlar example [here](https://rnplay.org/apps/qHU_5w).
+You can run a similar example [here](https://rnplay.org/apps/qHU_5w).
 
 #### A sidenote about setNativeProps
 
@@ -542,7 +542,7 @@ var CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
 });
 
 var CustomSceneConfig = Object.assign({}, BaseConfig, {
-  // A very tighly wound spring will make this transition fast
+  // A very tightly wound spring will make this transition fast
   springTension: 100,
   springFriction: 1,
 
