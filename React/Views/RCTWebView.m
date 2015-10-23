@@ -25,6 +25,10 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
+@property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
+@property (nonatomic, strong) NSConditionLock *conditionLock;
+@property (nonatomic, assign) BOOL startLoadResult;
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 @end
 
@@ -43,6 +47,8 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
     [self addSubview:_webView];
+
+    self.operationQueue = [[NSOperationQueue alloc] init];
   }
   return self;
 }
@@ -142,6 +148,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
+  // skip this for the JS Navigation handler
+  if (![request.URL.scheme isEqualToString:RCTJSNavigationScheme] &&
+      _onShouldStartLoadWithRequest) {
+    NSMutableDictionary *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"url": (request.URL).absoluteString,
+       @"navigationType": @(navigationType)
+    }];
+    return [self onShouldStartLoadWithRequest:event];
+  }
   if (_onLoadingStart) {
     // We have this check to filter out iframe requests and whatnot
     BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
@@ -158,6 +174,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // JS Navigation handler
   return ![request.URL.scheme isEqualToString:RCTJSNavigationScheme];
 }
+
+- (BOOL)onShouldStartLoadWithRequest:(NSMutableDictionary *)event {
+  id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"webViewStartLoadNotification" object:nil queue:self.operationQueue usingBlock:^(NSNotification * _Nonnull note) {
+    NSDictionary *userInfo = note.userInfo;
+    
+    NSInteger lockIdentifier = ((NSNumber *)userInfo[@"lockIdentifier"]).longValue;
+    self.startLoadResult = ((NSNumber *)userInfo[@"result"]).boolValue;
+    
+    [self.conditionLock unlockWithCondition:lockIdentifier];
+    self.conditionLock = nil;
+  }];
+  
+  NSInteger lockIdentifier = arc4random();
+  self.conditionLock = [[NSConditionLock alloc] initWithCondition:lockIdentifier];
+  [self.conditionLock lock];
+  
+  [event addEntriesFromDictionary: @{
+    @"lockIdentifier": @(lockIdentifier)
+  }];
+  _onShouldStartLoadWithRequest(event);
+
+  [self.conditionLock lockBeforeDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+
+  [[NSNotificationCenter defaultCenter] removeObserver:observer];
+
+  return self.startLoadResult;
+}
+
 
 - (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error
 {

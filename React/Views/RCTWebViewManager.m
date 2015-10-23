@@ -34,6 +34,7 @@ RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock);
 
 - (NSDictionary *)constantsToExport
 {
@@ -48,6 +49,14 @@ RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
       @"Other": @(UIWebViewNavigationTypeOther)
     },
   };
+}
+
+RCT_EXPORT_METHOD(startLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)lockIdentifier) {
+  NSDictionary *userInfo = @{
+    @"result": @(result),
+    @"lockIdentifier": @(lockIdentifier)
+  };
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"webViewStartLoadNotification" object:self userInfo:userInfo];
 }
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
