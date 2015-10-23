@@ -59,11 +59,12 @@ function attachToServer(server, path) {
 
   return {
     server: wss,
-    isChromeConnected: () =>
-      clients
-        .map(ws => ws.upgradeReq.headers['user-agent'])
+    isChromeConnected: function() {
+      return clients
+        .map(function(ws) { return ws.upgradeReq.headers['user-agent']; })
         .filter(Boolean)
-        .some(userAgent => userAgent.includes('Chrome'))
+        .some(function(userAgent) { return userAgent.includes('Chrome'); })
+    }
   };
 }
 
