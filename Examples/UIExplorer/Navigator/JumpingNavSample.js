@@ -67,7 +67,7 @@ class JumpingNavBar extends React.Component {
       <View style={styles.tabs}>
         <TabBarIOS>
           <TabBarIOS.Item
-            icon={require('image!tabnav_notification')}
+            icon={require('../img/tabnav_notification.png')}
             selected={this.state.tabIndex === 0}
             onPress={() => {
               this.props.onTabIndex(0);
@@ -76,7 +76,7 @@ class JumpingNavBar extends React.Component {
             <View />
           </TabBarIOS.Item>
           <TabBarIOS.Item
-            icon={require('image!tabnav_list')}
+            icon={require('../img/tabnav_list.png')}
             selected={this.state.tabIndex === 1}
             onPress={() => {
               this.props.onTabIndex(1);
@@ -85,7 +85,7 @@ class JumpingNavBar extends React.Component {
             <View />
           </TabBarIOS.Item>
           <TabBarIOS.Item
-            icon={require('image!tabnav_settings')}
+            icon={require('../img/tabnav_settings.png')}
             selected={this.state.tabIndex === 2}
             onPress={() => {
               this.props.onTabIndex(2);
