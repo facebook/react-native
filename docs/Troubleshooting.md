@@ -69,7 +69,7 @@ To see the exact error that is causing your build to fail, go into the Issues Na
 ##### React libraries missing
 If you are using CocoaPods, verify that you have added React along with the subspecs to the `Podfile`. For example, if you were using the `<Text />`, `<Image />` and `fetch()` APIs, you would need to add these in your `Podfile`:
 ```
-pod 'React', :subspecs => [
+pod 'React', :path => '../node_modules/react-native', :subspecs => [
   'RCTText',
   'RCTImage',
   'RCTNetwork',
