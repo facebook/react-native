@@ -15,7 +15,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
-#import "RCTPerfStats.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
@@ -181,22 +180,6 @@ RCT_EXPORT_MODULE()
     _extraMenuItems = [NSMutableArray new];
 
     __weak RCTDevMenu *weakSelf = self;
-
-    [_extraMenuItems addObject:[RCTDevMenuItem toggleItemWithKey:@"showFPS"
-                                               title:@"Show FPS Monitor"
-                                       selectedTitle:@"Hide FPS Monitor"
-                                             handler:^(BOOL showFPS)
-    {
-      RCTDevMenu *strongSelf = weakSelf;
-      if (strongSelf) {
-        strongSelf->_showFPS = showFPS;
-        if (showFPS) {
-          [strongSelf.bridge.perfStats show];
-        } else {
-          [strongSelf.bridge.perfStats hide];
-        }
-      }
-    }]];
 
     [_extraMenuItems addObject:[RCTDevMenuItem toggleItemWithKey:@"showInspector"
                                                  title:@"Show Inspector"
