@@ -26,13 +26,16 @@ var runAndroid = require('../private-cli/src/runAndroid/runAndroid');
 var server = require('../private-cli/src/server/server');
 var TerminalAdapter = require('yeoman-environment/lib/adapter.js');
 var yeoman = require('yeoman-environment');
+var upgrade = require('../private-cli/src/upgrade/upgrade');
 
 var documentedCommands = {
   'start': [server, 'starts the webserver'],
   'bundle': [bundle, 'builds the javascript bundle for offline use'],
   'new-library': [library, 'generates a native library bridge'],
   'android': [generateWrapper, 'generates an Android project for your app'],
-  'run-android': [runAndroid, 'builds your app and starts it on a connected Android emulator or device']
+  'run-android': [runAndroid, 'builds your app and starts it on a connected Android emulator or device'],
+  'upgrade': [upgrade, 'upgrade your app\'s template files to the latest version; run this after ' +
+                       'updating the react-native version in your package.json and running npm install']
 };
 
 var undocumentedCommands = {

@@ -29,6 +29,11 @@ module.exports = yeoman.generators.NamedBase.extend({
       type: String,
       defaults: 'com.' + this.name.toLowerCase()
     });
+    this.option('upgrade', {
+      desc: 'Specify an upgrade',
+      type: Boolean,
+      defaults: false
+    });
   },
 
   initializing: function() {
@@ -42,15 +47,29 @@ module.exports = yeoman.generators.NamedBase.extend({
       package: this.options.package,
       name: this.name
     };
-    this.fs.copyTpl(
-      this.templatePath(path.join('src', '**')),
-      this.destinationPath('android'),
-      templateParams
-    );
-    this.fs.copy(
-      this.templatePath(path.join('bin', '**')),
-      this.destinationPath('android')
-    );
+    if (!this.options.upgrade) {
+      this.fs.copyTpl(
+        this.templatePath(path.join('src', '**')),
+        this.destinationPath('android'),
+        templateParams
+      );
+      this.fs.copy(
+        this.templatePath(path.join('bin', '**')),
+        this.destinationPath('android')
+      );
+    } else {
+      this.fs.copyTpl(
+        this.templatePath(path.join('src', '*')),
+        this.destinationPath('android'),
+        templateParams
+      );
+      this.fs.copyTpl(
+        this.templatePath(path.join('src', 'app', '*')),
+        this.destinationPath(path.join('android', 'app')),
+        templateParams
+      );
+    }
+
     var javaPath = path.join.apply(
       null,
       ['android', 'app', 'src', 'main', 'java'].concat(this.options.package.split('.'))
