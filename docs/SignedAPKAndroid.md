@@ -83,8 +83,8 @@ You can [upgrade](/react-native/docs/upgrading.html) to the latest version of Re
 ```sh
 $ mkdir -p android/app/src/main/assets
 $ react-native bundle --platform android --dev false --entry-file index.android.js \
-  --bundle-output android/app/src/main/assets/index.android.bundle \
-  --assets-dest android/app/src/main/res/
+  --out android/app/src/main/assets/index.android.bundle \
+  --assetRoots android/app/src/main/res/
 $ cd android && ./gradlew assembleRelease
 ```
 
