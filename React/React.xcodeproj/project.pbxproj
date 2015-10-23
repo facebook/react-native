@@ -49,7 +49,6 @@
 		13E067571A70F44B002CDEE1 /* RCTView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067501A70F44B002CDEE1 /* RCTView.m */; };
 		13E067591A70F44B002CDEE1 /* UIView+React.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067541A70F44B002CDEE1 /* UIView+React.m */; };
 		13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 13F17A841B8493E5007D4C75 /* RCTRedBox.m */; };
-		1403F2B31B0AE60700C2A9A4 /* RCTPerfStats.m in Sources */ = {isa = PBXBuildFile; fileRef = 1403F2B21B0AE60700C2A9A4 /* RCTPerfStats.m */; };
 		14200DAA1AC179B3008EE6BA /* RCTJavaScriptLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 14200DA91AC179B3008EE6BA /* RCTJavaScriptLoader.m */; };
 		142014191B32094000CC17BA /* RCTPerformanceLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 142014171B32094000CC17BA /* RCTPerformanceLogger.m */; };
 		14435CE51AAC4AE100FC20F4 /* RCTMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 14435CE21AAC4AE100FC20F4 /* RCTMap.m */; };
@@ -59,7 +58,6 @@
 		1450FF881BCFF28A00208362 /* RCTProfileTrampoline-arm64.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF831BCFF28A00208362 /* RCTProfileTrampoline-arm64.S */; settings = {ASSET_TAGS = (); }; };
 		1450FF891BCFF28A00208362 /* RCTProfileTrampoline-x86.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF841BCFF28A00208362 /* RCTProfileTrampoline-x86.S */; settings = {ASSET_TAGS = (); }; };
 		1450FF8A1BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF851BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S */; settings = {ASSET_TAGS = (); }; };
-		146459261B06C49500B389AA /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 146459251B06C49500B389AA /* RCTFPSGraph.m */; };
 		14C2CA711B3AC63800E6CBB2 /* RCTModuleMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C2CA701B3AC63800E6CBB2 /* RCTModuleMethod.m */; };
 		14C2CA741B3AC64300E6CBB2 /* RCTModuleData.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C2CA731B3AC64300E6CBB2 /* RCTModuleData.m */; };
 		14C2CA761B3AC64F00E6CBB2 /* RCTFrameUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C2CA751B3AC64F00E6CBB2 /* RCTFrameUpdate.m */; };
@@ -67,6 +65,8 @@
 		14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F362081AABD06A001CE568 /* RCTSwitch.m */; };
 		14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F3620A1AABD06A001CE568 /* RCTSwitchManager.m */; };
 		14F484561AABFCE100FDF6B9 /* RCTSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */; };
+		14F7A0EC1BDA3B3C003C6C10 /* RCTPerfMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */; settings = {ASSET_TAGS = (); }; };
+		14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */; settings = {ASSET_TAGS = (); }; };
 		58114A161AAE854800E7D092 /* RCTPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A131AAE854800E7D092 /* RCTPicker.m */; };
 		58114A171AAE854800E7D092 /* RCTPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A151AAE854800E7D092 /* RCTPickerManager.m */; };
 		58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A4E1AAE93D500E7D092 /* RCTAsyncLocalStorage.m */; };
@@ -196,8 +196,6 @@
 		13EF7F441BC69646003F47DD /* RCTImageComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageComponent.h; sourceTree = "<group>"; };
 		13F17A831B8493E5007D4C75 /* RCTRedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRedBox.h; sourceTree = "<group>"; };
 		13F17A841B8493E5007D4C75 /* RCTRedBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRedBox.m; sourceTree = "<group>"; };
-		1403F2B11B0AE60700C2A9A4 /* RCTPerfStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPerfStats.h; sourceTree = "<group>"; };
-		1403F2B21B0AE60700C2A9A4 /* RCTPerfStats.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerfStats.m; sourceTree = "<group>"; };
 		14200DA81AC179B3008EE6BA /* RCTJavaScriptLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJavaScriptLoader.h; sourceTree = "<group>"; };
 		14200DA91AC179B3008EE6BA /* RCTJavaScriptLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJavaScriptLoader.m; sourceTree = "<group>"; };
 		142014171B32094000CC17BA /* RCTPerformanceLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerformanceLogger.m; sourceTree = "<group>"; };
@@ -213,8 +211,6 @@
 		1450FF831BCFF28A00208362 /* RCTProfileTrampoline-arm64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-arm64.S"; sourceTree = "<group>"; };
 		1450FF841BCFF28A00208362 /* RCTProfileTrampoline-x86.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-x86.S"; sourceTree = "<group>"; };
 		1450FF851BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-x86_64.S"; sourceTree = "<group>"; };
-		146459241B06C49500B389AA /* RCTFPSGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFPSGraph.h; sourceTree = "<group>"; };
-		146459251B06C49500B389AA /* RCTFPSGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFPSGraph.m; sourceTree = "<group>"; };
 		1482F9E61B55B927000ADFF3 /* RCTBridgeDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeDelegate.h; sourceTree = "<group>"; };
 		14C2CA6F1B3AC63800E6CBB2 /* RCTModuleMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuleMethod.h; sourceTree = "<group>"; };
 		14C2CA701B3AC63800E6CBB2 /* RCTModuleMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleMethod.m; sourceTree = "<group>"; };
@@ -228,6 +224,9 @@
 		14F3620A1AABD06A001CE568 /* RCTSwitchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSwitchManager.m; sourceTree = "<group>"; };
 		14F484541AABFCE100FDF6B9 /* RCTSliderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSliderManager.h; sourceTree = "<group>"; };
 		14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSliderManager.m; sourceTree = "<group>"; };
+		14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerfMonitor.m; sourceTree = "<group>"; };
+		14F7A0EE1BDA714B003C6C10 /* RCTFPSGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFPSGraph.h; sourceTree = "<group>"; };
+		14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFPSGraph.m; sourceTree = "<group>"; };
 		58114A121AAE854800E7D092 /* RCTPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPicker.h; sourceTree = "<group>"; };
 		58114A131AAE854800E7D092 /* RCTPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPicker.m; sourceTree = "<group>"; };
 		58114A141AAE854800E7D092 /* RCTPickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPickerManager.h; sourceTree = "<group>"; };
@@ -433,6 +432,9 @@
 		1450FF7F1BCFF28A00208362 /* Profiler */ = {
 			isa = PBXGroup;
 			children = (
+				14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */,
+				14F7A0EE1BDA714B003C6C10 /* RCTFPSGraph.h */,
+				14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */,
 				1450FF801BCFF28A00208362 /* RCTProfile.h */,
 				1450FF811BCFF28A00208362 /* RCTProfile.m */,
 				1450FF821BCFF28A00208362 /* RCTProfileTrampoline-arm.S */,
@@ -489,8 +491,6 @@
 				13AF1F851AE6E777005F5298 /* RCTDefines.h */,
 				83CBBA651A601EF300E9B192 /* RCTEventDispatcher.h */,
 				83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */,
-				146459241B06C49500B389AA /* RCTFPSGraph.h */,
-				146459251B06C49500B389AA /* RCTFPSGraph.m */,
 				1436DD071ADE7AA000A5ED7D /* RCTFrameUpdate.h */,
 				14C2CA751B3AC64F00E6CBB2 /* RCTFrameUpdate.m */,
 				83CBBA4C1A601E3B00E9B192 /* RCTInvalidating.h */,
@@ -511,8 +511,6 @@
 				14C2CA701B3AC63800E6CBB2 /* RCTModuleMethod.m */,
 				142014181B32094000CC17BA /* RCTPerformanceLogger.h */,
 				142014171B32094000CC17BA /* RCTPerformanceLogger.m */,
-				1403F2B11B0AE60700C2A9A4 /* RCTPerfStats.h */,
-				1403F2B21B0AE60700C2A9A4 /* RCTPerfStats.m */,
 				830A229C1A66C68A008503DA /* RCTRootView.h */,
 				830A229D1A66C68A008503DA /* RCTRootView.m */,
 				83BEE46C1A6D19BC00B5863B /* RCTSparseArray.h */,
@@ -635,15 +633,16 @@
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
 				832348161A77A5AA00B55238 /* Layout.c in Sources */,
 				13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */,
+				14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */,
 				14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,
 				13E067561A70F44B002CDEE1 /* RCTViewManager.m in Sources */,
 				58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */,
 				1450FF8A1BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S in Sources */,
+				14F7A0EC1BDA3B3C003C6C10 /* RCTPerfMonitor.m in Sources */,
 				1450FF881BCFF28A00208362 /* RCTProfileTrampoline-arm64.S in Sources */,
 				13B080061A6947C200A75B9A /* RCTScrollViewManager.m in Sources */,
-				146459261B06C49500B389AA /* RCTFPSGraph.m in Sources */,
 				14200DAA1AC179B3008EE6BA /* RCTJavaScriptLoader.m in Sources */,
 				137327EA1AA5CF210034F82E /* RCTTabBarManager.m in Sources */,
 				13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */,
@@ -688,7 +687,6 @@
 				134FCB3E1A6E7F0800051CC8 /* RCTWebViewExecutor.m in Sources */,
 				13B0801C1A69489C00A75B9A /* RCTNavItem.m in Sources */,
 				1385D0341B665AAE000A309B /* RCTModuleMap.m in Sources */,
-				1403F2B31B0AE60700C2A9A4 /* RCTPerfStats.m in Sources */,
 				83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */,
 				83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */,
 				13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */,
