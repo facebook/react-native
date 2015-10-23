@@ -22,7 +22,7 @@ function attachToServer(server, path) {
       try {
         cn.send(JSON.stringify(message));
       } catch(e) {
-        console.warn('WARN: ' + e.message);
+        // Sometimes this call throws 'not opened'
       }
     });
   }
@@ -57,7 +57,14 @@ function attachToServer(server, path) {
     });
   });
 
-  return wss;
+  return {
+    server: wss,
+    isChromeConnected: () =>
+      clients
+        .map(ws => ws.upgradeReq.headers['user-agent'])
+        .filter(Boolean)
+        .some(userAgent => userAgent.includes('Chrome'))
+  };
 }
 
 module.exports = {

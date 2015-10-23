@@ -10,9 +10,21 @@
 
 var execFile = require('child_process').execFile;
 var fs = require('fs');
+var opn = require('opn');
 var path = require('path');
 
-module.exports = function(options) {
+function getChromeAppName() {
+  switch (process.platform) {
+  case 'darwin':
+    return 'google chrome';
+  case 'win32':
+    return 'chrome';
+  default:
+    return 'google-chrome';
+  }
+}
+
+module.exports = function(options, isDebuggerConnected) {
   return function(req, res, next) {
     if (req.url === '/debugger-ui') {
       var debuggerPath = path.join(__dirname, 'debugger.html');
@@ -29,19 +41,18 @@ module.exports = function(options) {
         'If you still need this, please let us know.'
       );
     } else if (req.url === '/launch-chrome-devtools') {
+      if (isDebuggerConnected()) {
+        // Dev tools are already open; no need to open another session
+        res.end('OK');
+        return;
+      }
       var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
-      var script = 'launchChromeDevTools.applescript';
       console.log('Launching Dev Tools...');
-      execFile(
-        path.join(__dirname, script), [debuggerURL],
-        function(err, stdout, stderr) {
-          if (err) {
-            console.log('Failed to run ' + script, err);
-          }
-          console.log(stdout);
-          console.warn(stderr);
+      opn(debuggerURL, {app: [getChromeAppName()]}, function(err) {
+        if (err) {
+          console.error('Google Chrome exited with error:', err);
         }
-      );
+      });
       res.end('OK');
     } else {
       next();
