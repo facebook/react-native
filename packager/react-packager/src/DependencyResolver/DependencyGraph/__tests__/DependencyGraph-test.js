@@ -2669,6 +2669,55 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should fallback to mobile with multiple platforms (node)', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.ios.js': `
+            /**
+             * @providesModule index
+             */
+             require('./a');
+          `,
+          'a.mobile.js': '',
+          'a.android.js': '',
+          'a.js': '',
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.ios.js',
+              dependencies: ['./a'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: '/root/a.mobile.js',
+              path: '/root/a.mobile.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
+
     pit('should require package.json', () => {
       var root = '/root';
       fs.__setMockFilesystem({
