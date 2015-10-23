@@ -3733,6 +3733,18 @@
         }
       }
     },
+    "opn": {
+      "version": "3.0.2",
+      "from": "opn@*",
+      "resolved": "https://registry.npmjs.org/opn/-/opn-3.0.2.tgz",
+      "dependencies": {
+        "object-assign": {
+          "version": "3.0.0",
+          "from": "object-assign@>=3.0.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-3.0.0.tgz"
+        }
+      }
+    },
     "optimist": {
       "version": "0.6.1",
       "from": "optimist@0.6.1",
