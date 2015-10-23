@@ -426,6 +426,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   } else {
     [self.redBox showError:error];
   }
+  RCTLogError(@"Error while loading: %@", error.localizedDescription);
 
   NSDictionary *userInfo = @{@"bridge": self, @"error": error};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
