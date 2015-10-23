@@ -47,11 +47,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
-- (void)reactSetFrame:(CGRect)frame
-{
-  self.frame = frame;
-}
-
 - (void)layoutSubviews
 {
   [super layoutSubviews];
