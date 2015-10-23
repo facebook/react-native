@@ -13,11 +13,13 @@ const Config = require('./util/Config');
 const dependencies = require('./dependencies/dependencies');
 const Promise = require('promise');
 const server = require('./server/server');
+const upgrade = require('./upgrade/upgrade');
 
 const documentedCommands = {
   bundle: bundle,
   dependencies: dependencies,
   server: server,
+  upgrade,
 };
 
 const hiddenCommands = {
