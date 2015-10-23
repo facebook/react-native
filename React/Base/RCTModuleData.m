@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @implementation RCTModuleData
 {
@@ -79,37 +80,36 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   return _methods;
 }
 
-- (NSDictionary *)config
+- (NSArray *)config
 {
   if (_constants.count == 0 && self.methods.count == 0) {
-    return nil; // Nothing to export
+    return (id)kCFNull; // Nothing to export
   }
 
-  NSMutableDictionary *config = [NSMutableDictionary new];
-  config[@"moduleID"] = _moduleID;
-
-  if (_constants) {
-    config[@"constants"] = _constants;
-  }
-
-  NSMutableDictionary *methodconfig = [NSMutableDictionary new];
-  [self.methods enumerateObjectsUsingBlock:^(id<RCTBridgeMethod> method, NSUInteger idx, __unused BOOL *stop) {
+  NSMutableArray *methods = self.methods.count ? [NSMutableArray new] : nil;
+  NSMutableArray *asyncMethods = nil;
+  for (id<RCTBridgeMethod> method in self.methods) {
+    [methods addObject:method.JSMethodName];
     if (method.functionType == RCTFunctionTypePromise) {
-      methodconfig[method.JSMethodName] = @{
-        @"methodID": @(idx),
-        @"type": @"remoteAsync",
-      };
-    } else {
-      methodconfig[method.JSMethodName] = @{
-        @"methodID": @(idx),
-      };
+      if (!asyncMethods) {
+        asyncMethods = [NSMutableArray new];
+      }
+      [asyncMethods addObject:@(methods.count)];
     }
-  }];
-  if (methodconfig.count) {
-    config[@"methods"] = [methodconfig copy];
   }
 
-  return [config copy];
+  NSMutableArray *config = [NSMutableArray new];
+  [config addObject:_name];
+  if (_constants.count) {
+    [config addObject:_constants];
+  }
+  if (methods) {
+    [config addObject:methods];
+    if (asyncMethods) {
+      [config addObject:asyncMethods];
+    }
+  }
+  return config;
 }
 
 - (dispatch_queue_t)queue
