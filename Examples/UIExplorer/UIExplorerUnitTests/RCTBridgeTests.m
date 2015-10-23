@@ -136,19 +136,25 @@ _Pragma("clang diagnostic pop")
   NSString *injectedStuff;
   RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
 
-  NSDictionary *moduleConfig = RCTJSONParse(injectedStuff, NULL);
-  NSDictionary *remoteModuleConfig = moduleConfig[@"remoteModuleConfig"];
-  NSDictionary *testModuleConfig = remoteModuleConfig[@"TestModule"];
-  NSDictionary *constants = testModuleConfig[@"constants"];
-  NSDictionary *methods = testModuleConfig[@"methods"];
+  __block NSNumber *testModuleID = nil;
+  __block NSDictionary *testConstants = nil;
+  __block NSNumber *testMethodID = nil;
 
-  XCTAssertNotNil(moduleConfig);
+  NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
+  [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, BOOL *stop) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
+      testModuleID = @(i);
+      testConstants = moduleConfig[1];
+      testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
+      *stop = YES;
+    }
+  }];
+
   XCTAssertNotNil(remoteModuleConfig);
-  XCTAssertNotNil(testModuleConfig);
-  XCTAssertNotNil(constants);
-  XCTAssertEqualObjects(constants[@"eleventyMillion"], @42);
-  XCTAssertNotNil(methods);
-  XCTAssertNotNil(methods[@"testMethod"]);
+  XCTAssertNotNil(testModuleID);
+  XCTAssertNotNil(testConstants);
+  XCTAssertEqualObjects(testConstants[@"eleventyMillion"], @42);
+  XCTAssertNotNil(testMethodID);
 }
 
 - (void)testCallNativeMethod
@@ -158,13 +164,19 @@ _Pragma("clang diagnostic pop")
   NSString *injectedStuff;
   RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
 
-  NSDictionary *moduleConfig = RCTJSONParse(injectedStuff, NULL);
-  NSDictionary *remoteModuleConfig = moduleConfig[@"remoteModuleConfig"];
-  NSDictionary *testModuleConfig = remoteModuleConfig[@"TestModule"];
-  NSNumber *testModuleID = testModuleConfig[@"moduleID"];
-  NSDictionary *methods = testModuleConfig[@"methods"];
-  NSDictionary *testMethod = methods[@"testMethod"];
-  NSNumber *testMethodID = testMethod[@"methodID"];
+  __block NSNumber *testModuleID = nil;
+  __block NSDictionary *testConstants = nil;
+  __block NSNumber *testMethodID = nil;
+
+  NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
+  [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
+      testModuleID = @(i);
+      testConstants = moduleConfig[1];
+      testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
+      *stop = YES;
+    }
+  }];
 
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args], @[], @1234567];

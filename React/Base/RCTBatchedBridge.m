@@ -308,12 +308,9 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
 - (NSString *)moduleConfig
 {
-  NSMutableDictionary *config = [NSMutableDictionary new];
+  NSMutableArray *config = [NSMutableArray new];
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    NSDictionary *moduleConfig = moduleData.config;
-    if (moduleConfig) {
-      config[moduleData.name] = moduleConfig;
-    }
+    [config addObject:moduleData.config];
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:moduleData];
 
