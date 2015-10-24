@@ -184,11 +184,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
   if (_injectedJavaScript != nil) {
-    [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
+    NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
+    NSMutableDictionary *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{@"jsEvaluationValue":jsEvaluationValue}];
+    _onLoadingFinish(event);
   }
-
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
-  if (_onLoadingFinish && !webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+  else if (_onLoadingFinish && !webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
     _onLoadingFinish([self baseEvent]);
   }
 }
